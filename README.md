@@ -4,7 +4,8 @@ This is the Typescript client for Pinecone. It is a wrapper around the Pinecone 
 
 ## Installation
 
-(tbd)
+1. Clone the repo and run `npm install` to install dependencies.
+2. In your project, run `npm install <path to pinecone-ts-client>` to install the client.
 
 ## Usage
 
@@ -19,7 +20,7 @@ export PINECONE_ENVIRONMENT=your_environment
 Then, in your code:
 
 ```typescript
-import { PineconeClient } from "pinecone-client-ts";
+import { PineconeClient } from "pinecone-ts-client";
 
 // Create a client
 const client = new PineconeClient();
