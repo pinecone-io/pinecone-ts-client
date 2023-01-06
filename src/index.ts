@@ -2,8 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts'
 
 type PineconeClientConfiguration = {
-  enviornment: string
-  index: string
+  environment: string
   apiKey: string
 }
 
@@ -28,9 +27,13 @@ function exposeMethods(instance: any, target: PineconeClient) {
   }
 }
 
-interface PineconeClient extends IndexOperationsApi, VectorOperationsApi { }
+interface PineconeClient extends IndexOperationsApi { }
 
 class PineconeClient {
+  apiKey: string | null = null
+  projectName: string | null = null
+  environment: string | null = null
+
   private async getProjectName(controllerPath: string, apiKey: string) {
     const whoami = `${controllerPath}/actions/whoami`
     const request = {
@@ -52,28 +55,36 @@ class PineconeClient {
   }
 
   public async init(configuration: PineconeClientConfiguration) {
-    const { enviornment, index, apiKey } = configuration
-    const controllerPath = `https://controller.${enviornment}.pinecone.io`
-    const projectName = await this.getProjectName(controllerPath, apiKey)
+    const { environment, apiKey } = configuration
+    this.apiKey = apiKey
+    this.environment = environment
+
+    const controllerPath = `https://controller.${environment}.pinecone.io`
+    this.projectName = await this.getProjectName(controllerPath, apiKey)
 
     const controllerConfigurationParameters: ConfigurationParameters = {
       basePath: controllerPath,
       apiKey: apiKey
     }
 
+    const controllerConfiguration = new Configuration(controllerConfigurationParameters)
+    const indexOperations = new IndexOperationsApi(controllerConfiguration)
+    exposeMethods(indexOperations, this as PineconeClient);
+  }
+
+  public Index(index: string) {
+    if (!this.apiKey) throw new Error('PineconeClient: API key not set. Call init() first.')
+    if (!this.projectName) throw new Error('PineconeClient: Project name not set. Call init() first.')
+    if (!this.environment) throw new Error('PineconeClient: Environment not set. Call init() first.')
+
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: `https://${index}-${projectName}.svc.${enviornment}.pinecone.io`,
-      apiKey: apiKey
+      basePath: `https://${index}-${this.projectName}.svc.${this.environment}.pinecone.io`,
+      apiKey: this.apiKey
     }
 
-    const controllerConfiguration = new Configuration(controllerConfigurationParameters)
     const indexConfiguration = new Configuration(indexConfigurationParameters)
-
     const vectorOperations = new VectorOperationsApi(indexConfiguration)
-    const indexOperations = new IndexOperationsApi(controllerConfiguration)
-
-    exposeMethods(indexOperations, this as PineconeClient);
-    exposeMethods(vectorOperations, this as PineconeClient);
+    return vectorOperations
   }
 }
 
