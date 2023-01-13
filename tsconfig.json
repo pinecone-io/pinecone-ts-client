@@ -1,15 +1,18 @@
-//Default tsconfig.json
 {
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
     "lib": ["es2015", "dom"],
+    "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "jest"],
+    "noImplicitAny": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "src/pinecone-generated-ts", "tests"]
 }
