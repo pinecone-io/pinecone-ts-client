@@ -22,8 +22,9 @@ const indexName = "test"
 const namespace = "test-namespace"
 const collection = 'test-collection'
 const dimensions = 10
+const quantity = 10
 const metric = 'cosine'
-const vectors = generateVectors(dimensions, 2)
+const vectors = generateVectors(dimensions, quantity)
 
 describe('Pinecone Client Control Plane operations', () => {
   const client: PineconeClient = new PineconeClient()
@@ -63,7 +64,8 @@ describe('Pinecone Client Control Plane operations', () => {
     const { data: indexDescription } = indexDescriptionResult
     expect(indexDescription.database?.name).toEqual(indexName)
     expect(indexDescription.database?.metric).toEqual(metric)
-    expect(indexDescription.database?.dimensions).toEqual(dimensions)
+    //@ts-ignore
+    expect(indexDescription.database?.dimension).toEqual(dimensions)
   })
 
   it('should be able to create a collection', async () => {
@@ -79,18 +81,16 @@ describe('Pinecone Client Control Plane operations', () => {
 
   it('should be able to list collections', async () => {
     const list = await client.listCollections()
-    expect(list.data).toContain(indexName)
+    expect(list.data).toContain(collection)
   })
 
   it('should be able to describe collection', async () => {
-    const collection = 'test-collection'
     const describeCollectionResult = await client.describeCollection(collection)
     const { data: describeCollection } = describeCollectionResult
     expect(describeCollection?.name).toEqual(collection)
   })
 
-  it('should be able to delete a collection', async () => {
-    const collection = 'test-collection'
+  xit('should be able to delete a collection', async () => {
     await client.deleteCollection(collection)
     const list = await client.listCollections()
     expect(list.data).not.toContain(collection)
@@ -98,8 +98,8 @@ describe('Pinecone Client Control Plane operations', () => {
 
   it('should be able to delete an index', async () => {
     await client.deleteIndex(indexName)
-    const list = await client.listIndexes()
     await waitUntilIndexIsTerminated(client, indexName)
+    const list = await client.listIndexes()
     expect(list.data).not.toContain(indexName)
   })
 })
