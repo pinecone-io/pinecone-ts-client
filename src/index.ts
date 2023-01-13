@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios from 'axios'
 import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts'
 
 type PineconeClientConfiguration = {
@@ -89,3 +89,4 @@ class PineconeClient {
 }
 
 export { PineconeClient }
+export { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector } from './pinecone-generated-ts'
