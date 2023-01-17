@@ -14,5 +14,5 @@
     "noImplicitAny": false
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "src/pinecone-generated-ts", "tests"]
+  "exclude": ["dist", "src/pinecone-generated-ts", "tests", "src/run.ts"]
 }

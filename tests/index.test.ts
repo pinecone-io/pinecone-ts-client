@@ -18,7 +18,7 @@ jest.useRealTimers();
 //   separator: '-',
 // });
 
-const indexName = "test"
+const indexName = "test2"
 const namespace = "test-namespace"
 const collection = 'test-collection'
 const dimensions = 10
