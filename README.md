@@ -16,9 +16,8 @@ npm install pinecone-ts-client
 Set the following environment variables:
 
 ```bash
-export PINECONE_API_KEY=your_api_key
-export PINECONE_INDEX=your_index
-export PINECONE_ENVIRONMENT=your_environment
+PINECONE_API_KEY=your_api_key
+PINECONE_ENVIRONMENT=your_environment
 ```
 
 ## Initializing the client
