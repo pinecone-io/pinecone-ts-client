@@ -62,10 +62,9 @@ export const waitUntilCollectionIsReady = async (client: PineconeClient, collect
   try {
     let collectionDescriptionResult = await client.describeCollection(collectionName)
     let { data: collectionDescription } = collectionDescriptionResult
-    console.log('collectionDescription', collectionDescription)
     if (!(collectionDescription.status === 'Ready')) {
       await new Promise((r) => setTimeout(r, 1000));
-      await waitUntilIndexIsReady(client, collectionName)
+      await waitUntilCollectionIsReady(client, collectionName)
     }
     else {
       return
@@ -83,10 +82,9 @@ export const waitUntilCollectionIsTerminated = async (client: PineconeClient, co
     return
   }
   let { data: collectionDescription } = collectionDescriptionResult
-  console.log('terminate-collectionDescription', collectionDescription)
   if (collectionDescription.status === 'Terminating') {
     await new Promise((r) => setTimeout(r, 1000));
-    await waitUntilIndexIsTerminated(client, collectionName)
+    await waitUntilCollectionIsTerminated(client, collectionName)
   }
   else {
     return

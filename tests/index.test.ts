@@ -13,10 +13,12 @@ const environment = process.env.ENVIRONMENT!
 
 jest.useRealTimers();
 
-const indexName = uniqueNamesGenerator({
-  dictionaries: [adjectives, animals],
-  separator: '-',
-});
+// const indexName = uniqueNamesGenerator({
+//   dictionaries: [adjectives, animals],
+//   separator: '-',
+// });
+
+const indexName = "test"
 
 const namespace = "test-namespace"
 const collectionName = `${indexName}-collection`
