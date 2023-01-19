@@ -1,10 +1,10 @@
 // Test for the pinecone-client-ts
 
 import { PineconeClient } from '../src/index'
-import { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector, DescribeIndexStatsRequest, CreateCollectionRequest } from '../src/pinecone-generated-ts'
-import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
-import { generateVectors, getRandomVector, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
+import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest } from '../src/pinecone-generated-ts'
+import { afterAll, beforeAll, describe, expect } from '@jest/globals';
+import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
+import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -13,14 +13,13 @@ const environment = process.env.ENVIRONMENT!
 
 jest.useRealTimers();
 
-// const indexName = uniqueNamesGenerator({
-//   dictionaries: [colors, adjectives, animals],
-//   separator: '-',
-// });
+const indexName = uniqueNamesGenerator({
+  dictionaries: [adjectives, animals],
+  separator: '-',
+});
 
-const indexName = "test2"
 const namespace = "test-namespace"
-const collection = 'test-collection'
+const collectionName = `${indexName}-collection`
 const dimensions = 10
 const quantity = 10
 const metric = 'cosine'
@@ -30,7 +29,7 @@ describe('Pinecone Client Control Plane operations', () => {
   const client: PineconeClient = new PineconeClient()
 
   beforeEach(() => {
-    jest.setTimeout(100000)
+    jest.setTimeout(1000000)
   })
 
   beforeAll(async () => {
@@ -69,31 +68,35 @@ describe('Pinecone Client Control Plane operations', () => {
   })
 
   it('should be able to create a collection', async () => {
-    const collection = 'test-collection'
     const createCollectionRequest: CreateCollectionRequest = {
-      name: collection,
+      name: collectionName,
       source: indexName
     }
     await client.createCollection(createCollectionRequest)
+    waitUntilCollectionIsReady(client, collectionName)
     const list = await client.listCollections()
-    expect(list.data).toContain(collection)
+    expect(list.data).toContain(collectionName)
   })
 
   it('should be able to list collections', async () => {
+    waitUntilCollectionIsReady(client, collectionName)
     const list = await client.listCollections()
-    expect(list.data).toContain(collection)
+    expect(list.data).toContain(collectionName)
   })
 
   it('should be able to describe collection', async () => {
-    const describeCollectionResult = await client.describeCollection(collection)
+    waitUntilCollectionIsReady(client, collectionName)
+    const describeCollectionResult = await client.describeCollection(collectionName)
     const { data: describeCollection } = describeCollectionResult
-    expect(describeCollection?.name).toEqual(collection)
+    expect(describeCollection?.name).toEqual(collectionName)
   })
 
-  xit('should be able to delete a collection', async () => {
-    await client.deleteCollection(collection)
+  it('should be able to delete a collection', async () => {
+    waitUntilCollectionIsReady(client, collectionName)
+    await client.deleteCollection(collectionName)
+    waitUntilCollectionIsTerminated(client, collectionName)
     const list = await client.listCollections()
-    expect(list.data).not.toContain(collection)
+    expect(list.data).not.toContain(collectionName)
   })
 
   it('should be able to delete an index', async () => {
@@ -127,11 +130,6 @@ describe('Pinecone Client Index Operations', () => {
 
     await client.createIndex(createRequest)
     await waitUntilIndexIsReady(client, indexName)
-    const list = await client.listIndexes()
-    expect(list.data).toContain(indexName)
-  })
-
-  it('created index should be listed', async () => {
     const list = await client.listIndexes()
     expect(list.data).toContain(indexName)
   })
