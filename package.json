@@ -6,7 +6,6 @@
   "author": "Roie Schwaber-Cohen",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/run.ts",
     "build": "tsc",
     "test": "jest"
   },
