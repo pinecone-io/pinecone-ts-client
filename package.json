@@ -1,6 +1,6 @@
 {
   "name": "pinecone-ts-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.ts",
   "repository": "https://github.com/pinecone-io/pinecone-ts-client",
   "author": "Roie Schwaber-Cohen",
