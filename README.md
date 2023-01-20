@@ -177,7 +177,7 @@ type Vector = {
 
 After selecting an index to operate on, you can:
 
-#### 1. Upsert vectors
+### Upsert vectors
 
 ```ts
 const upsertRequest: UpsertRequest = {
@@ -187,7 +187,7 @@ const upsertRequest: UpsertRequest = {
 await index.upsert(upsertRequest);
 ```
 
-2. Query for vectors
+### Query vectors
 
 ```ts
 const vectors = [...] // array of vectors
@@ -201,7 +201,7 @@ const queryRequest: QueryRequest = {
 const queryResponse = await index.query(queryRequest)
 ```
 
-3. Update a specific vector
+### Update a vector
 
 ```ts
 const updateRequest: UpdateRequest = {
@@ -213,19 +213,19 @@ const updateRequest: UpdateRequest = {
 await index.update(updateRequest);
 ```
 
-4. Fetch vectors by their IDs
+### Fetch vectors by their IDs
 
 ```ts
 const fetchResult = await index.fetch([vectorIDs], namespace);
 ```
 
-5. Delete vectors
+### Delete vectors
 
 ```ts
 await index.delete1([vectorIDs], false, namespace);
 ```
 
-6. Delete all vectors in a namespace
+### Delete all vectors in a namespace
 
 ```ts
 await index.delete1([], true, namespace);

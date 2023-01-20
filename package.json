@@ -1,8 +1,11 @@
 {
-  "name": "pinecone-ts-client",
-  "version": "0.0.5",
+  "name": "@pinecone-database/pinecone-ts-client",
+  "version": "0.0.6",
   "main": "dist/index.js",
-  "repository": "https://github.com/pinecone-io/pinecone-ts-client",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinecone-io/pinecone-ts-client"
+  },
   "author": "Roie Schwaber-Cohen",
   "license": "MIT",
   "scripts": {
