@@ -8,7 +8,7 @@ This is the Typescript client for Pinecone. It is a wrapper around the Pinecone 
 ## Installation
 
 ```
-npm i @pinecone-database/pinecone-ts-client
+npm i @pinecone-database/pinecone
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ PINECONE_ENVIRONMENT=your_environment
 ## Initializing the client
 
 ```typescript
-import { PineconeClient } from "@pinecone-database/pinecone-ts-client";
+import { PineconeClient } from "@pinecone-database/pinecone";
 
 // Create a client
 const client = new PineconeClient();
