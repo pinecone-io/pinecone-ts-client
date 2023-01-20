@@ -73,7 +73,25 @@ const indexDescription = await client.describeIndex(indexName);
 Example result:
 
 ```json
-{}
+{
+  "database": {
+    "name": "my-index",
+    "metric": "cosine",
+    "dimension": 10,
+    "replicas": 1,
+    "shards": 1,
+    "pods": 1,
+    "pod_type": "p1.x1"
+  },
+  "status": {
+    "waiting": [],
+    "crashed": [],
+    "host": "my-index-[project-id].svc.[environment].pinecone.io",
+    "port": 433,
+    "state": "Ready",
+    "ready": true
+  }
+}
 ```
 
 ### List Indexes
