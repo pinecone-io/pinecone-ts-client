@@ -141,7 +141,12 @@ const describeCollection = await client.describeCollection(collection);
 Example result:
 
 ```json
-{}
+{
+  "name": "my-collection",
+  "status": "Ready",
+  "size": 3059815,
+  "dimension": 10
+}
 ```
 
 ### List Collections
