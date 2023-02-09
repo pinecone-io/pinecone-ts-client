@@ -190,7 +190,7 @@ await index.upsert(upsertRequest);
 ### Query vectors
 
 ```ts
-const vectors = [...] // array of vectors
+const vector = [...] // a vector
 
 const queryRequest: QueryRequest = {
   topK: 1,
