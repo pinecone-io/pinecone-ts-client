@@ -3,3 +3,4 @@ dist/
 scrap
 .env
 src/run.ts
+.vscode
