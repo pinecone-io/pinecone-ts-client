@@ -52,12 +52,12 @@ describe('Pinecone Client Control Plane operations', () => {
     await client.createIndex(createRequest)
     await waitUntilIndexIsReady(client, indexName)
     const list = await client.listIndexes()
-    expect(list.data).toContain(indexName)
+    expect(list).toContain(indexName)
   })
 
   it('created index should be listed', async () => {
     const list = await client.listIndexes()
-    expect(list.data).toContain(indexName)
+    expect(list).toContain(indexName)
   })
 
   it('should be able to fetch the index description ', async () => {

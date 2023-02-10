@@ -6,25 +6,47 @@ type PineconeClientConfiguration = {
   apiKey: string
 }
 
+
+
 async function handler(func: Function, args: any) {
   try {
-    return await func(args)
+    const result = await func(args)
+    return result.data ?? result
   } catch (error) {
-    throw `PineconeClient: Error calling ${func.name}: ${error}`
+    // @ts-ignore
+    const message = error?.response?.data?.message || null
+    throw `PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error} ${message ? `(${message})` : ''}`
   }
 }
 
 function exposeMethods(instance: any, target: PineconeClient) {
   for (const prop of Object.keys(Object.getPrototypeOf(instance))) {
-    const descriptor = instance[prop];
+    let descriptor = instance[prop];
     if (descriptor && typeof descriptor === 'function' && prop !== 'constructor') {
       // @ts-ignore
       target[prop] = async (args?) => {
-        const boundFunction: Function = descriptor.bind(instance);
+        Object.defineProperty(descriptor, 'name', { value: prop })
+        let boundFunction: Function = descriptor.bind(instance);
+
         return handler(boundFunction, args)
       }
     }
   }
+}
+
+function attachHandler(instance: VectorOperationsApi): VectorOperationsApi {
+  for (const prop of Object.keys(Object.getPrototypeOf(instance))) {
+    let descriptor = instance[prop];
+    if (descriptor && typeof descriptor === 'function' && prop !== 'constructor') {
+      // @ts-ignore
+      instance[prop] = async (args?) => {
+        Object.defineProperty(descriptor, 'name', { value: prop })
+        let boundFunction: Function = descriptor.bind(instance);
+        return handler(boundFunction, args)
+      }
+    }
+  }
+  return instance
 }
 
 interface PineconeClient extends IndexOperationsApi { }
@@ -84,7 +106,10 @@ class PineconeClient {
 
     const indexConfiguration = new Configuration(indexConfigurationParameters)
     const vectorOperations = new VectorOperationsApi(indexConfiguration)
-    return vectorOperations
+    const target: PineconeClient = this
+
+    return attachHandler(vectorOperations)
+
   }
 }
 
