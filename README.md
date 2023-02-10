@@ -1,6 +1,6 @@
-# Pinecone Typescript Client
+# Pinecone Node.js Client
 
-This is the Typescript client for Pinecone. It is a wrapper around the Pinecone OpenAPI spec.
+This is the Node.js client for Pinecone, written in Typescript. It is a wrapper around the Pinecone OpenAPI spec.
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Npm package version](https://badgen.net/npm/v/pinecone-ts-client)](https://npmjs.com/package/pinecone-ts-client)

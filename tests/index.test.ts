@@ -1,7 +1,7 @@
 // Test for the pinecone-client-ts
 
 import { PineconeClient } from '../src/index'
-import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest } from '../src/pinecone-generated-ts'
+import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../src/pinecone-generated-ts'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
@@ -13,12 +13,10 @@ const environment = process.env.ENVIRONMENT!
 
 jest.useRealTimers();
 
-// const indexName = uniqueNamesGenerator({
-//   dictionaries: [adjectives, animals],
-//   separator: '-',
-// });
-
-const indexName = "test"
+const indexName = uniqueNamesGenerator({
+  dictionaries: [adjectives, animals],
+  separator: '-',
+});
 
 const namespace = "test-namespace"
 const collectionName = `${indexName}-collection`
@@ -52,17 +50,17 @@ describe('Pinecone Client Control Plane operations', () => {
     await client.createIndex(createRequest)
     await waitUntilIndexIsReady(client, indexName)
     const list = await client.listIndexes()
-    expect(list).toContain(indexName)
+    expect(list.data).toContain(indexName)
   })
 
   it('created index should be listed', async () => {
     const list = await client.listIndexes()
-    expect(list).toContain(indexName)
+    expect(list.data).toContain(indexName)
   })
 
   it('should be able to fetch the index description ', async () => {
     const indexDescriptionResult = await client.describeIndex(indexName)
-    const { data: indexDescription } = indexDescriptionResult
+    const { data: indexDescription }: { data: IndexMeta } = indexDescriptionResult
     expect(indexDescription.database?.name).toEqual(indexName)
     expect(indexDescription.database?.metric).toEqual(metric)
     //@ts-ignore

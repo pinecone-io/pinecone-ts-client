@@ -10,8 +10,7 @@ type PineconeClientConfiguration = {
 
 async function handler(func: Function, args: any) {
   try {
-    const result = await func(args)
-    return result.data ?? result
+    return await func(args)
   } catch (error) {
     // @ts-ignore
     const message = error?.response?.data?.message || null
