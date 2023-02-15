@@ -5,6 +5,13 @@ This is the Node.js client for Pinecone, written in Typescript. It is a wrapper 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Npm package version](https://badgen.net/npm/v/pinecone-ts-client)](https://npmjs.com/package/pinecone-ts-client)
 
+> **_⚠️ Warning_**
+>
+> This is a **public preview** ("Beta") feature. Test thoroughly before
+> using this feature for production workloads. No SLAs or technical support
+> commitments are provided for this feature. Expect potential breaking
+> changes in future releases.
+
 ## Installation
 
 ```
