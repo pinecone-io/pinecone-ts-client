@@ -7,9 +7,9 @@ This is the Node.js client for Pinecone, written in Typescript. It is a wrapper 
 
 > **_⚠️ Warning_**
 >
-> This is a **public preview** ("Beta") feature. Test thoroughly before
-> using this feature for production workloads. No SLAs or technical support
-> commitments are provided for this feature. Expect potential breaking
+> This is a **public preview** ("Beta") client. Test thoroughly before
+> using this client for production workloads. No SLAs or technical support
+> commitments are provided for this client. Expect potential breaking
 > changes in future releases.
 
 ## Installation
