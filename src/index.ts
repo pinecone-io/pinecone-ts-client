@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts-fetch'
 
 type PineconeClientConfiguration = {
@@ -57,7 +56,6 @@ class PineconeClient {
     const whoami = `${controllerPath}/actions/whoami`
     const request = {
       method: 'GET',
-      url: whoami,
       headers: {
         'Content-Type': 'application/json',
         'Api-Key': apiKey
@@ -65,8 +63,8 @@ class PineconeClient {
     }
 
     try {
-      const response = await axios(request)
-      const { project_name } = response.data
+      const response = await fetch(whoami, request)
+      const { project_name } = await response.json()
       return project_name
     } catch (error) {
       console.log(`PineconeClient: Error getting project name: ${error}`)

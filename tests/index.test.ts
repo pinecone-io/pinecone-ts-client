@@ -221,8 +221,8 @@ describe('Pinecone Client Index Operations', () => {
       namespace
     })
     const fetchResult = await index.fetch({
-      ids: [...vectors.map((v) => v.id)]
-      , namespace
+      ids: [...vectors.map((v) => v.id)],
+      namespace
     })
     expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
   })
