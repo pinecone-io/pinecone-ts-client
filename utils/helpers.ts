@@ -1,5 +1,5 @@
 import { PineconeClient } from "../src"
-import { IndexMeta, Vector } from "../src/pinecone-generated-ts"
+import { IndexMeta, Vector } from "../src/pinecone-generated-ts-fetch"
 
 export const generateVectors = (dimension: number, quantity: number): Vector[] => {
   const vectors: Vector[] = []

@@ -1,13 +1,11 @@
+// Test for the pinecone-client-ts-fetch package
 import { CreateIndexRequest } from '../src/pinecone-generated-ts-fetch/apis/IndexOperationsApi';
-// Test for the pinecone-client-ts
-
 import { PineconeClient } from '../src/index'
-import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../src/pinecone-generated-ts'
+import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../src/pinecone-generated-ts-fetch'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
 import dotenv from 'dotenv'
-import { FetchRequest } from '../src/pinecone-generated-ts-fetch';
 
 dotenv.config()
 const apiKey = process.env.API_KEY!
@@ -15,12 +13,10 @@ const environment = process.env.ENVIRONMENT!
 
 jest.useRealTimers();
 
-// const indexName = uniqueNamesGenerator({
-//   dictionaries: [adjectives, animals],
-//   separator: '-',
-// });
-
-const indexName = "test"
+const indexName = uniqueNamesGenerator({
+  dictionaries: [adjectives, animals],
+  separator: '-',
+});
 
 const namespace = "test-namespace"
 const collectionName = `${indexName}-collection`
