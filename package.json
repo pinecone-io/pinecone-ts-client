@@ -1,6 +1,6 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -11,6 +11,9 @@
   "scripts": {
     "build": "tsc",
     "test": "jest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.17",
