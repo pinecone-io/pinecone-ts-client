@@ -1,12 +1,9 @@
-import axios from 'axios'
-import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts'
+import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts-fetch'
 
 type PineconeClientConfiguration = {
   environment: string
   apiKey: string
 }
-
-
 
 async function handler(func: Function, args: any) {
   try {
@@ -59,7 +56,6 @@ class PineconeClient {
     const whoami = `${controllerPath}/actions/whoami`
     const request = {
       method: 'GET',
-      url: whoami,
       headers: {
         'Content-Type': 'application/json',
         'Api-Key': apiKey
@@ -67,8 +63,8 @@ class PineconeClient {
     }
 
     try {
-      const response = await axios(request)
-      const { project_name } = response.data
+      const response = await fetch(whoami, request)
+      const { project_name } = await response.json()
       return project_name
     } catch (error) {
       console.log(`PineconeClient: Error getting project name: ${error}`)
@@ -105,12 +101,10 @@ class PineconeClient {
 
     const indexConfiguration = new Configuration(indexConfigurationParameters)
     const vectorOperations = new VectorOperationsApi(indexConfiguration)
-    const target: PineconeClient = this
-
     return attachHandler(vectorOperations)
 
   }
 }
 
 export { PineconeClient }
-export { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector, PatchRequest, IndexMeta, CreateCollectionRequest, ScoredVector } from './pinecone-generated-ts'
+export { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector, PatchRequest, IndexMeta, CreateCollectionRequest, ScoredVector } from './pinecone-generated-ts-fetch'

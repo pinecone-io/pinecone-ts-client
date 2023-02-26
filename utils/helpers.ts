@@ -1,5 +1,5 @@
 import { PineconeClient } from "../src"
-import { Vector } from "../src/pinecone-generated-ts"
+import { IndexMeta, Vector } from "../src/pinecone-generated-ts-fetch"
 
 export const generateVectors = (dimension: number, quantity: number): Vector[] => {
   const vectors: Vector[] = []
@@ -24,10 +24,9 @@ export const getRandomVector = (vectors: Vector[]) => {
 
 export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string) => {
   try {
-    let indexDescriptionResult = await client.describeIndex(indexName)
-    let { data: indexDescription } = indexDescriptionResult
-    //@ts-ignore
-    if (!indexDescription.status.ready) {
+    let indexDescription: IndexMeta = await client.describeIndex({ indexName })
+
+    if (!indexDescription.database?.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       await waitUntilIndexIsReady(client, indexName)
     }
@@ -40,16 +39,15 @@ export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: s
 }
 
 export const waitUntilIndexIsTerminated = async (client: PineconeClient, indexName: string) => {
-  let indexDescriptionResult
+  let indexDescription: IndexMeta;
   try {
-    indexDescriptionResult = await client.describeIndex(indexName)
+    indexDescription = await client.describeIndex({ indexName })
   } catch (error) {
     // If index wasn't found, describe will error and we assume it is terminated
     return
   }
-  let { data: indexDescription } = indexDescriptionResult
-  //@ts-ignore
-  if (indexDescription.status.state === 'Terminating') {
+
+  if (indexDescription.database?.status?.state === 'Terminating') {
     await new Promise((r) => setTimeout(r, 1000));
     await waitUntilIndexIsTerminated(client, indexName)
   }
@@ -60,8 +58,7 @@ export const waitUntilIndexIsTerminated = async (client: PineconeClient, indexNa
 
 export const waitUntilCollectionIsReady = async (client: PineconeClient, collectionName: string) => {
   try {
-    let collectionDescriptionResult = await client.describeCollection(collectionName)
-    let { data: collectionDescription } = collectionDescriptionResult
+    let collectionDescription = await client.describeCollection({ collectionName })
     if (!(collectionDescription.status === 'Ready')) {
       await new Promise((r) => setTimeout(r, 1000));
       await waitUntilCollectionIsReady(client, collectionName)
@@ -75,13 +72,12 @@ export const waitUntilCollectionIsReady = async (client: PineconeClient, collect
 }
 
 export const waitUntilCollectionIsTerminated = async (client: PineconeClient, collectionName: string) => {
-  let collectionDescriptionResult
+  let collectionDescription
   try {
-    collectionDescriptionResult = await client.describeCollection(collectionName)
+    collectionDescription = await client.describeCollection({ collectionName })
   } catch (error) {
     return
   }
-  let { data: collectionDescription } = collectionDescriptionResult
   if (collectionDescription.status === 'Terminating') {
     await new Promise((r) => setTimeout(r, 1000));
     await waitUntilCollectionIsTerminated(client, collectionName)

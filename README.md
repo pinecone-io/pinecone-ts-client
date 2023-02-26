@@ -62,19 +62,19 @@ const createRequest: CreateRequest = {
   metric,
 };
 
-await client.createIndex(createRequest);
+await client.createIndex({ createRequest });
 ```
 
 ### Delete Index
 
 ```ts
-await client.deleteIndex(indexName);
+await client.deleteIndex({ indexName });
 ```
 
 ### Describe Index
 
 ```ts
-const indexDescription = await client.describeIndex(indexName);
+const indexDescription = await client.describeIndex({ indexName });
 ```
 
 Example result:
@@ -130,7 +130,7 @@ const createCollectionRequest: CreateCollectionRequest = {
   name: collection,
   source: indexName,
 };
-await client.createCollection(createCollectionRequest);
+await client.createCollection({ createCollectionRequest });
 ```
 
 ### Delete Collection
@@ -142,7 +142,7 @@ await client.deleteCollection(collection);
 ### Describe Collection
 
 ```ts
-const describeCollection = await client.describeCollection(collection);
+const describeCollection = await client.describeCollection({ collectionName });
 ```
 
 Example result:
@@ -191,7 +191,7 @@ const upsertRequest: UpsertRequest = {
   vectors,
   namespace,
 };
-await index.upsert(upsertRequest);
+await index.upsert({ upsertRequest });
 ```
 
 ### Query vectors
@@ -205,7 +205,7 @@ const queryRequest: QueryRequest = {
   namespace
 }
 
-const queryResponse = await index.query(queryRequest)
+const queryResponse = await index.query({ queryRequest })
 ```
 
 ### Update a vector
@@ -217,23 +217,32 @@ const updateRequest: UpdateRequest = {
   setMetadata: metadata, // the new metadata
   namespace,
 };
-await index.update(updateRequest);
+await index.update({ updateRequest });
 ```
 
 ### Fetch vectors by their IDs
 
 ```ts
-const fetchResult = await index.fetch([vectorIDs], namespace);
+const fetchResult = await index.fetch({
+  ids: [vectorIDs],
+  namespace,
+});
 ```
 
 ### Delete vectors
 
 ```ts
-await index.delete1([vectorIDs], false, namespace);
+await index.delete1({
+  ids: [vectorIDs],
+  namespace,
+});
 ```
 
 ### Delete all vectors in a namespace
 
 ```ts
-await index.delete1([], true, namespace);
+await index.delete1({
+  deleteAll: true,
+  namespace,
+});
 ```
