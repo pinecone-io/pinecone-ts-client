@@ -1,4 +1,5 @@
 import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts-fetch'
+import 'cross-fetch/polyfill';
 
 type PineconeClientConfiguration = {
   environment: string
