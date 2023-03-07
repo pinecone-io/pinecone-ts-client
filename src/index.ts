@@ -1,4 +1,4 @@
-import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts-fetch'
+import { Configuration, ConfigurationParameters, IndexOperationsApi, ResponseError, VectorOperationsApi } from './pinecone-generated-ts-fetch'
 
 type PineconeClientConfiguration = {
   environment: string
@@ -28,9 +28,7 @@ async function handler(func: Function, args: any) {
   try {
     return await func(args)
   } catch (error) {
-    // @ts-ignore
-    if (error && error.response) {
-      // @ts-ignore
+    if (error instanceof ResponseError && error.response) {
       const body = error.response?.body as ReadableStream
       const buffer = body && await streamToArrayBuffer(body);
       const text = buffer && new TextDecoder().decode(buffer);
@@ -38,14 +36,14 @@ async function handler(func: Function, args: any) {
       try {
         // Handle "RAW" call errors
         const json = text && JSON.parse(text);
-        return Promise.reject(new Error(`${json.message}`))
+        return Promise.reject(new Error(`${json?.message}`))
 
       } catch (e) {
         return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
       }
     }
     else {
-      throw new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`)
+      return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
     }
   }
 }
