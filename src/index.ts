@@ -29,12 +29,12 @@ async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<
 async function handler(func: Function, args: any) {
   try {
     return await func(args)
-  } catch (error) {
-    if (error instanceof ResponseError && error.response) {
+  } catch (e) {
+    const error = e as ResponseError
+    if (error && error.response) {
       const body = error.response?.body as ReadableStream
       const buffer = body && await streamToArrayBuffer(body);
       const text = buffer && new TextDecoder().decode(buffer);
-
       try {
         // Handle "RAW" call errors
         const json = text && JSON.parse(text);
@@ -45,7 +45,8 @@ async function handler(func: Function, args: any) {
       }
     }
     else {
-      return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
+      console
+      throw new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`)
     }
   }
 }
