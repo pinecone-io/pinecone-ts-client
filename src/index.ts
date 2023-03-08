@@ -1,17 +1,50 @@
-import { Configuration, ConfigurationParameters, IndexOperationsApi, VectorOperationsApi } from './pinecone-generated-ts-fetch'
+import { Configuration, ConfigurationParameters, IndexOperationsApi, ResponseError, VectorOperationsApi } from './pinecone-generated-ts-fetch'
 
 type PineconeClientConfiguration = {
   environment: string
   apiKey: string
 }
 
+Error.prepareStackTrace = () => '';
+
+async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  let result = new Uint8Array(0);
+  const reader = stream.getReader();
+  while (true) { // eslint-disable-line no-constant-condition
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    const newResult = new Uint8Array(result.length + value.length);
+    newResult.set(result);
+    newResult.set(value, result.length);
+    result = newResult;
+  }
+  return result;
+}
+
 async function handler(func: Function, args: any) {
   try {
     return await func(args)
   } catch (error) {
-    // @ts-ignore
-    const message = error?.response?.data?.message || null
-    throw `PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error} ${message ? `(${message})` : ''}`
+    if (error instanceof ResponseError && error.response) {
+      const body = error.response?.body as ReadableStream
+      const buffer = body && await streamToArrayBuffer(body);
+      const text = buffer && new TextDecoder().decode(buffer);
+
+      try {
+        // Handle "RAW" call errors
+        const json = text && JSON.parse(text);
+        return Promise.reject(new Error(`${json?.message}`))
+
+      } catch (e) {
+        return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
+      }
+    }
+    else {
+      return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
+    }
   }
 }
 
