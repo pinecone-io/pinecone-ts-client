@@ -45,8 +45,7 @@ async function handler(func: Function, args: any) {
       }
     }
     else {
-      console
-      throw new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`)
+      return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
     }
   }
 }
