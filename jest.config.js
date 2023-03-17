@@ -7,5 +7,4 @@ module.exports = {
   transformIgnorePatterns: ["<rootDir>/node_modules/"],
   testTimeout: 100000,
   detectOpenHandles: true,
-  forceExit: true,
 };

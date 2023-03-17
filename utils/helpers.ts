@@ -25,8 +25,6 @@ export const getRandomVector = (vectors: Vector[]) => {
 export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string) => {
   try {
     let indexDescription: IndexMeta = await client.describeIndex({ indexName })
-    //@ts-ignore
-    console.log(indexDescription)
     if (!indexDescription.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       await waitUntilIndexIsReady(client, indexName)
