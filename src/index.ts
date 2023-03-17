@@ -1,13 +1,21 @@
 import { Configuration, ConfigurationParameters, IndexOperationsApi, ResponseError, VectorOperationsApi } from './pinecone-generated-ts-fetch'
 import 'cross-fetch/polyfill';
 
-
 type PineconeClientConfiguration = {
   environment: string
   apiKey: string
 }
 
-Error.prepareStackTrace = () => '';
+class ErrorWithoutStackTrace extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ErrorWithoutStackTrace';
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.stack = '';
+  }
+}
+
+// Error.prepareStackTrace = () => '';
 
 async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   let result = new Uint8Array(0);
@@ -38,14 +46,14 @@ async function handler(func: Function, args: any) {
       try {
         // Handle "RAW" call errors
         const json = text && JSON.parse(text);
-        return Promise.reject(new Error(`${json?.message}`))
+        return Promise.reject(new ErrorWithoutStackTrace(`${json?.message}`))
 
       } catch (e) {
-        return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
+        return Promise.reject(new ErrorWithoutStackTrace(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
       }
     }
     else {
-      return Promise.reject(new Error(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
+      return Promise.reject(new ErrorWithoutStackTrace(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
     }
   }
 }
