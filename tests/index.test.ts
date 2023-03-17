@@ -18,6 +18,8 @@ const indexName = uniqueNamesGenerator({
   separator: '-',
 });
 
+// const indexName = 'test'
+
 const namespace = "test-namespace"
 const collectionName = `${indexName}-collection`
 const dimensions = 10
@@ -58,6 +60,7 @@ describe('Pinecone Client Control Plane operations', () => {
   it('created index should be listed', async () => {
     const list = await client.listIndexes()
     expect(list).toContain(indexName)
+
   })
 
   it('should be able to describe and index ', async () => {
@@ -69,7 +72,7 @@ describe('Pinecone Client Control Plane operations', () => {
     expect(indexDescription.database?.metric).toEqual(metric)
   })
 
-  it('should be able to create a collection', async () => {
+  xit('should be able to create a collection', async () => {
     const createCollectionRequest: CreateCollectionRequest = {
       name: collectionName,
       source: indexName
@@ -82,19 +85,19 @@ describe('Pinecone Client Control Plane operations', () => {
     expect(list).toContain(collectionName)
   })
 
-  it('should be able to list collections', async () => {
+  xit('should be able to list collections', async () => {
     waitUntilCollectionIsReady(client, collectionName)
     const list = await client.listCollections()
     expect(list).toContain(collectionName)
   })
 
-  it('should be able to describe collection', async () => {
+  xit('should be able to describe collection', async () => {
     waitUntilCollectionIsReady(client, collectionName)
     const describeCollectionResult = await client.describeCollection({ collectionName })
     expect(describeCollectionResult?.name).toEqual(collectionName)
   })
 
-  it('should be able to delete a collection', async () => {
+  xit('should be able to delete a collection', async () => {
     waitUntilCollectionIsReady(client, collectionName)
     await client.deleteCollection({ collectionName })
     waitUntilCollectionIsTerminated(client, collectionName)

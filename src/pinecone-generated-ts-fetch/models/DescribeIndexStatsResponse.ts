@@ -30,10 +30,10 @@ export interface DescribeIndexStatsResponse {
      * A mapping for each namespace in the index from the namespace name to a
      * summary of its contents. If a metadata filter expression is present, the
      * summary will reflect only vectors matching that expression.
-     * @type {{ [key: string]: NamespaceSummary | undefined; }}
+     * @type {{ [key: string]: NamespaceSummary; }}
      * @memberof DescribeIndexStatsResponse
      */
-    namespaces?: { [key: string]: NamespaceSummary | undefined; };
+    namespaces?: { [key: string]: NamespaceSummary; };
     /**
      * The dimension of the indexed vectors.
      * @type {number}

@@ -25,8 +25,9 @@ export const getRandomVector = (vectors: Vector[]) => {
 export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string) => {
   try {
     let indexDescription: IndexMeta = await client.describeIndex({ indexName })
-
-    if (!indexDescription.database?.status?.ready) {
+    //@ts-ignore
+    console.log(indexDescription)
+    if (!indexDescription.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       await waitUntilIndexIsReady(client, indexName)
     }
@@ -47,7 +48,7 @@ export const waitUntilIndexIsTerminated = async (client: PineconeClient, indexNa
     return
   }
 
-  if (indexDescription.database?.status?.state === 'Terminating') {
+  if (indexDescription.status?.state === 'Terminating') {
     await new Promise((r) => setTimeout(r, 1000));
     await waitUntilIndexIsTerminated(client, indexName)
   }

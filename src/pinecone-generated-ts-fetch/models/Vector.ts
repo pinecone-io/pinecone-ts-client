@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { SparseValues } from './SparseValues';
+import {
+    SparseValuesFromJSON,
+    SparseValuesFromJSONTyped,
+    SparseValuesToJSON,
+} from './SparseValues';
+
 /**
  * 
  * @export
@@ -31,6 +38,12 @@ export interface Vector {
      * @memberof Vector
      */
     values: Array<number>;
+    /**
+     * 
+     * @type {SparseValues}
+     * @memberof Vector
+     */
+    sparseValues?: SparseValues;
     /**
      * This is the metadata included in the request.
      * @type {object}
@@ -62,6 +75,7 @@ export function VectorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ve
         
         'id': json['id'],
         'values': json['values'],
+        'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
     };
 }
@@ -77,6 +91,7 @@ export function VectorToJSON(value?: Vector | null): any {
         
         'id': value.id,
         'values': value.values,
+        'sparseValues': SparseValuesToJSON(value.sparseValues),
         'metadata': value.metadata,
     };
 }

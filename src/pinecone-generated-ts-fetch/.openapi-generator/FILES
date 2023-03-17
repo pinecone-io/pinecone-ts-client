@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/IndexOperationsApi.ts
 apis/VectorOperationsApi.ts
 apis/index.ts
@@ -26,6 +27,7 @@ models/QueryVector.ts
 models/RpcStatus.ts
 models/ScoredVector.ts
 models/SingleQueryResults.ts
+models/SparseValues.ts
 models/UpdateRequest.ts
 models/UpsertRequest.ts
 models/UpsertResponse.ts

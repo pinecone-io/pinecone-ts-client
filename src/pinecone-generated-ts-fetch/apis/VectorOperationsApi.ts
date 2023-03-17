@@ -15,16 +15,16 @@
 
 import * as runtime from '../runtime';
 import type {
-  DeleteRequest,
-  DescribeIndexStatsRequest,
-  DescribeIndexStatsResponse,
-  FetchResponse,
-  QueryRequest,
-  QueryResponse,
-  RpcStatus,
-  UpdateRequest,
-  UpsertRequest,
-  UpsertResponse,
+    DeleteRequest,
+    DescribeIndexStatsRequest,
+    DescribeIndexStatsResponse,
+    FetchResponse,
+    QueryRequest,
+    QueryResponse,
+    RpcStatus,
+    UpdateRequest,
+    UpsertRequest,
+    UpsertResponse,
 } from '../models';
 import {
     DeleteRequestFromJSON,
@@ -81,148 +81,9 @@ export interface UpsertOperationRequest {
 }
 
 /**
- * VectorOperationsApi - interface
- * 
- * @export
- * @interface VectorOperationsApiInterface
+ *
  */
-export interface VectorOperationsApiInterface {
-    /**
-     * The `Delete` operation deletes vectors, by id, from a single namespace. You can delete items by their id, from a single namespace.
-     * @summary Delete
-     * @param {DeleteRequest} deleteRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    _deleteRaw(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
-
-    /**
-     * The `Delete` operation deletes vectors, by id, from a single namespace. You can delete items by their id, from a single namespace.
-     * Delete
-     */
-    _delete(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
-
-    /**
-     * The `Delete` operation deletes vectors, by id, from a single namespace. You can delete items by their id, from a single namespace.
-     * @summary Delete
-     * @param {Array<string>} [ids] Vectors to delete.
-     * @param {boolean} [deleteAll] This indicates that all vectors in the index namespace should be deleted.
-     * @param {string} [namespace] The namespace to delete vectors from, if applicable.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    delete1Raw(requestParameters: Delete1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
-
-    /**
-     * The `Delete` operation deletes vectors, by id, from a single namespace. You can delete items by their id, from a single namespace.
-     * Delete
-     */
-    delete1(requestParameters: Delete1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
-
-    /**
-     * The `DescribeIndexStats` operation returns statistics about the index\'s contents, including the vector count per namespace, the number of dimensions, and the index fullness. The index fullness result  may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://www.pinecone.io/docs/api/operation/describe_index/).
-     * @summary DescribeIndexStats
-     * @param {DescribeIndexStatsRequest} describeIndexStatsRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>>;
-
-    /**
-     * The `DescribeIndexStats` operation returns statistics about the index\'s contents, including the vector count per namespace, the number of dimensions, and the index fullness. The index fullness result  may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://www.pinecone.io/docs/api/operation/describe_index/).
-     * DescribeIndexStats
-     */
-    describeIndexStats(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DescribeIndexStatsResponse>;
-
-    /**
-     * The `DescribeIndexStats` operation returns statistics about the index\'s contents, including the vector count per namespace, the number of dimensions, and the index fullness. The index fullness result  may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://www.pinecone.io/docs/api/operation/describe_index/).
-     * @summary DescribeIndexStats
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    describeIndexStats1Raw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>>;
-
-    /**
-     * The `DescribeIndexStats` operation returns statistics about the index\'s contents, including the vector count per namespace, the number of dimensions, and the index fullness. The index fullness result  may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://www.pinecone.io/docs/api/operation/describe_index/).
-     * DescribeIndexStats
-     */
-    describeIndexStats1(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DescribeIndexStatsResponse>;
-
-    /**
-     * The `Fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.
-     * @summary Fetch
-     * @param {Array<string>} ids The vector IDs to fetch. Does not accept values containing spaces.
-     * @param {string} [namespace] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    fetchRaw(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>>;
-
-    /**
-     * The `Fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.
-     * Fetch
-     */
-    fetch(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse>;
-
-    /**
-     * The `Query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.
-     * @summary Query
-     * @param {QueryRequest} queryRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    queryRaw(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>>;
-
-    /**
-     * The `Query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.
-     * Query
-     */
-    query(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QueryResponse>;
-
-    /**
-     * The `Update` operation updates vector in a namespace. If a value is included, it will overwrite the previous value. If a set_metadata is included, the values of the fields specified in it will be added or overwrite the previous value.
-     * @summary Update
-     * @param {UpdateRequest} updateRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
-
-    /**
-     * The `Update` operation updates vector in a namespace. If a value is included, it will overwrite the previous value. If a set_metadata is included, the values of the fields specified in it will be added or overwrite the previous value.
-     * Update
-     */
-    update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
-
-    /**
-     * The `Upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector id, it will overwrite the previous value.
-     * @summary Upsert
-     * @param {UpsertRequest} upsertRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof VectorOperationsApiInterface
-     */
-    upsertRaw(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>>;
-
-    /**
-     * The `Upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector id, it will overwrite the previous value.
-     * Upsert
-     */
-    upsert(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertResponse>;
-
-}
-
-/**
- * 
- */
-export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperationsApiInterface {
+export class VectorOperationsApi extends runtime.BaseAPI {
 
     /**
      * The `Delete` operation deletes vectors, by id, from a single namespace. You can delete items by their id, from a single namespace.
@@ -230,7 +91,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async _deleteRaw(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.deleteRequest === null || requestParameters.deleteRequest === undefined) {
-            throw new runtime.RequiredError('deleteRequest','Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.');
+            throw new runtime.RequiredError('deleteRequest', 'Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.');
         }
 
         const queryParameters: any = {};
@@ -313,7 +174,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
         if (requestParameters.describeIndexStatsRequest === null || requestParameters.describeIndexStatsRequest === undefined) {
-            throw new runtime.RequiredError('describeIndexStatsRequest','Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.');
+            throw new runtime.RequiredError('describeIndexStatsRequest', 'Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.');
         }
 
         const queryParameters: any = {};
@@ -384,7 +245,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async fetchRaw(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
         if (requestParameters.ids === null || requestParameters.ids === undefined) {
-            throw new runtime.RequiredError('ids','Required parameter requestParameters.ids was null or undefined when calling fetch.');
+            throw new runtime.RequiredError('ids', 'Required parameter requestParameters.ids was null or undefined when calling fetch.');
         }
 
         const queryParameters: any = {};
@@ -428,7 +289,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async queryRaw(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
         if (requestParameters.queryRequest === null || requestParameters.queryRequest === undefined) {
-            throw new runtime.RequiredError('queryRequest','Required parameter requestParameters.queryRequest was null or undefined when calling query.');
+            throw new runtime.RequiredError('queryRequest', 'Required parameter requestParameters.queryRequest was null or undefined when calling query.');
         }
 
         const queryParameters: any = {};
@@ -467,7 +328,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.updateRequest === null || requestParameters.updateRequest === undefined) {
-            throw new runtime.RequiredError('updateRequest','Required parameter requestParameters.updateRequest was null or undefined when calling update.');
+            throw new runtime.RequiredError('updateRequest', 'Required parameter requestParameters.updateRequest was null or undefined when calling update.');
         }
 
         const queryParameters: any = {};
@@ -506,7 +367,7 @@ export class VectorOperationsApi extends runtime.BaseAPI implements VectorOperat
      */
     async upsertRaw(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
         if (requestParameters.upsertRequest === null || requestParameters.upsertRequest === undefined) {
-            throw new runtime.RequiredError('upsertRequest','Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.');
+            throw new runtime.RequiredError('upsertRequest', 'Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.');
         }
 
         const queryParameters: any = {};

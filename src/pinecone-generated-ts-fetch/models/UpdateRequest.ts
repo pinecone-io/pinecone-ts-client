@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { SparseValues } from './SparseValues';
+import {
+    SparseValuesFromJSON,
+    SparseValuesFromJSONTyped,
+    SparseValuesToJSON,
+} from './SparseValues';
+
 /**
  * The request for the `Upsert` operation.
  * @export
@@ -31,6 +38,12 @@ export interface UpdateRequest {
      * @memberof UpdateRequest
      */
     values?: Array<number>;
+    /**
+     * 
+     * @type {SparseValues}
+     * @memberof UpdateRequest
+     */
+    sparseValues?: SparseValues;
     /**
      * Metadata to *set* for the vector.
      * @type {object}
@@ -67,6 +80,7 @@ export function UpdateRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'id': json['id'],
         'values': !exists(json, 'values') ? undefined : json['values'],
+        'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
         'setMetadata': !exists(json, 'setMetadata') ? undefined : json['setMetadata'],
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
     };
@@ -83,6 +97,7 @@ export function UpdateRequestToJSON(value?: UpdateRequest | null): any {
         
         'id': value.id,
         'values': value.values,
+        'sparseValues': SparseValuesToJSON(value.sparseValues),
         'setMetadata': value.setMetadata,
         'namespace': value.namespace,
     };
