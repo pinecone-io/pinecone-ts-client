@@ -179,6 +179,10 @@ type Vector = {
   id: string;
   values: number[];
   metadata?: object;
+  sparseValues: {
+    indices: [15, 30, 11];
+    values: [0.1, 0.2, 0.3];
+  }; // optional sparse values
 };
 ```
 
@@ -202,10 +206,32 @@ const vector = [...] // a vector
 const queryRequest: QueryRequest = {
   topK: 1,
   vector,
-  namespace
+  namespace,
+  includeMetadata: true,
+  includeValues: true,
 }
+```
 
-const queryResponse = await index.query({ queryRequest })
+To query with a spars vector:
+
+```ts
+const queryRequest: QueryRequest = {
+  topK: 1,
+  vector,
+  namespace,
+  includeMetadata: true,
+  includeValues: true,
+  sparseVector: {
+    indices: [15, 30, 11],
+    values: [0.1, 0.2, 0.3],
+  },
+};
+```
+
+To execute the query:
+
+```ts
+const queryResponse = await index.query({ queryRequest });
 ```
 
 ### Update a vector
@@ -214,6 +240,10 @@ const queryResponse = await index.query({ queryRequest })
 const updateRequest: UpdateRequest = {
   id: vectorId, // the ID of the vector to update
   values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // the new vector values
+  sparseValues: {
+    indices: [15, 30, 11],
+    values: [0.1, 0.2, 0.3],
+  }, // optional sparse values
   setMetadata: metadata, // the new metadata
   namespace,
 };
