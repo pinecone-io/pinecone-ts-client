@@ -106,11 +106,13 @@ class PineconeClient {
     }
 
     try {
+      // Workaround for Jest TLSWRAP issue
+      await process.nextTick(() => { });
       const response = await fetch(whoami, request)
       const { project_name } = await response.json()
       return project_name
     } catch (error) {
-      console.log(`PineconeClient: Error getting project name: ${error}`)
+      throw new ErrorWithoutStackTrace(`PineconeClient: Error getting project name: ${error}`)
     }
   }
 
