@@ -28,10 +28,10 @@ import {
 export interface FetchResponse {
     /**
      * 
-     * @type {{ [key: string]: Vector | undefined; }}
+     * @type {{ [key: string]: Vector; }}
      * @memberof FetchResponse
      */
-    vectors?: { [key: string]: Vector | undefined; };
+    vectors?: { [key: string]: Vector; };
     /**
      * The namespace of the vectors.
      * @type {string}

@@ -19,6 +19,12 @@ import {
     IndexMetaDatabaseFromJSONTyped,
     IndexMetaDatabaseToJSON,
 } from './IndexMetaDatabase';
+import type { IndexMetaStatus } from './IndexMetaStatus';
+import {
+    IndexMetaStatusFromJSON,
+    IndexMetaStatusFromJSONTyped,
+    IndexMetaStatusToJSON,
+} from './IndexMetaStatus';
 
 /**
  * 
@@ -32,6 +38,12 @@ export interface IndexMeta {
      * @memberof IndexMeta
      */
     database?: IndexMetaDatabase;
+    /**
+     * 
+     * @type {IndexMetaStatus}
+     * @memberof IndexMeta
+     */
+    status?: IndexMetaStatus;
 }
 
 /**
@@ -54,6 +66,7 @@ export function IndexMetaFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     return {
         
         'database': !exists(json, 'database') ? undefined : IndexMetaDatabaseFromJSON(json['database']),
+        'status': !exists(json, 'status') ? undefined : IndexMetaStatusFromJSON(json['status']),
     };
 }
 
@@ -67,6 +80,7 @@ export function IndexMetaToJSON(value?: IndexMeta | null): any {
     return {
         
         'database': IndexMetaDatabaseToJSON(value.database),
+        'status': IndexMetaStatusToJSON(value.status),
     };
 }
 

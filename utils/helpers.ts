@@ -1,20 +1,42 @@
+import { SparseValues } from './../src/pinecone-generated-ts-fetch/models/SparseValues';
 import { PineconeClient } from "../src"
 import { IndexMeta, Vector } from "../src/pinecone-generated-ts-fetch"
 
-export const generateVectors = (dimension: number, quantity: number): Vector[] => {
+export const generateVectors = (dimension: number, quantity: number, withSparseValues?: boolean): Vector[] => {
   const vectors: Vector[] = []
   for (let i = 0; i < quantity; i++) {
     const values: number[] = []
     for (let j = 0; j < dimension; j++) {
       values.push(Math.random())
     }
-    const vector: Vector = {
+    let vector: Vector = {
       id: i.toString(),
       values
     }
+    if (withSparseValues) {
+      vector = {
+        ...vector,
+        sparseValues: generateSparseValues(dimension)
+      }
+    }
+
     vectors.push(vector)
   }
   return vectors
+}
+
+export const generateSparseValues = (dimension: number): SparseValues => {
+  const values: number[] = []
+  const indecies: number[] = []
+  for (let j = 0; j < dimension; j++) {
+    values.push(Math.random())
+    indecies.push(j)
+  }
+  const sparseValues: SparseValues = {
+    indices: indecies,
+    values: values
+  }
+  return sparseValues
 }
 
 export const getRandomVector = (vectors: Vector[]) => {
@@ -25,8 +47,7 @@ export const getRandomVector = (vectors: Vector[]) => {
 export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string) => {
   try {
     let indexDescription: IndexMeta = await client.describeIndex({ indexName })
-
-    if (!indexDescription.database?.status?.ready) {
+    if (!indexDescription.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       await waitUntilIndexIsReady(client, indexName)
     }
@@ -47,7 +68,7 @@ export const waitUntilIndexIsTerminated = async (client: PineconeClient, indexNa
     return
   }
 
-  if (indexDescription.database?.status?.state === 'Terminating') {
+  if (indexDescription.status?.state === 'Terminating') {
     await new Promise((r) => setTimeout(r, 1000));
     await waitUntilIndexIsTerminated(client, indexName)
   }

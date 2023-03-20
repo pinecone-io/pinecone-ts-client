@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { SparseValues } from './SparseValues';
+import {
+    SparseValuesFromJSON,
+    SparseValuesFromJSONTyped,
+    SparseValuesToJSON,
+} from './SparseValues';
+
 /**
  * 
  * @export
@@ -37,6 +44,12 @@ export interface ScoredVector {
      * @memberof ScoredVector
      */
     values?: Array<number>;
+    /**
+     * 
+     * @type {SparseValues}
+     * @memberof ScoredVector
+     */
+    sparseValues?: SparseValues;
     /**
      * This is the metadata, if it is requested.
      * @type {object}
@@ -68,6 +81,7 @@ export function ScoredVectorFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'id': json['id'],
         'score': !exists(json, 'score') ? undefined : json['score'],
         'values': !exists(json, 'values') ? undefined : json['values'],
+        'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
     };
 }
@@ -84,6 +98,7 @@ export function ScoredVectorToJSON(value?: ScoredVector | null): any {
         'id': value.id,
         'score': value.score,
         'values': value.values,
+        'sparseValues': SparseValuesToJSON(value.sparseValues),
         'metadata': value.metadata,
     };
 }

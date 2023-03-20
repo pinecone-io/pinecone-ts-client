@@ -15,11 +15,11 @@
 
 import * as runtime from '../runtime';
 import type {
-  CollectionMeta,
-  CreateCollectionRequest,
-  CreateRequest,
-  IndexMeta,
-  PatchRequest,
+    CollectionMeta,
+    CreateCollectionRequest,
+    CreateRequest,
+    IndexMeta,
+    PatchRequest,
 } from '../models';
 import {
     CollectionMetaFromJSON,
@@ -64,150 +64,16 @@ export interface DescribeIndexRequest {
 }
 
 /**
- * IndexOperationsApi - interface
- * 
- * @export
- * @interface IndexOperationsApiInterface
+ *
  */
-export interface IndexOperationsApiInterface {
-    /**
-     * This operation specifies the pod type and number of replicas for an index.
-     * @param {string} indexName The name of the index
-     * @param {PatchRequest} [patchRequest] The desired pod type and replica configuration for the index.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    configureIndexRaw(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
-
-    /**
-     * This operation specifies the pod type and number of replicas for an index.
-     */
-    configureIndex(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
-
-    /**
-     * This operation creates a Pinecone collection.
-     * @param {CreateCollectionRequest} [createCollectionRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    createCollectionRaw(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
-
-    /**
-     * This operation creates a Pinecone collection.
-     */
-    createCollection(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
-
-    /**
-     * This operation creates a Pinecone index. You can use it to specify the measure of similarity, the dimension of vectors to be stored in the index, the numbers of shards and replicas to use, and more.
-     * @param {CreateRequest} [createRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    createIndexRaw(requestParameters: CreateIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
-
-    /**
-     * This operation creates a Pinecone index. You can use it to specify the measure of similarity, the dimension of vectors to be stored in the index, the numbers of shards and replicas to use, and more.
-     */
-    createIndex(requestParameters: CreateIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
-
-    /**
-     * This operation deletes an existing collection.
-     * @param {string} collectionName The name of the collection
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
-
-    /**
-     * This operation deletes an existing collection.
-     */
-    deleteCollection(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
-
-    /**
-     * This operation deletes an existing index.
-     * @param {string} indexName The name of the index
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    deleteIndexRaw(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
-
-    /**
-     * This operation deletes an existing index.
-     */
-    deleteIndex(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
-
-    /**
-     * Get a description of a collection.
-     * @param {string} collectionName The name of the collection
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    describeCollectionRaw(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionMeta>>;
-
-    /**
-     * Get a description of a collection.
-     */
-    describeCollection(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionMeta>;
-
-    /**
-     * Get a description of an index.
-     * @param {string} indexName The name of the index
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    describeIndexRaw(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexMeta>>;
-
-    /**
-     * Get a description of an index.
-     */
-    describeIndex(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexMeta>;
-
-    /**
-     * This operation returns a list of your Pinecone collections.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    listCollectionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>>;
-
-    /**
-     * This operation returns a list of your Pinecone collections.
-     */
-    listCollections(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>>;
-
-    /**
-     * This operation returns a list of your Pinecone indexes.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof IndexOperationsApiInterface
-     */
-    listIndexesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>>;
-
-    /**
-     * This operation returns a list of your Pinecone indexes.
-     */
-    listIndexes(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>>;
-
-}
-
-/**
- * 
- */
-export class IndexOperationsApi extends runtime.BaseAPI implements IndexOperationsApiInterface {
+export class IndexOperationsApi extends runtime.BaseAPI {
 
     /**
      * This operation specifies the pod type and number of replicas for an index.
      */
     async configureIndexRaw(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
         }
 
         const queryParameters: any = {};
@@ -310,7 +176,7 @@ export class IndexOperationsApi extends runtime.BaseAPI implements IndexOperatio
      */
     async deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.');
+            throw new runtime.RequiredError('collectionName', 'Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.');
         }
 
         const queryParameters: any = {};
@@ -344,7 +210,7 @@ export class IndexOperationsApi extends runtime.BaseAPI implements IndexOperatio
      */
     async deleteIndexRaw(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.');
         }
 
         const queryParameters: any = {};
@@ -378,7 +244,7 @@ export class IndexOperationsApi extends runtime.BaseAPI implements IndexOperatio
      */
     async describeCollectionRaw(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionMeta>> {
         if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.');
+            throw new runtime.RequiredError('collectionName', 'Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.');
         }
 
         const queryParameters: any = {};
@@ -412,7 +278,7 @@ export class IndexOperationsApi extends runtime.BaseAPI implements IndexOperatio
      */
     async describeIndexRaw(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexMeta>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling describeIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling describeIndex.');
         }
 
         const queryParameters: any = {};

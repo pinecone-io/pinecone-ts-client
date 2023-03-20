@@ -19,6 +19,12 @@ import {
     QueryVectorFromJSONTyped,
     QueryVectorToJSON,
 } from './QueryVector';
+import type { SparseValues } from './SparseValues';
+import {
+    SparseValuesFromJSON,
+    SparseValuesFromJSONTyped,
+    SparseValuesToJSON,
+} from './SparseValues';
 
 /**
  * The request for the `Query` operation.
@@ -70,6 +76,12 @@ export interface QueryRequest {
      */
     vector?: Array<number>;
     /**
+     * 
+     * @type {SparseValues}
+     * @memberof QueryRequest
+     */
+    sparseVector?: SparseValues;
+    /**
      * The unique ID of the vector to be used as a query vector. Each `query()` request can contain only one of the parameters `queries`, `vector`, or  `id`.
      * @type {string}
      * @memberof QueryRequest
@@ -104,6 +116,7 @@ export function QueryRequestFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'includeMetadata': !exists(json, 'includeMetadata') ? undefined : json['includeMetadata'],
         'queries': !exists(json, 'queries') ? undefined : ((json['queries'] as Array<any>).map(QueryVectorFromJSON)),
         'vector': !exists(json, 'vector') ? undefined : json['vector'],
+        'sparseVector': !exists(json, 'sparseVector') ? undefined : SparseValuesFromJSON(json['sparseVector']),
         'id': !exists(json, 'id') ? undefined : json['id'],
     };
 }
@@ -124,6 +137,7 @@ export function QueryRequestToJSON(value?: QueryRequest | null): any {
         'includeMetadata': value.includeMetadata,
         'queries': value.queries === undefined ? undefined : ((value.queries as Array<any>).map(QueryVectorToJSON)),
         'vector': value.vector,
+        'sparseVector': SparseValuesToJSON(value.sparseVector),
         'id': value.id,
     };
 }

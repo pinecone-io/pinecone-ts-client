@@ -19,12 +19,6 @@ import {
     IndexMetaDatabaseIndexConfigFromJSONTyped,
     IndexMetaDatabaseIndexConfigToJSON,
 } from './IndexMetaDatabaseIndexConfig';
-import type { IndexMetaDatabaseStatus } from './IndexMetaDatabaseStatus';
-import {
-    IndexMetaDatabaseStatusFromJSON,
-    IndexMetaDatabaseStatusFromJSONTyped,
-    IndexMetaDatabaseStatusToJSON,
-} from './IndexMetaDatabaseStatus';
 
 /**
  * 
@@ -89,10 +83,10 @@ export interface IndexMetaDatabase {
     indexConfig?: IndexMetaDatabaseIndexConfig;
     /**
      * 
-     * @type {IndexMetaDatabaseStatus}
+     * @type {object}
      * @memberof IndexMetaDatabase
      */
-    status?: IndexMetaDatabaseStatus;
+    metadataConfig?: object;
 }
 
 /**
@@ -123,7 +117,7 @@ export function IndexMetaDatabaseFromJSONTyped(json: any, ignoreDiscriminator: b
         'shards': !exists(json, 'shards') ? undefined : json['shards'],
         'podType': !exists(json, 'pod_type') ? undefined : json['pod_type'],
         'indexConfig': !exists(json, 'index_config') ? undefined : IndexMetaDatabaseIndexConfigFromJSON(json['index_config']),
-        'status': !exists(json, 'status') ? undefined : IndexMetaDatabaseStatusFromJSON(json['status']),
+        'metadataConfig': !exists(json, 'metadata_config') ? undefined : json['metadata_config'],
     };
 }
 
@@ -145,7 +139,7 @@ export function IndexMetaDatabaseToJSON(value?: IndexMetaDatabase | null): any {
         'shards': value.shards,
         'pod_type': value.podType,
         'index_config': IndexMetaDatabaseIndexConfigToJSON(value.indexConfig),
-        'status': IndexMetaDatabaseStatusToJSON(value.status),
+        'metadata_config': value.metadataConfig,
     };
 }
 
