@@ -212,7 +212,7 @@ const queryRequest: QueryRequest = {
 }
 ```
 
-To query with a spars vector:
+To query with a sparse vector:
 
 ```ts
 const queryRequest: QueryRequest = {
