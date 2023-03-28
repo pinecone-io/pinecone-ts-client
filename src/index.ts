@@ -15,8 +15,6 @@ class ErrorWithoutStackTrace extends Error {
   }
 }
 
-// Error.prepareStackTrace = () => '';
-
 async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   let result = new Uint8Array(0);
   const reader = stream.getReader();
