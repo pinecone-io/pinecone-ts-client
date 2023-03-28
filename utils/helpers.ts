@@ -1,6 +1,6 @@
-import { SparseValues } from './../src/pinecone-generated-ts-fetch/models/SparseValues';
-import { PineconeClient } from "../src"
-import { IndexMeta, Vector } from "../src/pinecone-generated-ts-fetch"
+import { SparseValues } from './../dist/pinecone-generated-ts-fetch/models/SparseValues';
+import { PineconeClient } from "../dist"
+import { IndexMeta, Vector } from "../dist/pinecone-generated-ts-fetch"
 
 export const generateVectors = (dimension: number, quantity: number, withSparseValues?: boolean): Vector[] => {
   const vectors: Vector[] = []
