@@ -1,10 +1,11 @@
 // Test for the pinecone-client-ts-fetch package
-import { PineconeClient } from '../src/index'
-import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../src/pinecone-generated-ts-fetch'
+
+import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../dist/pinecone-generated-ts-fetch'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
 import dotenv from 'dotenv'
+import { PineconeClient } from '../dist';
 
 dotenv.config()
 const apiKey = process.env.API_KEY!
