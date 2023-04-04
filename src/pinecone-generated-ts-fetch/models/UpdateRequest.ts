@@ -97,8 +97,8 @@ export function UpdateRequestToJSON(value?: UpdateRequest | null): any {
         
         'id': value.id,
         'values': value.values,
-        'sparseValues': SparseValuesToJSON(value.sparseValues),
-        'setMetadata': value.setMetadata,
+        'sparse_values': SparseValuesToJSON(value.sparseValues),
+        'set_metadata': value.setMetadata,
         'namespace': value.namespace,
     };
 }
