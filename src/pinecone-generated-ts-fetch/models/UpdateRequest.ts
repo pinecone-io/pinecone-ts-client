@@ -80,8 +80,8 @@ export function UpdateRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'id': json['id'],
         'values': !exists(json, 'values') ? undefined : json['values'],
-        'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
-        'setMetadata': !exists(json, 'setMetadata') ? undefined : json['setMetadata'],
+        'sparseValues': !exists(json, 'sparse_values') ? undefined : SparseValuesFromJSON(json['sparse_values']),
+        'setMetadata': !exists(json, 'set_metadata') ? undefined : json['set_metadata'],
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
     };
 }
