@@ -105,7 +105,7 @@ class PineconeClient {
 
     try {
       // Workaround for Jest TLSWRAP issue
-      await process.nextTick(() => { });
+      // await process.nextTick(() => { }); // Commented out as not supported by Edge Mode in Next.js (#44)
       const response = await fetch(whoami, request)
       const { project_name } = await response.json()
       return project_name
