@@ -6,10 +6,10 @@ type PineconeClientConfiguration = {
   apiKey: string
 }
 
-class ErrorWithoutStackTrace extends Error {
+class PineconeError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ErrorWithoutStackTrace';
+    this.name = 'PineconeError';
     Object.setPrototypeOf(this, new.target.prototype);
     this.stack = '';
   }
@@ -44,14 +44,14 @@ async function handler(func: Function, args: any) {
       try {
         // Handle "RAW" call errors
         const json = text && JSON.parse(text);
-        return Promise.reject(new ErrorWithoutStackTrace(`${json?.message}`))
+        return Promise.reject(new PineconeError(`${json?.message}`))
 
       } catch (e) {
-        return Promise.reject(new ErrorWithoutStackTrace(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
+        return Promise.reject(new PineconeError(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
       }
     }
     else {
-      return Promise.reject(new ErrorWithoutStackTrace(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
+      return Promise.reject(new PineconeError(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
     }
   }
 }
@@ -102,25 +102,36 @@ class PineconeClient {
         'Api-Key': apiKey
       }
     }
-
+    let response
     try {
       // Workaround for Jest TLSWRAP issue
       await process.nextTick(() => { });
-      const response = await fetch(whoami, request)
-      const { project_name } = await response.json()
-      return project_name
+      response = await fetch(whoami, request);
+      if (response.status !== 200) {
+        const error = await response.text();
+        const statusText = response.statusText;
+        throw new Error(`${statusText} - ${error}`);
+      } else {
+        const { project_name } = await response.json();
+        return project_name;
+      }
     } catch (error) {
-      throw new ErrorWithoutStackTrace(`PineconeClient: Error getting project name: ${error}`)
+      throw new PineconeError(`Failed getting project name. ${error}`);
     }
   }
 
   public async init(configuration: PineconeClientConfiguration) {
     const { environment, apiKey } = configuration
+
     this.apiKey = apiKey
     this.environment = environment
 
     const controllerPath = `https://controller.${environment}.pinecone.io`
-    this.projectName = await this.getProjectName(controllerPath, apiKey)
+    try {
+      this.projectName = await this.getProjectName(controllerPath, apiKey)
+    } catch (error) {
+      throw error;
+    }
 
     const controllerConfigurationParameters: ConfigurationParameters = {
       basePath: controllerPath,
@@ -130,6 +141,7 @@ class PineconeClient {
     const controllerConfiguration = new Configuration(controllerConfigurationParameters)
     const indexOperations = new IndexOperationsApi(controllerConfiguration)
     exposeMethods(indexOperations, this as PineconeClient);
+
   }
 
   public Index(index: string) {
