@@ -105,7 +105,9 @@ class PineconeClient {
     let response
     try {
       // Workaround for Jest TLSWRAP issue
-      await process.nextTick(() => { });
+      if (typeof process === 'object') {
+        await process.nextTick(() => { });
+      }
       response = await fetch(whoami, request);
       if (response.status !== 200) {
         const error = await response.text();
