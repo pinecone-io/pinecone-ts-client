@@ -8,7 +8,7 @@ on:
 
 jobs:
   run-tests:
-    name: Run unit tests
+    name: Run integration tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,7 +31,7 @@ jobs:
       - name: Run tests
         env:
           CI: true
-          API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
         run: |
           npm run test

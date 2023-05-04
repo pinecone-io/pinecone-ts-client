@@ -107,3 +107,17 @@ export const waitUntilCollectionIsTerminated = async (client: PineconeClient, co
     return
   }
 }
+
+export const cleanupEverything = async (client: PineconeClient) => {
+  // Delete all indexes and collections
+  const listIndexes = await client.listIndexes()
+  for (const index of listIndexes) {
+    await client.deleteIndex({ indexName: index })
+    await waitUntilIndexIsTerminated(client, index)
+  }
+  const listCollections = await client.listCollections()
+  for (const collection of listCollections) {
+    await client.deleteCollection({ collectionName: collection })
+    await waitUntilCollectionIsTerminated(client, collection)
+  }
+}
