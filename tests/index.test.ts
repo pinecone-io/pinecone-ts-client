@@ -7,7 +7,9 @@ import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntil
 import dotenv from 'dotenv'
 import { PineconeClient } from '../dist';
 
-dotenv.config()
+if (!process.env.CI) {
+  dotenv.config()
+}
 const apiKey = process.env.API_KEY!
 const environment = process.env.ENVIRONMENT!
 
