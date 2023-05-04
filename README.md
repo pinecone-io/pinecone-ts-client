@@ -1,3 +1,5 @@
+[![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
+
 # Pinecone Node.js Client
 
 This is the Node.js client for Pinecone, written in Typescript. It is a wrapper around the Pinecone OpenAPI spec.
