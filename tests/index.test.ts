@@ -3,13 +3,17 @@
 import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../dist/pinecone-generated-ts-fetch'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
-import { generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
+import { cleanupEverything, generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
 import dotenv from 'dotenv'
 import { PineconeClient } from '../dist';
 
 dotenv.config()
-const apiKey = process.env.API_KEY!
-const environment = process.env.ENVIRONMENT!
+const apiKey = process.env.PINECONE_API_KEY!
+const environment = process.env.PINECONE_ENVIRONMENT!
+
+if (!apiKey || !environment) {
+  throw new Error("You must set PINECONE_API_KEY and PINECONE_ENVIRONMENT environment variables before running tests")
+}
 
 jest.useRealTimers();
 
@@ -19,26 +23,33 @@ const quantity = 10
 const metric = 'dotproduct'
 const vectors = generateVectors(dimensions, quantity)
 const vectorsWithSparseValues = generateVectors(dimensions, quantity, true)
+const client: PineconeClient = new PineconeClient()
+
+beforeEach(() => {
+  jest.setTimeout(100000)
+})
+
+beforeAll(async () => {
+  const configuration = {
+    environment,
+    apiKey
+  }
+  await client.init(configuration)
+
+  // Defensively clean up any resources that may have been left behind
+  // by a previous test run that did not cleanup properly.
+  await cleanupEverything(client)
+})
 
 describe('Pinecone Client Index Operations', () => {
-  const client: PineconeClient = new PineconeClient()
+  afterAll(async () => {
+    await cleanupEverything(client)
+  })
+
   const indexName = uniqueNamesGenerator({
     dictionaries: [adjectives, animals],
     separator: '-',
   });
-
-
-  beforeEach(() => {
-    jest.setTimeout(100000)
-  })
-
-  beforeAll(async () => {
-    const configuration = {
-      environment,
-      apiKey
-    }
-    await client.init(configuration)
-  })
 
   it('should create index', async () => {
     const createRequest: CreateRequest = {
@@ -60,7 +71,6 @@ describe('Pinecone Client Index Operations', () => {
       namespace
     }
     await index.upsert({ upsertRequest })
-
     const queryRequest: QueryRequest = {
       topK: 1,
       vector: getRandomVector(vectors).values,
@@ -69,7 +79,6 @@ describe('Pinecone Client Index Operations', () => {
 
     const queryResponse = await index.query({ queryRequest })
     expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-
   })
 
   it('should be able to upsert a vector with sparse values', async () => {
@@ -89,7 +98,6 @@ describe('Pinecone Client Index Operations', () => {
 
     const queryResponse = await index.query({ queryRequest })
     expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-
   })
 
   it('should be able to query a vector', async () => {
@@ -176,18 +184,12 @@ describe('Pinecone Client Index Operations', () => {
     })
     expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
   })
-
-  afterAll(done => {
-    async () => {
-      await client.deleteIndex({ indexName })
-    }
-    done()
-  })
 })
 
-
 describe('Pinecone Client Control Plane operations', () => {
-  const client: PineconeClient = new PineconeClient()
+  afterAll(async () => {
+    await cleanupEverything(client)
+  })  
 
   const indexName = uniqueNamesGenerator({
     dictionaries: [adjectives, animals],
@@ -195,19 +197,6 @@ describe('Pinecone Client Control Plane operations', () => {
   });
 
   const collectionName = `${indexName}-collection`
-
-
-  beforeEach(() => {
-    jest.setTimeout(1000000)
-  })
-
-  beforeAll(async () => {
-    const configuration = {
-      environment,
-      apiKey
-    }
-    await client.init(configuration)
-  })
 
   it('should create index', async () => {
     const createRequest: CreateRequest = {
@@ -222,14 +211,12 @@ describe('Pinecone Client Control Plane operations', () => {
     expect(list).toContain(indexName)
   })
 
-
   it('created index should be listed', async () => {
     const list = await client.listIndexes()
     expect(list).toContain(indexName)
-
   })
 
-  it('should be able to describe and index ', async () => {
+  it('should be able to describe an index', async () => {
     const indexDescriptionResult = await client.describeIndex({
       indexName
     })
@@ -246,39 +233,35 @@ describe('Pinecone Client Control Plane operations', () => {
     await client.createCollection({
       createCollectionRequest
     })
-    waitUntilCollectionIsReady(client, collectionName)
+    await waitUntilCollectionIsReady(client, collectionName)
     const list = await client.listCollections()
     expect(list).toContain(collectionName)
   })
 
   it('should be able to list collections', async () => {
-    waitUntilCollectionIsReady(client, collectionName)
+    await waitUntilCollectionIsReady(client, collectionName)
     const list = await client.listCollections()
     expect(list).toContain(collectionName)
   })
 
   it('should be able to describe collection', async () => {
-    waitUntilCollectionIsReady(client, collectionName)
+    await waitUntilCollectionIsReady(client, collectionName)
     const describeCollectionResult = await client.describeCollection({ collectionName })
     expect(describeCollectionResult?.name).toEqual(collectionName)
   })
 
-  xit('should be able to delete a collection', async () => {
-    waitUntilCollectionIsReady(client, collectionName)
+  it('should be able to delete a collection', async () => {
+    await waitUntilCollectionIsReady(client, collectionName)
     await client.deleteCollection({ collectionName })
-    waitUntilCollectionIsTerminated(client, collectionName)
+    await waitUntilCollectionIsTerminated(client, collectionName)
     const list = await client.listCollections()
     expect(list).not.toContain(collectionName)
   })
 
-  xit('should be able to delete an index', async () => {
-
+  it('should be able to delete an index', async () => {
     await client.deleteIndex({ indexName })
     await waitUntilIndexIsTerminated(client, indexName)
     const list = await client.listIndexes()
     expect(list).not.toContain(indexName)
   })
 })
-
-
-

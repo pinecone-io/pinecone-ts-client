@@ -1,8 +1,10 @@
+
 # Pinecone Node.js Client
 
 This is the Node.js client for Pinecone, written in Typescript. It is a wrapper around the Pinecone OpenAPI spec.
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/pinecone-io/pinecone-ts-client/graphs/commit-activity)
 [![Npm package version](https://badgen.net/npm/v/pinecone-ts-client)](https://npmjs.com/package/@pinecone-database/pinecone)
 
 > **_⚠️ Warning_**
