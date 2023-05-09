@@ -32,10 +32,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup
       - name: Version and publish to npm
         id: npm-release
-        uses: ./.github/actions/npm-release.yml
+        uses: ./.github/actions/npm-release
         with:
           git_email: clients@pinecone.io
           git_username: ${{ github.actor }}

@@ -21,9 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup
       - name: Run tests
-        uses: ./.github/actions/run-tests.yml
+        uses: ./.github/actions/run-tests
         with:
           pinecone_api_key: ${{ secrets.PINECONE_API_KEY }}
           pinecone_environment: ${{ secrets.PINECONE_ENVIRONMENT }}
