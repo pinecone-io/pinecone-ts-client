@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup
-        uses: '../actions/setup.yml'
+        uses: '.github/actions/setup.yml'
       - name: Run tests
-        uses: '../actions/run-tests.yml'
+        uses: '.github/actions/run-tests.yml'
         with:
           pinecone_api_key: ${{ secrets.PINECONE_API_KEY }}
           pinecone_environment: ${{ secrets.PINECONE_ENVIRONMENT }}
