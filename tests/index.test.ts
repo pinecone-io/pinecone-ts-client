@@ -25,10 +25,6 @@ const vectors = generateVectors(dimensions, quantity)
 const vectorsWithSparseValues = generateVectors(dimensions, quantity, true)
 const client: PineconeClient = new PineconeClient()
 
-beforeEach(() => {
-  jest.setTimeout(100000)
-})
-
 beforeAll(async () => {
   const configuration = {
     environment,
@@ -41,7 +37,7 @@ beforeAll(async () => {
   await cleanupEverything(client)
 })
 
-describe('Pinecone Client Index Operations', () => {
+describe('Pinecone javascript client', () => {
   afterAll(async () => {
     await cleanupEverything(client)
   })
@@ -64,204 +60,184 @@ describe('Pinecone Client Index Operations', () => {
     expect(list).toContain(indexName)
   })
 
-  it('should be able to upsert a vector', async () => {
-    const index = client.Index(indexName)
-    const upsertRequest: UpsertRequest = {
-      vectors,
-      namespace
-    }
-    await index.upsert({ upsertRequest })
-    const queryRequest: QueryRequest = {
-      topK: 1,
-      vector: getRandomVector(vectors).values,
-      namespace
-    }
-
-    const queryResponse = await index.query({ queryRequest })
-    expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-  })
-
-  it('should be able to upsert a vector with sparse values', async () => {
-    const index = client.Index(indexName)
-    const upsertRequest: UpsertRequest = {
-      vectors: vectorsWithSparseValues,
-      namespace
-    }
-    await index.upsert({ upsertRequest })
-    const randomVector = getRandomVector(vectors)
-    const queryRequest: QueryRequest = {
-      topK: 1,
-      vector: randomVector.values,
-      sparseVector: randomVector.sparseValues,
-      namespace
-    }
-
-    const queryResponse = await index.query({ queryRequest })
-    expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-  })
-
-  it('should be able to query a vector', async () => {
-    const index = client.Index(indexName)
-    const queryRequest: QueryRequest = {
-      topK: 1,
-      vector: getRandomVector(vectors).values,
-      namespace
-    }
-
-    const queryResponse = await index.query({ queryRequest })
-    expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-  })
-
-  it('should be able to query a vector with sparse values', async () => {
-    const index = client.Index(indexName)
-    const randomVector = getRandomVector(vectors)
-    const queryRequest: QueryRequest = {
-      topK: 1,
-      vector: randomVector.values,
-      sparseVector: randomVector.sparseValues,
-      namespace
-    }
-
-    const queryResponse = await index.query({ queryRequest })
-    expect(queryResponse?.matches?.length).toBeGreaterThan(0)
-  })
-
-  it('should be able to update a vector', async () => {
-    const index = client.Index(indexName)
-    const updateRequest: UpdateRequest = {
-      id: getRandomVector(vectors).id,
-      values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-      setMetadata: {
-        "foo": "bar"
-      },
-      namespace
-    }
-    await index.update({ updateRequest })
-
-    const updatedVectorResult = await index.fetch({
-      ids: [updateRequest.id],
-      namespace
+  describe('Pinecone Client Index Operations', () => {
+    it('should be able to upsert a vector', async () => {
+      const index = client.Index(indexName)
+      const upsertRequest: UpsertRequest = {
+        vectors,
+        namespace
+      }
+      await index.upsert({ upsertRequest })
+      const queryRequest: QueryRequest = {
+        topK: 1,
+        vector: getRandomVector(vectors).values,
+        namespace
+      }
+  
+      const queryResponse = await index.query({ queryRequest })
+      expect(queryResponse?.matches?.length).toBeGreaterThan(0)
     })
-    const updatedVectors = updatedVectorResult?.vectors as object
-    const updatedVector = updatedVectors[updateRequest.id]
-    expect(updatedVector.values).toEqual(updateRequest.values)
+  
+    it('should be able to upsert a vector with sparse values', async () => {
+      const index = client.Index(indexName)
+      const upsertRequest: UpsertRequest = {
+        vectors: vectorsWithSparseValues,
+        namespace
+      }
+      await index.upsert({ upsertRequest })
+      const randomVector = getRandomVector(vectors)
+      const queryRequest: QueryRequest = {
+        topK: 1,
+        vector: randomVector.values,
+        sparseVector: randomVector.sparseValues,
+        namespace
+      }
+  
+      const queryResponse = await index.query({ queryRequest })
+      expect(queryResponse?.matches?.length).toBeGreaterThan(0)
+    })
+  
+    it('should be able to query a vector', async () => {
+      const index = client.Index(indexName)
+      const queryRequest: QueryRequest = {
+        topK: 1,
+        vector: getRandomVector(vectors).values,
+        namespace
+      }
+  
+      const queryResponse = await index.query({ queryRequest })
+      expect(queryResponse?.matches?.length).toBeGreaterThan(0)
+    })
+  
+    it('should be able to query a vector with sparse values', async () => {
+      const index = client.Index(indexName)
+      const randomVector = getRandomVector(vectors)
+      const queryRequest: QueryRequest = {
+        topK: 1,
+        vector: randomVector.values,
+        sparseVector: randomVector.sparseValues,
+        namespace
+      }
+  
+      const queryResponse = await index.query({ queryRequest })
+      expect(queryResponse?.matches?.length).toBeGreaterThan(0)
+    })
+  
+    it('should be able to update a vector', async () => {
+      const index = client.Index(indexName)
+      const updateRequest: UpdateRequest = {
+        id: getRandomVector(vectors).id,
+        values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        setMetadata: {
+          "foo": "bar"
+        },
+        namespace
+      }
+      await index.update({ updateRequest })
+  
+      const updatedVectorResult = await index.fetch({
+        ids: [updateRequest.id],
+        namespace
+      })
+      const updatedVectors = updatedVectorResult?.vectors as object
+      const updatedVector = updatedVectors[updateRequest.id]
+      expect(updatedVector.values).toEqual(updateRequest.values)
+    })
+  
+    it('should be able to fetch vectors by ID', async () => {
+      const index = client.Index(indexName)
+      const randomVectorId = getRandomVector(vectors).id
+      const fetchResult = await index.fetch({
+        ids: [randomVectorId],
+        namespace
+      })
+      expect(Object.keys(fetchResult.vectors as object)).toContain(randomVectorId)
+    })
+  
+    it('should be able to delete a vector', async () => {
+      const randomVectorId = getRandomVector(vectors).id
+      const index = client.Index(indexName)
+      await index.delete1({
+        ids: [randomVectorId],
+        deleteAll: false,
+        namespace
+      })
+      const fetchResult = await index.fetch({
+        ids: [randomVectorId],
+        namespace
+      })
+      expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
+    })
+  
+    it('should be able to delete all vector in namespace', async () => {
+      const index = client.Index(indexName)
+      await index.delete1({
+        deleteAll: true,
+        namespace
+      })
+      const fetchResult = await index.fetch({
+        ids: [...vectors.map((v) => v.id)],
+        namespace
+      })
+      expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
+    })
   })
-
-  it('should be able to fetch vectors by ID', async () => {
-    const index = client.Index(indexName)
-    const randomVectorId = getRandomVector(vectors).id
-    const fetchResult = await index.fetch({
-      ids: [randomVectorId],
-      namespace
+  
+  describe('Pinecone Client Control Plane operations', () => {   
+    const collectionName = `${indexName}-collection`
+  
+    it('created index should be listed', async () => {
+      const list = await client.listIndexes()
+      expect(list).toContain(indexName)
     })
-    expect(Object.keys(fetchResult.vectors as object)).toContain(randomVectorId)
-  })
-
-  it('should be able to delete a vector', async () => {
-    const randomVectorId = getRandomVector(vectors).id
-    const index = client.Index(indexName)
-    await index.delete1({
-      ids: [randomVectorId],
-      deleteAll: false,
-      namespace
+  
+    it('should be able to describe an index', async () => {
+      const indexDescriptionResult = await client.describeIndex({
+        indexName
+      })
+      const indexDescription: IndexMeta = indexDescriptionResult
+      expect(indexDescription.database?.name).toEqual(indexName)
+      expect(indexDescription.database?.metric).toEqual(metric)
     })
-    const fetchResult = await index.fetch({
-      ids: [randomVectorId],
-      namespace
+  
+    it('should be able to create a collection', async () => {
+      const createCollectionRequest: CreateCollectionRequest = {
+        name: collectionName,
+        source: indexName
+      }
+      await client.createCollection({
+        createCollectionRequest
+      })
+      await waitUntilCollectionIsReady(client, collectionName)
+      const list = await client.listCollections()
+      expect(list).toContain(collectionName)
     })
-    expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
-  })
-
-  it('should be able to delete all vector in namespace', async () => {
-    const index = client.Index(indexName)
-    await index.delete1({
-      deleteAll: true,
-      namespace
+  
+    it('should be able to list collections', async () => {
+      await waitUntilCollectionIsReady(client, collectionName)
+      const list = await client.listCollections()
+      expect(list).toContain(collectionName)
     })
-    const fetchResult = await index.fetch({
-      ids: [...vectors.map((v) => v.id)],
-      namespace
+  
+    it('should be able to describe collection', async () => {
+      await waitUntilCollectionIsReady(client, collectionName)
+      const describeCollectionResult = await client.describeCollection({ collectionName })
+      expect(describeCollectionResult?.name).toEqual(collectionName)
     })
-    expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
-  })
-})
-
-describe('Pinecone Client Control Plane operations', () => {
-  afterAll(async () => {
-    await cleanupEverything(client)
+  
+    it('should be able to delete a collection', async () => {
+      await waitUntilCollectionIsReady(client, collectionName)
+      await client.deleteCollection({ collectionName })
+      await waitUntilCollectionIsTerminated(client, collectionName)
+      const list = await client.listCollections()
+      expect(list).not.toContain(collectionName)
+    })
+  
+    it('should be able to delete an index', async () => {
+      await client.deleteIndex({ indexName })
+      await waitUntilIndexIsTerminated(client, indexName)
+      const list = await client.listIndexes()
+      expect(list).not.toContain(indexName)
+    })
   })  
-
-  const indexName = uniqueNamesGenerator({
-    dictionaries: [adjectives, animals],
-    separator: '-',
-  });
-
-  const collectionName = `${indexName}-collection`
-
-  it('should create index', async () => {
-    const createRequest: CreateRequest = {
-      name: indexName,
-      dimension: dimensions,
-      metric,
-    }
-
-    await client.createIndex({ createRequest })
-    await waitUntilIndexIsReady(client, indexName)
-    const list = await client.listIndexes()
-    expect(list).toContain(indexName)
-  })
-
-  it('created index should be listed', async () => {
-    const list = await client.listIndexes()
-    expect(list).toContain(indexName)
-  })
-
-  it('should be able to describe an index', async () => {
-    const indexDescriptionResult = await client.describeIndex({
-      indexName
-    })
-    const indexDescription: IndexMeta = indexDescriptionResult
-    expect(indexDescription.database?.name).toEqual(indexName)
-    expect(indexDescription.database?.metric).toEqual(metric)
-  })
-
-  it('should be able to create a collection', async () => {
-    const createCollectionRequest: CreateCollectionRequest = {
-      name: collectionName,
-      source: indexName
-    }
-    await client.createCollection({
-      createCollectionRequest
-    })
-    await waitUntilCollectionIsReady(client, collectionName)
-    const list = await client.listCollections()
-    expect(list).toContain(collectionName)
-  })
-
-  it('should be able to list collections', async () => {
-    await waitUntilCollectionIsReady(client, collectionName)
-    const list = await client.listCollections()
-    expect(list).toContain(collectionName)
-  })
-
-  it('should be able to describe collection', async () => {
-    await waitUntilCollectionIsReady(client, collectionName)
-    const describeCollectionResult = await client.describeCollection({ collectionName })
-    expect(describeCollectionResult?.name).toEqual(collectionName)
-  })
-
-  it('should be able to delete a collection', async () => {
-    await waitUntilCollectionIsReady(client, collectionName)
-    await client.deleteCollection({ collectionName })
-    await waitUntilCollectionIsTerminated(client, collectionName)
-    const list = await client.listCollections()
-    expect(list).not.toContain(collectionName)
-  })
-
-  it('should be able to delete an index', async () => {
-    await client.deleteIndex({ indexName })
-    await waitUntilIndexIsTerminated(client, indexName)
-    const list = await client.listIndexes()
-    expect(list).not.toContain(indexName)
-  })
 })
