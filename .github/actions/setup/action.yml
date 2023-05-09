@@ -22,5 +22,7 @@ runs:
     - name: Install npm packages
       run: | 
         npm install --ignore-scripts
+      shell: bash
     - name: Build typescript
       run: npm run build
+      shell: bash

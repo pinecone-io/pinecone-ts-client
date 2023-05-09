@@ -20,12 +20,24 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - run: git config --global user.email "${{ inputs.git_email }}"
-    - run: git config --global user.name "${{ inputs.git_username }}"
-    - run: npm version ${{ inputs.releaseType }} -m '[skip ci] Publish release %s'
-    - run: echo "release-tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+    - name: 'Configure git CLI'
+      shell: bash
+      run: |
+        git config --global user.email "${{ inputs.git_email }}"
+        git config --global user.name "${{ inputs.git_username }}"
+    - name: 'Bump version and commit'
+      shell: bash
+      run: npm version ${{ inputs.releaseType }} -m '[skip ci] Publish release %s'
+
+    - name: 'Output release tag'
+      shell: bash
       id: release-tag-step
-    - run: git push --follow-tags
-    - run: npm publish
+      run: echo "release-tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+    - name: 'Push changes'
+      shell: bash
+      run: git push --follow-tags
+    - name: 'Publish to npm'
+      run: npm publish
+      shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm_token }}

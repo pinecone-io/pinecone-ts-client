@@ -15,5 +15,5 @@ runs:
         CI: true
         PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
         PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
-      run: |
-        npm run test
+      run: npm run test
+      shell: bash
