@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   integration-tests:
-    uses: ./.github/workflows/PR.yml@main
+    uses: ./.github/workflows/PR.yml
     secrets: inherit
 
   version-and-release:
