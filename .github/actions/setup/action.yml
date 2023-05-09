@@ -1,0 +1,28 @@
+name: 'Setup'
+description: 'Node setup, install, and build'
+inputs:
+  pinecone_api_key:
+    description: 'API key'
+    required: true
+  pinecone_environment:
+    description: 'Environment/region to target'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.20.0
+    - name: Cache NPM dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('package-lock.json') }}
+    - name: Install npm packages
+      run: | 
+        npm install --ignore-scripts
+      shell: bash
+    - name: Build typescript
+      run: npm run build
+      shell: bash

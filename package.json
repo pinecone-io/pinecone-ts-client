@@ -1,6 +1,6 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "0.0.14",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -10,7 +10,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "jest --verbose=true"
+    "test": "jest --verbose=true",
+    "prepublishOnly": "git push --follow-tags"
   },
   "engines": {
     "node": ">=14.0.0"

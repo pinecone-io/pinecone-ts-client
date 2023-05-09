@@ -5,7 +5,13 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch: {}
+  workflow_call:
+    secrets:
+      PINECONE_API_KEY:
+        required: true
+      PINECONE_ENVIRONMENT:
+        required: true
 
 jobs:
   run-tests:
@@ -14,25 +20,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.20.0
-      - name: Cache NPM dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-      - name: Install npm packages
-        run: | 
-          npm install --ignore-scripts
-      - name: Build typescript
-        run: |
-          npm run build
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Run tests
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
-        run: |
-          npm run test
+        run: npm run test
