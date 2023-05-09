@@ -6,11 +6,12 @@ on:
       releaseType:
         description: 'Release type'
         required: true
+        type: choice
         default: 'patch'
         options:
-        - 'patch' # bug fixes
-        - 'minor' # new features, backwards compatible
-        - 'major' # breaking changes
+          - 'patch' # bug fixes
+          - 'minor' # new features, backwards compatible
+          - 'major' # breaking changes
 
 # prevent concurrent releases
 concurrency:
@@ -18,14 +19,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  integration-tests:
-    if: false # disable integration tests for now
-    uses: ./.github/workflows/PR.yml
-    secrets: inherit
+  # integration-tests:
+  #   if: ${{ github.event.inputs.runTests == 'true' }}
+  #   uses: ./.github/workflows/PR.yml
+  #   secrets: inherit
 
   version-and-release:
     name: Release to NPM
-    needs: integration-tests
+    # needs: integration-tests
     runs-on: ubuntu-latest
     outputs:
       tagName: ${{ steps.npm-release.outputs.release_tag }}
