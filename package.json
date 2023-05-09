@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "jest --verbose=true",
+    "test": "jest --runInBand --detectOpenHandles",
     "prepublishOnly": "git push --follow-tags"
   },
   "engines": {
