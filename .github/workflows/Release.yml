@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   integration-tests:
-    uses: './PR.yml'
+    uses: './PR.yml@main'
     secrets: inherit
 
   version-and-release:

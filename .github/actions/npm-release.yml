@@ -15,7 +15,7 @@ inputs:
     required: false
 outputs:
   release_tag:
-    description: "The name of the created git tag as described by git describe --tags"
+    description: 'The name of the created git tag'
     value: ${{ steps.release-tag-step.outputs.release-tag }}
 runs:
   using: 'composite'
