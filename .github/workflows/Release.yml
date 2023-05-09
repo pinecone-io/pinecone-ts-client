@@ -8,40 +8,29 @@ on:
         required: true
         default: 'patch'
         options:
-          - 'patch'
-          - 'minor'
-          - 'major'
-      releaseBranch:
-        description: 'Release branch'
-        required: true
-        default: 'main'
+          - 'patch' # bug fixes
+          - 'minor' # new features, backwards compatible
+          - 'major' # breaking changes
 
-concurrency: # prevent concurrent releases
-  group: npm-bump
+# prevent concurrent releases
+concurrency:
+  group: npm-release
   cancel-in-progress: true
 
 jobs:
+  integration-tests:
+    uses: './PR.yml'
+    secrets: inherit
+
   version-and-release:
     name: Release to NPM
+    needs: integration-tests
     runs-on: ubuntu-latest
     outputs:
-      tagName: ${{ steps.npm-bump.outputs.release_tag }}
+      tagName: ${{ steps.npm-release.outputs.release_tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.releaseBranch }}
-          # fetch full history so things like auto-changelog work properly
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install npm packages
-        run: npm install --ignore-scripts
-      - name: Build typescript
-        run: npm run build
+      - name: Setup
+        uses: '../actions/setup.yml'
       - name: Version and publish to npm
         id: npm-release
         uses: ../actions/release.yml
