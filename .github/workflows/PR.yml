@@ -23,7 +23,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
       - name: Run tests
-        uses: ./.github/actions/run-tests
-        with:
-          pinecone_api_key: ${{ secrets.PINECONE_API_KEY }}
-          pinecone_environment: ${{ secrets.PINECONE_ENVIRONMENT }}
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
+          PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
+        run: npm run test
