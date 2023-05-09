@@ -28,7 +28,6 @@ runs:
     - name: 'Bump version and commit'
       shell: bash
       run: npm version ${{ inputs.releaseType }} -m '[skip ci] Publish release %s'
-
     - name: 'Output release tag'
       shell: bash
       id: release-tag-step
