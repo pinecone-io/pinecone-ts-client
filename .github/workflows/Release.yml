@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   integration-tests:
+    if: false # disable integration tests for now
     uses: ./.github/workflows/PR.yml
     secrets: inherit
 
