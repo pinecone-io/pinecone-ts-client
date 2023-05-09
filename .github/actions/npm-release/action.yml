@@ -39,4 +39,4 @@ runs:
       run: npm publish
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
+        NPM_TOKEN: ${{ inputs.npm_token }}
