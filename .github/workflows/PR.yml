@@ -25,6 +25,6 @@ jobs:
       - name: Run tests
         env:
           CI: true
-          PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
-          PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
         run: npm run test
