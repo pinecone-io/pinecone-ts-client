@@ -161,4 +161,4 @@ class PineconeClient {
 
 export { PineconeClient }
 export { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector, PatchRequest, IndexMeta, CreateCollectionRequest, ScoredVector } from './pinecone-generated-ts-fetch'
-export { chunkedUpsert, createIndexIfNotExists } from './utils'
+export { utils } from './utils'

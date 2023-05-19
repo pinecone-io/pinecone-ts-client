@@ -17,7 +17,7 @@ const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string, 
   }
 }
 
-export const createIndexIfNotExists = async (
+const createIndexIfNotExists = async (
   client: PineconeClient,
   indexName: string,
   dimension: number
@@ -48,7 +48,7 @@ const sliceIntoChunks = <T>(arr: T[], chunkSize: number) => {
 };
 
 // Upserts vectors into the index in chunks
-export const chunkedUpsert = async (
+const chunkedUpsert = async (
   index: VectorOperationsApi,
   vectors: Vector[],
   namespace: string,
@@ -79,3 +79,11 @@ export const chunkedUpsert = async (
     throw new Error(`Error upserting vectors into index: ${e}`);
   }
 };
+
+
+const utils = {
+  createIndexIfNotExists,
+  chunkedUpsert
+}
+
+export { utils }
