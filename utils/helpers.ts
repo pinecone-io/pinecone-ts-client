@@ -43,23 +43,6 @@ export const getRandomVector = (vectors: Vector[]) => {
   return vectors[Math.floor(Math.random() * vectors.length)]
 }
 
-
-export const waitUntilIndexIsReady = async (client: PineconeClient, indexName: string, retries: number = 0) => {
-  try {
-    let indexDescription: IndexMeta = await client.describeIndex({ indexName })
-    if (!indexDescription.status?.ready) {
-      await new Promise((r) => setTimeout(r, 1000));
-      await waitUntilIndexIsReady(client, indexName, retries+1)
-    }
-    else {
-      console.log(`Index ready after ${retries} seconds`)
-      return
-    }
-  } catch (e) {
-    console.error('Error waiting until index is ready', e)
-  }
-}
-
 export const waitUntilIndexIsTerminated = async (client: PineconeClient, indexName: string) => {
   let indexDescription: IndexMeta;
   try {

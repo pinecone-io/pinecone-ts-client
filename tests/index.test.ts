@@ -3,9 +3,12 @@
 import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../dist/pinecone-generated-ts-fetch'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
-import { cleanupEverything, generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsReady, waitUntilIndexIsTerminated } from '../utils/helpers'
+import { cleanupEverything, generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsTerminated } from '../utils/helpers'
 import dotenv from 'dotenv'
 import { PineconeClient } from '../dist';
+import { utils } from '../dist';
+
+const { waitUntilIndexIsReady } = utils
 
 dotenv.config()
 const apiKey = process.env.PINECONE_API_KEY!
@@ -73,11 +76,11 @@ describe('Pinecone javascript client', () => {
         vector: getRandomVector(vectors).values,
         namespace
       }
-  
+
       const queryResponse = await index.query({ queryRequest })
       expect(queryResponse?.matches?.length).toBeGreaterThan(0)
     })
-  
+
     it('should be able to upsert a vector with sparse values', async () => {
       const index = client.Index(indexName)
       const upsertRequest: UpsertRequest = {
@@ -92,11 +95,11 @@ describe('Pinecone javascript client', () => {
         sparseVector: randomVector.sparseValues,
         namespace
       }
-  
+
       const queryResponse = await index.query({ queryRequest })
       expect(queryResponse?.matches?.length).toBeGreaterThan(0)
     })
-  
+
     it('should be able to query a vector', async () => {
       const index = client.Index(indexName)
       const queryRequest: QueryRequest = {
@@ -104,11 +107,11 @@ describe('Pinecone javascript client', () => {
         vector: getRandomVector(vectors).values,
         namespace
       }
-  
+
       const queryResponse = await index.query({ queryRequest })
       expect(queryResponse?.matches?.length).toBeGreaterThan(0)
     })
-  
+
     it('should be able to query a vector with sparse values', async () => {
       const index = client.Index(indexName)
       const randomVector = getRandomVector(vectors)
@@ -118,11 +121,11 @@ describe('Pinecone javascript client', () => {
         sparseVector: randomVector.sparseValues,
         namespace
       }
-  
+
       const queryResponse = await index.query({ queryRequest })
       expect(queryResponse?.matches?.length).toBeGreaterThan(0)
     })
-  
+
     it('should be able to update a vector', async () => {
       const index = client.Index(indexName)
       const updateRequest: UpdateRequest = {
@@ -134,7 +137,7 @@ describe('Pinecone javascript client', () => {
         namespace
       }
       await index.update({ updateRequest })
-  
+
       const updatedVectorResult = await index.fetch({
         ids: [updateRequest.id],
         namespace
@@ -143,7 +146,7 @@ describe('Pinecone javascript client', () => {
       const updatedVector = updatedVectors[updateRequest.id]
       expect(updatedVector.values).toEqual(updateRequest.values)
     })
-  
+
     it('should be able to fetch vectors by ID', async () => {
       const index = client.Index(indexName)
       const randomVectorId = getRandomVector(vectors).id
@@ -153,7 +156,7 @@ describe('Pinecone javascript client', () => {
       })
       expect(Object.keys(fetchResult.vectors as object)).toContain(randomVectorId)
     })
-  
+
     it('should be able to delete a vector', async () => {
       const randomVectorId = getRandomVector(vectors).id
       const index = client.Index(indexName)
@@ -168,7 +171,7 @@ describe('Pinecone javascript client', () => {
       })
       expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
     })
-  
+
     it('should be able to delete all vector in namespace', async () => {
       const index = client.Index(indexName)
       await index.delete1({
@@ -182,15 +185,15 @@ describe('Pinecone javascript client', () => {
       expect(Object.keys(fetchResult.vectors as object).length).toBe(0)
     })
   })
-  
-  describe('Pinecone Client Control Plane operations', () => {   
+
+  describe('Pinecone Client Control Plane operations', () => {
     const collectionName = `${indexName}-collection`
-  
+
     it('created index should be listed', async () => {
       const list = await client.listIndexes()
       expect(list).toContain(indexName)
     })
-  
+
     it('should be able to describe an index', async () => {
       const indexDescriptionResult = await client.describeIndex({
         indexName
@@ -199,7 +202,7 @@ describe('Pinecone javascript client', () => {
       expect(indexDescription.database?.name).toEqual(indexName)
       expect(indexDescription.database?.metric).toEqual(metric)
     })
-  
+
     it('should be able to create a collection', async () => {
       const createCollectionRequest: CreateCollectionRequest = {
         name: collectionName,
@@ -212,19 +215,19 @@ describe('Pinecone javascript client', () => {
       const list = await client.listCollections()
       expect(list).toContain(collectionName)
     })
-  
+
     it('should be able to list collections', async () => {
       await waitUntilCollectionIsReady(client, collectionName)
       const list = await client.listCollections()
       expect(list).toContain(collectionName)
     })
-  
+
     it('should be able to describe collection', async () => {
       await waitUntilCollectionIsReady(client, collectionName)
       const describeCollectionResult = await client.describeCollection({ collectionName })
       expect(describeCollectionResult?.name).toEqual(collectionName)
     })
-  
+
     it('should be able to delete a collection', async () => {
       await waitUntilCollectionIsReady(client, collectionName)
       await client.deleteCollection({ collectionName })
@@ -232,12 +235,12 @@ describe('Pinecone javascript client', () => {
       const list = await client.listCollections()
       expect(list).not.toContain(collectionName)
     })
-  
+
     it('should be able to delete an index', async () => {
       await client.deleteIndex({ indexName })
       await waitUntilIndexIsTerminated(client, indexName)
       const list = await client.listIndexes()
       expect(list).not.toContain(indexName)
     })
-  })  
+  })
 })

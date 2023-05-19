@@ -82,6 +82,7 @@ const chunkedUpsert = async (
 
 
 const utils = {
+  waitUntilIndexIsReady,
   createIndexIfNotExists,
   chunkedUpsert
 }
