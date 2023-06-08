@@ -36,7 +36,7 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
-      
+
       - name: Version and publish to npm
         id: npm-release
         uses: ./.github/actions/npm-release
