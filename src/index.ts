@@ -15,31 +15,13 @@ class PineconeError extends Error {
   }
 }
 
-async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
-  let result = new Uint8Array(0);
-  const reader = stream.getReader();
-  while (true) { // eslint-disable-line no-constant-condition
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
-    }
-
-    const newResult = new Uint8Array(result.length + value.length);
-    newResult.set(result);
-    newResult.set(value, result.length);
-    result = newResult;
-  }
-  return result;
-}
-
 async function handler(func: Function, args: any) {
   try {
     return await func(args)
   } catch (e) {
     const error = e as ResponseError
     if (error && error.response) {
-      const body = error.response?.body as ReadableStream
-      const buffer = body && await streamToArrayBuffer(body);
+      const buffer = await error.response.arrayBuffer()
       const text = buffer && new TextDecoder().decode(buffer);
       try {
         // Handle "RAW" call errors

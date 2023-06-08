@@ -1,12 +1,26 @@
 // Test for the pinecone-client-ts-fetch package
 
-import { QueryRequest, CreateRequest, UpdateRequest, UpsertRequest, CreateCollectionRequest, IndexMeta } from '../dist/pinecone-generated-ts-fetch'
+import {
+  CreateCollectionRequest,
+  CreateRequest,
+  IndexMeta,
+  PineconeClient,
+  QueryRequest,
+  UpdateRequest,
+  UpsertRequest,
+  utils
+} from '../dist'
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
-import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
-import { cleanupEverything, generateVectors, getRandomVector, waitUntilCollectionIsReady, waitUntilCollectionIsTerminated, waitUntilIndexIsTerminated } from '../utils/helpers'
+import { adjectives, animals, uniqueNamesGenerator } from 'unique-names-generator';
+import {
+  cleanupEverything,
+  generateVectors,
+  getRandomVector,
+  waitUntilCollectionIsReady,
+  waitUntilCollectionIsTerminated,
+  waitUntilIndexIsTerminated
+} from '../utils/helpers'
 import dotenv from 'dotenv'
-import { PineconeClient } from '../dist';
-import { utils } from '../dist';
 
 const { waitUntilIndexIsReady } = utils
 
@@ -195,10 +209,9 @@ describe('Pinecone javascript client', () => {
     })
 
     it('should be able to describe an index', async () => {
-      const indexDescriptionResult = await client.describeIndex({
+      const indexDescription: IndexMeta = await client.describeIndex({
         indexName
       })
-      const indexDescription: IndexMeta = indexDescriptionResult
       expect(indexDescription.database?.name).toEqual(indexName)
       expect(indexDescription.database?.metric).toEqual(metric)
     })
