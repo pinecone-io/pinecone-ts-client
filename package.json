@@ -11,8 +11,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
-    "test": "jest --runInBand --detectOpenHandles",
-    "prepublishOnly": "git push --follow-tags"
+    "test": "jest --runInBand --detectOpenHandles"
   },
   "engines": {
     "node": ">=14.0.0"
