@@ -1,4 +1,3 @@
-
 # Pinecone Node.js Client
 
 This is the Node.js client for Pinecone, written in Typescript. It is a wrapper around the Pinecone OpenAPI spec.
@@ -32,7 +31,7 @@ PINECONE_ENVIRONMENT=your_environment
 ## Initializing the client
 
 ```typescript
-import { PineconeClient } from "@pinecone-database/pinecone";
+import { PineconeClient } from '@pinecone-database/pinecone';
 
 // Create a client
 const client = new PineconeClient();
