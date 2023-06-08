@@ -23,7 +23,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
       - name: Prettier
-        run: npm run prettier
+        run: npm run format
       - name: Check for prettier changes
         run: |
           git diff --exit-code >/dev/null 2>&1
