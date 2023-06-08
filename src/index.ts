@@ -1,10 +1,16 @@
-import { Configuration, ConfigurationParameters, IndexOperationsApi, ResponseError, VectorOperationsApi } from './pinecone-generated-ts-fetch'
+import {
+  Configuration,
+  ConfigurationParameters,
+  IndexOperationsApi,
+  ResponseError,
+  VectorOperationsApi,
+} from './pinecone-generated-ts-fetch';
 import 'cross-fetch/polyfill';
 
 type PineconeClientConfiguration = {
-  environment: string
-  apiKey: string
-}
+  environment: string;
+  apiKey: string;
+};
 
 class PineconeError extends Error {
   constructor(message: string) {
@@ -15,10 +21,13 @@ class PineconeError extends Error {
   }
 }
 
-async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+async function streamToArrayBuffer(
+  stream: ReadableStream<Uint8Array>
+): Promise<Uint8Array> {
   let result = new Uint8Array(0);
   const reader = stream.getReader();
-  while (true) { // eslint-disable-line no-constant-condition
+  while (true) {
+    // eslint-disable-line no-constant-condition
     const { done, value } = await reader.read();
     if (done) {
       break;
@@ -34,24 +43,36 @@ async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<
 
 async function handler(func: Function, args: any) {
   try {
-    return await func(args)
+    return await func(args);
   } catch (e) {
-    const error = e as ResponseError
+    const error = e as ResponseError;
     if (error && error.response) {
-      const body = error.response?.body as ReadableStream
-      const buffer = body && await streamToArrayBuffer(body);
+      const body = error.response?.body as ReadableStream;
+      const buffer = body && (await streamToArrayBuffer(body));
       const text = buffer && new TextDecoder().decode(buffer);
       try {
         // Handle "RAW" call errors
         const json = text && JSON.parse(text);
-        return Promise.reject(new PineconeError(`${json?.message}`))
-
+        return Promise.reject(new PineconeError(`${json?.message}`));
       } catch (e) {
-        return Promise.reject(new PineconeError(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${text}`))
+        return Promise.reject(
+          new PineconeError(
+            `PineconeClient: Error calling ${func.name.replace(
+              'bound ',
+              ''
+            )}: ${text}`
+          )
+        );
       }
-    }
-    else {
-      return Promise.reject(new PineconeError(`PineconeClient: Error calling ${func.name.replace("bound ", "")}: ${error}`))
+    } else {
+      return Promise.reject(
+        new PineconeError(
+          `PineconeClient: Error calling ${func.name.replace(
+            'bound ',
+            ''
+          )}: ${error}`
+        )
+      );
     }
   }
 }
@@ -59,14 +80,18 @@ async function handler(func: Function, args: any) {
 function exposeMethods(instance: any, target: PineconeClient) {
   for (const prop of Object.keys(Object.getPrototypeOf(instance))) {
     let descriptor = instance[prop];
-    if (descriptor && typeof descriptor === 'function' && prop !== 'constructor') {
+    if (
+      descriptor &&
+      typeof descriptor === 'function' &&
+      prop !== 'constructor'
+    ) {
       // @ts-ignore
       target[prop] = async (args?) => {
-        Object.defineProperty(descriptor, 'name', { value: prop })
+        Object.defineProperty(descriptor, 'name', { value: prop });
         let boundFunction: Function = descriptor.bind(instance);
 
-        return handler(boundFunction, args)
-      }
+        return handler(boundFunction, args);
+      };
     }
   }
 }
@@ -74,35 +99,39 @@ function exposeMethods(instance: any, target: PineconeClient) {
 function attachHandler(instance: VectorOperationsApi): VectorOperationsApi {
   for (const prop of Object.keys(Object.getPrototypeOf(instance))) {
     let descriptor = instance[prop];
-    if (descriptor && typeof descriptor === 'function' && prop !== 'constructor') {
+    if (
+      descriptor &&
+      typeof descriptor === 'function' &&
+      prop !== 'constructor'
+    ) {
       // @ts-ignore
       instance[prop] = async (args?) => {
-        Object.defineProperty(descriptor, 'name', { value: prop })
+        Object.defineProperty(descriptor, 'name', { value: prop });
         let boundFunction: Function = descriptor.bind(instance);
-        return handler(boundFunction, args)
-      }
+        return handler(boundFunction, args);
+      };
     }
   }
-  return instance
+  return instance;
 }
 
-interface PineconeClient extends IndexOperationsApi { }
+interface PineconeClient extends IndexOperationsApi {}
 
 class PineconeClient {
-  apiKey: string | null = null
-  projectName: string | null = null
-  environment: string | null = null
+  apiKey: string | null = null;
+  projectName: string | null = null;
+  environment: string | null = null;
 
   private async getProjectName(controllerPath: string, apiKey: string) {
-    const whoami = `${controllerPath}/actions/whoami`
+    const whoami = `${controllerPath}/actions/whoami`;
     const request = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Api-Key': apiKey
-      }
-    }
-    let response
+        'Api-Key': apiKey,
+      },
+    };
+    let response;
     try {
       response = await fetch(whoami, request);
       if (response.status !== 200) {
@@ -119,46 +148,65 @@ class PineconeClient {
   }
 
   public async init(configuration: PineconeClientConfiguration) {
-    const { environment, apiKey } = configuration
+    const { environment, apiKey } = configuration;
 
-    this.apiKey = apiKey
-    this.environment = environment
+    this.apiKey = apiKey;
+    this.environment = environment;
 
-    const controllerPath = `https://controller.${environment}.pinecone.io`
+    const controllerPath = `https://controller.${environment}.pinecone.io`;
     try {
-      this.projectName = await this.getProjectName(controllerPath, apiKey)
+      this.projectName = await this.getProjectName(controllerPath, apiKey);
     } catch (error) {
       throw error;
     }
 
     const controllerConfigurationParameters: ConfigurationParameters = {
       basePath: controllerPath,
-      apiKey: apiKey
-    }
+      apiKey: apiKey,
+    };
 
-    const controllerConfiguration = new Configuration(controllerConfigurationParameters)
-    const indexOperations = new IndexOperationsApi(controllerConfiguration)
+    const controllerConfiguration = new Configuration(
+      controllerConfigurationParameters
+    );
+    const indexOperations = new IndexOperationsApi(controllerConfiguration);
     exposeMethods(indexOperations, this as PineconeClient);
-
   }
 
   public Index(index: string) {
-    if (!this.apiKey) throw new Error('PineconeClient: API key not set. Call init() first.')
-    if (!this.projectName) throw new Error('PineconeClient: Project name not set. Call init() first.')
-    if (!this.environment) throw new Error('PineconeClient: Environment not set. Call init() first.')
+    if (!this.apiKey)
+      throw new Error('PineconeClient: API key not set. Call init() first.');
+    if (!this.projectName)
+      throw new Error(
+        'PineconeClient: Project name not set. Call init() first.'
+      );
+    if (!this.environment)
+      throw new Error(
+        'PineconeClient: Environment not set. Call init() first.'
+      );
 
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: `https://${index}-${this.projectName}.svc.${this.environment}.pinecone.io`,
-      apiKey: this.apiKey
-    }
+      apiKey: this.apiKey,
+    };
 
-    const indexConfiguration = new Configuration(indexConfigurationParameters)
-    const vectorOperations = new VectorOperationsApi(indexConfiguration)
-    return attachHandler(vectorOperations)
-
+    const indexConfiguration = new Configuration(indexConfigurationParameters);
+    const vectorOperations = new VectorOperationsApi(indexConfiguration);
+    return attachHandler(vectorOperations);
   }
 }
 
-export { PineconeClient }
-export { QueryRequest, CreateRequest, UpdateRequest, DeleteRequest, UpsertRequest, Vector, QueryVector, PatchRequest, IndexMeta, CreateCollectionRequest, ScoredVector } from './pinecone-generated-ts-fetch'
-export { utils } from './utils'
+export { PineconeClient };
+export {
+  QueryRequest,
+  CreateRequest,
+  UpdateRequest,
+  DeleteRequest,
+  UpsertRequest,
+  Vector,
+  QueryVector,
+  PatchRequest,
+  IndexMeta,
+  CreateCollectionRequest,
+  ScoredVector,
+} from './pinecone-generated-ts-fetch';
+export { utils } from './utils';
