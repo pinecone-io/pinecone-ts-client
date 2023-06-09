@@ -27,7 +27,7 @@ jobs:
           jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
 
       - name: 'Publish to npm'
-        run: npm publish --tag next --dry-run
+        run: npm publish --tag next
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
