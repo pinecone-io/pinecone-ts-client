@@ -1,9 +1,9 @@
-import { PineconeClient } from '.';
+import { PineconeClient } from '..';
 import {
   IndexMeta,
   Vector,
   VectorOperationsApi,
-} from './pinecone-generated-ts-fetch';
+} from '../pinecone-generated-ts-fetch';
 
 const waitUntilIndexIsReady = async (
   client: PineconeClient,

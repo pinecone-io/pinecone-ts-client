@@ -6,12 +6,18 @@
     "type": "git",
     "url": "https://github.com/pinecone-io/pinecone-ts-client"
   },
-  "author": "Roie Schwaber-Cohen",
+  "contributors": [
+    "Jen Hamon (https://github.com/jhamon)",
+    "Roie Schwaber-Cohen (https://github.com/rschwabco)"
+  ],
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
-    "test": "jest --runInBand --detectOpenHandles"
+    "repl": "npm run build && node utils/replInit.ts",
+    "test:legacy": "jest --runInBand --detectOpenHandles tests/legacy-integration/",
+    "test:integration": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
+    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -33,6 +39,7 @@
     "/dist"
   ],
   "dependencies": {
+    "@types/web": "^0.0.99",
     "cross-fetch": "^3.1.5"
   }
 }

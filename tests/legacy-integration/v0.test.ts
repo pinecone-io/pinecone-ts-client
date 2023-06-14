@@ -7,7 +7,7 @@ import {
   UpsertRequest,
   CreateCollectionRequest,
   IndexMeta,
-} from '../dist/pinecone-generated-ts-fetch';
+} from '../../dist/pinecone-generated-ts-fetch';
 import { afterAll, beforeAll, describe, expect } from '@jest/globals';
 import {
   uniqueNamesGenerator,
@@ -21,10 +21,10 @@ import {
   waitUntilCollectionIsReady,
   waitUntilCollectionIsTerminated,
   waitUntilIndexIsTerminated,
-} from '../utils/helpers';
+} from '../../utils/helpers';
 import dotenv from 'dotenv';
-import { PineconeClient } from '../dist';
-import { utils } from '../dist';
+import { PineconeClient } from '../../dist';
+import { utils } from '../../dist';
 
 const { waitUntilIndexIsReady } = utils;
 
