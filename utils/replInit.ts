@@ -31,21 +31,26 @@ myrepl.context['LegacyPineconeClient'] = pinecone.PineconeClient;
 console.log(
   'SUCCESS Pinecone module exports (Pinecone, PineconeClient, etc) automatically imported to this repl session.'
 );
-console.log('')
-console.log('Run init() to initialize a client and assign it to the "client" variable.')
+console.log('');
+console.log(
+  'Run "await init()" to setup client instances using environment variable configs.'
+);
 
 const init = async () => {
   const client = await pinecone.Pinecone.createClient();
   myrepl.context['client'] = client;
-  console.log('SUCCESS Created "client":')
-  console.log(client)
-  console.log('')
+  console.log('SUCCESS Created new client "client":');
+  console.log(client);
+  console.log('');
 
-  const legacyClient = new pinecone.PineconeClient(); 
-  await legacyClient.init({ apiKey: process.env.PINECONE_API_KEY, environment: process.env.PINECONE_ENVIRONMENT })
+  const legacyClient = new pinecone.PineconeClient();
+  await legacyClient.init({
+    apiKey: process.env.PINECONE_API_KEY,
+    environment: process.env.PINECONE_ENVIRONMENT,
+  });
   myrepl.context['legacy'] = legacyClient;
-  console.log('SUCCESS Created "legacy":')
-  console.log(legacyClient)
-}
+  console.log('SUCCESS Created legacy client "legacy":');
+  console.log(legacyClient);
+};
 
 myrepl.context['init'] = init;
