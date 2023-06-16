@@ -51,8 +51,6 @@ describe('Client', () => {
       });
     });
 
-    describe('optional properties', () => {});
-
     describe('unknown properties', () => {
       test('should throw an error if unknown property provided', () => {
         expect(() => {
@@ -71,8 +69,6 @@ describe('Client', () => {
   });
 
   describe('init', () => {
-    test('should retrieve the project_id', () => {});
-
     test('should immediately return if optional projectId is provided', () => {
       const client = new Client({
         environment: 'env',

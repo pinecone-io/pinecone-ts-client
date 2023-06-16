@@ -87,7 +87,7 @@ describe('Pinecone.createClient', () => {
       };
 
       await expect(expectToFail()).rejects.toThrow(
-        `Unexpected response while calling https://controller.test-env.pinecone.io/actions/whoami. The HTTP call succeeded but response did not contain expected project_name. Status: 200. Body: { \"projects\": [{ \"name\": \"projectName\" }]}`
+        'Unexpected response while calling https://controller.test-env.pinecone.io/actions/whoami. The HTTP call succeeded but response did not contain expected project_name. Status: 200. Body: { "projects": [{ "name": "projectName" }]}'
       );
     });
 
@@ -110,7 +110,7 @@ describe('Pinecone.createClient', () => {
       };
 
       await expect(expectToFail()).rejects.toThrow(
-        `Unexpected response while calling https://controller.test-env.pinecone.io/actions/whoami. The HTTP call succeeded but the response could not be parsed as JSON. Status: 200. Body: { \"projects\": [{ \"name\": \"projectName\" }]}`
+        'Unexpected response while calling https://controller.test-env.pinecone.io/actions/whoami. The HTTP call succeeded but the response could not be parsed as JSON. Status: 200. Body: { "projects": [{ "name": "projectName" }]}'
       );
     });
   });
@@ -176,7 +176,7 @@ describe('Pinecone.createClient', () => {
       process.env.PINECONE_ENVIRONMENT = 'test';
       delete process.env.PINECONE_API_KEY;
       await expect(Pinecone.createClient()).rejects.toThrow(
-        `Since you called Pinecone.createClient() with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io`
+        'Since you called Pinecone.createClient() with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
       );
     });
   });

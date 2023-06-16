@@ -19,14 +19,14 @@ export class PineconeInternalServerError extends Error {
 }
 
 export class PineconeNotImplementedError extends Error {
-  constructor(url: string, message: string = '') {
+  constructor(url: string, message = '') {
     super(`The endpoint ${url} is not yet implemented. ${message}`);
     this.name = 'PineconeNotImplementedError';
   }
 }
 
 export class PineconeUnmappedHttpError extends Error {
-  constructor(url: string, status: number, body: string, message: string = '') {
+  constructor(url: string, status: number, body: string, message = '') {
     super(
       `Unexpected response while calling ${url}. ${
         message ? message + ' ' : ''
