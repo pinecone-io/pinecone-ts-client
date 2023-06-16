@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist/ && tsc",
     "format": "prettier --write .",
     "repl": "npm run build && node utils/replInit.ts",
     "test:legacy": "jest --runInBand --detectOpenHandles tests/legacy-integration/",
