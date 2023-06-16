@@ -32,6 +32,8 @@ jobs:
             echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
             exit 1
           fi
+      - name: ESLint
+        run: npm run lint
 
   run-integration-tests:
     name: Run integration tests

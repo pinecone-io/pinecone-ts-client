@@ -1,4 +1,5 @@
-export const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io`;
+export const CONFIG_HELP =
+  'You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io';
 
 export class PineconeConfigurationError extends Error {
   constructor(message: string) {

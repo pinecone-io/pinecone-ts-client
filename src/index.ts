@@ -3,6 +3,7 @@ export type { ClientConfiguration, ClientConfigurationInit } from './pinecone';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
+export { utils } from './v0/utils';
 export {
   QueryRequest,
   CreateRequest,
@@ -16,4 +17,3 @@ export {
   CreateCollectionRequest,
   ScoredVector,
 } from './pinecone-generated-ts-fetch';
-export { utils } from './v0/utils';

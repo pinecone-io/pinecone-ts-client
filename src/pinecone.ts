@@ -37,18 +37,18 @@ export class Pinecone {
   static _readEnvironmentConfig(): ClientConfigurationInit {
     if (!process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
-        `Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling Pinecone.createClient().`
+        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling Pinecone.createClient().'
       );
     }
 
-    let environmentConfig = {};
+    const environmentConfig = {};
     const requiredEnvVarMap = {
       environment: 'PINECONE_ENVIRONMENT',
       apiKey: 'PINECONE_API_KEY',
     };
     const missingVars: Array<string> = [];
     for (const [key, envVar] of Object.entries(requiredEnvVarMap)) {
-      let value = process.env[envVar] || '';
+      const value = process.env[envVar] || '';
       if (!value) {
         missingVars.push(envVar);
       }
@@ -64,7 +64,7 @@ export class Pinecone {
 
     const optionalEnvVarMap = { projectId: 'PINECONE_PROJECT_ID' };
     for (const [key, envVar] of Object.entries(optionalEnvVarMap)) {
-      let value = process.env[envVar];
+      const value = process.env[envVar];
       if (value !== undefined) {
         environmentConfig[key] = value;
       }
@@ -79,12 +79,12 @@ export class Pinecone {
     const { apiKey, environment } = options;
     if (!apiKey) {
       throw new PineconeConfigurationError(
-        `Cannot fetch projectId from whoami endpoint without an API key.`
+        'Cannot fetch projectId from whoami endpoint without an API key.'
       );
     }
     if (!environment) {
       throw new PineconeConfigurationError(
-        `Cannot fetch projectId from whoami endpoint without an environment.`
+        'Cannot fetch projectId from whoami endpoint without an environment.'
       );
     }
 

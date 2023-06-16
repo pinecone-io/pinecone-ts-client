@@ -1,4 +1,4 @@
-import { PineconeClient } from '..';
+import type { PineconeClient } from '..';
 import {
   IndexMeta,
   Vector,
