@@ -63,7 +63,7 @@ describe('Pinecone.createClient', () => {
       };
 
       await expect(expectToFail).rejects.toThrow(
-        'An internal server error occured while calling the https://controller.test-env.pinecone.io/actions/whoami endpoint. To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client. Body: { "error": "Internal Server Error" }'
+        'An internal server error occured while calling the https://controller.test-env.pinecone.io/actions/whoami endpoint. To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client'
       );
     });
 

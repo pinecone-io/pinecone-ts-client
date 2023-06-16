@@ -46,7 +46,7 @@ export class PineconeInternalServerError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
     const { url, body } = failedRequest;
     const intro = url
-      ? `An internal server error occured while calling the ${url} endpoint. `
+      ? `An internal server error occured while calling the ${url} endpoint.`
       : '';
     const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
     const bodyMessage = body ? `Body: ${body}` : '';
