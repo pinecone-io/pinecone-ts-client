@@ -4,7 +4,13 @@
     "es2021": true
   },
   "ignorePatterns": ["dist", "src/pinecone-generated-ts-fetch", "src/v0"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
