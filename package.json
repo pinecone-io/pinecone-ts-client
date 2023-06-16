@@ -44,7 +44,9 @@
     "/dist"
   ],
   "dependencies": {
+    "@sinclair/typebox": "^0.28.15",
     "@types/web": "^0.0.99",
+    "ajv": "^8.12.0",
     "cross-fetch": "^3.1.5"
   }
 }

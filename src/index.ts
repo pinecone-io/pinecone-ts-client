@@ -1,5 +1,6 @@
 export { Pinecone } from './pinecone';
-export type { ClientConfiguration, ClientConfigurationInit } from './pinecone';
+export type { ClientConfiguration, ClientConfigurationInit } from './types';
+export * as Errors from './errors';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';

@@ -1,10 +1,33 @@
 import { PineconeConfigurationError } from './errors';
-import type { ClientConfiguration } from './pinecone';
+import type { ClientConfiguration } from './types';
+import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from './pinecone-generated-ts-fetch';
+import {
+  IndexOperationsApi,
+  Configuration as ApiConfiguration,
+} from './pinecone-generated-ts-fetch';
+import { describeIndex, listIndexes } from './control';
 
 export class Client {
   private config: ClientConfiguration;
 
   constructor(options: ClientConfiguration) {
+    this._validateConfig(options);
+
+    this.config = options;
+
+    const { apiKey, environment } = options;
+    const controllerPath = `https://controller.${environment}.pinecone.io`;
+    const apiConfig: IndexOperationsApiConfigurationParameters = {
+      basePath: controllerPath,
+      apiKey,
+    };
+    const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
+
+    this['describeIndex'] = describeIndex(api);
+    this['listIndexes'] = listIndexes(api);
+  }
+
+  _validateConfig(options: ClientConfiguration) {
     const requiredProperties = ['environment', 'apiKey', 'projectId'];
     if (!options) {
       throw new PineconeConfigurationError(
@@ -38,8 +61,6 @@ export class Client {
         );
       }
     }
-
-    this.config = options;
   }
 
   getConfig() {

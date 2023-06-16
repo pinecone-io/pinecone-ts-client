@@ -1,4 +1,5 @@
 import { Client } from './client';
+import type { ClientConfigurationInit } from './types';
 import {
   PineconeConfigurationError,
   PineconeUnexpectedResponseError,
@@ -6,15 +7,6 @@ import {
   PineconeUnknownRequestFailure,
   mapHttpStatusError,
 } from './errors';
-
-export type ClientConfigurationInit = {
-  apiKey: string;
-  environment: string;
-  projectId?: string;
-};
-export type ClientConfiguration = ClientConfigurationInit & {
-  projectId: string;
-};
 
 export class Pinecone {
   static async createClient(
@@ -109,7 +101,11 @@ export class Pinecone {
     }
 
     if (response.status >= 400) {
-      throw mapHttpStatusError(url, response.status, await response.text());
+      throw mapHttpStatusError({
+        status: response.status,
+        url,
+        message: await response.text(),
+      });
     }
 
     let json;
