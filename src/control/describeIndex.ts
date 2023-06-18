@@ -68,7 +68,7 @@ export const describeIndex = (api: IndexOperationsApi) => {
         const message = await validIndexMessage(name, requestInfo);
         toThrow = mapHttpStatusError({ ...requestInfo, message });
       } else {
-        // 500? This logical branch is not generally expected. Let
+        // 500? 401? This logical branch is not generally expected. Let
         // the http error mapper handle it, but we can't write a
         // message because we don't know what went wrong.
         toThrow = mapHttpStatusError(requestInfo);
