@@ -1,4 +1,4 @@
-export * from './describeIndex';
+export { describeIndex } from './describeIndex';
 export type { IndexName } from './describeIndex';
-export * from './listIndexes';
-export type { IndexList } from './listIndexes';
+export { listIndexes } from './listIndexes';
+export { IndexList } from './listIndexes';
