@@ -1,14 +1,29 @@
 import { PineconeConfigurationError } from './errors';
-import type { ClientConfiguration } from './types';
 import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from './pinecone-generated-ts-fetch';
 import {
   IndexOperationsApi,
   Configuration as ApiConfiguration,
 } from './pinecone-generated-ts-fetch';
 import { describeIndex, listIndexes } from './control';
+import { buildValidator } from './validator';
+import { Static, Type } from '@sinclair/typebox';
+
+const ClientConfigurationSchema = Type.Object(
+  {
+    environment: Type.String({ minLength: 1 }),
+    apiKey: Type.String({ minLength: 1 }),
+    projectId: Type.Optional(Type.String({ minLength: 1 })),
+  },
+  { additionalProperties: false }
+);
+
+export type ClientConfiguration = Static<typeof ClientConfigurationSchema>;
 
 export class Client {
   private config: ClientConfiguration;
+
+  describeIndex: ReturnType<typeof describeIndex>;
+  listIndexes: ReturnType<typeof listIndexes>;
 
   constructor(options: ClientConfiguration) {
     this._validateConfig(options);
@@ -23,44 +38,22 @@ export class Client {
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 
-    this['describeIndex'] = describeIndex(api);
-    this['listIndexes'] = listIndexes(api);
+    this.describeIndex = describeIndex(api);
+    this.listIndexes = listIndexes(api);
   }
 
   _validateConfig(options: ClientConfiguration) {
-    const requiredProperties = ['environment', 'apiKey', 'projectId'];
-    if (!options) {
-      throw new PineconeConfigurationError(
-        `Cannot create client without a configuration object containing required keys: ${requiredProperties.join(
-          ', '
-        )}.`
-      );
-    }
-
-    for (const key of requiredProperties) {
-      if (options[key] === undefined) {
-        throw new PineconeConfigurationError(
-          `Client configuration missing required property '${key}'.`
-        );
-      }
-
-      if (!options[key]) {
-        throw new PineconeConfigurationError(
-          `Required client configuration value '${key}' cannot be blank.}`
-        );
-      }
-    }
-
-    const knownProperties = requiredProperties;
-    for (const key of Object.keys(options)) {
-      if (!knownProperties.includes(key)) {
-        throw new PineconeConfigurationError(
-          `Cannot create client with unknown configuration property '${key}'. Allowed properties: ${knownProperties.join(
-            ', '
-          )}.`
-        );
-      }
-    }
+    buildValidator(ClientConfigurationSchema, (errorsList) => {
+      const errorStr =
+        'Configuration passed to Client constructor had a problem: ' +
+        errorsList.join(',') +
+        '.';
+      const requiredKeys = ['environment', 'apiKey', 'projectId'];
+      const requiredKeysStr = `Configuration must be an object with keys ${requiredKeys.join(
+        ', '
+      )}.`;
+      throw new PineconeConfigurationError(`${errorStr} ${requiredKeysStr}`);
+    })(options);
   }
 
   getConfig() {

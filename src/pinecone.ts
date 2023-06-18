@@ -1,5 +1,4 @@
 import { Client } from './client';
-import type { ClientConfigurationInit } from './types';
 import {
   PineconeConfigurationError,
   PineconeUnexpectedResponseError,
@@ -7,6 +6,12 @@ import {
   PineconeUnknownRequestFailure,
   mapHttpStatusError,
 } from './errors';
+
+export type ClientConfigurationInit = {
+  apiKey: string;
+  environment: string;
+  projectId?: string;
+};
 
 export class Pinecone {
   static async createClient(

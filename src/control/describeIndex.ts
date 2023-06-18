@@ -1,6 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import { buildValidator } from '../validator';
+import { buildDataPlaneOperationsValidator } from '../validator';
 import { mapHttpStatusError, type FailedRequestInfo } from '../errors';
 import type {
   ResponseError,
@@ -17,7 +17,10 @@ const DescribeIndexOptionsSchema = Type.String({ minLength: 1 });
 export type IndexName = Static<typeof DescribeIndexOptionsSchema>;
 
 export const describeIndex = (api: IndexOperationsApi) => {
-  const validator = buildValidator(DescribeIndexOptionsSchema, 'describeIndex');
+  const validator = buildDataPlaneOperationsValidator(
+    DescribeIndexOptionsSchema,
+    'describeIndex'
+  );
 
   const validIndexMessage = async (name, requestInfo: FailedRequestInfo) => {
     try {

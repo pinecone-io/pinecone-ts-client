@@ -1,6 +1,9 @@
-export { Pinecone } from './pinecone';
-export type { ClientConfiguration, ClientConfigurationInit } from './types';
+export { Pinecone, type ClientConfigurationInit } from './pinecone';
+export { Client, type ClientConfiguration } from './client'
 export * as Errors from './errors';
+export type {
+    IndexName
+} from './control'
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
