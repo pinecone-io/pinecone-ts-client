@@ -10,6 +10,7 @@ export const listIndexes = (api: IndexOperationsApi) => {
     try {
       return await api.listIndexes();
     } catch (e) {
+      console.log(e)
       const listIndexesError = e as ResponseError;
       throw mapHttpStatusError({
         status: listIndexesError.response.status,
