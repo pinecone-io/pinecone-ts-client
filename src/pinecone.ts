@@ -12,9 +12,6 @@ export type ClientConfigurationInit = {
   environment: string;
   projectId?: string;
 };
-export type ClientConfiguration = ClientConfigurationInit & {
-  projectId: string;
-};
 
 export class Pinecone {
   static async createClient(
@@ -109,7 +106,11 @@ export class Pinecone {
     }
 
     if (response.status >= 400) {
-      throw mapHttpStatusError(url, response.status, await response.text());
+      throw mapHttpStatusError({
+        status: response.status,
+        url,
+        message: await response.text(),
+      });
     }
 
     let json;
