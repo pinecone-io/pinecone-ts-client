@@ -6,12 +6,19 @@
     "type": "git",
     "url": "https://github.com/pinecone-io/pinecone-ts-client"
   },
-  "author": "Roie Schwaber-Cohen",
+  "contributors": [
+    "Jen Hamon (https://github.com/jhamon)",
+    "Roie Schwaber-Cohen (https://github.com/rschwabco)"
+  ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist/ && tsc",
     "format": "prettier --write .",
-    "test": "jest --runInBand --detectOpenHandles"
+    "lint": "eslint src/ --ext .ts",
+    "repl": "npm run build && node utils/replInit.ts",
+    "test:legacy": "jest --runInBand --detectOpenHandles tests/legacy-integration/",
+    "test:integration": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
+    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -20,7 +27,11 @@
     "@jest/globals": "^29.3.1",
     "@types/jest": "^29.2.5",
     "@types/node": "^18.11.17",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
     "dotenv": "^16.0.3",
+    "eslint": "^8.42.0",
+    "eslint-plugin-import": "^2.27.5",
     "jest": "^29.5.0",
     "prettier": "^2.8.8",
     "ts-jest": "^29.0.5",
@@ -33,6 +44,9 @@
     "/dist"
   ],
   "dependencies": {
+    "@sinclair/typebox": "^0.28.15",
+    "@types/web": "^0.0.99",
+    "ajv": "^8.12.0",
     "cross-fetch": "^3.1.5"
   }
 }

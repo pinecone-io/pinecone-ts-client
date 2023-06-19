@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "ignorePatterns": ["dist", "src/pinecone-generated-ts-fetch", "src/v0"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "import"],
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/no-cycle": "error"
+  }
+}

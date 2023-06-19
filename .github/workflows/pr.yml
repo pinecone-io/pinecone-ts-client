@@ -32,8 +32,10 @@ jobs:
             echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
             exit 1
           fi
+      - name: ESLint
+        run: npm run lint
 
-  run-tests:
+  run-integration-tests:
     name: Run integration tests
     runs-on: ubuntu-latest
     steps:
@@ -46,4 +48,17 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
-        run: npm run test
+        run: npm run test:integration
+
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Run tests
+        env:
+          CI: true
+        run: npm run test:unit
