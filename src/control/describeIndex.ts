@@ -1,7 +1,8 @@
 import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import { buildDataPlaneOperationsValidator } from '../validator';
-import { mapHttpStatusError, type FailedRequestInfo } from '../errors';
+import { builOptionConfigValidator } from '../validator';
+import { mapHttpStatusError } from '../errors';
+import { validIndexMessage } from './utils';
 import type {
   ResponseError,
   IndexMeta as IndexDescription,
@@ -17,27 +18,10 @@ const DescribeIndexOptionsSchema = Type.String({ minLength: 1 });
 export type IndexName = Static<typeof DescribeIndexOptionsSchema>;
 
 export const describeIndex = (api: IndexOperationsApi) => {
-  const validator = buildDataPlaneOperationsValidator(
+  const validator = builOptionConfigValidator(
     DescribeIndexOptionsSchema,
     'describeIndex'
   );
-
-  const validIndexMessage = async (name, requestInfo: FailedRequestInfo) => {
-    try {
-      const validNames = await api.listIndexes();
-      return `Index '${name}' does not exist. Valid index names: [${validNames
-        .map((n) => `'${n}'`)
-        .join(', ')}]`;
-    } catch (e) {
-      // Expect to end up here only if a second error occurs while fetching valid index names.
-      // We can show the error from the failed call to describeIndex, but without listing
-      // index names.
-      throw mapHttpStatusError({
-        ...requestInfo,
-        message: `Index '${name}' does not exist.`,
-      });
-    }
-  };
 
   const removeDeprecatedFields = (result: any) => {
     if (result.database) {
@@ -60,12 +44,11 @@ export const describeIndex = (api: IndexOperationsApi) => {
       const describeError = e as ResponseError;
       const requestInfo = {
         status: describeError.response.status,
-        url: describeError.response.url,
       };
 
       let toThrow;
       if (requestInfo.status === 404) {
-        const message = await validIndexMessage(name, requestInfo);
+        const message = await validIndexMessage(api, name, requestInfo);
         toThrow = mapHttpStatusError({ ...requestInfo, message });
       } else {
         // 500? 401? This logical branch is not generally expected. Let
