@@ -16,6 +16,16 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Get recent changes
+        id: list-commits
+        run: |
+          recentCommits=$(git log --since=yesterday --oneline)
+          echo "commits=$recentCommits" >> "$GITHUB_OUTPUT"
+
+      - name: Abort if no recent changes
+        if: steps.list-commits.outputs.commits == ''
+        uses: andymckay/cancel-action@0.3
+
       - name: 'Bump version, do not commit'
         shell: bash
         run: |
@@ -27,7 +37,7 @@ jobs:
           jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
 
       - name: 'Publish to npm'
-        run: npm publish --tag next --dry-run
+        run: npm publish --tag next
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
