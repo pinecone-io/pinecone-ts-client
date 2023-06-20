@@ -4,17 +4,18 @@ import {
   PineconeInternalServerError,
   PineconeNotFoundError,
 } from '../../errors';
+import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import type { ConfigureIndexRequest } from '../../pinecone-generated-ts-fetch';
 
 describe('configureIndex', () => {
-  beforeEach(() => {
-    // @ts-ignore
-    const IOA = { configureIndex: jest.fn() };
+  test('calls the openapi configure endpoint', async () => {
+    const fakeConfigure: (req: ConfigureIndexRequest) => Promise<string> =
+      jest.fn();
+    const IOA = { configureIndex: fakeConfigure } as IndexOperationsApi;
+
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
       IndexOperationsApi: IOA,
     }));
-  });
-
-  test('calls the openapi configure endpoint', async () => {
     const returned = await configureIndex(IOA)('index-name', { replicas: 10 });
 
     expect(returned).toBe(void 0);
@@ -26,23 +27,24 @@ describe('configureIndex', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const IOA = {
-        configureIndex: jest.fn().mockImplementation(() =>
+      const fakeConfigure: (req: ConfigureIndexRequest) => Promise<string> =
+        jest.fn().mockImplementation(() =>
           Promise.reject({
             response: {
               status: 500,
               text: () => 'backend error message',
             },
           })
-        ),
-      };
+        );
+      const IOA = {
+        configureIndex: fakeConfigure,
+      } as IndexOperationsApi;
 
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       const toThrow = async () => {
-        // @ts-ignore
         await configureIndex(IOA)('index-name', { replicas: 10 });
       };
 
@@ -50,23 +52,24 @@ describe('configureIndex', () => {
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const IOA = {
-        configureIndex: jest.fn().mockImplementation(() =>
+      const fakeConfigure: (req: ConfigureIndexRequest) => Promise<string> =
+        jest.fn().mockImplementation(() =>
           Promise.reject({
             response: {
               status: 400,
               text: () => 'backend error message',
             },
           })
-        ),
-      };
+        );
+      const IOA = {
+        configureIndex: fakeConfigure,
+      } as IndexOperationsApi;
 
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       const toThrow = async () => {
-        // @ts-ignore
         await configureIndex(IOA)('index-name', { replicas: 10 });
       };
 
@@ -75,26 +78,28 @@ describe('configureIndex', () => {
     });
 
     test('when 404 occurs, show available indexes', async () => {
-      const IOA = {
-        configureIndex: jest.fn().mockImplementation(() =>
+      const fakeConfigure: (req: ConfigureIndexRequest) => Promise<string> =
+        jest.fn().mockImplementation(() =>
           Promise.reject({
             response: {
               status: 404,
-              text: () => 'backend error message',
+              text: () => 'not found',
             },
           })
-        ),
-        listIndexes: jest
-          .fn()
-          .mockImplementation(() => Promise.resolve(['foo', 'bar'])),
-      };
+        );
+      const fakeListIndexes: () => Promise<string[]> = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(['foo', 'bar']));
+      const IOA = {
+        configureIndex: fakeConfigure,
+        listIndexes: fakeListIndexes,
+      } as IndexOperationsApi;
 
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       const toThrow = async () => {
-        // @ts-ignore
         await configureIndex(IOA)('index-name', { replicas: 10 });
       };
 
