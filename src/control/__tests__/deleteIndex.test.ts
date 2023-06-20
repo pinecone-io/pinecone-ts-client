@@ -1,108 +1,60 @@
-import { describeIndex } from '../describeIndex';
+import { deleteIndex } from '../deleteIndex';
 import {
   PineconeArgumentError,
   PineconeInternalServerError,
   PineconeNotFoundError,
 } from '../../errors';
 
-describe('describeIndex', () => {
-  const responseData = Object.freeze({
-    database: {
-      name: 'test-index',
-      dimensions: undefined,
-      indexType: undefined,
-      metric: 'cosine',
-      pods: 1,
-      replicas: 1,
-      shards: 1,
-      podType: 'p1.x1',
-      indexConfig: undefined,
-      metadataConfig: undefined,
-    },
-    status: { ready: true, state: 'Ready' },
-  });
-
-  test('should remove undefined fields from response', async () => {
-    const IOA = {
-      describeIndex: jest
-        .fn()
-        .mockImplementation(() => Promise.resolve(responseData)),
-    };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IOA,
-    }));
-
-    // @ts-ignore
-    const returned = await describeIndex(IOA)('index-name');
-
-    expect(returned).toEqual({
-      database: {
-        name: 'test-index',
-        metric: 'cosine',
-        pods: 1,
-        replicas: 1,
-        shards: 1,
-        podType: 'p1.x1',
-      },
-      status: { ready: true, state: 'Ready' },
-    });
-  });
-
+describe('deleteIndex', () => {
   describe('argument validation', () => {
     test('should throw if index name is not provided', async () => {
       const IOA = {
-        describeIndex: jest
-          .fn()
-          .mockImplementation(() => Promise.resolve(responseData)),
+        deleteIndex: jest.fn().mockImplementation(() => Promise.resolve('')),
       };
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)();
+      const expectToThrow = async () => await deleteIndex(IOA)();
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must be string.'
+        'Argument to deleteIndex has a problem. The argument must be string.'
       );
     });
 
     test('should throw if index name is not a string', async () => {
       const IOA = {
-        describeIndex: jest
-          .fn()
-          .mockImplementation(() => Promise.resolve(responseData)),
+        deleteIndex: jest.fn().mockImplementation(() => Promise.resolve('')),
       };
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)({});
+      const expectToThrow = async () => await deleteIndex(IOA)({});
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must be string.'
+        'Argument to deleteIndex has a problem. The argument must be string.'
       );
     });
 
     test('should throw if index name is empty string', async () => {
       const IOA = {
-        describeIndex: jest
-          .fn()
-          .mockImplementation(() => Promise.resolve(responseData)),
+        deleteIndex: jest.fn().mockImplementation(() => Promise.resolve('')),
       };
       jest.mock('../../pinecone-generated-ts-fetch', () => ({
         IndexOperationsApi: IOA,
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('');
+      const expectToThrow = async () => await deleteIndex(IOA)('');
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must not be blank.'
+        'Argument to deleteIndex has a problem. The argument must not be blank.'
       );
     });
   });
@@ -110,7 +62,7 @@ describe('describeIndex', () => {
   describe('uses http error mapper', () => {
     test('it should map errors with the http error mapper (500)', async () => {
       const IOA = {
-        describeIndex: jest
+        deleteIndex: jest
           .fn()
           .mockImplementation(() =>
             Promise.reject({ response: { status: 500 } })
@@ -121,7 +73,7 @@ describe('describeIndex', () => {
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
+      const expectToThrow = async () => await deleteIndex(IOA)('index-name');
 
       expect(expectToThrow).rejects.toThrowError(PineconeInternalServerError);
     });
@@ -130,7 +82,7 @@ describe('describeIndex', () => {
   describe('custom error mapping', () => {
     test('not found (404), fetches and shows available index names', async () => {
       const IOA = {
-        describeIndex: jest
+        deleteIndex: jest
           .fn()
           .mockImplementation(() =>
             Promise.reject({ response: { status: 404 } })
@@ -144,7 +96,7 @@ describe('describeIndex', () => {
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
+      const expectToThrow = async () => await deleteIndex(IOA)('index-name');
 
       expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
       expect(expectToThrow).rejects.toThrowError(
@@ -154,7 +106,7 @@ describe('describeIndex', () => {
 
     test('not found (404), fetches and shows available index names (empty list)', async () => {
       const IOA = {
-        describeIndex: jest
+        deleteIndex: jest
           .fn()
           .mockImplementation(() =>
             Promise.reject({ response: { status: 404 } })
@@ -166,7 +118,7 @@ describe('describeIndex', () => {
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
+      const expectToThrow = async () => await deleteIndex(IOA)('index-name');
 
       expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
       expect(expectToThrow).rejects.toThrowError(
@@ -176,7 +128,7 @@ describe('describeIndex', () => {
 
     test('not found (404), error while fetching index list', async () => {
       const IOA = {
-        describeIndex: jest
+        deleteIndex: jest
           .fn()
           .mockImplementation(() =>
             Promise.reject({ response: { status: 404 } })
@@ -190,7 +142,7 @@ describe('describeIndex', () => {
       }));
 
       // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
+      const expectToThrow = async () => await deleteIndex(IOA)('index-name');
 
       expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
       expect(expectToThrow).rejects.toThrowError(

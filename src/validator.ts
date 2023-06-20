@@ -22,12 +22,16 @@ export const buildValidator = (
         })
         .map((error) => {
           if (error.instancePath) {
-            return `the field '${error.instancePath.slice(1)}' ${
+            return `the property '${error.instancePath.slice(1)}' ${
               error.message
             }`;
           } else {
-            return `${error.message}`;
+            return `the argument ${error.message}`;
           }
+        })
+        .map((error) => {
+          // Turn errors into sentences
+          return error.charAt(0).toUpperCase() + error.slice(1) + '.';
         })
         .filter((message): message is string => message !== undefined);
       onError(errorsList);
@@ -36,14 +40,11 @@ export const buildValidator = (
   };
 };
 
-export const buildDataPlaneOperationsValidator = (
-  schema: any,
-  methodName: string
-) => {
+export const builOptionConfigValidator = (schema: any, methodName: string) => {
   return buildValidator(schema, (errorsList) => {
-    const message = errorsList.join('\n');
+    const message = errorsList.join(' ');
     throw new PineconeArgumentError(
-      `Argument to ${methodName} ${message || ''}`
+      `Argument to ${methodName} has a problem. ${message || ''}`
     );
   });
 };

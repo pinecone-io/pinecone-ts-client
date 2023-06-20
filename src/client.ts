@@ -4,7 +4,12 @@ import {
   IndexOperationsApi,
   Configuration as ApiConfiguration,
 } from './pinecone-generated-ts-fetch';
-import { describeIndex, listIndexes } from './control';
+import {
+  describeIndex,
+  listIndexes,
+  createIndex,
+  deleteIndex,
+} from './control';
 import { buildValidator } from './validator';
 import { Static, Type } from '@sinclair/typebox';
 
@@ -24,6 +29,8 @@ export class Client {
 
   describeIndex: ReturnType<typeof describeIndex>;
   listIndexes: ReturnType<typeof listIndexes>;
+  createIndex: ReturnType<typeof createIndex>;
+  deleteIndex: ReturnType<typeof deleteIndex>;
 
   constructor(options: ClientConfiguration) {
     this._validateConfig(options);
@@ -40,19 +47,33 @@ export class Client {
 
     this.describeIndex = describeIndex(api);
     this.listIndexes = listIndexes(api);
+    this.createIndex = createIndex(api);
+    this.deleteIndex = deleteIndex(api);
   }
 
   _validateConfig(options: ClientConfiguration) {
     buildValidator(ClientConfigurationSchema, (errorsList) => {
-      const errorStr =
-        'Configuration passed to Client constructor had a problem: ' +
-        errorsList.join(',') +
-        '.';
+      const messageParts: Array<string> = [];
+      messageParts.push(
+        'Configuration passed to Client constructor had a problem.'
+      );
+
+      if (
+        errorsList.length === 1 &&
+        errorsList[0] === 'The argument must be object.'
+      ) {
+        // This error doesn't really say anything that isn't covered in the other parts
+        // of the error message. So leave it out.
+      } else {
+        messageParts.push(...errorsList);
+      }
+
       const requiredKeys = ['environment', 'apiKey', 'projectId'];
-      const requiredKeysStr = `Configuration must be an object with keys ${requiredKeys.join(
-        ', '
-      )}.`;
-      throw new PineconeConfigurationError(`${errorStr} ${requiredKeysStr}`);
+      messageParts.push(
+        `Configuration must be an object with keys ${requiredKeys.join(', ')}.`
+      );
+
+      throw new PineconeConfigurationError(`${messageParts.join(' ')}`);
     })(options);
   }
 

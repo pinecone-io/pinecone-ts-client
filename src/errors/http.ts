@@ -9,6 +9,14 @@ export type FailedRequestInfo = {
 
 const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io`;
 
+export class PineconeBadRequestError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { message } = failedRequest;
+    super(message);
+    this.name = 'PineconeBadRequestError';
+  }
+}
+
 export class PineconeAuthorizationError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
     const { url } = failedRequest;
@@ -87,6 +95,8 @@ export class PineconeUnmappedHttpError extends BasePineconeError {
 
 export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
   switch (failedRequestInfo.status) {
+    case 400:
+      return new PineconeBadRequestError(failedRequestInfo);
     case 401:
       return new PineconeAuthorizationError(failedRequestInfo);
     case 404:
