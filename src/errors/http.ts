@@ -81,14 +81,14 @@ export class PineconeNotImplementedError extends BasePineconeError {
 
 export class PineconeUnmappedHttpError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
-    const { url, status, body } = failedRequest;
+    const { url, status, body, message } = failedRequest;
     const intro = url
       ? `An unexpected error occured while calling the ${url} endpoint. `
       : '';
     const statusMsg = status ? `Status: ${status}. ` : '';
     const bodyMsg = body ? `Body: ${body}` : '';
 
-    super([intro, statusMsg, bodyMsg].join(' ').trim());
+    super([intro, message, statusMsg, bodyMsg].join(' ').trim());
     this.name = 'PineconeUnmappedHttpError';
   }
 }
