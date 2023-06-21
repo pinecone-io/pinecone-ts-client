@@ -5,3 +5,5 @@ export { IndexList } from './listIndexes';
 export { createIndex } from './createIndex';
 export type { CreateIndexOptions } from './createIndex';
 export { deleteIndex } from './deleteIndex';
+export { configureIndex } from './configureIndex';
+export type { ConfigureIndexOptions } from './configureIndex';

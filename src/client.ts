@@ -9,6 +9,7 @@ import {
   listIndexes,
   createIndex,
   deleteIndex,
+  configureIndex,
 } from './control';
 import { buildValidator } from './validator';
 import { Static, Type } from '@sinclair/typebox';
@@ -31,6 +32,7 @@ export class Client {
   listIndexes: ReturnType<typeof listIndexes>;
   createIndex: ReturnType<typeof createIndex>;
   deleteIndex: ReturnType<typeof deleteIndex>;
+  configureIndex: ReturnType<typeof configureIndex>;
 
   constructor(options: ClientConfiguration) {
     this._validateConfig(options);
@@ -49,6 +51,7 @@ export class Client {
     this.listIndexes = listIndexes(api);
     this.createIndex = createIndex(api);
     this.deleteIndex = deleteIndex(api);
+    this.configureIndex = configureIndex(api);
   }
 
   _validateConfig(options: ClientConfiguration) {
