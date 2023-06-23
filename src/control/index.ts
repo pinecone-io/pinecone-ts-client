@@ -12,7 +12,7 @@ export type { ConfigureIndexOptions } from './configureIndex';
 
 // Collection Operations
 export { createCollection } from './createCollection';
-export { describeCollection }from './describeCollection';
+export { describeCollection } from './describeCollection';
 export { listCollections } from './listCollections';
 export { deleteCollection } from './deleteCollection';
 

@@ -13,7 +13,7 @@ import {
   listCollections,
   createCollection,
   describeCollection,
-  deleteCollection
+  deleteCollection,
 } from './control';
 import { buildValidator } from './validator';
 import { Static, Type } from '@sinclair/typebox';
@@ -243,7 +243,7 @@ export class Client {
     this.createIndex = createIndex(api);
     this.deleteIndex = deleteIndex(api);
     this.configureIndex = configureIndex(api);
-    
+
     this.createCollection = createCollection(api);
     this.listCollections = listCollections(api);
     this.describeCollection = describeCollection(api);

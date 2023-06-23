@@ -3,7 +3,7 @@ import type { ResponseError } from '../pinecone-generated-ts-fetch';
 import { mapHttpStatusError } from '../errors';
 import { builOptionConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
-import { validIndexMessage } from './utils';
+import { validCollectionMessage } from './utils';
 
 const DeleteCollectionIndex = Type.String({ minLength: 1 });
 export type CollectionName = Static<typeof DeleteCollectionIndex>;
@@ -28,7 +28,11 @@ export const deleteCollection = (api: IndexOperationsApi) => {
 
       let toThrow;
       if (requestInfo.status === 404) {
-        const message = await validIndexMessage(api, collectionName, requestInfo);
+        const message = await validCollectionMessage(
+          api,
+          collectionName,
+          requestInfo
+        );
         toThrow = mapHttpStatusError({ ...requestInfo, message });
       } else {
         // 500? 401? This logical branch is not generally expected. Let

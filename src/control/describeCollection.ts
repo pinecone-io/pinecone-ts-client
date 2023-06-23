@@ -2,7 +2,7 @@ import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { builOptionConfigValidator } from '../validator';
 import { mapHttpStatusError } from '../errors';
-import { validIndexMessage } from './utils';
+import { validCollectionMessage } from './utils';
 import type {
   ResponseError,
   CollectionMeta as CollectionDescription,
@@ -15,7 +15,7 @@ import type {
 // string. To avoid this confusing case, we require lenth > 1.
 const DescribeCollectionSchema = Type.String({ minLength: 1 });
 
-export type CollectionName = Static<typeof DescribeCollectionSchema>;;
+export type CollectionName = Static<typeof DescribeCollectionSchema>;
 
 export const describeCollection = (api: IndexOperationsApi) => {
   const validator = builOptionConfigValidator(
@@ -47,15 +47,12 @@ export const describeCollection = (api: IndexOperationsApi) => {
       };
 
       let toThrow;
-    //   if (requestInfo.status === 404) {
-        // const message = await validIndexMessage(api, name, requestInfo);
-        // toThrow = mapHttpStatusError({ ...requestInfo, message });
-    //   } else {
-        // 500? 401? This logical branch is not generally expected. Let
-        // the http error mapper handle it, but we can't write a
-        // message because we don't know what went wrong.
+      if (requestInfo.status === 404) {
+        const message = await validCollectionMessage(api, name, requestInfo);
+        toThrow = mapHttpStatusError({ ...requestInfo, message });
+      } else {
         toThrow = mapHttpStatusError(requestInfo);
-    //   }
+      }
       throw toThrow;
     }
   };
