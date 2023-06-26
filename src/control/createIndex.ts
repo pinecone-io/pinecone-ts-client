@@ -15,7 +15,11 @@ const CreateIndexOptionsSchema = Type.Object({
   pods: Type.Optional(positiveInteger),
   replicas: Type.Optional(positiveInteger),
   podType: Type.Optional(nonemptyString),
-  metadataConfig: Type.Optional(Type.Object({})),
+  metadataConfig: Type.Optional(
+    Type.Object({
+      indexed: Type.Array(nonemptyString),
+    })
+  ),
   sourceCollection: Type.Optional(nonemptyString),
 });
 
