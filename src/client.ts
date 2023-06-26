@@ -18,7 +18,7 @@ const ClientConfigurationSchema = Type.Object(
   {
     environment: Type.String({ minLength: 1 }),
     apiKey: Type.String({ minLength: 1 }),
-    projectId: Type.String({ minLength: 1 }),
+    projectId: Type.Optional(Type.String({ minLength: 1 })),
   },
   { additionalProperties: false }
 );
