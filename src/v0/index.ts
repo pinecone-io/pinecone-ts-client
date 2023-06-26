@@ -117,6 +117,11 @@ function attachHandler(instance: VectorOperationsApi): VectorOperationsApi {
 
 interface PineconeClient extends IndexOperationsApi {}
 
+/**
+ * @deprecated in v1.0.0
+ * 
+ * Use {@link Client} instead, which is most easily initialized with the `Pinecone`{@link Pinecone.createClient} static method.
+ */
 class PineconeClient {
   apiKey: string | null = null;
   projectName: string | null = null;
