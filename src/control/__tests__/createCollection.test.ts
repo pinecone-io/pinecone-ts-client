@@ -20,9 +20,6 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
     listIndexes: fakeListIndexes,
   } as IndexOperationsApi;
 
-  jest.mock('../../pinecone-generated-ts-fetch', () => ({
-    IndexOperationsApi: IOA,
-  }));
   return IOA;
 };
 

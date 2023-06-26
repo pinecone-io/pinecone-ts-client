@@ -28,9 +28,6 @@ describe('describeIndex', () => {
         .fn()
         .mockImplementation(() => Promise.resolve(responseData)),
     };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IOA,
-    }));
 
     // @ts-ignore
     const returned = await describeIndex(IOA)('index-name');
@@ -55,9 +52,6 @@ describe('describeIndex', () => {
           .fn()
           .mockImplementation(() => Promise.resolve(responseData)),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)();
@@ -74,9 +68,6 @@ describe('describeIndex', () => {
           .fn()
           .mockImplementation(() => Promise.resolve(responseData)),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)({});
@@ -93,9 +84,6 @@ describe('describeIndex', () => {
           .fn()
           .mockImplementation(() => Promise.resolve(responseData)),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('');
@@ -116,9 +104,6 @@ describe('describeIndex', () => {
             Promise.reject({ response: { status: 500 } })
           ),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('index-name');
@@ -139,9 +124,6 @@ describe('describeIndex', () => {
           .fn()
           .mockImplementation(() => Promise.resolve(['foo', 'bar'])),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('index-name');
@@ -161,9 +143,6 @@ describe('describeIndex', () => {
           ),
         listIndexes: jest.fn().mockImplementation(() => Promise.resolve([])),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('index-name');
@@ -185,9 +164,6 @@ describe('describeIndex', () => {
           .fn()
           .mockImplementation(() => Promise.reject('error')),
       };
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
 
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('index-name');

@@ -24,9 +24,6 @@ const setupMocks = (
     describeCollection: fakeDescribeCollection,
     listCollections: fakeListCollections,
   };
-  jest.mock('../../pinecone-generated-ts-fetch', () => ({
-    IndexOperationsApi: IOA,
-  }));
   return IOA as IndexOperationsApi;
 };
 
