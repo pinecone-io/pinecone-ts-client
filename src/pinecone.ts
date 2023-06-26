@@ -13,7 +13,57 @@ export type ClientConfigurationInit = {
   projectId?: string;
 };
 
+/**
+ * This utility class is used to help configure a Pinecone {@link Client} by aggregating
+ * configuration from environment variables and method params. Most usage will center on the `createClient`
+ * static method.
+ *
+ * @example
+ * ```
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const client = await Pinecone.createClient();
+ * ```
+ */
 export class Pinecone {
+  /**
+   * This is the primary way to create a new client instance.
+   *
+   * @example
+   * If you would like to configure the client via environment variables, you can invoke this method with no arguments:
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const client = await Pinecone.createClient();
+   * ```
+   *
+   * When no arguments are provided, the client will attempt to read configuration from the following environment variables:
+   * - `PINECONE_ENVIRONMENT`
+   * - `PINECONE_API_KEY`
+   * - `PINECONE_PROJECT_ID` (optional)
+   *
+   * If a project ID is not provided, the client will fetch it from the Pinecone API.
+   *
+   * @example
+   * If you would like to configure the client via arguments, you can invoke this method with a {@link ClientConfigurationInit} object:
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = await Pinecone.createClient({
+   *   apiKey: 'my-api-key',
+   *   environment: 'us-west1-gcp'
+   * });
+   * ```
+   *
+   * This can be useful if your application needs to interact with indexes from multiple projects and relying on environment variables would create a conflict.
+   *
+   * Whether you are configuring via environment variables or arguments, the client will throw an error if it is unable to read the required configuration.
+   *
+   * @param options - A {@link ClientConfigurationInit} object containing the configuration for the client.
+   * @param options.apiKey - The API key to use for authentication.
+   * @param options.environment - The environment to use for the client.
+   * @param options.projectId - The project ID to use for the client. If not provided, the project ID will be fetched from the Pinecone API.
+   * @throws {@link PineconeConfigurationError} if the client is unable to find the required configuration from either parameters or environment variables.
+   * @returns A new {@link Client} instance.
+   */
   static async createClient(
     options?: ClientConfigurationInit
   ): Promise<Client> {
@@ -31,6 +81,17 @@ export class Pinecone {
     }
   }
 
+  /**
+   * @internal
+   * This method is used by {@link Pinecone.createClient} to read configuration from environment variables.
+   *
+   * It looks for the following environment variables:
+   * - `PINECONE_ENVIRONMENT`
+   * - `PINECONE_API_KEY`
+   * - `PINECONE_PROJECT_ID`
+   *
+   * @returns A {@link ClientConfigurationInit} object populated with values found in environment variables.
+   */
   static _readEnvironmentConfig(): ClientConfigurationInit {
     if (!process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
@@ -137,6 +198,7 @@ export class Pinecone {
     return json.project_name;
   }
 
+  /** @hidden */
   static _buildWhoamiRequest(
     environment: string,
     apiKey: string
