@@ -152,7 +152,7 @@ export class Client {
 
   /**
    * Create a new collection from an existing index
-   * 
+   *
    * @example
    * ```js
    * const indexList = await client.listIndexes()
@@ -161,37 +161,37 @@ export class Client {
    *  source: indexList[0]
    * })
    * ```
-   * 
-   * 
+   *
+   *
    * @param options - The collection configuration.
    * @param options.name - The name of the collection. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
    * @param options.source - The name of the index to use as the source for the collection.
    * @returns a promise that resolves when the request to create the collection is completed.
-  */
+   */
   createCollection: ReturnType<typeof createCollection>;
 
   /**
    * List all collections in a project
-   * 
+   *
    * @example
    * ```js
    * await client.listCollections()
    * ```
-   * 
+   *
    * @returns A promise that resolves to an array of collection objects.
-  */
+   */
   listCollections: ReturnType<typeof listCollections>;
-  
-  /** 
+
+  /**
    * Delete a collection by collection name
-   * 
+   *
    * @example
    * ```
    * const collectionList = await client.listCollections()
    * const collectionName = collectionList[0]
    * await client.deleteCollection(collectionName)
    * ```
-   * 
+   *
    * @param collectionName - The name of the collection to delete.
    * @returns A promise that resolves when the request to delete the collection is completed.
    */
@@ -199,15 +199,15 @@ export class Client {
 
   /**
    * Describe a collection
-   * 
+   *
    * @example
    * ```js
    * await client.describeCollection('my-collection')
    * ```
-   * 
+   *
    * @param collectionName - The name of the collection to describe.
    * @returns A promise that resolves to a collection object with type {@link CollectionDescription}.
-  */
+   */
   describeCollection: ReturnType<typeof describeCollection>;
 
   /**
