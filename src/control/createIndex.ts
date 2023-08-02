@@ -39,7 +39,8 @@ export const createIndex = (api: IndexOperationsApi) => {
       return;
     } catch (e) {
       const createIndexError = e as ResponseError;
-      const message = await createIndexError.response.text();
+      const messageJSON = await createIndexError.response.text();
+      const message = JSON.parse(messageJSON).message;
       throw mapHttpStatusError({
         status: createIndexError.response.status,
         url: createIndexError.response.url,

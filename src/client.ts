@@ -15,6 +15,7 @@ import {
   describeCollection,
   deleteCollection,
 } from './control';
+import { Index } from './data';
 import { buildValidator } from './validator';
 import { Static, Type } from '@sinclair/typebox';
 
@@ -22,7 +23,7 @@ const ClientConfigurationSchema = Type.Object(
   {
     environment: Type.String({ minLength: 1 }),
     apiKey: Type.String({ minLength: 1 }),
-    projectId: Type.Optional(Type.String({ minLength: 1 })),
+    projectId: Type.String({ minLength: 1 }),
   },
   { additionalProperties: false }
 );
@@ -282,5 +283,14 @@ export class Client {
    */
   getConfig() {
     return this.config;
+  }
+
+  index(indexName: string) {
+    return new Index(indexName, this.config);
+  }
+
+  // Alias method to match the Python SDK capitalization
+  Index(indexName: string) {
+    return this.index(indexName);
   }
 }
