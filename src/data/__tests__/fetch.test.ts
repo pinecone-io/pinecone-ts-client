@@ -10,7 +10,7 @@ import type {
 } from '../../pinecone-generated-ts-fetch';
 
 describe('fetch', () => {
-  test('calls the openapi fetch endpoint', async () => {
+  test('calls the openapi fetch endpoint, passing target namespace', async () => {
     const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
       .fn()
       .mockImplementation(() =>
@@ -27,12 +27,10 @@ describe('fetch', () => {
     const fetchFn = fetch(VOA, 'namespace');
     const returned = await fetchFn(['1', '2']);
 
-    expect(returned).toBe(void 0);
+    expect(returned).toEqual({"vectors": []});
     expect(VOA.fetch).toHaveBeenCalledWith({
-      fetchRequest: {
-        ids: ['1', '2'],
-        namespace: 'namespace',
-      },
+      ids: ['1', '2'],
+      namespace: 'namespace',
     });
   });
 
