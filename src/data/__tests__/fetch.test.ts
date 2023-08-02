@@ -27,7 +27,7 @@ describe('fetch', () => {
     const fetchFn = fetch(VOA, 'namespace');
     const returned = await fetchFn(['1', '2']);
 
-    expect(returned).toEqual({"vectors": []});
+    expect(returned).toEqual({ vectors: [] });
     expect(VOA.fetch).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',

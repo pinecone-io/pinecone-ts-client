@@ -3,7 +3,11 @@ import type {
   ResponseError,
   FetchResponse,
 } from '../pinecone-generated-ts-fetch';
-import { mapHttpStatusError, PineconeConnectionError } from '../errors';
+import {
+  mapHttpStatusError,
+  PineconeConnectionError,
+  extractMessage,
+} from '../errors';
 import { builOptionConfigValidator } from '../validator';
 
 import { Static, Type } from '@sinclair/typebox';
@@ -27,20 +31,7 @@ export const fetch = (api: VectorOperationsApi, namespace: string) => {
         );
       } else {
         const fetchError = e as ResponseError;
-        let message = await fetchError.response.text();
-
-        // Error response of this endpoint seems different from others,
-        // so we will try to parse out the actual message text, but
-        // we wrap it in a try to avoid crashing in a way that obscures
-        // the actual error if the response format changes in the future.
-        try {
-          const messageJSON = JSON.parse(message);
-          if (messageJSON.message) {
-            message = messageJSON.message;
-          }
-        } catch (e) {
-          // noop
-        }
+        const message = await extractMessage(fetchError);
 
         throw mapHttpStatusError({
           status: fetchError.response.status,
