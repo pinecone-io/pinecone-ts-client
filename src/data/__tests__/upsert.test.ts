@@ -2,10 +2,12 @@ import { upsert } from '../upsert';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
-  PineconeNotFoundError,
 } from '../../errors';
 import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
-import type { UpsertOperationRequest, UpsertResponse } from '../../pinecone-generated-ts-fetch';
+import type {
+  UpsertOperationRequest,
+  UpsertResponse,
+} from '../../pinecone-generated-ts-fetch';
 
 describe('upsert', () => {
   test('calls the openapi upsert endpoint', async () => {
@@ -25,21 +27,22 @@ describe('upsert', () => {
       upsertRequest: {
         namespace: 'namespace',
         vectors: [{ id: '1', values: [1, 2, 3] }],
-      }
+      },
     });
   });
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const fakeUpsert: (req: UpsertOperationRequest) => Promise<UpsertResponse> =
-        jest.fn().mockImplementation(() =>
-          Promise.reject({
-            response: {
-              status: 500,
-              text: () => 'backend error message',
-            },
-          })
-        );
+      const fakeUpsert: (
+        req: UpsertOperationRequest
+      ) => Promise<UpsertResponse> = jest.fn().mockImplementation(() =>
+        Promise.reject({
+          response: {
+            status: 500,
+            text: () => 'backend error message',
+          },
+        })
+      );
       const VOA = {
         upsert: fakeUpsert,
       } as VectorOperationsApi;
@@ -56,15 +59,16 @@ describe('upsert', () => {
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const fakeUpsert: (req: UpsertOperationRequest) => Promise<UpsertResponse> =
-        jest.fn().mockImplementation(() =>
-          Promise.reject({
-            response: {
-              status: 400,
-              text: () => 'backend error message',
-            },
-          })
-        );
+      const fakeUpsert: (
+        req: UpsertOperationRequest
+      ) => Promise<UpsertResponse> = jest.fn().mockImplementation(() =>
+        Promise.reject({
+          response: {
+            status: 400,
+            text: () => 'backend error message',
+          },
+        })
+      );
       const VOA = {
         upsert: fakeUpsert,
       } as VectorOperationsApi;

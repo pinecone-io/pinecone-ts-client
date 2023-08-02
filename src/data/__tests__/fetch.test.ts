@@ -2,17 +2,22 @@ import { fetch } from '../fetch';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
-  PineconeNotFoundError,
 } from '../../errors';
 import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
-import type { FetchRequest, FetchResponse } from '../../pinecone-generated-ts-fetch';
+import type {
+  FetchRequest,
+  FetchResponse,
+} from '../../pinecone-generated-ts-fetch';
 
 describe('fetch', () => {
   test('calls the openapi fetch endpoint', async () => {
-    const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> =
-      jest.fn().mockImplementation(() => Promise.resolve({
-        vectors: [],
-      }));
+    const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve({
+          vectors: [],
+        })
+      );
     const VOA = { fetch: fakeFetch } as VectorOperationsApi;
 
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
@@ -27,14 +32,15 @@ describe('fetch', () => {
       fetchRequest: {
         ids: ['1', '2'],
         namespace: 'namespace',
-      }
+      },
     });
   });
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> =
-        jest.fn().mockImplementation(() =>
+      const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
+        .fn()
+        .mockImplementation(() =>
           Promise.reject({
             response: {
               status: 500,
@@ -58,8 +64,9 @@ describe('fetch', () => {
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> =
-        jest.fn().mockImplementation(() =>
+      const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
+        .fn()
+        .mockImplementation(() =>
           Promise.reject({
             response: {
               status: 400,
