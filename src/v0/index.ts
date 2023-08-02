@@ -6,6 +6,7 @@ import {
   VectorOperationsApi,
 } from '../pinecone-generated-ts-fetch';
 import 'cross-fetch/polyfill';
+import { queryParamsStringify } from '../utils/queryParamsStringify';
 
 type PineconeClientConfiguration = {
   environment: string;
@@ -168,6 +169,7 @@ class PineconeClient {
     const controllerConfigurationParameters: ConfigurationParameters = {
       basePath: controllerPath,
       apiKey: apiKey,
+      queryParamsStringify
     };
 
     const controllerConfiguration = new Configuration(
@@ -192,6 +194,7 @@ class PineconeClient {
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: `https://${index}-${this.projectName}.svc.${this.environment}.pinecone.io`,
       apiKey: this.apiKey,
+      queryParamsStringify
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);
