@@ -5,6 +5,7 @@ import {
 } from '../pinecone-generated-ts-fetch';
 import { upsert } from './upsert';
 import { fetch } from './fetch';
+import { queryParamsStringify } from '../utils/queryParamsStringify';
 
 type ApiConfig = {
   projectId: string;
@@ -26,6 +27,7 @@ export class Index {
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`,
       apiKey: config.apiKey,
+      queryParamsStringify,
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

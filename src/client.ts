@@ -17,6 +17,7 @@ import {
 } from './control';
 import { Index } from './data';
 import { buildValidator } from './validator';
+import { queryParamsStringify } from './utils/queryParamsStringify';
 import { Static, Type } from '@sinclair/typebox';
 
 const ClientConfigurationSchema = Type.Object(
@@ -236,6 +237,7 @@ export class Client {
     const apiConfig: IndexOperationsApiConfigurationParameters = {
       basePath: controllerPath,
       apiKey,
+      queryParamsStringify,
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 
