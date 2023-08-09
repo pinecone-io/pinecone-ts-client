@@ -1,5 +1,10 @@
 import type { HTTPQuery } from '../pinecone-generated-ts-fetch';
 
+// Everything in this file is lifted from the generated openapi runtime.
+// I need to create a small modification of the generated queryParamStringify
+// function in order to fix an issue with array params.
+//
+// See https://github.com/pinecone-io/pinecone-ts-client/pull/74
 export function queryParamsStringify(
   params: HTTPQuery,
   prefix: string = ''
