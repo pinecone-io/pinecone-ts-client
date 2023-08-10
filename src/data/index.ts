@@ -5,7 +5,7 @@ import {
 } from '../pinecone-generated-ts-fetch';
 import { upsert } from './upsert';
 import { fetch } from './fetch';
-import { queryParamsStringify } from '../utils/queryParamsStringify';
+import { queryParamsStringify, buildUserAgent } from '../utils';
 
 type ApiConfig = {
   projectId: string;
@@ -28,6 +28,9 @@ export class Index {
       basePath: `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`,
       apiKey: config.apiKey,
       queryParamsStringify,
+      headers: {
+        'User-Agent': buildUserAgent(false),
+      },
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);
