@@ -121,6 +121,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async _delete(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this._deleteRaw(requestParameters, initOverrides);
+        console.log('response: ', response);
         return await response.value();
     }
 
@@ -165,6 +166,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async delete1(requestParameters: Delete1Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.delete1Raw(requestParameters, initOverrides);
+        console.log('Delete Response: ', response);
         return await response.value();
     }
 
