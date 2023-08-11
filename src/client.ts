@@ -17,7 +17,7 @@ import {
 } from './control';
 import { Index } from './data';
 import { buildValidator } from './validator';
-import { queryParamsStringify } from './utils/queryParamsStringify';
+import { queryParamsStringify, buildUserAgent } from './utils';
 import { Static, Type } from '@sinclair/typebox';
 
 const ClientConfigurationSchema = Type.Object(
@@ -238,6 +238,9 @@ export class Client {
       basePath: controllerPath,
       apiKey,
       queryParamsStringify,
+      headers: {
+        'User-Agent': buildUserAgent(false),
+      },
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 
