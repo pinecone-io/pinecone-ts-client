@@ -5,7 +5,6 @@ import {
 } from '../../errors';
 import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
 import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch';
-import { Vector } from '../upsert';
 
 describe('update', () => {
   test('calls the openapi update endpoint, passing target namespace', async () => {
