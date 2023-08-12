@@ -23,7 +23,7 @@ export type DeleteVectorOptions = Static<typeof DeleteVectorOptionsSchema>;
 export const deleteVector = (api: VectorOperationsApi, namespace: string) => {
   const validator = builOptionConfigValidator(
     DeleteVectorOptionsSchema,
-    'deleteVector'
+    'delete'
   );
 
   return async (options: DeleteVectorOptions): Promise<void> => {
