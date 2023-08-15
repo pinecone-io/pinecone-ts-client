@@ -1,10 +1,5 @@
 import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import type { ResponseError } from '../pinecone-generated-ts-fetch';
-import {
-  mapHttpStatusError,
-  PineconeConnectionError,
-  extractMessage,
-} from '../errors';
+import { handleDataError } from './utils/errorHandling';
 import { builOptionConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 
@@ -35,20 +30,8 @@ export const update = (api: VectorOperationsApi, namespace: string) => {
       await api.update({ updateRequest: { ...options, namespace } });
       return;
     } catch (e) {
-      if (e instanceof Error && e.name === 'FetchError') {
-        throw new PineconeConnectionError(
-          'Request failed to reach the server. Are you sure you are targeting an index that exists?'
-        );
-      } else {
-        const updateVectorError = e as ResponseError;
-        const message = await extractMessage(updateVectorError);
-
-        throw mapHttpStatusError({
-          status: updateVectorError.response.status,
-          url: updateVectorError.response.url,
-          message: message,
-        });
-      }
+      const err = await handleDataError(e);
+      throw err;
     }
   };
 };
