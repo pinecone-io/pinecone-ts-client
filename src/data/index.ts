@@ -6,6 +6,7 @@ import {
 import { upsert } from './upsert';
 import { fetch } from './fetch';
 import { queryParamsStringify, buildUserAgent } from '../utils';
+import { deleteVector } from './delete';
 
 type ApiConfig = {
   projectId: string;
@@ -22,6 +23,7 @@ export class Index {
 
   upsert: ReturnType<typeof upsert>;
   fetch: ReturnType<typeof fetch>;
+  delete: ReturnType<typeof deleteVector>;
 
   constructor(indexName: string, config: ApiConfig, namespace = '') {
     const indexConfigurationParameters: ConfigurationParameters = {
@@ -43,6 +45,7 @@ export class Index {
 
     this.upsert = upsert(vectorOperations, namespace);
     this.fetch = fetch(vectorOperations, namespace);
+    this.delete = deleteVector(vectorOperations, namespace);
   }
 
   namespace(namespace: string): Index {
