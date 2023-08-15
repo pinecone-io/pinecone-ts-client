@@ -5,6 +5,7 @@ import {
 } from '../pinecone-generated-ts-fetch';
 import { upsert } from './upsert';
 import { fetch } from './fetch';
+import { update } from './update';
 import { queryParamsStringify, buildUserAgent } from '../utils';
 import { deleteVector } from './delete';
 
@@ -24,6 +25,7 @@ export class Index {
   upsert: ReturnType<typeof upsert>;
   fetch: ReturnType<typeof fetch>;
   delete: ReturnType<typeof deleteVector>;
+  update: ReturnType<typeof update>;
 
   constructor(indexName: string, config: ApiConfig, namespace = '') {
     const indexConfigurationParameters: ConfigurationParameters = {
@@ -46,6 +48,7 @@ export class Index {
     this.upsert = upsert(vectorOperations, namespace);
     this.fetch = fetch(vectorOperations, namespace);
     this.delete = deleteVector(vectorOperations, namespace);
+    this.update = update(vectorOperations, namespace);
   }
 
   namespace(namespace: string): Index {
