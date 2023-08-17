@@ -37,7 +37,7 @@ export interface IndexMetaDatabase {
      * @type {string}
      * @memberof IndexMetaDatabase
      */
-    dimensions?: string;
+    dimension?: string;
     /**
      * 
      * @type {string}
@@ -109,7 +109,7 @@ export function IndexMetaDatabaseFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'dimensions': !exists(json, 'dimensions') ? undefined : json['dimensions'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'indexType': !exists(json, 'index_type') ? undefined : json['index_type'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'pods': !exists(json, 'pods') ? undefined : json['pods'],
@@ -131,7 +131,7 @@ export function IndexMetaDatabaseToJSON(value?: IndexMetaDatabase | null): any {
     return {
         
         'name': value.name,
-        'dimensions': value.dimensions,
+        'dimension': value.dimension,
         'index_type': value.indexType,
         'metric': value.metric,
         'pods': value.pods,
