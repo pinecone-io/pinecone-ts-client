@@ -9,4 +9,11 @@ module.exports = {
   testTimeout: 100000,
   verbose: true,
   detectOpenHandles: true,
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.ts',
+    '!**/src/pinecone-generated-ts-fetch/**',
+    '!**/src/v0/**',
+    '!**/node_modules/**',
+    '!**/vendor/**',
+  ],
 };
