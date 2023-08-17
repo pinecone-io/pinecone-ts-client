@@ -61,4 +61,4 @@ jobs:
       - name: Run tests
         env:
           CI: true
-        run: npm run test:unit
+        run: npm run test:unit -- --coverage
