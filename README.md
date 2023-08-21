@@ -244,7 +244,7 @@ const updateRequest: UpdateRequest = {
     indices: [15, 30, 11],
     values: [0.1, 0.2, 0.3],
   }, // optional sparse values
-  setMetadata: metadata, // the new metadata
+  metadata: metadata, // the new metadata
   namespace,
 };
 await index.update({ updateRequest });
