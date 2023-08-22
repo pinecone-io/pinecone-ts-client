@@ -13,7 +13,6 @@ const UpdateVectorOptionsSchema = Type.Object({
   values: Type.Optional(Type.Array(Type.Number())),
   sparseValues: Type.Optional(SparseValues),
   metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  setMetadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
 });
 
 export type UpdateVectorOptions = Static<typeof UpdateVectorOptionsSchema>;
@@ -26,11 +25,16 @@ export const update = (api: VectorOperationsApi, namespace: string) => {
 
   return async (options: UpdateVectorOptions): Promise<void> => {
     validator(options);
-    options["setMetadata"] = options["metadata"];
-    delete(options["metadata"]);
+
+    const requestOptions = {
+      id: options['id'],
+      values: options['values'],
+      sparseValues: options['sparseValues'],
+      setMetadata: options['metadata'],
+    };
 
     try {
-      await api.update({ updateRequest: { ...options, namespace } });
+      await api.update({ updateRequest: { ...requestOptions, namespace } });
       return;
     } catch (e) {
       const err = await handleDataError(e);
