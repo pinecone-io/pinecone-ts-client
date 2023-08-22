@@ -1,7 +1,7 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
 import { mapHttpStatusError } from '../errors';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 import { validIndexMessage } from './utils';
 
 import { Static, Type } from '@sinclair/typebox';
@@ -18,7 +18,7 @@ export type CreateCollectionOptions = Static<
 >;
 
 export const createCollection = (api: IndexOperationsApi) => {
-  const validator = builOptionConfigValidator(
+  const validator = buildConfigValidator(
     CreateCollectionOptionsSchema,
     'createCollection'
   );

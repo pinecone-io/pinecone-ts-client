@@ -23,7 +23,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to createIndex has a problem. The argument must be object.'
+        'The argument to createIndex had type errors: the argument must be object.'
       );
     });
 
@@ -33,7 +33,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'name' must be string."
+        "The argument to createIndex had type errors: property 'name' must be string."
       );
     });
 
@@ -43,7 +43,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'name' must not be blank."
+        "The argument to createIndex had validation errors: property 'name' must not be blank."
       );
     });
 
@@ -53,7 +53,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The argument must have required property 'dimension'."
+        'The argument to createIndex must have required properties: dimension.'
       );
     });
 
@@ -63,7 +63,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'dimension' must be integer."
+        "The argument to createIndex had type errors: property 'dimension' must be integer."
       );
     });
 
@@ -73,7 +73,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'dimension' must be integer."
+        "The argument to createIndex had type errors: property 'dimension' must be integer."
       );
     });
 
@@ -83,7 +83,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'dimension' must be >= 1."
+        "The argument to createIndex had validation errors: property 'dimension' must be >= 1."
       );
     });
   });
@@ -99,7 +99,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'metric' must be string."
+        "The argument to createIndex had type errors: property 'metric' must be string."
       );
     });
 
@@ -113,7 +113,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'metric' must not be blank."
+        "The argument to createIndex had validation errors: property 'metric' must not be blank."
       );
     });
 
@@ -127,7 +127,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'replicas' must be integer."
+        "The argument to createIndex had type errors: property 'replicas' must be integer."
       );
     });
 
@@ -141,7 +141,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'replicas' must be >= 1."
+        "The argument to createIndex had validation errors: property 'replicas' must be >= 1."
       );
     });
 
@@ -155,7 +155,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'podType' must be string."
+        "The argument to createIndex had type errors: property 'podType' must be string."
       );
     });
 
@@ -169,7 +169,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'podType' must not be blank."
+        "The argument to createIndex had validation errors: property 'podType' must not be blank."
       );
     });
 
@@ -183,7 +183,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'pods' must be integer."
+        "The argument to createIndex had type errors: property 'pods' must be integer."
       );
     });
 
@@ -197,7 +197,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'pods' must be >= 1."
+        "The argument to createIndex had validation errors: property 'pods' must be >= 1."
       );
     });
 
@@ -211,7 +211,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'metadataConfig' must be object."
+        "The argument to createIndex had type errors: property 'metadataConfig' must be object."
       );
     });
 
@@ -225,7 +225,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'sourceCollection' must be string."
+        "The argument to createIndex had type errors: property 'sourceCollection' must be string."
       );
     });
 
@@ -239,7 +239,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createIndex has a problem. The property 'sourceCollection' must not be blank."
+        "The argument to createIndex had validation errors: property 'sourceCollection' must not be blank."
       );
     });
   });

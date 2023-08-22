@@ -23,7 +23,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to configureIndex has a problem. The argument must be string.'
+        'The first argument to configureIndex had type errors: the argument must be string.'
       );
     });
 
@@ -33,7 +33,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to configureIndex has a problem. The argument must be string.'
+        'The first argument to configureIndex had type errors: the argument must be string.'
       );
     });
 
@@ -43,7 +43,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to configureIndex has a problem. The argument must not be blank.'
+        'The first argument to configureIndex had validation errors: the argument must not be blank.'
       );
     });
 
@@ -52,7 +52,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "At least one mutable property must be specified from list ['replicas', 'podType']. Replicas must be a non-negative integer, podType must be a known pod type. See the API reference documentation at https://docs.pinecone.io/reference/configure_index"
+        'The second argument to configureIndex accepts multiple types. Either 1) must have required properties: replicas. 2) must have required properties: podType.'
       );
     });
 
@@ -62,7 +62,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "At least one mutable property must be specified from list ['replicas', 'podType']. Replicas must be a non-negative integer, podType must be a known pod type. See the API reference documentation at https://docs.pinecone.io/reference/configure_index"
+        "The second argument to configureIndex accepts multiple types. Either 1) had type errors: property 'replicas' must be integer. 2) must have required properties: podType."
       );
     });
 
@@ -72,7 +72,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "At least one mutable property must be specified from list ['replicas', 'podType']. Replicas must be a non-negative integer, podType must be a known pod type. See the API reference documentation at https://docs.pinecone.io/reference/configure_index"
+        "The second argument to configureIndex accepts multiple types. Either 1) must have required properties: replicas. 2) had type errors: property 'podType' must be string."
       );
     });
 
@@ -82,7 +82,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "At least one mutable property must be specified from list ['replicas', 'podType']. Replicas must be a non-negative integer, podType must be a known pod type. See the API reference documentation at https://docs.pinecone.io/reference/configure_index"
+        "The second argument to configureIndex accepts multiple types. Either 1) had validation errors: property 'replicas' must be >= 1. 2) must have required properties: podType."
       );
     });
   });

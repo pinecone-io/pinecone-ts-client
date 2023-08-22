@@ -1,6 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 import { mapHttpStatusError } from '../errors';
 import { validIndexMessage } from './utils';
 import type {
@@ -18,7 +18,7 @@ const DescribeIndexOptionsSchema = Type.String({ minLength: 1 });
 export type IndexName = Static<typeof DescribeIndexOptionsSchema>;
 
 export const describeIndex = (api: IndexOperationsApi) => {
-  const validator = builOptionConfigValidator(
+  const validator = buildConfigValidator(
     DescribeIndexOptionsSchema,
     'describeIndex'
   );

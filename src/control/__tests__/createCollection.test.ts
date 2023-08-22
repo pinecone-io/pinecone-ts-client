@@ -34,7 +34,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to createCollection has a problem. The argument must be object.'
+        'The argument to createCollection had type errors: the argument must be object.'
       );
     });
 
@@ -47,7 +47,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'Argument to createCollection has a problem. The argument must be object.'
+        'The argument to createCollection had type errors: the argument must be object.'
       );
     });
 
@@ -60,7 +60,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The argument must have required property 'name'. The argument must have required property 'source'."
+        'The argument to createCollection must have required properties: name, source.'
       );
     });
 
@@ -75,7 +75,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The property 'name' must not be blank."
+        "The argument to createCollection had validation errors: property 'name' must not be blank."
       );
     });
 
@@ -88,7 +88,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The property 'name' must be string."
+        "The argument to createCollection had type errors: property 'name' must be string."
       );
     });
 
@@ -101,7 +101,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The argument must have required property 'source'."
+        'The argument to createCollection must have required properties: source.'
       );
     });
 
@@ -114,7 +114,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The property 'source' must be string."
+        "The argument to createCollection had type errors: property 'source' must be string."
       );
     });
 
@@ -129,7 +129,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "Argument to createCollection has a problem. The property 'source' must not be blank."
+        "The argument to createCollection had validation errors: property 'source' must not be blank."
       );
     });
   });

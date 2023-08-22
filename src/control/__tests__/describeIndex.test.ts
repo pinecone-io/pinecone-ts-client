@@ -58,7 +58,7 @@ describe('describeIndex', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must be string.'
+        'The argument to describeIndex had type errors: the argument must be string.'
       );
     });
 
@@ -74,7 +74,7 @@ describe('describeIndex', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must be string.'
+        'The argument to describeIndex had type errors: the argument must be string.'
       );
     });
 
@@ -90,7 +90,7 @@ describe('describeIndex', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeIndex has a problem. The argument must not be blank.'
+        'The argument to describeIndex had validation errors: the argument must not be blank.'
       );
     });
   });

@@ -258,29 +258,10 @@ export class Client {
 
   /** @internal */
   _validateConfig(options: ClientConfiguration) {
-    buildValidator(ClientConfigurationSchema, (errorsList) => {
-      const messageParts: Array<string> = [];
-      messageParts.push(
-        'Configuration passed to Client constructor had a problem.'
-      );
-
-      if (
-        errorsList.length === 1 &&
-        errorsList[0] === 'The argument must be object.'
-      ) {
-        // This error doesn't really say anything that isn't covered in the other parts
-        // of the error message. So leave it out.
-      } else {
-        messageParts.push(...errorsList);
-      }
-
-      const requiredKeys = ['environment', 'apiKey', 'projectId'];
-      messageParts.push(
-        `Configuration must be an object with keys ${requiredKeys.join(', ')}.`
-      );
-
-      throw new PineconeConfigurationError(`${messageParts.join(' ')}`);
-    })(options);
+    buildValidator(
+      'The client configuration',
+      ClientConfigurationSchema
+    )(options);
   }
 
   /**
