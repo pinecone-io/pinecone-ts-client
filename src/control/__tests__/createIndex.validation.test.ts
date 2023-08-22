@@ -53,7 +53,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createIndex must have required properties: dimension.'
+        'The argument to createIndex must have required property: dimension.'
       );
     });
 

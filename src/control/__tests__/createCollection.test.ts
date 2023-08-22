@@ -101,7 +101,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection must have required properties: source.'
+        'The argument to createCollection must have required property: source.'
       );
     });
 

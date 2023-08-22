@@ -61,7 +61,9 @@ const missingPropertiesErrors = (
   if (missingPropertyNames.length > 0) {
     const missingMessage = prepend(
       subject,
-      `must have required properties: ${missingPropertyNames.join(', ')}.`
+      `must have required ${
+        missingPropertyNames.length > 1 ? 'properties' : 'property'
+      }: ${missingPropertyNames.join(', ')}.`
     );
     messageParts.push(missingMessage);
   }

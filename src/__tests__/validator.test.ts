@@ -117,7 +117,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to createIndex', validationErrors)
       ).toEqual(
-        'The argument to createIndex must have required properties: dimension.'
+        'The argument to createIndex must have required property: dimension.'
       );
     });
 
@@ -186,7 +186,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to createIndex', validationErrors)
       ).toEqual(
-        "The argument to createIndex must have required properties: dimension. There were also type errors: property 'name' must be string."
+        "The argument to createIndex must have required property: dimension. There were also type errors: property 'name' must be string."
       );
     });
 
@@ -216,7 +216,7 @@ describe('validation', () => {
       ];
 
       expect(errorFormatter('The argument to query', validationErrors)).toEqual(
-        'The argument to query accepts multiple types. Either 1) must have required properties: id. 2) must have required properties: vector.'
+        'The argument to query accepts multiple types. Either 1) must have required property: id. 2) must have required property: vector.'
       );
     });
 
@@ -285,7 +285,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to createIndex', validationErrors)
       ).toEqual(
-        "The argument to createIndex must have required properties: dimension. There were also validation errors: property 'name' must not be blank."
+        "The argument to createIndex must have required property: dimension. There were also validation errors: property 'name' must not be blank."
       );
     });
 

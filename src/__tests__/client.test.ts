@@ -49,7 +49,7 @@ describe('Client', () => {
             apiKey: '',
           });
         }).toThrow(
-          "The client configuration must have required properties: projectId. There were also validation errors: property 'apiKey' must not be blank."
+          "The client configuration must have required property: projectId. There were also validation errors: property 'apiKey' must not be blank."
         );
       });
     });
