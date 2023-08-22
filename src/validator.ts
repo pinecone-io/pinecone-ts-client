@@ -85,7 +85,6 @@ const typeErrors = (
       } else {
         formatIndividualError(e, typeErrorsList);
       }
-
     }
   }
 

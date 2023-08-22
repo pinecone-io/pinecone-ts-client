@@ -16,10 +16,7 @@ const DeleteVectorOptionsSchema = Type.Object({
 export type DeleteVectorOptions = Static<typeof DeleteVectorOptionsSchema>;
 
 export const deleteVector = (api: VectorOperationsApi, namespace: string) => {
-  const validator = buildConfigValidator(
-    DeleteVectorOptionsSchema,
-    'delete'
-  );
+  const validator = buildConfigValidator(DeleteVectorOptionsSchema, 'delete');
 
   return async (options: DeleteVectorOptions): Promise<void> => {
     validator(options);

@@ -18,10 +18,7 @@ const UpdateVectorOptionsSchema = Type.Object({
 export type UpdateVectorOptions = Static<typeof UpdateVectorOptionsSchema>;
 
 export const update = (api: VectorOperationsApi, namespace: string) => {
-  const validator = buildConfigValidator(
-    UpdateVectorOptionsSchema,
-    'update'
-  );
+  const validator = buildConfigValidator(UpdateVectorOptionsSchema, 'update');
 
   return async (options: UpdateVectorOptions): Promise<void> => {
     validator(options);
