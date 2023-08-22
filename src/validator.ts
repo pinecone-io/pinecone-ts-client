@@ -6,9 +6,13 @@ const prepend = (prefix: string, message: string) => {
   return `${prefix} ${message}`;
 };
 
-const propNameRegex = /properties\/(.+)\//;
-const arrayPropNameRegex = /properties\/(.+)\/items/;
-const itemIndexRegex = /(\d+)$/;
+const schemaPathPropNameRegex = /properties\/(.+)\//;
+const schemaPathArrayPropNameRegex = /properties\/(.+)\/items/;
+const schemaPathGroupNumberRegex = /anyOf\/(\d+)\/(.+)/;
+const instancePathItemIndexRegex = /(\d+)$/;
+
+// If there are more than maxErrors errors in a group, they
+// will get summarized with an error count.
 const maxErrors = 3;
 
 const formatIndividualError = (e, formattedMessageList) => {
@@ -16,22 +20,22 @@ const formatIndividualError = (e, formattedMessageList) => {
     // property of an object
     if (e.schemaPath.indexOf('items') > -1) {
       // property is an array
-      const propNameMatch = arrayPropNameRegex.exec(e.schemaPath);
+      const propNameMatch = schemaPathArrayPropNameRegex.exec(e.schemaPath);
       const propName = propNameMatch ? propNameMatch[1] : 'unknown';
-      const itemIndexMatch = itemIndexRegex.exec(e.instancePath);
+      const itemIndexMatch = instancePathItemIndexRegex.exec(e.instancePath);
       const itemIndex = itemIndexMatch ? itemIndexMatch[1] : 'unknown';
       formattedMessageList.push(
         `item at index ${itemIndex} of the '${propName}' array ${e.message}`
       );
     } else {
       // property is not an array
-      const propNameMatch = propNameRegex.exec(e.schemaPath);
+      const propNameMatch = schemaPathPropNameRegex.exec(e.schemaPath);
       const propName = propNameMatch ? propNameMatch[1] : 'unknown';
       formattedMessageList.push(`property '${propName}' ${e.message}`);
     }
   } else if (e.schemaPath.indexOf('items') > -1) {
     // item in an array
-    const itemIndexMatch = itemIndexRegex.exec(e.instancePath);
+    const itemIndexMatch = instancePathItemIndexRegex.exec(e.instancePath);
     const itemIndex = itemIndexMatch ? itemIndexMatch[1] : 'unknown';
     formattedMessageList.push(
       `item at index ${itemIndex} of the array ${e.message}`
@@ -74,16 +78,14 @@ const typeErrors = (
   for (var i = 0; i < errors.length; i++) {
     let e = errors[i];
 
-    switch (e.keyword) {
-      case 'type':
-        errorCount += 1;
-        if (errorCount > maxErrors) {
-          continue;
-        } else {
-          formatIndividualError(e, typeErrorsList);
-        }
-      default:
-      // noop, other non-validation error handled elsewhere
+    if (e.keyword === 'type') {
+      errorCount += 1;
+      if (errorCount > maxErrors) {
+        continue;
+      } else {
+        formatIndividualError(e, typeErrorsList);
+      }
+
     }
   }
 
@@ -167,9 +169,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
     const groups = {};
     for (let i = 0; i < anyOfErrors.length; i++) {
       let error = anyOfErrors[i];
-
-      const schemaPathRegex = /anyOf\/(\d+)\/(.+)/;
-      const schemaPathMatch = schemaPathRegex.exec(error.schemaPath);
+      const schemaPathMatch = schemaPathGroupNumberRegex.exec(error.schemaPath);
       const groupNumber = schemaPathMatch ? schemaPathMatch[1] : 'unknown';
       // Remove the anyOf portion of the schema path to avoid infinite loop
       // when building message for each error group

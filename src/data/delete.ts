@@ -1,6 +1,6 @@
 import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import { handleDataError } from './utils/errorHandling';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 
 const idsArray = Type.Array(Type.String({ minLength: 1 }));
@@ -16,7 +16,7 @@ const DeleteVectorOptionsSchema = Type.Object({
 export type DeleteVectorOptions = Static<typeof DeleteVectorOptionsSchema>;
 
 export const deleteVector = (api: VectorOperationsApi, namespace: string) => {
-  const validator = builOptionConfigValidator(
+  const validator = buildConfigValidator(
     DeleteVectorOptionsSchema,
     'delete'
   );
