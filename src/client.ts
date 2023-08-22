@@ -1,4 +1,3 @@
-import { PineconeConfigurationError } from './errors';
 import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from './pinecone-generated-ts-fetch';
 import {
   IndexOperationsApi,

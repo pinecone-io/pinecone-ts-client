@@ -75,8 +75,8 @@ const typeErrors = (
   const typeErrorsList: Array<string> = [];
   let errorCount = 0;
 
-  for (var i = 0; i < errors.length; i++) {
-    let e = errors[i];
+  for (let i = 0; i < errors.length; i++) {
+    const e = errors[i];
 
     if (e.keyword === 'type') {
       errorCount += 1;
@@ -112,8 +112,8 @@ const validationErrors = (
   let errorCount = 0;
 
   // List of error keywords from https://ajv.js.org/api.html#validation-errors
-  for (var i = 0; i < errors.length; i++) {
-    let e = errors[i];
+  for (let i = 0; i < errors.length; i++) {
+    const e = errors[i];
 
     if (e.keyword === 'minLength' && e.params.limit === 1) {
       e.message = 'must not be blank';
@@ -138,6 +138,7 @@ const validationErrors = (
         } else {
           formatIndividualError(e, validationErrors);
         }
+        break;
       default:
       // noop, other non-validation error handled elsewhere
     }
@@ -167,7 +168,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
   if (anyOfErrors.length > 0) {
     const groups = {};
     for (let i = 0; i < anyOfErrors.length; i++) {
-      let error = anyOfErrors[i];
+      const error = anyOfErrors[i];
       const schemaPathMatch = schemaPathGroupNumberRegex.exec(error.schemaPath);
       const groupNumber = schemaPathMatch ? schemaPathMatch[1] : 'unknown';
       // Remove the anyOf portion of the schema path to avoid infinite loop
@@ -218,7 +219,7 @@ export const buildValidator = (errorMessagePrefix: string, schema: any) => {
     // The PINECONE_DISABLE_RUNTIME_VALIDATIONS env var provides a way to disable
     // all runtime validation. If it is set, all validator functions will immediately
     // return without performing any validation.
-    return (data: any) => {};
+    return (data: any) => {}; // eslint-disable-line
   }
 
   const ajv = new Ajv({ allErrors: true });
