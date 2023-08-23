@@ -24,7 +24,7 @@ describe('update', () => {
         indices: [15, 30, 25],
         values: [0.5, 0.5, 0.2],
       },
-      setMetadata: { genre: 'ambient' },
+      metadata: { genre: 'ambient' },
     });
 
     expect(returned).toBe(void 0);
