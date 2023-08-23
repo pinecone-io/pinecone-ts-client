@@ -8,7 +8,7 @@ describe('Client', () => {
           // @ts-ignore
           new Client();
         }).toThrow(
-          'The client configuration had type errors: the argument must be object.'
+          'The client configuration had type errors: argument must be object.'
         );
       });
 
@@ -65,7 +65,7 @@ describe('Client', () => {
             unknownProp: 'banana',
           } as any);
         }).toThrow(
-          'The client configuration had validation errors: the argument must NOT have additional properties.'
+          'The client configuration had validation errors: argument must NOT have additional properties.'
         );
       });
     });

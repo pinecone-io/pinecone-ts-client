@@ -34,7 +34,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection had type errors: the argument must be object.'
+        'The argument to createCollection had type errors: argument must be object.'
       );
     });
 
@@ -47,7 +47,7 @@ describe('createCollection', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection had type errors: the argument must be object.'
+        'The argument to createCollection had type errors: argument must be object.'
       );
     });
 

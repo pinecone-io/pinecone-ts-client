@@ -42,7 +42,7 @@ const formatIndividualError = (e, formattedMessageList) => {
     );
   } else if (e.instancePath === '') {
     // parameter is something other than an object, e.g. string
-    formattedMessageList.push(`the argument ${e.message}`);
+    formattedMessageList.push(`argument ${e.message}`);
   }
 };
 
@@ -183,7 +183,11 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
     return (
       `${subject} accepts multiple types. Either ` +
       Object.entries(groups)
-        .map(([key, group]) => (`${parseInt(key) + 1})` + errorFormatter('', group as Array<ErrorObject>)))
+        .map(
+          ([key, group]) =>
+            `${parseInt(key) + 1})` +
+            errorFormatter('', group as Array<ErrorObject>)
+        )
         .join(' ')
     );
   }

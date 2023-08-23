@@ -23,7 +23,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: the argument must be string.'
+        'The first argument to configureIndex had type errors: argument must be string.'
       );
     });
 
@@ -33,7 +33,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: the argument must be string.'
+        'The first argument to configureIndex had type errors: argument must be string.'
       );
     });
 
@@ -43,7 +43,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had validation errors: the argument must not be blank.'
+        'The first argument to configureIndex had validation errors: argument must not be blank.'
       );
     });
 

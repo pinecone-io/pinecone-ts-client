@@ -40,7 +40,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to createIndex', validationErrors)
       ).toEqual(
-        'The argument to createIndex had type errors: the argument must be object.'
+        'The argument to createIndex had type errors: argument must be object.'
       );
     });
 
@@ -58,7 +58,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to describeIndex', validationErrors)
       ).toEqual(
-        'The argument to describeIndex had type errors: the argument must be string.'
+        'The argument to describeIndex had type errors: argument must be string.'
       );
     });
 
@@ -319,7 +319,7 @@ describe('validation', () => {
       expect(
         errorFormatter('The argument to describeIndex', validationErrors)
       ).toEqual(
-        'The argument to describeIndex had validation errors: the argument must not be blank.'
+        'The argument to describeIndex had validation errors: argument must not be blank.'
       );
     });
 
@@ -455,7 +455,7 @@ describe('validation', () => {
       ];
 
       expect(errorFormatter('The argument to fetch', validationErrors)).toEqual(
-        'The argument to fetch had validation errors: the argument must NOT have fewer than 1 items.'
+        'The argument to fetch had validation errors: argument must NOT have fewer than 1 items.'
       );
     });
 
