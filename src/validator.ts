@@ -82,9 +82,7 @@ const typeErrors = (
 
     if (e.keyword === 'type') {
       errorCount += 1;
-      if (errorCount > maxErrors) {
-        continue;
-      } else {
+      if (errorCount <= maxErrors) {
         formatIndividualError(e, typeErrorsList);
       }
     }
@@ -114,9 +112,7 @@ const validationErrors = (
   let errorCount = 0;
 
   // List of error keywords from https://ajv.js.org/api.html#validation-errors
-  for (let i = 0; i < errors.length; i++) {
-    const e = errors[i];
-
+  for (const e of errors) {
     if (e.keyword === 'minLength' && e.params.limit === 1) {
       e.message = 'must not be blank';
     }
@@ -169,8 +165,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
   );
   if (anyOfErrors.length > 0) {
     const groups = {};
-    for (let i = 0; i < anyOfErrors.length; i++) {
-      const error = anyOfErrors[i];
+    for (const error of anyOfErrors) {
       const schemaPathMatch = schemaPathGroupNumberRegex.exec(error.schemaPath);
       const groupNumber = schemaPathMatch ? schemaPathMatch[1] : 'unknown';
       // Remove the anyOf portion of the schema path to avoid infinite loop
@@ -187,11 +182,8 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
     // concat errors for each error group
     return (
       `${subject} accepts multiple types. Either ` +
-      Object.keys(groups)
-        .map((key) => {
-          const group = groups[key];
-          return `${parseInt(key) + 1})` + errorFormatter('', group);
-        })
+      Object.entries(groups)
+        .map(([key, group]) => (`${parseInt(key) + 1})` + errorFormatter('', group as Array<ErrorObject>)))
         .join(' ')
     );
   }
