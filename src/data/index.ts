@@ -9,6 +9,9 @@ import { update } from './update';
 import { query } from './query';
 import { queryParamsStringify, buildUserAgent } from '../utils';
 import { deleteVector } from './delete';
+import { deleteOne } from './deleteOne';
+import { deleteMany } from './deleteMany';
+import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 
 export type { DescribeIndexStatsOptions } from './describeIndexStats';
@@ -40,11 +43,14 @@ export class Index {
   };
 
   delete: ReturnType<typeof deleteVector>;
+  deleteAll: ReturnType<typeof deleteAll>;
+  deleteMany: ReturnType<typeof deleteMany>;
+  deleteOne: ReturnType<typeof deleteOne>;
   describeIndexStats: ReturnType<typeof describeIndexStats>;
   fetch: ReturnType<typeof fetch>;
+  query: ReturnType<typeof query>;
   update: ReturnType<typeof update>;
   upsert: ReturnType<typeof upsert>;
-  query: ReturnType<typeof query>;
 
   constructor(indexName: string, config: ApiConfig, namespace = '') {
     const indexConfigurationParameters: ConfigurationParameters = {
@@ -65,11 +71,14 @@ export class Index {
     };
 
     this.delete = deleteVector(vectorOperations, namespace);
+    this.deleteAll = deleteAll(vectorOperations, namespace);
+    this.deleteMany = deleteMany(vectorOperations, namespace);
+    this.deleteOne = deleteOne(vectorOperations, namespace);
     this.describeIndexStats = describeIndexStats(vectorOperations);
     this.fetch = fetch(vectorOperations, namespace);
+    this.query = query(vectorOperations, namespace);
     this.update = update(vectorOperations, namespace);
     this.upsert = upsert(vectorOperations, namespace);
-    this.query = query(vectorOperations, namespace);
   }
 
   namespace(namespace: string): Index {
