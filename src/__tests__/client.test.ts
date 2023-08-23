@@ -8,7 +8,7 @@ describe('Client', () => {
           // @ts-ignore
           new Client();
         }).toThrow(
-          'Configuration passed to Client constructor had a problem. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
+          'The client configuration had type errors: argument must be object.'
         );
       });
 
@@ -17,7 +17,7 @@ describe('Client', () => {
           // @ts-ignore
           new Client({ apiKey: 'test-key' });
         }).toThrow(
-          "Configuration passed to Client constructor had a problem. The argument must have required property 'environment'. The argument must have required property 'projectId'. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
+          'The client configuration must have required properties: environment, projectId.'
         );
 
         expect(() => {
@@ -26,7 +26,7 @@ describe('Client', () => {
             environment: 'test-environment',
           });
         }).toThrow(
-          "Configuration passed to Client constructor had a problem. The argument must have required property 'apiKey'. The argument must have required property 'projectId'. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
+          'The client configuration must have required properties: apiKey, projectId.'
         );
       });
 
@@ -39,7 +39,7 @@ describe('Client', () => {
             apiKey: 'test-key',
           });
         }).toThrow(
-          "Configuration passed to Client constructor had a problem. The property 'environment' must not be blank. The property 'projectId' must not be blank. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
+          "The client configuration had validation errors: property 'environment' must not be blank, property 'projectId' must not be blank."
         );
 
         expect(() => {
@@ -49,7 +49,7 @@ describe('Client', () => {
             apiKey: '',
           });
         }).toThrow(
-          "Configuration passed to Client constructor had a problem. The argument must have required property 'projectId'. The property 'apiKey' must not be blank. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
+          "The client configuration must have required property: projectId. There were also validation errors: property 'apiKey' must not be blank."
         );
       });
     });
@@ -65,7 +65,7 @@ describe('Client', () => {
             unknownProp: 'banana',
           } as any);
         }).toThrow(
-          'Configuration passed to Client constructor had a problem. The argument must NOT have additional properties. Configuration must be an object with keys environment, apiKey, projectId. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
+          'The client configuration had validation errors: argument must NOT have additional properties.'
         );
       });
     });

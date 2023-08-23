@@ -1,15 +1,15 @@
 import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { FetchResponse } from '../pinecone-generated-ts-fetch';
 import { handleDataError } from './utils/errorHandling';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 
 import { Static, Type } from '@sinclair/typebox';
 
-const IdsArray = Type.Array(Type.String({ minLength: 1 }));
+const IdsArray = Type.Array(Type.String({ minLength: 1 }), { minItems: 1 });
 export type IdsArray = Static<typeof IdsArray>;
 
 export const fetch = (api: VectorOperationsApi, namespace: string) => {
-  const validator = builOptionConfigValidator(IdsArray, 'fetch');
+  const validator = buildConfigValidator(IdsArray, 'fetch');
 
   return async (ids: IdsArray): Promise<FetchResponse> => {
     validator(ids);

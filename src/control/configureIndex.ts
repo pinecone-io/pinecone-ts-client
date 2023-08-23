@@ -1,7 +1,7 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
-import { PineconeArgumentError, mapHttpStatusError } from '../errors';
-import { builOptionConfigValidator } from '../validator';
+import { mapHttpStatusError } from '../errors';
+import { buildValidator } from '../validator';
 import type { IndexName } from './deleteIndex';
 import { validIndexMessage } from './utils';
 
@@ -22,13 +22,13 @@ const ConfigureIndexOptionsSchema = Type.Union([
 export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;
 
 export const configureIndex = (api: IndexOperationsApi) => {
-  const indexNameValidator = builOptionConfigValidator(
-    nonemptyString,
-    'configureIndex'
+  const indexNameValidator = buildValidator(
+    'The first argument to configureIndex',
+    nonemptyString
   );
-  const patchRequestValidator = builOptionConfigValidator(
-    ConfigureIndexOptionsSchema,
-    'configureIndex'
+  const patchRequestValidator = buildValidator(
+    'The second argument to configureIndex',
+    ConfigureIndexOptionsSchema
   );
 
   return async (
@@ -36,21 +36,7 @@ export const configureIndex = (api: IndexOperationsApi) => {
     options: ConfigureIndexOptions
   ): Promise<void> => {
     indexNameValidator(name);
-
-    try {
-      patchRequestValidator(options);
-    } catch (e) {
-      if (e instanceof PineconeArgumentError && e.message.includes('anyOf')) {
-        const updateableProperties = ['replicas', 'podType'];
-        const propertyNames = updateableProperties
-          .map((p) => `'${p}'`)
-          .join(', ');
-        const msg = `At least one mutable property must be specified from list [${propertyNames}]. Replicas must be a non-negative integer, podType must be a known pod type. See the API reference documentation at https://docs.pinecone.io/reference/configure_index`;
-        throw new PineconeArgumentError(msg);
-      } else {
-        throw e;
-      }
-    }
+    patchRequestValidator(options);
 
     try {
       await api.configureIndex({ indexName: name, patchRequest: options });

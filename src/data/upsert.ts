@@ -1,6 +1,6 @@
 import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import { handleDataError } from './utils/errorHandling';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 
 import { Static, Type } from '@sinclair/typebox';
 
@@ -25,7 +25,7 @@ export type SparseValues = Static<typeof SparseValues>;
 export type VectorArray = Static<typeof VectorArray>;
 
 export const upsert = (api: VectorOperationsApi, namespace: string) => {
-  const validator = builOptionConfigValidator(VectorArray, 'upsert');
+  const validator = buildConfigValidator(VectorArray, 'upsert');
 
   return async (vectors: VectorArray): Promise<void> => {
     validator(vectors);

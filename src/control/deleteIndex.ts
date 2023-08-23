@@ -1,7 +1,7 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
 import { mapHttpStatusError } from '../errors';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { validIndexMessage } from './utils';
 
@@ -9,10 +9,7 @@ const DescribeIndexSchema = Type.String({ minLength: 1 });
 export type IndexName = Static<typeof DescribeIndexSchema>;
 
 export const deleteIndex = (api: IndexOperationsApi) => {
-  const validator = builOptionConfigValidator(
-    DescribeIndexSchema,
-    'deleteIndex'
-  );
+  const validator = buildConfigValidator(DescribeIndexSchema, 'deleteIndex');
 
   return async (indexName: IndexName): Promise<void> => {
     validator(indexName);

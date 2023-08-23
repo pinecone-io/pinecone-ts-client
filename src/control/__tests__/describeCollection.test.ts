@@ -39,7 +39,7 @@ describe('describeCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeCollection has a problem. The argument must be string.'
+        'The argument to describeCollection had type errors: argument must be string.'
       );
     });
 
@@ -53,7 +53,7 @@ describe('describeCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeCollection has a problem. The argument must be string.'
+        'The argument to describeCollection had type errors: argument must be string.'
       );
     });
 
@@ -67,7 +67,7 @@ describe('describeCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'Argument to describeCollection has a problem. The argument must not be blank.'
+        'The argument to describeCollection had validation errors: argument must not be blank.'
       );
     });
   });

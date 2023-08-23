@@ -1,7 +1,7 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
 import { mapHttpStatusError } from '../errors';
-import { builOptionConfigValidator } from '../validator';
+import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { validCollectionMessage } from './utils';
 
@@ -9,7 +9,7 @@ const DeleteCollectionIndex = Type.String({ minLength: 1 });
 export type CollectionName = Static<typeof DeleteCollectionIndex>;
 
 export const deleteCollection = (api: IndexOperationsApi) => {
-  const validator = builOptionConfigValidator(
+  const validator = buildConfigValidator(
     DeleteCollectionIndex,
     'deleteCollection'
   );
