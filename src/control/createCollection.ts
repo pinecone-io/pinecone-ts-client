@@ -8,10 +8,13 @@ import { Static, Type } from '@sinclair/typebox';
 
 const nonemptyString = Type.String({ minLength: 1 });
 
-const CreateCollectionOptionsSchema = Type.Object({
-  name: nonemptyString,
-  source: nonemptyString,
-});
+const CreateCollectionOptionsSchema = Type.Object(
+  {
+    name: nonemptyString,
+    source: nonemptyString,
+  },
+  { additionalProperties: false }
+);
 
 export type CreateCollectionOptions = Static<
   typeof CreateCollectionOptionsSchema

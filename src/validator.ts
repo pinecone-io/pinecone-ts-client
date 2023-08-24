@@ -159,6 +159,7 @@ const validationErrors = (
 };
 
 export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
+  console.log('errorFormatter: ', errors);
   const anyOfErrors = errors.filter(
     (error) =>
       error.schemaPath.indexOf('anyOf') > -1 && error.keyword !== 'anyOf'
@@ -227,6 +228,7 @@ export const buildValidator = (errorMessagePrefix: string, schema: any) => {
     const valid = validate(data);
     if (!valid) {
       const errors = validate.errors || ([] as Array<ErrorObject>);
+      console.log('EARLY ERRORS: ', errors);
       const msg = errorFormatter(errorMessagePrefix, errors);
       throw new PineconeArgumentError(msg);
     }

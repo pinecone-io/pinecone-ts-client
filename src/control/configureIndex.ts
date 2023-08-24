@@ -11,12 +11,18 @@ const nonemptyString = Type.String({ minLength: 1 });
 const positiveInteger = Type.Integer({ minimum: 1 });
 
 const ConfigureIndexOptionsSchema = Type.Union([
-  Type.Object({
-    replicas: positiveInteger,
-  }),
-  Type.Object({
-    podType: nonemptyString,
-  }),
+  Type.Object(
+    {
+      replicas: positiveInteger,
+    },
+    { additionalProperties: false }
+  ),
+  Type.Object(
+    {
+      podType: nonemptyString,
+    },
+    { additionalProperties: false }
+  ),
 ]);
 
 export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;

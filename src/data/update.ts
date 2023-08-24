@@ -3,17 +3,23 @@ import { handleDataError } from './utils/errorHandling';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 
-const SparseValues = Type.Object({
-  indices: Type.Array(Type.Integer()),
-  values: Type.Array(Type.Number()),
-});
+const SparseValues = Type.Object(
+  {
+    indices: Type.Array(Type.Integer()),
+    values: Type.Array(Type.Number()),
+  },
+  { additionalProperties: false }
+);
 
-const UpdateVectorOptionsSchema = Type.Object({
-  id: Type.String({ minLength: 1 }),
-  values: Type.Optional(Type.Array(Type.Number())),
-  sparseValues: Type.Optional(SparseValues),
-  metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-});
+const UpdateVectorOptionsSchema = Type.Object(
+  {
+    id: Type.String({ minLength: 1 }),
+    values: Type.Optional(Type.Array(Type.Number())),
+    sparseValues: Type.Optional(SparseValues),
+    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  },
+  { additionalProperties: false }
+);
 
 export type UpdateVectorOptions = Static<typeof UpdateVectorOptionsSchema>;
 

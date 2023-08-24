@@ -7,11 +7,14 @@ const idsArray = Type.Array(Type.String({ minLength: 1 }));
 const deleteAll = Type.Boolean();
 const filter = Type.Optional(Type.Object({}, { additionalProperties: true }));
 
-const DeleteVectorOptionsSchema = Type.Object({
-  ids: Type.Optional(idsArray),
-  deleteAll: Type.Optional(deleteAll),
-  filter: Type.Optional(filter),
-});
+const DeleteVectorOptionsSchema = Type.Object(
+  {
+    ids: Type.Optional(idsArray),
+    deleteAll: Type.Optional(deleteAll),
+    filter: Type.Optional(filter),
+  },
+  { additionalProperties: false }
+);
 
 export type DeleteVectorOptions = Static<typeof DeleteVectorOptionsSchema>;
 

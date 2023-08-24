@@ -72,7 +72,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex accepts multiple types. Either 1) must have required property: replicas. 2) had type errors: property 'podType' must be string."
+        "The second argument to configureIndex accepts multiple types. Either 1) must have required property: replicas. There were also validation errors: argument must NOT have additional properties. 2) had type errors: property 'podType' must be string."
       );
     });
 
