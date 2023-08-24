@@ -3,17 +3,23 @@ import { handleDataError } from './utils/errorHandling';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 
-const DeleteManyByVectorIdSchema = Type.Object({
-  ids: Type.Array(Type.String({ minLength: 1 })),
-  deleteAll: Type.Optional(Type.Never()),
-  filter: Type.Optional(Type.Never()),
-});
+const DeleteManyByVectorIdSchema = Type.Object(
+  {
+    ids: Type.Array(Type.String({ minLength: 1 })),
+    deleteAll: Type.Optional(Type.Never()),
+    filter: Type.Optional(Type.Never()),
+  },
+  { additionalProperties: false }
+);
 
-const DeleteManyByFilterSchema = Type.Object({
-  ids: Type.Optional(Type.Never()),
-  deleteAll: Type.Optional(Type.Never()),
-  filter: Type.Object({}, { additionalProperties: true }),
-});
+const DeleteManyByFilterSchema = Type.Object(
+  {
+    ids: Type.Optional(Type.Never()),
+    deleteAll: Type.Optional(Type.Never()),
+    filter: Type.Object({}, { additionalProperties: true }),
+  },
+  { additionalProperties: false }
+);
 
 const DeleteManySchema = Type.Union([
   DeleteManyByVectorIdSchema,
