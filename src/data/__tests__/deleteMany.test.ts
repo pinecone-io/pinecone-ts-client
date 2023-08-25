@@ -17,7 +17,7 @@ describe('deleteMany', () => {
     }));
 
     const deleteManyFn = deleteMany(VOA, 'namespace');
-    const returned = await deleteManyFn({ ids: ['123', '456', '789'] });
+    const returned = await deleteManyFn(['123', '456', '789']);
 
     expect(returned).toBe(void 0);
     expect(VOA._delete).toHaveBeenCalledWith({
@@ -35,7 +35,7 @@ describe('deleteMany', () => {
     }));
 
     const deleteManyFn = deleteMany(VOA, 'namespace');
-    const returned = await deleteManyFn({ filter: { genre: 'ambient' } });
+    const returned = await deleteManyFn({ genre: 'ambient' });
 
     expect(returned).toBe(void 0);
     expect(VOA._delete).toHaveBeenCalledWith({

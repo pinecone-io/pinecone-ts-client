@@ -8,16 +8,15 @@ import { fetch } from './fetch';
 import { update } from './update';
 import { query } from './query';
 import { queryParamsStringify, buildUserAgent } from '../utils';
-import { deleteVector } from './delete';
 import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 
-export type { DescribeIndexStatsOptions } from './describeIndexStats';
-
 export type { IdsArray } from './fetch';
-export type { DeleteVectorOptions } from './delete';
+export type { DeleteOneOptions } from './deleteOne';
+export type { DeleteManyOptions } from './deleteMany';
+export type { DescribeIndexStatsOptions } from './describeIndexStats';
 export type { UpdateVectorOptions } from './update';
 export type { Vector, VectorArray, SparseValues } from './upsert';
 export type {
@@ -42,7 +41,6 @@ export class Index {
     namespace: string;
   };
 
-  delete: ReturnType<typeof deleteVector>;
   deleteAll: ReturnType<typeof deleteAll>;
   deleteMany: ReturnType<typeof deleteMany>;
   deleteOne: ReturnType<typeof deleteOne>;
@@ -70,7 +68,6 @@ export class Index {
       namespace: namespace,
     };
 
-    this.delete = deleteVector(vectorOperations, namespace);
     this.deleteAll = deleteAll(vectorOperations, namespace);
     this.deleteMany = deleteMany(vectorOperations, namespace);
     this.deleteOne = deleteOne(vectorOperations, namespace);

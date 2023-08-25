@@ -2,23 +2,13 @@ import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import { handleDataError } from './utils/errorHandling';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
+import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
 
-const DeleteManyByVectorIdSchema = Type.Object(
-  {
-    ids: Type.Array(Type.String({ minLength: 1 })),
-    deleteAll: Type.Optional(Type.Never()),
-    filter: Type.Optional(Type.Never()),
-  },
-  { additionalProperties: false }
-);
+const DeleteManyByVectorIdSchema = Type.Array(Type.String({ minLength: 1 }));
 
 const DeleteManyByFilterSchema = Type.Object(
-  {
-    ids: Type.Optional(Type.Never()),
-    deleteAll: Type.Optional(Type.Never()),
-    filter: Type.Object({}, { additionalProperties: true }),
-  },
-  { additionalProperties: false }
+  {},
+  { additionalProperties: true }
 );
 
 const DeleteManySchema = Type.Union([
@@ -38,8 +28,16 @@ export const deleteMany = (api: VectorOperationsApi, namespace: string) => {
   return async (options: DeleteManyOptions): Promise<void> => {
     validator(options);
 
+    const requestOptions: DeleteRequest = {};
+
+    if (Array.isArray(options)) {
+      requestOptions.ids = options;
+    } else {
+      requestOptions.filter = options;
+    }
+
     try {
-      await api._delete({ deleteRequest: { ...options, namespace } });
+      await api._delete({ deleteRequest: { ...requestOptions, namespace } });
     } catch (e) {
       const err = await handleDataError(e);
       throw err;
