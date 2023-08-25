@@ -8,7 +8,7 @@ const DeleteManyByVectorIdSchema = Type.Array(Type.String({ minLength: 1 }));
 
 const DeleteManyByFilterSchema = Type.Object(
   {},
-  { additionalProperties: true }
+  { additionalProperties: true, minProperties: 1 }
 );
 
 const DeleteManySchema = Type.Union([
