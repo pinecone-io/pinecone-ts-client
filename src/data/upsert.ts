@@ -6,17 +6,23 @@ import { Static, Type } from '@sinclair/typebox';
 
 const nonemptyString = Type.String({ minLength: 1 });
 
-const SparseValues = Type.Object({
-  indices: Type.Array(Type.Integer()),
-  values: Type.Array(Type.Number()),
-});
+const SparseValues = Type.Object(
+  {
+    indices: Type.Array(Type.Integer()),
+    values: Type.Array(Type.Number()),
+  },
+  { additionalProperties: false }
+);
 
-const Vector = Type.Object({
-  id: nonemptyString,
-  values: Type.Array(Type.Number()),
-  sparseValues: Type.Optional(SparseValues),
-  metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-});
+const Vector = Type.Object(
+  {
+    id: nonemptyString,
+    values: Type.Array(Type.Number()),
+    sparseValues: Type.Optional(SparseValues),
+    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
+  },
+  { additionalProperties: false }
+);
 
 const VectorArray = Type.Array(Vector);
 
