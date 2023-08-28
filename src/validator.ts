@@ -61,11 +61,32 @@ const missingPropertiesErrors = (
   if (missingPropertyNames.length > 0) {
     const missingMessage = prepend(
       subject,
-      `must have required ${
+      `${messageParts.length > 0 ? 'M' : 'm'}ust have required ${
         missingPropertyNames.length > 1 ? 'properties' : 'property'
       }: ${missingPropertyNames.join(', ')}.`
     );
     messageParts.push(missingMessage);
+  }
+};
+
+const neverErrors = (
+  subject: string,
+  errors: Array<ErrorObject>,
+  messageParts: Array<string>
+) => {
+  const neverPropertyErrors = errors
+    .filter((error) => error.keyword === 'not')
+    .map((error) => {
+      return error.instancePath.slice(1);
+    });
+  if (neverPropertyErrors.length > 0) {
+    const neverMessage = prepend(
+      subject,
+      `must not have ${
+        neverPropertyErrors.length > 1 ? 'properties' : 'property'
+      }: ${neverPropertyErrors.join(', ')}.`
+    );
+    messageParts.push(neverMessage);
   }
 };
 
@@ -194,6 +215,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
 
   const messageParts: Array<string> = [];
 
+  neverErrors(subject, errors, messageParts);
   missingPropertiesErrors(subject, errors, messageParts);
   typeErrors(subject, errors, messageParts);
   validationErrors(subject, errors, messageParts);
@@ -227,6 +249,7 @@ export const buildValidator = (errorMessagePrefix: string, schema: any) => {
     const valid = validate(data);
     if (!valid) {
       const errors = validate.errors || ([] as Array<ErrorObject>);
+      // console.log(errors)
       const msg = errorFormatter(errorMessagePrefix, errors);
       throw new PineconeArgumentError(msg);
     }

@@ -5,7 +5,17 @@ export * as Errors from './errors';
 
 // Type exports
 export type { IndexName, IndexList, CreateIndexOptions } from './control';
-export type { DescribeIndexStatsOptions } from './data';
+export type {
+  IdsArray,
+  DeleteVectorOptions,
+  DescribeIndexStatsOptions,
+  UpdateVectorOptions,
+  VectorArray,
+  SparseValues,
+  Query,
+  QueryByVectorId,
+  QueryByVectorValues,
+} from './data';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';

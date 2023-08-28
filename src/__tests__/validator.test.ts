@@ -484,4 +484,35 @@ describe('validation', () => {
       );
     });
   });
+
+  test('handles Never conditions', () => {
+    // await client.index('jen3').query({ topK: 3, vector: [0.5, 0.5, 0.5], sparseVector: { indices: [0, 1], values: [0.1, 0.25]}, id: '1' })
+    const validationErrors = [
+      {
+        instancePath: '/vector',
+        schemaPath: '#/anyOf/0/properties/vector/not',
+        keyword: 'not',
+        params: {},
+        message: 'must NOT be valid',
+      },
+      {
+        instancePath: '/id',
+        schemaPath: '#/anyOf/1/properties/id/not',
+        keyword: 'not',
+        params: {},
+        message: 'must NOT be valid',
+      },
+      {
+        instancePath: '',
+        schemaPath: '#/anyOf',
+        keyword: 'anyOf',
+        params: {},
+        message: 'must match a schema in anyOf',
+      },
+    ];
+
+    expect(errorFormatter('The argument to query', validationErrors)).toEqual(
+      'The argument to query accepts multiple types. Either 1) must not have property: vector. 2) must not have property: id.'
+    );
+  });
 });
