@@ -2,7 +2,7 @@ import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { QueryResponse } from '../pinecone-generated-ts-fetch';
 import { handleDataError } from './utils/errorHandling';
 import { buildConfigValidator } from '../validator';
-import { SparseValues } from './upsert';
+import { SparseValuesSchema } from './upsert';
 
 import { Static, Type } from '@sinclair/typebox';
 
@@ -25,7 +25,7 @@ const QueryByVectorId = Type.Object({
 const QueryByVectorValues = Type.Object({
   ...shared,
   vector: Type.Array(Type.Number()),
-  sparseVector: Type.Optional(SparseValues),
+  sparseVector: Type.Optional(SparseValuesSchema),
   id: Type.Optional(Type.Never()),
 });
 
