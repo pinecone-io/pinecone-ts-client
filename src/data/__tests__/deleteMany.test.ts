@@ -1,4 +1,4 @@
-import { deleteVector } from '../delete';
+import { deleteMany } from '../deleteMany';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
@@ -6,8 +6,8 @@ import {
 import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
 import type { DeleteOperationRequest } from '../../pinecone-generated-ts-fetch';
 
-describe('deleteVector', () => {
-  test('calls the openapi delete endpoint, passing target namespace', async () => {
+describe('deleteMany', () => {
+  test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
     const fakeDelete: (req: DeleteOperationRequest) => Promise<object> =
       jest.fn();
     const VOA = { _delete: fakeDelete } as VectorOperationsApi;
@@ -16,21 +16,30 @@ describe('deleteVector', () => {
       VectorOperationsApi: VOA,
     }));
 
-    const deleteFn = deleteVector(VOA, 'namespace');
-    const returned = await deleteFn({
-      ids: ['123', '456', '789'],
-      deleteAll: false,
-      filter: {},
-    });
+    const deleteManyFn = deleteMany(VOA, 'namespace');
+    const returned = await deleteManyFn(['123', '456', '789']);
 
     expect(returned).toBe(void 0);
     expect(VOA._delete).toHaveBeenCalledWith({
-      deleteRequest: {
-        ids: ['123', '456', '789'],
-        deleteAll: false,
-        filter: {},
-        namespace: 'namespace',
-      },
+      deleteRequest: { ids: ['123', '456', '789'], namespace: 'namespace' },
+    });
+  });
+
+  test('calls the openapi delete endpoint, passing filter with target namespace', async () => {
+    const fakeDelete: (req: DeleteOperationRequest) => Promise<object> =
+      jest.fn();
+    const VOA = { _delete: fakeDelete } as VectorOperationsApi;
+
+    jest.mock('../../pinecone-generated-ts-fetch', () => ({
+      VectorOperationsApi: VOA,
+    }));
+
+    const deleteManyFn = deleteMany(VOA, 'namespace');
+    const returned = await deleteManyFn({ genre: 'ambient' });
+
+    expect(returned).toBe(void 0);
+    expect(VOA._delete).toHaveBeenCalledWith({
+      deleteRequest: { filter: { genre: 'ambient' }, namespace: 'namespace' },
     });
   });
 
@@ -40,10 +49,7 @@ describe('deleteVector', () => {
         .fn()
         .mockImplementation(() =>
           Promise.reject({
-            response: {
-              status: 500,
-              text: () => 'backend error message',
-            },
+            response: { status: 500, text: () => 'backend error message' },
           })
         );
 
@@ -53,8 +59,8 @@ describe('deleteVector', () => {
       }));
 
       const toThrow = async () => {
-        const deleteVectorFn = deleteVector(VOA, 'namespace');
-        await deleteVectorFn({ ids: ['1', '2', '3', '4'] });
+        const deleteManyFn = deleteMany(VOA, 'namespace');
+        await deleteManyFn({ ids: ['123', '456', '789'] });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
@@ -74,8 +80,8 @@ describe('deleteVector', () => {
       }));
 
       const toThrow = async () => {
-        const deleteVectorFn = deleteVector(VOA, 'namespace');
-        await deleteVectorFn({ ids: ['1', '2', '3', '4'] });
+        const deleteManyFn = deleteMany(VOA, 'namespace');
+        await deleteManyFn({ ids: ['123', '456', '789'] });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);
