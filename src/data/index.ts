@@ -10,6 +10,8 @@ import { queryParamsStringify, buildUserAgent } from '../utils';
 import { deleteVector } from './delete';
 import { describeIndexStats } from './describeIndexStats';
 
+export type { DescribeIndexStatsOptions } from './describeIndexStats';
+
 type ApiConfig = {
   projectId: string;
   apiKey: string;

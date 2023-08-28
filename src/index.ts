@@ -1,7 +1,11 @@
 export { Pinecone, type ClientConfigurationInit } from './pinecone';
 export { Client, type ClientConfiguration } from './client';
+
 export * as Errors from './errors';
+
+// Type exports
 export type { IndexName, IndexList, CreateIndexOptions } from './control';
+export type { DescribeIndexStatsOptions } from './data';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
