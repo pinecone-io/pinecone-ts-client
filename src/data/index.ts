@@ -13,17 +13,17 @@ import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 
-export type { IdsArray } from './fetch';
-export type { DeleteOneOptions } from './deleteOne';
 export type { DeleteManyOptions } from './deleteMany';
+export type { DeleteOneOptions } from './deleteOne';
 export type { DescribeIndexStatsOptions } from './describeIndexStats';
-export type { UpdateVectorOptions } from './update';
-export type { Vector, VectorArray, SparseValues } from './upsert';
+export type { IdsArray } from './fetch';
 export type {
-  QueryOptions,
   QueryByVectorId,
   QueryByVectorValues,
+  QueryOptions,
 } from './query';
+export type { SparseValues, Vector, VectorArray } from './upsert';
+export type { UpdateVectorOptions } from './update';
 
 type ApiConfig = {
   projectId: string;

@@ -3,7 +3,7 @@ export { Client, type ClientConfiguration } from './client';
 
 export * as Errors from './errors';
 
-//Type exports
+// Type exports
 export type { CreateIndexOptions, IndexList, IndexName } from './control';
 export type {
   DeleteManyOptions,
