@@ -249,7 +249,6 @@ export const buildValidator = (errorMessagePrefix: string, schema: any) => {
     const valid = validate(data);
     if (!valid) {
       const errors = validate.errors || ([] as Array<ErrorObject>);
-      // console.log(errors)
       const msg = errorFormatter(errorMessagePrefix, errors);
       throw new PineconeArgumentError(msg);
     }

@@ -12,7 +12,7 @@ export type {
   UpdateVectorOptions,
   VectorArray,
   SparseValues,
-  Query,
+  QueryOptions,
   QueryByVectorId,
   QueryByVectorValues,
 } from './data';

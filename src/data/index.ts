@@ -17,7 +17,7 @@ export type { IdsArray } from './fetch';
 export type { DeleteVectorOptions } from './delete';
 export type { UpdateVectorOptions } from './update';
 export type { Vector, VectorArray, SparseValues } from './upsert';
-export type { Query, QueryByVectorId, QueryByVectorValues } from './query';
+export type { QueryOptions, QueryByVectorId, QueryByVectorValues } from './query';
 
 type ApiConfig = {
   projectId: string;
