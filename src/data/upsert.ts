@@ -6,7 +6,7 @@ import { Static, Type } from '@sinclair/typebox';
 
 const nonemptyString = Type.String({ minLength: 1 });
 
-const SparseValues = Type.Object(
+export const SparseValuesSchema = Type.Object(
   {
     indices: Type.Array(Type.Integer()),
     values: Type.Array(Type.Number()),
@@ -18,7 +18,7 @@ const Vector = Type.Object(
   {
     id: nonemptyString,
     values: Type.Array(Type.Number()),
-    sparseValues: Type.Optional(SparseValues),
+    sparseValues: Type.Optional(SparseValuesSchema),
     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
   },
   { additionalProperties: false }
@@ -27,7 +27,7 @@ const Vector = Type.Object(
 const VectorArray = Type.Array(Vector);
 
 export type Vector = Static<typeof Vector>;
-export type SparseValues = Static<typeof SparseValues>;
+export type SparseValues = Static<typeof SparseValuesSchema>;
 export type VectorArray = Static<typeof VectorArray>;
 
 export const upsert = (api: VectorOperationsApi, namespace: string) => {

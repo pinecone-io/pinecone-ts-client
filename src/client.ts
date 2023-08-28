@@ -278,4 +278,13 @@ export class Client {
   Index(indexName: string) {
     return this.index(indexName);
   }
+
+  __curlStarter() {
+    // Every endpoint is going to have a different path and expect different data (in the case of POST requests),
+    // but this is a good starting point for users to see how to use curl to interact with the REST API.
+    console.log('Example curl command to list indexes: ');
+    console.log(
+      `curl "https://controller.${this.config.environment}.pinecone.io/databases" -H "Api-Key: ${this.config.apiKey}" -H "Accept: application/json"`
+    );
+  }
 }

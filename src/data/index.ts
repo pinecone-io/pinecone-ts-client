@@ -6,17 +6,31 @@ import {
 import { upsert } from './upsert';
 import { fetch } from './fetch';
 import { update } from './update';
+import { query } from './query';
 import { queryParamsStringify, buildUserAgent } from '../utils';
 import { deleteVector } from './delete';
 import { describeIndexStats } from './describeIndexStats';
 
 export type { DescribeIndexStatsOptions } from './describeIndexStats';
 
+export type { IdsArray } from './fetch';
+export type { DeleteVectorOptions } from './delete';
+export type { UpdateVectorOptions } from './update';
+export type { Vector, VectorArray, SparseValues } from './upsert';
+export type {
+  QueryOptions,
+  QueryByVectorId,
+  QueryByVectorValues,
+} from './query';
+
 type ApiConfig = {
   projectId: string;
   apiKey: string;
   environment: string;
 };
+
+const basePath = (config: ApiConfig, indexName: string) =>
+  `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
 
 export class Index {
   private config: ApiConfig;
@@ -25,15 +39,16 @@ export class Index {
     namespace: string;
   };
 
-  upsert: ReturnType<typeof upsert>;
-  fetch: ReturnType<typeof fetch>;
   delete: ReturnType<typeof deleteVector>;
   describeIndexStats: ReturnType<typeof describeIndexStats>;
+  fetch: ReturnType<typeof fetch>;
   update: ReturnType<typeof update>;
+  upsert: ReturnType<typeof upsert>;
+  query: ReturnType<typeof query>;
 
   constructor(indexName: string, config: ApiConfig, namespace = '') {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`,
+      basePath: basePath(config, indexName),
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {
@@ -49,11 +64,12 @@ export class Index {
       namespace: namespace,
     };
 
-    this.upsert = upsert(vectorOperations, namespace);
-    this.fetch = fetch(vectorOperations, namespace);
     this.delete = deleteVector(vectorOperations, namespace);
     this.describeIndexStats = describeIndexStats(vectorOperations);
+    this.fetch = fetch(vectorOperations, namespace);
     this.update = update(vectorOperations, namespace);
+    this.upsert = upsert(vectorOperations, namespace);
+    this.query = query(vectorOperations, namespace);
   }
 
   namespace(namespace: string): Index {
