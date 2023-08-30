@@ -20,8 +20,7 @@ describe('createIndex', () => {
       IndexOperationsApi: IOA,
     }));
 
-    const createIndexFn = createIndex(IOA);
-    const returned = await createIndexFn({
+    const returned = await createIndex(IOA)({
       name: 'index-name',
       dimension: 10,
     });
@@ -36,6 +35,13 @@ describe('createIndex', () => {
   });
 
   describe('waitUntilReady', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     test('when passed waitUntilReady, calls the create index endpoint and begins polling describeIndex', async () => {
       const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> =
         jest.fn();
@@ -53,8 +59,7 @@ describe('createIndex', () => {
         IndexOperationsApi: IOA,
       }));
 
-      const createIndexFn = createIndex(IOA);
-      const returned = await createIndexFn({
+      const returned = await createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
         waitUntilReady: true,
@@ -74,7 +79,6 @@ describe('createIndex', () => {
     });
 
     test('will continue polling describeIndex if the index is not yet ready', async () => {
-      jest.useFakeTimers();
       const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> =
         jest.fn();
       const fakeDescribeIndex: (
@@ -115,7 +119,6 @@ describe('createIndex', () => {
         expect(fakeDescribeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
         });
-        jest.useRealTimers();
       });
     });
   });
