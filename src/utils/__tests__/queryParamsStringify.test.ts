@@ -1,4 +1,4 @@
-import { queryParamsStringify } from './queryParamsStringify';
+import { queryParamsStringify } from '../queryParamsStringify';
 
 describe('queryParamsStringify', () => {
   test('should stringify array params correctly', () => {
