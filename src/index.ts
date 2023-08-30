@@ -14,6 +14,7 @@ export type {
   QueryOptions,
   SparseValues,
   UpdateVectorOptions,
+  UpsertOptions,
   VectorArray,
 } from './data';
 
