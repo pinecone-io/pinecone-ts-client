@@ -66,6 +66,6 @@ const waitUntilIndexIsReady = async (
       return `Index is ready after ${seconds} seconds`;
     }
   } catch (e) {
-    throw new Error('Error creating index');
+    throw new Error(`Error creating index: ${e}`);
   }
 };
