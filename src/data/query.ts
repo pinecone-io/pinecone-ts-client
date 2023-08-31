@@ -1,9 +1,9 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { QueryResponse } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { SparseValuesSchema } from './upsert';
 import { Static, Type } from '@sinclair/typebox';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 const nonemptyString = Type.String({ minLength: 1 });
 
@@ -34,20 +34,24 @@ export type QueryByVectorId = Static<typeof QueryByVectorId>;
 export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
 export type QueryOptions = Static<typeof QuerySchema>;
 
-export const query = (api: VectorOperationsApi, namespace: string) => {
+export const query = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   const validator = buildConfigValidator(QuerySchema, 'query');
 
   return async (query: QueryOptions): Promise<QueryResponse> => {
     validator(query);
 
     try {
+      const api = await apiProvider.provide();
       const results = await api.query({
         queryRequest: { ...query, namespace },
       });
       delete results.results;
       return results;
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

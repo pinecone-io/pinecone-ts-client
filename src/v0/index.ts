@@ -122,7 +122,7 @@ interface PineconeClient extends IndexOperationsApi {}
 /**
  * @deprecated in v1.0.0
  * 
- * Use {@link Client} instead, which is most easily initialized with the `Pinecone`{@link Pinecone.createClient} static method.
+ * Use {@link Pinecone} instead.
  */
 class PineconeClient {
   apiKey: string | null = null;

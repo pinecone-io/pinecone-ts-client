@@ -1,5 +1,5 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
@@ -22,7 +22,7 @@ export type DeleteManyByVectorIdOptions = Static<
 export type DeleteManyByFilterOptions = Static<typeof DeleteManyByFilterSchema>;
 export type DeleteManyOptions = Static<typeof DeleteManySchema>;
 
-export const deleteMany = (api: VectorOperationsApi, namespace: string) => {
+export const deleteMany = (apiProvider: VectorOperationsProvider, namespace: string) => {
   const validator = buildConfigValidator(DeleteManySchema, 'deleteMany');
 
   return async (options: DeleteManyOptions): Promise<void> => {
@@ -37,9 +37,10 @@ export const deleteMany = (api: VectorOperationsApi, namespace: string) => {
     }
 
     try {
+      const api = await apiProvider.provide()
       await api._delete({ deleteRequest: { ...requestOptions, namespace } });
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

@@ -1,6 +1,5 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import { mapHttpStatusError } from '../errors';
-import type { ResponseError } from '../pinecone-generated-ts-fetch';
+import { handleApiError } from '../errors';
 
 type IndexName = string;
 export type IndexList = IndexName[];
@@ -10,11 +9,8 @@ export const listIndexes = (api: IndexOperationsApi) => {
     try {
       return await api.listIndexes();
     } catch (e) {
-      const listIndexesError = e as ResponseError;
-      throw mapHttpStatusError({
-        status: listIndexesError.response.status,
-        url: listIndexesError.response.url,
-      });
+      const err = await handleApiError(e);
+      throw err;
     }
   };
 };

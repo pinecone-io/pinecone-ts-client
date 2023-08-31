@@ -9,7 +9,7 @@ To get started, you need to create a client that specifies your Pinecone credent
 ```
 import { Pinecone } from '@pinecone-database/pinecone`
 
-const client = await Pinecone.createClient({
+const client = new Pinecone({
     apiKey: 'your-api-key',
     environment: 'your-environment'
 })

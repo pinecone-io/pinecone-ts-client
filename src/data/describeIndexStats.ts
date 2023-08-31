@@ -1,7 +1,7 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 const DescribeIndexStatsOptionsSchema = Type.Object(
   {
@@ -14,7 +14,7 @@ export type DescribeIndexStatsOptions = Static<
   typeof DescribeIndexStatsOptionsSchema
 >;
 
-export const describeIndexStats = (api: VectorOperationsApi) => {
+export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
   const validator = buildConfigValidator(
     DescribeIndexStatsOptionsSchema,
     'describeIndexStats'
@@ -26,12 +26,13 @@ export const describeIndexStats = (api: VectorOperationsApi) => {
     }
 
     try {
+      const api = await apiProvider.provide();
       const results = await api.describeIndexStats({
         describeIndexStatsRequest: { ...options },
       });
       return results;
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

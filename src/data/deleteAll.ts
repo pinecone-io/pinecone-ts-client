@@ -1,13 +1,14 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { handleApiError } from '../errors';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
-export const deleteAll = (api: VectorOperationsApi, namespace: string) => {
+export const deleteAll = (apiProvider: VectorOperationsProvider, namespace: string) => {
   return async (): Promise<void> => {
     try {
+      const api = await apiProvider.provide();
       await api._delete({ deleteRequest: { deleteAll: true, namespace } });
       return;
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

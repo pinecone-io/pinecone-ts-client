@@ -3,20 +3,13 @@ import {
   PineconeBadRequestError,
   PineconeInternalServerError,
 } from '../../errors';
-import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
-import type { DeleteOperationRequest } from '../../pinecone-generated-ts-fetch';
+import { setupDeleteSuccess, setupDeleteFailure } from './deleteOne.test';
 
 describe('deleteMany', () => {
   test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
-    const fakeDelete: (req: DeleteOperationRequest) => Promise<object> =
-      jest.fn();
-    const VOA = { _delete: fakeDelete } as VectorOperationsApi;
+    const { VoaProvider, VOA } = setupDeleteSuccess(undefined);
 
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      VectorOperationsApi: VOA,
-    }));
-
-    const deleteManyFn = deleteMany(VOA, 'namespace');
+    const deleteManyFn = deleteMany(VoaProvider, 'namespace');
     const returned = await deleteManyFn(['123', '456', '789']);
 
     expect(returned).toBe(void 0);
@@ -26,15 +19,9 @@ describe('deleteMany', () => {
   });
 
   test('calls the openapi delete endpoint, passing filter with target namespace', async () => {
-    const fakeDelete: (req: DeleteOperationRequest) => Promise<object> =
-      jest.fn();
-    const VOA = { _delete: fakeDelete } as VectorOperationsApi;
+    const { VOA, VoaProvider } = setupDeleteSuccess(undefined);
 
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      VectorOperationsApi: VOA,
-    }));
-
-    const deleteManyFn = deleteMany(VOA, 'namespace');
+    const deleteManyFn = deleteMany(VoaProvider, 'namespace');
     const returned = await deleteManyFn({ genre: 'ambient' });
 
     expect(returned).toBe(void 0);
@@ -45,21 +32,10 @@ describe('deleteMany', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const fakeDelete: (req: DeleteOperationRequest) => Promise<object> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({
-            response: { status: 500, text: () => 'backend error message' },
-          })
-        );
-
-      const VOA = { _delete: fakeDelete } as VectorOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        VectorOperationsApi: VOA,
-      }));
+      const { VoaProvider, VOA } = setupDeleteFailure({ status: 500, text: () => 'backend error message' })
 
       const toThrow = async () => {
-        const deleteManyFn = deleteMany(VOA, 'namespace');
+        const deleteManyFn = deleteMany(VoaProvider, 'namespace');
         await deleteManyFn({ ids: ['123', '456', '789'] });
       };
 
@@ -68,19 +44,10 @@ describe('deleteMany', () => {
 
     test('when 400 occurs, displays server message', async () => {
       const serverError = 'there has been a server error!';
-      const fakeDelete: (req: DeleteOperationRequest) => Promise<object> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({ response: { status: 400, text: () => serverError } })
-        );
-
-      const VOA = { _delete: fakeDelete } as VectorOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        VectorOperationsApi: VOA,
-      }));
+      const { VoaProvider } = setupDeleteFailure({ status: 400, text: () => serverError });
 
       const toThrow = async () => {
-        const deleteManyFn = deleteMany(VOA, 'namespace');
+        const deleteManyFn = deleteMany(VoaProvider, 'namespace');
         await deleteManyFn({ ids: ['123', '456', '789'] });
       };
 

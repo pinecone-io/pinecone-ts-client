@@ -1,5 +1,4 @@
-export { Pinecone, type ClientConfigurationInit } from './pinecone';
-export { Client, type ClientConfiguration } from './client';
+export { Pinecone, type ClientConfiguration } from './pinecone';
 
 export * as Errors from './errors';
 

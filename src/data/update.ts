@@ -1,7 +1,7 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 const SparseValues = Type.Object(
   {
@@ -23,7 +23,10 @@ const UpdateVectorOptionsSchema = Type.Object(
 
 export type UpdateVectorOptions = Static<typeof UpdateVectorOptionsSchema>;
 
-export const update = (api: VectorOperationsApi, namespace: string) => {
+export const update = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   const validator = buildConfigValidator(UpdateVectorOptionsSchema, 'update');
 
   return async (options: UpdateVectorOptions): Promise<void> => {
@@ -37,10 +40,11 @@ export const update = (api: VectorOperationsApi, namespace: string) => {
     };
 
     try {
+      const api = await apiProvider.provide();
       await api.update({ updateRequest: { ...requestOptions, namespace } });
       return;
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

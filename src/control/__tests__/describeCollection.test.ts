@@ -98,7 +98,8 @@ describe('describeCollection', () => {
   describe('uses http error mapper', () => {
     test('it should map errors with the http error mapper (500)', async () => {
       const IOA = setupMocks(
-        () => Promise.reject({ response: { status: 500 } }),
+        () =>
+          Promise.reject({ response: { status: 500, text: async () => '' } }),
         () => Promise.resolve([])
       );
 
@@ -113,7 +114,8 @@ describe('describeCollection', () => {
   describe('custom error mapping', () => {
     test('not found (404), fetches and shows available collection names', async () => {
       const IOA = setupMocks(
-        () => Promise.reject({ response: { status: 404 } }),
+        () =>
+          Promise.reject({ response: { status: 404, text: async () => '' } }),
         () => Promise.resolve(['foo', 'bar'])
       );
 
@@ -129,7 +131,8 @@ describe('describeCollection', () => {
 
     test('not found (404), fetches and shows available collection names (empty list)', async () => {
       const IOA = setupMocks(
-        () => Promise.reject({ response: { status: 404 } }),
+        () =>
+          Promise.reject({ response: { status: 404, text: async () => '' } }),
         () => Promise.resolve([])
       );
 
@@ -145,7 +148,8 @@ describe('describeCollection', () => {
 
     test('not found (404), error while fetching collection list', async () => {
       const IOA = setupMocks(
-        () => Promise.reject({ response: { status: 404 } }),
+        () =>
+          Promise.reject({ response: { status: 404, text: async () => '' } }),
         () => Promise.reject('error')
       );
 
