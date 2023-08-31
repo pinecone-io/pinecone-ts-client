@@ -1,8 +1,8 @@
-import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
-import { handleDataError } from './utils/errorHandling';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 
 import { Static, Type } from '@sinclair/typebox';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 const nonemptyString = Type.String({ minLength: 1 });
 
@@ -30,17 +30,21 @@ export type Vector = Static<typeof Vector>;
 export type SparseValues = Static<typeof SparseValuesSchema>;
 export type VectorArray = Static<typeof VectorArray>;
 
-export const upsert = (api: VectorOperationsApi, namespace: string) => {
+export const upsert = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   const validator = buildConfigValidator(VectorArray, 'upsert');
 
   return async (vectors: VectorArray): Promise<void> => {
     validator(vectors);
 
     try {
+      const api = await apiProvider.provide();
       await api.upsert({ upsertRequest: { vectors, namespace } });
       return;
     } catch (e) {
-      const err = await handleDataError(e);
+      const err = await handleApiError(e);
       throw err;
     }
   };

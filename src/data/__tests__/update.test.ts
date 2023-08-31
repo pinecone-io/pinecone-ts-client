@@ -4,19 +4,32 @@ import {
   PineconeInternalServerError,
 } from '../../errors';
 import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { VectorOperationsProvider } from '../vectorOperationsProvider';
 import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch';
+
+const setupResponse = (response, isSuccess) => {
+  const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest
+    .fn()
+    .mockImplementation(() =>
+      isSuccess ? Promise.resolve(response) : Promise.reject({ response })
+    );
+  const VOA = { update: fakeUpdate } as VectorOperationsApi;
+  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
+
+  return { fakeUpdate, VOA, VoaProvider };
+};
+const setupSuccess = (response) => {
+  return setupResponse(response, true);
+};
+const setupFailure = (response) => {
+  return setupResponse(response, false);
+};
 
 describe('update', () => {
   test('calls the openapi update endpoint, passing target namespace', async () => {
-    const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> =
-      jest.fn();
-    const VOA = { update: fakeUpdate } as VectorOperationsApi;
+    const { VoaProvider, fakeUpdate } = setupSuccess('');
 
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      VectorOperationsApi: VOA,
-    }));
-
-    const updateFn = update(VOA, 'namespace');
+    const updateFn = update(VoaProvider, 'namespace');
     const returned = await updateFn({
       id: 'fake-vector',
       values: [1, 2, 3, 4, 5],
@@ -44,23 +57,13 @@ describe('update', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({
-            response: {
-              status: 500,
-              text: () => 'backend error message',
-            },
-          })
-        );
-      const VOA = { update: fakeUpdate } as VectorOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        VectorOperationsApi: VOA,
-      }));
+      const { VoaProvider } = setupFailure({
+        status: 500,
+        text: () => 'backend error message',
+      });
 
       const toThrow = async () => {
-        const updateFn = update(VOA, 'namespace');
+        const updateFn = update(VoaProvider, 'namespace');
         await updateFn({ id: 'fake-vector' });
       };
 
@@ -68,24 +71,13 @@ describe('update', () => {
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({
-            response: {
-              status: 400,
-              text: () => 'backend error message',
-            },
-          })
-        );
-      const VOA = { update: fakeUpdate } as VectorOperationsApi;
-
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        VectorOperationsApi: VOA,
-      }));
+      const { VoaProvider } = setupFailure({
+        status: 400,
+        text: () => 'backend error message',
+      });
 
       const toThrow = async () => {
-        const updateFn = update(VOA, 'namespace');
+        const updateFn = update(VoaProvider, 'namespace');
         await updateFn({ id: 'fake-vector' });
       };
 

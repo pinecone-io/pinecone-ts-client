@@ -37,7 +37,7 @@ console.log(
 );
 
 const init = async () => {
-  const client = await pinecone.Pinecone.createClient();
+  const client = new pinecone.Pinecone();
   myrepl.context['client'] = client;
   console.log('SUCCESS Created new client "client":');
   console.log(client);

@@ -1,7 +1,6 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import type { ResponseError } from '../pinecone-generated-ts-fetch';
-import { mapHttpStatusError, extractMessage } from '../errors';
 import { buildConfigValidator } from '../validator';
+import { handleIndexRequestError } from './utils';
 
 import { Static, Type } from '@sinclair/typebox';
 
@@ -44,13 +43,8 @@ export const createIndex = (api: IndexOperationsApi) => {
       await api.createIndex({ createRequest: options });
       return;
     } catch (e) {
-      const createIndexError = e as ResponseError;
-      const message = await extractMessage(createIndexError);
-      throw mapHttpStatusError({
-        status: createIndexError.response.status,
-        url: createIndexError.response.url,
-        message: message,
-      });
+      const err = await handleIndexRequestError(e, api, options.name);
+      throw err;
     }
   };
 };

@@ -1,12 +1,8 @@
 import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import { mapHttpStatusError } from '../errors';
-import { validCollectionMessage } from './utils';
-import type {
-  ResponseError,
-  CollectionMeta as CollectionDescription,
-} from '../pinecone-generated-ts-fetch';
+import { handleCollectionRequestError } from './utils';
+import type { CollectionMeta as CollectionDescription } from '../pinecone-generated-ts-fetch';
 
 // If user passes the empty string for collection name, the generated
 // OpenAPI client will call /databases/ which is the list
@@ -41,19 +37,8 @@ export const describeCollection = (api: IndexOperationsApi) => {
       removeDeprecatedFields(result);
       return result;
     } catch (e) {
-      const describeError = e as ResponseError;
-      const requestInfo = {
-        status: describeError.response.status,
-      };
-
-      let toThrow;
-      if (requestInfo.status === 404) {
-        const message = await validCollectionMessage(api, name, requestInfo);
-        toThrow = mapHttpStatusError({ ...requestInfo, message });
-      } else {
-        toThrow = mapHttpStatusError(requestInfo);
-      }
-      throw toThrow;
+      const err = await handleCollectionRequestError(e, api, name);
+      throw err;
     }
   };
 };

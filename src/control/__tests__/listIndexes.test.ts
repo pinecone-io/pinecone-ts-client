@@ -13,9 +13,6 @@ describe('listIndexes', () => {
           Promise.resolve(['index-name', 'index-name-2'])
         ),
     };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IndexOperationsApi,
-    }));
 
     // @ts-ignore
     const returned = await listIndexes(IndexOperationsApi)();
@@ -28,12 +25,9 @@ describe('listIndexes', () => {
       listIndexes: jest
         .fn()
         .mockImplementation(() =>
-          Promise.reject({ response: { status: 500 } })
+          Promise.reject({ response: { status: 500, text: async () => '' } })
         ),
     };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IndexOperationsApi,
-    }));
 
     // @ts-ignore
     const expectToThrow = async () => await listIndexes(IndexOperationsApi)();
@@ -46,12 +40,9 @@ describe('listIndexes', () => {
       listIndexes: jest
         .fn()
         .mockImplementation(() =>
-          Promise.reject({ response: { status: 401 } })
+          Promise.reject({ response: { status: 401, text: async () => '' } })
         ),
     };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IndexOperationsApi,
-    }));
 
     // @ts-ignore
     const expectToThrow = async () => await listIndexes(IndexOperationsApi)();

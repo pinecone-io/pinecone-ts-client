@@ -1,101 +1,108 @@
-import { Client } from './client';
+import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from './pinecone-generated-ts-fetch';
+import {
+  IndexOperationsApi,
+  Configuration as ApiConfiguration,
+} from './pinecone-generated-ts-fetch';
+import {
+  describeIndex,
+  listIndexes,
+  createIndex,
+  deleteIndex,
+  configureIndex,
+  listCollections,
+  createCollection,
+  describeCollection,
+  deleteCollection,
+} from './control';
 import {
   PineconeConfigurationError,
-  PineconeUnexpectedResponseError,
   PineconeEnvironmentVarsNotSupportedError,
-  PineconeUnknownRequestFailure,
-  mapHttpStatusError,
 } from './errors';
+import { Index } from './data';
+import { buildValidator } from './validator';
+import { queryParamsStringify, buildUserAgent } from './utils';
+import { Static, Type } from '@sinclair/typebox';
 
-export type ClientConfigurationInit = {
-  apiKey: string;
-  environment: string;
-  projectId?: string;
-};
+const PineconeConfigurationSchema = Type.Object(
+  {
+    environment: Type.String({ minLength: 1 }),
+    apiKey: Type.String({ minLength: 1 }),
+    projectId: Type.Optional(Type.String({ minLength: 1 })),
+  },
+  { additionalProperties: false }
+);
+
+export type PineconeConfiguration = Static<typeof PineconeConfigurationSchema>;
 
 /**
- * This utility class is used to help configure a Pinecone {@link Client} by aggregating
- * configuration from environment variables and method params. Most usage will center on the `createClient`
- * static method.
- *
  * @example
  * ```
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const client = await Pinecone.createClient();
+ * const client = new Pinecone();
  * ```
  */
 export class Pinecone {
   /**
-   * This is the primary way to create a new client instance.
-   *
    * @example
-   * If you would like to configure the client via environment variables, you can invoke this method with no arguments:
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const client = await Pinecone.createClient();
+   * ```
+   * import { Pinecone } from '@pinecone-database/pinecone`
+   * const client = new Pinecone({ apiKey: 'my-api-key', environment: 'us-west1-gcp', projectId: 'my-project-id' })
    * ```
    *
-   * When no arguments are provided, the client will attempt to read configuration from the following environment variables:
-   * - `PINECONE_ENVIRONMENT`
-   * - `PINECONE_API_KEY`
-   * - `PINECONE_PROJECT_ID` (optional)
-   *
-   * If a project ID is not provided, the client will fetch it from the Pinecone API.
-   *
-   * @example
-   * If you would like to configure the client via arguments, you can invoke this method with a {@link ClientConfigurationInit} object:
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = await Pinecone.createClient({
-   *   apiKey: 'my-api-key',
-   *   environment: 'us-west1-gcp'
-   * });
-   * ```
-   *
-   * This can be useful if your application needs to interact with indexes from multiple projects and relying on environment variables would create a conflict.
-   *
-   * Whether you are configuring via environment variables or arguments, the client will throw an error if it is unable to read the required configuration.
-   *
-   * @param options - A {@link ClientConfigurationInit} object containing the configuration for the client.
-   * @param options.apiKey - The API key to use for authentication.
-   * @param options.environment - The environment to use for the client.
-   * @param options.projectId - The project ID to use for the client. If not provided, the project ID will be fetched from the Pinecone API.
-   * @throws {@link PineconeConfigurationError} if the client is unable to find the required configuration from either parameters or environment variables.
-   * @returns A new {@link Client} instance.
+   * @constructor
+   * @param options - The configuration options for the client.
+   * @param options.apiKey - The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
+   * @param options.environment - The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
+   * @param options.projectId - The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed.
    */
-  static async createClient(
-    options?: ClientConfigurationInit
-  ): Promise<Client> {
+  constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
       options = this._readEnvironmentConfig();
     }
 
-    if (options.projectId) {
-      // Have to spread the options here because otherwise TS doesn't know that
-      // we've already checked that projectId is defined.
-      return new Client({ ...options, projectId: options.projectId });
-    } else {
-      const projectId = await this._fetchProjectId(options);
-      return new Client({ ...options, projectId });
-    }
+    this._validateConfig(options);
+
+    this.config = options;
+
+    const { apiKey, environment } = options;
+    const controllerPath = `https://controller.${environment}.pinecone.io`;
+    const apiConfig: IndexOperationsApiConfigurationParameters = {
+      basePath: controllerPath,
+      apiKey,
+      queryParamsStringify,
+      headers: {
+        'User-Agent': buildUserAgent(false),
+      },
+    };
+    const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
+
+    this.describeIndex = describeIndex(api);
+    this.listIndexes = listIndexes(api);
+    this.createIndex = createIndex(api);
+    this.deleteIndex = deleteIndex(api);
+    this.configureIndex = configureIndex(api);
+
+    this.createCollection = createCollection(api);
+    this.listCollections = listCollections(api);
+    this.describeCollection = describeCollection(api);
+    this.deleteCollection = deleteCollection(api);
   }
 
   /**
    * @internal
-   * This method is used by {@link Pinecone.createClient} to read configuration from environment variables.
+   * This method is used by {@link Pinecone.constructor} to read configuration from environment variables.
    *
    * It looks for the following environment variables:
    * - `PINECONE_ENVIRONMENT`
    * - `PINECONE_API_KEY`
    * - `PINECONE_PROJECT_ID`
    *
-   * @returns A {@link ClientConfigurationInit} object populated with values found in environment variables.
+   * @returns A {@link PineconeConfiguration} object populated with values found in environment variables.
    */
-  static _readEnvironmentConfig(): ClientConfigurationInit {
+  _readEnvironmentConfig(): PineconeConfiguration {
     if (!process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
-        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling Pinecone.createClient().'
+        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
       );
     }
 
@@ -114,7 +121,7 @@ export class Pinecone {
     }
     if (missingVars.length > 0) {
       throw new PineconeConfigurationError(
-        `Since you called Pinecone.createClient() with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: ${missingVars.join(
+        `Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: ${missingVars.join(
           ', '
         )}.`
       );
@@ -128,89 +135,219 @@ export class Pinecone {
       }
     }
 
-    return environmentConfig as ClientConfigurationInit;
-  }
-
-  static async _fetchProjectId(
-    options: ClientConfigurationInit
-  ): Promise<string> {
-    const { apiKey, environment } = options;
-    if (!apiKey) {
-      throw new PineconeConfigurationError(
-        'Cannot fetch projectId from whoami endpoint without an API key.'
-      );
-    }
-    if (!environment) {
-      throw new PineconeConfigurationError(
-        'Cannot fetch projectId from whoami endpoint without an environment.'
-      );
-    }
-
-    const { url, request } = this._buildWhoamiRequest(environment, apiKey);
-
-    let response: Response;
-    try {
-      response = await fetch(url, request);
-    } catch (e: any) {
-      // Expected fetch exceptions listed here https://developer.mozilla.org/en-US/docs/Web/API/fetch#exceptions
-      // Most are header-related and should never occur since we do not let the user set headers. A TypeError
-      // will occur if the connection fails due to invalid environment configuration provided by the user. This is
-      // different from server errors handled below because the client is unable to make contact with a Pinecone
-      // server at all without a valid environment value.
-      if (e instanceof TypeError) {
-        throw new PineconeConfigurationError(
-          `A network error occured while attempting to connect to ${url}. Are you sure you passed the correct environment? Please check your configuration values and try again. Visit https://status.pinecone.io for overall service health information.`
-        );
-      } else {
-        throw new PineconeUnknownRequestFailure(url, e);
-      }
-    }
-
-    if (response.status >= 400) {
-      throw mapHttpStatusError({
-        status: response.status,
-        url,
-        message: await response.text(),
-      });
-    }
-
-    let json;
-    try {
-      json = await response.json();
-    } catch (e) {
-      throw new PineconeUnexpectedResponseError(
-        url,
-        response.status,
-        await response.text(),
-        'The HTTP call succeeded but the response could not be parsed as JSON.'
-      );
-    }
-
-    if (!json.project_name) {
-      throw new PineconeUnexpectedResponseError(
-        url,
-        response.status,
-        await response.text(),
-        'The HTTP call succeeded but response did not contain expected project_name.'
-      );
-    }
-
-    return json.project_name;
+    return environmentConfig as PineconeConfiguration;
   }
 
   /** @hidden */
-  static _buildWhoamiRequest(
-    environment: string,
-    apiKey: string
-  ): { url: string; request: RequestInit } {
-    const url = `https://controller.${environment}.pinecone.io/actions/whoami`;
-    const request = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Key': apiKey,
-      },
-    };
-    return { url, request };
+  private config: PineconeConfiguration;
+
+  /**
+   * Describe a Pinecone index
+   *
+   * @example
+   * ```js
+   * const indexConfig = await client.describeIndex('my-index')
+   * console.log(indexConfig)
+   * // {
+   * //    database: {
+   * //      name: 'my-index',
+   * //      metric: 'cosine',
+   * //      dimension: 256,
+   * //      pods: 2,
+   * //      replicas: 2,
+   * //      shards: 1,
+   * //      podType: 'p1.x2',
+   * //      metadataConfig: { indexed: [Array] }
+   * //    },
+   * //    status: { ready: true, state: 'Ready' }
+   * // }
+   * ```
+   *
+   * @param indexName - The name of the index to describe.
+   * @returns A promise that resolves to {@link IndexMeta}
+   */
+  describeIndex: ReturnType<typeof describeIndex>;
+
+  /**
+   * List all Pinecone indexes
+   * @example
+   * ```js
+   * const indexes = await client.listIndexes()
+   * console.log(indexes)
+   * // [ 'my-index', 'my-other-index' ]
+   * ```
+   *
+   * @returns A promise that resolves to an array of index names
+   */
+  listIndexes: ReturnType<typeof listIndexes>;
+
+  /**
+   * Creates a new index.
+   *
+   * @example
+   * The minimum required configuration to create an index is the index name and dimension.
+   * ```js
+   * await client.createIndex({ name: 'my-index', dimension: 128 })
+   * ```
+   * @example
+   * In a more expansive example, you can specify the metric, number of pods, number of replicas, and pod type.
+   * ```js
+   * await client.createIndex({
+   *  name: 'my-index',
+   *  dimension: 128,
+   *  metric: 'cosine',
+   *  pods: 1,
+   *  replicas: 2,
+   *  podType: 'p1.x1'
+   * })
+   * ```
+   *
+   * @example
+   * By default all metadata fields are indexed when vectors are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store in Pinecone alongside your vectors.
+   * ```js
+   * await client.createIndex({ name: 'my-index', dimension: 128, metadataConfig: { 'indexed' : ['productName', 'productDescription'] }})
+   * ```
+   *
+   * @param options - The index configuration.
+   * @param options.name - The name of the index. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
+   * @param options.dimension - The dimension of the index. Must be a positive integer. The number you choose here will depend on the model you are using. For example, if you are using a model that outputs 128-dimensional vectors, you should set the dimension to 128.
+   * @param options.metric - The metric of the index. The default metric is `'cosine'`. Supported metrics include `'cosine'`, `'dotproduct'`, and `'euclidean'`. To learn more about these options, see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
+   * @param options.pods - The number of pods in the index. The default number of pods is 1.
+   * @param options.replicas - The number of replicas in the index. The default number of replicas is 1.
+   * @param options.podType - The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
+   * @param options.metadataConfig - Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when a `metadataConfig` object is present, only metadata fields specified are indexed.
+   * @param options.metadataConfig.indexed - An array of metadata fields to index. If this array is empty, no metadata is indexed. If this array is not present, all metadata is indexed.
+   * @param options.sourceCollection - If creating an index from a collection, you can specify the name of the collection here.
+   * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
+   * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
+   * @throws {@link PineconeArgumentError} when invalid arguments are provided.
+   *
+   * @returns A promise that resolves when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the `describeIndex` function to check the status of the index.
+   */
+  createIndex: ReturnType<typeof createIndex>;
+
+  /**
+   * Deletes an index
+   *
+   * @example
+   * ```js
+   * await client.deleteIndex('my-index')
+   * ```
+   *
+   * @param indexName - The name of the index to delete.
+   * @returns A promise that resolves when the request to delete the index is completed.
+   * @throws {@link PineconeArgumentError} when invalid arguments are provided
+   */
+  deleteIndex: ReturnType<typeof deleteIndex>;
+
+  /**
+   * Configure an index
+   *
+   * Use this method to update configuration on an existing index. You can update the number of pods, replicas, and pod type. You can also update the metadata configuration.
+   *
+   * @example
+   * ```js
+   * await client.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
+   * ```
+   *
+   * @param indexName - The name of the index to configure.
+   * @param options - The configuration properties you would like to update
+   * @param options.replicas - The number of replicas in the index. The default number of replicas is 1.
+   * @param options.podType - The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
+   * @param options.metadataConfig - Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when a `metadataConfig` object is present, only metadata fields specified are indexed.
+   */
+  configureIndex: ReturnType<typeof configureIndex>;
+
+  /**
+   * Create a new collection from an existing index
+   *
+   * @example
+   * ```js
+   * const indexList = await client.listIndexes()
+   * await client.createCollection({
+   *  name: 'my-collection',
+   *  source: indexList[0]
+   * })
+   * ```
+   *
+   *
+   * @param options - The collection configuration.
+   * @param options.name - The name of the collection. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
+   * @param options.source - The name of the index to use as the source for the collection.
+   * @returns a promise that resolves when the request to create the collection is completed.
+   */
+  createCollection: ReturnType<typeof createCollection>;
+
+  /**
+   * List all collections in a project
+   *
+   * @example
+   * ```js
+   * await client.listCollections()
+   * ```
+   *
+   * @returns A promise that resolves to an array of collection objects.
+   */
+  listCollections: ReturnType<typeof listCollections>;
+
+  /**
+   * Delete a collection by collection name
+   *
+   * @example
+   * ```
+   * const collectionList = await client.listCollections()
+   * const collectionName = collectionList[0]
+   * await client.deleteCollection(collectionName)
+   * ```
+   *
+   * @param collectionName - The name of the collection to delete.
+   * @returns A promise that resolves when the request to delete the collection is completed.
+   */
+  deleteCollection: ReturnType<typeof deleteCollection>;
+
+  /**
+   * Describe a collection
+   *
+   * @example
+   * ```js
+   * await client.describeCollection('my-collection')
+   * ```
+   *
+   * @param collectionName - The name of the collection to describe.
+   * @returns A promise that resolves to a collection object with type {@link CollectionDescription}.
+   */
+  describeCollection: ReturnType<typeof describeCollection>;
+
+  /** @internal */
+  _validateConfig(options: PineconeConfiguration) {
+    buildValidator(
+      'The client configuration',
+      PineconeConfigurationSchema
+    )(options);
+  }
+
+  /**
+   * @returns The configuration object that was passed to the Pinecone constructor.
+   */
+  getConfig() {
+    return this.config;
+  }
+
+  index(indexName: string) {
+    return new Index(indexName, this.config);
+  }
+
+  // Alias method to match the Python SDK capitalization
+  Index(indexName: string) {
+    return this.index(indexName);
+  }
+
+  __curlStarter() {
+    // Every endpoint is going to have a different path and expect different data (in the case of POST requests),
+    // but this is a good starting point for users to see how to use curl to interact with the REST API.
+    console.log('Example curl command to list indexes: ');
+    console.log(
+      `curl "https://controller.${this.config.environment}.pinecone.io/databases" -H "Api-Key: ${this.config.apiKey}" -H "Accept: application/json"`
+    );
   }
 }

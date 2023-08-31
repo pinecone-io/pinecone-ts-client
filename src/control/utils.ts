@@ -1,11 +1,9 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import type { FailedRequestInfo } from '../errors';
-import { mapHttpStatusError } from '../errors';
+import { handleApiError } from '../errors';
 
 export const validIndexMessage = async (
   api: IndexOperationsApi,
-  name: string,
-  requestInfo: FailedRequestInfo
+  name: string
 ) => {
   try {
     const validNames = await api.listIndexes();
@@ -14,19 +12,15 @@ export const validIndexMessage = async (
       .join(', ')}]`;
   } catch (e) {
     // Expect to end up here only if a second error occurs while fetching valid index names.
-    // We can show the error from the failed call to describeIndex, but without listing
-    // index names.
-    throw mapHttpStatusError({
-      ...requestInfo,
-      message: `Index '${name}' does not exist.`,
-    });
+    // In that case, we can just return a message without the additional context about what names
+    // are valid.
+    return `Index '${name}' does not exist.`;
   }
 };
 
 export const validCollectionMessage = async (
   api: IndexOperationsApi,
-  name: string,
-  requestInfo: FailedRequestInfo
+  name: string
 ) => {
   try {
     const validNames = await api.listCollections();
@@ -37,9 +31,30 @@ export const validCollectionMessage = async (
     // Expect to end up here only if a second error occurs while fetching valid collection names.
     // We can show the error from the failed call to describeIndex, but without listing
     // index names.
-    throw mapHttpStatusError({
-      ...requestInfo,
-      message: `Collection '${name}' does not exist.`,
-    });
+    return `Collection '${name}' does not exist.`;
   }
+};
+
+export const handleIndexRequestError = async (
+  e: any,
+  api: IndexOperationsApi,
+  indexName: string
+): Promise<Error> => {
+  return await handleApiError(e, async (statusCode, rawMessageText) =>
+    statusCode === 404
+      ? await validIndexMessage(api, indexName)
+      : rawMessageText
+  );
+};
+
+export const handleCollectionRequestError = async (
+  e: any,
+  api: IndexOperationsApi,
+  collectionName: string
+): Promise<Error> => {
+  return await handleApiError(e, async (statusCode, rawMessageText) =>
+    statusCode === 404
+      ? await validCollectionMessage(api, collectionName)
+      : rawMessageText
+  );
 };
