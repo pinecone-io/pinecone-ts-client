@@ -1,7 +1,10 @@
 import { handleApiError } from '../errors';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 
-export const deleteAll = (apiProvider: VectorOperationsProvider, namespace: string) => {
+export const deleteAll = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   return async (): Promise<void> => {
     try {
       const api = await apiProvider.provide();

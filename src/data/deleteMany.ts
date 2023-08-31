@@ -22,7 +22,10 @@ export type DeleteManyByVectorIdOptions = Static<
 export type DeleteManyByFilterOptions = Static<typeof DeleteManyByFilterSchema>;
 export type DeleteManyOptions = Static<typeof DeleteManySchema>;
 
-export const deleteMany = (apiProvider: VectorOperationsProvider, namespace: string) => {
+export const deleteMany = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   const validator = buildConfigValidator(DeleteManySchema, 'deleteMany');
 
   return async (options: DeleteManyOptions): Promise<void> => {
@@ -37,7 +40,7 @@ export const deleteMany = (apiProvider: VectorOperationsProvider, namespace: str
     }
 
     try {
-      const api = await apiProvider.provide()
+      const api = await apiProvider.provide();
       await api._delete({ deleteRequest: { ...requestOptions, namespace } });
     } catch (e) {
       const err = await handleApiError(e);

@@ -7,7 +7,10 @@ const DeleteOneOptionsSchema = Type.String({ minLength: 1 });
 
 export type DeleteOneOptions = Static<typeof DeleteOneOptionsSchema>;
 
-export const deleteOne = (apiProvider: VectorOperationsProvider, namespace: string) => {
+export const deleteOne = (
+  apiProvider: VectorOperationsProvider,
+  namespace: string
+) => {
   const validator = buildConfigValidator(DeleteOneOptionsSchema, 'deleteOne');
 
   return async (options: DeleteOneOptions): Promise<void> => {

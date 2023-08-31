@@ -3,7 +3,10 @@ import {
   PineconeBadRequestError,
   PineconeInternalServerError,
 } from '../../errors';
-import type { DeleteOperationRequest, VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
+import type {
+  DeleteOperationRequest,
+  VectorOperationsApi,
+} from '../../pinecone-generated-ts-fetch';
 import { VectorOperationsProvider } from '../vectorOperationsProvider';
 
 const setupDeleteResponse = (response, isSuccess) => {
@@ -38,7 +41,10 @@ describe('deleteOne', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const { VoaProvider } = setupDeleteFailure({ status: 500, text: () => 'backend error message' });
+      const { VoaProvider } = setupDeleteFailure({
+        status: 500,
+        text: () => 'backend error message',
+      });
 
       const toThrow = async () => {
         const deleteOneFn = deleteOne(VoaProvider, 'namespace');
@@ -50,7 +56,7 @@ describe('deleteOne', () => {
 
     test('when 400 occurs, displays server message', async () => {
       const serverError = 'there has been a server error!';
-      const { VoaProvider, VOA } = setupDeleteFailure({
+      const { VoaProvider } = setupDeleteFailure({
         status: 400,
         text: () => serverError,
       });
