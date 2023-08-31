@@ -12,7 +12,6 @@ export type { DeleteManyOptions } from './deleteMany';
 export type { DeleteOneOptions } from './deleteOne';
 export type { DescribeIndexStatsOptions } from './describeIndexStats';
 export type { IdsArray } from './fetch';
-export type { DeleteVectorOptions } from './delete';
 export type { UpdateVectorOptions } from './update';
 export type { Vector, VectorArray, SparseValues } from './upsert';
 export type {

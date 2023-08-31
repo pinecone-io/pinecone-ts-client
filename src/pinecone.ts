@@ -23,9 +23,7 @@ import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
 import { Static, Type } from '@sinclair/typebox';
 
-export type ClientConfiguration = Static<typeof ClientConfigurationSchema>;
-
-const ClientConfigurationSchema = Type.Object(
+const PineconeConfigurationSchema = Type.Object(
   {
     environment: Type.String({ minLength: 1 }),
     apiKey: Type.String({ minLength: 1 }),
@@ -34,11 +32,7 @@ const ClientConfigurationSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export type PineconeConfigurationOptions = {
-  apiKey: string;
-  environment: string;
-  projectId?: string;
-};
+export type PineconeConfiguration = Static<typeof PineconeConfigurationSchema>;
 
 /**
  * @example
@@ -61,7 +55,7 @@ export class Pinecone {
    * @param options.environment - The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
    * @param options.projectId - The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed.
    */
-  constructor(options?: ClientConfiguration) {
+  constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
       options = this._readEnvironmentConfig();
     }
@@ -103,9 +97,9 @@ export class Pinecone {
    * - `PINECONE_API_KEY`
    * - `PINECONE_PROJECT_ID`
    *
-   * @returns A {@link PineconeConfigurationOptions} object populated with values found in environment variables.
+   * @returns A {@link PineconeConfiguration} object populated with values found in environment variables.
    */
-  _readEnvironmentConfig(): PineconeConfigurationOptions {
+  _readEnvironmentConfig(): PineconeConfiguration {
     if (!process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
@@ -141,11 +135,11 @@ export class Pinecone {
       }
     }
 
-    return environmentConfig as PineconeConfigurationOptions;
+    return environmentConfig as PineconeConfiguration;
   }
 
   /** @hidden */
-  private config: ClientConfiguration;
+  private config: PineconeConfiguration;
 
   /**
    * Describe a Pinecone index
@@ -325,10 +319,10 @@ export class Pinecone {
   describeCollection: ReturnType<typeof describeCollection>;
 
   /** @internal */
-  _validateConfig(options: ClientConfiguration) {
+  _validateConfig(options: PineconeConfiguration) {
     buildValidator(
       'The client configuration',
-      ClientConfigurationSchema
+      PineconeConfigurationSchema
     )(options);
   }
 

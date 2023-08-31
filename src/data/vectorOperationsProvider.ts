@@ -1,4 +1,4 @@
-import type { PineconeConfigurationOptions } from '../pinecone';
+import type { PineconeConfiguration } from '../pinecone';
 import {
   Configuration,
   ConfigurationParameters,
@@ -7,15 +7,15 @@ import {
 import { queryParamsStringify, buildUserAgent } from '../utils';
 import { ProjectIdSingleton } from './projectIdSingleton';
 
-const basePath = (config: PineconeConfigurationOptions, indexName: string) =>
+const basePath = (config: PineconeConfiguration, indexName: string) =>
   `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
 
 export class VectorOperationsProvider {
-  private config: PineconeConfigurationOptions;
+  private config: PineconeConfiguration;
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
 
-  constructor(config: PineconeConfigurationOptions, indexName: string) {
+  constructor(config: PineconeConfiguration, indexName: string) {
     this.config = config;
     this.indexName = indexName;
   }

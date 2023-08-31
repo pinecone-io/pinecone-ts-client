@@ -1,11 +1,11 @@
-import { Pinecone, type PineconeConfigurationOptions } from '../pinecone';
+import { Pinecone, type PineconeConfiguration } from '../pinecone';
 
 describe('Pinecone', () => {
   describe('constructor', () => {
     describe('required properties', () => {
       test('should throw an error if no properties provided', () => {
         expect(() => {
-          new Pinecone({} as PineconeConfigurationOptions);
+          new Pinecone({} as PineconeConfiguration);
         }).toThrow(
           'The client configuration must have required properties: environment, apiKey.'
         );
@@ -13,7 +13,7 @@ describe('Pinecone', () => {
 
       test('should throw an error if required property not provided', () => {
         expect(() => {
-          new Pinecone({ apiKey: 'test-key' } as PineconeConfigurationOptions);
+          new Pinecone({ apiKey: 'test-key' } as PineconeConfiguration);
         }).toThrow(
           'The client configuration must have required property: environment.'
         );
@@ -21,7 +21,7 @@ describe('Pinecone', () => {
         expect(() => {
           new Pinecone({
             environment: 'test-environment',
-          } as PineconeConfigurationOptions);
+          } as PineconeConfiguration);
         }).toThrow(
           'The client configuration must have required property: apiKey.'
         );
@@ -42,7 +42,7 @@ describe('Pinecone', () => {
           const config = {
             environment: 'test-env',
             apiKey: '',
-          } as PineconeConfigurationOptions;
+          } as PineconeConfiguration;
           new Pinecone(config);
         }).toThrow(
           "The client configuration had validation errors: property 'apiKey' must not be blank."
@@ -58,7 +58,7 @@ describe('Pinecone', () => {
             apiKey: 'test-key',
             projectId: 'test-proj',
             unknownProp: 'banana',
-          } as PineconeConfigurationOptions);
+          } as PineconeConfiguration);
         }).toThrow(
           'The client configuration had validation errors: argument must NOT have additional properties.'
         );

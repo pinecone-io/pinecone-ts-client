@@ -4,7 +4,7 @@ import {
   PineconeUnknownRequestFailure,
   mapHttpStatusError,
 } from '../errors';
-import type { PineconeConfigurationOptions } from '../pinecone';
+import type { PineconeConfiguration } from '../pinecone';
 import { buildUserAgent } from '../utils';
 
 // We only ever want to call whoami a maximum of once per API key, even if there
@@ -14,7 +14,7 @@ export const ProjectIdSingleton = (function () {
   const projectIds = {}; // map of apiKey to projectId
 
   const _fetchProjectId = async (
-    options: PineconeConfigurationOptions
+    options: PineconeConfiguration
   ): Promise<string> => {
     const { apiKey, environment } = options;
     const { url, request } = _buildWhoamiRequest(environment, apiKey);
@@ -89,7 +89,7 @@ export const ProjectIdSingleton = (function () {
   const key = (config) => `${config.apiKey}:${config.environment}`;
 
   return {
-    getProjectId: async function (config: PineconeConfigurationOptions) {
+    getProjectId: async function (config: PineconeConfiguration) {
       const cacheKey = key(config);
       if (cacheKey in projectIds) {
         return projectIds[cacheKey];
