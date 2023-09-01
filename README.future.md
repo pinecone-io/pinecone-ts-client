@@ -208,6 +208,32 @@ You can fetch the description of any index by name using `describeIndex`.
 }
 ```
 
+### Configure Index
+
+You can adjust the number of replicas or scale to a larger pod size (specified with podType). See [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
+
+```typescript
+> await pinecone.configureIndex('my-index', { replicas: 3 })
+> const config = await pinecone.describeIndex('my-index')
+{
+  database: {
+    name: 'my-index',
+    dimension: 2,
+    metric: 'cosine',
+    pods: 2,
+    replicas: 2,
+    shards: 1,
+    podType: 'p1.x1'
+  },
+  status: {
+    ready: true,
+    state: 'ScalingUpPodSize',
+    host: 'jen2-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
+}
+```
+
 ### Delete Index
 
 Indexes are deleted by name.
@@ -278,12 +304,12 @@ Pinecone indexes support operations for working with vector data using operation
 
 To perform data operations on an index, you target it using the `index` method.
 
-```
-const pinecone = new Pinecone()
-const index = pinecone.index('test-index')
+```typescript
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index');
 
 // Now perform index operations
-await index.fetch(['1'])
+await index.fetch(['1']);
 ```
 
 ### Targeting a namespace
