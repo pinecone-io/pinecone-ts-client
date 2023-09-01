@@ -1,5 +1,7 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
+import { debugLog } from '../utils';
+import { handleApiError } from '../errors';
 import { handleIndexRequestError } from './utils';
 import { Static, Type } from '@sinclair/typebox';
 
@@ -63,9 +65,15 @@ const waitUntilIndexIsReady = async (
       await new Promise((r) => setTimeout(r, 1000));
       return await waitUntilIndexIsReady(api, indexName, seconds + 1);
     } else {
-      return `Index is ready after ${seconds} seconds`;
+      debugLog(`Index ${indexName} is ready after ${seconds}`);
+      return;
     }
   } catch (e) {
-    throw new Error(`Error creating index: ${e}`);
+    const err = await handleApiError(
+      e,
+      async (_, rawMessageText) =>
+        `Error creating index ${indexName}: ${rawMessageText}`
+    );
+    throw err;
   }
 };

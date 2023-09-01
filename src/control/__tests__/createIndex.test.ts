@@ -10,16 +10,53 @@ import type {
   IndexMeta,
 } from '../../pinecone-generated-ts-fetch';
 
+// describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
+const setupCreateIndexResponse = (
+  createIndexResponse,
+  describeIndexResponse,
+  isCreateIndexSuccess = true,
+  isDescribeIndexSuccess = true
+) => {
+  const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> = jest
+    .fn()
+    .mockImplementation(() =>
+      isCreateIndexSuccess
+        ? Promise.resolve(createIndexResponse)
+        : Promise.reject({ response: createIndexResponse })
+    );
+
+  // unfold describeIndexResponses
+  const describeIndexMock = jest.fn();
+  if (Array.isArray(describeIndexResponse)) {
+    describeIndexResponse.forEach((response) => {
+      describeIndexMock.mockImplementationOnce(() =>
+        isDescribeIndexSuccess
+          ? Promise.resolve(response)
+          : Promise.reject({ response })
+      );
+    });
+  } else if (describeIndexResponse) {
+    describeIndexMock.mockImplementation(() =>
+      isDescribeIndexSuccess
+        ? Promise.resolve(describeIndexResponse)
+        : Promise.reject({ response: describeIndexResponse })
+    );
+  }
+
+  const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexMeta> =
+    describeIndexMock;
+
+  const IOA = {
+    createIndex: fakeCreateIndex,
+    describeIndex: fakeDescribeIndex,
+  } as IndexOperationsApi;
+
+  return IOA;
+};
+
 describe('createIndex', () => {
   test('calls the openapi create index endpoint, passing name and dimension', async () => {
-    const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> =
-      jest.fn();
-    const IOA = { createIndex: fakeCreateIndex } as IndexOperationsApi;
-
-    jest.mock('../../pinecone-generated-ts-fetch', async () => ({
-      IndexOperationsApi: IOA,
-    }));
-
+    const IOA = setupCreateIndexResponse(undefined, undefined);
     const returned = await createIndex(IOA)({
       name: 'index-name',
       dimension: 10,
@@ -43,21 +80,11 @@ describe('createIndex', () => {
     });
 
     test('when passed waitUntilReady, calls the create index endpoint and begins polling describeIndex', async () => {
-      const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> =
-        jest.fn();
-      const fakeDescribeIndex: (
-        req: DescribeIndexRequest
-      ) => Promise<IndexMeta> = jest.fn().mockImplementation(() => ({
-        status: { ready: true, state: 'Ready' },
-      }));
-
-      const IOA = {
-        createIndex: fakeCreateIndex,
-        describeIndex: fakeDescribeIndex,
-      } as IndexOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
+      const IOA = setupCreateIndexResponse(undefined, [
+        {
+          status: { ready: true, state: 'Ready' },
+        },
+      ]);
 
       const returned = await createIndex(IOA)({
         name: 'index-name',
@@ -65,7 +92,7 @@ describe('createIndex', () => {
         waitUntilReady: true,
       });
 
-      expect(returned).toBe('Index is ready after 0 seconds');
+      expect(returned).toBe(void 0);
       expect(IOA.createIndex).toHaveBeenCalledWith({
         createRequest: {
           name: 'index-name',
@@ -79,32 +106,20 @@ describe('createIndex', () => {
     });
 
     test('will continue polling describeIndex if the index is not yet ready', async () => {
-      const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> =
-        jest.fn();
-      const fakeDescribeIndex: (
-        req: DescribeIndexRequest
-      ) => Promise<IndexMeta> = jest
-        .fn()
-        .mockResolvedValueOnce({
+      const IOA = setupCreateIndexResponse(undefined, [
+        {
           status: { ready: false, state: 'Initializing' },
-        })
-        .mockResolvedValueOnce({
+        },
+        {
           status: { ready: false, state: 'ScalingUp' },
-        })
-        .mockResolvedValueOnce({
+        },
+        {
           status: { ready: false, state: 'ScalingUp' },
-        })
-        .mockResolvedValueOnce({
+        },
+        {
           status: { ready: true, state: 'Ready' },
-        });
-
-      const IOA = {
-        createIndex: fakeCreateIndex,
-        describeIndex: fakeDescribeIndex,
-      } as IndexOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
+        },
+      ]);
 
       const returned = createIndex(IOA)({
         name: 'index-name',
@@ -115,8 +130,8 @@ describe('createIndex', () => {
       await jest.advanceTimersByTimeAsync(3000);
 
       return returned.then((result) => {
-        expect(result).toBe('Index is ready after 3 seconds');
-        expect(fakeDescribeIndex).toHaveBeenNthCalledWith(3, {
+        expect(result).toBe(void 0);
+        expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
         });
       });
@@ -125,18 +140,11 @@ describe('createIndex', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({
-            response: { status: 500, text: () => 'backend error message' },
-          })
-        );
-
-      const IOA = { createIndex: fakeCreateIndex } as IndexOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
+      const IOA = setupCreateIndexResponse(
+        { status: 500, text: () => 'backend error message' },
+        undefined,
+        false
+      );
 
       const toThrow = async () => {
         const createIndexFn = createIndex(IOA);
@@ -148,18 +156,11 @@ describe('createIndex', () => {
 
     test('when 400 occurs, displays server message', async () => {
       const serverError = 'there has been a server error!';
-      const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.reject({
-            response: { status: 400, text: () => serverError },
-          })
-        );
-
-      const IOA = { createIndex: fakeCreateIndex } as IndexOperationsApi;
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        IndexOperationsApi: IOA,
-      }));
+      const IOA = setupCreateIndexResponse(
+        { status: 400, text: () => serverError },
+        undefined,
+        false
+      );
 
       const toThrow = async () => {
         const createIndexFn = createIndex(IOA);
