@@ -16,7 +16,7 @@ models/HnswConfig.ts
 models/IndexMeta.ts
 models/IndexMetaDatabase.ts
 models/IndexMetaDatabaseIndexConfig.ts
-models/IndexMetaStatus.ts
+models/IndexMetaDatabaseStatus.ts
 models/NamespaceSummary.ts
 models/PatchRequest.ts
 models/ProtobufAny.ts

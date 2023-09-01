@@ -37,18 +37,6 @@ export interface CollectionMeta {
      * @memberof CollectionMeta
      */
     status?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CollectionMeta
-     */
-    dimension?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof CollectionMeta
-     */
-    vectorCount?: number;
 }
 
 /**
@@ -73,8 +61,6 @@ export function CollectionMetaFromJSONTyped(json: any, ignoreDiscriminator: bool
         'name': !exists(json, 'name') ? undefined : json['name'],
         'size': !exists(json, 'size') ? undefined : json['size'],
         'status': !exists(json, 'status') ? undefined : json['status'],
-        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
-        'vectorCount': !exists(json, 'vector_count') ? undefined : json['vector_count'],
     };
 }
 
@@ -90,8 +76,6 @@ export function CollectionMetaToJSON(value?: CollectionMeta | null): any {
         'name': value.name,
         'size': value.size,
         'status': value.status,
-        'dimension': value.dimension,
-        'vector_count': value.vectorCount,
     };
 }
 
