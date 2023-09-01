@@ -25,23 +25,18 @@ const setupCreateIndexResponse = (
         : Promise.reject({ response: createIndexResponse })
     );
 
-  // unfold describeIndexResponses
+  // unfold describeIndexResponse
+  const describeResponses = Array.isArray(describeIndexResponse)
+    ? describeIndexResponse
+    : [describeIndexResponse];
   const describeIndexMock = jest.fn();
-  if (Array.isArray(describeIndexResponse)) {
-    describeIndexResponse.forEach((response) => {
-      describeIndexMock.mockImplementationOnce(() =>
-        isDescribeIndexSuccess
-          ? Promise.resolve(response)
-          : Promise.reject({ response })
-      );
-    });
-  } else if (describeIndexResponse) {
-    describeIndexMock.mockImplementation(() =>
+  describeResponses.forEach((response) => {
+    describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
-        ? Promise.resolve(describeIndexResponse)
-        : Promise.reject({ response: describeIndexResponse })
+        ? Promise.resolve(response)
+        : Promise.reject({ response })
     );
-  }
+  });
 
   const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexMeta> =
     describeIndexMock;
