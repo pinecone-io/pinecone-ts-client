@@ -15,12 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
-  CollectionMeta,
-  CreateCollectionRequest,
-  CreateRequest,
-  IndexMeta,
-  PatchRequest,
-} from '../models/index';
+    CollectionMeta,
+    CreateCollectionRequest,
+    CreateRequest,
+    IndexMeta,
+    PatchRequest,
+} from '../models';
 import {
     CollectionMetaFromJSON,
     CollectionMetaToJSON,
@@ -32,7 +32,7 @@ import {
     IndexMetaToJSON,
     PatchRequestFromJSON,
     PatchRequestToJSON,
-} from '../models/index';
+} from '../models';
 
 export interface ConfigureIndexRequest {
     indexName: string;
@@ -64,7 +64,7 @@ export interface DescribeIndexRequest {
 }
 
 /**
- * 
+ *
  */
 export class IndexOperationsApi extends runtime.BaseAPI {
 
@@ -73,7 +73,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
      */
     async configureIndexRaw(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
         }
 
         const queryParameters: any = {};
@@ -94,11 +94,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             body: PatchRequestToJSON(requestParameters.patchRequest),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.TextApiResponse(response) as any;
     }
 
     /**
@@ -131,11 +127,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             body: CreateCollectionRequestToJSON(requestParameters.createCollectionRequest),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.TextApiResponse(response) as any;
     }
 
     /**
@@ -168,11 +160,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             body: CreateRequestToJSON(requestParameters.createRequest),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.TextApiResponse(response) as any;
     }
 
     /**
@@ -188,7 +176,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
      */
     async deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.');
+            throw new runtime.RequiredError('collectionName', 'Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.');
         }
 
         const queryParameters: any = {};
@@ -206,11 +194,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.TextApiResponse(response) as any;
     }
 
     /**
@@ -226,7 +210,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
      */
     async deleteIndexRaw(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.');
         }
 
         const queryParameters: any = {};
@@ -244,11 +228,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.TextApiResponse(response) as any;
     }
 
     /**
@@ -264,7 +244,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
      */
     async describeCollectionRaw(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionMeta>> {
         if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.');
+            throw new runtime.RequiredError('collectionName', 'Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.');
         }
 
         const queryParameters: any = {};
@@ -298,7 +278,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
      */
     async describeIndexRaw(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexMeta>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling describeIndex.');
+            throw new runtime.RequiredError('indexName', 'Required parameter requestParameters.indexName was null or undefined when calling describeIndex.');
         }
 
         const queryParameters: any = {};

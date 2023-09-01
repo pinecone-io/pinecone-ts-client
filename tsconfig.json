@@ -14,5 +14,5 @@
     "noImplicitAny": false
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "src/pinecone-generated-ts-fetch"]
+  "exclude": ["dist", "src/v0/pinecone-generated-ts-fetch"]
 }

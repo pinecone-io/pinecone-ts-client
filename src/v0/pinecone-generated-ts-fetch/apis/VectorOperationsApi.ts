@@ -15,17 +15,17 @@
 
 import * as runtime from '../runtime';
 import type {
-  DeleteRequest,
-  DescribeIndexStatsRequest,
-  DescribeIndexStatsResponse,
-  FetchResponse,
-  QueryRequest,
-  QueryResponse,
-  RpcStatus,
-  UpdateRequest,
-  UpsertRequest,
-  UpsertResponse,
-} from '../models/index';
+    DeleteRequest,
+    DescribeIndexStatsRequest,
+    DescribeIndexStatsResponse,
+    FetchResponse,
+    QueryRequest,
+    QueryResponse,
+    RpcStatus,
+    UpdateRequest,
+    UpsertRequest,
+    UpsertResponse,
+} from '../models';
 import {
     DeleteRequestFromJSON,
     DeleteRequestToJSON,
@@ -47,7 +47,7 @@ import {
     UpsertRequestToJSON,
     UpsertResponseFromJSON,
     UpsertResponseToJSON,
-} from '../models/index';
+} from '../models';
 
 export interface DeleteOperationRequest {
     deleteRequest: DeleteRequest;
@@ -81,7 +81,7 @@ export interface UpsertOperationRequest {
 }
 
 /**
- * 
+ *
  */
 export class VectorOperationsApi extends runtime.BaseAPI {
 
@@ -91,7 +91,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async _deleteRaw(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.deleteRequest === null || requestParameters.deleteRequest === undefined) {
-            throw new runtime.RequiredError('deleteRequest','Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.');
+            throw new runtime.RequiredError('deleteRequest', 'Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.');
         }
 
         const queryParameters: any = {};
@@ -174,7 +174,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
         if (requestParameters.describeIndexStatsRequest === null || requestParameters.describeIndexStatsRequest === undefined) {
-            throw new runtime.RequiredError('describeIndexStatsRequest','Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.');
+            throw new runtime.RequiredError('describeIndexStatsRequest', 'Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.');
         }
 
         const queryParameters: any = {};
@@ -245,7 +245,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async fetchRaw(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
         if (requestParameters.ids === null || requestParameters.ids === undefined) {
-            throw new runtime.RequiredError('ids','Required parameter requestParameters.ids was null or undefined when calling fetch.');
+            throw new runtime.RequiredError('ids', 'Required parameter requestParameters.ids was null or undefined when calling fetch.');
         }
 
         const queryParameters: any = {};
@@ -289,7 +289,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async queryRaw(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
         if (requestParameters.queryRequest === null || requestParameters.queryRequest === undefined) {
-            throw new runtime.RequiredError('queryRequest','Required parameter requestParameters.queryRequest was null or undefined when calling query.');
+            throw new runtime.RequiredError('queryRequest', 'Required parameter requestParameters.queryRequest was null or undefined when calling query.');
         }
 
         const queryParameters: any = {};
@@ -328,7 +328,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.updateRequest === null || requestParameters.updateRequest === undefined) {
-            throw new runtime.RequiredError('updateRequest','Required parameter requestParameters.updateRequest was null or undefined when calling update.');
+            throw new runtime.RequiredError('updateRequest', 'Required parameter requestParameters.updateRequest was null or undefined when calling update.');
         }
 
         const queryParameters: any = {};
@@ -367,7 +367,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
      */
     async upsertRaw(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
         if (requestParameters.upsertRequest === null || requestParameters.upsertRequest === undefined) {
-            throw new runtime.RequiredError('upsertRequest','Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.');
+            throw new runtime.RequiredError('upsertRequest', 'Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.');
         }
 
         const queryParameters: any = {};

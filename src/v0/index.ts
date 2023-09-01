@@ -4,7 +4,7 @@ import {
   IndexOperationsApi,
   ResponseError,
   VectorOperationsApi,
-} from '../pinecone-generated-ts-fetch';
+} from './pinecone-generated-ts-fetch';
 import 'cross-fetch/polyfill';
 import { queryParamsStringify, buildUserAgent } from '../utils';
 

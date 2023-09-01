@@ -31,18 +31,6 @@ export interface IndexMetaStatus {
      * @memberof IndexMetaStatus
      */
     state?: IndexMetaStatusStateEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof IndexMetaStatus
-     */
-    host?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof IndexMetaStatus
-     */
-    port?: number;
 }
 
 
@@ -51,11 +39,8 @@ export interface IndexMetaStatus {
  */
 export const IndexMetaStatusStateEnum = {
     Initializing: 'Initializing',
-    InitializationFailed: 'InitializationFailed',
     ScalingUp: 'ScalingUp',
     ScalingDown: 'ScalingDown',
-    ScalingUpPodSize: 'ScalingUpPodSize',
-    ScalingDownPodSize: 'ScalingDownPodSize',
     Terminating: 'Terminating',
     Ready: 'Ready'
 } as const;
@@ -83,8 +68,6 @@ export function IndexMetaStatusFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'ready': !exists(json, 'ready') ? undefined : json['ready'],
         'state': !exists(json, 'state') ? undefined : json['state'],
-        'host': !exists(json, 'host') ? undefined : json['host'],
-        'port': !exists(json, 'port') ? undefined : json['port'],
     };
 }
 
@@ -99,8 +82,6 @@ export function IndexMetaStatusToJSON(value?: IndexMetaStatus | null): any {
         
         'ready': value.ready,
         'state': value.state,
-        'host': value.host,
-        'port': value.port,
     };
 }
 
