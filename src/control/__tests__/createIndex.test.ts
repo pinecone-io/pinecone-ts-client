@@ -26,11 +26,12 @@ const setupCreateIndexResponse = (
     );
 
   // unfold describeIndexResponse
-  const describeResponses = Array.isArray(describeIndexResponse)
+  const describeIndexResponses = Array.isArray(describeIndexResponse)
     ? describeIndexResponse
     : [describeIndexResponse];
+
   const describeIndexMock = jest.fn();
-  describeResponses.forEach((response) => {
+  describeIndexResponses.forEach((response) => {
     describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
         ? Promise.resolve(response)
