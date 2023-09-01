@@ -22,10 +22,13 @@ There are two pieces of configuration required to use the Pinecone client: an AP
 #### Using environment variables
 
 The environment variables used to configure the client are:
+
 ```bash
 PINECONE_API_KEY="your_api_key"
 PINECONE_ENVIRONMENT="your_environment"
 ```
+
+When these environment variables are set, the client constructor does not require any additional arguments.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -35,13 +38,13 @@ const pinecone = new Pinecone();
 
 #### Using configuration object
 
-If you prefer to pass configuration in code, the constructor accepts a config object containing the apiKey and environment values. This 
+If you prefer to pass configuration in code, the constructor accepts a config object containing the apiKey and environment values. This
 could be useful if your application needs to interact with multiple projects each with different configuration.
 
 ```typescript
 const pinecone = new Pinecone({
   apiKey: 'your_api_key',
-  environment: 'your_environment'
+  environment: 'your_environment',
 });
 ```
 
@@ -62,9 +65,9 @@ At a minimum, to create an index you must specify a `name` and `dimension`. The 
 
 ```ts
 const pinecone = new Pinecone();
-await pinecone.createIndex({ 
-  name: 'sample-index', 
-  dimension: 1536 
+await pinecone.createIndex({
+  name: 'sample-index',
+  dimension: 1536,
 });
 ```
 
@@ -84,17 +87,15 @@ await pinecone.createIndex({
   shards: 2,
   podType: 'p1.x2',
   metadataConfig: {
-    indexed: [
-      'product_type'
-    ]
-  }
-})
+    indexed: ['product_type'],
+  },
+});
 ```
 
 #### Create Index: Checking the status of a newly created index
 
-The `createIndex` method issues a create request to the API that returns quickly, but the resulting index is 
-not immediately ready for use upserting, querying, or performing other data operations. You can use the 
+The `createIndex` method issues a create request to the API that returns quickly, but the resulting index is
+not immediately ready for use upserting, querying, or performing other data operations. You can use the
 `describeIndex` method to find out the status of an index and see whether it is ready for use.
 
 ```ts
@@ -132,11 +133,11 @@ If you pass the `waitUntilReady` option, the client will handle polling for stat
 
 ```ts
 const client = new Pinecone();
-await pinecone.createIndex({ 
-  name: 'sample-index', 
+await pinecone.createIndex({
+  name: 'sample-index',
   dimension: 1536,
-  waitUntilReady: true
-}); 
+  waitUntilReady: true,
+});
 ```
 
 #### Create index from a Pinecone collection
@@ -147,9 +148,9 @@ Given that you have an existing collection:
 
 ```ts
 > await pinecone.describeCollection('product-description-embeddings')
-{ 
-  name: 'product-description-embeddings', 
-  size: undefined, 
+{
+  name: 'product-description-embeddings',
+  size: undefined,
   status: 'Ready'
 }
 ```
@@ -200,7 +201,7 @@ You can fetch the description of any index by name using `describeIndex`.
 
 ### Delete Index
 
-Indexes are deleted by name. 
+Indexes are deleted by name.
 
 ```ts
 await pinecone.deleteIndex('sample-index');
@@ -281,18 +282,18 @@ await index.fetch(['1'])
 By default all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target them namespace by chaining a call to `namespace()`.
 
 ```ts
-const pinecone = new Pinecone()
-const index = pinecone.index('test-index').namespace('ns1')
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index').namespace('ns1');
 
 // Now perform index operations in the targeted index and namesapce
-await index.fetch(['1'])
+await index.fetch(['1']);
 ```
 
 If needed, you can check the currently targeted index and namespace by inspecting the `target` property of an index object.
 
 ```ts
-const pinecone = new Pinecone()
-const index = pinecone.index('test-index').namespace('ns1')
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index').namespace('ns1');
 
 console.log(index.target); // { index: 'test-index', namespace: 'ns1' }
 ```
@@ -305,11 +306,11 @@ Pinecone expects vector data to have the following form:
 
 ```ts
 type Vector = {
-  id: string,
-  values: Array<number>,
-  sparseValues?: Array<number>,
-  metadata?: object
-}
+  id: string;
+  values: Array<number>;
+  sparseValues?: Array<number>;
+  metadata?: object;
+};
 ```
 
 To upsert some vectors, you can use the client like so.
@@ -324,13 +325,13 @@ const index = pinecone.index('sample-index');
 const vectors = [
   {
     id: '1',
-    values: [ 0.236, 0.971, 0.559 ]
+    values: [0.236, 0.971, 0.559],
   },
   {
     id: '2',
-    values: []
-  }
-]
+    values: [],
+  },
+];
 
 // Upsert the data into your index
 await index.upsert(vectors);
@@ -338,16 +339,16 @@ await index.upsert(vectors);
 
 ### Seeing index statistics
 
-When experimenting with data operations, it's sometimes helpful to know how many vectors are stored in each namespace. In that case, 
+When experimenting with data operations, it's sometimes helpful to know how many vectors are stored in each namespace. In that case,
 target the index and use the `describeIndexStats()` command.
 
 ```ts
 > await pinecone.index('example-index').describeIndexStats()
 {
-  namespaces: { 
+  namespaces: {
     '': { vectorCount: 10 }
-    foo: { vectorCount: 2000 }, 
-    bar: { vectorCount: 2000 } 
+    foo: { vectorCount: 2000 },
+    bar: { vectorCount: 2000 }
   },
   dimension: 1536,
   indexFullness: 0,
@@ -363,17 +364,16 @@ The query method accepts a large number of options. The dimension of the query v
 
 ```ts
 type QueryOptions = {
-  topK: number,                // number of results desired
-  vector?: Array<number>,      // must match dimension of index
+  topK: number; // number of results desired
+  vector?: Array<number>; // must match dimension of index
   sparseVector?: {
-    indices: Array<integer>,  // indices must fall within index dimension
-    values: Array<number>     // indices and values arrays must have same length
-  }
-  id?: string                 // if you want to use a vector already stored in 
-                              // the index as the query, specify its id
-  includeMetadata: boolean,
-  includeValues: boolean,
-}
+    indices: Array<integer>; // indices must fall within index dimension
+    values: Array<number>; // indices and values arrays must have same length
+  };
+  id?: string;
+  includeMetadata: boolean;
+  includeValues: boolean;
+};
 ```
 
 For example, to query by vector values you would pass options like these:
@@ -413,7 +413,10 @@ You include options to `includeMetadata: true` or `includeValues: true` if you n
 Remember that data operations take place within the context of a namespace, so if you are working with namespaces and do not see expected results you should check that you are targeting the correct namespace with your query.
 
 ```ts
-const results = await pinecone.index('my-index').namespace('my-namespace').query({ topK: 3, vector: [ 0.22, 0.66 ]})
+const results = await pinecone
+  .index('my-index')
+  .namespace('my-namespace')
+  .query({ topK: 3, vector: [0.22, 0.66] });
 ```
 
 #### Querying by vector id
@@ -421,7 +424,7 @@ const results = await pinecone.index('my-index').namespace('my-namespace').query
 You can query using an existing vector in the index by passing an id.
 
 ```ts
-await pinecone.index('my-index').query({ topK: 10, id: '1' })
+await pinecone.index('my-index').query({ topK: 10, id: '1' });
 ```
 
 #### Hybrid search with sparseVector
@@ -447,7 +450,7 @@ const vectors = [...]
 // a large number of vectors at once
 await index.upsert({ vectors, chunkSize: 100 })
 
-// Prepare query values. In a more realistic example, these would both come out of a model. 
+// Prepare query values. In a more realistic example, these would both come out of a model.
 const vector = [
   // The dimension of this index needs to match the index dimension.
   // Pretend this is a 512 dimension vector.
@@ -485,21 +488,21 @@ For convenience there are several delete-related methods. You can verify the res
 #### Delete one
 
 ```ts
-const index = pinecone.index('my-index')
-await index.deleteOne('id-to-delete')
+const index = pinecone.index('my-index');
+await index.deleteOne('id-to-delete');
 ```
 
 #### Delete many by id
 
 ```ts
-const index = pinecone.index('my-index')
-await index.deleteMany(['id-1', 'id-2', 'id-3'])
+const index = pinecone.index('my-index');
+await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```
 
 ### Delete many by metadata filter
 
 ```ts
-await client.index('albums-database').deleteMany({ filter: { genre: 'rock' }})
+await client.index('albums-database').deleteMany({ filter: { genre: 'rock' } });
 ```
 
 #### Delete all vectors in a namespace
@@ -507,7 +510,7 @@ await client.index('albums-database').deleteMany({ filter: { genre: 'rock' }})
 To nuke everything in the targeted namespace, use the `deleteAll` method.
 
 ```ts
-const index = pinecone.index('my-index')
+const index = pinecone.index('my-index');
 await index.namespace('foo-namespace').deleteAll();
 ```
 
@@ -515,6 +518,6 @@ If you do not specify a namespace, the vectors in the default namespace `''` wil
 
 ## Productionizing
 
-If you are ready to take a javascript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property. 
+If you are ready to take a javascript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property.
 
 These runtime validatiosn are most helpful for users who are not developing with Typescript or who are experimenting in a REPL or notebook-type setting. But once you've tested an application and have gained confidence things are working as expected, you can disable these checks to slightly improve performance. This will have the most impact if your workload is upserting very large amounts of data.
