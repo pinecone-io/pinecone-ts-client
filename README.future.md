@@ -125,7 +125,12 @@ not immediately ready for use upserting, querying, or performing other data oper
     shards: 1,
     podType: 'p1.x1'
   },
-  status: { ready: true, state: 'Ready' }
+  status: {
+    ready: true,
+    state: 'Ready',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
 }
 ```
 
@@ -152,8 +157,10 @@ Given that you have an existing collection:
 > await pinecone.describeCollection('product-description-embeddings')
 {
   name: 'product-description-embeddings',
-  size: undefined,
-  status: 'Ready'
+  size: 543427063,
+  status: 'Ready',
+  dimension: 2,
+  vectorCount: 10001498
 }
 ```
 
