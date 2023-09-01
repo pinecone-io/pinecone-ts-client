@@ -1,4 +1,5 @@
+import { debugLog } from './debugLog';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
 
-export { queryParamsStringify, buildUserAgent };
+export { debugLog, queryParamsStringify, buildUserAgent };
