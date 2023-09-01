@@ -11,8 +11,6 @@ This is the official Node.js client for Pinecone, written in TypeScript.
 npm install @pinecone-database/pinecone
 ```
 
-To try out pre-release features, a nightly build is published using the `@next` tag. To install this
-
 ## Usage
 
 ### Initializing the client
