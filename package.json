@@ -11,7 +11,7 @@
     "Roie Schwaber-Cohen (https://github.com/rschwabco)",
     "Austin DeNoble (https://github.com/austin-denoble)"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
     "docs:build": "typedoc",
