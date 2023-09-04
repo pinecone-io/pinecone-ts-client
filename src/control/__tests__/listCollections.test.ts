@@ -5,7 +5,7 @@ import {
 } from '../../errors';
 
 describe('listCollections', () => {
-  test('should return a list of collections', async () => {
+  test('should return a list of collection objects', async () => {
     const IOA = {
       listCollections: jest
         .fn()
@@ -17,7 +17,10 @@ describe('listCollections', () => {
     // @ts-ignore
     const returned = await listCollections(IOA)();
 
-    expect(returned).toEqual(['collection-name', 'collection-name-2']);
+    expect(returned).toEqual([
+      { name: 'collection-name' },
+      { name: 'collection-name-2' },
+    ]);
   });
 
   test('it should map errors with the http error mapper (500)', async () => {

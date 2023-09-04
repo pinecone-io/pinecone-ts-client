@@ -7,7 +7,7 @@ export { listIndexes } from './listIndexes';
 
 export type { ConfigureIndexOptions } from './configureIndex';
 export type { CreateIndexOptions } from './createIndex';
-export type { IndexList } from './listIndexes';
+export type { IndexList, IndexNameObj } from './listIndexes';
 export type { IndexName } from './describeIndex';
 
 // Collection Operations
@@ -16,4 +16,4 @@ export { deleteCollection } from './deleteCollection';
 export { describeCollection } from './describeCollection';
 export { listCollections } from './listCollections';
 
-export type { CollectionList, CollectionName } from './listCollections';
+export type { CollectionList, CollectionNameObj } from './listCollections';
