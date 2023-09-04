@@ -1,4 +1,4 @@
-import { upsert } from '../upsert';
+import { sliceArrayToBatches, upsert } from '../upsert';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
@@ -47,31 +47,86 @@ describe('upsert', () => {
     });
   });
 
-  describe('chunked upsert', () => {
-    test('passing an object with vectors and chunkSize calls the openapi upsert endpoint with appropriate chunks', async () => {
-      const fakeUpsert: (
-        req: UpsertOperationRequest
-      ) => Promise<UpsertResponse> = jest.fn();
-      const VOA = { upsert: fakeUpsert } as VectorOperationsApi;
+  describe('sliceArrayToBatches', () => {
+    test('batchSize 0 returns original array as batch', () => {
+      const vectors = generateTestVectors(10);
+      const batches = sliceArrayToBatches(vectors, 0);
 
-      jest.mock('../../pinecone-generated-ts-fetch', () => ({
-        VectorOperationsApi: VOA,
-      }));
+      expect(vectors).toBe(batches[0]);
+    });
+
+    describe('array length less than batchSize', () => {
+      test('array length 0', () => {
+        expect(sliceArrayToBatches([], 10)).toEqual([]);
+      });
+
+      test('array length odd', () => {
+        const vectors = generateTestVectors(1);
+        const batches = sliceArrayToBatches(vectors, 10);
+
+        expect(vectors).toEqual(batches[0]);
+      });
+
+      test('array length even', () => {
+        const vectors = generateTestVectors(2);
+        const batches = sliceArrayToBatches(vectors, 6);
+
+        expect(batches.length).toBe(1);
+        expect(batches[0]).toEqual(vectors);
+      });
+    });
+
+    describe('array length greater than batchSize', () => {
+      test('batchSize divides cleanly into array length', () => {
+        const vectors = generateTestVectors(20);
+        const batches = sliceArrayToBatches(vectors, 10);
+
+        expect(batches.length).toBe(2);
+        expect(batches[0]).toEqual(vectors.slice(0, 10));
+        expect(batches[1]).toEqual(vectors.slice(10));
+      });
+
+      test('batchSize does not divide cleanly into array length', () => {
+        const vectors = generateTestVectors(27);
+        const batches = sliceArrayToBatches(vectors, 5);
+
+        expect(batches.length).toBe(6);
+        expect(batches[0]).toEqual(vectors.slice(0, 5));
+        expect(batches[1]).toEqual(vectors.slice(5, 10));
+        expect(batches[2]).toEqual(vectors.slice(10, 15));
+        expect(batches[3]).toEqual(vectors.slice(15, 20));
+        expect(batches[4]).toEqual(vectors.slice(20, 25));
+        expect(batches[5]).toEqual(vectors.slice(25));
+      });
+    });
+
+    test('array length equal to batch size', () => {
+      const vectors = generateTestVectors(10);
+      const batches = sliceArrayToBatches(vectors, 10);
+
+      expect(batches.length).toBe(1);
+      expect(batches[0]).toEqual(vectors);
+    });
+  });
+
+  describe('batched upsert', () => {
+    test('passing an object with vectors and batchSize calls the openapi upsert endpoint with appropriate batches', async () => {
+      const { fakeUpsert, VoaProvider } = setupSuccess('');
 
       const vectors = generateTestVectors(50);
-      const chunkSize = 10;
-      const chunks = Array.from(
-        { length: Math.ceil(vectors.length / chunkSize) },
-        (_, i) => vectors.slice(i * chunkSize, (i + 1) * chunkSize)
-      );
+      const batchSize = 10;
+      const batches = sliceArrayToBatches(vectors, batchSize);
 
-      const returned = await upsert(VOA, 'namespace')({ vectors, chunkSize });
+      const returned = await upsert(
+        VoaProvider,
+        'namespace'
+      )({ vectors, batchSize });
 
       expect(returned).toBe(void 0);
       expect(fakeUpsert).toHaveBeenCalledTimes(5);
-      for (let i = 0; i < chunks.length; i++) {
+      for (let i = 0; i < batches.length; i++) {
         expect(fakeUpsert).toHaveBeenNthCalledWith(i + 1, {
-          upsertRequest: { namespace: 'namespace', vectors: chunks[i] },
+          upsertRequest: { namespace: 'namespace', vectors: batches[i] },
         });
       }
     });

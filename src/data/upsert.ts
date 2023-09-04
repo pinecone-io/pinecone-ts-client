@@ -23,15 +23,12 @@ const VectorSchema = Type.Object(
 );
 const VectorArraySchema = Type.Array(VectorSchema);
 
-const ChunkedUpsertSchema = Type.Object({
+const BatchUpsertSchema = Type.Object({
   vectors: VectorArraySchema,
-  chunkSize: Type.Number({ minimum: 1 }),
+  batchSize: Type.Number({ minimum: 1 }),
 });
 
-const UpsertOptionsSchema = Type.Union([
-  VectorArraySchema,
-  ChunkedUpsertSchema,
-]);
+const UpsertOptionsSchema = Type.Union([VectorArraySchema, BatchUpsertSchema]);
 
 export type Vector = Static<typeof VectorSchema>;
 export type SparseValues = Static<typeof SparseValuesSchema>;
@@ -47,12 +44,12 @@ export const upsert = (
   return async (options: UpsertOptions): Promise<void> => {
     validator(options);
 
-    const isChunkedUpsert = !Array.isArray(options);
+    const isBatchUpsert = !Array.isArray(options);
 
     try {
       const api = await apiProvider.provide();
-      if (isChunkedUpsert) {
-        await chunkedUpsert(api, options.vectors, namespace, options.chunkSize);
+      if (isBatchUpsert) {
+        await batchUpsert(api, options.vectors, namespace, options.batchSize);
       } else {
         await api.upsert({ upsertRequest: { vectors: options, namespace } });
       }
@@ -64,33 +61,49 @@ export const upsert = (
   };
 };
 
-const chunkedUpsert = async (
+const batchUpsert = async (
   api: VectorOperationsApi,
   vectors: VectorArray,
   namespace: string,
-  chunkSize = 10
+  batchSize = 10
 ) => {
-  // Split vectors into chunks and promises for upserting
-  const chunks = sliceArrayToChunks(vectors, chunkSize);
+  // Split vectors into batches and promises for upserting
+  const batches = sliceArrayToBatches(vectors, batchSize);
 
-  const chunkedPromises = chunks.map(async (chunk) => {
+  const batchPromises = batches.map(async (batch) => {
     try {
-      await api.upsert({ upsertRequest: { vectors: chunk, namespace } });
+      await api.upsert({ upsertRequest: { vectors: batch, namespace } });
     } catch (e) {
-      throw new Error(`Error upserting chunk: ${e}`);
+      const err = await handleApiError(
+        e,
+        async (_, rawMessage) => `Error upserting batch: ${rawMessage}`
+      );
+      throw err;
     }
   });
 
   try {
-    await Promise.allSettled(chunkedPromises);
+    await Promise.allSettled(batchPromises);
     return;
   } catch (e) {
-    throw new Error(`Error upserting vectors into index: ${e}`);
+    const err = await handleApiError(
+      e,
+      async (_, rawMessage) =>
+        `Error upserting vectors into index: ${rawMessage}`
+    );
+    throw err;
   }
 };
 
-const sliceArrayToChunks = (array: VectorArray, chunkSize: number) => {
-  return Array.from({ length: Math.ceil(array.length / chunkSize) }, (_, i) => {
-    return array.slice(i * chunkSize, (i + 1) * chunkSize);
-  });
+export const sliceArrayToBatches = (array: VectorArray, batchSize: number) => {
+  if (batchSize > 0) {
+    return Array.from(
+      { length: Math.ceil(array.length / batchSize) },
+      (_, i) => {
+        return array.slice(i * batchSize, (i + 1) * batchSize);
+      }
+    );
+  }
+  // invalid batchSize, return original vectors as a batch
+  return [array];
 };
