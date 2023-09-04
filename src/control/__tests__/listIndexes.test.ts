@@ -5,7 +5,7 @@ import {
 } from '../../errors';
 
 describe('listIndexes', () => {
-  test('should return a list of indexes', async () => {
+  test('should return a list of index objects', async () => {
     const IndexOperationsApi = {
       listIndexes: jest
         .fn()
@@ -17,7 +17,10 @@ describe('listIndexes', () => {
     // @ts-ignore
     const returned = await listIndexes(IndexOperationsApi)();
 
-    expect(returned).toEqual(['index-name', 'index-name-2']);
+    expect(returned).toEqual([
+      { name: 'index-name' },
+      { name: 'index-name-2' },
+    ]);
   });
 
   test('it should map errors with the http error mapper (500)', async () => {
