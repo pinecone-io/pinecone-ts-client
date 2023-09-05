@@ -32,6 +32,7 @@ export type {
   FetchOptions,
   FetchResponse,
   UpdateVectorOptions,
+  UpsertOptions,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,

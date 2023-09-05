@@ -3,36 +3,15 @@ import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsApi } from '../pinecone-generated-ts-fetch';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { PineconeRecord, PineconeRecordSchema } from './types';
 
-export const SparseValuesSchema = Type.Object(
-  {
-    indices: Type.Array(Type.Integer()),
-    values: Type.Array(Type.Number()),
-  },
-  { additionalProperties: false }
-);
-
-const VectorSchema = Type.Object(
-  {
-    id: Type.String({ minLength: 1 }),
-    values: Type.Array(Type.Number()),
-    sparseValues: Type.Optional(SparseValuesSchema),
-    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  },
-  { additionalProperties: false }
-);
-const VectorArraySchema = Type.Array(VectorSchema);
-
+const RecordArraySchema = Type.Array(PineconeRecordSchema);
 const BatchUpsertSchema = Type.Object({
-  vectors: VectorArraySchema,
+  vectors: RecordArraySchema,
   batchSize: Type.Number({ minimum: 1 }),
 });
 
-const UpsertOptionsSchema = Type.Union([VectorArraySchema, BatchUpsertSchema]);
-
-export type Vector = Static<typeof VectorSchema>;
-export type SparseValues = Static<typeof SparseValuesSchema>;
-export type VectorArray = Static<typeof VectorArraySchema>;
+const UpsertOptionsSchema = Type.Union([RecordArraySchema, BatchUpsertSchema]);
 export type UpsertOptions = Static<typeof UpsertOptionsSchema>;
 
 export const upsert = (
@@ -63,7 +42,7 @@ export const upsert = (
 
 const batchUpsert = async (
   api: VectorOperationsApi,
-  vectors: VectorArray,
+  vectors: Array<PineconeRecord>,
   namespace: string,
   batchSize = 10
 ) => {
@@ -95,7 +74,7 @@ const batchUpsert = async (
   }
 };
 
-export const sliceArrayToBatches = (array: VectorArray, batchSize: number) => {
+export const sliceArrayToBatches = (array: Array<PineconeRecord>, batchSize: number) => {
   if (batchSize > 0) {
     return Array.from(
       { length: Math.ceil(array.length / batchSize) },

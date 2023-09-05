@@ -25,6 +25,7 @@ export type {
 } from './describeIndexStats';
 export type { FetchOptions, FetchResponse } from './fetch';
 export type { UpdateVectorOptions } from './update';
+export type { UpsertOptions } from './upsert';
 export type {
   QueryByRecordId,
   QueryByVectorValues,
