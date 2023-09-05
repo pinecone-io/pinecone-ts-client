@@ -316,7 +316,7 @@ By default, all data operations take place inside the default namespace of `''`.
 const pinecone = new Pinecone();
 const index = pinecone.index('test-index').namespace('ns1');
 
-// Now perform index operations in the targeted index and namesapce
+// Now perform index operations in the targeted index and namespace
 await index.fetch(['1']);
 ```
 
