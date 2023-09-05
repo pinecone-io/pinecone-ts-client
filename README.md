@@ -18,7 +18,7 @@ There are two pieces of configuration required to use the Pinecone client: an AP
 
 #### Using environment variables
 
-The environment variables used to configure the client are:
+The environment variables used to configure the client are the following:
 
 ```bash
 PINECONE_API_KEY="your_api_key"
@@ -50,13 +50,13 @@ const pinecone = new Pinecone({
 Once you've instantiated your pinecone client, you're ready to perform the following control plane operations:
 
 1. Create, configure and delete indexes
-2. Get information about existing indexes
+2. Get information about existing indexes and collections
 3. Create and delete collections
 4. Select an index to perform data operations (upsert, query, fetch, etc)
 
 ## Indexes
 
-### Create Index with minimal configuration
+### Create an index with minimal configuration
 
 At a minimum, to create an index you must specify a `name` and `dimension`. The `dimension` indicates the size of the records you intend to store in the index. For example, if your intention was to store and query embeddings generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
 
@@ -144,7 +144,7 @@ await pinecone.createIndex({
 
 #### Create index from a Pinecone collection
 
-As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. Collections provide an easy way to do this.
+As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](https://github.com/pinecone-io/pinecone-ts-client#collections).
 
 Given that you have an existing collection:
 
@@ -239,7 +239,7 @@ await pinecone.deleteIndex('sample-index');
 
 ### List Indexes
 
-The list index command returns an array of index names.
+The `listIndexes` command returns an array of index names.
 
 ```typescript
 > await pinecone.listIndexes()
@@ -248,7 +248,7 @@ The list index command returns an array of index names.
 
 ## Collections
 
-A collection is a static copy of an index that may be used for backup, to create copies of indexes, or perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/docs/collections).
+A collection is a static copy of an index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/docs/collections).
 
 ### Create Collection
 
@@ -310,7 +310,7 @@ await index.fetch(['1']);
 > [!NOTE]
 > Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
 
-By default all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
+By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
 
 ```typescript
 const pinecone = new Pinecone();
@@ -477,9 +477,9 @@ const index = pinecone.index('hybrid-image-search');
 // Create some vector embeddings using your model of choice.
 const vectors = [...]
 
-// Upsert data. Specify a chunkSize if you are trying to upsert
+// Upsert data. Specify a batchSize if you are trying to upsert
 // a large number of vectors at once
-await index.upsert({ vectors, chunkSize: 100 })
+await index.upsert({ vectors, batchSize: 100 })
 
 // Prepare query values. In a more realistic example, these would both come out of a model.
 const vector = [
