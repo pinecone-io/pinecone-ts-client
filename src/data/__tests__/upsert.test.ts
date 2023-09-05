@@ -26,7 +26,7 @@ const setupFailure = (response) => {
 };
 
 describe('upsert', () => {
-  const generateTestVectors = (numberOfVectors: number) =>
+  const generateTestRecords = (numberOfVectors: number) =>
     Array.from({ length: numberOfVectors }, (_, i) => ({
       id: `test-create-${i}`,
       values: [1, 2, 3],
@@ -49,10 +49,10 @@ describe('upsert', () => {
 
   describe('sliceArrayToBatches', () => {
     test('batchSize 0 returns original array as batch', () => {
-      const vectors = generateTestVectors(10);
-      const batches = sliceArrayToBatches(vectors, 0);
+      const records = generateTestRecords(10);
+      const batches = sliceArrayToBatches(records, 0);
 
-      expect(vectors).toBe(batches[0]);
+      expect(records).toBe(batches[0]);
     });
 
     describe('array length less than batchSize', () => {
@@ -61,51 +61,51 @@ describe('upsert', () => {
       });
 
       test('array length odd', () => {
-        const vectors = generateTestVectors(1);
-        const batches = sliceArrayToBatches(vectors, 10);
+        const records = generateTestRecords(1);
+        const batches = sliceArrayToBatches(records, 10);
 
-        expect(vectors).toEqual(batches[0]);
+        expect(records).toEqual(batches[0]);
       });
 
       test('array length even', () => {
-        const vectors = generateTestVectors(2);
-        const batches = sliceArrayToBatches(vectors, 6);
+        const records = generateTestRecords(2);
+        const batches = sliceArrayToBatches(records, 6);
 
         expect(batches.length).toBe(1);
-        expect(batches[0]).toEqual(vectors);
+        expect(batches[0]).toEqual(records);
       });
     });
 
     describe('array length greater than batchSize', () => {
       test('batchSize divides cleanly into array length', () => {
-        const vectors = generateTestVectors(20);
-        const batches = sliceArrayToBatches(vectors, 10);
+        const records = generateTestRecords(20);
+        const batches = sliceArrayToBatches(records, 10);
 
         expect(batches.length).toBe(2);
-        expect(batches[0]).toEqual(vectors.slice(0, 10));
-        expect(batches[1]).toEqual(vectors.slice(10));
+        expect(batches[0]).toEqual(records.slice(0, 10));
+        expect(batches[1]).toEqual(records.slice(10));
       });
 
       test('batchSize does not divide cleanly into array length', () => {
-        const vectors = generateTestVectors(27);
-        const batches = sliceArrayToBatches(vectors, 5);
+        const records = generateTestRecords(27);
+        const batches = sliceArrayToBatches(records, 5);
 
         expect(batches.length).toBe(6);
-        expect(batches[0]).toEqual(vectors.slice(0, 5));
-        expect(batches[1]).toEqual(vectors.slice(5, 10));
-        expect(batches[2]).toEqual(vectors.slice(10, 15));
-        expect(batches[3]).toEqual(vectors.slice(15, 20));
-        expect(batches[4]).toEqual(vectors.slice(20, 25));
-        expect(batches[5]).toEqual(vectors.slice(25));
+        expect(batches[0]).toEqual(records.slice(0, 5));
+        expect(batches[1]).toEqual(records.slice(5, 10));
+        expect(batches[2]).toEqual(records.slice(10, 15));
+        expect(batches[3]).toEqual(records.slice(15, 20));
+        expect(batches[4]).toEqual(records.slice(20, 25));
+        expect(batches[5]).toEqual(records.slice(25));
       });
     });
 
     test('array length equal to batch size', () => {
-      const vectors = generateTestVectors(10);
-      const batches = sliceArrayToBatches(vectors, 10);
+      const records = generateTestRecords(10);
+      const batches = sliceArrayToBatches(records, 10);
 
       expect(batches.length).toBe(1);
-      expect(batches[0]).toEqual(vectors);
+      expect(batches[0]).toEqual(records);
     });
   });
 
@@ -113,14 +113,14 @@ describe('upsert', () => {
     test('passing an object with vectors and batchSize calls the openapi upsert endpoint with appropriate batches', async () => {
       const { fakeUpsert, VoaProvider } = setupSuccess('');
 
-      const vectors = generateTestVectors(50);
+      const records = generateTestRecords(50);
       const batchSize = 10;
-      const batches = sliceArrayToBatches(vectors, batchSize);
+      const batches = sliceArrayToBatches(records, batchSize);
 
       const returned = await upsert(
         VoaProvider,
         'namespace'
-      )({ vectors, batchSize });
+      )({ records, batchSize });
 
       expect(returned).toBe(void 0);
       expect(fakeUpsert).toHaveBeenCalledTimes(5);
