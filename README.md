@@ -10,6 +10,12 @@ This is the official Node.js client for Pinecone, written in TypeScript.
 npm install @pinecone-database/pinecone
 ```
 
+## Example code
+
+See some practical examples of how this client can be used:
+
+- [Semantic search](https://github.com/pinecone-io/semantic-search-example)
+
 ## Usage
 
 ### Initializing the client
