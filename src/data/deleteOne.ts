@@ -1,19 +1,17 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { Static, Type } from '@sinclair/typebox';
+import { RecordIdSchema, type RecordId } from './types';
 
-const DeleteOneOptionsSchema = Type.String({ minLength: 1 });
-
-export type DeleteOneOptions = Static<typeof DeleteOneOptionsSchema>;
+export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (
   apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
-  const validator = buildConfigValidator(DeleteOneOptionsSchema, 'deleteOne');
+  const validator = buildConfigValidator(RecordIdSchema, 'deleteOne');
 
-  return async (options: DeleteOneOptions): Promise<void> => {
+  return async (options: RecordId): Promise<void> => {
     validator(options);
 
     try {

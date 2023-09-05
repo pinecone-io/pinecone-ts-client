@@ -4,7 +4,7 @@ import {
   PineconeUnknownRequestFailure,
   mapHttpStatusError,
 } from '../errors';
-import type { PineconeConfiguration } from '../pinecone';
+import type { PineconeConfiguration } from './types';
 import { buildUserAgent } from '../utils';
 
 // We only ever want to call whoami a maximum of once per API key, even if there

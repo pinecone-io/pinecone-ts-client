@@ -3,8 +3,9 @@ import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
+import { RecordIdSchema } from './types';
 
-const DeleteManyByVectorIdSchema = Type.Array(Type.String({ minLength: 1 }));
+const DeleteManyByRecordIdSchema = Type.Array(RecordIdSchema);
 
 const DeleteManyByFilterSchema = Type.Object(
   {},
@@ -12,12 +13,12 @@ const DeleteManyByFilterSchema = Type.Object(
 );
 
 const DeleteManySchema = Type.Union([
-  DeleteManyByVectorIdSchema,
+  DeleteManyByRecordIdSchema,
   DeleteManyByFilterSchema,
 ]);
 
 export type DeleteManyByVectorIdOptions = Static<
-  typeof DeleteManyByVectorIdSchema
+  typeof DeleteManyByRecordIdSchema
 >;
 export type DeleteManyByFilterOptions = Static<typeof DeleteManyByFilterSchema>;
 export type DeleteManyOptions = Static<typeof DeleteManySchema>;

@@ -2,32 +2,29 @@ import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import {
+  RecordIdSchema,
+  RecordValuesSchema,
+  RecordSparseValuesSchema,
+} from './types';
 
-const SparseValues = Type.Object(
+const UpdateRecordOptionsSchema = Type.Object(
   {
-    indices: Type.Array(Type.Integer()),
-    values: Type.Array(Type.Number()),
-  },
-  { additionalProperties: false }
-);
-
-const UpdateVectorOptionsSchema = Type.Object(
-  {
-    id: Type.String({ minLength: 1 }),
-    values: Type.Optional(Type.Array(Type.Number())),
-    sparseValues: Type.Optional(SparseValues),
+    id: RecordIdSchema,
+    values: Type.Optional(RecordValuesSchema),
+    sparseValues: Type.Optional(RecordSparseValuesSchema),
     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
   },
   { additionalProperties: false }
 );
 
-export type UpdateVectorOptions = Static<typeof UpdateVectorOptionsSchema>;
+export type UpdateVectorOptions = Static<typeof UpdateRecordOptionsSchema>;
 
 export const update = (
   apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
-  const validator = buildConfigValidator(UpdateVectorOptionsSchema, 'update');
+  const validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
 
   return async (options: UpdateVectorOptions): Promise<void> => {
     validator(options);

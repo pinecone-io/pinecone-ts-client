@@ -1,15 +1,14 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import { Static, Type } from '@sinclair/typebox';
+import { IndexName, IndexNameSchema } from './types';
 import { handleIndexRequestError } from './utils';
 
-const DescribeIndexSchema = Type.String({ minLength: 1 });
-export type IndexName = Static<typeof DescribeIndexSchema>;
+export type DeleteIndexOptions = IndexName;
 
 export const deleteIndex = (api: IndexOperationsApi) => {
-  const validator = buildConfigValidator(DescribeIndexSchema, 'deleteIndex');
+  const validator = buildConfigValidator(IndexNameSchema, 'deleteIndex');
 
-  return async (indexName: IndexName): Promise<void> => {
+  return async (indexName: DeleteIndexOptions): Promise<void> => {
     validator(indexName);
 
     try {

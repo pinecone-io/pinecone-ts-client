@@ -1,10 +1,10 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { handleApiError } from '../errors';
 
-export type IndexNameObj = {
+export type PartialIndexDescription = {
   name: string;
 };
-export type IndexList = Array<IndexNameObj>;
+export type IndexList = Array<PartialIndexDescription>;
 
 export const listIndexes = (api: IndexOperationsApi) => {
   return async (): Promise<IndexList> => {

@@ -1,15 +1,13 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { handleIndexRequestError } from './utils';
-
+import { CollectionNameSchema, IndexNameSchema } from './types';
 import { Static, Type } from '@sinclair/typebox';
-
-const nonemptyString = Type.String({ minLength: 1 });
 
 const CreateCollectionOptionsSchema = Type.Object(
   {
-    name: nonemptyString,
-    source: nonemptyString,
+    name: CollectionNameSchema,
+    source: IndexNameSchema,
   },
   { additionalProperties: false }
 );

@@ -1,11 +1,13 @@
-import type { QueryResponse } from '../pinecone-generated-ts-fetch';
+import type { QueryResponse as GeneratedQueryResponse } from '../pinecone-generated-ts-fetch';
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { SparseValuesSchema } from './upsert';
+import {
+  RecordSparseValuesSchema,
+  RecordIdSchema,
+  RecordValuesSchema,
+} from './types';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-
-const nonemptyString = Type.String({ minLength: 1 });
 
 const shared = {
   topK: Type.Number(),
@@ -14,25 +16,26 @@ const shared = {
   filter: Type.Optional(Type.Object({})),
 };
 
-const QueryByVectorId = Type.Object({
+const QueryByRecordId = Type.Object({
   ...shared,
-  id: nonemptyString,
+  id: RecordIdSchema,
   vector: Type.Optional(Type.Never()),
   sparseVector: Type.Optional(Type.Never()),
 });
 
 const QueryByVectorValues = Type.Object({
   ...shared,
-  vector: Type.Array(Type.Number()),
-  sparseVector: Type.Optional(SparseValuesSchema),
+  vector: RecordValuesSchema,
+  sparseVector: Type.Optional(RecordSparseValuesSchema),
   id: Type.Optional(Type.Never()),
 });
 
-const QuerySchema = Type.Union([QueryByVectorId, QueryByVectorValues]);
+const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 
-export type QueryByVectorId = Static<typeof QueryByVectorId>;
+export type QueryByRecordId = Static<typeof QueryByRecordId>;
 export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
 export type QueryOptions = Static<typeof QuerySchema>;
+export type QueryResponse = GeneratedQueryResponse;
 
 export const query = (
   apiProvider: VectorOperationsProvider,

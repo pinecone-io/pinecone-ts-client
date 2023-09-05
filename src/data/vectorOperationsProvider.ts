@@ -1,4 +1,4 @@
-import type { PineconeConfiguration } from '../pinecone';
+import type { PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,

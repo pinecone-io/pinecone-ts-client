@@ -21,18 +21,10 @@ import {
 import { Index } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
-import { Static, Type } from '@sinclair/typebox';
-
-const PineconeConfigurationSchema = Type.Object(
-  {
-    environment: Type.String({ minLength: 1 }),
-    apiKey: Type.String({ minLength: 1 }),
-    projectId: Type.Optional(Type.String({ minLength: 1 })),
-  },
-  { additionalProperties: false }
-);
-
-export type PineconeConfiguration = Static<typeof PineconeConfigurationSchema>;
+import {
+  type PineconeConfiguration,
+  PineconeConfigurationSchema,
+} from './data';
 
 /**
  * @example

@@ -2,6 +2,9 @@ import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { type DescribeIndexStatsResponse } from '../pinecone-generated-ts-fetch';
+
+export type IndexStatsDescription = DescribeIndexStatsResponse;
 
 const DescribeIndexStatsOptionsSchema = Type.Object(
   {
@@ -20,7 +23,9 @@ export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
     'describeIndexStats'
   );
 
-  return async (options?: DescribeIndexStatsOptions): Promise<object> => {
+  return async (
+    options?: DescribeIndexStatsOptions
+  ): Promise<IndexStatsDescription> => {
     if (options) {
       validator(options);
     }

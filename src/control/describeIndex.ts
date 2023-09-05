@@ -1,23 +1,14 @@
-import { Static, Type } from '@sinclair/typebox';
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import type { IndexMeta as IndexDescription } from '../pinecone-generated-ts-fetch';
+import type { IndexMeta } from '../pinecone-generated-ts-fetch';
 import { handleIndexRequestError } from './utils';
+import { IndexNameSchema, type IndexName } from './types';
 
-// If user passes the empty string for index name, the generated
-// OpenAPI client will call /databases/ which is the list
-// indexes endpoint. This returns 200 instead of 404, but obviously
-// no descriptive information is returned for an index named empty
-// string. To avoid this confusing case, we require lenth > 1.
-const DescribeIndexOptionsSchema = Type.String({ minLength: 1 });
-
-export type IndexName = Static<typeof DescribeIndexOptionsSchema>;
+export type DescribeIndexOptions = IndexName;
+export type IndexDescription = IndexMeta;
 
 export const describeIndex = (api: IndexOperationsApi) => {
-  const validator = buildConfigValidator(
-    DescribeIndexOptionsSchema,
-    'describeIndex'
-  );
+  const validator = buildConfigValidator(IndexNameSchema, 'describeIndex');
 
   const removeDeprecatedFields = (result: any) => {
     if (result.database) {
