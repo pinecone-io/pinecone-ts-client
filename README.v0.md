@@ -5,9 +5,9 @@
 
 > **_⚠️ Warning_**
 >
-> All 0.x versions of the Pinecone client should be regarded as a **public preview** 
-> ("Beta") client. Test thoroughly before using this client for production workloads. 
-> No SLAs or technical support commitments are provided for this client. Expect 
+> All 0.x versions of the Pinecone client should be regarded as a **public preview**
+> ("Beta") client. Test thoroughly before using this client for production workloads.
+> No SLAs or technical support commitments are provided for this client. Expect
 > potential breaking changes in future releases.
 
 ## Installation
