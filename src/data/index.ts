@@ -13,7 +13,12 @@ export type { DeleteOneOptions } from './deleteOne';
 export type { DescribeIndexStatsOptions } from './describeIndexStats';
 export type { IdsArray } from './fetch';
 export type { UpdateVectorOptions } from './update';
-export type { Vector, VectorArray, SparseValues } from './upsert';
+export type {
+  SparseValues,
+  UpsertOptions,
+  Vector,
+  VectorArray,
+} from './upsert';
 export type {
   QueryByVectorId,
   QueryByVectorValues,
