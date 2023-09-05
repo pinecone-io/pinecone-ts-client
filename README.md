@@ -33,10 +33,10 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pinecone = new Pinecone();
 ```
 
-#### Using configuration object
+#### Using a configuration object
 
-If you prefer to pass configuration in code, the constructor accepts a config object containing the apiKey and environment values. This
-could be useful if your application needs to interact with multiple projects each with different configuration.
+If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` and `environment` values. This
+could be useful if your application needs to interact with multiple projects, each with a different configuration.
 
 ```typescript
 const pinecone = new Pinecone({
@@ -52,7 +52,7 @@ Once you've instantiated your pinecone client, you're ready to perform the follo
 1. Create, configure and delete indexes
 2. Get information about existing indexes and collections
 3. Create and delete collections
-4. Select an index to perform data operations (upsert, query, fetch, etc)
+4. Select an index to perform data operations (upsert, query, fetch, etc.)
 
 ## Indexes
 
@@ -68,7 +68,7 @@ await pinecone.createIndex({
 });
 ```
 
-#### Create index with other optional configurations
+#### Create an index with other optional configurations
 
 Many optional configuration fields allow greater control over hardware resources and availability. To learn more
 about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -92,7 +92,7 @@ await pinecone.createIndex({
 #### Create Index: Checking the status of a newly created index
 
 The `createIndex` method issues a create request to the API that returns quickly, but the resulting index is
-not immediately ready for use upserting, querying, or performing other data operations. You can use the
+not immediately ready for upserting, querying, or performing other data operations. You can use the
 `describeIndex` method to find out the status of an index and see whether it is ready for use.
 
 ```typescript
@@ -131,7 +131,7 @@ not immediately ready for use upserting, querying, or performing other data oper
 
 #### Create Index: Waiting until the index is ready
 
-If you pass the `waitUntilReady` option, the client will handle polling for status updates on a newly created index. The promise returned by `createIndex` will not be resolved until the index status indicates it is ready to handle data operations. This can be especially useful for integration testing where index creation in a setup step will be immediately followed by data operations.
+If you pass the `waitUntilReady` option, the client will handle polling for status updates on a newly created index. The promise returned by `createIndex` will not be resolved until the index status indicates it is ready to handle data operations. This can be especially useful for integration testing, where index creation in a setup step will be immediately followed by data operations.
 
 ```typescript
 const client = new Pinecone();
@@ -159,7 +159,7 @@ Given that you have an existing collection:
 }
 ```
 
-You can specify a sourceCollection along with other configuration in your create index options:
+You can specify a sourceCollection along with other configuration in your `createIndex` options:
 
 ```typescript
 await pinecone.createIndex({
@@ -171,7 +171,7 @@ await pinecone.createIndex({
 })
 ```
 
-When the new index is ready, it should contain all the data that was in the collection ready to be queried.
+When the new index is ready, it should contain all the data that was in the collection, ready to be queried.
 
 ```typescript
 > await pinecone.index('product-description-p2x2').describeIndexStats()
@@ -205,7 +205,7 @@ You can fetch the description of any index by name using `describeIndex`.
 
 ### Configure Index
 
-You can adjust the number of replicas or scale to a larger pod size (specified with podType). See [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
+You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
 
 ```typescript
 > await pinecone.configureIndex('my-index', { replicas: 3 })
