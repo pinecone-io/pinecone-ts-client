@@ -337,12 +337,12 @@ console.log(index.target); // { index: 'test-index', namespace: 'ns1' }
 
 See [Using namespaces](https://docs.pinecone.io/docs/namespaces) for more information.
 
-### Upsert vectors
+### Upsert records
 
-Pinecone expects vector data to have the following form:
+Pinecone expects records inserted into indexes to have the following form:
 
 ```typescript
-type Vector = {
+type PineconeRecord = {
   id: string;
   values: Array<number>;
   sparseValues?: Array<number>;
@@ -350,7 +350,7 @@ type Vector = {
 };
 ```
 
-To upsert some vectors, you can use the client like so.
+To upsert some records, you can use the client like so:
 
 ```typescript
 const pinecone = new Pinecone();
@@ -358,25 +358,26 @@ const pinecone = new Pinecone();
 // Target an index
 const index = pinecone.index('sample-index');
 
-// Prepare your data
-const vectors = [
+// Prepare your data. The length of each array
+// of vector values must match the index dimension.
+const records = [
   {
     id: '1',
     values: [0.236, 0.971, 0.559],
   },
   {
     id: '2',
-    values: [],
+    values: [0.685, 0.111, 0.857],
   },
 ];
 
 // Upsert the data into your index
-await index.upsert(vectors);
+await index.upsert(records);
 ```
 
 ### Seeing index statistics
 
-When experimenting with data operations, it's sometimes helpful to know how many vectors are stored in each namespace. In that case,
+When experimenting with data operations, it's sometimes helpful to know how many records are stored in each namespace. In that case,
 target the index and use the `describeIndexStats()` command.
 
 ```typescript
@@ -456,7 +457,7 @@ const results = await pinecone
   .query({ topK: 3, vector: [0.22, 0.66] });
 ```
 
-#### Querying by vector id
+#### Querying by record id
 
 You can query using an existing vector in the index by passing an id.
 
@@ -481,11 +482,11 @@ await pinecone.createIndex({
 const index = pinecone.index('hybrid-image-search');
 
 // Create some vector embeddings using your model of choice.
-const vectors = [...]
+const records = [...]
 
 // Upsert data. Specify a batchSize if you are trying to upsert
-// a large number of vectors at once
-await index.upsert({ vectors, batchSize: 100 })
+// a large number of records at once
+await index.upsert({ records, batchSize: 100 })
 
 // Prepare query values. In a more realistic example, these would both come out of a model.
 const vector = [
@@ -501,7 +502,7 @@ const sparseVector = {
 const results = await index.query({ topK: 10, vector, sparseVector, includeMetadata: true })
 ```
 
-### Update a vector
+### Update a record
 
 You may want to update vector `values`, `sparseValues`, or `metadata`. Specify the id and the attribute value you want to update.
 
@@ -512,15 +513,15 @@ await pinecone.index('imdb-movies').update({
 })
 ```
 
-### Fetch vectors by their IDs
+### Fetch records by their IDs
 
 ```typescript
 const fetchResult = await index.fetch(['id-1', 'id-2']);
 ```
 
-### Delete vectors
+### Delete records
 
-For convenience there are several delete-related methods. You can verify the results of a delete operation by trying to `fetch()` a vector or looking at the index summary with `describeIndexStats()`
+For convenience there are several delete-related methods. You can verify the results of a delete operation by trying to `fetch()` a record or looking at the index summary with `describeIndexStats()`
 
 #### Delete one
 
@@ -542,7 +543,7 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 await client.index('albums-database').deleteMany({ filter: { genre: 'rock' } });
 ```
 
-#### Delete all vectors in a namespace
+#### Delete all records in a namespace
 
 > [!NOTE]
 > Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
@@ -554,7 +555,7 @@ const index = pinecone.index('my-index');
 await index.namespace('foo-namespace').deleteAll();
 ```
 
-If you do not specify a namespace, the vectors in the default namespace `''` will be deleted.
+If you do not specify a namespace, the records in the default namespace `''` will be deleted.
 
 ## Productionizing
 
