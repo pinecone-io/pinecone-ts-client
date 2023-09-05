@@ -18,7 +18,7 @@ const UpdateRecordOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export type UpdateVectorOptions = Static<typeof UpdateRecordOptionsSchema>;
+export type UpdateOptions = Static<typeof UpdateRecordOptionsSchema>;
 
 export const update = (
   apiProvider: VectorOperationsProvider,
@@ -26,7 +26,7 @@ export const update = (
 ) => {
   const validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
 
-  return async (options: UpdateVectorOptions): Promise<void> => {
+  return async (options: UpdateOptions): Promise<void> => {
     validator(options);
 
     const requestOptions = {

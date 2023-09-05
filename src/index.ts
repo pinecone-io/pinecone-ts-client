@@ -31,7 +31,7 @@ export type {
   IndexStatsDescription,
   FetchOptions,
   FetchResponse,
-  UpdateVectorOptions,
+  UpdateOptions,
   UpsertOptions,
   QueryByRecordId,
   QueryByVectorValues,
