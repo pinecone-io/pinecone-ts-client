@@ -195,7 +195,7 @@ export class Pinecone {
    * ```
    *
    * @example
-   * By default all metadata fields are indexed when vectors are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store in Pinecone alongside your vectors.
+   * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
    * ```js
    * await client.createIndex({ name: 'my-index', dimension: 128, metadataConfig: { 'indexed' : ['productName', 'productDescription'] }})
    * ```
