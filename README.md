@@ -527,8 +527,8 @@ You may want to update vector `values`, `sparseValues`, or `metadata`. Specify t
 ```typescript
 await pinecone.index('imdb-movies').update({
   id: '18593',
-  metadata: { genre: 'romance' }
-})
+  metadata: { genre: 'romance' },
+});
 ```
 
 ### Fetch records by their IDs
