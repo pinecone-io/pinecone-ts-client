@@ -91,9 +91,9 @@ describe('Index', () => {
     expect(FetchCommand).toHaveBeenCalledTimes(1);
 
     const response = await index.fetch(['1']);
-    if (response && response.vectors) {
+    if (response && response.records) {
       // eslint-disable-next-line
-      Object.entries(response.vectors).forEach(([key, value]) => {
+      Object.entries(response.records).forEach(([key, value]) => {
         // No errors on these because they are properties from MovieMetadata
         console.log(value.metadata?.genre);
         console.log(value.metadata?.runtime);

@@ -9,7 +9,7 @@ const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
 export type FetchOptions = Array<RecordId>;
 
 export type FetchResponse<T extends Record<string, RecordMetadataValue>> = {
-  vectors?: { [key: string]: PineconeRecord<T> };
+  records?: { [key: string]: PineconeRecord<T> };
   namespace?: string;
 };
 
@@ -32,7 +32,7 @@ export class FetchCommand<T extends Record<string, RecordMetadataValue>> {
       const response = await api.fetch({ ids: ids, namespace: this.namespace });
 
       return {
-        vectors: response.vectors,
+        records: response.vectors,
         namespace: response.namespace,
       } as FetchResponse<T>;
     } catch (e) {

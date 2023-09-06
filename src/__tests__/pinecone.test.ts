@@ -132,12 +132,12 @@ describe('Pinecone', () => {
       const i = p.index<ProductMetadata>('product-embeddings');
 
       const result = await i.fetch(['1']);
-      if (result && result.vectors) {
+      if (result && result.records) {
         // No ts error
-        console.log(result.vectors['1'].metadata?.color);
+        console.log(result.records['1'].metadata?.color);
 
         // @ts-expect-error because colour not in ProductMetadata
-        console.log(result.vectors['1'].metadata.colour);
+        console.log(result.records['1'].metadata.colour);
       }
 
       // No ts errors when passing ProductMetadata
