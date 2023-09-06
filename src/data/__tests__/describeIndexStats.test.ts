@@ -30,14 +30,29 @@ const setupFailure = (response) => {
 
 describe('describeIndexStats', () => {
   test('calls the openapi describe_index_stats endpoint passing filter if provided', async () => {
-    const { VOA, VoaProvider } = setupSuccess(undefined);
+    const { VOA, VoaProvider } = setupSuccess({
+      namespaces: {
+        '': { vectorCount: 50 },
+      },
+      dimension: 1586,
+      indexFullness: 0,
+      totalVectorCount: 50,
+    });
 
     const describeIndexStatsFn = describeIndexStats(VoaProvider);
     const returned = await describeIndexStatsFn({
       filter: { genre: 'classical' },
     });
 
-    expect(returned).toBe(void 0);
+    // Maps response to from "vector" to "record" terminology
+    expect(returned).toEqual({
+      namespaces: {
+        '': { recordCount: 50 },
+      },
+      dimension: 1586,
+      indexFullness: 0,
+      totalRecordCount: 50,
+    });
     expect(VOA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
     });

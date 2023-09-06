@@ -2,9 +2,17 @@ import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import { type DescribeIndexStatsResponse } from '../pinecone-generated-ts-fetch';
 
-export type IndexStatsDescription = DescribeIndexStatsResponse;
+export type IndexStatsNamespaceSummary = {
+  recordCount: number;
+};
+
+export type IndexStatsDescription = {
+  namespaces?: { [key: string]: IndexStatsNamespaceSummary };
+  dimension?: number;
+  indexFullness?: number;
+  totalRecordCount?: number;
+};
 
 const DescribeIndexStatsOptionsSchema = Type.Object(
   {
@@ -35,7 +43,22 @@ export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
       const results = await api.describeIndexStats({
         describeIndexStatsRequest: { ...options },
       });
-      return results;
+
+      const mappedResult = {
+        namespaces: {},
+        dimension: results.dimension,
+        indexFullness: results.indexFullness,
+        totalRecordCount: results.totalVectorCount,
+      };
+      if (results.namespaces) {
+        for (const key in results.namespaces) {
+          mappedResult.namespaces[key] = {
+            recordCount: results.namespaces[key].vectorCount,
+          };
+        }
+      }
+
+      return mappedResult;
     } catch (e) {
       const err = await handleApiError(e);
       throw err;

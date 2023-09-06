@@ -22,6 +22,7 @@ export type { DeleteOneOptions } from './deleteOne';
 export type {
   DescribeIndexStatsOptions,
   IndexStatsDescription,
+  IndexStatsNamespaceSummary,
 } from './describeIndexStats';
 export type { FetchOptions, FetchResponse } from './fetch';
 export type { UpdateOptions } from './update';

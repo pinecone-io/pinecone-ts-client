@@ -26,6 +26,7 @@ export type {
   FetchOptions,
   FetchResponse,
   IndexStatsDescription,
+  IndexStatsNamespaceSummary,
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,

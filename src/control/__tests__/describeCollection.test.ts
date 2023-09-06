@@ -80,6 +80,7 @@ describe('describeCollection', () => {
             name: 'collection-name',
             size: 3085509,
             status: 'Ready',
+            vectorCount: 120,
           }),
         () => Promise.resolve([])
       );
@@ -91,6 +92,7 @@ describe('describeCollection', () => {
         name: 'collection-name',
         size: 3085509,
         status: 'Ready',
+        recordCount: 120,
       });
     });
   });
