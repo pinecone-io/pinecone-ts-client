@@ -4,10 +4,11 @@ import { PineconeRecordSchema, type PineconeRecord } from './types';
 import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch';
+import type { RecordMetadataValue } from './types';
 
 const RecordArray = Type.Array(PineconeRecordSchema);
 
-export class UpsertCommand<T> {
+export class UpsertCommand<T extends Record<string, RecordMetadataValue>> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;
@@ -21,9 +22,6 @@ export class UpsertCommand<T> {
   async run(records: Array<PineconeRecord<T>>): Promise<void> {
     this.validator(records);
 
-    const isBatchUpsert = !Array.isArray(options);
-
-    let api;
     try {
       const api = await this.apiProvider.provide();
       await api.upsert({

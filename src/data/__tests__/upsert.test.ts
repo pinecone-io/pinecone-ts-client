@@ -3,9 +3,8 @@ import {
   PineconeBadRequestError,
   PineconeInternalServerError,
 } from '../../errors';
-import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { VectorOperationsApi, type UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
 import { VectorOperationsProvider } from '../vectorOperationsProvider';
-import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertOperationRequest) => Promise<object> = jest
@@ -46,92 +45,7 @@ describe('upsert', () => {
       },
     });
   });
-
-  describe('sliceArrayToBatches', () => {
-    test('batchSize 0 returns original array as batch', () => {
-      const records = generateTestRecords(10);
-      const batches = sliceArrayToBatches(records, 0);
-
-      expect(records).toBe(batches[0]);
-    });
-
-    describe('array length less than batchSize', () => {
-      test('array length 0', () => {
-        expect(sliceArrayToBatches([], 10)).toEqual([]);
-      });
-
-      test('array length odd', () => {
-        const records = generateTestRecords(1);
-        const batches = sliceArrayToBatches(records, 10);
-
-        expect(records).toEqual(batches[0]);
-      });
-
-      test('array length even', () => {
-        const records = generateTestRecords(2);
-        const batches = sliceArrayToBatches(records, 6);
-
-        expect(batches.length).toBe(1);
-        expect(batches[0]).toEqual(records);
-      });
-    });
-
-    describe('array length greater than batchSize', () => {
-      test('batchSize divides cleanly into array length', () => {
-        const records = generateTestRecords(20);
-        const batches = sliceArrayToBatches(records, 10);
-
-        expect(batches.length).toBe(2);
-        expect(batches[0]).toEqual(records.slice(0, 10));
-        expect(batches[1]).toEqual(records.slice(10));
-      });
-
-      test('batchSize does not divide cleanly into array length', () => {
-        const records = generateTestRecords(27);
-        const batches = sliceArrayToBatches(records, 5);
-
-        expect(batches.length).toBe(6);
-        expect(batches[0]).toEqual(records.slice(0, 5));
-        expect(batches[1]).toEqual(records.slice(5, 10));
-        expect(batches[2]).toEqual(records.slice(10, 15));
-        expect(batches[3]).toEqual(records.slice(15, 20));
-        expect(batches[4]).toEqual(records.slice(20, 25));
-        expect(batches[5]).toEqual(records.slice(25));
-      });
-    });
-
-    test('array length equal to batch size', () => {
-      const records = generateTestRecords(10);
-      const batches = sliceArrayToBatches(records, 10);
-
-      expect(batches.length).toBe(1);
-      expect(batches[0]).toEqual(records);
-    });
-  });
-
-  describe('batched upsert', () => {
-    test('passing an object with vectors and batchSize calls the openapi upsert endpoint with appropriate batches', async () => {
-      const { fakeUpsert, VoaProvider } = setupSuccess('');
-
-      const records = generateTestRecords(50);
-      const batchSize = 10;
-      const batches = sliceArrayToBatches(records, batchSize);
-
-      const returned = await upsert(
-        VoaProvider,
-        'namespace'
-      )({ records, batchSize });
-
-      expect(returned).toBe(void 0);
-      expect(fakeUpsert).toHaveBeenCalledTimes(5);
-      for (let i = 0; i < batches.length; i++) {
-        expect(fakeUpsert).toHaveBeenNthCalledWith(i + 1, {
-          upsertRequest: { namespace: 'namespace', vectors: batches[i] },
-        });
-      }
-    });
-  });
-
+  
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
       const { cmd } = setupFailure({

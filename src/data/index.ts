@@ -1,5 +1,5 @@
 import { UpsertCommand } from './upsert';
-import { FetchCommand } from './fetch';
+import { FetchCommand, type FetchOptions } from './fetch';
 import { update } from './update';
 import { query } from './query';
 import { deleteOne } from './deleteOne';
@@ -7,14 +7,15 @@ import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import type { PineconeConfiguration } from './types';
+import type { PineconeConfiguration, PineconeRecord, RecordMetadataValue } from './types';
 
 export type {
   PineconeConfiguration,
   PineconeRecord,
   RecordId,
-  SparseValues,
-  Values,
+  RecordSparseValues,
+  RecordValues,
+  RecordMetadataValue
 } from './types';
 export { PineconeConfigurationSchema } from './types';
 export type { DeleteManyOptions } from './deleteMany';
@@ -26,7 +27,6 @@ export type {
 } from './describeIndexStats';
 export type { FetchOptions, FetchResponse } from './fetch';
 export type { UpdateOptions } from './update';
-export type { UpsertOptions } from './upsert';
 export type {
   QueryByRecordId,
   QueryByVectorValues,
@@ -34,7 +34,7 @@ export type {
   QueryResponse,
 } from './query';
 
-export class Index<T> {
+export class Index<T extends Record<string, RecordMetadataValue>> {
   private config: PineconeConfiguration;
   private target: {
     index: string;
@@ -47,6 +47,9 @@ export class Index<T> {
   describeIndexStats: ReturnType<typeof describeIndexStats>;
   query: ReturnType<typeof query>;
   update: ReturnType<typeof update>;
+
+  private fetchCommand: FetchCommand<T>;
+  private upsertCommand: UpsertCommand<T>;
 
   constructor(
     indexName: string,
