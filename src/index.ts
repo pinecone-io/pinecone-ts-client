@@ -38,6 +38,7 @@ export type {
   RecordMetadataValue,
   RecordSparseValues,
   RecordValues,
+  ScoredPineconeRecord
 } from './data';
 
 // Legacy exports for backwards compatibility

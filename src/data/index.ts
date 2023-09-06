@@ -32,6 +32,7 @@ export type {
 export type { FetchOptions, FetchResponse } from './fetch';
 export type { UpdateOptions } from './update';
 export type {
+  ScoredPineconeRecord,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,
