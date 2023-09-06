@@ -33,7 +33,7 @@ describe('fetch', () => {
     const { VOA, cmd } = setupSuccess({ vectors: [] });
     const returned = await cmd.run(['1', '2']);
 
-    expect(returned).toEqual({ vectors: [] });
+    expect(returned).toEqual({ records: [] });
     expect(VOA.fetch).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',
