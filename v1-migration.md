@@ -121,7 +121,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pinecone = new Pinecone();
 const list = await pinecone.listIndexes();
-// [ { name: 'index-name' }, { name: 'index-name2' }]
+// [{ name: 'index-name' }, { name: 'index-name2' }]
 ```
 
 ### Describe index
