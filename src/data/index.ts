@@ -9,8 +9,8 @@ import { describeIndexStats } from './describeIndexStats';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type {
   PineconeConfiguration,
+  RecordMetadata,
   PineconeRecord,
-  RecordMetadataValue,
 } from './types';
 
 export type {
@@ -19,6 +19,7 @@ export type {
   RecordId,
   RecordSparseValues,
   RecordValues,
+  RecordMetadata,
   RecordMetadataValue,
 } from './types';
 export { PineconeConfigurationSchema } from './types';
@@ -39,7 +40,7 @@ export type {
   QueryResponse,
 } from './query';
 
-export class Index<T extends Record<string, RecordMetadataValue>> {
+export class Index<T extends RecordMetadata> {
   private config: PineconeConfiguration;
   private target: {
     index: string;

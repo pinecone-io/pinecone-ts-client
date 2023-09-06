@@ -35,10 +35,11 @@ export type {
   QueryOptions,
   QueryResponse,
   RecordId,
+  RecordMetadata,
   RecordMetadataValue,
   RecordSparseValues,
   RecordValues,
-  ScoredPineconeRecord
+  ScoredPineconeRecord,
 } from './data';
 
 // Legacy exports for backwards compatibility

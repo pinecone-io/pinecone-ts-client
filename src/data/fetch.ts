@@ -2,18 +2,18 @@ import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { RecordIdSchema } from './types';
-import type { PineconeRecord, RecordId, RecordMetadataValue } from './types';
+import type { PineconeRecord, RecordId, RecordMetadata } from './types';
 import { Type } from '@sinclair/typebox';
 
 const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
 export type FetchOptions = Array<RecordId>;
 
-export type FetchResponse<T extends Record<string, RecordMetadataValue>> = {
+export type FetchResponse<T extends RecordMetadata> = {
   records?: { [key: string]: PineconeRecord<T> };
   namespace?: string;
 };
 
-export class FetchCommand<T extends Record<string, RecordMetadataValue>> {
+export class FetchCommand<T extends RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

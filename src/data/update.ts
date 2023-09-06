@@ -9,7 +9,7 @@ import {
   type RecordId,
   type RecordValues,
   type RecordSparseValues,
-  type RecordMetadataValue,
+  type RecordMetadata,
 } from './types';
 
 const UpdateRecordOptionsSchema = Type.Object(
@@ -25,14 +25,14 @@ const UpdateRecordOptionsSchema = Type.Object(
 // This is very similar to PineconeRecord, but differs because values field
 // is optional here. E.g. perhaps the caller only wants to update metadata
 // for a given record.
-export type UpdateOptions<T extends Record<string, RecordMetadataValue>> = {
+export type UpdateOptions<T extends RecordMetadata> = {
   id: RecordId;
   values?: RecordValues;
   sparseValues?: RecordSparseValues;
   metadata?: T;
 };
 
-export class UpdateCommand<T extends Record<string, RecordMetadataValue>> {
+export class UpdateCommand<T extends RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

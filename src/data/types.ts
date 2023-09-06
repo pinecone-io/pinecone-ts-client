@@ -33,7 +33,8 @@ export type RecordId = Static<typeof RecordIdSchema>;
 export type RecordValues = Static<typeof RecordValuesSchema>;
 export type RecordSparseValues = Static<typeof RecordSparseValuesSchema>;
 export type RecordMetadataValue = string | boolean | number | Array<string>;
-export type PineconeRecord<T extends Record<string, RecordMetadataValue>> = {
+export type RecordMetadata = Record<string, RecordMetadataValue>;
+export type PineconeRecord<T extends RecordMetadata = {}> = {
   id: RecordId;
   values: RecordValues;
   sparseValues?: RecordSparseValues;

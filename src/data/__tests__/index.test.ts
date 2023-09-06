@@ -37,7 +37,7 @@ describe('Index', () => {
       { id: '2', values: [0.1, 0.2], metadata: { hello: 'world' } },
     ]);
 
-    // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of Record<string, RecordMetadataValue>
+    // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
     await index.upsert([{ id: '2', values: [0.1, 0.2], metadata: 2 }]);
   });
 

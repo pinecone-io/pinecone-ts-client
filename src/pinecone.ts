@@ -21,7 +21,7 @@ import {
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
-import type { PineconeConfiguration, RecordMetadataValue } from './data';
+import type { PineconeConfiguration, RecordMetadata } from './data';
 
 /**
  * @example
@@ -322,12 +322,12 @@ export class Pinecone {
     return this.config;
   }
 
-  index<T extends Record<string, RecordMetadataValue>>(indexName: string) {
+  index<T extends RecordMetadata>(indexName: string) {
     return new Index<T>(indexName, this.config);
   }
 
   // Alias method to match the Python SDK capitalization
-  Index<T extends Record<string, RecordMetadataValue>>(indexName: string) {
+  Index<T extends RecordMetadata>(indexName: string) {
     return this.index<T>(indexName);
   }
 

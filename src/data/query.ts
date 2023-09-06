@@ -5,7 +5,7 @@ import {
   RecordSparseValuesSchema,
   RecordValuesSchema,
 } from './types';
-import type { PineconeRecord, RecordMetadataValue } from './types';
+import type { PineconeRecord, RecordMetadata } from './types';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 
@@ -36,18 +36,17 @@ export type QueryByRecordId = Static<typeof QueryByRecordId>;
 export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
 export type QueryOptions = Static<typeof QuerySchema>;
 
-export interface ScoredPineconeRecord<
-  T extends Record<string, RecordMetadataValue>
-> extends PineconeRecord<T> {
+export interface ScoredPineconeRecord<T extends RecordMetadata>
+  extends PineconeRecord<T> {
   score?: number;
 }
 
-export type QueryResponse<T extends Record<string, RecordMetadataValue>> = {
+export type QueryResponse<T extends RecordMetadata> = {
   matches?: Array<ScoredPineconeRecord<T>>;
   namespace: string;
 };
 
-export class QueryCommand<T extends Record<string, RecordMetadataValue>> {
+export class QueryCommand<T extends RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;
