@@ -63,7 +63,7 @@ Once you've instantiated your pinecone client, you're ready to perform the follo
 
 ## Indexes
 
-## Creating indexes
+### Create Index
 
 #### Create an index with minimal configuration
 
