@@ -5,6 +5,11 @@ import {
   VectorOperationsApi,
 } from './pinecone-generated-ts-fetch';
 
+/**
+ * @deprecated in v1.0.0
+ * 
+ * Use {@link Pinecone} with the createIndex waitUntilReady option.
+ */
 const waitUntilIndexIsReady = async (
   client: PineconeClient,
   indexName: string,
@@ -24,6 +29,9 @@ const waitUntilIndexIsReady = async (
   }
 };
 
+/**
+ * @deprecated in v1.0.0
+ */
 const createIndexIfNotExists = async (
   client: PineconeClient,
   indexName: string,
@@ -54,7 +62,9 @@ const sliceIntoChunks = <T>(arr: T[], chunkSize: number) => {
   );
 };
 
-// Upserts vectors into the index in chunks
+/**
+ * @deprecated in v1.0.0
+ */
 const chunkedUpsert = async (
   index: VectorOperationsApi,
   vectors: Vector[],
