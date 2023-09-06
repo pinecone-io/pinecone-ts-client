@@ -1,21 +1,43 @@
-export { Pinecone, type PineconeConfiguration } from './pinecone';
+export { Pinecone } from './pinecone';
+export { Index } from './data';
 
 export * as Errors from './errors';
 
 // Type exports
-export type { CreateIndexOptions, IndexList, IndexName } from './control';
+export type {
+  CollectionDescription,
+  CollectionList,
+  ConfigureIndexOptions,
+  CreateCollectionOptions,
+  CreateIndexOptions,
+  DeleteCollectionOptions,
+  DeleteIndexOptions,
+  DescribeCollectionOptions,
+  DescribeIndexOptions,
+  IndexDescription,
+  IndexList,
+  PartialIndexDescription,
+  PartialCollectionDescription,
+} from './control';
 export type {
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
-  IdsArray,
-  QueryByVectorId,
+  FetchOptions,
+  FetchResponse,
+  IndexStatsDescription,
+  IndexStatsNamespaceSummary,
+  PineconeConfiguration,
+  PineconeRecord,
+  UpdateOptions,
+  UpsertOptions,
+  QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,
+  QueryResponse,
+  RecordId,
   SparseValues,
-  UpdateVectorOptions,
-  UpsertOptions,
-  VectorArray,
+  Values,
 } from './data';
 
 // Legacy exports for backwards compatibility

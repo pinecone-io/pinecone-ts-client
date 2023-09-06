@@ -4,33 +4,33 @@ import { debugLog } from '../utils';
 import { handleApiError } from '../errors';
 import { handleIndexRequestError } from './utils';
 import { Static, Type } from '@sinclair/typebox';
+import {
+  IndexNameSchema,
+  DimensionSchema,
+  MetricSchema,
+  PodsSchema,
+  ReplicasSchema,
+  PodTypeSchema,
+  MetadataConfigSchema,
+  CollectionNameSchema,
+} from './types';
 
-const nonemptyString = Type.String({ minLength: 1 });
-const positiveInteger = Type.Integer({ minimum: 1 });
+export type CreateIndexOptions = Static<typeof CreateIndexOptionsSchema>;
 
 const CreateIndexOptionsSchema = Type.Object(
   {
-    name: nonemptyString,
-    dimension: positiveInteger,
-    metric: Type.Optional(nonemptyString),
-    pods: Type.Optional(positiveInteger),
-    replicas: Type.Optional(positiveInteger),
-    podType: Type.Optional(nonemptyString),
-    metadataConfig: Type.Optional(
-      Type.Object(
-        {
-          indexed: Type.Array(nonemptyString),
-        },
-        { additionalProperties: false }
-      )
-    ),
-    sourceCollection: Type.Optional(nonemptyString),
+    name: IndexNameSchema,
+    dimension: DimensionSchema,
+    metric: Type.Optional(MetricSchema),
+    pods: Type.Optional(PodsSchema),
+    replicas: Type.Optional(ReplicasSchema),
+    podType: Type.Optional(PodTypeSchema),
+    metadataConfig: Type.Optional(MetadataConfigSchema),
+    sourceCollection: Type.Optional(CollectionNameSchema),
     waitUntilReady: Type.Optional(Type.Boolean()),
   },
   { additionalProperties: false }
 );
-
-export type CreateIndexOptions = Static<typeof CreateIndexOptionsSchema>;
 
 export const createIndex = (api: IndexOperationsApi) => {
   const validator = buildConfigValidator(

@@ -1,26 +1,14 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildValidator } from '../validator';
-import type { IndexName } from './deleteIndex';
+import type { IndexName } from './types';
 import { handleIndexRequestError } from './utils';
 
 import { Static, Type } from '@sinclair/typebox';
-
-const nonemptyString = Type.String({ minLength: 1 });
-const positiveInteger = Type.Integer({ minimum: 1 });
+import { ReplicasSchema, PodTypeSchema, IndexNameSchema } from './types';
 
 const ConfigureIndexOptionsSchema = Type.Union([
-  Type.Object(
-    {
-      replicas: positiveInteger,
-    },
-    { additionalProperties: false }
-  ),
-  Type.Object(
-    {
-      podType: nonemptyString,
-    },
-    { additionalProperties: false }
-  ),
+  Type.Object({ replicas: ReplicasSchema }, { additionalProperties: false }),
+  Type.Object({ podType: PodTypeSchema }, { additionalProperties: false }),
 ]);
 
 export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;
@@ -28,7 +16,7 @@ export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;
 export const configureIndex = (api: IndexOperationsApi) => {
   const indexNameValidator = buildValidator(
     'The first argument to configureIndex',
-    nonemptyString
+    IndexNameSchema
   );
   const patchRequestValidator = buildValidator(
     'The second argument to configureIndex',

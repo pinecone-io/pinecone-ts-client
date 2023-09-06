@@ -1,14 +1,13 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import { Static, Type } from '@sinclair/typebox';
 import { handleCollectionRequestError } from './utils';
+import { CollectionNameSchema, type CollectionName } from './types';
 
-const DeleteCollectionIndex = Type.String({ minLength: 1 });
-export type CollectionName = Static<typeof DeleteCollectionIndex>;
+export type DeleteCollectionOptions = CollectionName;
 
 export const deleteCollection = (api: IndexOperationsApi) => {
   const validator = buildConfigValidator(
-    DeleteCollectionIndex,
+    CollectionNameSchema,
     'deleteCollection'
   );
 

@@ -1,19 +1,34 @@
 // Index Operations
-export { configureIndex } from './configureIndex';
-export { createIndex } from './createIndex';
-export { deleteIndex } from './deleteIndex';
-export { describeIndex } from './describeIndex';
-export { listIndexes } from './listIndexes';
-
-export type { ConfigureIndexOptions } from './configureIndex';
-export type { CreateIndexOptions } from './createIndex';
-export type { IndexList, IndexNameObj } from './listIndexes';
-export type { IndexName } from './describeIndex';
+export { configureIndex, type ConfigureIndexOptions } from './configureIndex';
+export { createIndex, type CreateIndexOptions } from './createIndex';
+export { deleteIndex, type DeleteIndexOptions } from './deleteIndex';
+export {
+  describeIndex,
+  type DescribeIndexOptions,
+  type IndexDescription,
+} from './describeIndex';
+export {
+  listIndexes,
+  type IndexList,
+  type PartialIndexDescription,
+} from './listIndexes';
 
 // Collection Operations
-export { createCollection } from './createCollection';
-export { deleteCollection } from './deleteCollection';
-export { describeCollection } from './describeCollection';
-export { listCollections } from './listCollections';
-
-export type { CollectionList, CollectionNameObj } from './listCollections';
+export {
+  createCollection,
+  type CreateCollectionOptions,
+} from './createCollection';
+export {
+  deleteCollection,
+  type DeleteCollectionOptions,
+} from './deleteCollection';
+export {
+  describeCollection,
+  type DescribeCollectionOptions,
+  type CollectionDescription,
+} from './describeCollection';
+export {
+  listCollections,
+  type CollectionList,
+  type PartialCollectionDescription,
+} from './listCollections';
