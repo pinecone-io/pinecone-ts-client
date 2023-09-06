@@ -1,4 +1,4 @@
-import { sliceArrayToBatches, upsert } from '../upsert';
+import { UpsertCommand } from '../upsert';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
@@ -15,8 +15,9 @@ const setupResponse = (response, isSuccess) => {
     );
   const VOA = { upsert: fakeUpsert } as VectorOperationsApi;
   const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const cmd = new UpsertCommand(VoaProvider, 'namespace');
 
-  return { fakeUpsert, VOA, VoaProvider };
+  return { fakeUpsert, VOA, VoaProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -33,10 +34,9 @@ describe('upsert', () => {
     }));
 
   test('calls the openapi upsert endpoint', async () => {
-    const { fakeUpsert, VoaProvider } = setupSuccess('');
+    const { fakeUpsert, cmd } = setupSuccess('');
 
-    const upsertFn = upsert(VoaProvider, 'namespace');
-    const returned = await upsertFn([{ id: '1', values: [1, 2, 3] }]);
+    const returned = await cmd.run([{ id: '1', values: [1, 2, 3] }]);
 
     expect(returned).toBe(void 0);
     expect(fakeUpsert).toHaveBeenCalledWith({
@@ -134,28 +134,26 @@ describe('upsert', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 500,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const upsertFn = upsert(VoaProvider, 'namespace');
-        await upsertFn([]);
+        await cmd.run([]);
       };
 
       await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 400,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const upsertFn = upsert(VoaProvider, 'namespace');
-        await upsertFn([]);
+        await cmd.run([]);
       };
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);

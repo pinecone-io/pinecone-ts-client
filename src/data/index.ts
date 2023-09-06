@@ -1,5 +1,5 @@
-import { upsert } from './upsert';
-import { fetch } from './fetch';
+import { UpsertCommand } from './upsert';
+import { FetchCommand } from './fetch';
 import { update } from './update';
 import { query } from './query';
 import { deleteOne } from './deleteOne';
@@ -34,7 +34,7 @@ export type {
   QueryResponse,
 } from './query';
 
-export class Index {
+export class Index<T> {
   private config: PineconeConfiguration;
   private target: {
     index: string;
@@ -45,10 +45,8 @@ export class Index {
   deleteMany: ReturnType<typeof deleteMany>;
   deleteOne: ReturnType<typeof deleteOne>;
   describeIndexStats: ReturnType<typeof describeIndexStats>;
-  fetch: ReturnType<typeof fetch>;
   query: ReturnType<typeof query>;
   update: ReturnType<typeof update>;
-  upsert: ReturnType<typeof upsert>;
 
   constructor(
     indexName: string,
@@ -67,13 +65,22 @@ export class Index {
     this.deleteMany = deleteMany(apiProvider, namespace);
     this.deleteOne = deleteOne(apiProvider, namespace);
     this.describeIndexStats = describeIndexStats(apiProvider);
-    this.fetch = fetch(apiProvider, namespace);
     this.update = update(apiProvider, namespace);
-    this.upsert = upsert(apiProvider, namespace);
     this.query = query(apiProvider, namespace);
+
+    this.fetchCommand = new FetchCommand<T>(apiProvider, namespace);
+    this.upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
   }
 
-  namespace(namespace: string): Index {
-    return new Index(this.target.index, this.config, namespace);
+  namespace(namespace: string): Index<T> {
+    return new Index<T>(this.target.index, this.config, namespace);
+  }
+
+  async upsert(data: Array<PineconeRecord<T>>) {
+    return await this.upsertCommand.run(data);
+  }
+
+  async fetch(options: FetchOptions) {
+    return await this.fetchCommand.run(options);
   }
 }

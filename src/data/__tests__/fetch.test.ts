@@ -1,4 +1,4 @@
-import { fetch } from '../fetch';
+import { FetchCommand } from '../fetch';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
@@ -18,7 +18,8 @@ const setupResponse = (response, isSuccess) => {
     );
   const VOA = { fetch: fakeFetch } as VectorOperationsApi;
   const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  return { VOA, VoaProvider };
+  const cmd = new FetchCommand(VoaProvider, 'namespace');
+  return { VOA, VoaProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -29,10 +30,8 @@ const setupFailure = (response) => {
 
 describe('fetch', () => {
   test('calls the openapi fetch endpoint, passing target namespace', async () => {
-    const { VOA, VoaProvider } = setupSuccess({ vectors: [] });
-
-    const fetchFn = fetch(VoaProvider, 'namespace');
-    const returned = await fetchFn(['1', '2']);
+    const { VOA, cmd } = setupSuccess({ vectors: [] });
+    const returned = await cmd.run(['1', '2']);
 
     expect(returned).toEqual({ vectors: [] });
     expect(VOA.fetch).toHaveBeenCalledWith({
@@ -43,28 +42,26 @@ describe('fetch', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 500,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const fetchFn = fetch(VoaProvider, 'namespace');
-        await fetchFn(['1']);
+        await cmd.run(['1']);
       };
 
       await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 400,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const fetchFn = fetch(VoaProvider, 'namespace');
-        await fetchFn(['1']);
+        await cmd.run(['1']);
       };
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);

@@ -20,6 +20,26 @@ export type {
   PartialCollectionDescription,
 } from './control';
 export type {
+  ConfigureIndexOptions,
+  CreateIndexOptions,
+  DeleteIndexOptions,
+  DescribeIndexOptions,
+  IndexDescription,
+  IndexList,
+  PartialIndexDescription,
+  CreateCollectionOptions,
+  DeleteCollectionOptions,
+  DescribeCollectionOptions,
+  CollectionDescription,
+  CollectionList,
+  PartialCollectionDescription,
+} from './control';
+export type {
+  PineconeConfiguration,
+  PineconeRecord,
+  RecordId,
+  Values,
+  SparseValues,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
