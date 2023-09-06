@@ -161,7 +161,7 @@ Given that you have an existing collection:
   size: 543427063,
   status: 'Ready',
   dimension: 2,
-  vectorCount: 10001498
+  recordCount: 10001498
 }
 ```
 
@@ -182,10 +182,10 @@ When the new index is ready, it should contain all the data that was in the coll
 ```typescript
 > await pinecone.index('product-description-p2x2').describeIndexStats()
 {
-  namespaces: { '': { vectorCount: 78000 } },
+  namespaces: { '': { recordCount: 78000 } },
   dimension: 256,
   indexFullness: 0.9,
-  totalVectorCount: 78000
+  totalRecordCount: 78000
 }
 ```
 
@@ -284,7 +284,7 @@ You can use `listIndexes` to confirm the deletion.
   size: 3126700,
   status: 'Ready',
   dimension: 3,
-  vectorCount: 99
+  recordCount: 99
 }
 ```
 
@@ -384,13 +384,13 @@ target the index and use the `describeIndexStats()` command.
 > await pinecone.index('example-index').describeIndexStats()
 {
   namespaces: {
-    '': { vectorCount: 10 }
-    foo: { vectorCount: 2000 },
-    bar: { vectorCount: 2000 }
+    '': { recordCount: 10 }
+    foo: { recordCount: 2000 },
+    bar: { recordCount: 2000 }
   },
   dimension: 1536,
   indexFullness: 0,
-  totalVectorCount: 4010
+  totalRecordCount: 4010
 }
 ```
 
@@ -459,10 +459,10 @@ const results = await pinecone
 
 #### Querying by record id
 
-You can query using an existing vector in the index by passing an id.
+You can query using the vector values of an existing record in the index by passing a record id.
 
 ```typescript
-await pinecone.index('my-index').query({ topK: 10, id: '1' });
+const results = await pinecone.index('my-index').query({ topK: 10, id: '1' });
 ```
 
 #### Hybrid search with sparseVector
