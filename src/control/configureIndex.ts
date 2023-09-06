@@ -36,7 +36,7 @@ export const configureIndex = (api: IndexOperationsApi) => {
 
     if (Object.keys(options).length === 0) {
       throw new PineconeArgumentError(
-        'The second argument to configureIndex should not be empty object. Please specify at least one property to update.'
+        'The second argument to configureIndex should not be empty object. Please specify at least one propert (replicas, podType) to update.'
       );
     }
 
