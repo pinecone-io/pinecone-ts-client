@@ -18,13 +18,10 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { Index, type RecordMetadataValue } from './data';
+import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
-import {
-  type PineconeConfiguration,
-  PineconeConfigurationSchema,
-} from './data';
+import type { PineconeConfiguration, RecordMetadataValue } from './data';
 
 /**
  * @example

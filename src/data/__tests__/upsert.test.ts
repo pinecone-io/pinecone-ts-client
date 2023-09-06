@@ -29,12 +29,6 @@ const setupFailure = (response) => {
 };
 
 describe('upsert', () => {
-  const generateTestRecords = (numberOfVectors: number) =>
-    Array.from({ length: numberOfVectors }, (_, i) => ({
-      id: `test-create-${i}`,
-      values: [1, 2, 3],
-    }));
-
   test('calls the openapi upsert endpoint', async () => {
     const { fakeUpsert, cmd } = setupSuccess('');
 

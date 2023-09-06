@@ -52,7 +52,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The second argument to configureIndex accepts multiple types. Either 1) must have required property: replicas. 2) must have required property: podType.'
+        'The second argument to configureIndex should not be empty object. Please specify at least one property to update.'
       );
     });
 
@@ -62,7 +62,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex accepts multiple types. Either 1) had type errors: property 'replicas' must be integer. 2) must have required property: podType."
+        "The second argument to configureIndex had type errors: property 'replicas' must be integer."
       );
     });
 
@@ -72,7 +72,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex accepts multiple types. Either 1) must have required property: replicas. There were also validation errors: argument must NOT have additional properties. 2) had type errors: property 'podType' must be string."
+        "The second argument to configureIndex had type errors: property 'podType' must be string."
       );
     });
 
@@ -82,7 +82,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex accepts multiple types. Either 1) had validation errors: property 'replicas' must be >= 1. 2) must have required property: podType."
+        "The second argument to configureIndex had validation errors: property 'replicas' must be >= 1."
       );
     });
   });
