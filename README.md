@@ -524,7 +524,7 @@ const results = await index.query({ topK: 10, vector, sparseVector, includeMetad
 
 You may want to update vector `values`, `sparseValues`, or `metadata`. Specify the id and the attribute value you want to update.
 
-```
+```typescript
 await pinecone.index('imdb-movies').update({
   id: '18593',
   metadata: { genre: 'romance' }
