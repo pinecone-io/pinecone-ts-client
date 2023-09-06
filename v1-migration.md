@@ -1,6 +1,6 @@
 # v1 Migration Guide
 
-This doc will outline the differences between v0.x beta versions of the Pinecone client and the v1 version. The v1.0.0 release adds a new `Pinecone` module export alongside the legacy `PineconeClient` export. `PineconeClient` is deprecated and will be removed in a future release.
+This doc will outline the differences between `v0.x` beta versions of the Pinecone client and the `v1` version. The `v1.0.0` release adds a new `Pinecone` module export alongside the legacy `PineconeClient` export. `PineconeClient` is deprecated and will be removed in a future release.
 
 ## Client Initialization
 
@@ -263,7 +263,7 @@ await pinecone.describeCollection('collection3')
   name: 'collection3',
   size: 3126700,
   status: 'Ready',
-  dimension: 3,
+  dimension: 1536,
   recordCount: 99
 }
 ```
@@ -290,7 +290,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pinecone = new Pinecone();
 const list = await pinecone.listCollections();
-// [ { name: 'collection-name' }, { name: 'collection-name2' }]
+// [{ name: 'collection-name' }, { name: 'collection-name2' }]
 ```
 
 ## Data plane
@@ -308,7 +308,7 @@ const pineconeClient = new PineconeClient({
 const index = pineconeClient.Index('movie-embeddings');
 ```
 
-In the new `Pinecone` client, the `index()` method accepts an optional generic type arument that describes the shape of your index's metadata. If you provide this type paramter, the TypeScript compiler will provide appropriate typechecking on your interactions with the `index` object when attempting to `upsert()` or `update()` and you shouldn't need to cast results of `query()` and `fetch()` operations.
+In the new `Pinecone` client, the `index()` method accepts an optional generic type arument that describes the shape of your index's metadata. If you provide this type parameter, the TypeScript compiler will provide appropriate typechecking on your interactions with the `index` object when attempting to `upsert()` or `update()` and you shouldn't need to cast results of `query()` and `fetch()` operations.
 
 ```typescript
 // v1.0.0
@@ -346,7 +346,7 @@ await index.upsert({
       },
       {
         id: '2',
-        values: [0.5, 0.6, 0, 0.8],
+        values: [0.5, 0.6, 0.7, 0.8],
         metadata: { genre: 'horror', runtime: 120 },
       },
     ],
@@ -427,17 +427,19 @@ const pineconeClient = new PineconeClient({
   environment: 'your-environment',
 });
 const index = pineconeClient.Index('movie-embeddings');
-const results = await index.query({ queryRequest: {
-  topK: 1,
-  vector: [...], // actual values here
-  namespace: 'imdb',
-  includeMetadata: true,
-  includeValues: true,
-  sparseVector: {
-    indices: [15, 30, 11],
-    values: [0.1, 0.2, 0.3],
-  },
-}});
+const results = await index.query({
+  queryRequest: {
+    topK: 1,
+    vector: [...], // actual values here
+    namespace: 'imdb',
+    includeMetadata: true,
+    includeValues: true,
+    sparseVector: {
+      indices: [15, 30, 11],
+      values: [0.1, 0.2, 0.3],
+    }
+  }
+});
 ```
 
 ```typescript
@@ -538,7 +540,7 @@ const pineconeClient = new PineconeClient({
   environment: 'your-environment',
 });
 const index = pineconeClient.Index('movie-embeddings');
-const stats = await index.describeIndexStats({ describeIndexStatsRequest: {}})
+const stats = await index.describeIndexStats({ describeIndexStatsRequest: {} });
 // {
 //   namespaces: { '': { vectorCount: 10001502 } },
 //   dimension: 256,
