@@ -13,7 +13,7 @@ npm install @pinecone-database/pinecone
 
 ## Example code
 
-See some practical examples of how this client can be used:
+Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve vectors of higher dimension. To see some more realistic examples of how this client can be used, explore these examples:
 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
 
@@ -428,7 +428,7 @@ type QueryOptions = {
 };
 ```
 
-For example, to query by vector values you would pass the `vector` param in the options configuration. For brevity sake this example query vector is tiny (dimension 2), but in a more realistic use case this query vector would be an embedding outputted by a model. Look at the [Example code](#example-code) to see a some more realistic examples of how to query.
+For example, to query by vector values you would pass the `vector` param in the options configuration. For brevity sake this example query vector is tiny (dimension 2), but in a more realistic use case this query vector would be an embedding outputted by a model. Look at the [Example code](#example-code) to see more realistic examples of how to use `query`.
 
 ```typescript
 > await pinecone.index('my-index').query({ topK: 3, vector: [ 0.22, 0.66 ]})
