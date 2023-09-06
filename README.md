@@ -2,6 +2,7 @@
 
 This is the official Node.js client for Pinecone, written in TypeScript.
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/pr.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
 
 ## Installation
