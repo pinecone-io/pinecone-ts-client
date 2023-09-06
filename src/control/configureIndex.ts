@@ -1,4 +1,5 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import { PineconeArgumentError } from '../errors';
 import { buildValidator } from '../validator';
 import type { IndexName } from './types';
 import { handleIndexRequestError } from './utils';
@@ -6,10 +7,13 @@ import { handleIndexRequestError } from './utils';
 import { Static, Type } from '@sinclair/typebox';
 import { ReplicasSchema, PodTypeSchema, IndexNameSchema } from './types';
 
-const ConfigureIndexOptionsSchema = Type.Union([
-  Type.Object({ replicas: ReplicasSchema }, { additionalProperties: false }),
-  Type.Object({ podType: PodTypeSchema }, { additionalProperties: false }),
-]);
+const ConfigureIndexOptionsSchema = Type.Object(
+  {
+    replicas: Type.Optional(ReplicasSchema),
+    podType: Type.Optional(PodTypeSchema),
+  },
+  { additionalProperties: false }
+);
 
 export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;
 
@@ -29,6 +33,12 @@ export const configureIndex = (api: IndexOperationsApi) => {
   ): Promise<void> => {
     indexNameValidator(name);
     patchRequestValidator(options);
+
+    if (Object.keys(options).length === 0) {
+      throw new PineconeArgumentError(
+        'The second argument to configureIndex should not be empty object. Please specify at least one propert (replicas, podType) to update.'
+      );
+    }
 
     try {
       await api.configureIndex({ indexName: name, patchRequest: options });

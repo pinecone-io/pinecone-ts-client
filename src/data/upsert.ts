@@ -1,10 +1,10 @@
-import { handleApiError, PineconeBatchUpsertError } from '../errors';
+import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { PineconeRecordSchema, type PineconeRecord } from './types';
+import { PineconeRecordSchema } from './types';
 import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch';
-import type { RecordMetadataValue } from './types';
+import type { PineconeRecord, RecordMetadataValue } from './types';
 
 const RecordArray = Type.Array(PineconeRecordSchema);
 

@@ -1,6 +1,6 @@
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import {
   RecordIdSchema,
