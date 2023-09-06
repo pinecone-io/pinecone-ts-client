@@ -1,11 +1,11 @@
-import type { QueryResponse as GeneratedQueryResponse } from '../pinecone-generated-ts-fetch';
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import {
-  RecordSparseValuesSchema,
   RecordIdSchema,
+  RecordSparseValuesSchema,
   RecordValuesSchema,
 } from './types';
+import type { PineconeRecord, RecordMetadataValue } from './types';
 import { Static, Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 
@@ -35,27 +35,44 @@ const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 export type QueryByRecordId = Static<typeof QueryByRecordId>;
 export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
 export type QueryOptions = Static<typeof QuerySchema>;
-export type QueryResponse = GeneratedQueryResponse;
 
-export const query = (
-  apiProvider: VectorOperationsProvider,
-  namespace: string
-) => {
-  const validator = buildConfigValidator(QuerySchema, 'query');
+export interface ScoredPineconeRecord<
+  T extends Record<string, RecordMetadataValue>
+> extends PineconeRecord<T> {
+  score?: number;
+}
 
-  return async (query: QueryOptions): Promise<QueryResponse> => {
-    validator(query);
+export type QueryResponse<T extends Record<string, RecordMetadataValue>> = {
+  matches?: Array<ScoredPineconeRecord<T>>;
+  namespace: string;
+};
+
+export class QueryCommand<T extends Record<string, RecordMetadataValue>> {
+  apiProvider: VectorOperationsProvider;
+  namespace: string;
+  validator: ReturnType<typeof buildConfigValidator>;
+
+  constructor(apiProvider, namespace) {
+    this.apiProvider = apiProvider;
+    this.namespace = namespace;
+    this.validator = buildConfigValidator(QuerySchema, 'query');
+  }
+
+  async run(query: QueryOptions): Promise<QueryResponse<T>> {
+    this.validator(query);
 
     try {
-      const api = await apiProvider.provide();
+      const api = await this.apiProvider.provide();
       const results = await api.query({
-        queryRequest: { ...query, namespace },
+        queryRequest: { ...query, namespace: this.namespace },
       });
-      delete results.results;
-      return results;
+      return {
+        matches: results.matches as Array<ScoredPineconeRecord<T>>,
+        namespace: this.namespace,
+      };
     } catch (e) {
       const err = await handleApiError(e);
       throw err;
     }
-  };
-};
+  }
+}

@@ -1,30 +1,43 @@
-import type { FetchResponse as GeneratedFetchResponse } from '../pinecone-generated-ts-fetch';
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import { RecordIdSchema, type RecordId } from './types';
+import { RecordIdSchema } from './types';
+import type { PineconeRecord, RecordId, RecordMetadataValue } from './types';
 import { Type } from '@sinclair/typebox';
 
 const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
 export type FetchOptions = Array<RecordId>;
 
-export type FetchResponse = GeneratedFetchResponse;
+export type FetchResponse<T extends Record<string, RecordMetadataValue>> = {
+  vectors?: { [key: string]: PineconeRecord<T> };
+  namespace?: string;
+};
 
-export const fetch = (
-  apiProvider: VectorOperationsProvider,
-  namespace: string
-) => {
-  const validator = buildConfigValidator(RecordIdsArray, 'fetch');
+export class FetchCommand<T extends Record<string, RecordMetadataValue>> {
+  apiProvider: VectorOperationsProvider;
+  namespace: string;
+  validator: ReturnType<typeof buildConfigValidator>;
 
-  return async (ids: FetchOptions): Promise<FetchResponse> => {
-    validator(ids);
+  constructor(apiProvider, namespace) {
+    this.apiProvider = apiProvider;
+    this.namespace = namespace;
+    this.validator = buildConfigValidator(RecordIdsArray, 'fetch');
+  }
+
+  async run(ids: FetchOptions): Promise<FetchResponse<T>> {
+    this.validator(ids);
 
     try {
-      const api = await apiProvider.provide();
-      return await api.fetch({ ids: ids, namespace });
+      const api = await this.apiProvider.provide();
+      const response = await api.fetch({ ids: ids, namespace: this.namespace });
+
+      return {
+        vectors: response.vectors,
+        namespace: response.namespace,
+      } as FetchResponse<T>;
     } catch (e) {
       const err = await handleApiError(e);
       throw err;
     }
-  };
-};
+  }
+}

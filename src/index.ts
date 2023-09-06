@@ -30,14 +30,14 @@ export type {
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
-  UpsertOptions,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,
   QueryResponse,
   RecordId,
-  SparseValues,
-  Values,
+  RecordMetadataValue,
+  RecordSparseValues,
+  RecordValues,
 } from './data';
 
 // Legacy exports for backwards compatibility
