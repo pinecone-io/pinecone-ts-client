@@ -524,3 +524,41 @@ await index.deleteMany(['1', '2', '3']);
 // Delete all records in default namespace
 await index.deleteAll();
 ```
+
+### Describe index stats
+
+The return type has changed slightly in the new `Pinecone` client. The arguments to `describeIndexStats()` have been simplified and the return type has changed `totalVectorCount` to `totalRecordCount`, `vectorCount` to `recordCount`.
+
+```typescript
+// v0.x beta releases
+import { PineconeClient } from '@pinecone-database/pinecone';
+
+const pineconeClient = new PineconeClient({
+  apiKey: 'your-api-key',
+  environment: 'your-environment',
+});
+const index = pineconeClient.Index('movie-embeddings');
+const stats = await index.describeIndexStats({ describeIndexStatsRequest: {}})
+// {
+//   namespaces: { '': { vectorCount: 10001502 } },
+//   dimension: 256,
+//   indexFullness: 0.9,
+//   totalVectorCount: 10001502
+// }
+```
+
+```typescript
+// v1.0.0
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pinecone = new Pinecone();
+
+const index = await pinecone.index('movie-embeddings');
+const stats = await index.describeIndexStats();
+// {
+//   namespaces: { '': { recordCount: 10001502 } },
+//   dimension: 256,
+//   indexFullness: 0.9,
+//   totalRecordCount: 10001502
+// }
+```
