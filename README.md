@@ -372,7 +372,8 @@ const pinecone = new Pinecone();
 const index = pinecone.index('sample-index');
 
 // Prepare your data. The length of each array
-// of vector values must match the index dimension.
+// of vector values must match the dimension of
+// the index where you plan to store them.
 const records = [
   {
     id: '1',
