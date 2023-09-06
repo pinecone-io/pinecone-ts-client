@@ -1,9 +1,11 @@
 import { UpsertCommand } from '../upsert';
 import { FetchCommand } from '../fetch';
+import { QueryCommand } from '../query';
 import { Index } from '../index';
 
 jest.mock('../upsert');
 jest.mock('../fetch');
+jest.mock('../query');
 
 describe('Index', () => {
   let config;
@@ -75,6 +77,32 @@ describe('Index', () => {
         // @ts-expect-error because result is expecting metadata to be MovieMetadata
         console.log(value.metadata?.bogus);
       });
+    }
+  });
+
+  test('query: returns typed results', async () => {
+    type MovieMetadata = {
+      genre: string;
+      runtime: number;
+    };
+    const index = new Index<MovieMetadata>('index-name', config, 'namespace');
+    expect(QueryCommand).toHaveBeenCalledTimes(1);
+
+    const results = await index.query({ id: '1', topK: 5 });
+    if (results && results.matches) {
+      if (results.matches.length > 0) {
+        const firstResult = results.matches[0];
+
+        // no ts error because score is part of ScoredPineconeRecord
+        console.log(firstResult.score);
+
+        // no ts error because genre and runtime part of MovieMetadata
+        console.log(firstResult.metadata?.genre);
+        console.log(firstResult.metadata?.runtime);
+
+        // @ts-expect-error because bogus not part of MovieMetadata
+        console.log(firstResult.metadata?.bogus);
+      }
     }
   });
 });

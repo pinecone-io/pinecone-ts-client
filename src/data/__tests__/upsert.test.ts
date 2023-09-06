@@ -3,7 +3,10 @@ import {
   PineconeBadRequestError,
   PineconeInternalServerError,
 } from '../../errors';
-import { VectorOperationsApi, type UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
+import {
+  VectorOperationsApi,
+  type UpsertOperationRequest,
+} from '../../pinecone-generated-ts-fetch';
 import { VectorOperationsProvider } from '../vectorOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {
@@ -45,7 +48,7 @@ describe('upsert', () => {
       },
     });
   });
-  
+
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
       const { cmd } = setupFailure({

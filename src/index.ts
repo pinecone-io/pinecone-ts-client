@@ -30,7 +30,6 @@ export type {
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
-  UpsertOptions,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,

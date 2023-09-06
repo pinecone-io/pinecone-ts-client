@@ -32,7 +32,7 @@ export const PineconeRecordSchema = Type.Object(
 export type RecordId = Static<typeof RecordIdSchema>;
 export type RecordValues = Static<typeof RecordValuesSchema>;
 export type RecordSparseValues = Static<typeof RecordSparseValuesSchema>;
-export type RecordMetadataValue = string | boolean | number | Array<string>
+export type RecordMetadataValue = string | boolean | number | Array<string>;
 export type PineconeRecord<T extends Record<string, RecordMetadataValue>> = {
   id: RecordId;
   values: RecordValues;

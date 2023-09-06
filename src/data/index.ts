@@ -1,13 +1,17 @@
 import { UpsertCommand } from './upsert';
 import { FetchCommand, type FetchOptions } from './fetch';
 import { update } from './update';
-import { query } from './query';
+import { QueryCommand, type QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import type { PineconeConfiguration, PineconeRecord, RecordMetadataValue } from './types';
+import type {
+  PineconeConfiguration,
+  PineconeRecord,
+  RecordMetadataValue,
+} from './types';
 
 export type {
   PineconeConfiguration,
@@ -15,7 +19,7 @@ export type {
   RecordId,
   RecordSparseValues,
   RecordValues,
-  RecordMetadataValue
+  RecordMetadataValue,
 } from './types';
 export { PineconeConfigurationSchema } from './types';
 export type { DeleteManyOptions } from './deleteMany';
@@ -45,10 +49,10 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
   deleteMany: ReturnType<typeof deleteMany>;
   deleteOne: ReturnType<typeof deleteOne>;
   describeIndexStats: ReturnType<typeof describeIndexStats>;
-  query: ReturnType<typeof query>;
   update: ReturnType<typeof update>;
 
   private fetchCommand: FetchCommand<T>;
+  private queryCommand: QueryCommand<T>;
   private upsertCommand: UpsertCommand<T>;
 
   constructor(
@@ -69,10 +73,10 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
     this.deleteOne = deleteOne(apiProvider, namespace);
     this.describeIndexStats = describeIndexStats(apiProvider);
     this.update = update(apiProvider, namespace);
-    this.query = query(apiProvider, namespace);
 
     this.fetchCommand = new FetchCommand<T>(apiProvider, namespace);
     this.upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
+    this.queryCommand = new QueryCommand<T>(apiProvider, namespace);
   }
 
   namespace(namespace: string): Index<T> {
@@ -85,5 +89,9 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
 
   async fetch(options: FetchOptions) {
     return await this.fetchCommand.run(options);
+  }
+
+  async query(options: QueryOptions) {
+    return await this.queryCommand.run(options);
   }
 }
