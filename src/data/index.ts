@@ -13,8 +13,8 @@ export type {
   PineconeConfiguration,
   PineconeRecord,
   RecordId,
-  Values,
   SparseValues,
+  Values,
 } from './types';
 export { PineconeConfigurationSchema } from './types';
 export type { DeleteManyOptions } from './deleteMany';

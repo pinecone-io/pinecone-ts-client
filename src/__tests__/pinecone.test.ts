@@ -1,5 +1,5 @@
 import { Pinecone } from '../pinecone';
-import { type PineconeConfiguration } from '../data';
+import type { PineconeConfiguration } from '../data';
 
 describe('Pinecone', () => {
   describe('constructor', () => {
