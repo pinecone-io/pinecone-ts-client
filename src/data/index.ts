@@ -1,6 +1,6 @@
 import { UpsertCommand } from './upsert';
 import { FetchCommand, type FetchOptions } from './fetch';
-import { update } from './update';
+import { UpdateCommand, type UpdateOptions } from './update';
 import { QueryCommand, type QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
@@ -49,11 +49,11 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
   deleteMany: ReturnType<typeof deleteMany>;
   deleteOne: ReturnType<typeof deleteOne>;
   describeIndexStats: ReturnType<typeof describeIndexStats>;
-  update: ReturnType<typeof update>;
 
-  private fetchCommand: FetchCommand<T>;
-  private queryCommand: QueryCommand<T>;
-  private upsertCommand: UpsertCommand<T>;
+  private _fetchCommand: FetchCommand<T>;
+  private _queryCommand: QueryCommand<T>;
+  private _updateCommand: UpdateCommand<T>;
+  private _upsertCommand: UpsertCommand<T>;
 
   constructor(
     indexName: string,
@@ -72,11 +72,11 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
     this.deleteMany = deleteMany(apiProvider, namespace);
     this.deleteOne = deleteOne(apiProvider, namespace);
     this.describeIndexStats = describeIndexStats(apiProvider);
-    this.update = update(apiProvider, namespace);
 
-    this.fetchCommand = new FetchCommand<T>(apiProvider, namespace);
-    this.upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
-    this.queryCommand = new QueryCommand<T>(apiProvider, namespace);
+    this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
+    this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
+    this._updateCommand = new UpdateCommand<T>(apiProvider, namespace);
+    this._upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
   }
 
   namespace(namespace: string): Index<T> {
@@ -84,14 +84,18 @@ export class Index<T extends Record<string, RecordMetadataValue>> {
   }
 
   async upsert(data: Array<PineconeRecord<T>>) {
-    return await this.upsertCommand.run(data);
+    return await this._upsertCommand.run(data);
   }
 
   async fetch(options: FetchOptions) {
-    return await this.fetchCommand.run(options);
+    return await this._fetchCommand.run(options);
   }
 
   async query(options: QueryOptions) {
-    return await this.queryCommand.run(options);
+    return await this._queryCommand.run(options);
+  }
+
+  async update(options: UpdateOptions<T>) {
+    return await this._updateCommand.run(options);
   }
 }

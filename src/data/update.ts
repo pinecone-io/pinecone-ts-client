@@ -6,6 +6,8 @@ import {
   RecordIdSchema,
   RecordValuesSchema,
   RecordSparseValuesSchema,
+  type PineconeRecord,
+  type RecordMetadataValue
 } from './types';
 
 const UpdateRecordOptionsSchema = Type.Object(
@@ -18,16 +20,21 @@ const UpdateRecordOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export type UpdateOptions = Static<typeof UpdateRecordOptionsSchema>;
+export interface UpdateOptions<T extends Record<string, RecordMetadataValue>> extends PineconeRecord<T> {};
 
-export const update = (
-  apiProvider: VectorOperationsProvider,
-  namespace: string
-) => {
-  const validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
+export class UpdateCommand<T extends Record<string, RecordMetadataValue>> {
+  apiProvider: VectorOperationsProvider;
+  namespace: string;
+  validator: ReturnType<typeof buildConfigValidator>;
 
-  return async (options: UpdateOptions): Promise<void> => {
-    validator(options);
+  constructor(apiProvider, namespace) {
+    this.apiProvider = apiProvider;
+    this.namespace = namespace;
+    this.validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
+  }
+
+  async run(options: UpdateOptions<T>): Promise<void> {
+    this.validator(options);
 
     const requestOptions = {
       id: options['id'],
@@ -37,12 +44,12 @@ export const update = (
     };
 
     try {
-      const api = await apiProvider.provide();
-      await api.update({ updateRequest: { ...requestOptions, namespace } });
+      const api = await this.apiProvider.provide();
+      await api.update({ updateRequest: { ...requestOptions, namespace: this.namespace } });
       return;
     } catch (e) {
       const err = await handleApiError(e);
       throw err;
     }
   };
-};
+}

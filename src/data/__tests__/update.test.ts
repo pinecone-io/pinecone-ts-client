@@ -1,4 +1,4 @@
-import { update } from '../update';
+import { UpdateCommand } from '../update';
 import {
   PineconeBadRequestError,
   PineconeInternalServerError,
@@ -15,8 +15,8 @@ const setupResponse = (response, isSuccess) => {
     );
   const VOA = { update: fakeUpdate } as VectorOperationsApi;
   const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-
-  return { fakeUpdate, VOA, VoaProvider };
+  const cmd = new UpdateCommand(VoaProvider, 'namespace')
+  return { fakeUpdate, VOA, VoaProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -27,10 +27,9 @@ const setupFailure = (response) => {
 
 describe('update', () => {
   test('calls the openapi update endpoint, passing target namespace', async () => {
-    const { VoaProvider, fakeUpdate } = setupSuccess('');
+    const { fakeUpdate, cmd } = setupSuccess('');
 
-    const updateFn = update(VoaProvider, 'namespace');
-    const returned = await updateFn({
+    const returned = await cmd.run({
       id: 'fake-vector',
       values: [1, 2, 3, 4, 5],
       sparseValues: {
@@ -57,28 +56,28 @@ describe('update', () => {
 
   describe('http error mapping', () => {
     test('when 500 occurs', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 500,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const updateFn = update(VoaProvider, 'namespace');
-        await updateFn({ id: 'fake-vector' });
+        // @ts-expect-error
+        await cmd.run({ id: 'fake-vector' });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
     });
 
     test('when 400 occurs, displays server message', async () => {
-      const { VoaProvider } = setupFailure({
+      const { cmd } = setupFailure({
         status: 400,
         text: () => 'backend error message',
       });
 
       const toThrow = async () => {
-        const updateFn = update(VoaProvider, 'namespace');
-        await updateFn({ id: 'fake-vector' });
+        // @ts-expect-error 
+        await cmd.run({ id: 'fake-vector' });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);
