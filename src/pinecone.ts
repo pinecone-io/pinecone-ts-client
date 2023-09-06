@@ -18,7 +18,7 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { Index } from './data';
+import { Index, type RecordMetadataValue } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
 import {
@@ -325,13 +325,13 @@ export class Pinecone {
     return this.config;
   }
 
-  index(indexName: string) {
-    return new Index(indexName, this.config);
+  index<T extends Record<string, RecordMetadataValue>>(indexName: string) {
+    return new Index<T>(indexName, this.config);
   }
 
   // Alias method to match the Python SDK capitalization
-  Index(indexName: string) {
-    return this.index(indexName);
+  Index<T extends Record<string, RecordMetadataValue>>(indexName: string) {
+    return this.index<T>(indexName);
   }
 
   __curlStarter() {

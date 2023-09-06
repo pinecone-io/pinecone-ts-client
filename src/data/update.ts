@@ -6,8 +6,10 @@ import {
   RecordIdSchema,
   RecordValuesSchema,
   RecordSparseValuesSchema,
-  type PineconeRecord,
-  type RecordMetadataValue
+  type RecordId,
+  type RecordValues,
+  type RecordSparseValues,
+  type RecordMetadataValue,
 } from './types';
 
 const UpdateRecordOptionsSchema = Type.Object(
@@ -20,7 +22,15 @@ const UpdateRecordOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export interface UpdateOptions<T extends Record<string, RecordMetadataValue>> extends PineconeRecord<T> {};
+// This is very similar to PineconeRecord, but differs because values field
+// is optional here. E.g. perhaps the caller only wants to update metadata
+// for a given record.
+export type UpdateOptions<T extends Record<string, RecordMetadataValue>> = {
+  id: RecordId;
+  values?: RecordValues;
+  sparseValues?: RecordSparseValues;
+  metadata?: T;
+};
 
 export class UpdateCommand<T extends Record<string, RecordMetadataValue>> {
   apiProvider: VectorOperationsProvider;
@@ -45,11 +55,13 @@ export class UpdateCommand<T extends Record<string, RecordMetadataValue>> {
 
     try {
       const api = await this.apiProvider.provide();
-      await api.update({ updateRequest: { ...requestOptions, namespace: this.namespace } });
+      await api.update({
+        updateRequest: { ...requestOptions, namespace: this.namespace },
+      });
       return;
     } catch (e) {
       const err = await handleApiError(e);
       throw err;
     }
-  };
+  }
 }

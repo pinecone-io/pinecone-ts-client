@@ -15,7 +15,7 @@ const setupResponse = (response, isSuccess) => {
     );
   const VOA = { update: fakeUpdate } as VectorOperationsApi;
   const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  const cmd = new UpdateCommand(VoaProvider, 'namespace')
+  const cmd = new UpdateCommand(VoaProvider, 'namespace');
   return { fakeUpdate, VOA, VoaProvider, cmd };
 };
 const setupSuccess = (response) => {
@@ -62,8 +62,7 @@ describe('update', () => {
       });
 
       const toThrow = async () => {
-        // @ts-expect-error
-        await cmd.run({ id: 'fake-vector' });
+        await cmd.run({ id: 'fake-vector', values: [0.1, 0.2, 0.3] });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
@@ -76,8 +75,7 @@ describe('update', () => {
       });
 
       const toThrow = async () => {
-        // @ts-expect-error 
-        await cmd.run({ id: 'fake-vector' });
+        await cmd.run({ id: 'fake-vector', values: [0.1, 0.2, 0.3] });
       };
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);

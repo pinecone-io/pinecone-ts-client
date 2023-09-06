@@ -1,6 +1,9 @@
 import { Pinecone } from '../pinecone';
 import type { PineconeConfiguration } from '../data';
 
+jest.mock('../data/fetch');
+jest.mock('../data/upsert');
+
 describe('Pinecone', () => {
   describe('constructor', () => {
     describe('required properties', () => {
@@ -115,6 +118,45 @@ describe('Pinecone', () => {
           "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
         );
       });
+    });
+  });
+
+  describe('typescript: generic types for index metadata', () => {
+    test('passes generic types from index()', async () => {
+      type ProductMetadata = {
+        color: 'red' | 'blue' | 'white' | 'black';
+        description: string;
+      };
+
+      const p = new Pinecone({ apiKey: 'foo', environment: 'bar' });
+      const i = p.index<ProductMetadata>('product-embeddings');
+
+      const result = await i.fetch(['1']);
+      if (result && result.vectors) {
+        // No ts error
+        console.log(result.vectors['1'].metadata?.color);
+
+        // @ts-expect-error because colour not in ProductMetadata
+        console.log(result.vectors['1'].metadata.colour);
+      }
+
+      // No ts errors when passing ProductMetadata
+      await i.upsert([
+        {
+          id: 'party-shirt',
+          values: [0.1, 0.1, 0.1],
+          metadata: { color: 'black', description: 'sexy black dress' },
+        },
+      ]);
+
+      // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
+      await i.upsert([
+        {
+          id: 'pink-shirt',
+          values: [0.1, 0.1, 0.1],
+          metadata: { color: 'pink', description: 'pink shirt' },
+        },
+      ]);
     });
   });
 });
