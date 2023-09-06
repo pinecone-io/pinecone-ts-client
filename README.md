@@ -17,6 +17,10 @@ Many of the brief examples shown in this README are using very small vectors to 
 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
 
+## Migration Guide
+
+If you are upgrading from a `v0.x` beta client, check out the [v1 migration guide](./v1-migration.md).
+
 ## Usage
 
 ### Initializing the client
