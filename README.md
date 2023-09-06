@@ -63,7 +63,9 @@ Once you've instantiated your pinecone client, you're ready to perform the follo
 
 ## Indexes
 
-### Create an index with minimal configuration
+## Creating indexes
+
+#### Create an index with minimal configuration
 
 At a minimum, to create an index you must specify a `name` and `dimension`. The `dimension` indicates the size of the records you intend to store in the index. For example, if your intention was to store and query embeddings generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
 
@@ -96,7 +98,7 @@ await pinecone.createIndex({
 });
 ```
 
-#### Create Index: Checking the status of a newly created index
+#### Checking the status of a newly created index
 
 The `createIndex` method issues a create request to the API that returns quickly, but the resulting index is
 not immediately ready for upserting, querying, or performing other data operations. You can use the
@@ -136,7 +138,7 @@ not immediately ready for upserting, querying, or performing other data operatio
 }
 ```
 
-#### Create Index: Waiting until the index is ready
+#### Waiting until the index is ready
 
 If you pass the `waitUntilReady` option, the client will handle polling for status updates on a newly created index. The promise returned by `createIndex` will not be resolved until the index status indicates it is ready to handle data operations. This can be especially useful for integration testing, where index creation in a setup step will be immediately followed by data operations.
 
@@ -149,7 +151,7 @@ await pinecone.createIndex({
 });
 ```
 
-#### Create index from a Pinecone collection
+#### Create an index from a Pinecone collection
 
 As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](https://github.com/pinecone-io/pinecone-ts-client#collections).
 
