@@ -116,7 +116,12 @@ not immediately ready for upserting, querying, or performing other data operatio
     shards: 1,
     podType: 'p1.x1'
   },
-  status: { ready: false, state: 'Initializing' }
+  status: {
+    ready: false,
+    state: 'Initializing',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
 }
 > await pinecone.describeIndex('sample-index')
 {
@@ -208,7 +213,12 @@ You can fetch the description of any index by name using `describeIndex`.
     shards: 1,
     podType: 'p1.x1'
   },
-  status: { ready: true, state: 'Ready' }
+  status: {
+    ready: true,
+    state: 'Ready',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
 }
 ```
 
@@ -232,7 +242,7 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
   status: {
     ready: true,
     state: 'ScalingUpPodSize',
-    host: 'jen2-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    host: 'my-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
     port: 433
   }
 }
