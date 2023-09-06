@@ -149,11 +149,11 @@ describe('Pinecone', () => {
         },
       ]);
 
-      // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
       await i.upsert([
         {
           id: 'pink-shirt',
           values: [0.1, 0.1, 0.1],
+          // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
           metadata: { color: 'pink', description: 'pink shirt' },
         },
       ]);
