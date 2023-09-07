@@ -4,7 +4,7 @@ This doc will outline the differences between `v0.x` beta versions of the Pineco
 
 ## Client Initialization
 
-The legacy `PineconeClient` export has a two-step asyc initialization.
+The legacy `PineconeClient` export has a two-step async initialization.
 
 ```typescript
 // Legacy initialization
