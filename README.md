@@ -330,6 +330,54 @@ const index = pinecone.index('test-index');
 await index.fetch(['1']);
 ```
 
+### Targeting an index, with metadata typing
+
+If you are storing metadata alongside your vector values, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking.
+
+```typescript
+const pinecone = new Pinecone();
+
+type MovieMetadata = {
+  title: string,
+  runtime: numbers,
+  genre: 'comedy' | 'horror' | 'drama' | 'action'
+}
+
+// Specify a custom metadata type while targeting the index
+const index = pinecone.index<MovieMetadata>('test-index');
+
+// Now you get type errors if upserting malformed metadata
+await index.upsert({
+  id: '1234',
+  values: [
+    .... // embedding values
+  ],
+  metadata: {
+    genre: 'Gone with the Wind',
+    runtime: 238,
+    genre: 'drama',
+    // @ts-expect-error because category property not in MovieMetadata
+    category: 'classic'
+  }
+})
+
+const results = await index.query({
+  vector: [
+    ... // query embedding
+  ],
+  filter: { genre: { '$eq': 'drama' }}
+})
+const movie = results.matches[0];
+
+if (movie.metadata) {
+  // Since we passed the MovieMetadata type parameter above,
+  // we can interact with metadata fields without having to
+  // do any typecasting.
+  const { title, runtime, genre } = movie.metadata;
+  console.log(`The best match in drama was ${title}`)
+}
+```
+
 ### Targeting a namespace
 
 > [!NOTE]
