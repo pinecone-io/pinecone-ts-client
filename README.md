@@ -1,278 +1,635 @@
 # Pinecone Node.js Client
 
-This is the Node.js client for Pinecone, written in Typescript. It is a wrapper around the Pinecone OpenAPI spec.
+This is the official Node.js client for Pinecone, written in TypeScript.
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/pr.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/pinecone-io/pinecone-ts-client/graphs/commit-activity)
 
-> **_⚠️ Warning_**
->
-> This is a **public preview** ("Beta") client. Test thoroughly before
-> using this client for production workloads. No SLAs or technical support
-> commitments are provided for this client. Expect potential breaking
-> changes in future releases.
+## Migration Guide
+
+If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](./v1-migration.md).
 
 ## Installation
 
 ```
-npm i @pinecone-database/pinecone
+npm install @pinecone-database/pinecone
 ```
+
+## Example code
+
+Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve vectors of higher dimension. To see some more realistic examples of how this client can be used, explore these examples:
+
+- [Semantic search](https://github.com/pinecone-io/semantic-search-example)
+- [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
+- [Image search](https://github.com/pinecone-io/image-search-example)
 
 ## Usage
 
-Set the following environment variables:
+### Initializing the client
+
+There are two pieces of configuration required to use the Pinecone client: an API key and environment value. These values can be passed using environment variables or in code through a configuration object. Find your configuration values in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io).
+
+#### Using environment variables
+
+The environment variables used to configure the client are the following:
 
 ```bash
-PINECONE_API_KEY=your_api_key
-PINECONE_ENVIRONMENT=your_environment
+PINECONE_API_KEY="your_api_key"
+PINECONE_ENVIRONMENT="your_environment"
 ```
 
-## Initializing the client
+When these environment variables are set, the client constructor does not require any additional arguments.
 
 ```typescript
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { Pinecone } from '@pinecone-database/pinecone';
 
-// Create a client
-const client = new PineconeClient();
+const pinecone = new Pinecone();
+```
 
-// Initialize the client
-await client.init({
-  apiKey: process.env.PINECONE_API_KEY,
-  environment: process.env.PINECONE_ENVIRONMENT,
+#### Using a configuration object
+
+If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` and `environment` values. This
+could be useful if your application needs to interact with multiple projects, each with a different configuration.
+
+```typescript
+const pinecone = new Pinecone({
+  apiKey: 'your_api_key',
+  environment: 'your_environment',
 });
 ```
 
 ## Control plane operations
 
-The Pinecone control plane allows you to perform the following operations:
+Once you've instantiated your pinecone client, you're ready to perform the following control plane operations:
 
 1. Create, configure and delete indexes
-2. Get information about an existing indexes
+2. Get information about existing indexes and collections
 3. Create and delete collections
-4. Select an index to operate on
+4. Select an index to perform data operations (upsert, query, fetch, etc.)
 
 ## Indexes
 
 ### Create Index
 
-```ts
-const createRequest: CreateRequest = {
-  name: indexName,
-  dimension: dimensions,
-  metric,
-};
+#### Create an index with minimal configuration
 
-await client.createIndex({ createRequest });
+At a minimum, to create an index you must specify a `name` and `dimension`. The `dimension` indicates the size of the records you intend to store in the index. For example, if your intention was to store and query embeddings generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
+
+```typescript
+const pinecone = new Pinecone();
+await pinecone.createIndex({
+  name: 'sample-index',
+  dimension: 1536,
+});
 ```
 
-### Delete Index
+#### Create an index with other optional configurations
 
-```ts
-await client.deleteIndex({ indexName });
-```
+Many optional configuration fields allow greater control over hardware resources and availability. To learn more
+about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
+and [Scaling indexes](https://docs.pinecone.io/docs/scaling-indexes).
 
-### Describe Index
-
-```ts
-const indexDescription = await client.describeIndex({ indexName });
-```
-
-Example result:
-
-```json
-{
-  "database": {
-    "name": "my-index",
-    "metric": "cosine",
-    "dimension": 10,
-    "replicas": 1,
-    "shards": 1,
-    "pods": 1,
-    "pod_type": "p1.x1"
+```typescript
+await pinecone.createIndex({
+  name: 'sample-index-2',
+  dimension: 1536,
+  metric: 'dotproduct',
+  pods: 2,
+  replicas: 2,
+  shards: 2,
+  podType: 'p1.x2',
+  metadataConfig: {
+    indexed: ['product_type'],
   },
-  "status": {
-    "waiting": [],
-    "crashed": [],
-    "host": "my-index-[project-id].svc.[environment].pinecone.io",
-    "port": 433,
-    "state": "Ready",
-    "ready": true
+});
+```
+
+#### Checking the status of a newly created index
+
+The `createIndex` method issues a create request to the API that returns quickly, but the resulting index is
+not immediately ready for upserting, querying, or performing other data operations. You can use the
+`describeIndex` method to find out the status of an index and see whether it is ready for use.
+
+```typescript
+> await pinecone.describeIndex('sample-index')
+{
+  database: {
+    name: 'sample-index',
+    dimension: 1536,
+    metric: 'cosine',
+    pods: 1,
+    replicas: 1,
+    shards: 1,
+    podType: 'p1.x1'
+  },
+  status: {
+    ready: false,
+    state: 'Initializing',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
+}
+> await pinecone.describeIndex('sample-index')
+{
+  database: {
+    name: 'sample-index',
+    dimension: 1536,
+    metric: 'cosine',
+    pods: 1,
+    replicas: 1,
+    shards: 1,
+    podType: 'p1.x1'
+  },
+  status: {
+    ready: true,
+    state: 'Ready',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
   }
 }
 ```
 
+#### Waiting until the index is ready
+
+If you pass the `waitUntilReady` option, the client will handle polling for status updates on a newly created index. The promise returned by `createIndex` will not be resolved until the index status indicates it is ready to handle data operations. This can be especially useful for integration testing, where index creation in a setup step will be immediately followed by data operations.
+
+```typescript
+const client = new Pinecone();
+await pinecone.createIndex({
+  name: 'sample-index',
+  dimension: 1536,
+  waitUntilReady: true,
+});
+```
+
+#### Create an index from a Pinecone collection
+
+As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](https://github.com/pinecone-io/pinecone-ts-client#collections).
+
+Given that you have an existing collection:
+
+```typescript
+> await pinecone.describeCollection('product-description-embeddings')
+{
+  name: 'product-description-embeddings',
+  size: 543427063,
+  status: 'Ready',
+  dimension: 2,
+  recordCount: 10001498
+}
+```
+
+You can specify a sourceCollection along with other configuration in your `createIndex` options:
+
+```typescript
+await pinecone.createIndex({
+  name: 'product-description-p1x1',
+  sourceCollection: 'product-description-embeddings',
+  dimension: 256,
+  metric: 'cosine'
+  podType: 'p1.x1'
+})
+```
+
+When the new index is ready, it should contain all the data that was in the collection, ready to be queried.
+
+```typescript
+> await pinecone.index('product-description-p2x2').describeIndexStats()
+{
+  namespaces: { '': { recordCount: 78000 } },
+  dimension: 256,
+  indexFullness: 0.9,
+  totalRecordCount: 78000
+}
+```
+
+### Describe Index
+
+You can fetch the description of any index by name using `describeIndex`.
+
+```typescript
+> await pinecone.describeIndex('sample-index')
+{
+  database: {
+    name: 'sample-index',
+    dimension: 1536,
+    metric: 'cosine',
+    pods: 1,
+    replicas: 1,
+    shards: 1,
+    podType: 'p1.x1'
+  },
+  status: {
+    ready: true,
+    state: 'Ready',
+    host: 'sample-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
+}
+```
+
+### Configure Index
+
+You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
+
+```typescript
+> await pinecone.configureIndex('my-index', { replicas: 3 })
+> const config = await pinecone.describeIndex('my-index')
+{
+  database: {
+    name: 'my-index',
+    dimension: 2,
+    metric: 'cosine',
+    pods: 2,
+    replicas: 2,
+    shards: 1,
+    podType: 'p1.x1'
+  },
+  status: {
+    ready: true,
+    state: 'ScalingUpPodSize',
+    host: 'my-index-c01b9b5.svc.us-east1-gcp.pinecone.io',
+    port: 433
+  }
+}
+```
+
+### Delete Index
+
+Indexes are deleted by name.
+
+```typescript
+await pinecone.deleteIndex('sample-index');
+```
+
 ### List Indexes
 
-```ts
-const list = await client.listIndexes();
-```
+The `listIndexes` command returns an array of index names.
 
-Example result:
-
-```json
-["index1", "index2"]
-```
-
-### Select an index
-
-To operate on an index, you must select it. This is done by calling the `Index` method on the client.
-
-```ts
-const index = client.Index(indexName);
+```typescript
+> await pinecone.listIndexes()
+[{ name: 'sample-index' }, { name: 'sample-index-2' }]
 ```
 
 ## Collections
 
+A collection is a static copy of an index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/docs/collections).
+
 ### Create Collection
 
-```ts
-const createCollectionRequest: CreateCollectionRequest = {
-  name: collection,
-  source: indexName,
-};
-await client.createCollection({ createCollectionRequest });
+```typescript
+await pinecone.createCollection({
+  name: 'collection-name',
+  source: 'index-name',
+});
 ```
+
+This API call should return quickly, but the creation of a collection can take from minutes to hours depending on the size of the source index and the index's configuration. Use `describeCollection` to check the status of a collection.
 
 ### Delete Collection
 
-```ts
-await client.deleteCollection(collection);
+```typescript
+await pinecone.deleteCollection('collection-name');
 ```
+
+You can use `listIndexes` to confirm the deletion.
 
 ### Describe Collection
 
-```ts
-const describeCollection = await client.describeCollection({ collectionName });
-```
-
-Example result:
-
-```json
+```typescript
+> const describeCollection = await pinecone.describeCollection('collection3');
 {
-  "name": "my-collection",
-  "status": "Ready",
-  "size": 3059815,
-  "dimension": 10
+  name: 'collection3',
+  size: 3126700,
+  status: 'Ready',
+  dimension: 3,
+  recordCount: 99
 }
 ```
 
 ### List Collections
 
-```ts
-const list = await client.listCollections();
-```
-
-Example result:
-
-```json
-["collection1", "collection2"]
+```typescript
+> const list = await pinecone.listCollections();
+[{ name: "collection1" }, { name: "collection2" }]
 ```
 
 ## Index operations
 
-The Pinecone index operations allow you to perform the following operations instances of `Vector`.
+Pinecone indexes support operations for working with vector data using operations such as upsert, query, fetch, and delete.
 
-A `Vector` is defined as follows:
+### Targeting an index
 
-```ts
-type Vector = {
-  id: string;
-  values: number[];
-  metadata?: object;
-  sparseValues: {
-    indices: [15, 30, 11];
-    values: [0.1, 0.2, 0.3];
-  }; // optional sparse values
-};
+To perform data operations on an index, you target it using the `index` method.
+
+```typescript
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index');
+
+// Now perform index operations
+await index.fetch(['1']);
 ```
 
-After selecting an index to operate on, you can:
+### Targeting an index, with metadata typing
 
-### Upsert vectors
+If you are storing metadata alongside your vector values, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking.
 
-```ts
-const upsertRequest: UpsertRequest = {
-  vectors,
-  namespace,
-};
-await index.upsert({ upsertRequest });
-```
+```typescript
+const pinecone = new Pinecone();
 
-### Query vectors
+type MovieMetadata = {
+  title: string,
+  runtime: numbers,
+  genre: 'comedy' | 'horror' | 'drama' | 'action'
+}
 
-```ts
-const vector = [...] // a vector
+// Specify a custom metadata type while targeting the index
+const index = pinecone.index<MovieMetadata>('test-index');
 
-const queryRequest: QueryRequest = {
-  topK: 1,
-  vector,
-  namespace,
-  includeMetadata: true,
-  includeValues: true,
+// Now you get type errors if upserting malformed metadata
+await index.upsert({
+  id: '1234',
+  values: [
+    .... // embedding values
+  ],
+  metadata: {
+    genre: 'Gone with the Wind',
+    runtime: 238,
+    genre: 'drama',
+    // @ts-expect-error because category property not in MovieMetadata
+    category: 'classic'
+  }
+})
+
+const results = await index.query({
+  vector: [
+    ... // query embedding
+  ],
+  filter: { genre: { '$eq': 'drama' }}
+})
+const movie = results.matches[0];
+
+if (movie.metadata) {
+  // Since we passed the MovieMetadata type parameter above,
+  // we can interact with metadata fields without having to
+  // do any typecasting.
+  const { title, runtime, genre } = movie.metadata;
+  console.log(`The best match in drama was ${title}`)
 }
 ```
 
-To query with a sparse vector:
+### Targeting a namespace
 
-```ts
-const queryRequest: QueryRequest = {
-  topK: 1,
-  vector,
-  namespace,
-  includeMetadata: true,
-  includeValues: true,
-  sparseVector: {
-    indices: [15, 30, 11],
-    values: [0.1, 0.2, 0.3],
+> [!NOTE]
+> Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
+
+By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
+
+```typescript
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index').namespace('ns1');
+
+// Now perform index operations in the targeted index and namespace
+await index.fetch(['1']);
+```
+
+If needed, you can check the currently targeted index and namespace by inspecting the `target` property of an index object.
+
+```typescript
+const pinecone = new Pinecone();
+const index = pinecone.index('test-index').namespace('ns1');
+
+console.log(index.target); // { index: 'test-index', namespace: 'ns1' }
+```
+
+See [Using namespaces](https://docs.pinecone.io/docs/namespaces) for more information.
+
+### Upsert records
+
+Pinecone expects records inserted into indexes to have the following form:
+
+```typescript
+type PineconeRecord = {
+  id: string;
+  values: Array<number>;
+  sparseValues?: Array<number>;
+  metadata?: object;
+};
+```
+
+To upsert some records, you can use the client like so:
+
+```typescript
+const pinecone = new Pinecone();
+
+// Target an index
+const index = pinecone.index('sample-index');
+
+// Prepare your data. The length of each array
+// of vector values must match the dimension of
+// the index where you plan to store them.
+const records = [
+  {
+    id: '1',
+    values: [0.236, 0.971, 0.559],
   },
+  {
+    id: '2',
+    values: [0.685, 0.111, 0.857],
+  },
+];
+
+// Upsert the data into your index
+await index.upsert(records);
+```
+
+### Seeing index statistics
+
+When experimenting with data operations, it's sometimes helpful to know how many records are stored in each namespace. In that case,
+target the index and use the `describeIndexStats()` command.
+
+```typescript
+> await pinecone.index('example-index').describeIndexStats()
+{
+  namespaces: {
+    '': { recordCount: 10 }
+    foo: { recordCount: 2000 },
+    bar: { recordCount: 2000 }
+  },
+  dimension: 1536,
+  indexFullness: 0,
+  totalRecordCount: 4010
+}
+```
+
+### Querying
+
+#### Querying with vector values
+
+The query method accepts a large number of options. The dimension of the query vector must match the dimension of your index.
+
+```typescript
+type QueryOptions = {
+  topK: number; // number of results desired
+  vector?: Array<number>; // must match dimension of index
+  sparseVector?: {
+    indices: Array<integer>; // indices must fall within index dimension
+    values: Array<number>; // indices and values arrays must have same length
+  };
+  id?: string;
+  includeMetadata: boolean;
+  includeValues: boolean;
 };
 ```
 
-To execute the query:
+For example, to query by vector values you would pass the `vector` param in the options configuration. For brevity sake this example query vector is tiny (dimension 2), but in a more realistic use case this query vector would be an embedding outputted by a model. Look at the [Example code](#example-code) to see more realistic examples of how to use `query`.
 
-```ts
-const queryResponse = await index.query({ queryRequest });
+```typescript
+> await pinecone.index('my-index').query({ topK: 3, vector: [ 0.22, 0.66 ]})
+{
+  matches: [
+    {
+      id: '556',
+      score: 1.00000012,
+      values: [],
+      sparseValues: undefined,
+      metadata: undefined
+    },
+    {
+      id: '137',
+      score: 1.00000012,
+      values: [],
+      sparseValues: undefined,
+      metadata: undefined
+    },
+    {
+      id: '129',
+      score: 1.00000012,
+      values: [],
+      sparseValues: undefined,
+      metadata: undefined
+    }
+  ],
+  namespace: ''
+}
 ```
 
-### Update a vector
+You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default these are not returned to keep the response payload small.
 
-```ts
-const updateRequest: UpdateRequest = {
-  id: vectorId, // the ID of the vector to update
-  values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // the new vector values
-  sparseValues: {
-    indices: [15, 30, 11],
-    values: [0.1, 0.2, 0.3],
-  }, // optional sparse values
-  metadata: metadata, // the new metadata
-  namespace,
-};
-await index.update({ updateRequest });
+Remember that data operations take place within the context of a namespace, so if you are working with namespaces and do not see expected results you should check that you are targeting the correct namespace with your query.
+
+```typescript
+const results = await pinecone
+  .index('my-index')
+  .namespace('my-namespace')
+  .query({ topK: 3, vector: [0.22, 0.66] });
 ```
 
-### Fetch vectors by their IDs
+#### Querying by record id
 
-```ts
-const fetchResult = await index.fetch({
-  ids: [vectorIDs],
-  namespace,
+You can query using the vector values of an existing record in the index by passing a record id.
+
+```typescript
+const results = await pinecone.index('my-index').query({ topK: 10, id: '1' });
+```
+
+#### Hybrid search with sparseVector
+
+If you are working with [sparse-dense vectors](https://docs.pinecone.io/docs/hybrid-search#creating-sparse-vector-embeddings), you can add sparse vector values to perform a hybrid search.
+
+```typescript
+const pinecone = new Pinecone()
+
+await pinecone.createIndex({
+  name: 'hyrbid-image-search',
+  metric: 'dotproduct',
+  dimension: 512,
+  podType: 's1',
+  waitUntilReady: true
+});
+const index = pinecone.index('hybrid-image-search');
+
+// Create some vector embeddings using your model of choice.
+const records = [...]
+
+// Upsert data
+await index.upsert(records)
+
+// Prepare query values. In a more realistic example, these would both come out of a model.
+const vector = [
+  // The dimension of this index needs to match the index dimension.
+  // Pretend this is a 512 dimension vector.
+]
+const sparseVector = {
+  indices: [23, 399, 251, 17],
+  values: [ 0.221, 0.967, 0.016, 0.572]
+}
+
+// Execute the query
+const results = await index.query({ topK: 10, vector, sparseVector, includeMetadata: true })
+```
+
+### Update a record
+
+You may want to update vector `values`, `sparseValues`, or `metadata`. Specify the id and the attribute value you want to update.
+
+```typescript
+await pinecone.index('imdb-movies').update({
+  id: '18593',
+  metadata: { genre: 'romance' },
 });
 ```
 
-### Delete vectors
+### Fetch records by their IDs
 
-```ts
-await index.delete1({
-  ids: [vectorIDs],
-  namespace,
-});
+```typescript
+const fetchResult = await index.fetch(['id-1', 'id-2']);
 ```
 
-### Delete all vectors in a namespace
+### Delete records
 
-```ts
-await index.delete1({
-  deleteAll: true,
-  namespace,
-});
+For convenience there are several delete-related methods. You can verify the results of a delete operation by trying to `fetch()` a record or looking at the index summary with `describeIndexStats()`
+
+#### Delete one
+
+```typescript
+const index = pinecone.index('my-index');
+await index.deleteOne('id-to-delete');
 ```
+
+#### Delete many by id
+
+```typescript
+const index = pinecone.index('my-index');
+await index.deleteMany(['id-1', 'id-2', 'id-3']);
+```
+
+### Delete many by metadata filter
+
+```typescript
+await client.index('albums-database').deleteMany({ filter: { genre: 'rock' } });
+```
+
+#### Delete all records in a namespace
+
+> [!NOTE]
+> Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
+
+To nuke everything in the targeted namespace, use the `deleteAll` method.
+
+```typescript
+const index = pinecone.index('my-index');
+await index.namespace('foo-namespace').deleteAll();
+```
+
+If you do not specify a namespace, the records in the default namespace `''` will be deleted.
+
+## Productionizing
+
+If you are ready to take a JavaScript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to provide feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property.
+
+These runtime validations are most helpful for users who are not developing with Typescript or who are experimenting in a REPL or notebook-type setting. But once you've tested an application and have gained confidence things are working as expected, you can disable these checks to gain a small improvement in performance. This will have the most impact if your workload is upserting very large amounts of data.
+
+## Legacy exports
+
+For information about the legacy `PineconeClient` export, see the [old README](./README.v0.md).
