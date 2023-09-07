@@ -5,6 +5,10 @@ This is the official Node.js client for Pinecone, written in TypeScript.
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/pr.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
 
+## Migration Guide
+
+If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](./v1-migration.md).
+
 ## Installation
 
 ```
@@ -18,10 +22,6 @@ Many of the brief examples shown in this README are using very small vectors to 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
 - [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
 - [Image search](https://github.com/pinecone-io/image-search-example)
-
-## Migration Guide
-
-If you are upgrading from a `v0.x` beta client, check out the [v1 migration guide](./v1-migration.md).
 
 ## Usage
 
@@ -552,9 +552,8 @@ const index = pinecone.index('hybrid-image-search');
 // Create some vector embeddings using your model of choice.
 const records = [...]
 
-// Upsert data. Specify a batchSize if you are trying to upsert
-// a large number of records at once
-await index.upsert({ records, batchSize: 100 })
+// Upsert data
+await index.upsert(records)
 
 // Prepare query values. In a more realistic example, these would both come out of a model.
 const vector = [
