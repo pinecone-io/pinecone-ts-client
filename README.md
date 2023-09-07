@@ -17,6 +17,7 @@ Many of the brief examples shown in this README are using very small vectors to 
 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
 - [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
+- [Image search](https://github.com/pinecone-io/image-search-example)
 
 ## Migration Guide
 
