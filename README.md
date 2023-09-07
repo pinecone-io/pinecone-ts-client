@@ -16,6 +16,7 @@ npm install @pinecone-database/pinecone
 Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve vectors of higher dimension. To see some more realistic examples of how this client can be used, explore these examples:
 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
+- [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
 
 ## Migration Guide
 
