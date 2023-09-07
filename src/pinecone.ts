@@ -322,12 +322,12 @@ export class Pinecone {
     return this.config;
   }
 
-  index<T extends RecordMetadata>(indexName: string) {
+  index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
     return new Index<T>(indexName, this.config);
   }
 
   // Alias method to match the Python SDK capitalization
-  Index<T extends RecordMetadata>(indexName: string) {
+  Index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
     return this.index<T>(indexName);
   }
 

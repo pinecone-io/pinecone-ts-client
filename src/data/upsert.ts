@@ -8,7 +8,7 @@ import type { PineconeRecord, RecordMetadata } from './types';
 
 const RecordArray = Type.Array(PineconeRecordSchema);
 
-export class UpsertCommand<T extends RecordMetadata> {
+export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

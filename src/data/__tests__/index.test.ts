@@ -3,6 +3,7 @@ import { QueryCommand } from '../query';
 import { UpdateCommand } from '../update';
 import { UpsertCommand } from '../upsert';
 import { Index } from '../index';
+import type { ScoredPineconeRecord } from '../query';
 
 jest.mock('../fetch');
 jest.mock('../query');
@@ -21,6 +22,26 @@ describe('Index', () => {
     config = {
       apiKey: 'test-api-key',
       environment: 'test-environment',
+    };
+  });
+
+  test('can write functions that take types with generic params', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const fn1 = (record: ScoredPineconeRecord) => {
+      // no type errors on this because typescript doesn't know anything about what keys are defined
+      // ScoredPineconeRecord without specifying the generic type param
+      console.log(record.metadata && record.metadata.yolo);
+    };
+    type MyMeta = {
+      name: string;
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const fn2 = (record: ScoredPineconeRecord<MyMeta>) => {
+      console.log(record.metadata && record.metadata.name);
+
+      // @ts-expect-error because bogus not in MyMeta
+      console.log(record.metadata && record.metadata.bogus);
     };
   });
 

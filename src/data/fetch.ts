@@ -8,12 +8,12 @@ import { Type } from '@sinclair/typebox';
 const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
 export type FetchOptions = Array<RecordId>;
 
-export type FetchResponse<T extends RecordMetadata> = {
+export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
   records?: { [key: string]: PineconeRecord<T> };
   namespace?: string;
 };
 
-export class FetchCommand<T extends RecordMetadata> {
+export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

@@ -16,19 +16,25 @@ const shared = {
   filter: Type.Optional(Type.Object({})),
 };
 
-const QueryByRecordId = Type.Object({
-  ...shared,
-  id: RecordIdSchema,
-  vector: Type.Optional(Type.Never()),
-  sparseVector: Type.Optional(Type.Never()),
-});
+const QueryByRecordId = Type.Object(
+  {
+    ...shared,
+    id: RecordIdSchema,
+    vector: Type.Optional(Type.Never()),
+    sparseVector: Type.Optional(Type.Never()),
+  },
+  { additionalProperties: false }
+);
 
-const QueryByVectorValues = Type.Object({
-  ...shared,
-  vector: RecordValuesSchema,
-  sparseVector: Type.Optional(RecordSparseValuesSchema),
-  id: Type.Optional(Type.Never()),
-});
+const QueryByVectorValues = Type.Object(
+  {
+    ...shared,
+    vector: RecordValuesSchema,
+    sparseVector: Type.Optional(RecordSparseValuesSchema),
+    id: Type.Optional(Type.Never()),
+  },
+  { additionalProperties: false }
+);
 
 const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 
@@ -36,17 +42,17 @@ export type QueryByRecordId = Static<typeof QueryByRecordId>;
 export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
 export type QueryOptions = Static<typeof QuerySchema>;
 
-export interface ScoredPineconeRecord<T extends RecordMetadata>
+export interface ScoredPineconeRecord<T extends RecordMetadata = RecordMetadata>
   extends PineconeRecord<T> {
   score?: number;
 }
 
-export type QueryResponse<T extends RecordMetadata> = {
+export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
   matches?: Array<ScoredPineconeRecord<T>>;
   namespace: string;
 };
 
-export class QueryCommand<T extends RecordMetadata> {
+export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

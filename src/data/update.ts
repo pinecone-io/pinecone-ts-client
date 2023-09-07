@@ -25,14 +25,14 @@ const UpdateRecordOptionsSchema = Type.Object(
 // This is very similar to PineconeRecord, but differs because values field
 // is optional here. E.g. perhaps the caller only wants to update metadata
 // for a given record.
-export type UpdateOptions<T extends RecordMetadata> = {
+export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   id: RecordId;
   values?: RecordValues;
   sparseValues?: RecordSparseValues;
   metadata?: T;
 };
 
-export class UpdateCommand<T extends RecordMetadata> {
+export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;

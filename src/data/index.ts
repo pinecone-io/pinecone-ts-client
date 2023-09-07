@@ -40,7 +40,7 @@ export type {
   QueryResponse,
 } from './query';
 
-export class Index<T extends RecordMetadata> {
+export class Index<T extends RecordMetadata = RecordMetadata> {
   private config: PineconeConfiguration;
   private target: {
     index: string;
