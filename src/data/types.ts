@@ -34,7 +34,7 @@ export const PineconeRecordSchema = Type.Object(
 );
 
 export type RecordId = string;
-export type RecordValues = number[];
+export type RecordValues = Array<number>;
 export type RecordSparseValues = {
   indices: Array<number>;
   values: Array<number>;

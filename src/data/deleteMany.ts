@@ -4,6 +4,7 @@ import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
 import { RecordIdSchema } from './types';
+import type { RecordId } from './types';
 
 const DeleteManyByRecordIdSchema = Type.Array(RecordIdSchema);
 
@@ -17,7 +18,7 @@ const DeleteManySchema = Type.Union([
   DeleteManyByFilterSchema,
 ]);
 
-export type DeleteManyByVectorIdOptions = Array<string>;
+export type DeleteManyByVectorIdOptions = Array<RecordId>;
 export type DeleteManyByFilterOptions = object;
 export type DeleteManyOptions =
   | DeleteManyByVectorIdOptions

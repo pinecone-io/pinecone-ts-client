@@ -14,9 +14,10 @@ import {
   MetadataConfigSchema,
   CollectionNameSchema,
 } from './types';
+import type { IndexName } from './types';
 
 export type CreateIndexOptions = {
-  name: string;
+  name: IndexName;
   dimension: number;
   metric?: string;
   pods?: number;
