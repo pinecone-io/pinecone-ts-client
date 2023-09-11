@@ -15,7 +15,7 @@ on:
 
 jobs:
   basic-hygiene:
-    name: Linting, formatting, etc
+    name: Linting, formatting, documentation, etc
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,6 +34,8 @@ jobs:
           fi
       - name: ESLint
         run: npm run lint
+      - name: TypeDoc
+        uses: ./.github/actions/build-docs
 
   run-integration-tests:
     name: Run integration tests
