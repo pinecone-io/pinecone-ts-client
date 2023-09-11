@@ -3,7 +3,7 @@ import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
 import { handleApiError } from '../errors';
 import { handleIndexRequestError } from './utils';
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import {
   IndexNameSchema,
   DimensionSchema,
@@ -14,8 +14,19 @@ import {
   MetadataConfigSchema,
   CollectionNameSchema,
 } from './types';
+import type { IndexName } from './types';
 
-export type CreateIndexOptions = Static<typeof CreateIndexOptionsSchema>;
+export type CreateIndexOptions = {
+  name: IndexName;
+  dimension: number;
+  metric?: string;
+  pods?: number;
+  replicas?: number;
+  podType?: string;
+  metadataConfig?: { indexed: Array<string> };
+  sourceCollection?: string;
+  waitUntilReady?: boolean;
+};
 
 const CreateIndexOptionsSchema = Type.Object(
   {
