@@ -1,4 +1,4 @@
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 
 export const PineconeConfigurationSchema = Type.Object(
   {
@@ -8,7 +8,11 @@ export const PineconeConfigurationSchema = Type.Object(
   },
   { additionalProperties: false }
 );
-export type PineconeConfiguration = Static<typeof PineconeConfigurationSchema>;
+export type PineconeConfiguration = {
+  environment: string;
+  apiKey: string;
+  projectId?: string;
+};
 
 export const RecordIdSchema = Type.String({ minLength: 1 });
 export const RecordValuesSchema = Type.Array(Type.Number());
@@ -29,9 +33,12 @@ export const PineconeRecordSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export type RecordId = Static<typeof RecordIdSchema>;
-export type RecordValues = Static<typeof RecordValuesSchema>;
-export type RecordSparseValues = Static<typeof RecordSparseValuesSchema>;
+export type RecordId = string;
+export type RecordValues = number[];
+export type RecordSparseValues = {
+  indices: Array<number>;
+  values: Array<number>;
+};
 export type RecordMetadataValue = string | boolean | number | Array<string>;
 export type RecordMetadata = Record<string, RecordMetadataValue>;
 export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
