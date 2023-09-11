@@ -15,7 +15,7 @@ on:
 
 jobs:
   basic-hygiene:
-    name: Linting, formatting, etc
+    name: Linting, formatting, documentation, etc
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
