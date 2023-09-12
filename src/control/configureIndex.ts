@@ -4,7 +4,7 @@ import { buildValidator } from '../validator';
 import type { IndexName } from './types';
 import { handleIndexRequestError } from './utils';
 
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { ReplicasSchema, PodTypeSchema, IndexNameSchema } from './types';
 
 const ConfigureIndexOptionsSchema = Type.Object(
@@ -14,8 +14,7 @@ const ConfigureIndexOptionsSchema = Type.Object(
   },
   { additionalProperties: false }
 );
-
-export type ConfigureIndexOptions = Static<typeof ConfigureIndexOptionsSchema>;
+export type ConfigureIndexOptions = { replicas?: number; podType?: string };
 
 export const configureIndex = (api: IndexOperationsApi) => {
   const indexNameValidator = buildValidator(

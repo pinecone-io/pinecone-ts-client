@@ -3,10 +3,11 @@ import { buildConfigValidator } from '../validator';
 import {
   RecordIdSchema,
   RecordSparseValuesSchema,
+  RecordValues,
   RecordValuesSchema,
 } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 const shared = {
@@ -38,9 +39,15 @@ const QueryByVectorValues = Type.Object(
 
 const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 
-export type QueryByRecordId = Static<typeof QueryByRecordId>;
-export type QueryByVectorValues = Static<typeof QueryByVectorValues>;
-export type QueryOptions = Static<typeof QuerySchema>;
+type QueryShared = {
+  topK: number;
+  includeValues?: boolean;
+  includeMetadata?: boolean;
+  filter?: object;
+};
+export type QueryByRecordId = QueryShared & { id: string };
+export type QueryByVectorValues = QueryShared & { vector: RecordValues };
+export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 
 export interface ScoredPineconeRecord<T extends RecordMetadata = RecordMetadata>
   extends PineconeRecord<T> {

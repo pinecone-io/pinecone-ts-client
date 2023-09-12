@@ -2,7 +2,8 @@ import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { handleIndexRequestError } from './utils';
 import { CollectionNameSchema, IndexNameSchema } from './types';
-import { Static, Type } from '@sinclair/typebox';
+import type { CollectionName, IndexName } from './types';
+import { Type } from '@sinclair/typebox';
 
 const CreateCollectionOptionsSchema = Type.Object(
   {
@@ -12,9 +13,10 @@ const CreateCollectionOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export type CreateCollectionOptions = Static<
-  typeof CreateCollectionOptionsSchema
->;
+export type CreateCollectionOptions = {
+  name: CollectionName;
+  source: IndexName;
+};
 
 export const createCollection = (api: IndexOperationsApi) => {
   const validator = buildConfigValidator(

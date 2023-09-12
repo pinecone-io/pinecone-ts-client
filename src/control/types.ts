@@ -1,4 +1,4 @@
-import { Type, Static } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 
 const nonemptyString = Type.String({ minLength: 1 });
 const positiveInteger = Type.Integer({ minimum: 1 });
@@ -9,7 +9,7 @@ const positiveInteger = Type.Integer({ minimum: 1 });
 // no descriptive information is returned for an index named empty
 // string. To avoid this confusing case, we require lenth > 1.
 export const IndexNameSchema = nonemptyString;
-export type IndexName = Static<typeof IndexNameSchema>;
+export type IndexName = string;
 
 export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
@@ -29,4 +29,4 @@ export const MetadataConfigSchema = Type.Object(
 // no descriptive information is returned for an collection named empty
 // string. To avoid this confusing case, we require lenth > 1.
 export const CollectionNameSchema = nonemptyString;
-export type CollectionName = Static<typeof CollectionNameSchema>;
+export type CollectionName = string;
