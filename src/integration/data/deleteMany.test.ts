@@ -26,6 +26,11 @@ describe('deleteMany', () => {
 
   test('verify deleteMany with ids', async () => {
     const recordsToUpsert = generateRecords(5, 3);
+    expect(recordsToUpsert).toHaveLength(3);
+    expect(recordsToUpsert[0].id).toEqual('0');
+    expect(recordsToUpsert[1].id).toEqual('1');
+    expect(recordsToUpsert[2].id).toEqual('2');
+
     await ns.upsert(recordsToUpsert);
 
     // Check records got upserted
@@ -61,7 +66,7 @@ describe('deleteMany', () => {
       );
     }
 
-    // Check that record 1 still exists
+    // Check that record id='1' still exists
     const fetchResult2 = await ns.fetch(['1']);
     const records2 = fetchResult2.records;
     if (records2) {

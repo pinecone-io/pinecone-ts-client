@@ -63,14 +63,11 @@ export const generateRecords = (
 
 export const generateSparseValues = (dimension: number): RecordSparseValues => {
   const values: number[] = [];
-  const indecies: number[] = [];
+  const indices: number[] = [];
   for (let j = 0; j < dimension; j++) {
     values.push(Math.random());
-    indecies.push(j);
+    indices.push(j);
   }
-  const sparseValues: RecordSparseValues = {
-    indices: indecies,
-    values: values,
-  };
+  const sparseValues: RecordSparseValues = { indices, values };
   return sparseValues;
 };
