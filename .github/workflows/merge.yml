@@ -1,0 +1,30 @@
+name: 'Merge to main'
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    types:
+      - closed
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  build-and-deploy-documentation:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Generate TypeDoc documentation
+        uses: ./.github/actions/build-docs
+      - name: Deploy documentation to gh-pages
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: gh-pages
+          FOLDER: docs
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
