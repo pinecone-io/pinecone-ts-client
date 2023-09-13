@@ -154,7 +154,7 @@ not immediately ready for upserting, querying, or performing other data operatio
 If you pass the `waitUntilReady` option, the client will handle polling for status updates on a newly created index. The promise returned by `createIndex` will not be resolved until the index status indicates it is ready to handle data operations. This can be especially useful for integration testing, where index creation in a setup step will be immediately followed by data operations.
 
 ```typescript
-const client = new Pinecone();
+const pinecone = new Pinecone();
 await pinecone.createIndex({
   name: 'sample-index',
   dimension: 1536,
