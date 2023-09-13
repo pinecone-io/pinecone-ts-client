@@ -6,6 +6,7 @@ import {
 } from '../errors';
 import type { PineconeConfiguration } from './types';
 import { buildUserAgent } from '../utils';
+import fetch from 'cross-fetch';
 
 // We only ever want to call whoami a maximum of once per API key, even if there
 // are multiple instantiations of the Index class. So we use a singleton here

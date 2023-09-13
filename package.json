@@ -18,9 +18,8 @@
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
-    "test:legacy": "jest --runInBand --detectOpenHandles tests/legacy-integration/",
-    "test:integration": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
-    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts"
+    "test:integration": "jest src/integration --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
+    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts --testPathIgnorePatterns src/integration"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -42,7 +41,7 @@
     "typescript": "^4.9.4",
     "unique-names-generator": "^4.7.1"
   },
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
     "/dist"
   ],

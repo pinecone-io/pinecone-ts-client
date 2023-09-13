@@ -1,5 +1,14 @@
 import { Pinecone } from '../pinecone';
 import type { PineconeConfiguration } from '../data';
+import crossFetch from 'cross-fetch';
+
+jest.mock('cross-fetch', () => {
+  //Mock the default export
+  return {
+    __esModule: true,
+    default: jest.fn(),
+  };
+});
 
 jest.mock('../data/fetch');
 jest.mock('../data/upsert');
@@ -96,7 +105,7 @@ describe('Pinecone', () => {
         const client = new Pinecone();
 
         expect(client.getConfig().projectId).toEqual('test-project');
-        expect(global.fetch).not.toHaveBeenCalled();
+        expect(crossFetch).not.toHaveBeenCalled();
       });
 
       test('config object should take precedence when both config object and environment variables are provided', () => {

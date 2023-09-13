@@ -7,7 +7,7 @@ import {
   VectorOperationsApi,
   type UpsertOperationRequest,
 } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import type { VectorOperationsProvider } from '../vectorOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertOperationRequest) => Promise<object> = jest
