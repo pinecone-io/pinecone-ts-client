@@ -14,12 +14,14 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
+    "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc",
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
-    "test:integration": "jest src/integration --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
-    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts --testPathIgnorePatterns src/integration"
+    "test:integration:node": "jest src/integration/ -c jest.config.integration-node.js",
+    "test:integration:edge": "jest src/integration/ -c jest.config.integration-edge.js",
+    "test:unit": "jest src/"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -46,6 +48,8 @@
     "/dist"
   ],
   "dependencies": {
+    "@edge-runtime/jest-environment": "^2.3.3",
+    "@edge-runtime/types": "^2.2.3",
     "@sinclair/typebox": "^0.28.15",
     "@types/web": "^0.0.99",
     "ajv": "^8.12.0",
