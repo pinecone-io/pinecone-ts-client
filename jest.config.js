@@ -3,17 +3,12 @@ module.exports = {
   testEnvironment: 'node',
   reporters: [['github-actions', { silent: false }], 'default'],
   transform: {
-    '^.+\\.ts?$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.json',
-      },
-    ],
+    '^.+\\.ts?$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   testTimeout: 100000,
   verbose: true,
-  detectOpenHandles: false,
+  detectOpenHandles: true,
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!**/src/pinecone-generated-ts-fetch/**',
