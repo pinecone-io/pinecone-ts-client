@@ -30,7 +30,7 @@ export class PineconeEnvironmentVarsNotSupportedError extends BasePineconeError 
 export class PineconeUnknownRequestFailure extends BasePineconeError {
   constructor(url: string, underlyingError: Error) {
     const message = `Something went wrong while attempting to call ${url}. Please check your configuration and try again later. Underlying error was ${JSON.stringify(
-      underlyingError
+      underlyingError.message
     )}`;
     super(message);
     this.name = 'PineconeUnknownRequestFailure';

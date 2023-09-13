@@ -22,6 +22,7 @@ import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent } from './utils';
 import type { PineconeConfiguration, RecordMetadata } from './data';
+import fetch from 'cross-fetch';
 
 /**
  * @example
@@ -62,6 +63,7 @@ export class Pinecone {
       headers: {
         'User-Agent': buildUserAgent(false),
       },
+      fetchApi: fetch,
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 

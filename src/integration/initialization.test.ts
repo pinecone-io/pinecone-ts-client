@@ -1,4 +1,4 @@
-import { Pinecone } from '../../dist';
+import { Pinecone } from '../index';
 
 describe('Client initialization', () => {
   test('can accept a config object', () => {
