@@ -11,8 +11,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"],
-    "noImplicitAny": false,
-    "resolveJsonModule": true
+    "noImplicitAny": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

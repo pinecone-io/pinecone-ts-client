@@ -3,7 +3,6 @@ import type { PineconeConfiguration } from '../data';
 import crossFetch from 'cross-fetch';
 
 jest.mock('cross-fetch', () => {
-  //Mock the default export
   return {
     __esModule: true,
     default: jest.fn(),
