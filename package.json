@@ -19,9 +19,9 @@
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
-    "test:integration:node": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
-    "test:integration:edge": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts -c jest.config.edge.js",
-    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts --testPathIgnorePatterns src/integration"
+    "test:integration:node": "jest src/integration/ -c jest.config.integration-node.js",
+    "test:integration:edge": "jest src/integration/ -c jest.config.integration-edge.js",
+    "test:unit": "jest src/"
   },
   "engines": {
     "node": ">=14.0.0"
