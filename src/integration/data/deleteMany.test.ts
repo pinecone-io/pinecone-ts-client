@@ -1,5 +1,4 @@
-import { Index } from '../../data';
-import { Pinecone } from '../../pinecone';
+import { Pinecone, Index } from '../../index';
 import {
   randomString,
   createIndexIfDoesNotExist,
