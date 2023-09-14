@@ -35,10 +35,12 @@ async function streamToArrayBuffer(
       break;
     }
 
-    const newResult = new Uint8Array(result.length + value.length);
-    newResult.set(result);
-    newResult.set(value, result.length);
-    result = newResult;
+    if (value) {
+      const newResult = new Uint8Array(result.length + value.length);
+      newResult.set(result);
+      newResult.set(value, result.length);
+      result = newResult;  
+    }
   }
   return result;
 }

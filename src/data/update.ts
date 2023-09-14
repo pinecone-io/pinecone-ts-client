@@ -6,10 +6,12 @@ import {
   RecordIdSchema,
   RecordValuesSchema,
   RecordSparseValuesSchema,
-  type RecordId,
-  type RecordValues,
-  type RecordSparseValues,
-  type RecordMetadata,
+} from './types';
+import type {
+  RecordId,
+  RecordValues,
+  RecordSparseValues,
+  RecordMetadata,
 } from './types';
 
 const UpdateRecordOptionsSchema = Type.Object(

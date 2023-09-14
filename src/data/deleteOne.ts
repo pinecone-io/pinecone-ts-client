@@ -1,7 +1,8 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { RecordIdSchema, type RecordId } from './types';
+import { RecordIdSchema } from './types';
+import type { RecordId } from './types';
 
 export type DeleteOneOptions = RecordId;
 
