@@ -1,4 +1,3 @@
-import { getOSInfo } from './os';
 import { isEdge } from './environment';
 import * as packageInfo from '../version.json';
 
@@ -11,12 +10,7 @@ export const buildUserAgent = (isLegacy: boolean) => {
     'lang=typescript',
   ];
 
-  if (!isEdge()) {
-    const osInfo = getOSInfo();
-    if (osInfo) {
-      userAgentParts.push(osInfo);
-    }
-  } else {
+  if (isEdge()) {
     userAgentParts.push('Edge Runtime');
   }
 
