@@ -18,10 +18,10 @@ const DeleteManySchema = Type.Union([
   DeleteManyByFilterSchema,
 ]);
 
-export type DeleteManyByVectorIdOptions = Array<RecordId>;
+export type DeleteManyByRecordIdOptions = Array<RecordId>;
 export type DeleteManyByFilterOptions = object;
 export type DeleteManyOptions =
-  | DeleteManyByVectorIdOptions
+  | DeleteManyByRecordIdOptions
   | DeleteManyByFilterOptions;
 
 export const deleteMany = (

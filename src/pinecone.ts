@@ -211,7 +211,7 @@ export class Pinecone {
    * @param options.sourceCollection - If creating an index from a collection, you can specify the name of the collection here.
    * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
    * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @throws {@link PineconeArgumentError} when invalid arguments are provided.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided.
    *
    * @returns A promise that resolves when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the `describeIndex` function to check the status of the index.
    */
@@ -227,7 +227,7 @@ export class Pinecone {
    *
    * @param indexName - The name of the index to delete.
    * @returns A promise that resolves when the request to delete the index is completed.
-   * @throws {@link PineconeArgumentError} when invalid arguments are provided
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided
    */
   deleteIndex: ReturnType<typeof deleteIndex>;
 

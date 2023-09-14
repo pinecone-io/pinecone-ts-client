@@ -1,4 +1,5 @@
 // Index Operations
+export type { IndexName } from './types';
 export { configureIndex } from './configureIndex';
 export type { ConfigureIndexOptions } from './configureIndex';
 export { createIndex } from './createIndex';
@@ -11,6 +12,7 @@ export { listIndexes } from './listIndexes';
 export type { IndexList, PartialIndexDescription } from './listIndexes';
 
 // Collection Operations
+export type { CollectionName } from './types';
 export { createCollection } from './createCollection';
 export type { CreateCollectionOptions } from './createCollection';
 
