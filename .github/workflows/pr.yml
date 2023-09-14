@@ -55,6 +55,43 @@ jobs:
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
         run: npm run test:integration:${{ matrix.jest_env }}
 
+  example-app-semantic-search:
+    name: 'Example app: semantic search'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pinecone-ts-client
+        uses: actions/checkout@v4
+        with:
+          path: pinecone-ts-client
+      - name: Checkout semantic-search-example
+        uses: actions/checkout@v4
+        with:
+          repository: pinecone-io/semantic-search-example
+          path: semantic-search-example
+      - name: Install and build client
+        shell: bash
+        run: |
+          cd pinecone-ts-client
+          npm install --ignore-scripts
+          npm run build
+      - name: Install and build sample app
+        shell: bash
+        run: |
+          cd semantic-search-example
+          npm install --no-cache
+          npm install '../pinecone-ts-client'
+          cat package.json
+      - name: Run example tests with dev version of client
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_INDEX: 'semantic-search'
+        shell: bash
+        run: |
+          cd semantic-search-example
+          npm run test
+
   unit-tests:
     name: Run unit tests
     runs-on: ubuntu-latest
