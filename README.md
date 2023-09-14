@@ -9,6 +9,10 @@ This is the official Node.js client for Pinecone, written in TypeScript.
 
 If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](./v1-migration.md).
 
+## Prerequisites
+
+The Pinecone TypeScript client is compatible with TypeScript 4.1 and greater.
+
 ## Installation
 
 ```

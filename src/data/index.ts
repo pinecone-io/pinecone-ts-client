@@ -1,7 +1,10 @@
 import { UpsertCommand } from './upsert';
-import { FetchCommand, type FetchOptions } from './fetch';
-import { UpdateCommand, type UpdateOptions } from './update';
-import { QueryCommand, type QueryOptions } from './query';
+import { FetchCommand } from './fetch';
+import type { FetchOptions } from './fetch';
+import { UpdateCommand } from './update';
+import type { UpdateOptions } from './update';
+import { QueryCommand } from './query';
+import type { QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';

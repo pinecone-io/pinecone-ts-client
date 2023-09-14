@@ -3,10 +3,8 @@ import {
   PineconeBadRequestError,
   PineconeInternalServerError,
 } from '../../errors';
-import {
-  VectorOperationsApi,
-  type UpsertOperationRequest,
-} from '../../pinecone-generated-ts-fetch';
+import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
+import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
 import { VectorOperationsProvider } from '../vectorOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {

@@ -1,7 +1,8 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { handleCollectionRequestError } from './utils';
-import { CollectionNameSchema, type CollectionName } from './types';
+import { CollectionNameSchema } from './types';
+import type { CollectionName } from './types';
 
 export type DeleteCollectionOptions = CollectionName;
 
