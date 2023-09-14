@@ -80,6 +80,7 @@ jobs:
           cd semantic-search-example
           npm install --no-cache
           npm install '../pinecone-ts-client'
+          cat package.json
       - name: Run example tests with dev version of client
         env:
           CI: true
