@@ -74,6 +74,12 @@ jobs:
           cd pinecone-ts-client
           npm install --ignore-scripts
           npm run build
+      - name: Install and build sample app
+        shell: bash
+        run: |
+          cd semantic-search-example
+          npm install --no-cache
+          npm install '../pinecone-ts-client'
       - name: Run example tests with dev version of client
         env:
           CI: true
@@ -82,11 +88,7 @@ jobs:
           PINECONE_INDEX: 'semantic-search'
         shell: bash
         run: |
-          set -x
           cd semantic-search-example
-          npm install --no-cache
-          npm install '../pinecone-ts-client'
-          npm run build
           npm run test
 
   unit-tests:
