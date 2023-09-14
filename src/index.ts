@@ -23,7 +23,7 @@ export type {
 } from './control';
 export type {
   DeleteManyByFilterOptions,
-  DeleteManyByVectorIdOptions,
+  DeleteManyByRecordIdOptions,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,

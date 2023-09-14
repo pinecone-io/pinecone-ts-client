@@ -29,7 +29,7 @@ export { PineconeConfigurationSchema } from './types';
 export type {
   DeleteManyOptions,
   DeleteManyByFilterOptions,
-  DeleteManyByVectorIdOptions,
+  DeleteManyByRecordIdOptions,
 } from './deleteMany';
 export type { DeleteOneOptions } from './deleteOne';
 export type {
