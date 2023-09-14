@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           set -x
-          cd ../semantic-search-example
+          cd semantic-search-example
           npm install --no-cache
           npm install '../pinecone-ts-client'
           npm run build
