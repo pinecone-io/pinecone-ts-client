@@ -26,7 +26,11 @@ export type {
   RecordMetadataValue,
 } from './types';
 export { PineconeConfigurationSchema } from './types';
-export type { DeleteManyOptions } from './deleteMany';
+export type {
+  DeleteManyOptions,
+  DeleteManyByFilterOptions,
+  DeleteManyByVectorIdOptions,
+} from './deleteMany';
 export type { DeleteOneOptions } from './deleteOne';
 export type {
   DescribeIndexStatsOptions,
@@ -41,6 +45,7 @@ export type {
   QueryByVectorValues,
   QueryOptions,
   QueryResponse,
+  QueryShared,
 } from './query';
 
 export class Index<T extends RecordMetadata = RecordMetadata> {

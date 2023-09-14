@@ -39,7 +39,7 @@ const QueryByVectorValues = Type.Object(
 
 const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 
-type QueryShared = {
+export type QueryShared = {
   topK: number;
   includeValues?: boolean;
   includeMetadata?: boolean;

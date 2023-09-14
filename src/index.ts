@@ -22,6 +22,8 @@ export type {
   PartialCollectionDescription,
 } from './control';
 export type {
+  DeleteManyByFilterOptions,
+  DeleteManyByVectorIdOptions,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
@@ -36,6 +38,7 @@ export type {
   QueryByVectorValues,
   QueryOptions,
   QueryResponse,
+  QueryShared,
   RecordId,
   RecordMetadata,
   RecordMetadataValue,
