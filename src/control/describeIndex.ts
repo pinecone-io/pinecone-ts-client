@@ -2,7 +2,8 @@ import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import type { IndexMeta } from '../pinecone-generated-ts-fetch';
 import { handleIndexRequestError } from './utils';
-import { IndexNameSchema, type IndexName } from './types';
+import { IndexNameSchema } from './types';
+import type { IndexName } from './types';
 
 export type DescribeIndexOptions = IndexName;
 export type IndexDescription = IndexMeta;

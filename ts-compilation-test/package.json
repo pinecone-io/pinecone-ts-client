@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "tsc-version": "tsc -v",
+    "start": "node lib/index.js"
+  }
+}
