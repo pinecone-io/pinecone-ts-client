@@ -27,3 +27,5 @@ export type {
   CollectionList,
   PartialCollectionDescription,
 } from './listCollections';
+
+export type { CollectionName, IndexName } from './types';

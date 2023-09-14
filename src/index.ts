@@ -7,6 +7,7 @@ export * as Errors from './errors';
 export type {
   CollectionDescription,
   CollectionList,
+  CollectionName,
   ConfigureIndexOptions,
   CreateCollectionOptions,
   CreateIndexOptions,
@@ -16,6 +17,7 @@ export type {
   DescribeIndexOptions,
   IndexDescription,
   IndexList,
+  IndexName,
   PartialIndexDescription,
   PartialCollectionDescription,
 } from './control';
