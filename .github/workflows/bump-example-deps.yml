@@ -1,7 +1,6 @@
 name: 'Example app: PR dependency update'
 
 on:
-  push: {}
   workflow_dispatch:
     inputs:
       repoName:
@@ -31,8 +30,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: pinecone-ts-client
       - name: Bump client dep in example project
-        uses: ./.github/actions/update-example-app
+        uses: ./pinecone-ts-client/.github/actions/update-example-app
         with:
           repository_name: ${{ github.event.inputs.repoName }}
           client_version: ${{ github.event.inputs.versionTag }}

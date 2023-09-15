@@ -25,7 +25,6 @@ runs:
         npm install --no-cache
         npm install "@pinecone-database/pinecone@${{ inputs.client_version }}"
         cat package.json
-        cat package-lock.json
         pineconeVersion=$(jq -r '.dependencies."@pinecone-database/pinecone"' package.json)
         echo "installedVersion=$pineconeVersion" >> $GITHUB_OUTPUT
     - name: Create Pull Request
@@ -35,7 +34,7 @@ runs:
           package.json
           package-lock.json
         commit-message: 'Update node client dependency to ${{ steps.install.outputs.installedVersion }}'
-        committer: pinecone-ts-client CI Bot <noreply@github.com>
+        committer: SDK Bump Bot <clients@pinecone.io>
         branch: dep-update/@pinecone-database/pinecone@${{ inputs.client_version }}
         title: 'Update @pinecone-database/pinecone to ${{ inputs.client_version }}'
         body: |
@@ -46,4 +45,4 @@ runs:
           automated pr
         assignees: jhamon
         reviewers: jhamon
-        draft: true
+        draft: false
