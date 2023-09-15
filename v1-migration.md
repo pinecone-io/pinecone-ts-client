@@ -48,11 +48,11 @@ The legacy `PineconeClient` export has a two-step async initialization.
 // Legacy initialization
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 ```
 
 The new `Pinecone` client constructor accepts the same configuration object and eliminates the async `init()` step.
@@ -88,11 +88,11 @@ The new `Pinecone` client's `createIndex` flattens out the method params to remo
 // v0.x beta releases
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 await pineconeClient.createClient({
   createRequest: {
     name: 'sample-index',
@@ -120,11 +120,11 @@ The new `Pinecone` client has flattened out the `deleteIndex` method param from 
 // v0.x beta releases
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 
 await client.deleteIndex({ indexName: 'index-to-delete' });
 ```
