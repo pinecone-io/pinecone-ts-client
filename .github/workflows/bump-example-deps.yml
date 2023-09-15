@@ -1,6 +1,7 @@
 name: 'Example app: PR dependency update'
 
 on:
+  push: {}
   workflow_dispatch:
     inputs:
       repoName:
