@@ -29,6 +29,8 @@ jobs:
   bump-example-app:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Bump client dep in example project
         uses: ./.github/actions/update-example-app
         with:
