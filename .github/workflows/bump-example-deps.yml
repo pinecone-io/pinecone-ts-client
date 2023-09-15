@@ -1,0 +1,35 @@
+name: 'Example app: PR dependency update'
+
+on:
+  workflow_dispatch:
+    inputs:
+      repoName:
+        description: 'Repo name'
+        required: true
+        type: choice
+        default: 'semantic-search-example'
+        options:
+          - 'semantic-search-example'
+      versionTag:
+        description: 'Release tag to install'
+        required: true
+        type: choice
+        default: 'latest'
+        options:
+          - 'latest'
+          - 'next'
+
+# prevent concurrent releases
+concurrency:
+  group: npm-release
+  cancel-in-progress: true
+
+jobs:
+  bump-example-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bump client dep in example project
+        uses: ./.github/actions/update-example-app
+        with:
+          repository_name: ${{ github.event.inputs.repoName }}
+          client_version: ${{ github.event.inputs.versionTag }}
