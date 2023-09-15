@@ -2,6 +2,44 @@
 
 This doc will outline the differences between `v0.x` beta versions of the Pinecone client and the `v1` version. The `v1.0.0` release adds a new `Pinecone` module export alongside the legacy `PineconeClient` export. `PineconeClient` is deprecated and will be removed in a future release.
 
+## Types and Terminology
+
+In general, you can expect to see terminology migrate the term `vector` to `record` in many places to align with our [documentation](https://docs.pinecone.io/docs/overview#pinecone-indexes-store-records-with-vector-data) which calls the item stored and retrieved from indexes a "record". Some examples of how this impacts naming in the client:
+
+- Legacy type `Vector` is being replaced with `PineconeRecord`
+- Legacy type `ScoredVector` is being replaced with `ScoredPineconeRecord`
+- The `fetch()` method now returns `records` instead of `vectors` in the response object.
+- The `describeIndexStats()` method now returns `totalRecordCount` instead of `totalVectorCount` in the response object.
+
+The old types are still exported from the client, but you're encouraged to adopt the new ones because of their support for generic type params specifying the expected shape of your metadata. For example:
+
+```typescript
+// user-defined metadata type
+type MovieMetadata = {
+  title: string;
+  genre: 'comedy' | 'drama' | 'horror' | 'action';
+};
+
+const records: PineconeRecord<MovieMetadata>[] = [
+  {
+    id: '1234',
+    values: [0.234, 0.143, 0.999], // embedding values, a.k.a. "vector values", simplified
+    metadata: {
+      title: 'Ghostbusters',
+      genre: 'comedy',
+    },
+  },
+  {
+    id: '1235',
+    values: [0.675, 0.332, 0.512],
+    metadata: {
+      title: 'Vertigo',
+      genre: 'suspense', // <---- Typescript will flag this type error telling us we made a mistake, yay!
+    },
+  },
+];
+```
+
 ## Client Initialization
 
 The legacy `PineconeClient` export has a two-step async initialization.
@@ -10,11 +48,11 @@ The legacy `PineconeClient` export has a two-step async initialization.
 // Legacy initialization
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 ```
 
 The new `Pinecone` client constructor accepts the same configuration object and eliminates the async `init()` step.
@@ -50,11 +88,11 @@ The new `Pinecone` client's `createIndex` flattens out the method params to remo
 // v0.x beta releases
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 await pineconeClient.createClient({
   createRequest: {
     name: 'sample-index',
@@ -82,11 +120,11 @@ The new `Pinecone` client has flattened out the `deleteIndex` method param from 
 // v0.x beta releases
 import { PineconeClient } from '@pinecone-database/pinecone';
 
-const pineconeClient = new PineconeClient({
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
   apiKey: 'your-api-key',
   environment: 'your-environment',
 });
-await pineconeClient.init();
 
 await client.deleteIndex({ indexName: 'index-to-delete' });
 ```
@@ -498,6 +536,19 @@ await index.delete1({
   deleteAll: true,
   namespace: 'imdb',
 });
+
+// Delete all records in namespace with filter
+await index.delete1({
+  deleteAll: true,
+  namespace: 'imdb',
+  filter: {
+    { $and: [
+        { genre: 'comedy' },
+        { rating: { $gt: 7.0 } }
+      ]
+    }
+  }
+});
 ```
 
 ```typescript
@@ -513,6 +564,11 @@ await namespace.deleteOne('1');
 
 // Delete several record by ids in namespace
 await namespace.deleteMany(['1', '2', '3']);
+
+// Delete all records in namesapce with filter expression
+await namespace.deleteMany({
+  $and: [{ genre: 'comedy' }, { rating: { $gt: 7.0 } }],
+});
 
 // Delete all records in namespace
 await namespace.deleteAll();
