@@ -16,30 +16,29 @@ The old types are still exported from the client, but you're encouraged to adopt
 ```typescript
 // user-defined metadata type
 type MovieMetadata = {
-  title: string,
-  genre: 'comedy' | 'drama' | 'horror' | 'action'
-}
+  title: string;
+  genre: 'comedy' | 'drama' | 'horror' | 'action';
+};
 
 const records: PineconeRecord<MovieMetadata>[] = [
   {
     id: '1234',
-    values: [ 0.234, 0.143, 0.999 ], // embedding values, a.k.a. "vector values", simplified
+    values: [0.234, 0.143, 0.999], // embedding values, a.k.a. "vector values", simplified
     metadata: {
       title: 'Ghostbusters',
-      genre: 'comedy'
-    }
+      genre: 'comedy',
+    },
   },
   {
     id: '1235',
-    values: [ 0.234, 0.143, 0.999 ],
+    values: [0.675, 0.332, 0.512],
     metadata: {
       title: 'Vertigo',
-      genre: 'suspense'  // <---- Typescript will flag this type error telling us we made a mistake, yay!
-    }
-  }
-]
+      genre: 'suspense', // <---- Typescript will flag this type error telling us we made a mistake, yay!
+    },
+  },
+];
 ```
-
 
 ## Client Initialization
 
