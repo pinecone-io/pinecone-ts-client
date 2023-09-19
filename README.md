@@ -611,7 +611,7 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ### Delete many by metadata filter
 
 ```typescript
-await client.index('albums-database').deleteMany({ filter: { genre: 'rock' } });
+await client.index('albums-database').deleteMany({ genre: 'rock' });
 ```
 
 #### Delete all records in a namespace
