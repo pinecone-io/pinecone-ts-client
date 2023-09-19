@@ -25,18 +25,19 @@ runs:
         npm install --no-cache
         npm install "@pinecone-database/pinecone@${{ inputs.client_version }}"
         cat package.json
-        pineconeVersion=$(jq -r '.dependencies."@pinecone-database/pinecone"' package.json)
-        echo "installedVersion=$pineconeVersion" >> $GITHUB_OUTPUT
+        pineconeVersion=$(jq -r '.dependencies."@pinecone-database/pinecone"' package.json | sed 's/[\^\~]//')
+        echo "pineconeVersion=$pineconeVersion" >> $GITHUB_OUTPUT
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
         add-paths: |
           package.json
           package-lock.json
-        commit-message: 'Update node client dependency to ${{ steps.install.outputs.installedVersion }}'
+        commit-message: 'Update node client dependency to ${{ steps.install.outputs.pineconeVersion }}'
         committer: SDK Bump Bot <clients@pinecone.io>
-        branch: dep-update/@pinecone-database/pinecone@${{ inputs.client_version }}
-        title: 'Update @pinecone-database/pinecone to ${{ inputs.client_version }}'
+        base: main
+        branch: dep-update/@pinecone-database/pinecone@${{ steps.install.outputs.pineconeVersion }}
+        title: 'Update @pinecone-database/pinecone to ${{ steps.install.outputs.pineconeVersion }}'
         body: |
           ## Update Pinecone SDK version
 
