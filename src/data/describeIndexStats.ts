@@ -1,6 +1,6 @@
 import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 export type IndexStatsNamespaceSummary = {
@@ -20,10 +20,7 @@ const DescribeIndexStatsOptionsSchema = Type.Object(
   },
   { additionalProperties: false }
 );
-
-export type DescribeIndexStatsOptions = Static<
-  typeof DescribeIndexStatsOptionsSchema
->;
+export type DescribeIndexStatsOptions = { filter: object };
 
 export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
   const validator = buildConfigValidator(

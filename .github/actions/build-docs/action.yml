@@ -1,0 +1,9 @@
+name: 'Build client documentation'
+description: 'Generates client documentation using TypeDoc'
+runs:
+  using: 'composite'
+  steps:
+    - name: Build html documentation
+      run: |
+        npm run docs:build
+      shell: bash

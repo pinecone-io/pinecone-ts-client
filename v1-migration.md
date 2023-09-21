@@ -455,7 +455,7 @@ type MovieMetadata = {
 
 const index = await pinecone.index<MovieMetadata>('movie-embeddings');
 const namespace = index.namespace('imdb')
-const results = await index.query({
+const results = await namespace.query({
   topK: 1,
   vector: [...], // actual values here
   includeMetadata: true,
