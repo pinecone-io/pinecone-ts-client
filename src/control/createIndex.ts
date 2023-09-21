@@ -26,6 +26,7 @@ export type CreateIndexOptions = {
   metadataConfig?: { indexed: Array<string> };
   sourceCollection?: string;
   waitUntilReady?: boolean;
+  suppressConflicts?: boolean;
 };
 
 const CreateIndexOptionsSchema = Type.Object(
