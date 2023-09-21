@@ -7,6 +7,7 @@ export * as Errors from './errors';
 export type {
   CollectionDescription,
   CollectionList,
+  CollectionName,
   ConfigureIndexOptions,
   CreateCollectionOptions,
   CreateIndexOptions,
@@ -16,10 +17,13 @@ export type {
   DescribeIndexOptions,
   IndexDescription,
   IndexList,
+  IndexName,
   PartialIndexDescription,
   PartialCollectionDescription,
 } from './control';
 export type {
+  DeleteManyByFilterOptions,
+  DeleteManyByRecordIdOptions,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
@@ -34,6 +38,7 @@ export type {
   QueryByVectorValues,
   QueryOptions,
   QueryResponse,
+  QueryShared,
   RecordId,
   RecordMetadata,
   RecordMetadataValue,

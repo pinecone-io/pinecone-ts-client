@@ -1,7 +1,10 @@
 import { UpsertCommand } from './upsert';
-import { FetchCommand, type FetchOptions } from './fetch';
-import { UpdateCommand, type UpdateOptions } from './update';
-import { QueryCommand, type QueryOptions } from './query';
+import { FetchCommand } from './fetch';
+import type { FetchOptions } from './fetch';
+import { UpdateCommand } from './update';
+import type { UpdateOptions } from './update';
+import { QueryCommand } from './query';
+import type { QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
@@ -23,7 +26,11 @@ export type {
   RecordMetadataValue,
 } from './types';
 export { PineconeConfigurationSchema } from './types';
-export type { DeleteManyOptions } from './deleteMany';
+export type {
+  DeleteManyOptions,
+  DeleteManyByFilterOptions,
+  DeleteManyByRecordIdOptions,
+} from './deleteMany';
 export type { DeleteOneOptions } from './deleteOne';
 export type {
   DescribeIndexStatsOptions,
@@ -38,6 +45,7 @@ export type {
   QueryByVectorValues,
   QueryOptions,
   QueryResponse,
+  QueryShared,
 } from './query';
 
 export class Index<T extends RecordMetadata = RecordMetadata> {

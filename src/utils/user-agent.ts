@@ -1,23 +1,17 @@
-import * as fs from 'fs';
-import * as os from 'os';
-
-const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+import { isEdge } from './environment';
+import * as packageInfo from '../version.json';
 
 export const buildUserAgent = (isLegacy: boolean) => {
   // We always want to include the package name and version
   // along with the langauge name to help distinguish these
   // requests from those emitted by other clients
   const userAgentParts = [
-    `${packageJson.name} v${packageJson.version}`,
+    `${packageInfo.name} v${packageInfo.version}`,
     'lang=typescript',
   ];
 
-  // If available, capture information about the OS
-  if (os && os.release && os.platform && os.arch) {
-    const platform = os.platform();
-    const platformVersion = os.release();
-    const arch = os.arch();
-    userAgentParts.push(`${platform} ${platformVersion}, ${arch}`);
+  if (isEdge()) {
+    userAgentParts.push('Edge Runtime');
   }
 
   // If available, capture information about the Node.js version

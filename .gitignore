@@ -1,10 +1,16 @@
-node_modules/
-dist/
-scrap
+# Secrets
 .env
-src/run.ts
+
+# Generated files
+coverage/
+dist/
+docs/
+node_modules/
+ts-compilation-test/package-lock.json
+ts-compilation-test/node_modules/
+ts-compilation-test/lib/
+
+# Clutter
 .vscode
 .DS_Store
 scratch
-docs/
-coverage/

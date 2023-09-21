@@ -6,6 +6,7 @@ import {
 } from '../pinecone-generated-ts-fetch';
 import { queryParamsStringify, buildUserAgent } from '../utils';
 import { ProjectIdSingleton } from './projectIdSingleton';
+import fetch from 'cross-fetch';
 
 const basePath = (config: PineconeConfiguration, indexName: string) =>
   `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
@@ -51,6 +52,7 @@ export class VectorOperationsProvider {
       headers: {
         'User-Agent': buildUserAgent(false),
       },
+      fetchApi: fetch,
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

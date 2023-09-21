@@ -1,6 +1,6 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -14,21 +14,21 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
+    "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc",
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
-    "test:legacy": "jest --runInBand --detectOpenHandles tests/legacy-integration/",
-    "test:integration": "jest tests/integration/ --setupFilesAfterEnv ./utils/globalIntegrationTestSetup.ts",
-    "test:unit": "jest src/ --setupFilesAfterEnv ./utils/globalUnitTestSetup.ts"
+    "test:integration:node": "jest src/integration/ -c jest.config.integration-node.js",
+    "test:integration:edge": "jest src/integration/ -c jest.config.integration-edge.js",
+    "test:unit": "jest src/"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "devDependencies": {
-    "@jest/globals": "^29.3.1",
+    "@edge-runtime/jest-environment": "^2.3.3",
     "@types/jest": "^29.5.0",
-    "@types/node": "^18.11.17",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "dotenv": "^16.0.3",
@@ -37,19 +37,18 @@
     "jest": "^29.5.0",
     "prettier": "^2.8.8",
     "ts-jest": "^29.0.5",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.24.8",
-    "typescript": "^4.9.4",
-    "unique-names-generator": "^4.7.1"
+    "typedoc": "^0.24.8"
   },
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
   "dependencies": {
-    "@sinclair/typebox": "^0.28.15",
-    "@types/web": "^0.0.99",
+    "@edge-runtime/types": "^2.2.3",
+    "@sinclair/typebox": "^0.29.0",
+    "@types/node": "^18.11.17",
     "ajv": "^8.12.0",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^3.1.5",
+    "typescript": "^4.9.4"
   }
 }

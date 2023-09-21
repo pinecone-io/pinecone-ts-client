@@ -10,9 +10,10 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"],
-    "noImplicitAny": false
+    "types": ["node", "jest", "@edge-runtime/types"],
+    "noImplicitAny": false,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "src/v0/pinecone-generated-ts-fetch"]
+  "exclude": ["node_modules"]
 }

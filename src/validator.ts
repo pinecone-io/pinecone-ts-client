@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import type { ErrorObject } from 'ajv';
 import { PineconeArgumentError } from './errors';
+import { isEdge } from './utils/environment';
 
 const prepend = (prefix: string, message: string) => {
   return `${prefix} ${message}`;
@@ -224,6 +225,11 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
 };
 
 export const buildValidator = (errorMessagePrefix: string, schema: any) => {
+  if (isEdge()) {
+    // Ajv schema compilation does not work in the Edge Runtime.
+    return (data: any) => {}; // eslint-disable-line
+  }
+
   if (
     process &&
     process.env &&
