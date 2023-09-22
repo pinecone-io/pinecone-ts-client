@@ -324,10 +324,20 @@ export class Pinecone {
     return this.config;
   }
 
+  /**
+   * Targets a specific index for performing data operations.
+   *
+   * @param indexName - The name of the index to target.
+   * @typeParam T - The type of the metadata object associated with each record.
+   * @returns An {@link Index} object that can be used to perform data operations.
+   */
   index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
     return new Index<T>(indexName, this.config);
   }
 
+  /**
+   * {@inheritDoc index}
+   */
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
     return this.index<T>(indexName);
