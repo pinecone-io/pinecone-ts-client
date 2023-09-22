@@ -19,13 +19,16 @@
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
 <li>
-<h4><span class="tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol"> extends </span><a href="../types/RecordMetadata.html" class="tsd-signature-type tsd-kind-type-alias">RecordMetadata</a> = <a href="../types/RecordMetadata.html" class="tsd-signature-type tsd-kind-type-alias">RecordMetadata</a></h4></li></ul></section> 
+<h4><span class="tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol"> extends </span><a href="../types/RecordMetadata.html" class="tsd-signature-type tsd-kind-type-alias">RecordMetadata</a> = <a href="../types/RecordMetadata.html" class="tsd-signature-type tsd-kind-type-alias">RecordMetadata</a></h4>
+<div class="tsd-comment tsd-typography"><p>The type of metadata associated with each record.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></section> 
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">Index</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L51">src/data/index.ts:51</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L54">src/data/index.ts:54</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -63,6 +66,8 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="constructor.new_Index"><span class="tsd-kind-constructor-signature">new <wbr/>Index</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">indexName</span>, <span class="tsd-kind-parameter">config</span>, <span class="tsd-kind-parameter">namespace</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#constructor.new_Index" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Instantiation of Index is handled by <a href="Pinecone.html" class="tsd-kind-class">Pinecone</a></p>
+</div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
@@ -72,41 +77,54 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">indexName</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">indexName</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The name of the index that will receive operations from this <a href="Index.html" class="tsd-kind-class">Index</a> instance.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">config</span>: <a href="../types/PineconeConfiguration.html" class="tsd-signature-type tsd-kind-type-alias">PineconeConfiguration</a></h5></li>
+<h5><span class="tsd-kind-parameter">config</span>: <a href="../types/PineconeConfiguration.html" class="tsd-signature-type tsd-kind-type-alias">PineconeConfiguration</a></h5>
+<div class="tsd-comment tsd-typography"><p>The configuration from the Pinecone client.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li>
-<h5><span class="tsd-kind-parameter">namespace</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;&#39;</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">namespace</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;&#39;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The namespace for the index.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">index</span><span class="hl-1"> = </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">);</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L68">src/data/index.ts:68</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L173">src/data/index.ts:173</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_fetchCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_fetch<wbr/>Command</span><a href="#_fetchCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_fetch<wbr/>Command</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">FetchCommand</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L63">src/data/index.ts:63</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L154">src/data/index.ts:154</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_queryCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_query<wbr/>Command</span><a href="#_queryCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_query<wbr/>Command</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">QueryCommand</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L64">src/data/index.ts:64</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L155">src/data/index.ts:155</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_updateCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_update<wbr/>Command</span><a href="#_updateCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_update<wbr/>Command</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">UpdateCommand</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L65">src/data/index.ts:65</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L156">src/data/index.ts:156</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_upsertCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_upsert<wbr/>Command</span><a href="#_upsertCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_upsert<wbr/>Command</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">UpsertCommand</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L66">src/data/index.ts:66</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L157">src/data/index.ts:157</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="config" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>config</span><a href="#config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">config</span><span class="tsd-signature-symbol">:</span> <a href="../types/PineconeConfiguration.html" class="tsd-signature-type tsd-kind-type-alias">PineconeConfiguration</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L52">src/data/index.ts:52</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L55">src/data/index.ts:55</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="deleteAll" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete<wbr/>All</span><a href="#deleteAll" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">delete<wbr/>All</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -117,9 +135,17 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="deleteAll.__type.__type-1"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>Delete all records from the targeted namespace. To delete all records from across all namespaces,
+delete the index using <a href="Pinecone.html#deleteIndex" class="tsd-kind-property">deleteIndex</a> and create a new one using <a href="Pinecone.html#createIndex" class="tsd-kind-property">createIndex</a>.</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves when the delete is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">describeIndexStats</span><span class="hl-1">();</span><br/><br/><span class="hl-9">// {</span><br/><span class="hl-9">//  namespaces: {</span><br/><span class="hl-9">//    &#39;&#39;: { recordCount: 10 },</span><br/><span class="hl-9">//   foo: { recordCount: 1 }</span><br/><span class="hl-9">//   },</span><br/><span class="hl-9">//   dimension: 8,</span><br/><span class="hl-9">//   indexFullness: 0,</span><br/><span class="hl-9">//   totalRecordCount: 11</span><br/><span class="hl-9">// }</span><br/><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">deleteAll</span><span class="hl-1">();</span><br/><br/><span class="hl-9">// Records in default namespace &#39;&#39; are now gone, but records in namespace &#39;foo&#39; are not modified.</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">client</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">describeIndexStats</span><span class="hl-1">();</span><br/><span class="hl-9">// {</span><br/><span class="hl-9">//  namespaces: {</span><br/><span class="hl-9">//   foo: { recordCount: 1 }</span><br/><span class="hl-9">//   },</span><br/><span class="hl-9">//   dimension: 8,</span><br/><span class="hl-9">//   indexFullness: 0,</span><br/><span class="hl-9">//   totalRecordCount: 1</span><br/><span class="hl-9">// }</span><br/>
+</code><button>Copy</button></pre>
+</div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L58">src/data/index.ts:58</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L96">src/data/index.ts:96</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="deleteMany" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete<wbr/>Many</span><a href="#deleteMany" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">delete<wbr/>Many</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -130,14 +156,28 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="deleteMany.__type-2.__type-3"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Delete records from the index by either an array of ids, or a filter object.
+See <a href="https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter">Filtering with metadata</a>
+for more on deleting records with filters.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/DeleteManyOptions.html" class="tsd-signature-type tsd-kind-type-alias">DeleteManyOptions</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/DeleteManyOptions.html" class="tsd-signature-type tsd-kind-type-alias">DeleteManyOptions</a></h5>
+<div class="tsd-comment tsd-typography"><p>An array of record id values or a filter object.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves when the delete is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">deleteMany</span><span class="hl-1">([</span><span class="hl-2">&#39;record-1&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;record-2&#39;</span><span class="hl-1">]);</span><br/><br/><span class="hl-9">// or</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">deleteMany</span><span class="hl-1">({ </span><span class="hl-0">genre:</span><span class="hl-1"> </span><span class="hl-2">&#39;classical&#39;</span><span class="hl-1"> });</span>
+</code><button>Copy</button></pre>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L59">src/data/index.ts:59</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L115">src/data/index.ts:115</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="deleteOne" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete<wbr/>One</span><a href="#deleteOne" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">delete<wbr/>One</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -148,14 +188,23 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="deleteOne.__type-4.__type-5"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Delete a record from the index by id.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
 <h5><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves when the delete is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">deleteOne</span><span class="hl-1">(</span><span class="hl-2">&#39;record-1&#39;</span><span class="hl-1">);</span>
+</code><button>Copy</button></pre>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L60">src/data/index.ts:60</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L129">src/data/index.ts:129</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="describeIndexStats" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>describe<wbr/>Index<wbr/>Stats</span><a href="#describeIndexStats" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">describe<wbr/>Index<wbr/>Stats</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/IndexStatsDescription.html" class="tsd-signature-type tsd-kind-type-alias">IndexStatsDescription</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
@@ -166,14 +215,21 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature" id="describeIndexStats.__type-6.__type-7"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/IndexStatsDescription.html" class="tsd-signature-type tsd-kind-type-alias">IndexStatsDescription</a><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Describes the index&#39;s statistics such as total number of records, records per namespace, and the index&#39;s dimension size.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">options</span>: <a href="../types/DescribeIndexStatsOptions.html" class="tsd-signature-type tsd-kind-type-alias">DescribeIndexStatsOptions</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/IndexStatsDescription.html" class="tsd-signature-type tsd-kind-type-alias">IndexStatsDescription</a><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/IndexStatsDescription.html" class="tsd-signature-type tsd-kind-type-alias">IndexStatsDescription</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolve with the <a href="../types/IndexStatsDescription.html" class="tsd-kind-type-alias">IndexStatsDescription</a> value when the operation is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">describeIndexStats</span><span class="hl-1">();</span><br/><br/><span class="hl-9">// {</span><br/><span class="hl-9">//  namespaces: {</span><br/><span class="hl-9">//    &#39;&#39;: { recordCount: 10 }</span><br/><span class="hl-9">//    foo: { recordCount: 2000 },</span><br/><span class="hl-9">//    bar: { recordCount: 2000 }</span><br/><span class="hl-9">//   },</span><br/><span class="hl-9">//   dimension: 1536,</span><br/><span class="hl-9">//   indexFullness: 0,</span><br/><span class="hl-9">//   totalRecordCount: 4010</span><br/><span class="hl-9">// }</span>
+</code><button>Copy</button></pre>
+</div></li></ul></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L61">src/data/index.ts:61</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L152">src/data/index.ts:152</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="target" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>target</span><a href="#target" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">target</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">index</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">namespace</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
@@ -185,7 +241,7 @@
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">namespace</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L53">src/data/index.ts:53</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L56">src/data/index.ts:56</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="fetch" class="tsd-anchor"></a>
@@ -193,66 +249,130 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="fetch.fetch-1"><span class="tsd-kind-call-signature">fetch</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/FetchResponse.html" class="tsd-signature-type tsd-kind-type-alias">FetchResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetch.fetch-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Fetch records from the index.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/FetchOptions.html" class="tsd-signature-type tsd-kind-type-alias">FetchOptions</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/FetchResponse.html" class="tsd-signature-type tsd-kind-type-alias">FetchResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/FetchOptions.html" class="tsd-signature-type tsd-kind-type-alias">FetchOptions</a></h5>
+<div class="tsd-comment tsd-typography"><p>The <a href="../types/FetchOptions.html" class="tsd-kind-type-alias">FetchOptions</a> for the operation.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/FetchResponse.html" class="tsd-signature-type tsd-kind-type-alias">FetchResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves with the <a href="../types/FetchResponse.html" class="tsd-kind-type-alias">FetchResponse</a> when the fetch is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">fetch</span><span class="hl-1">([</span><span class="hl-2">&#39;record-1&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;record-2&#39;</span><span class="hl-1">]);</span>
+</code><button>Copy</button></pre>
+
+<h4>Throws</h4><p><a href="Errors.PineconeConnectionError.html" class="tsd-kind-class">PineconeConnectionError</a> when invalid environment, project id, or index name is configured.</p>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L100">src/data/index.ts:100</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L249">src/data/index.ts:249</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="namespace-1" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>namespace</span><a href="#namespace-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="namespace-1.namespace-2"><span class="tsd-kind-call-signature">namespace</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">namespace</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><a href="#namespace-1.namespace-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns an <a href="Index.html" class="tsd-kind-class">Index</a> targeting the specified namespace. By default, all operations take place inside the default namespace &#39;&#39;.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">namespace</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">namespace</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The namespace to target within the index.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="Index.html" class="tsd-signature-type tsd-kind-class">Index</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">indexNamed</span><span class="hl-1"> = </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">namespace</span><span class="hl-1">(</span><span class="hl-2">&#39;my-namespace&#39;</span><span class="hl-1">);</span>
+</code><button>Copy</button></pre>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L92">src/data/index.ts:92</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L208">src/data/index.ts:208</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="query" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>query</span><a href="#query" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="query.query-1"><span class="tsd-kind-call-signature">query</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/QueryResponse.html" class="tsd-signature-type tsd-kind-type-alias">QueryResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#query.query-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Query records from the index. Query is used to find the <code>topK</code> records in the index whose vector values are most
+similar to the vector values of the query according to the distance metric you have configured for your index.
+See <a href="https://docs.pinecone.io/docs/query-data">Query data</a> for more on querying.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/QueryOptions.html" class="tsd-signature-type tsd-kind-type-alias">QueryOptions</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/QueryResponse.html" class="tsd-signature-type tsd-kind-type-alias">QueryResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/QueryOptions.html" class="tsd-signature-type tsd-kind-type-alias">QueryOptions</a></h5>
+<div class="tsd-comment tsd-typography"><p>The <a href="../types/QueryOptions.html" class="tsd-kind-type-alias">QueryOptions</a> for the operation.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/QueryResponse.html" class="tsd-signature-type tsd-kind-type-alias">QueryResponse</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves with the <a href="../types/QueryResponse.html" class="tsd-kind-type-alias">QueryResponse</a> when the query is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">query</span><span class="hl-1">({ </span><span class="hl-0">topK:</span><span class="hl-1"> </span><span class="hl-7">3</span><span class="hl-1">, </span><span class="hl-0">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;record-1&#39;</span><span class="hl-1">});</span><br/><br/><span class="hl-9">// or</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">query</span><span class="hl-1">({ </span><span class="hl-0">topK:</span><span class="hl-1"> </span><span class="hl-7">3</span><span class="hl-1">, </span><span class="hl-0">vector:</span><span class="hl-1"> [</span><span class="hl-7">0.176</span><span class="hl-1">, </span><span class="hl-7">0.345</span><span class="hl-1">, </span><span class="hl-7">0.263</span><span class="hl-1">] });</span>
+</code><button>Copy</button></pre>
+
+<h4>Throws</h4><p><a href="Errors.PineconeConnectionError.html" class="tsd-kind-class">PineconeConnectionError</a> when invalid environment, project id, or index name is configured.</p>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L104">src/data/index.ts:104</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L272">src/data/index.ts:272</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="update" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>update</span><a href="#update" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="update.update-1"><span class="tsd-kind-call-signature">update</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#update.update-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Update a record in the index by id.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/UpdateOptions.html" class="tsd-signature-type tsd-kind-type-alias">UpdateOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">options</span>: <a href="../types/UpdateOptions.html" class="tsd-signature-type tsd-kind-type-alias">UpdateOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The <a href="../types/UpdateOptions.html" class="tsd-kind-type-alias">UpdateOptions</a> for the operation.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves when the update is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Throws</h4><p><a href="Errors.PineconeConnectionError.html" class="tsd-kind-class">PineconeConnectionError</a> when invalid environment, project id, or index name is configured.</p>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L108">src/data/index.ts:108</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L284">src/data/index.ts:284</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="upsert" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>upsert</span><a href="#upsert" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="upsert.upsert-1"><span class="tsd-kind-call-signature">upsert</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#upsert.upsert-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Upsert records to the index.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">data</span>: <a href="../types/PineconeRecord.html" class="tsd-signature-type tsd-kind-type-alias">PineconeRecord</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h5><span class="tsd-kind-parameter">data</span>: <a href="../types/PineconeRecord.html" class="tsd-signature-type tsd-kind-type-alias">PineconeRecord</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>An array of <a href="../types/PineconeRecord.html" class="tsd-kind-type-alias">PineconeRecord</a> objects to upsert.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A promise that resolves when the upsert is completed.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Example</h4><pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pinecone</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">Pinecone</span><span class="hl-1">();</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">pinecone</span><span class="hl-1">.</span><span class="hl-6">index</span><span class="hl-1">(</span><span class="hl-2">&#39;my-index&#39;</span><span class="hl-1">).</span><span class="hl-6">upsert</span><span class="hl-1">([{</span><br/><span class="hl-1"> </span><span class="hl-0">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;record-1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-0">values:</span><span class="hl-1"> [</span><span class="hl-7">0.176</span><span class="hl-1">, </span><span class="hl-7">0.345</span><span class="hl-1">, </span><span class="hl-7">0.263</span><span class="hl-1">],</span><br/><span class="hl-1">},{</span><br/><span class="hl-1"> </span><span class="hl-0">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;record-2&#39;</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-0">values:</span><span class="hl-1"> [</span><span class="hl-7">0.176</span><span class="hl-1">, </span><span class="hl-7">0.345</span><span class="hl-1">, </span><span class="hl-7">0.263</span><span class="hl-1">],</span><br/><span class="hl-1">}])</span>
+</code><button>Copy</button></pre>
+
+<h4>Throws</h4><p><a href="Errors.PineconeConnectionError.html" class="tsd-kind-class">PineconeConnectionError</a> when invalid environment, project id, or index name is configured.</p>
+
+<h4>Throws</h4><p><a href="Errors.PineconeArgumentError.html" class="tsd-kind-class">PineconeArgumentError</a> when invalid arguments are passed.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/f711645/src/data/index.ts#L96">src/data/index.ts:96</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/pinecone-io/pinecone-ts-client/blob/699b5dd/src/data/index.ts#L232">src/data/index.ts:232</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
