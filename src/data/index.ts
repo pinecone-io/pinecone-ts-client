@@ -59,12 +59,37 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   };
 
   /**
-   * Delete all records from the index.
+   * Delete all records from the targeted namespace. To delete all records from across all namespaces,
+   * delete the index using {@link Pinecone.deleteIndex} and create a new one using {@link Pinecone.createIndex}.
    *
    * @example
    * ```js
    * const pinecone = new Pinecone();
+   * await pinecone.index('my-index').describeIndexStats();
+   *
+   * // {
+   * //  namespaces: {
+   * //    '': { recordCount: 10 },
+   * //   foo: { recordCount: 1 }
+   * //   },
+   * //   dimension: 8,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 11
+   * // }
+   *
    * await pinecone.index('my-index').deleteAll();
+   *
+   * // Records in default namespace '' are now gone, but records in namespace 'foo' are not modified.
+   * await client.index('my-index').describeIndexStats();
+   * // {
+   * //  namespaces: {
+   * //   foo: { recordCount: 1 }
+   * //   },
+   * //   dimension: 8,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 1
+   * // }
+   *
    * ```
    * @returns A promise that resolves when the delete is completed.
    */
@@ -72,7 +97,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Delete records from the index by either an array of ids, or a filter object.
-   * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter) for more on deleting records with filters.
+   * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
+   * for more on deleting records with filters.
    *
    * @example
    * ```js
@@ -80,10 +106,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * await pinecone.index('my-index').deleteMany(['record-1', 'record-2']);
    *
    * // or
-   * await pinecone.index('my-index').deleteMany({ filter: { genre: 'classical' }});
+   * await pinecone.index('my-index').deleteMany({ genre: 'classical' });
    * ```
    * @param options - An array of record id values or a filter object.
    * @returns A promise that resolves when the delete is completed.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   deleteMany: ReturnType<typeof deleteMany>;
 
@@ -95,8 +122,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pinecone = new Pinecone();
    * await pinecone.index('my-index').deleteOne('record-1');
    * ```
-   * @param options - The record is for deletion.
+   * @param id - The id of the record to delete.
    * @returns A promise that resolves when the delete is completed.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   deleteOne: ReturnType<typeof deleteOne>;
 
@@ -119,7 +147,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
-   * @returns A promise that resolve with the {@link IndexStatsDescription} when the operation is completed.
+   * @returns A promise that resolve with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats: ReturnType<typeof describeIndexStats>;
 
@@ -138,7 +166,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    *
    * @constructor
-   * @param indexName - The name of the index being configured.
+   * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
    * @param config - The configuration from the Pinecone client.
    * @param namespace - The namespace for the index.
    */
@@ -223,7 +251,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Query records from the index by id or vector values.
+   * Query records from the index. Query is used to find the `topK` records in the index whose vector values are most
+   * similar to the vector values of the query according to the distance metric you have configured for your index.
+   * See [Query data](https://docs.pinecone.io/docs/query-data) for more on querying.
    *
    * @example
    * ```js
