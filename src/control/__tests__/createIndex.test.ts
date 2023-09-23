@@ -1,6 +1,7 @@
 import { createIndex } from '../createIndex';
 import {
   PineconeBadRequestError,
+  PineconeConflictError,
   PineconeInternalServerError,
 } from '../../errors';
 import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
@@ -165,6 +166,21 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrow(PineconeBadRequestError);
       await expect(toThrow).rejects.toThrow(serverError);
+    });
+
+    test('when 409 occurs', async () => {
+      const IOA = setupCreateIndexResponse(
+        { status: 409, text: () => 'conflict error message' },
+        undefined,
+        false
+      );
+
+      const toThrow = async () => {
+        const createIndexFn = createIndex(IOA);
+        await createIndexFn({ name: 'index-name', dimension: 10 });
+      };
+
+      await expect(toThrow).rejects.toThrow(PineconeConflictError);
     });
   });
 });

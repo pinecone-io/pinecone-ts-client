@@ -26,6 +26,7 @@ export type CreateIndexOptions = {
   metadataConfig?: { indexed: Array<string> };
   sourceCollection?: string;
   waitUntilReady?: boolean;
+  suppressConflicts?: boolean;
 };
 
 const CreateIndexOptionsSchema = Type.Object(
@@ -39,6 +40,7 @@ const CreateIndexOptionsSchema = Type.Object(
     metadataConfig: Type.Optional(MetadataConfigSchema),
     sourceCollection: Type.Optional(CollectionNameSchema),
     waitUntilReady: Type.Optional(Type.Boolean()),
+    suppressConflicts: Type.Optional(Type.Boolean()),
   },
   { additionalProperties: false }
 );
@@ -60,6 +62,9 @@ export const createIndex = (api: IndexOperationsApi) => {
       return;
     } catch (e) {
       const err = await handleIndexRequestError(e, api, options.name);
+      if (options.suppressConflicts && err.name === 'PineconeConflictError') {
+        return;
+      }
       throw err;
     }
   };

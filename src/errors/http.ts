@@ -50,6 +50,23 @@ export class PineconeNotFoundError extends BasePineconeError {
   }
 }
 
+export class PineconeConflictError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 409. ${message ? message : ''}`
+      );
+    } else if (message) {
+      super(message);
+    } else {
+      super();
+    }
+
+    this.name = 'PineconeConflictError';
+  }
+}
+
 export class PineconeInternalServerError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
     const { url, body } = failedRequest;
@@ -101,6 +118,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeAuthorizationError(failedRequestInfo);
     case 404:
       return new PineconeNotFoundError(failedRequestInfo);
+    case 409:
+      return new PineconeConflictError(failedRequestInfo);
     case 500:
       return new PineconeInternalServerError(failedRequestInfo);
     case 501:
