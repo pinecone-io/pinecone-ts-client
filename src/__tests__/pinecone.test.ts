@@ -77,6 +77,18 @@ describe('Pinecone', () => {
       });
     });
 
+    describe('optional properties', () => {
+      test('should not throw when optional properties provided: fetchAPI', () => {
+        expect(() => {
+          new Pinecone({
+            environment: 'test-env',
+            apiKey: 'test-key',
+            fetchApi: crossFetch,
+          } as PineconeConfiguration);
+        }).not.toThrow();
+      });
+    });
+
     describe('configuration with environment variables', () => {
       beforeEach(() => {
         delete process.env.PINECONE_ENVIRONMENT;

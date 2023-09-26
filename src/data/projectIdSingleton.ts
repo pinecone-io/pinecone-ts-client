@@ -5,8 +5,7 @@ import {
   mapHttpStatusError,
 } from '../errors';
 import type { PineconeConfiguration } from './types';
-import { buildUserAgent } from '../utils';
-import fetch from 'cross-fetch';
+import { buildUserAgent, getFetch } from '../utils';
 
 // We only ever want to call whoami a maximum of once per API key, even if there
 // are multiple instantiations of the Index class. So we use a singleton here
@@ -18,6 +17,7 @@ export const ProjectIdSingleton = (function () {
     options: PineconeConfiguration
   ): Promise<string> => {
     const { apiKey, environment } = options;
+    const fetch = getFetch(options);
     const { url, request } = _buildWhoamiRequest(environment, apiKey);
 
     let response: Response;

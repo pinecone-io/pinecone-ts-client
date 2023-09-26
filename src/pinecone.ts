@@ -20,9 +20,8 @@ import {
 } from './errors';
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
-import { queryParamsStringify, buildUserAgent } from './utils';
+import { queryParamsStringify, buildUserAgent, getFetch } from './utils';
 import type { PineconeConfiguration, RecordMetadata } from './data';
-import fetch from 'cross-fetch';
 
 /**
  * @example
@@ -44,6 +43,7 @@ export class Pinecone {
    * @param options.apiKey - The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
    * @param options.environment - The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
    * @param options.projectId - The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed.
+   * @param options.fetchApi - Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a cross-fetch polyfill.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -63,7 +63,7 @@ export class Pinecone {
       headers: {
         'User-Agent': buildUserAgent(false),
       },
-      fetchApi: fetch,
+      fetchApi: getFetch(options),
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 

@@ -46,6 +46,7 @@ export type {
   RecordValues,
   ScoredPineconeRecord,
 } from './data';
+export type { FetchAPI } from './pinecone-generated-ts-fetch';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
