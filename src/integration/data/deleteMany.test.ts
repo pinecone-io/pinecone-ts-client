@@ -1,9 +1,5 @@
 import { Pinecone, Index } from '../../index';
-import {
-  randomString,
-  createIndexIfDoesNotExist,
-  generateRecords,
-} from '../test-helpers';
+import { randomString, generateRecords } from '../test-helpers';
 
 describe('deleteMany', () => {
   const INDEX_NAME = 'ts-integration';
@@ -12,7 +8,12 @@ describe('deleteMany', () => {
   beforeAll(async () => {
     pinecone = new Pinecone();
 
-    await createIndexIfDoesNotExist(pinecone, INDEX_NAME);
+    await pinecone.createIndex({
+      name: INDEX_NAME,
+      dimension: 5,
+      waitUntilReady: true,
+      suppressConflicts: true,
+    });
 
     namespace = randomString(16);
     index = pinecone.index(INDEX_NAME);

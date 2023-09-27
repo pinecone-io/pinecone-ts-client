@@ -1,21 +1,29 @@
 import { ProjectIdSingleton } from '../projectIdSingleton';
-import crossFetch from 'cross-fetch';
+import * as utils from '../../utils';
+import type { PineconeConfiguration } from '../types';
 
-jest.mock('cross-fetch', () => {
+const fakeFetch = jest.fn();
+
+jest.mock('../../utils', () => {
+  const realUtils = jest.requireActual('../../utils');
+
   return {
-    __esModule: true,
-    default: jest.fn(),
+    ...realUtils,
+    getFetch: () => fakeFetch,
   };
 });
 
 describe('ProjectIdSingleton', () => {
+  const fetch = utils.getFetch({} as PineconeConfiguration);
+
   afterEach(() => {
     ProjectIdSingleton._reset();
+    fakeFetch.mockReset();
   });
 
   test('issues whoami requests for unknown projectId', async () => {
     // @ts-ignore
-    crossFetch.mockResolvedValue({
+    fetch.mockResolvedValue({
       status: 200,
       json: () => Promise.resolve({ project_name: 'abcdef' }),
     });
@@ -29,7 +37,7 @@ describe('ProjectIdSingleton', () => {
     const id = await ProjectIdSingleton.getProjectId(testConfig);
 
     expect(id).toEqual('abcdef');
-    expect(crossFetch).toHaveBeenCalledWith(
+    expect(fetch).toHaveBeenCalledWith(
       'https://controller.gcp-free.pinecone.io/actions/whoami',
       {
         headers: {
@@ -44,7 +52,7 @@ describe('ProjectIdSingleton', () => {
 
   test('only makes API call once per api key', async () => {
     // @ts-ignore
-    crossFetch.mockResolvedValue({
+    utils.getFetch({} as PineconeConfiguration).mockResolvedValue({
       status: 200,
       json: () => Promise.resolve({ project_name: 'xyzxyz' }),
     });
@@ -57,15 +65,15 @@ describe('ProjectIdSingleton', () => {
 
     const id = await ProjectIdSingleton.getProjectId(testConfig2);
     expect(id).toEqual('xyzxyz');
-    expect(crossFetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
 
     const id2 = await ProjectIdSingleton.getProjectId(testConfig2);
     expect(id2).toEqual('xyzxyz');
-    expect(crossFetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
 
     await ProjectIdSingleton.getProjectId(testConfig2);
     await ProjectIdSingleton.getProjectId(testConfig2);
     await ProjectIdSingleton.getProjectId(testConfig2);
-    expect(crossFetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

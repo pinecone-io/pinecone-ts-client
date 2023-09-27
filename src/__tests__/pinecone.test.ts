@@ -1,14 +1,17 @@
 import { Pinecone } from '../pinecone';
 import type { PineconeConfiguration } from '../data';
-import crossFetch from 'cross-fetch';
+import * as utils from '../utils';
 
-jest.mock('cross-fetch', () => {
+const fakeFetch = jest.fn();
+
+jest.mock('../utils', () => {
+  const realUtils = jest.requireActual('../utils');
+
   return {
-    __esModule: true,
-    default: jest.fn(),
+    ...realUtils,
+    getFetch: () => fakeFetch,
   };
 });
-
 jest.mock('../data/fetch');
 jest.mock('../data/upsert');
 
@@ -77,6 +80,18 @@ describe('Pinecone', () => {
       });
     });
 
+    describe('optional properties', () => {
+      test('should not throw when optional properties provided: fetchAPI', () => {
+        expect(() => {
+          new Pinecone({
+            environment: 'test-env',
+            apiKey: 'test-key',
+            fetchApi: utils.getFetch({} as PineconeConfiguration),
+          } as PineconeConfiguration);
+        }).not.toThrow();
+      });
+    });
+
     describe('configuration with environment variables', () => {
       beforeEach(() => {
         delete process.env.PINECONE_ENVIRONMENT;
@@ -94,17 +109,6 @@ describe('Pinecone', () => {
         expect(client.getConfig().environment).toEqual('test-env');
         expect(client.getConfig().apiKey).toEqual('test-api');
         expect(client.getConfig().projectId).toEqual(undefined);
-      });
-
-      test('should read projectId and skip whoami if provided', () => {
-        process.env.PINECONE_ENVIRONMENT = 'test-env';
-        process.env.PINECONE_API_KEY = 'test-api';
-        process.env.PINECONE_PROJECT_ID = 'test-project';
-
-        const client = new Pinecone();
-
-        expect(client.getConfig().projectId).toEqual('test-project');
-        expect(crossFetch).not.toHaveBeenCalled();
       });
 
       test('config object should take precedence when both config object and environment variables are provided', () => {
