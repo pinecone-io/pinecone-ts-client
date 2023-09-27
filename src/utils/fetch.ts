@@ -12,7 +12,7 @@ export const getFetch = (config: PineconeConfiguration) => {
     // other implementations are stubbed out.
     return global.fetch;
   } else {
-    // Use polyfill as last resort
+    // Use ponyfill as last resort
     return crossFetch;
   }
 };
