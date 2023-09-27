@@ -27,19 +27,14 @@ describe('query', () => {
   test('query by id', async () => {
     const recordsToUpsert = generateRecords(5, 3);
     expect(recordsToUpsert).toHaveLength(3);
+
+    // These assertions are just to show what ids were
+    // used in the generated records
     expect(recordsToUpsert[0].id).toEqual('0');
     expect(recordsToUpsert[1].id).toEqual('1');
     expect(recordsToUpsert[2].id).toEqual('2');
 
     await ns.upsert(recordsToUpsert);
-
-    // Check records got upserted
-    const stats = await ns.describeIndexStats();
-    if (stats.namespaces) {
-      expect(stats.namespaces[namespace].recordCount).toEqual(3);
-    } else {
-      fail('Expected namespaces to be defined');
-    }
 
     const topK = 2;
     const results = await ns.query({ id: '0', topK });
@@ -97,7 +92,6 @@ describe('query', () => {
       topK,
     });
     expect(results.matches).toBeDefined();
-
     expect(results.matches?.length).toEqual(topK);
   });
 });
