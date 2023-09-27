@@ -1,4 +1,3 @@
-import { Pinecone } from '../index';
 import type { PineconeRecord, RecordSparseValues } from '../index';
 
 export const randomString = (length) => {
@@ -12,26 +11,6 @@ export const randomString = (length) => {
   }
 
   return result;
-};
-
-export const createIndexIfDoesNotExist = async (
-  pinecone: Pinecone,
-  indexName: string
-) => {
-  const indexList = await pinecone.listIndexes();
-  let found = false;
-  indexList.forEach((i) => {
-    if (i.name === indexName) {
-      found = true;
-    }
-  });
-  if (!found) {
-    await pinecone.createIndex({
-      name: indexName,
-      dimension: 5,
-      waitUntilReady: true,
-    });
-  }
 };
 
 export const generateRecords = (
