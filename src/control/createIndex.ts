@@ -17,7 +17,7 @@ import {
 import type { IndexName, PodType } from './types';
 
 /**
- * @see
+ * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
 export type CreateIndexOptions = {
   /** The name of the index. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters. */
