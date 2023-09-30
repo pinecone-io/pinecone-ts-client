@@ -620,3 +620,42 @@ const stats = await index.describeIndexStats();
 //   totalRecordCount: 10001502
 // }
 ```
+
+### Utilities `waitUntilIndexIsReady` and `createIndexIfNotExists`
+
+In the v1 client, the needs served by these utility functions in v0.x beta clients are served by additional options to the `createIndex` method.
+
+```typescript
+// v0.x beta releases
+import { PineconeClient, utils } from '@pinecone-database/pinecone';
+
+const { createIndexIfNotExists, waitUntilIndexIsReady } = utils;
+
+const pineconeClient = new PineconeClient();
+await pineconeClient.init({
+  apiKey: 'your-api-key',
+  environment: 'your-environment',
+});
+
+await createIndexIfNotExists(pineconeClient, 'sample-index', 1536);
+await waitUntilIndexIsReady(pineconeClient, 'sample-index');
+```
+
+```typescript
+// v1.0.0
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pinecone = new Pinecone();
+await pinecone.createIndex({
+  name: 'sample-index',
+  dimension: 1536,
+  
+  // This option tells the client not to throw if the index already exists.
+  // It serves as replacement for createIndexIfNotExists
+  suppressConflicts: true,
+
+  // This option tells the client not to resolve the promise until the 
+  // index is ready. It replaces waitUntilIndexIsReady.
+  waitUntilReady: true
+});
+```
