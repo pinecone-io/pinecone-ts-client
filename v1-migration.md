@@ -649,13 +649,13 @@ const pinecone = new Pinecone();
 await pinecone.createIndex({
   name: 'sample-index',
   dimension: 1536,
-  
+
   // This option tells the client not to throw if the index already exists.
   // It serves as replacement for createIndexIfNotExists
   suppressConflicts: true,
 
-  // This option tells the client not to resolve the promise until the 
+  // This option tells the client not to resolve the promise until the
   // index is ready. It replaces waitUntilIndexIsReady.
-  waitUntilReady: true
+  waitUntilReady: true,
 });
 ```
