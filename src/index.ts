@@ -20,6 +20,7 @@ export type {
   IndexName,
   PartialIndexDescription,
   PartialCollectionDescription,
+  PodType,
 } from './control';
 export type {
   DeleteManyByFilterOptions,
@@ -47,6 +48,12 @@ export type {
   ScoredPineconeRecord,
 } from './data';
 export type { FetchAPI } from './pinecone-generated-ts-fetch';
+export type {
+  IndexMeta,
+  IndexMetaStatus,
+  IndexMetaStatusStateEnum,
+  IndexMetaDatabase,
+} from './pinecone-generated-ts-fetch';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
@@ -55,7 +62,6 @@ export {
   CreateCollectionRequest,
   CreateRequest,
   DeleteRequest,
-  IndexMeta,
   PatchRequest,
   QueryRequest,
   QueryVector,
@@ -63,4 +69,4 @@ export {
   UpdateRequest,
   UpsertRequest,
   Vector,
-} from './pinecone-generated-ts-fetch';
+} from './v0/pinecone-generated-ts-fetch';

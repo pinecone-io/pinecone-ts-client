@@ -16,10 +16,27 @@ export const PineconeConfigurationSchema = Type.Object(
   },
   { additionalProperties: false }
 );
+
+/**
+ * @see [Understanding projects](https://docs.pinecone.io/docs/projects)
+ */
 export type PineconeConfiguration = {
+  /**
+   * The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
+   */
   environment: string;
+
+  /**
+   * The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
+   */
   apiKey: string;
+
+  /** The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed. */
   projectId?: string;
+
+  /**
+   * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
+   */
   fetchApi?: FetchAPI;
 };
 

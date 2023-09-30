@@ -122,7 +122,8 @@ function attachHandler(instance: VectorOperationsApi): VectorOperationsApi {
 interface PineconeClient extends IndexOperationsApi {}
 
 /**
- * @deprecated in v1.0.0
+ * @deprecated 
+ * Deprecated in v1.0.0
  * 
  * Use {@link Pinecone} instead.
  */

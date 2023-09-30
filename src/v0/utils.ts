@@ -97,6 +97,13 @@ const chunkedUpsert = async (
   }
 };
 
+/**
+ *  @deprecated
+ * 
+ * Deprecated in v1.0.0
+ * 
+ * See [discussion on replacing utils for v1](https://github.com/pinecone-io/pinecone-ts-client/issues/117)
+ */
 const utils = {
   waitUntilIndexIsReady,
   createIndexIfNotExists,

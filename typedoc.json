@@ -1,7 +1,13 @@
 {
   "entryPoints": ["src/index.ts"],
-  "exclude": ["**/v0/*"],
+  "exclude": ["src/v0/**/*"],
   "hideGenerator": true,
   "includeVersion": true,
-  "out": "docs"
+  "excludeInternal": true,
+  "out": "docs",
+  "customCss": "./docs-styles.css",
+  "sidebarLinks": {
+    "Github Repo": "https://github.com/pinecone-io/pinecone-ts-client",
+    "Pinecone Docs": "https://docs.pinecone.io"
+  }
 }

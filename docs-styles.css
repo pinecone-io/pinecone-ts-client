@@ -1,0 +1,60 @@
+:root {
+  /* I copied these vars from docs.pinecone.io */
+  --font-family: 'MediumLLWeb', sans-serif;
+  --font-family-mono: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
+    'Ubuntu Mono', monospace;
+  --md-code-font: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
+    'Ubuntu Mono', monospace;
+  --md-code-background: #f6f8fa;
+  --base-font-size: 1rem;
+  --color-text-default: #000;
+  --color-alpha1: #030080;
+  --color-alpha2: #1c17ff;
+  --color-alpha3: #f1f5f8;
+  --color-alpha7: #738fab;
+  --color-light1: #fff;
+  --color-light2: #cdcdcd;
+  --color-text-minimum: #637288;
+}
+body {
+  font-family: var(--font-family);
+  color: #4c555a;
+  background-color: var(--color-light1);
+}
+a {
+  color: var(--color-alpha2);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-alpha1);
+}
+
+section.tsd-member > h3 {
+  margin-left: 0;
+}
+.tsd-member .tsd-anchor + h3 {
+  background-color: yellow;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+code,
+pre {
+  font-family: var(--md-code-font);
+  background-color: var(--md-code-background);
+}
+pre {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+p > code {
+  padding: 2px 4px;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+}
+.tsd-signature-type {
+  font-family: var(--md-code-font);
+}

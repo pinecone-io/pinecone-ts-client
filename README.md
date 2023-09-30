@@ -351,7 +351,7 @@ type MovieMetadata = {
 const index = pinecone.index<MovieMetadata>('test-index');
 
 // Now you get type errors if upserting malformed metadata
-await index.upsert({
+await index.upsert([{
   id: '1234',
   values: [
     .... // embedding values
@@ -363,7 +363,7 @@ await index.upsert({
     // @ts-expect-error because category property not in MovieMetadata
     category: 'classic'
   }
-})
+}])
 
 const results = await index.query({
   vector: [

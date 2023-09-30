@@ -22,8 +22,10 @@ import {
 
 /**
  * 
- * @export
- * @interface Vector
+ * @deprecated 
+ * Deprecated in v1.0.0. 
+ * 
+ * Use {@link PineconeRecord} instead.
  */
 export interface Vector {
     /**
