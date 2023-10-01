@@ -14,6 +14,10 @@ const ConfigureIndexOptionsSchema = Type.Object(
   },
   { additionalProperties: false }
 );
+
+/**
+ * @see [Managing indexes](https://docs.pinecone.io/docs/manage-indexes)
+ */
 export type ConfigureIndexOptions = {
   /** The number of replicas in the index. The default number of replicas is 1. */
   replicas?: number;

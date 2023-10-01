@@ -7,6 +7,7 @@ import type { ResponseError } from '../pinecone-generated-ts-fetch';
 // for all other API errors. The FetchError type arises when someone has configured the client with an invalid
 // environment value; in this case no connection is ever made to a server so there's no response status code or
 // body contents with information about the error.
+/** @internal */
 export const handleFetchError = async (
   e: unknown,
   handleResponseError: (e: ResponseError) => Promise<Error>
@@ -18,6 +19,7 @@ export const handleFetchError = async (
   }
 };
 
+/** @internal */
 export const handleApiError = async (
   e: unknown,
   customMessage?: (

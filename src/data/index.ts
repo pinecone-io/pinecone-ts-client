@@ -113,9 +113,15 @@ export type {
  * @typeParam T - The type of metadata associated with each record.
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
+  /** @internal */
   private config: PineconeConfiguration;
+
+  /** @internal */
   private target: {
+    /** The name of the index that will receive data operations when this class instance is used to upsert, update, query, or delete. */
     index: string;
+
+    /** The namespace where operations will be performed. If not set, the default namespace of `''` will be used. */
     namespace: string;
   };
 

@@ -13,8 +13,14 @@ const CreateCollectionOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
+/**
+ * @see [Understanding collections](https://docs.pinecone.io/docs/collections)
+ */
 export type CreateCollectionOptions = {
+  /** The name of the collection you would like to create. */
   name: CollectionName;
+
+  /** The name of the index you would like to create the collection from. */
   source: IndexName;
 };
 

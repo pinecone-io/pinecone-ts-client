@@ -4,6 +4,9 @@ import { handleCollectionRequestError } from './utils';
 import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
 
+/**
+ * The name of collection to delete.
+ */
 export type DeleteCollectionOptions = CollectionName;
 
 export const deleteCollection = (api: IndexOperationsApi) => {

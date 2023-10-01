@@ -31,6 +31,14 @@ h3,
 h4 {
   color: var(--color-alpha1);
 }
+h1 > a,
+h2 > a,
+h3 > a,
+h4 > a,
+h5 > a,
+h6 > a {
+  color: var(--color-alpha1);
+}
 
 section.tsd-member > h3 {
   margin-left: 0;
@@ -57,4 +65,7 @@ p > code {
 }
 .tsd-signature-type {
   font-family: var(--md-code-font);
+}
+.page-menu .settings {
+  display: none;
 }

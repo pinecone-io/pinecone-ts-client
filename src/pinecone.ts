@@ -490,8 +490,6 @@ export class Pinecone {
   }
 
   /**
-   * This is an alias of {@link Pinecone.index}
-   *
    * {@inheritDoc index}
    */
   // Alias method to match the Python SDK capitalization

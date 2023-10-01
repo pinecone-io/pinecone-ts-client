@@ -5,7 +5,9 @@ import { handleIndexRequestError } from './utils';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 
+/** The name of the index to describe */
 export type DescribeIndexOptions = IndexName;
+/** The description of your index returned from { @link Pinecone.describeIndex } */
 export type IndexDescription = IndexMeta;
 
 export const describeIndex = (api: IndexOperationsApi) => {

@@ -24,13 +24,28 @@ const UpdateRecordOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-// This is very similar to PineconeRecord, but differs because values field
-// is optional here. E.g. perhaps the caller only wants to update metadata
-// for a given record.
+/**
+ * This type is very similar to { @link PineconeRecord }, but differs because the
+ * values field is optional here. This is to allow for situations where perhaps
+ * the caller only wants to update metadata for a given record while leaving
+ * stored vector values as they are.
+ */
 export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
+  /** The id of the record you would like to update */
   id: RecordId;
+
+  /** The vector values you would like to store with this record */
   values?: RecordValues;
+
+  /** The sparse values you would like to store with this record.
+   *
+   * @see [Understanding hybrid search](https://docs.pinecone.io/docs/hybrid-search)
+   */
   sparseValues?: RecordSparseValues;
+
+  /**
+   * The metadata you would like to store with this record.
+   */
   metadata?: T;
 };
 

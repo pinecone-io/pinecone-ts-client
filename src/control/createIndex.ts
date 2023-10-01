@@ -48,7 +48,14 @@ export type CreateIndexOptions = {
   podType?: PodType;
 
   /** Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when a `metadataConfig` object is present, only metadata fields specified are indexed. */
-  metadataConfig?: { indexed: Array<string> };
+  metadataConfig?: {
+    /**
+     * Specify an array of metadata fields you would like indexed.
+     *
+     * @see [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering)
+     * */
+    indexed: Array<string>;
+  };
 
   /** If creating an index from a collection, you can specify the name of the collection here. */
   sourceCollection?: string;
