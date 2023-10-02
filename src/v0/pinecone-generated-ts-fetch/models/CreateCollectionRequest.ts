@@ -15,8 +15,10 @@
 import { exists, mapValues } from '../runtime';
 /**
  * 
- * @export
- * @interface CreateCollectionRequest
+ * @deprecated
+ * 
+ * Deprecated in v1.0.0 along with {@link PineconeClient}. 
+ * 
  */
 export interface CreateCollectionRequest {
     /**

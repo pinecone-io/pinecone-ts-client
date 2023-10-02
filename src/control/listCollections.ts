@@ -1,9 +1,21 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { handleApiError } from '../errors';
 
+/**
+ * A partial description of a collection in your project.
+ *
+ * To see full information about the collection, see { @link Pinecone.describeCollection }
+ */
 export type PartialCollectionDescription = {
+  /** The name of the collection */
   name: string;
 };
+
+/**
+ * A list of collections in your project
+ *
+ * @see [Understanding collections](https://docs.pinecone.io/docs/collections#limitations)
+ */
 export type CollectionList = PartialCollectionDescription[];
 
 export const listCollections = (api: IndexOperationsApi) => {

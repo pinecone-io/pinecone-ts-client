@@ -1,5 +1,6 @@
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
 
+/** @internal */
 export const extractMessage = async (error: ResponseError): Promise<string> => {
   let message = await error.response.text();
 

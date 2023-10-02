@@ -49,12 +49,79 @@ export type {
 } from './query';
 
 /**
+ * The `Index` class is used to perform data operations (upsert, query, etc)
+ * against Pinecone indexes. Typically it will be instantiated via a `Pinecone`
+ * client instance that has already built the required configuration from a
+ * combination of sources.
+ *
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ *
+ * const pinecone = new Pinecone()
+ * const index = pinecone.index('index-name')
+ * ```
+ *
+ * ### Targeting an index, with user-defined Metadata types
+ *
+ * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
+ *
+ * ```typescript
+ * const pinecone = new Pinecone();
+ *
+ * type MovieMetadata = {
+ *   title: string,
+ *   runtime: numbers,
+ *   genre: 'comedy' | 'horror' | 'drama' | 'action'
+ * }
+ *
+ * // Specify a custom metadata type while targeting the index
+ * const index = pinecone.index<MovieMetadata>('test-index');
+ *
+ * // Now you get type errors if upserting malformed metadata
+ * await index.upsert([{
+ *   id: '1234',
+ *   values: [
+ *     .... // embedding values
+ *   ],
+ *   metadata: {
+ *     genre: 'Gone with the Wind',
+ *     runtime: 238,
+ *     genre: 'drama',
+ *
+ *     // @ts-expect-error because category property not in MovieMetadata
+ *     category: 'classic'
+ *   }
+ * }])
+ *
+ * const results = await index.query({
+ *    vector: [
+ *     ... // query embedding
+ *    ],
+ *    filter: { genre: { '$eq': 'drama' }}
+ * })
+ * const movie = results.matches[0];
+ *
+ * if (movie.metadata) {
+ *   // Since we passed the MovieMetadata type parameter above,
+ *   // we can interact with metadata fields without having to
+ *   // do any typecasting.
+ *   const { title, runtime, genre } = movie.metadata;
+ *   console.log(`The best match in drama was ${title}`)
+ * }
+ * ```
+ *
  * @typeParam T - The type of metadata associated with each record.
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
+  /** @internal */
   private config: PineconeConfiguration;
+
+  /** @internal */
   private target: {
+    /** The name of the index that will receive data operations when this class instance is used to upsert, update, query, or delete. */
     index: string;
+
+    /** The namespace where operations will be performed. If not set, the default namespace of `''` will be used. */
     namespace: string;
   };
 
@@ -66,7 +133,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * const pinecone = new Pinecone();
    * await pinecone.index('my-index').describeIndexStats();
-   *
    * // {
    * //  namespaces: {
    * //    '': { recordCount: 10 },
@@ -93,7 +159,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteAll: ReturnType<typeof deleteAll>;
+  deleteAll() {
+    return this._deleteAll();
+  }
+  /** @hidden */
+  private _deleteAll: ReturnType<typeof deleteAll>;
 
   /**
    * Delete records from the index by either an array of ids, or a filter object.
@@ -112,7 +182,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
-  deleteMany: ReturnType<typeof deleteMany>;
+  deleteMany(options) {
+    return this._deleteMany(options);
+  }
+  /** @hidden */
+  _deleteMany: ReturnType<typeof deleteMany>;
 
   /**
    * Delete a record from the index by id.
@@ -126,7 +200,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
-  deleteOne: ReturnType<typeof deleteOne>;
+  deleteOne(id) {
+    return this._deleteOne(id);
+  }
+  /** @hidden */
+  _deleteOne: ReturnType<typeof deleteOne>;
 
   /**
    * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
@@ -149,11 +227,19 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    * @returns A promise that resolve with the {@link IndexStatsDescription} value when the operation is completed.
    */
-  describeIndexStats: ReturnType<typeof describeIndexStats>;
+  describeIndexStats() {
+    return this._describeIndexStats();
+  }
+  /** @hidden */
+  _describeIndexStats: ReturnType<typeof describeIndexStats>;
 
+  /** @hidden */
   private _fetchCommand: FetchCommand<T>;
+  /** @hidden */
   private _queryCommand: QueryCommand<T>;
+  /** @hidden */
   private _updateCommand: UpdateCommand<T>;
+  /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
 
   /**
@@ -183,10 +269,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
     const apiProvider = new VectorOperationsProvider(config, indexName);
 
-    this.deleteAll = deleteAll(apiProvider, namespace);
-    this.deleteMany = deleteMany(apiProvider, namespace);
-    this.deleteOne = deleteOne(apiProvider, namespace);
-    this.describeIndexStats = describeIndexStats(apiProvider);
+    this._deleteAll = deleteAll(apiProvider, namespace);
+    this._deleteMany = deleteMany(apiProvider, namespace);
+    this._deleteOne = deleteOne(apiProvider, namespace);
+    this._describeIndexStats = describeIndexStats(apiProvider);
 
     this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
     this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
@@ -195,15 +281,30 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Returns an {@link Index} targeting the specified namespace. By default, all operations take place inside the default namespace ''.
+   * Returns an {@link Index} targeting the specified namespace. By default, all operations take place inside the default namespace `''`.
    *
    * @example
    * ```js
    * const pinecone = new Pinecone();
-   * const indexNamed = pinecone.index('my-index').namespace('my-namespace');
+   *
+   * // Create an Index client instance scoped to operate on a
+   * // single namespace
+   * const ns = pinecone.index('my-index').namespace('my-namespace');
+   *
+   * // Now operations against this intance only affect records in
+   * // the targeted namespace
+   * ns.upsert([
+   *   // ... records to upsert in namespace 'my-namespace'
+   * ])
+   *
+   * ns.query({
+   *   // ... query records in namespace 'my-namespace'
+   * })
    * ```
    *
-   * @param namespace - The namespace to target within the index.
+   * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
+   *
+   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an { @link Index } client instance that is typed with a user-specified metadata type. See { @link Pinecone.index } for more info.
    */
   namespace(namespace: string): Index<T> {
     return new Index<T>(this.target.index, this.config, namespace);

@@ -22,8 +22,10 @@ import {
 
 /**
  * 
- * @export
- * @interface ScoredVector
+ * @deprecated 
+ * Deprecated in v1.0.0. 
+ * 
+ * Use {@link ScoredPineconeRecord} instead.
  */
 export interface ScoredVector {
     /**

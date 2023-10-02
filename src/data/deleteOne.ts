@@ -4,6 +4,11 @@ import { buildConfigValidator } from '../validator';
 import { RecordIdSchema } from './types';
 import type { RecordId } from './types';
 
+/**
+ * The id of the record to delete from the index.
+ *
+ * @see {@link Index.deleteOne }
+ */
 export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (

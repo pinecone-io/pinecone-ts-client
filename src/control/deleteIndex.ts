@@ -3,6 +3,7 @@ import { buildConfigValidator } from '../validator';
 import { IndexName, IndexNameSchema } from './types';
 import { handleIndexRequestError } from './utils';
 
+/** The name of index to delete */
 export type DeleteIndexOptions = IndexName;
 
 export const deleteIndex = (api: IndexOperationsApi) => {

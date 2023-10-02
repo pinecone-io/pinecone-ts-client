@@ -13,6 +13,11 @@ import {
   createCollection,
   describeCollection,
   deleteCollection,
+  ConfigureIndexOptions,
+  CreateCollectionOptions,
+  CreateIndexOptions,
+  IndexName,
+  CollectionName,
 } from './control';
 import {
   PineconeConfigurationError,
@@ -24,26 +29,81 @@ import { queryParamsStringify, buildUserAgent, getFetch } from './utils';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 
 /**
- * @example
+ * The `Pinecone` class is the main entrypoint to this sdk. You will use
+ * instances of it to create and manage indexes as well as perform data
+ * operations on those indexes after they are created.
+ *
+ * ### Initializing the client
+ *
+ * There are two pieces of configuration required to use the Pinecone client: an API key and environment value. These values can be passed using environment variables or in code through a configuration object. Find your configuration values in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
+ *
+ * ### Using environment variables
+ *
+ * The environment variables used to configure the client are the following:
+ *
+ * ```bash
+ * export PINECONE_API_KEY="your_api_key"
+ * export PINECONE_ENVIRONMENT="your_environment"
  * ```
+ *
+ * When these environment variables are set, the client constructor does not require any additional arguments.
+ *
+ * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const client = new Pinecone();
+ *
+ * const pinecone = new Pinecone();
  * ```
+ *
+ * ### Using a configuration object
+ *
+ * If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` and `environment` values. This
+ * could be useful if your application needs to interact with multiple projects, each with a different configuration.
+ *
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ *
+ * const pinecone = new Pinecone({
+ *   apiKey: 'your_api_key',
+ *   environment: 'your_environment',
+ * });
+ *
+ * ```
+ *
+ * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
+  /** @hidden */
+  private _configureIndex: ReturnType<typeof configureIndex>;
+  /** @hidden */
+  private _createCollection: ReturnType<typeof createCollection>;
+  /** @hidden */
+  private _createIndex: ReturnType<typeof createIndex>;
+  /** @hidden */
+  private _describeCollection: ReturnType<typeof describeCollection>;
+  /** @hidden */
+  private _describeIndex: ReturnType<typeof describeIndex>;
+  /** @hidden */
+  private _deleteCollection: ReturnType<typeof deleteCollection>;
+  /** @hidden */
+  private _deleteIndex: ReturnType<typeof deleteIndex>;
+  /** @hidden */
+  private _listCollections: ReturnType<typeof listCollections>;
+  /** @hidden */
+  private _listIndexes: ReturnType<typeof listIndexes>;
+
   /**
    * @example
    * ```
-   * import { Pinecone } from '@pinecone-database/pinecone`
-   * const client = new Pinecone({ apiKey: 'my-api-key', environment: 'us-west1-gcp', projectId: 'my-project-id' })
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pinecone = new Pinecone({
+   *  apiKey: 'my-api-key',
+   *  environment: 'us-west1-gcp'
+   * });
    * ```
    *
    * @constructor
-   * @param options - The configuration options for the client.
-   * @param options.apiKey - The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
-   * @param options.environment - The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
-   * @param options.projectId - The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed.
-   * @param options.fetchApi - Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a cross-fetch polyfill.
+   * @param options - The configuration options for the pinecone.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -67,16 +127,15 @@ export class Pinecone {
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 
-    this.describeIndex = describeIndex(api);
-    this.listIndexes = listIndexes(api);
-    this.createIndex = createIndex(api);
-    this.deleteIndex = deleteIndex(api);
-    this.configureIndex = configureIndex(api);
-
-    this.createCollection = createCollection(api);
-    this.listCollections = listCollections(api);
-    this.describeCollection = describeCollection(api);
-    this.deleteCollection = deleteCollection(api);
+    this._configureIndex = configureIndex(api);
+    this._createCollection = createCollection(api);
+    this._createIndex = createIndex(api);
+    this._describeCollection = describeCollection(api);
+    this._deleteCollection = deleteCollection(api);
+    this._describeIndex = describeIndex(api);
+    this._deleteIndex = deleteIndex(api);
+    this._listCollections = listCollections(api);
+    this._listIndexes = listIndexes(api);
   }
 
   /**
@@ -137,7 +196,7 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * const indexConfig = await client.describeIndex('my-index')
+   * const indexConfig = await pinecone.describeIndex('my-index')
    * console.log(indexConfig)
    * // {
    * //    database: {
@@ -157,20 +216,24 @@ export class Pinecone {
    * @param indexName - The name of the index to describe.
    * @returns A promise that resolves to {@link IndexMeta}
    */
-  describeIndex: ReturnType<typeof describeIndex>;
+  describeIndex(indexName: IndexName) {
+    return this._describeIndex(indexName);
+  }
 
   /**
    * List all Pinecone indexes
    * @example
    * ```js
-   * const indexes = await client.listIndexes()
+   * const indexes = await pinecone.listIndexes()
    * console.log(indexes)
    * // [ 'my-index', 'my-other-index' ]
    * ```
    *
    * @returns A promise that resolves to an array of index names
    */
-  listIndexes: ReturnType<typeof listIndexes>;
+  listIndexes() {
+    return this._listIndexes();
+  }
 
   /**
    * Creates a new index.
@@ -178,14 +241,14 @@ export class Pinecone {
    * @example
    * The minimum required configuration to create an index is the index name and dimension.
    * ```js
-   * await client.createIndex({ name: 'my-index', dimension: 128 })
+   * await pinecone.createIndex({ name: 'my-index', dimension: 128 })
    * ```
    * @example
    * In a more expansive example, you can specify the metric, number of pods, number of replicas, and pod type.
    * ```js
-   * await client.createIndex({
+   * await pinecone.createIndex({
    *  name: 'my-index',
-   *  dimension: 128,
+   *  dimension: 1536,
    *  metric: 'cosine',
    *  pods: 1,
    *  replicas: 2,
@@ -194,42 +257,69 @@ export class Pinecone {
    * ```
    *
    * @example
+   * If you would like to create the index only if it does not already exist, you can use the `suppressConflicts` boolean option.
+   * ```js
+   * await pinecone.createIndex({
+   *   name: 'my-index',
+   *   dimension: 1536,
+   *   suppressConflicts: true
+   * })
+   * ```
+   *
+   * @example
+   * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
+   * ```js
+   * await pinecone.createIndex({
+   *  name: 'my-index',
+   *  dimension: 1536,
+   *  waitUntilReady: true
+   * });
+   *
+   * const records = [
+   *   // PineconeRecord objects with your embedding values
+   * ]
+   * await pinecone.index('my-index').upsert(records)
+   * ```
+   *
+   * @example
    * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
    * ```js
-   * await client.createIndex({ name: 'my-index', dimension: 128, metadataConfig: { 'indexed' : ['productName', 'productDescription'] }})
+   * await pinecone.createIndex({
+   *   name: 'my-index',
+   *   dimension: 1536,
+   *   metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
+   * })
    * ```
    *
    * @param options - The index configuration.
-   * @param options.name - The name of the index. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
-   * @param options.dimension - The dimension of the index. Must be a positive integer. The number you choose here will depend on the model you are using. For example, if you are using a model that outputs 128-dimensional vectors, you should set the dimension to 128.
-   * @param options.metric - The metric of the index. The default metric is `'cosine'`. Supported metrics include `'cosine'`, `'dotproduct'`, and `'euclidean'`. To learn more about these options, see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
-   * @param options.pods - The number of pods in the index. The default number of pods is 1.
-   * @param options.replicas - The number of replicas in the index. The default number of replicas is 1.
-   * @param options.podType - The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @param options.metadataConfig - Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when a `metadataConfig` object is present, only metadata fields specified are indexed.
-   * @param options.metadataConfig.indexed - An array of metadata fields to index. If this array is empty, no metadata is indexed. If this array is not present, all metadata is indexed.
-   * @param options.sourceCollection - If creating an index from a collection, you can specify the name of the collection here.
+   *
    * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
    * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided.
+   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
+   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
    *
    * @returns A promise that resolves when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the `describeIndex` function to check the status of the index.
    */
-  createIndex: ReturnType<typeof createIndex>;
+  createIndex(options: CreateIndexOptions) {
+    return this._createIndex(options);
+  }
 
   /**
    * Deletes an index
    *
    * @example
    * ```js
-   * await client.deleteIndex('my-index')
+   * await pinecone.deleteIndex('my-index')
    * ```
    *
    * @param indexName - The name of the index to delete.
    * @returns A promise that resolves when the request to delete the index is completed.
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided
    */
-  deleteIndex: ReturnType<typeof deleteIndex>;
+  deleteIndex(indexName: IndexName) {
+    return this._deleteIndex(indexName);
+  }
 
   /**
    * Configure an index
@@ -238,24 +328,23 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * await client.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
+   * await pinecone.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
    * ```
    *
    * @param indexName - The name of the index to configure.
    * @param options - The configuration properties you would like to update
-   * @param options.replicas - The number of replicas in the index. The default number of replicas is 1.
-   * @param options.podType - The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @param options.metadataConfig - Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when a `metadataConfig` object is present, only metadata fields specified are indexed.
    */
-  configureIndex: ReturnType<typeof configureIndex>;
+  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
+    return this._configureIndex(indexName, options);
+  }
 
   /**
    * Create a new collection from an existing index
    *
    * @example
    * ```js
-   * const indexList = await client.listIndexes()
-   * await client.createCollection({
+   * const indexList = await pinecone.listIndexes()
+   * await pinecone.createCollection({
    *  name: 'my-collection',
    *  source: indexList[0]
    * })
@@ -267,47 +356,55 @@ export class Pinecone {
    * @param options.source - The name of the index to use as the source for the collection.
    * @returns a promise that resolves when the request to create the collection is completed.
    */
-  createCollection: ReturnType<typeof createCollection>;
+  createCollection(options: CreateCollectionOptions) {
+    return this._createCollection(options);
+  }
 
   /**
    * List all collections in a project
    *
    * @example
    * ```js
-   * await client.listCollections()
+   * await pinecone.listCollections()
    * ```
    *
    * @returns A promise that resolves to an array of collection objects.
    */
-  listCollections: ReturnType<typeof listCollections>;
+  listCollections() {
+    return this._listCollections();
+  }
 
   /**
    * Delete a collection by collection name
    *
    * @example
    * ```
-   * const collectionList = await client.listCollections()
+   * const collectionList = await pinecone.listCollections()
    * const collectionName = collectionList[0]
-   * await client.deleteCollection(collectionName)
+   * await pinecone.deleteCollection(collectionName)
    * ```
    *
    * @param collectionName - The name of the collection to delete.
    * @returns A promise that resolves when the request to delete the collection is completed.
    */
-  deleteCollection: ReturnType<typeof deleteCollection>;
+  deleteCollection(collectionName: CollectionName) {
+    return this._deleteCollection(collectionName);
+  }
 
   /**
    * Describe a collection
    *
    * @example
    * ```js
-   * await client.describeCollection('my-collection')
+   * await pinecone.describeCollection('my-collection')
    * ```
    *
    * @param collectionName - The name of the collection to describe.
    * @returns A promise that resolves to a collection object with type {@link CollectionDescription}.
    */
-  describeCollection: ReturnType<typeof describeCollection>;
+  describeCollection(collectionName: CollectionName) {
+    return this._describeCollection(collectionName);
+  }
 
   /** @internal */
   _validateConfig(options: PineconeConfiguration) {
@@ -327,6 +424,63 @@ export class Pinecone {
   /**
    * Targets a specific index for performing data operations.
    *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pinecone = new Pinecone()
+   * const index = pinecone.index('index-name')
+   * ```
+   *
+   * #### Targeting an index, with user-defined Metadata types
+   *
+   * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
+   *
+   * ```typescript
+   * const pinecone = new Pinecone();
+   *
+   * type MovieMetadata = {
+   *   title: string,
+   *   runtime: numbers,
+   *   genre: 'comedy' | 'horror' | 'drama' | 'action'
+   * }
+   *
+   * // Specify a custom metadata type while targeting the index
+   * const index = pinecone.index<MovieMetadata>('test-index');
+   *
+   * // Now you get type errors if upserting malformed metadata
+   * await index.upsert([{
+   *   id: '1234',
+   *   values: [
+   *     .... // embedding values
+   *   ],
+   *   metadata: {
+   *     genre: 'Gone with the Wind',
+   *     runtime: 238,
+   *     genre: 'drama',
+   *
+   *     // @ts-expect-error because category property not in MovieMetadata
+   *     category: 'classic'
+   *   }
+   * }])
+   *
+   * const results = await index.query({
+   *    vector: [
+   *     ... // query embedding
+   *    ],
+   *    filter: { genre: { '$eq': 'drama' }}
+   * })
+   * const movie = results.matches[0];
+   *
+   * if (movie.metadata) {
+   *   // Since we passed the MovieMetadata type parameter above,
+   *   // we can interact with metadata fields without having to
+   *   // do any typecasting.
+   *   const { title, runtime, genre } = movie.metadata;
+   *   console.log(`The best match in drama was ${title}`)
+   * }
+   * ```
+   *
+   * @typeParam T - The type of metadata associated with each record.
    * @param indexName - The name of the index to target.
    * @typeParam T - The type of the metadata object associated with each record.
    * @returns An {@link Index} object that can be used to perform data operations.
@@ -343,6 +497,7 @@ export class Pinecone {
     return this.index<T>(indexName);
   }
 
+  /** @hidden */
   __curlStarter() {
     // Every endpoint is going to have a different path and expect different data (in the case of POST requests),
     // but this is a good starting point for users to see how to use curl to interact with the REST API.
