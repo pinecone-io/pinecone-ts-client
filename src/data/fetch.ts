@@ -17,7 +17,7 @@ export type FetchOptions = Array<RecordId>;
 export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
   /** A map of fetched records, keyed by record id. */
   records: {
-    [key: RecordId]: PineconeRecord<T>;
+    [key: string]: PineconeRecord<T>;
   };
 
   /** The namespace where records were fetched. */
