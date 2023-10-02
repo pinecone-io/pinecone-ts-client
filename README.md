@@ -105,6 +105,13 @@ await pinecone.createIndex({
   metadataConfig: {
     indexed: ['product_type'],
   },
+
+  // This option tells the client not to throw if the index already exists.
+  suppressConflicts: true,
+
+  // This option tells the client not to resolve the promise until the
+  // index is ready.
+  waitUntilReady: true,
 });
 ```
 
