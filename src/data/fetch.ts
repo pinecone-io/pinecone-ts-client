@@ -10,7 +10,10 @@ const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
 /** The list of record ids you would like to fetch using { @link Index.fetch } */
 export type FetchOptions = Array<RecordId>;
 
-/** The response from {@link Index.fetch } */
+/** 
+*  The response from {@link Index.fetch } 
+*  @typeParam T - The metadata shape for each record: {@link RecordMetadata}. 
+*/
 export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
   /** A map of fetched records, keyed by record id. */
   records: {
