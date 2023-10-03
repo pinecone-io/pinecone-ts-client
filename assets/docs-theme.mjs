@@ -21,7 +21,7 @@ function onPageRendered(page) {
   if (page && page.contents) {
     page.contents = page.contents.replace(
       '</head>',
-      `<link rel="icon" href="./favicon-32x32.png"/>` + '\n' + '</head>'
+      '<link rel="icon" href="./favicon-32x32.png"/></head>'
     );
   }
 }
