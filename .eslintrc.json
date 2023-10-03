@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true
   },
   "ignorePatterns": ["dist", "src/pinecone-generated-ts-fetch", "src/v0"],
   "extends": [
