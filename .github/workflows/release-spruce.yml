@@ -1,0 +1,34 @@
+name: 'Release: @spruce build'
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  version-and-release:
+    name: Release dev build to NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: spruce
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: 'Bump version, do not commit'
+        shell: bash
+        run: |
+          currentVersion=$(jq -r '.version' package.json)
+          timestamp=$(date +%Y%m%d%H%M%S)
+          devVersion="$currentVersion-spruce.$timestamp"
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+          jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > src/version.json
+
+      - name: 'Publish to npm'
+        run: npm publish --tag spruce
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
