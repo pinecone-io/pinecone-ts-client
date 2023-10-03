@@ -1,13 +1,19 @@
-# Pinecone Node.js Client
+# Pinecone Node.js Client &middot; ![License](https://img.shields.io/github/license/pinecone-io/pinecone-ts-client?color=orange) ![npm](https://img.shields.io/npm/v/%40pinecone-database%2Fpinecone?link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40pinecone-database%2Fpinecone) ![npm](https://img.shields.io/npm/dw/%40pinecone-database/pinecone?style=flat&color=blue&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40pinecone-database%2Fpinecone) ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/pinecone-io/pinecone-ts-client/merge.yml?label=CI&link=https%3A%2F%2Fgithub.com%2Fpinecone-io%2Fpinecone-ts-client%2Factions%2Fworkflows%2Fmerge.yml)
 
-This is the official Node.js client for Pinecone, written in TypeScript.
+This is the official Node.js client for [Pinecone](https://www.pinecone.io), written in TypeScript.
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Tests](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/pr.yml/badge.svg?branch=main)](https://github.com/pinecone-io/pinecone-ts-client/actions/workflows/PR.yml)
+## Documentation
 
-## Migration Guide
+- [**Reference Documentation**](https://pinecone-io.github.io/pinecone-ts-client/classes/Pinecone.html)
+- If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v1-migration.md).
 
-If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](./v1-migration.md).
+### Example code
+
+Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve much larger embedding vectors. To see some more realistic examples of how this client can be used, explore these examples:
+
+- [Semantic search](https://github.com/pinecone-io/semantic-search-example)
+- [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
+- [Image search](https://github.com/pinecone-io/image-search-example)
 
 ## Prerequisites
 
@@ -18,14 +24,6 @@ The Pinecone TypeScript client is compatible with TypeScript 4.1 and greater.
 ```
 npm install @pinecone-database/pinecone
 ```
-
-## Example code
-
-Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve vectors of higher dimension. To see some more realistic examples of how this client can be used, explore these examples:
-
-- [Semantic search](https://github.com/pinecone-io/semantic-search-example)
-- [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
-- [Image search](https://github.com/pinecone-io/image-search-example)
 
 ## Usage
 
@@ -61,15 +59,6 @@ const pinecone = new Pinecone({
   environment: 'your_environment',
 });
 ```
-
-## Control plane operations
-
-Once you've instantiated your pinecone client, you're ready to perform the following control plane operations:
-
-1. Create, configure and delete indexes
-2. Get information about existing indexes and collections
-3. Create and delete collections
-4. Select an index to perform data operations (upsert, query, fetch, etc.)
 
 ## Indexes
 
@@ -643,4 +632,4 @@ These runtime validations are most helpful for users who are not developing with
 
 ## Legacy exports
 
-For information about the legacy `PineconeClient` export, see the [old README](./README.v0.md).
+For information about the legacy `PineconeClient` export, see the [old README](https://github.com/pinecone-io/pinecone-ts-client/blob/main/README.v0.md).
