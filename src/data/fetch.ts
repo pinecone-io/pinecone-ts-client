@@ -1,4 +1,3 @@
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { RecordIdSchema } from './types';
@@ -38,20 +37,15 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   async run(ids: FetchOptions): Promise<FetchResponse<T>> {
     this.validator(ids);
 
-    try {
-      const api = await this.apiProvider.provide();
-      const response = await api.fetch({ ids: ids, namespace: this.namespace });
+    const api = await this.apiProvider.provide();
+    const response = await api.fetch({ ids: ids, namespace: this.namespace });
 
-      // My testing shows that in reality vectors and namespace are
-      // never undefined even when there are no records returned. So these
-      // default values are needed only to satisfy the typescript compiler.
-      return {
-        records: response.vectors ? response.vectors : {},
-        namespace: response.namespace ? response.namespace : '',
-      } as FetchResponse<T>;
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    // My testing shows that in reality vectors and namespace are
+    // never undefined even when there are no records returned. So these
+    // default values are needed only to satisfy the typescript compiler.
+    return {
+      records: response.vectors ? response.vectors : {},
+      namespace: response.namespace ? response.namespace : '',
+    } as FetchResponse<T>;
   }
 }

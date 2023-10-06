@@ -1,4 +1,3 @@
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import {
   RecordIdSchema,
@@ -142,20 +141,15 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     this.validator(query);
 
-    try {
-      const api = await this.apiProvider.provide();
-      const results = await api.query({
-        queryRequest: { ...query, namespace: this.namespace },
-      });
-      const matches = results.matches ? results.matches : [];
+    const api = await this.apiProvider.provide();
+    const results = await api.query({
+      queryRequest: { ...query, namespace: this.namespace },
+    });
+    const matches = results.matches ? results.matches : [];
 
-      return {
-        matches: matches as Array<ScoredPineconeRecord<T>>,
-        namespace: this.namespace,
-      };
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    return {
+      matches: matches as Array<ScoredPineconeRecord<T>>,
+      namespace: this.namespace,
+    };
   }
 }

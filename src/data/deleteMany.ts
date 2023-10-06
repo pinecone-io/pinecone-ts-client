@@ -1,5 +1,4 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
@@ -52,12 +51,7 @@ export const deleteMany = (
       requestOptions.filter = options;
     }
 
-    try {
-      const api = await apiProvider.provide();
-      await api._delete({ deleteRequest: { ...requestOptions, namespace } });
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    const api = await apiProvider.provide();
+    await api._delete({ deleteRequest: { ...requestOptions, namespace } });
   };
 };

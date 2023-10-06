@@ -1,5 +1,8 @@
 export class BasePineconeError extends Error {
-  constructor(message?: string) {
+  /** The underlying error, if any. */
+  cause?: Error;
+
+  constructor(message?: string, cause?: Error) {
     super(message);
 
     // Set the prototype explicitly to ensure instanceof works correctly
@@ -10,7 +13,7 @@ export class BasePineconeError extends Error {
       Error.captureStackTrace(this, new.target);
     }
 
-    // set the name property
     this.name = this.constructor.name;
+    this.cause = cause;
   }
 }

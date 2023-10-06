@@ -1,9 +1,4 @@
 import { createIndex } from '../createIndex';
-import {
-  PineconeBadRequestError,
-  PineconeConflictError,
-  PineconeInternalServerError,
-} from '../../errors';
 import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
 import type {
   CreateIndexRequest,
@@ -23,7 +18,7 @@ const setupCreateIndexResponse = (
     .mockImplementation(() =>
       isCreateIndexSuccess
         ? Promise.resolve(createIndexResponse)
-        : Promise.reject({ response: createIndexResponse })
+        : Promise.reject(createIndexResponse)
     );
 
   // unfold describeIndexResponse
@@ -132,55 +127,6 @@ describe('createIndex', () => {
           indexName: 'index-name',
         });
       });
-    });
-  });
-
-  describe('http error mapping', () => {
-    test('when 500 occurs', async () => {
-      const IOA = setupCreateIndexResponse(
-        { status: 500, text: () => 'backend error message' },
-        undefined,
-        false
-      );
-
-      const toThrow = async () => {
-        const createIndexFn = createIndex(IOA);
-        await createIndexFn({ name: 'index-name', dimension: 10 });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
-    });
-
-    test('when 400 occurs, displays server message', async () => {
-      const serverError = 'there has been a server error!';
-      const IOA = setupCreateIndexResponse(
-        { status: 400, text: () => serverError },
-        undefined,
-        false
-      );
-
-      const toThrow = async () => {
-        const createIndexFn = createIndex(IOA);
-        await createIndexFn({ name: 'index-name', dimension: 10 });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeBadRequestError);
-      await expect(toThrow).rejects.toThrow(serverError);
-    });
-
-    test('when 409 occurs', async () => {
-      const IOA = setupCreateIndexResponse(
-        { status: 409, text: () => 'conflict error message' },
-        undefined,
-        false
-      );
-
-      const toThrow = async () => {
-        const createIndexFn = createIndex(IOA);
-        await createIndexFn({ name: 'index-name', dimension: 10 });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeConflictError);
     });
   });
 });

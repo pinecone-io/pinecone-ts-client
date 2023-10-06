@@ -1,6 +1,5 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import { handleCollectionRequestError } from './utils';
 import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
 
@@ -40,20 +39,15 @@ export const describeCollection = (api: IndexOperationsApi) => {
   return async (name: CollectionName): Promise<CollectionDescription> => {
     validator(name);
 
-    try {
-      const result = await api.describeCollection({ collectionName: name });
+    const result = await api.describeCollection({ collectionName: name });
 
-      // Alias vectorCount to recordCount
-      return {
-        name: result.name,
-        size: result.size,
-        status: result.status,
-        dimension: result.dimension,
-        recordCount: result.vectorCount,
-      };
-    } catch (e) {
-      const err = await handleCollectionRequestError(e, api, name);
-      throw err;
-    }
+    // Alias vectorCount to recordCount
+    return {
+      name: result.name,
+      size: result.size,
+      status: result.status,
+      dimension: result.dimension,
+      recordCount: result.vectorCount,
+    };
   };
 };

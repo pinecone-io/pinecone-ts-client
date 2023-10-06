@@ -55,9 +55,7 @@ export class PineconeNotFoundError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
     const { url, message } = failedRequest;
     if (url) {
-      super(
-        `A call to ${url} returned HTTP status 404. ${message ? message : ''}`
-      );
+      super(`A call to ${url} returned HTTP status 404.`);
     } else if (message) {
       super(message);
     } else {

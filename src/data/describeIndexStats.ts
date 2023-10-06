@@ -1,4 +1,3 @@
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
@@ -73,30 +72,25 @@ export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
       validator(options);
     }
 
-    try {
-      const api = await apiProvider.provide();
-      const results = await api.describeIndexStats({
-        describeIndexStatsRequest: { ...options },
-      });
+    const api = await apiProvider.provide();
+    const results = await api.describeIndexStats({
+      describeIndexStatsRequest: { ...options },
+    });
 
-      const mappedResult = {
-        namespaces: {},
-        dimension: results.dimension,
-        indexFullness: results.indexFullness,
-        totalRecordCount: results.totalVectorCount,
-      };
-      if (results.namespaces) {
-        for (const key in results.namespaces) {
-          mappedResult.namespaces[key] = {
-            recordCount: results.namespaces[key].vectorCount,
-          };
-        }
+    const mappedResult = {
+      namespaces: {},
+      dimension: results.dimension,
+      indexFullness: results.indexFullness,
+      totalRecordCount: results.totalVectorCount,
+    };
+    if (results.namespaces) {
+      for (const key in results.namespaces) {
+        mappedResult.namespaces[key] = {
+          recordCount: results.namespaces[key].vectorCount,
+        };
       }
-
-      return mappedResult;
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
     }
+
+    return mappedResult;
   };
 };

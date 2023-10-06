@@ -1,4 +1,3 @@
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
@@ -70,15 +69,10 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
       setMetadata: options['metadata'],
     };
 
-    try {
-      const api = await this.apiProvider.provide();
-      await api.update({
-        updateRequest: { ...requestOptions, namespace: this.namespace },
-      });
-      return;
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    const api = await this.apiProvider.provide();
+    await api.update({
+      updateRequest: { ...requestOptions, namespace: this.namespace },
+    });
+    return;
   }
 }

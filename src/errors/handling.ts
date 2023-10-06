@@ -3,22 +3,6 @@ import { mapHttpStatusError } from './http';
 import { PineconeConnectionError } from './request';
 import type { ResponseError } from '../pinecone-generated-ts-fetch';
 
-// We want to check for FetchError in a consistent way, then continue to other customizable error handling
-// for all other API errors. The FetchError type arises when someone has configured the client with an invalid
-// environment value; in this case no connection is ever made to a server so there's no response status code or
-// body contents with information about the error.
-/** @internal */
-export const handleFetchError = async (
-  e: unknown,
-  handleResponseError: (e: ResponseError) => Promise<Error>
-): Promise<Error> => {
-  if (e instanceof Error && e.name === 'FetchError') {
-    return new PineconeConnectionError();
-  } else {
-    return await handleResponseError(e as ResponseError);
-  }
-};
-
 /** @internal */
 export const handleApiError = async (
   e: unknown,
@@ -27,20 +11,28 @@ export const handleApiError = async (
     rawMessageText: string
   ) => Promise<string>
 ): Promise<Error> => {
-  return await handleFetchError(
-    e,
-    async (responseError: ResponseError): Promise<Error> => {
-      const rawMessage = await extractMessage(responseError);
-      const statusCode = responseError.response.status;
-      const message = customMessage
-        ? await customMessage(statusCode, rawMessage)
-        : rawMessage;
+  if (e instanceof Error && e.name === 'ResponseError') {
+    const responseError = e as ResponseError;
+    const rawMessage = await extractMessage(responseError);
+    const statusCode = responseError.response.status;
+    const message = customMessage
+      ? await customMessage(statusCode, rawMessage)
+      : rawMessage;
 
-      return mapHttpStatusError({
-        status: responseError.response.status,
-        url: responseError.response.url,
-        message: message,
-      });
-    }
-  );
+    return mapHttpStatusError({
+      status: responseError.response.status,
+      url: responseError.response.url,
+      message: message,
+    });
+  } else if (e instanceof PineconeConnectionError) {
+    // If we've already wrapped this error, just return it
+    return e;
+  } else {
+    // There seem to be some situations where "e instanceof Error" is erroneously
+    // false (perhaps the custom errors emitted by cross-fetch do not extend Error?)
+    // but we can still cast it to an Error type because all we're going to do
+    // with it is store off a reference to whatever it is under the "cause"
+    const err = e as Error;
+    return new PineconeConnectionError(err);
+  }
 };

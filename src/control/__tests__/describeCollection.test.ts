@@ -1,9 +1,5 @@
 import { describeCollection } from '../describeCollection';
-import {
-  PineconeArgumentError,
-  PineconeInternalServerError,
-  PineconeNotFoundError,
-} from '../../errors';
+import { PineconeArgumentError } from '../../errors';
 import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
 import type {
   DescribeCollectionRequest as DCR,
@@ -94,75 +90,6 @@ describe('describeCollection', () => {
         status: 'Ready',
         recordCount: 120,
       });
-    });
-  });
-
-  describe('uses http error mapper', () => {
-    test('it should map errors with the http error mapper (500)', async () => {
-      const IOA = setupMocks(
-        () =>
-          Promise.reject({ response: { status: 500, text: async () => '' } }),
-        () => Promise.resolve([])
-      );
-
-      // @ts-ignore
-      const expectToThrow = async () =>
-        await describeCollection(IOA)('collection-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeInternalServerError);
-    });
-  });
-
-  describe('custom error mapping', () => {
-    test('not found (404), fetches and shows available collection names', async () => {
-      const IOA = setupMocks(
-        () =>
-          Promise.reject({ response: { status: 404, text: async () => '' } }),
-        () => Promise.resolve(['foo', 'bar'])
-      );
-
-      // @ts-ignore
-      const expectToThrow = async () =>
-        await describeCollection(IOA)('collection-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
-      expect(expectToThrow).rejects.toThrowError(
-        `Collection 'collection-name' does not exist. Valid collection names: ['foo', 'bar']`
-      );
-    });
-
-    test('not found (404), fetches and shows available collection names (empty list)', async () => {
-      const IOA = setupMocks(
-        () =>
-          Promise.reject({ response: { status: 404, text: async () => '' } }),
-        () => Promise.resolve([])
-      );
-
-      // @ts-ignore
-      const expectToThrow = async () =>
-        await describeCollection(IOA)('collection-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
-      expect(expectToThrow).rejects.toThrowError(
-        `Collection 'collection-name' does not exist. Valid collection names: []`
-      );
-    });
-
-    test('not found (404), error while fetching collection list', async () => {
-      const IOA = setupMocks(
-        () =>
-          Promise.reject({ response: { status: 404, text: async () => '' } }),
-        () => Promise.reject('error')
-      );
-
-      // @ts-ignore
-      const expectToThrow = async () =>
-        await describeCollection(IOA)('collection-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
-      expect(expectToThrow).rejects.toThrowError(
-        `Collection 'collection-name' does not exist.`
-      );
     });
   });
 });

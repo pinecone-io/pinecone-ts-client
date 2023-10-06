@@ -1,4 +1,5 @@
 import type { PineconeRecord, RecordSparseValues } from '../index';
+import { Pinecone } from '../index';
 
 export const randomString = (length) => {
   const characters =
@@ -49,4 +50,25 @@ export const generateSparseValues = (dimension: number): RecordSparseValues => {
   }
   const sparseValues: RecordSparseValues = { indices, values };
   return sparseValues;
+};
+
+export const randomIndexName = (testName: string): string => {
+  return `it-${process.env.TEST_ENV}-${testName}-${randomString(8)}`
+    .toLowerCase()
+    .slice(0, 45);
+};
+
+export const sleep = async (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const waitUntilReady = async (indexName: string) => {
+  const p = new Pinecone();
+  const sleepIntervalMs = 1000;
+
+  let description = await p.describeIndex(indexName);
+  while (description.status?.state !== 'Ready') {
+    await sleep(sleepIntervalMs);
+    description = await p.describeIndex(indexName);
+  }
 };
