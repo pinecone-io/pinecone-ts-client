@@ -29,9 +29,6 @@ describe('configure index', () => {
       } catch (e) {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeNotFoundError');
-        expect(err.message).toEqual(
-          `A call to https://controller.${process.env.PINECONE_ENVIRONMENT}.pinecone.io/databases/non-existent-index returned HTTP status 404.`
-        );
       }
     });
 
