@@ -1,26 +1,88 @@
+/* 
+  The media query pattern here is mimicking what typedoc does within their default theme.
+  Currently you cannot disable the dark / light mode toggle easily, so this provides a
+  way of applying specific overrides in the context of their default styling.
+  
+  https://github.com/TypeStrong/typedoc/blob/master/static/style.css
+*/
 :root {
-  /* I copied these vars from docs.pinecone.io */
+  /* Styles copied from docs.pinecone.io */
   --font-family: 'MediumLLWeb', sans-serif;
   --font-family-mono: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
     'Ubuntu Mono', monospace;
   --md-code-font: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
     'Ubuntu Mono', monospace;
-  --md-code-background: #f6f8fa;
   --base-font-size: 1rem;
-  --color-text-default: #000;
-  --color-alpha1: #030080;
-  --color-alpha2: #1c17ff;
-  --color-alpha3: #f1f5f8;
-  --color-alpha7: #738fab;
-  --color-light1: #fff;
-  --color-light2: #cdcdcd;
-  --color-text-minimum: #637288;
+
+  /* light mode we override with Pinecone colors */
+  --md-code-background-light: #f6f8fa;
+  --tsd-member-header-light: #fbff54;
+  --p-code-border-light: lightgrey;
+  --color-alpha1-light: #030080;
+  --color-alpha2-light: #1c17ff;
+  --color-light1-light: #fff;
+  --color-body-light: #4c555a;
+
+  /* dark mode inherit from typedoc and/or override */
+  --md-code-background-dark: inherit;
+  --tsd-member-header-dark: #2b2e33;
+  --p-code-border-dark: inherit;
+  --color-alpha1-dark: inherit;
+  --color-alpha2-dark: inherit;
+  --color-light1-dark: inherit;
+  --color-body-dark: inherit;
 }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --md-code-background: var(--md-code-background-light);
+    --tsd-member-header: var(--tsd-member-header-light);
+    --p-code-border: var(--p-code-border-light);
+    --color-alpha1: var(--color-alpha1-light);
+    --color-alpha2: var(--color-alpha2-light);
+    --color-light1: var(--color-light1-light);
+    --color-body: var(--color-body-light);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-code-background: var(--md-code-background-dark);
+    --tsd-member-header: var(--tsd-member-header-dark);
+    --p-code-border: var(--p-code-border-dark);
+    --color-alpha1: var(--color-alpha1-dark);
+    --color-alpha2: var(--color-alpha2-dark);
+    --color-light1: var(--color-light1-dark);
+    --color-body: var(--color-body-dark);
+  }
+}
+
+:root[data-theme='light'] {
+  --md-code-background: var(--md-code-background-light);
+  --tsd-member-header: var(--tsd-member-header-light);
+  --p-code-border: var(--p-code-border-light);
+  --color-alpha1: var(--color-alpha1-light);
+  --color-alpha2: var(--color-alpha2-light);
+  --color-light1: var(--color-light1-light);
+  --color-body: var(--color-body-light);
+}
+
+:root[data-theme='dark'] {
+  --md-code-background: var(--md-code-background-dark);
+  --tsd-member-header: var(--tsd-member-header-dark);
+  --p-code-border: var(--p-code-border-dark);
+  --color-alpha1: var(--color-alpha1-dark);
+  --color-alpha2: var(--color-alpha2-dark);
+  --color-light1: var(--color-light1-dark);
+  --color-body: var(--color-body-dark);
+}
+
 body {
   font-family: var(--font-family);
-  color: #4c555a;
+  color: var(--color-body);
   background-color: var(--color-light1);
 }
+
 a {
   color: var(--color-alpha2);
 }
@@ -31,6 +93,7 @@ h3,
 h4 {
   color: var(--color-alpha1);
 }
+
 h1 > a,
 h2 > a,
 h3 > a,
@@ -42,11 +105,14 @@ h6 > a {
 
 section.tsd-member > h3 {
   margin-left: 0;
+  margin-right: 0;
 }
+
 .tsd-member .tsd-anchor + h3 {
-  background-color: yellow;
+  background-color: var(--tsd-member-header);
   padding-top: 0.5em;
   padding-bottom: 0.5em;
+  padding-left: 0.5em;
 }
 
 code,
@@ -54,18 +120,18 @@ pre {
   font-family: var(--md-code-font);
   background-color: var(--md-code-background);
 }
+
 pre {
   margin-top: 1em;
   margin-bottom: 1em;
 }
+
 p > code {
   padding: 2px 4px;
   border: 1px solid lightgrey;
   border-radius: 4px;
 }
+
 .tsd-signature-type {
   font-family: var(--md-code-font);
-}
-.page-menu .settings {
-  display: none;
 }
