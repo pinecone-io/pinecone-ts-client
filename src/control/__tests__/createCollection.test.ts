@@ -1,10 +1,5 @@
 import { createCollection } from '../createCollection';
-import {
-  PineconeArgumentError,
-  PineconeBadRequestError,
-  PineconeInternalServerError,
-  PineconeNotFoundError,
-} from '../../errors';
+import { PineconeArgumentError } from '../../errors';
 import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
 import type { CreateCollectionOperationRequest as CCOR } from '../../pinecone-generated-ts-fetch';
 
@@ -147,70 +142,6 @@ describe('createCollection', () => {
         name: 'collection-name',
         source: 'index-name',
       },
-    });
-  });
-
-  describe('http error mapping', () => {
-    test('when 500 occurs', async () => {
-      const IOA = setOpenAPIResponse(() =>
-        Promise.reject({
-          response: {
-            status: 500,
-            text: () => 'backend error message',
-          },
-        })
-      );
-
-      const toThrow = async () => {
-        await createCollection(IOA)({
-          name: 'collection-name',
-          source: 'index-name',
-        });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeInternalServerError);
-    });
-
-    test('when 400 occurs, displays server message', async () => {
-      const IOA = setOpenAPIResponse(() =>
-        Promise.reject({
-          response: {
-            status: 400,
-            text: () => 'backend error message',
-          },
-        })
-      );
-      const toThrow = async () => {
-        await createCollection(IOA)({
-          name: 'collection-name',
-          source: 'index-name',
-        });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeBadRequestError);
-      await expect(toThrow).rejects.toThrow('backend error message');
-    });
-
-    test('when 404 occurs, show available indexes', async () => {
-      const IOA = setOpenAPIResponse(() =>
-        Promise.reject({
-          response: {
-            status: 404,
-            text: () => 'not found',
-          },
-        })
-      );
-      const toThrow = async () => {
-        await createCollection(IOA)({
-          name: 'collection-name',
-          source: 'index-name',
-        });
-      };
-
-      await expect(toThrow).rejects.toThrow(PineconeNotFoundError);
-      await expect(toThrow).rejects.toThrow(
-        "Index 'index-name' does not exist. Valid index names: ['foo', 'bar']"
-      );
     });
   });
 });

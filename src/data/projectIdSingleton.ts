@@ -1,8 +1,7 @@
 import {
   PineconeUnexpectedResponseError,
-  PineconeConfigurationError,
-  PineconeUnknownRequestFailure,
   mapHttpStatusError,
+  PineconeConnectionError,
 } from '../errors';
 import type { PineconeConfiguration } from './types';
 import { buildUserAgent, getFetch } from '../utils';
@@ -29,13 +28,7 @@ export const ProjectIdSingleton = (function () {
       // will occur if the connection fails due to invalid environment configuration provided by the user. This is
       // different from server errors handled below because the client is unable to make contact with a Pinecone
       // server at all without a valid environment value.
-      if (e instanceof TypeError) {
-        throw new PineconeConfigurationError(
-          `A network error occured while attempting to connect to ${url}. Are you sure you passed the correct environment? Please check your configuration values and try again. Visit https://status.pinecone.io for overall service health information.`
-        );
-      } else {
-        throw new PineconeUnknownRequestFailure(url, e);
-      }
+      throw new PineconeConnectionError(e, url);
     }
 
     if (response.status >= 400) {

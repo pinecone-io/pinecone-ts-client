@@ -2,10 +2,10 @@ export {
   PineconeConfigurationError,
   PineconeUnexpectedResponseError,
   PineconeEnvironmentVarsNotSupportedError,
-  PineconeUnknownRequestFailure,
 } from './config';
 export * from './http';
-export { PineconeConnectionError } from './request';
+export { PineconeConnectionError, PineconeRequestError } from './request';
+export { BasePineconeError } from './base';
 export { PineconeArgumentError } from './validation';
 export { extractMessage } from './utils';
 export { handleApiError } from './handling';
