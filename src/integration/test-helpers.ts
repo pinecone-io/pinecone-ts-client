@@ -53,7 +53,7 @@ export const generateSparseValues = (dimension: number): RecordSparseValues => {
 };
 
 export const randomIndexName = (testName: string): string => {
-  return `it-${process.env.TEST_ENV}-${testName}-${randomString(8)}`
+  return `${process.env.TEST_ENV}-${testName}-${randomString(8)}`
     .toLowerCase()
     .slice(0, 45);
 };

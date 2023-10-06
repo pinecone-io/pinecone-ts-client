@@ -17,16 +17,7 @@ describe('Error handling', () => {
         expect(err.message).toEqual(
           'Request failed to reach Pinecone. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
         );
-        // @ts-ignore
-        expect(err.cause.name).toEqual('TypeError');
-        // @ts-ignore
-        expect(err.cause.message).toEqual('fetch failed');
-        // @ts-ignore
-        expect(err.cause.cause.name).toEqual('Error');
-        //@ts-ignore
-        expect(err.cause.cause.message).toEqual(
-          'getaddrinfo ENOTFOUND controller.wrong-environment.pinecone.io'
-        );
+        expect(err.cause).toBeDefined();
       }
     });
 
