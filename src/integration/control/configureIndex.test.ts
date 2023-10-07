@@ -15,6 +15,7 @@ describe('configure index', () => {
       dimension: 5,
       waitUntilReady: true,
       podType: 'p1.x1',
+      replicas: 2,
     });
   });
 
@@ -47,18 +48,19 @@ describe('configure index', () => {
   });
 
   describe('scaling replicas', () => {
-    test('up and down', async () => {
+    test('scaling up', async () => {
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.replicas).toEqual(1);
+      expect(description.database?.replicas).toEqual(2);
 
-      // Scale up
-      await pinecone.configureIndex(indexName, { replicas: 2 });
+      await pinecone.configureIndex(indexName, { replicas: 3 });
       const description2 = await pinecone.describeIndex(indexName);
-      expect(description2.database?.replicas).toEqual(2);
+      expect(description2.database?.replicas).toEqual(3);
+    });
 
-      await waitUntilReady(indexName);
+    test('scaling down', async () => {
+      const description = await pinecone.describeIndex(indexName);
+      expect(description.database?.replicas).toEqual(2);
 
-      // Scale down
       await pinecone.configureIndex(indexName, { replicas: 1 });
       const description3 = await pinecone.describeIndex(indexName);
       expect(description3.database?.replicas).toEqual(1);
