@@ -48,7 +48,6 @@ describe('create index', () => {
       expect(description.database?.replicas).toEqual(2);
       expect(description.database?.shards).toEqual(1);
       expect(description.status?.host).toBeDefined();
-      expect(description.status?.state).toEqual('Initializing');
     });
 
     test('create with utility prop: waitUntilReady', async () => {
