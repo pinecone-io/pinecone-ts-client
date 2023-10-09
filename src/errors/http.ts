@@ -53,13 +53,11 @@ export class PineconeAuthorizationError extends BasePineconeError {
  */
 export class PineconeNotFoundError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
-    const { url, message } = failedRequest;
+    const { url } = failedRequest;
     if (url) {
       super(`A call to ${url} returned HTTP status 404.`);
-    } else if (message) {
-      super(message);
     } else {
-      super();
+      super('The requested resource could not be found.');
     }
 
     this.name = 'PineconeNotFoundError';
@@ -77,10 +75,8 @@ export class PineconeConflictError extends BasePineconeError {
       super(
         `A call to ${url} returned HTTP status 409. ${message ? message : ''}`
       );
-    } else if (message) {
-      super(message);
     } else {
-      super();
+      super('The resource you are attempting to create already exists.');
     }
 
     this.name = 'PineconeConflictError';
@@ -122,8 +118,6 @@ export class PineconeNotImplementedError extends BasePineconeError {
       super(
         `A call to ${url} returned HTTP status 501. ${message ? message : ''}`
       );
-    } else if (message) {
-      super(message);
     } else {
       super();
     }
