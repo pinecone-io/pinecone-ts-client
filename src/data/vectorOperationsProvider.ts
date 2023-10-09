@@ -4,20 +4,24 @@ import {
   ConfigurationParameters,
   VectorOperationsApi,
 } from '../pinecone-generated-ts-fetch';
-import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
-import { ProjectIdSingleton } from './projectIdSingleton';
-import { middleware } from '../utils/middleware';
-
-const basePath = (config: PineconeConfiguration, indexName: string) =>
-  `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
+import type { Pinecone } from '../pinecone';
+import {
+  queryParamsStringify,
+  buildUserAgent,
+  getFetch,
+  middleware,
+} from '../utils';
+import { DataUrlSingleton } from './dataUrlSingleton';
 
 export class VectorOperationsProvider {
+  private controlPlaneClient: Pinecone;
   private config: PineconeConfiguration;
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
 
-  constructor(config: PineconeConfiguration, indexName: string) {
-    this.config = config;
+  constructor(client: Pinecone, indexName: string) {
+    this.controlPlaneClient = client;
+    this.config = client.getConfig();
     this.indexName = indexName;
   }
 
@@ -26,27 +30,21 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
-    if (this.config.projectId) {
-      this.vectorOperations = this.buildVectorOperationsConfig(
-        this.config,
-        this.indexName
-      );
-    } else {
-      this.config.projectId = await ProjectIdSingleton.getProjectId(
-        this.config
-      );
-      this.vectorOperations = this.buildVectorOperationsConfig(
-        this.config,
-        this.indexName
-      );
-    }
+    const dataUrl = await DataUrlSingleton.getDataUrl(
+      this.controlPlaneClient,
+      this.indexName
+    );
+    this.vectorOperations = this.buildVectorOperationsConfig(
+      this.config,
+      dataUrl
+    );
 
     return this.vectorOperations;
   }
 
-  buildVectorOperationsConfig(config, indexName) {
+  buildVectorOperationsConfig(config, dataUrl) {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: basePath(config, indexName),
+      basePath: dataUrl,
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {

@@ -23,11 +23,16 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { middleware } from './utils/middleware';
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
-import { queryParamsStringify, buildUserAgent, getFetch } from './utils';
+import {
+  buildUserAgent,
+  getFetch,
+  middleware,
+  queryParamsStringify,
+} from './utils';
 import type { PineconeConfiguration, RecordMetadata } from './data';
+import { VectorOperationsProvider } from './data/vectorOperationsProvider';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -91,6 +96,7 @@ export class Pinecone {
   private _listCollections: ReturnType<typeof listCollections>;
   /** @hidden */
   private _listIndexes: ReturnType<typeof listIndexes>;
+  git;
 
   /**
    * @example
@@ -134,7 +140,7 @@ export class Pinecone {
     this._createIndex = createIndex(api);
     this._describeCollection = describeCollection(api);
     this._deleteCollection = deleteCollection(api);
-    this._describeIndex = describeIndex(api);
+    this._describeIndex = describeIndex(api, this.config);
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
@@ -488,7 +494,8 @@ export class Pinecone {
    * @returns An {@link Index} object that can be used to perform data operations.
    */
   index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
-    return new Index<T>(indexName, this.config);
+    const apiProvider = new VectorOperationsProvider(this, indexName);
+    return new Index<T>(indexName, apiProvider);
   }
 
   /**

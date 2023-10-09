@@ -10,12 +10,7 @@ import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import type {
-  PineconeConfiguration,
-  RecordMetadata,
-  PineconeRecord,
-} from './types';
-
+import type { RecordMetadata, PineconeRecord } from './types';
 export type {
   PineconeConfiguration,
   PineconeRecord,
@@ -114,7 +109,7 @@ export type {
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @internal */
-  private config: PineconeConfiguration;
+  private apiProvider: VectorOperationsProvider;
 
   /** @internal */
   private target: {
@@ -258,16 +253,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   constructor(
     indexName: string,
-    config: PineconeConfiguration,
+    apiProvider: VectorOperationsProvider,
     namespace = ''
   ) {
-    this.config = config;
     this.target = {
       index: indexName,
       namespace: namespace,
     };
-
-    const apiProvider = new VectorOperationsProvider(config, indexName);
+    this.apiProvider = apiProvider;
 
     this._deleteAll = deleteAll(apiProvider, namespace);
     this._deleteMany = deleteMany(apiProvider, namespace);
@@ -307,7 +300,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * This `namespace()` method will inherit custom metadata types if you are chaining the call off an { @link Index } client instance that is typed with a user-specified metadata type. See { @link Pinecone.index } for more info.
    */
   namespace(namespace: string): Index<T> {
-    return new Index<T>(this.target.index, this.config, namespace);
+    return new Index<T>(this.target.index, this.apiProvider, namespace);
   }
 
   /**
