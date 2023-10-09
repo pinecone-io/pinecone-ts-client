@@ -58,18 +58,3 @@ export class PineconeEnvironmentVarsNotSupportedError extends BasePineconeError 
     this.name = 'PineconeEnvironmentVarsNotSupportedError';
   }
 }
-
-/**
- * This error reflects a problem while fetching project id. It is not expected to ever occur.
- *
- * If you encounter this error, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues) so we can investigate.
- */
-export class PineconeUnknownRequestFailure extends BasePineconeError {
-  constructor(url: string, underlyingError: Error) {
-    const message = `Something went wrong while attempting to call ${url}. Please check your configuration and try again later. Underlying error was ${JSON.stringify(
-      underlyingError.message
-    )}`;
-    super(message);
-    this.name = 'PineconeUnknownRequestFailure';
-  }
-}

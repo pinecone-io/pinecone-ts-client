@@ -1,4 +1,3 @@
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { PineconeRecordSchema } from './types';
 import { Type } from '@sinclair/typebox';
@@ -22,18 +21,13 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   async run(records: Array<PineconeRecord<T>>): Promise<void> {
     this.validator(records);
 
-    try {
-      const api = await this.apiProvider.provide();
-      await api.upsert({
-        upsertRequest: {
-          vectors: records as Array<Vector>,
-          namespace: this.namespace,
-        },
-      });
-      return;
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    const api = await this.apiProvider.provide();
+    await api.upsert({
+      upsertRequest: {
+        vectors: records as Array<Vector>,
+        namespace: this.namespace,
+      },
+    });
+    return;
   }
 }

@@ -1,7 +1,6 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import type { IndexMeta } from '../pinecone-generated-ts-fetch';
-import { handleIndexRequestError } from './utils';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 
@@ -26,13 +25,8 @@ export const describeIndex = (api: IndexOperationsApi) => {
   return async (name: IndexName): Promise<IndexDescription> => {
     validator(name);
 
-    try {
-      const result = await api.describeIndex({ indexName: name });
-      removeDeprecatedFields(result);
-      return result;
-    } catch (e) {
-      const err = await handleIndexRequestError(e, api, name);
-      throw err;
-    }
+    const result = await api.describeIndex({ indexName: name });
+    removeDeprecatedFields(result);
+    return result;
   };
 };

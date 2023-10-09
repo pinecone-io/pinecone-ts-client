@@ -1,5 +1,4 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import { handleApiError } from '../errors';
 import { buildConfigValidator } from '../validator';
 import { RecordIdSchema } from './types';
 import type { RecordId } from './types';
@@ -20,13 +19,8 @@ export const deleteOne = (
   return async (options: RecordId): Promise<void> => {
     validator(options);
 
-    try {
-      const api = await apiProvider.provide();
-      await api._delete({ deleteRequest: { ids: [options], namespace } });
-      return;
-    } catch (e) {
-      const err = await handleApiError(e);
-      throw err;
-    }
+    const api = await apiProvider.provide();
+    await api._delete({ deleteRequest: { ids: [options], namespace } });
+    return;
   };
 };

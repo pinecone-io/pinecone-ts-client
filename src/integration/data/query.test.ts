@@ -5,7 +5,7 @@ describe('query', () => {
   const INDEX_NAME = 'ts-integration';
   let pinecone: Pinecone, index: Index, ns: Index, namespace: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     pinecone = new Pinecone();
 
     await pinecone.createIndex({

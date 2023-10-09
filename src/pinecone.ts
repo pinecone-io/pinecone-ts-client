@@ -23,6 +23,7 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
+import { middleware } from './utils/middleware';
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
 import { queryParamsStringify, buildUserAgent, getFetch } from './utils';
@@ -124,6 +125,7 @@ export class Pinecone {
         'User-Agent': buildUserAgent(false),
       },
       fetchApi: getFetch(options),
+      middleware,
     };
     const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
 
@@ -495,15 +497,5 @@ export class Pinecone {
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(indexName: string) {
     return this.index<T>(indexName);
-  }
-
-  /** @hidden */
-  __curlStarter() {
-    // Every endpoint is going to have a different path and expect different data (in the case of POST requests),
-    // but this is a good starting point for users to see how to use curl to interact with the REST API.
-    console.log('Example curl command to list indexes: ');
-    console.log(
-      `curl "https://controller.${this.config.environment}.pinecone.io/databases" -H "Api-Key: ${this.config.apiKey}" -H "Accept: application/json"`
-    );
   }
 }

@@ -2,7 +2,6 @@ import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { PineconeArgumentError } from '../errors';
 import { buildValidator } from '../validator';
 import type { IndexName, PodType } from './types';
-import { handleIndexRequestError } from './utils';
 
 import { Type } from '@sinclair/typebox';
 import { ReplicasSchema, PodTypeSchema, IndexNameSchema } from './types';
@@ -49,12 +48,7 @@ export const configureIndex = (api: IndexOperationsApi) => {
       );
     }
 
-    try {
-      await api.configureIndex({ indexName: name, patchRequest: options });
-      return;
-    } catch (e) {
-      const err = await handleIndexRequestError(e, api, name);
-      throw err;
-    }
+    await api.configureIndex({ indexName: name, patchRequest: options });
+    return;
   };
 };

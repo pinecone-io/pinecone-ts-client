@@ -1,9 +1,5 @@
 import { describeIndex } from '../describeIndex';
-import {
-  PineconeArgumentError,
-  PineconeInternalServerError,
-  PineconeNotFoundError,
-} from '../../errors';
+import { PineconeArgumentError } from '../../errors';
 
 describe('describeIndex', () => {
   let responseData;
@@ -13,17 +9,6 @@ describe('describeIndex', () => {
       describeIndex: jest
         .fn()
         .mockImplementation(() => Promise.resolve(responseData)),
-    };
-  };
-
-  const setupErrorResponse = (response) => {
-    return {
-      describeIndex: jest
-        .fn()
-        .mockImplementation(() => Promise.reject({ response })),
-      listIndexes: jest
-        .fn()
-        .mockImplementation(() => Promise.resolve(['foo', 'bar'])),
     };
   };
 
@@ -98,52 +83,6 @@ describe('describeIndex', () => {
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
         'The argument to describeIndex had validation errors: argument must not be blank.'
-      );
-    });
-  });
-
-  describe('uses http error mapper', () => {
-    test('it should map errors with the http error mapper (500)', async () => {
-      const IOA = setupErrorResponse({ status: 500, text: async () => '' });
-
-      // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeInternalServerError);
-    });
-  });
-
-  describe('custom error mapping', () => {
-    test('not found (404), fetches and shows available index names', async () => {
-      const IOA = setupErrorResponse({ status: 404, text: async () => '' });
-
-      // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
-      expect(expectToThrow).rejects.toThrowError(
-        `Index 'index-name' does not exist. Valid index names: ['foo', 'bar']`
-      );
-    });
-
-    test('not found (404), error while fetching index list', async () => {
-      const IOA = {
-        describeIndex: jest
-          .fn()
-          .mockImplementation(() =>
-            Promise.reject({ response: { status: 404, text: async () => '' } })
-          ),
-        listIndexes: jest
-          .fn()
-          .mockImplementation(() => Promise.reject('error')),
-      };
-
-      // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)('index-name');
-
-      expect(expectToThrow).rejects.toThrowError(PineconeNotFoundError);
-      expect(expectToThrow).rejects.toThrowError(
-        `Index 'index-name' does not exist.`
       );
     });
   });

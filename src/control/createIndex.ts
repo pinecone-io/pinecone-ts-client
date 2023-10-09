@@ -2,7 +2,6 @@ import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
 import { handleApiError } from '../errors';
-import { handleIndexRequestError } from './utils';
 import { Type } from '@sinclair/typebox';
 import {
   IndexNameSchema,
@@ -97,13 +96,16 @@ export const createIndex = (api: IndexOperationsApi) => {
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, options.name);
       }
-      return;
     } catch (e) {
-      const err = await handleIndexRequestError(e, api, options.name);
-      if (options.suppressConflicts && err.name === 'PineconeConflictError') {
-        return;
+      if (
+        !(
+          options.suppressConflicts &&
+          e instanceof Error &&
+          e.name === 'PineconeConflictError'
+        )
+      ) {
+        throw e;
       }
-      throw err;
     }
   };
 };
