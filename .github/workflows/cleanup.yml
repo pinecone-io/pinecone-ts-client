@@ -1,0 +1,18 @@
+name: 'Cleanup test resources'
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  cleanup:
+    name: Delete all indexes and collections in sdk-node-testing project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Cleanup
+        run: npm run test:integration:cleanup
