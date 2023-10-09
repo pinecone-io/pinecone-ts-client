@@ -6,7 +6,7 @@
   "includeVersion": true,
   "excludeInternal": true,
   "out": "docs",
-  "customCss": "./docs-styles.css",
+  "customCss": "./assets/docs-styles.css",
   "navigationLinks": {
     "Github Repo": "https://github.com/pinecone-io/pinecone-ts-client",
     "Pinecone Docs": "https://docs.pinecone.io"
