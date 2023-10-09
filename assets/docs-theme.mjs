@@ -5,7 +5,7 @@ import { join } from 'path';
  * This script is passed into typedoc at build time, and is used to hook into their rendering
  * pipeline allowing us to modify the output.
  *
- * example: typedoc --plugin ./assets/docs-theme.js
+ * example: typedoc --plugin ./assets/docs-theme.mjs
  * TypeDoc documentation: https://github.com/TypeStrong/typedoc/blob/master/internal-docs/custom-themes.md#hooks-v0228
  */
 
