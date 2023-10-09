@@ -21,6 +21,7 @@
     "repl": "npm run build && node utils/replInit.ts",
     "test:integration:node": "jest src/integration/ -c jest.config.integration-node.js",
     "test:integration:edge": "jest src/integration/ -c jest.config.integration-edge.js",
+    "test:integration:cleanup": "npm run build && node utils/cleanupResources.ts",
     "test:unit": "jest src/"
   },
   "engines": {
