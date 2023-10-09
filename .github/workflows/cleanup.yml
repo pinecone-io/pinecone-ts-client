@@ -1,4 +1,4 @@
-name: "Cleanup test resources"
+name: 'Cleanup test resources'
 
 on:
   workflow_dispatch: {}
