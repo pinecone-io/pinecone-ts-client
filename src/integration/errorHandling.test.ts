@@ -23,7 +23,7 @@ describe('Error handling', () => {
 
     test('calling data plane', async () => {
       const p = new Pinecone({
-        apiKey: 'api-key-2',
+        apiKey: process.env.PINECONE_API_KEY || '',
         environment: 'wrong-environment2',
       });
 
