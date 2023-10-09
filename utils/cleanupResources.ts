@@ -16,11 +16,13 @@ var pinecone = require('../dist');
 
   const collections = await p.listCollections();
   for (const collection of collections) {
+    console.log(`Deleting collection ${collection.name}`);
     await p.deleteCollection(collection.name);
   }
 
   const indexes = await p.listIndexes();
   for (const index of indexes) {
+    console.log(`Deleting index ${index.name}`);
     await p.deleteIndex(index.name);
   }
 })();
