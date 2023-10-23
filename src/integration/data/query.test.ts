@@ -94,4 +94,22 @@ describe('query', () => {
     expect(results.matches).toBeDefined();
     expect(results.matches?.length).toEqual(topK);
   });
+
+  test('query with includeValues: true', async () => {
+    const recordsToUpsert = generateRecords(5, 3);
+    expect(recordsToUpsert).toHaveLength(3);
+
+    const queryVec = Array.from({ length: 5 }, () => Math.random());
+
+    await ns.upsert(recordsToUpsert);
+    const results = await ns.query({
+      vector: queryVec,
+      topK: 2,
+      includeValues: true,
+      includeMetadata: true,
+    });
+
+    expect(results.matches).toBeDefined();
+    expect(results.matches?.length).toEqual(2);
+  });
 });
