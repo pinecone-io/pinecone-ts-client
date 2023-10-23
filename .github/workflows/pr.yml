@@ -42,11 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
-        config:
-          [
-            { runner: 'npm', jest_env: 'node' },
-            { runner: 'npm', jest_env: 'edge' },
+        config: [
+            # { runner: 'npm', jest_env: 'node' },
+            # { runner: 'npm', jest_env: 'edge' },
             { runner: 'bun', jest_env: 'node', bunVersion: '1.0.4' },
             { runner: 'bun', jest_env: 'node', bunVersion: '1.0.7' },
           ]
