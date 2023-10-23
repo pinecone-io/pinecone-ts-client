@@ -20,7 +20,7 @@ const chalk = (str, color) => {
  *
  * Api-Key headers will be redacted.
  */
-if (process && process.env && process.env.PINECONE_DEBUG) {
+if (typeof process !== 'undefined' && process && process.env && process.env.PINECONE_DEBUG) {
   const debugLogMiddleware = {
     pre: async (context) => {
       console.debug(
@@ -54,7 +54,7 @@ if (process && process.env && process.env.PINECONE_DEBUG) {
  * curl commands for each request. These commands will include the API key and
  * other sensitive information, so be careful when using this option.
  */
-if (process && process.env && process.env.PINECONE_DEBUG_CURL) {
+if (typeof process !== 'undefined' && process && process.env && process.env.PINECONE_DEBUG_CURL) {
   const debugCurlMiddleware = {
     post: async (context) => {
       let headers = `-H "Api-Key: ${(context.init.headers || {})['Api-Key']}"`;

@@ -15,7 +15,7 @@ export const buildUserAgent = (isLegacy: boolean) => {
   }
 
   // If available, capture information about the Node.js version
-  if (process && process.version) {
+  if (typeof process !== 'undefined' && process && process.version) {
     userAgentParts.push(`node ${process.version}`);
   }
 
