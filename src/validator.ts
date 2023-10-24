@@ -231,6 +231,7 @@ export const buildValidator = (errorMessagePrefix: string, schema: any) => {
   }
 
   if (
+    typeof process !== 'undefined' &&
     process &&
     process.env &&
     process.env.PINECONE_DISABLE_RUNTIME_VALIDATIONS

@@ -152,7 +152,7 @@ export class Pinecone {
    * @returns A {@link PineconeConfiguration} object populated with values found in environment variables.
    */
   _readEnvironmentConfig(): PineconeConfiguration {
-    if (!process || !process.env) {
+    if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
       );
