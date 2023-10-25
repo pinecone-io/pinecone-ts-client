@@ -31,8 +31,14 @@ export type PineconeConfiguration = {
    */
   apiKey: string;
 
-  /** The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed. */
+  /**
+   * The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed. */
   projectId?: string;
+
+  /**
+   * The host URL for the Index.
+   */
+  hostUrl?: string;
 
   /**
    * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.

@@ -59,7 +59,7 @@ export const ProjectIdSingleton = (function () {
         'The HTTP call succeeded but response did not contain expected project_name.'
       );
     }
-
+    console.log('_fetchProjectId JSON: ', json);
     return json.project_name;
   };
 

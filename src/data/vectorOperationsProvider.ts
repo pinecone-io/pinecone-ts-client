@@ -5,11 +5,8 @@ import {
   VectorOperationsApi,
 } from '../pinecone-generated-ts-fetch';
 import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
-import { ProjectIdSingleton } from './projectIdSingleton';
+import { HostUrlSingleton } from './hostUrlSingleton';
 import { middleware } from '../utils/middleware';
-
-const basePath = (config: PineconeConfiguration, indexName: string) =>
-  `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
 
 export class VectorOperationsProvider {
   private config: PineconeConfiguration;
@@ -26,27 +23,23 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
-    if (this.config.projectId) {
-      this.vectorOperations = this.buildVectorOperationsConfig(
-        this.config,
-        this.indexName
-      );
+    if (this.config.hostUrl) {
+      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     } else {
-      this.config.projectId = await ProjectIdSingleton.getProjectId(
-        this.config
-      );
-      this.vectorOperations = this.buildVectorOperationsConfig(
+      this.config.hostUrl = await HostUrlSingleton.getHostUrl(
         this.config,
         this.indexName
       );
+
+      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     }
 
     return this.vectorOperations;
   }
 
-  buildVectorOperationsConfig(config, indexName) {
+  buildVectorOperationsConfig(config) {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: basePath(config, indexName),
+      basePath: config.hostUrl,
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {

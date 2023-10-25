@@ -19,6 +19,8 @@ import {
   IndexName,
   CollectionName,
 } from './control';
+import type { IndexDescription } from './control';
+import { HostUrlSingleton } from './data/hostUrlSingleton';
 import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
@@ -104,7 +106,7 @@ export class Pinecone {
    * ```
    *
    * @constructor
-   * @param options - The configuration options for the pinecone.
+   * @param options - The configuration options for the Pinecone client.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -115,8 +117,9 @@ export class Pinecone {
 
     this.config = options;
 
-    const { apiKey, environment } = options;
-    const controllerPath = `https://controller.${environment}.pinecone.io`;
+    const { apiKey } = options;
+    // const controllerPath = `https://controller.${environment}.pinecone.io`;
+    const controllerPath = `https://api.pinecone.io`;
     const apiConfig: IndexOperationsApiConfigurationParameters = {
       basePath: controllerPath,
       apiKey,
@@ -134,10 +137,21 @@ export class Pinecone {
     this._createIndex = createIndex(api);
     this._describeCollection = describeCollection(api);
     this._deleteCollection = deleteCollection(api);
-    this._describeIndex = describeIndex(api);
+    this._describeIndex = describeIndex(api, this._handleDescribeIndex);
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
+  }
+
+  /**
+   * @internal
+   * Used as a callback by {@link Pinecone.describeIndex} to cache any index host URLs that are returned.
+   * This bypasses the need to fetch the host on subsequent dataplane calls.
+   */
+  _handleDescribeIndex(response: IndexDescription, indexName: IndexName) {
+    if (response.status?.host) {
+      HostUrlSingleton._set(this.config, indexName, response.status.host);
+    }
   }
 
   /**
