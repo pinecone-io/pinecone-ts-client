@@ -50,7 +50,7 @@ jobs:
             { runner: 'bun', jest_env: 'node', bunVersion: '1.0.4' },
             { runner: 'bun', jest_env: 'node', bunVersion: '1.0.5' },
             { runner: 'bun', jest_env: 'node', bunVersion: '1.0.6' },
-            { runner: 'bun', jest_env: 'node', bunVersion: '1.0.7' }
+            { runner: 'bun', jest_env: 'node', bunVersion: '1.0.7' },
           ]
     steps:
       - name: Checkout
