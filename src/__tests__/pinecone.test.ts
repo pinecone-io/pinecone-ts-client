@@ -1,8 +1,10 @@
 import { Pinecone } from '../pinecone';
+import { HostUrlSingleton } from '../data/hostUrlSingleton';
 import type { PineconeConfiguration } from '../data';
 import * as utils from '../utils';
 
 const fakeFetch = jest.fn();
+const fakeHost = '123-456.pinecone.io';
 
 jest.mock('../utils', () => {
   const realUtils = jest.requireActual('../utils');
@@ -14,6 +16,23 @@ jest.mock('../utils', () => {
 });
 jest.mock('../data/fetch');
 jest.mock('../data/upsert');
+jest.mock('../data/hostUrlSingleton');
+
+jest.mock('../control', () => {
+  const realControl = jest.requireActual('../control');
+  return {
+    ...realControl,
+    describeIndex: (_, callback) =>
+      jest.fn((indexName) =>
+        callback(
+          {
+            status: { ready: true, state: 'Ready', host: fakeHost },
+          },
+          indexName
+        )
+      ),
+  };
+});
 
 describe('Pinecone', () => {
   describe('constructor', () => {
@@ -131,6 +150,19 @@ describe('Pinecone', () => {
           metadata: { color: 'pink', description: 'pink shirt' },
         },
       ]);
+    });
+  });
+
+  describe('control plane operations', () => {
+    test('describeIndex callback triggers calling HostUrlSingleton._set', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      p.describeIndex('test-index');
+
+      expect(HostUrlSingleton._set).toHaveBeenCalledWith(
+        { apiKey: 'foo' },
+        'test-index',
+        fakeHost
+      );
     });
   });
 });

@@ -145,11 +145,11 @@ export class Pinecone {
    * Used as a callback by {@link Pinecone.describeIndex} to cache any index host URLs that are returned.
    * This bypasses the need to fetch the host on subsequent dataplane calls.
    */
-  _handleDescribeIndex(response: IndexDescription, indexName: IndexName) {
+  _handleDescribeIndex = (response: IndexDescription, indexName: IndexName) => {
     if (response.status?.host) {
       HostUrlSingleton._set(this.config, indexName, response.status.host);
     }
-  }
+  };
 
   /**
    * @internal
