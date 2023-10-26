@@ -4,7 +4,6 @@ describe('Client initialization', () => {
   test('can accept a config object', () => {
     const client = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY || '',
-      environment: process.env.PINECONE_ENVIRONMENT || '',
     });
     expect(client).toBeDefined();
   });

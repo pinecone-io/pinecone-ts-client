@@ -18,4 +18,3 @@ jobs:
         run: npm run test:integration:cleanup
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}

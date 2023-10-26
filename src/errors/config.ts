@@ -46,7 +46,6 @@ export class PineconeUnexpectedResponseError extends BasePineconeError {
  *
  * const pinecone = new Pinecone({
  *    apiKey: 'YOUR_API_KEY',
- *    environment: 'YOUR_ENVIRONMENT'
  * })
  * ```
  *

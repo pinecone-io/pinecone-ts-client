@@ -3,9 +3,8 @@ import type { FetchAPI } from '../pinecone-generated-ts-fetch';
 
 export const PineconeConfigurationSchema = Type.Object(
   {
-    environment: Type.String({ minLength: 1 }),
     apiKey: Type.String({ minLength: 1 }),
-    projectId: Type.Optional(Type.String({ minLength: 1 })),
+    hostUrl: Type.Optional(Type.String({ minLength: 1 })),
 
     // fetchApi is a complex type that I don't really want to recreate in the
     // form of a json schema (seems difficult and error prone). So we will
@@ -22,18 +21,9 @@ export const PineconeConfigurationSchema = Type.Object(
  */
 export type PineconeConfiguration = {
   /**
-   * The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
-   */
-  environment: string;
-
-  /**
    * The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
    */
   apiKey: string;
-
-  /**
-   * The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed. */
-  projectId?: string;
 
   /**
    * The host URL for the Index.

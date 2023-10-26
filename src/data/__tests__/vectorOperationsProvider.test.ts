@@ -20,7 +20,6 @@ describe('VectorOperationsProvider', () => {
   test('makes no API calls on instantiation', async () => {
     const config = {
       apiKey: 'test-api-key',
-      environment: 'gcp-free',
     };
     new VectorOperationsProvider(config, 'index-name');
     expect(HostUrlSingleton.getHostUrl).not.toHaveBeenCalled();
@@ -29,7 +28,6 @@ describe('VectorOperationsProvider', () => {
   test('api calls occur only the first time the provide method is called', async () => {
     const config = {
       apiKey: 'test-api-key',
-      environment: 'gcp-free',
     };
     const provider = new VectorOperationsProvider(config, 'index-name');
     expect(HostUrlSingleton.getHostUrl).not.toHaveBeenCalled();

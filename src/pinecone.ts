@@ -67,7 +67,6 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * const pinecone = new Pinecone({
  *   apiKey: 'your_api_key',
- *   environment: 'your_environment',
  * });
  *
  * ```
@@ -101,7 +100,6 @@ export class Pinecone {
    *
    * const pinecone = new Pinecone({
    *  apiKey: 'my-api-key',
-   *  environment: 'us-west1-gcp'
    * });
    * ```
    *
@@ -118,7 +116,6 @@ export class Pinecone {
     this.config = options;
 
     const { apiKey } = options;
-    // const controllerPath = `https://controller.${environment}.pinecone.io`;
     const controllerPath = `https://api.pinecone.io`;
     const apiConfig: IndexOperationsApiConfigurationParameters = {
       basePath: controllerPath,
@@ -174,7 +171,6 @@ export class Pinecone {
 
     const environmentConfig = {};
     const requiredEnvVarMap = {
-      environment: 'PINECONE_ENVIRONMENT',
       apiKey: 'PINECONE_API_KEY',
     };
     const missingVars: Array<string> = [];
