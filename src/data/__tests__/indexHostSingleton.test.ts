@@ -1,4 +1,4 @@
-import { HostUrlSingleton } from '../hostUrlSingleton';
+import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
 
@@ -11,9 +11,9 @@ jest.mock('../../control', () => {
   };
 });
 
-describe('HostUrlSingleton', () => {
+describe('IndexHostSingleton', () => {
   afterEach(() => {
-    HostUrlSingleton._reset();
+    IndexHostSingleton._reset();
     mockDescribeIndex.mockReset();
   });
 
@@ -36,7 +36,7 @@ describe('HostUrlSingleton', () => {
       status: { ready: true, state: 'Ready', host: testHost },
     });
 
-    const hostUrl = await HostUrlSingleton.getHostUrl(
+    const hostUrl = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
       testIndex
     );
@@ -78,7 +78,7 @@ describe('HostUrlSingleton', () => {
         status: { ready: true, state: 'Ready', host: testHost2 },
       });
 
-    const hostUrl = await HostUrlSingleton.getHostUrl(
+    const hostUrl = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
       testIndex
     );
@@ -86,7 +86,7 @@ describe('HostUrlSingleton', () => {
     expect(hostUrl).toEqual(`https://${testHost}`);
 
     // call again for same indexName, no additional calls
-    const hostUrl2 = await HostUrlSingleton.getHostUrl(
+    const hostUrl2 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
       testIndex
     );
@@ -95,11 +95,46 @@ describe('HostUrlSingleton', () => {
 
     // new indexName means we call describeIndex again
     // to resolve the new host
-    const hostUrl3 = await HostUrlSingleton.getHostUrl(
+    const hostUrl3 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
       testIndex2
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(2);
     expect(hostUrl3).toEqual(`https://${testHost2}`);
+  });
+
+  test('_set, _delete, and _reset work as expected', async () => {
+    const pineconeConfig = { apiKey: 'test-key' };
+
+    mockDescribeIndex.mockResolvedValue({
+      database: {
+        name: 'index-1',
+        dimensions: 10,
+        metric: 'cosine',
+        pods: 1,
+        replicas: 1,
+        shards: 1,
+        podType: 'p1.x1',
+      },
+      status: { ready: true, state: 'Ready', host: 'test-host' },
+    });
+
+    // _set test
+    IndexHostSingleton._set(pineconeConfig, 'index-1', 'test-host');
+    const host1 = await IndexHostSingleton.getHostUrl(
+      pineconeConfig,
+      'index-1'
+    );
+    expect(mockDescribeIndex).toHaveBeenCalledTimes(0);
+    expect(host1).toEqual('https://test-host');
+
+    // _delete test
+    IndexHostSingleton._delete(pineconeConfig, 'index-1');
+    const host2 = await IndexHostSingleton.getHostUrl(
+      pineconeConfig,
+      'index-1'
+    );
+    expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
+    expect(host2).toBe('https://test-host');
   });
 });

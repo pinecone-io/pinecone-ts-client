@@ -4,7 +4,7 @@ import type { FetchAPI } from '../pinecone-generated-ts-fetch';
 export const PineconeConfigurationSchema = Type.Object(
   {
     apiKey: Type.String({ minLength: 1 }),
-    hostUrl: Type.Optional(Type.String({ minLength: 1 })),
+    controllerHostUrl: Type.Optional(Type.String({ minLength: 1 })),
 
     // fetchApi is a complex type that I don't really want to recreate in the
     // form of a json schema (seems difficult and error prone). So we will
@@ -26,14 +26,22 @@ export type PineconeConfiguration = {
   apiKey: string;
 
   /**
-   * The host URL for the Index.
+   * Optional configuration field for specifying the controller host. If not specified, the client will use the default controller host: https://api.pinecone.io.
    */
-  hostUrl?: string;
+  controllerHostUrl?: string;
 
   /**
    * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
    */
   fetchApi?: FetchAPI;
+};
+
+/** Configuration for a single Pinecone Index */
+export type IndexConfiguration = PineconeConfiguration & {
+  /**
+   * The host URL for the Index.
+   */
+  indexHostUrl?: string;
 };
 
 export const RecordIdSchema = Type.String({ minLength: 1 });

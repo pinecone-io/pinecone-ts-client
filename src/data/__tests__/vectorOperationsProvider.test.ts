@@ -1,20 +1,20 @@
 import { VectorOperationsProvider } from '../vectorOperationsProvider';
-import { HostUrlSingleton } from '../hostUrlSingleton';
+import { IndexHostSingleton } from '../indexHostSingleton';
 
 describe('VectorOperationsProvider', () => {
   let real;
 
   beforeAll(() => {
-    real = HostUrlSingleton.getHostUrl;
+    real = IndexHostSingleton.getHostUrl;
   });
   afterAll(() => {
-    HostUrlSingleton.getHostUrl = real;
+    IndexHostSingleton.getHostUrl = real;
   });
   beforeEach(() => {
-    HostUrlSingleton.getHostUrl = jest.fn();
+    IndexHostSingleton.getHostUrl = jest.fn();
   });
   afterEach(() => {
-    HostUrlSingleton._reset();
+    IndexHostSingleton._reset();
   });
 
   test('makes no API calls on instantiation', async () => {
@@ -22,7 +22,7 @@ describe('VectorOperationsProvider', () => {
       apiKey: 'test-api-key',
     };
     new VectorOperationsProvider(config, 'index-name');
-    expect(HostUrlSingleton.getHostUrl).not.toHaveBeenCalled();
+    expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
   });
 
   test('api calls occur only the first time the provide method is called', async () => {
@@ -30,13 +30,13 @@ describe('VectorOperationsProvider', () => {
       apiKey: 'test-api-key',
     };
     const provider = new VectorOperationsProvider(config, 'index-name');
-    expect(HostUrlSingleton.getHostUrl).not.toHaveBeenCalled();
+    expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
 
     const api = await provider.provide();
-    expect(HostUrlSingleton.getHostUrl).toHaveBeenCalled();
+    expect(IndexHostSingleton.getHostUrl).toHaveBeenCalled();
 
     const api2 = await provider.provide();
-    expect(HostUrlSingleton.getHostUrl).toHaveBeenCalledTimes(1);
+    expect(IndexHostSingleton.getHostUrl).toHaveBeenCalledTimes(1);
     expect(api).toEqual(api2);
   });
 });

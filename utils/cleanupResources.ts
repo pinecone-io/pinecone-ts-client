@@ -1,7 +1,7 @@
 var dotenv = require('dotenv');
 dotenv.config();
 
-for (const envVar of ['PINECONE_ENVIRONMENT', 'PINECONE_API_KEY']) {
+for (const envVar of ['PINECONE_API_KEY']) {
   if (!process.env[envVar]) {
     console.warn(`WARNING Missing environment variable ${envVar} in .env file`);
   } else {

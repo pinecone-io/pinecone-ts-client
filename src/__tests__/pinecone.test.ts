@@ -1,5 +1,5 @@
 import { Pinecone } from '../pinecone';
-import { HostUrlSingleton } from '../data/hostUrlSingleton';
+import { IndexHostSingleton } from '../data/indexHostSingleton';
 import type { PineconeConfiguration } from '../data';
 import * as utils from '../utils';
 
@@ -16,21 +16,18 @@ jest.mock('../utils', () => {
 });
 jest.mock('../data/fetch');
 jest.mock('../data/upsert');
-jest.mock('../data/hostUrlSingleton');
-
+jest.mock('../data/indexHostSingleton');
 jest.mock('../control', () => {
   const realControl = jest.requireActual('../control');
   return {
     ...realControl,
-    describeIndex: (_, callback) =>
-      jest.fn((indexName) =>
-        callback(
-          {
-            status: { ready: true, state: 'Ready', host: fakeHost },
-          },
-          indexName
-        )
-      ),
+    describeIndex: () =>
+      jest
+        .fn()
+        .mockImplementation(() =>
+          Promise.resolve({ status: { host: fakeHost } })
+        ),
+    deleteIndex: () => jest.fn().mockImplementation(() => Promise.resolve()),
   };
 });
 
@@ -71,12 +68,12 @@ describe('Pinecone', () => {
     });
 
     describe('optional properties', () => {
-      test('should not throw when optional properties provided: fetchAPI, hostUrl', () => {
+      test('should not throw when optional properties provided: fetchAPI, controllerHostUrl', () => {
         expect(() => {
           new Pinecone({
             apiKey: 'test-key',
             fetchApi: utils.getFetch({} as PineconeConfiguration),
-            hostUrl: 'https://foo-bar.io',
+            controllerHostUrl: 'https://foo-bar.io',
           } as PineconeConfiguration);
         }).not.toThrow();
       });
@@ -154,14 +151,24 @@ describe('Pinecone', () => {
   });
 
   describe('control plane operations', () => {
-    test('describeIndex callback triggers calling HostUrlSingleton._set', async () => {
+    test('describeIndex triggers calling IndexHostSingleton._set', async () => {
       const p = new Pinecone({ apiKey: 'foo' });
-      p.describeIndex('test-index');
+      await p.describeIndex('test-index');
 
-      expect(HostUrlSingleton._set).toHaveBeenCalledWith(
+      expect(IndexHostSingleton._set).toHaveBeenCalledWith(
         { apiKey: 'foo' },
         'test-index',
         fakeHost
+      );
+    });
+
+    test('deleteIndex trigger calling IndexHostSingleton._delete', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      await p.deleteIndex('test-index');
+
+      expect(IndexHostSingleton._delete).toHaveBeenCalledWith(
+        { apiKey: 'foo' },
+        'test-index'
       );
     });
   });

@@ -9,13 +9,7 @@ export type DescribeIndexOptions = IndexName;
 /** The description of your index returned from { @link Pinecone.describeIndex } */
 export type IndexDescription = IndexMeta;
 
-export const describeIndex = (
-  api: IndexOperationsApi,
-  callback?: (
-    descriptionResponse: IndexDescription,
-    indexName: IndexName
-  ) => void
-) => {
+export const describeIndex = (api: IndexOperationsApi) => {
   const validator = buildConfigValidator(IndexNameSchema, 'describeIndex');
 
   const removeDeprecatedFields = (result: any) => {
@@ -33,10 +27,6 @@ export const describeIndex = (
 
     const result = await api.describeIndex({ indexName: name });
     removeDeprecatedFields(result);
-
-    if (callback) {
-      callback(result, name);
-    }
 
     return result;
   };

@@ -1,44 +1,21 @@
-import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch';
-import {
-  IndexOperationsApi,
-  Configuration as ApiConfiguration,
-} from '../pinecone-generated-ts-fetch';
+import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { PineconeConfiguration } from './types';
-import { middleware } from '../utils/middleware';
-import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
-import { describeIndex } from '../control';
+import { describeIndex, indexOperationsBuilder } from '../control';
 import { PineconeUnableToResolveHostError } from '../errors';
 
 // We use describeIndex to retrieve the data plane url (host) for a given API key
 // and index. We only ever want to call describeIndex a maximum of once per API key
-// and index so we cache them in a singleton for reuse.
-export const HostUrlSingleton = (function () {
+// and index, so we cache them in a singleton for reuse.
+export const IndexHostSingleton = (function () {
   const hostUrls = {}; // map of apiKey-indexName to hostUrl
   let indexOperationsApi: InstanceType<typeof IndexOperationsApi> | null = null;
-
-  const _buildIndexOperationsApi = (config: PineconeConfiguration) => {
-    const { apiKey } = config;
-    const controllerPath = `https://api.pinecone.io`;
-    const apiConfig: IndexOperationsApiConfigurationParameters = {
-      basePath: controllerPath,
-      apiKey,
-      queryParamsStringify,
-      headers: {
-        'User-Agent': buildUserAgent(false),
-      },
-      fetchApi: getFetch(config),
-      middleware,
-    };
-
-    return new IndexOperationsApi(new ApiConfiguration(apiConfig));
-  };
 
   const _describeIndex = async (
     config: PineconeConfiguration,
     indexName: string
   ): Promise<string> => {
     if (!indexOperationsApi) {
-      indexOperationsApi = _buildIndexOperationsApi(config);
+      indexOperationsApi = indexOperationsBuilder(config);
     }
 
     const describeResponse = await describeIndex(indexOperationsApi)(indexName);
@@ -84,6 +61,11 @@ export const HostUrlSingleton = (function () {
     _set: (config, indexName, hostUrl) => {
       const cacheKey = key(config, indexName);
       hostUrls[cacheKey] = hostUrl;
+    },
+
+    _delete: (config, indexName) => {
+      const cacheKey = key(config, indexName);
+      delete hostUrls[cacheKey];
     },
   };
 })();
