@@ -2,6 +2,7 @@ export {
   PineconeConfigurationError,
   PineconeUnexpectedResponseError,
   PineconeEnvironmentVarsNotSupportedError,
+  PineconeUnableToResolveHostError,
 } from './config';
 export * from './http';
 export { PineconeConnectionError, PineconeRequestError } from './request';

@@ -1,8 +1,3 @@
-import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from './pinecone-generated-ts-fetch';
-import {
-  IndexOperationsApi,
-  Configuration as ApiConfiguration,
-} from './pinecone-generated-ts-fetch';
 import {
   describeIndex,
   listIndexes,
@@ -17,16 +12,16 @@ import {
   CreateCollectionOptions,
   CreateIndexOptions,
   IndexName,
+  indexOperationsBuilder,
   CollectionName,
 } from './control';
+import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { middleware } from './utils/middleware';
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
-import { queryParamsStringify, buildUserAgent, getFetch } from './utils';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 
 /**
@@ -65,7 +60,6 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * const pinecone = new Pinecone({
  *   apiKey: 'your_api_key',
- *   environment: 'your_environment',
  * });
  *
  * ```
@@ -99,12 +93,11 @@ export class Pinecone {
    *
    * const pinecone = new Pinecone({
    *  apiKey: 'my-api-key',
-   *  environment: 'us-west1-gcp'
    * });
    * ```
    *
    * @constructor
-   * @param options - The configuration options for the pinecone.
+   * @param options - The configuration options for the Pinecone client.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -115,19 +108,7 @@ export class Pinecone {
 
     this.config = options;
 
-    const { apiKey, environment } = options;
-    const controllerPath = `https://controller.${environment}.pinecone.io`;
-    const apiConfig: IndexOperationsApiConfigurationParameters = {
-      basePath: controllerPath,
-      apiKey,
-      queryParamsStringify,
-      headers: {
-        'User-Agent': buildUserAgent(false),
-      },
-      fetchApi: getFetch(options),
-      middleware,
-    };
-    const api = new IndexOperationsApi(new ApiConfiguration(apiConfig));
+    const api = indexOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -145,9 +126,8 @@ export class Pinecone {
    * This method is used by {@link Pinecone.constructor} to read configuration from environment variables.
    *
    * It looks for the following environment variables:
-   * - `PINECONE_ENVIRONMENT`
    * - `PINECONE_API_KEY`
-   * - `PINECONE_PROJECT_ID`
+   * - `PINECONE_CONTROLLER_HOST`
    *
    * @returns A {@link PineconeConfiguration} object populated with values found in environment variables.
    */
@@ -160,7 +140,6 @@ export class Pinecone {
 
     const environmentConfig = {};
     const requiredEnvVarMap = {
-      environment: 'PINECONE_ENVIRONMENT',
       apiKey: 'PINECONE_API_KEY',
     };
     const missingVars: Array<string> = [];
@@ -179,7 +158,9 @@ export class Pinecone {
       );
     }
 
-    const optionalEnvVarMap = { projectId: 'PINECONE_PROJECT_ID' };
+    const optionalEnvVarMap = {
+      controllerHostUrl: 'PINECONE_CONTROLLER_HOST',
+    };
     for (const [key, envVar] of Object.entries(optionalEnvVarMap)) {
       const value = process.env[envVar];
       if (value !== undefined) {
@@ -219,7 +200,17 @@ export class Pinecone {
    * @returns A promise that resolves to {@link IndexMeta}
    */
   describeIndex(indexName: IndexName) {
-    return this._describeIndex(indexName);
+    const describeIndexPromise = this._describeIndex(indexName);
+
+    // For any describeIndex calls we want to update the IndexHostSingleton cache.
+    // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
+    describeIndexPromise.then((indexMeta) => {
+      if (indexMeta.status?.host) {
+        IndexHostSingleton._set(this.config, indexName, indexMeta.status.host);
+      }
+    });
+
+    return describeIndexPromise;
   }
 
   /**
@@ -320,7 +311,14 @@ export class Pinecone {
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided
    */
   deleteIndex(indexName: IndexName) {
-    return this._deleteIndex(indexName);
+    const deleteIndexPromise = this._deleteIndex(indexName);
+
+    // When an index is deleted, we need to evict the host from the IndexHostSingleton cache.
+    deleteIndexPromise.then(() => {
+      IndexHostSingleton._delete(this.config, indexName);
+    });
+
+    return deleteIndexPromise;
   }
 
   /**

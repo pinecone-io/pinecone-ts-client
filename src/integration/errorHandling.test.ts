@@ -6,7 +6,6 @@ describe('Error handling', () => {
     test('calling control plane', async () => {
       const p = new Pinecone({
         apiKey: process.env.PINECONE_API_KEY || '',
-        environment: 'wrong-environment',
       });
 
       try {
@@ -24,7 +23,6 @@ describe('Error handling', () => {
     test('calling data plane', async () => {
       const p = new Pinecone({
         apiKey: process.env.PINECONE_API_KEY || '',
-        environment: 'wrong-environment2',
       });
 
       try {
@@ -43,7 +41,6 @@ describe('Error handling', () => {
       beforeEach(() => {
         p = new Pinecone({
           apiKey: process.env.PINECONE_API_KEY || '',
-          environment: process.env.PINECONE_ENVIRONMENT || '',
           fetchApi: async () => {
             throw new Error('network failure');
           },

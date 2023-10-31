@@ -27,6 +27,7 @@ export const describeIndex = (api: IndexOperationsApi) => {
 
     const result = await api.describeIndex({ indexName: name });
     removeDeprecatedFields(result);
+
     return result;
   };
 };
