@@ -21,7 +21,6 @@ describe('Index', () => {
   beforeEach(() => {
     config = {
       apiKey: 'test-api-key',
-      environment: 'test-environment',
     };
   });
 

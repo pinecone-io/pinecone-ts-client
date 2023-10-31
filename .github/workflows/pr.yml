@@ -10,8 +10,6 @@ on:
     secrets:
       PINECONE_API_KEY:
         required: true
-      PINECONE_ENVIRONMENT:
-        required: true
 
 jobs:
   basic-hygiene:
@@ -53,7 +51,6 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
         run: npm run test:integration:${{ matrix.jest_env }}
 
   example-app-semantic-search:
@@ -86,7 +83,6 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_INDEX: 'semantic-search'
         shell: bash
         run: |
@@ -147,7 +143,6 @@ jobs:
         shell: bash
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
         run: |
           set -x
           cd ..

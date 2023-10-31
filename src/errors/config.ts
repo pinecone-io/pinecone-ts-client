@@ -46,7 +46,6 @@ export class PineconeUnexpectedResponseError extends BasePineconeError {
  *
  * const pinecone = new Pinecone({
  *    apiKey: 'YOUR_API_KEY',
- *    environment: 'YOUR_ENVIRONMENT'
  * })
  * ```
  *
@@ -56,5 +55,18 @@ export class PineconeEnvironmentVarsNotSupportedError extends BasePineconeError 
   constructor(message: string) {
     super(message);
     this.name = 'PineconeEnvironmentVarsNotSupportedError';
+  }
+}
+
+/**
+ * This error occurs when the client is unable to resolve the database host for a given
+ * index. This is unexpected to occur unless there is a problem with the Pinecone service.
+ *
+ * If you encounter this error, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues) so we can investigate.
+ */
+export class PineconeUnableToResolveHostError extends BasePineconeError {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PineconeUnableToResolveHostError';
   }
 }
