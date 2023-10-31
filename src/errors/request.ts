@@ -6,14 +6,14 @@ import type { ErrorContext } from '../pinecone-generated-ts-fetch';
  * request and never receives any response.
  *
  * This could be due to:
- * - Incorrect configuration of the client. The client builds its connection url using values supplied in configuration, so if these values are incorrect the request will not reach a Pinecone server.
+ * - Incorrect configuration of the client. If the apiKey value is incorrect the request will not reach a Pinecone server.
  * - An outage of Pinecone's APIs. See [Pinecone's status page](https://status.pinecone.io/) to find out whether there is an ongoing incident.
  *
  * The `cause` property will contain a reference to the underlying error. Inspect its value to find out more about the root cause of the error.
  * ```
  * import { Pinecone } from '@pinecone-database/pinecone';
  *
- * const p = new Pinecone({ apiKey: 'api-key-value', environment: 'wrong-environment' })
+ * const p = new Pinecone({ apiKey: 'invalid-api-key-value' })
  *
  * try {
  *  await p.listIndexes();

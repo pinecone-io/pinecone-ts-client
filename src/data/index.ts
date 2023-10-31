@@ -225,7 +225,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
-   * @returns A promise that resolve with the {@link IndexStatsDescription} value when the operation is completed.
+   * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats() {
     return this._describeIndexStats();

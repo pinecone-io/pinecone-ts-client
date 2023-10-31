@@ -1,22 +1,19 @@
-import type { PineconeConfiguration } from './types';
+import type { IndexConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
   VectorOperationsApi,
 } from '../pinecone-generated-ts-fetch';
 import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
-import { ProjectIdSingleton } from './projectIdSingleton';
+import { IndexHostSingleton } from './indexHostSingleton';
 import { middleware } from '../utils/middleware';
 
-const basePath = (config: PineconeConfiguration, indexName: string) =>
-  `https://${indexName}-${config.projectId}.svc.${config.environment}.pinecone.io`;
-
 export class VectorOperationsProvider {
-  private config: PineconeConfiguration;
+  private config: IndexConfiguration;
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
 
-  constructor(config: PineconeConfiguration, indexName: string) {
+  constructor(config: IndexConfiguration, indexName: string) {
     this.config = config;
     this.indexName = indexName;
   }
@@ -26,27 +23,23 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
-    if (this.config.projectId) {
-      this.vectorOperations = this.buildVectorOperationsConfig(
-        this.config,
-        this.indexName
-      );
+    if (this.config.indexHostUrl) {
+      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     } else {
-      this.config.projectId = await ProjectIdSingleton.getProjectId(
-        this.config
-      );
-      this.vectorOperations = this.buildVectorOperationsConfig(
+      this.config.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
       );
+
+      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     }
 
     return this.vectorOperations;
   }
 
-  buildVectorOperationsConfig(config, indexName) {
+  buildVectorOperationsConfig(config) {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: basePath(config, indexName),
+      basePath: config.hostUrl,
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {
