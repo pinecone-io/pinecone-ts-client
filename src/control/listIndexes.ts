@@ -1,5 +1,4 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
-import type { IndexListMeta } from '../pinecone-generated-ts-fetch';
 
 /**
  * A description of indexes in your project.
@@ -27,7 +26,7 @@ export type IndexListDescription = {
 export type IndexList = Array<IndexListDescription>;
 
 export const listIndexes = (api: IndexOperationsApi) => {
-  return async (): Promise<Array<IndexListMeta>> => {
+  return async (): Promise<IndexList> => {
     const response = await api.listIndexes();
 
     return response.databases || [];
