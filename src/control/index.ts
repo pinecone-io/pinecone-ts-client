@@ -10,7 +10,6 @@ export type { DeleteIndexOptions } from './deleteIndex';
 export { describeIndex } from './describeIndex';
 export type { DescribeIndexOptions, IndexDescription } from './describeIndex';
 export { listIndexes } from './listIndexes';
-export type { IndexList, PartialIndexDescription } from './listIndexes';
 
 // Collection Operations
 export type { CollectionName } from './types';

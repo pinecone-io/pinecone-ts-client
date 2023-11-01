@@ -16,6 +16,9 @@ describe('configure index', () => {
       waitUntilReady: true,
       podType: 'p1.x1',
       replicas: 2,
+      cloud: 'gcp',
+      region: 'us-east1',
+      capacityMode: 'pod',
     });
   });
 

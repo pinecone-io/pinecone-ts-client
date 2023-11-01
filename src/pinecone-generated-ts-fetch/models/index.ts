@@ -14,6 +14,7 @@ export * from './IndexMeta';
 export * from './IndexMetaDatabase';
 export * from './IndexMetaDatabaseIndexConfig';
 export * from './IndexMetaStatus';
+export * from './ListIndexes200Response';
 export * from './NamespaceSummary';
 export * from './PatchRequest';
 export * from './ProtobufAny';

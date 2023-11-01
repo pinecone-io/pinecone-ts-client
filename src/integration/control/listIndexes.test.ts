@@ -12,6 +12,9 @@ describe('list indexes', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      cloud: 'gcp',
+      region: 'us-east1',
+      capacityMode: 'pod',
     });
   });
 
@@ -22,8 +25,8 @@ describe('list indexes', () => {
   test('list indexes', async () => {
     const indexes = await pinecone.listIndexes();
     expect(indexes).toBeDefined();
-    expect(indexes.length).toBeGreaterThan(0);
+    expect(indexes?.length).toBeGreaterThan(0);
 
-    expect(indexes.map((i) => i.name)).toContain(indexName);
+    expect(indexes?.map((i) => i.database.name)).toContain(indexName);
   });
 });

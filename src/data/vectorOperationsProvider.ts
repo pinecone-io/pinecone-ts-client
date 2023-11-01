@@ -37,9 +37,9 @@ export class VectorOperationsProvider {
     return this.vectorOperations;
   }
 
-  buildVectorOperationsConfig(config) {
+  buildVectorOperationsConfig(config: IndexConfiguration) {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: config.hostUrl,
+      basePath: config.indexHostUrl,
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {

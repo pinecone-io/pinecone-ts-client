@@ -5,9 +5,12 @@ import { handleApiError } from '../errors';
 import { Type } from '@sinclair/typebox';
 import {
   IndexNameSchema,
+  CapacityModeSchema,
+  CloudSchema,
   DimensionSchema,
   MetricSchema,
   PodsSchema,
+  RegionSchema,
   ReplicasSchema,
   PodTypeSchema,
   MetadataConfigSchema,
@@ -26,6 +29,21 @@ export type CreateIndexOptions = {
   dimension: number;
 
   /**
+   * The region where you would like your index to be created
+   */
+  region: string;
+
+  /**
+   * The public cloud where you would like your index hosted
+   */
+  cloud: 'gcp' | 'aws' | 'azure';
+
+  /**
+   * The capacity mode for the index.
+   */
+  capacityMode: string;
+
+  /**
    * The metric specifies how similarity is calculated in the index when querying. The default metric is `'cosine'`. Supported metrics include `'cosine'`, `'dotproduct'`, and `'euclidean'`. To learn more about these options, see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
    *
    * @defaultValue `"cosine"`
@@ -38,6 +56,9 @@ export type CreateIndexOptions = {
 
   /** The number of replicas in the index. The default number of replicas is 1. */
   replicas?: number;
+
+  /** The number of shards to be used in the index. */
+  shards?: number;
 
   /**
    * The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes).
@@ -70,6 +91,9 @@ const CreateIndexOptionsSchema = Type.Object(
   {
     name: IndexNameSchema,
     dimension: DimensionSchema,
+    region: RegionSchema,
+    cloud: CloudSchema,
+    capacityMode: CapacityModeSchema,
     metric: Type.Optional(MetricSchema),
     pods: Type.Optional(PodsSchema),
     replicas: Type.Optional(ReplicasSchema),

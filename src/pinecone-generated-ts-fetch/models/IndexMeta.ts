@@ -37,13 +37,13 @@ export interface IndexMeta {
      * @type {IndexMetaDatabase}
      * @memberof IndexMeta
      */
-    database?: IndexMetaDatabase;
+    database: IndexMetaDatabase;
     /**
      * 
      * @type {IndexMetaStatus}
      * @memberof IndexMeta
      */
-    status?: IndexMetaStatus;
+    status: IndexMetaStatus;
 }
 
 /**
@@ -51,6 +51,8 @@ export interface IndexMeta {
  */
 export function instanceOfIndexMeta(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "database" in value;
+    isInstance = isInstance && "status" in value;
 
     return isInstance;
 }
@@ -65,8 +67,8 @@ export function IndexMetaFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'database': !exists(json, 'database') ? undefined : IndexMetaDatabaseFromJSON(json['database']),
-        'status': !exists(json, 'status') ? undefined : IndexMetaStatusFromJSON(json['status']),
+        'database': IndexMetaDatabaseFromJSON(json['database']),
+        'status': IndexMetaStatusFromJSON(json['status']),
     };
 }
 

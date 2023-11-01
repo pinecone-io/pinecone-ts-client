@@ -11,6 +11,9 @@ describe('deleteMany', () => {
     await pinecone.createIndex({
       name: INDEX_NAME,
       dimension: 5,
+      cloud: 'gcp',
+      region: 'us-east1',
+      capacityMode: 'pod',
       waitUntilReady: true,
       suppressConflicts: true,
     });
