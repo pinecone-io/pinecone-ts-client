@@ -180,7 +180,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createIndex accepts multiple types. Either 1) 2) 3)'
+        "The argument to createIndex had type errors: property 'cloud' is a constant which must be equal to one of: 'gcp', 'aws', 'azure'."
       );
     });
 
@@ -196,7 +196,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The argument to createIndex accepts multiple types. Either 1) 2) 3)'
+        "The argument to createIndex had type errors: property 'cloud' is a constant which must be equal to one of: 'gcp', 'aws', 'azure'."
       );
     });
 

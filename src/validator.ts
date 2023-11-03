@@ -97,12 +97,46 @@ const typeErrors = (
   messageParts: Array<string>
 ) => {
   const typeErrorsList: Array<string> = [];
+  const anyOfConstPropErrors: Array<ErrorObject> = errors.filter(
+    (error) =>
+      error.schemaPath.indexOf('anyOf') > -1 &&
+      error.keyword === 'const' &&
+      error.instancePath.length > 0
+  );
   let errorCount = 0;
 
+  // handle possible literal types first
+  const propErrorGroups: { [key: string]: Array<ErrorObject> } = {};
+  if (anyOfConstPropErrors.length > 0) {
+    for (const error of anyOfConstPropErrors) {
+      const constValue = error.instancePath.slice(1);
+
+      if (propErrorGroups[constValue]) {
+        propErrorGroups[constValue].push(error);
+      } else {
+        propErrorGroups[constValue] = [error];
+      }
+    }
+    const properties = Object.keys(propErrorGroups);
+
+    properties.forEach((property) => {
+      const constValueErrors = propErrorGroups[property];
+
+      typeErrorsList.push(
+        `property '${property}' is a constant which must be equal to one of: ` +
+          Object.values(constValueErrors)
+            .map((group) => `'${group.params.allowedValue}'`)
+            .join(', ')
+      );
+    });
+  }
+
+  // typebox also emits type errors for each value of a literal so we want to exclude these
+  const anyOfKeys = Object.keys(propErrorGroups);
   for (let i = 0; i < errors.length; i++) {
     const e = errors[i];
 
-    if (e.keyword === 'type') {
+    if (e.keyword === 'type' && !anyOfKeys.includes(e.instancePath.slice(1))) {
       errorCount += 1;
       if (errorCount <= maxErrors) {
         formatIndividualError(e, typeErrorsList);
@@ -181,13 +215,19 @@ const validationErrors = (
 };
 
 export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
-  const anyOfErrors = errors.filter(
+  const messageParts: Array<string> = [];
+
+  const anyOfArgumentErrors = errors.filter(
     (error) =>
-      error.schemaPath.indexOf('anyOf') > -1 && error.keyword !== 'anyOf'
+      error.schemaPath.indexOf('anyOf') > -1 &&
+      error.keyword !== 'anyOf' &&
+      error.keyword !== 'const' &&
+      error.keyword !== 'type'
   );
-  if (anyOfErrors.length > 0) {
+
+  if (anyOfArgumentErrors.length > 0) {
     const groups = {};
-    for (const error of anyOfErrors) {
+    for (const error of anyOfArgumentErrors) {
       const schemaPathMatch = schemaPathGroupNumberRegex.exec(error.schemaPath);
       const groupNumber = schemaPathMatch ? schemaPathMatch[1] : 'unknown';
       // Remove the anyOf portion of the schema path to avoid infinite loop
@@ -213,8 +253,6 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
         .join(' ')
     );
   }
-
-  const messageParts: Array<string> = [];
 
   neverErrors(subject, errors, messageParts);
   missingPropertiesErrors(subject, errors, messageParts);
