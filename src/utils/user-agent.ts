@@ -10,6 +10,11 @@ export const buildUserAgent = (isLegacy: boolean) => {
     'lang=typescript',
   ];
 
+  // If the @spruce release is in use, add that to the user agent
+  if (packageInfo.release) {
+    userAgentParts.push(`release=${packageInfo.release}`);
+  }
+
   if (isEdge()) {
     userAgentParts.push('Edge Runtime');
   }
