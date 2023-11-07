@@ -39,6 +39,24 @@ export interface CreateRequest {
      */
     dimension: number;
     /**
+     * The region where you would like your index to be created
+     * @type {string}
+     * @memberof CreateRequest
+     */
+    region: string;
+    /**
+     * The public cloud where you would like your index hosted
+     * @type {string}
+     * @memberof CreateRequest
+     */
+    cloud: CreateRequestCloudEnum;
+    /**
+     * The capacity mode for the index.
+     * @type {string}
+     * @memberof CreateRequest
+     */
+    capacityMode: string;
+    /**
      * The type of vector index. Pinecone supports 'approximated'.
      * @type {string}
      * @memberof CreateRequest
@@ -99,6 +117,18 @@ export interface CreateRequest {
     sourceCollection?: string;
 }
 
+
+/**
+ * @export
+ */
+export const CreateRequestCloudEnum = {
+    Gcp: 'gcp',
+    Aws: 'aws',
+    Azure: 'azure'
+} as const;
+export type CreateRequestCloudEnum = typeof CreateRequestCloudEnum[keyof typeof CreateRequestCloudEnum];
+
+
 /**
  * Check if a given object implements the CreateRequest interface.
  */
@@ -106,6 +136,9 @@ export function instanceOfCreateRequest(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "dimension" in value;
+    isInstance = isInstance && "region" in value;
+    isInstance = isInstance && "cloud" in value;
+    isInstance = isInstance && "capacityMode" in value;
 
     return isInstance;
 }
@@ -122,6 +155,9 @@ export function CreateRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'name': json['name'],
         'dimension': json['dimension'],
+        'region': json['region'],
+        'cloud': json['cloud'],
+        'capacityMode': json['capacity_mode'],
         'indexType': !exists(json, 'index_type') ? undefined : json['index_type'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'pods': !exists(json, 'pods') ? undefined : json['pods'],
@@ -145,6 +181,9 @@ export function CreateRequestToJSON(value?: CreateRequest | null): any {
         
         'name': value.name,
         'dimension': value.dimension,
+        'region': value.region,
+        'cloud': value.cloud,
+        'capacity_mode': value.capacityMode,
         'index_type': value.indexType,
         'metric': value.metric,
         'pods': value.pods,

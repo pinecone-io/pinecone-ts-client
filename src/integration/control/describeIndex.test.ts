@@ -13,6 +13,9 @@ describe('describe index', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      cloud: 'gcp',
+      region: 'us-east1',
+      capacityMode: 'pod',
     });
   });
 

@@ -1,13 +1,16 @@
 import { createCollection } from '../createCollection';
 import { PineconeArgumentError } from '../../errors';
 import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
-import type { CreateCollectionOperationRequest as CCOR } from '../../pinecone-generated-ts-fetch';
+import type {
+  CreateCollectionOperationRequest as CCOR,
+  ListIndexes200Response,
+} from '../../pinecone-generated-ts-fetch';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const fakeCreateCollection: (req: CCOR) => Promise<string> = jest
     .fn()
     .mockImplementation(fakeCreateCollectionResponse);
-  const fakeListIndexes: () => Promise<string[]> = jest
+  const fakeListIndexes: () => Promise<ListIndexes200Response> = jest
     .fn()
     .mockImplementation(() => Promise.resolve(['foo', 'bar']));
   const IOA = {

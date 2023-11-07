@@ -19,6 +19,7 @@ import type {
   CreateCollectionRequest,
   CreateRequest,
   IndexMeta,
+  ListIndexes200Response,
   PatchRequest,
 } from '../models/index';
 import {
@@ -30,6 +31,8 @@ import {
     CreateRequestToJSON,
     IndexMetaFromJSON,
     IndexMetaToJSON,
+    ListIndexes200ResponseFromJSON,
+    ListIndexes200ResponseToJSON,
     PatchRequestFromJSON,
     PatchRequestToJSON,
 } from '../models/index';
@@ -71,7 +74,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
     /**
      * This operation specifies the pod type and number of replicas for an index.
      */
-    async configureIndexRaw(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async configureIndexRaw(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexMeta>> {
         if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
             throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
         }
@@ -94,17 +97,13 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             body: PatchRequestToJSON(requestParameters.patchRequest),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexMetaFromJSON(jsonValue));
     }
 
     /**
      * This operation specifies the pod type and number of replicas for an index.
      */
-    async configureIndex(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async configureIndex(requestParameters: ConfigureIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexMeta> {
         const response = await this.configureIndexRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -149,7 +148,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
     /**
      * This operation creates a Pinecone index. You can use it to specify the measure of similarity, the dimension of vectors to be stored in the index, the numbers of shards and replicas to use, and more.
      */
-    async createIndexRaw(requestParameters: CreateIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async createIndexRaw(requestParameters: CreateIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexMeta>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -168,17 +167,13 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             body: CreateRequestToJSON(requestParameters.createRequest),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexMetaFromJSON(jsonValue));
     }
 
     /**
      * This operation creates a Pinecone index. You can use it to specify the measure of similarity, the dimension of vectors to be stored in the index, the numbers of shards and replicas to use, and more.
      */
-    async createIndex(requestParameters: CreateIndexRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async createIndex(requestParameters: CreateIndexRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexMeta> {
         const response = await this.createIndexRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -360,7 +355,7 @@ export class IndexOperationsApi extends runtime.BaseAPI {
     /**
      * This operation returns a list of your Pinecone indexes.
      */
-    async listIndexesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+    async listIndexesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListIndexes200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -376,13 +371,13 @@ export class IndexOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListIndexes200ResponseFromJSON(jsonValue));
     }
 
     /**
      * This operation returns a list of your Pinecone indexes.
      */
-    async listIndexes(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+    async listIndexes(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListIndexes200Response> {
         const response = await this.listIndexesRaw(initOverrides);
         return await response.value();
     }
