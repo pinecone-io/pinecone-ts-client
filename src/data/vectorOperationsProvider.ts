@@ -12,10 +12,16 @@ export class VectorOperationsProvider {
   private config: IndexConfiguration;
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
+  private hostUrlOverride?: string;
 
-  constructor(config: IndexConfiguration, indexName: string) {
+  constructor(
+    config: IndexConfiguration,
+    indexName: string,
+    hostUrlOverride?: string
+  ) {
     this.config = config;
     this.indexName = indexName;
+    this.hostUrlOverride = hostUrlOverride;
   }
 
   async provide() {
@@ -24,6 +30,9 @@ export class VectorOperationsProvider {
     }
 
     if (this.config.hostUrl) {
+      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
+    } else if (this.hostUrlOverride) {
+      this.config.hostUrl = this.hostUrlOverride;
       this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     } else {
       this.config.hostUrl = await IndexHostSingleton.getHostUrl(

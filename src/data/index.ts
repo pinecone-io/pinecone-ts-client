@@ -123,6 +123,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
     /** The namespace where operations will be performed. If not set, the default namespace of `''` will be used. */
     namespace: string;
+
+    /** An optional host address override for data operations. */
+    hostUrlOverride?: string;
   };
 
   /**
@@ -255,19 +258,26 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
    * @param config - The configuration from the Pinecone client.
    * @param namespace - The namespace for the index.
+   * @param hostUrlOverride - An optional override for the host address used for data operations.
    */
   constructor(
     indexName: string,
     config: PineconeConfiguration,
-    namespace = ''
+    namespace = '',
+    hostUrlOverride?: string
   ) {
     this.config = config;
     this.target = {
       index: indexName,
       namespace: namespace,
+      hostUrlOverride: hostUrlOverride,
     };
 
-    const apiProvider = new VectorOperationsProvider(config, indexName);
+    const apiProvider = new VectorOperationsProvider(
+      config,
+      indexName,
+      hostUrlOverride
+    );
 
     this._deleteAll = deleteAll(apiProvider, namespace);
     this._deleteMany = deleteMany(apiProvider, namespace);
