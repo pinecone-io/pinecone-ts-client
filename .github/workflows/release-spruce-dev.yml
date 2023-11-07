@@ -34,10 +34,11 @@ jobs:
           currentVersion=$(jq -r '.version' package.json)
           timestamp=$(date +%Y%m%d%H%M%S)
           devVersion="$currentVersion-spruceDev.$timestamp"
+          release="@spruceDev"
           jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
           jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
           jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > src/version.json
+          jq --null-input --arg version "$devVersion" --arg release "$release" '{"name": "@pinecone-database/pinecone", "version": $version, "release": $release}' > src/version.json
 
       - name: 'Publish to npm'
         run: npm publish --tag spruceDev
