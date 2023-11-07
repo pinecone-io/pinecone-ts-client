@@ -26,6 +26,13 @@ export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;
 export const MetricSchema = nonemptyString;
 export const DimensionSchema = positiveInteger;
+export const RegionSchema = nonemptyString;
+export const CloudSchema = Type.Union([
+  Type.Literal('gcp'),
+  Type.Literal('aws'),
+  Type.Literal('azure'),
+]);
+export const CapacityModeSchema = nonemptyString;
 export const MetadataConfigSchema = Type.Object(
   {
     indexed: Type.Array(nonemptyString),

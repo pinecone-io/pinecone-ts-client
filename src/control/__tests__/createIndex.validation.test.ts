@@ -29,7 +29,13 @@ describe('createIndex argument validations', () => {
 
     test('should throw if index name is not a string', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: 12, dimension: 10 });
+        await createIndex(IOA)({
+          name: 12,
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -39,7 +45,13 @@ describe('createIndex argument validations', () => {
 
     test('should throw if index name is empty string', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: '', dimension: 10 });
+        await createIndex(IOA)({
+          name: '',
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -49,7 +61,12 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not provided', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: 'index-name' });
+        await createIndex(IOA)({
+          name: 'index-name',
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -59,7 +76,13 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not a number', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: 'index-name', dimension: '10' });
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: '10',
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -69,7 +92,13 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is float', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: 'index-name', dimension: 10.5 });
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10.5,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -79,11 +108,126 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not a positive integer', async () => {
       const toThrow = async () =>
-        await createIndex(IOA)({ name: 'index-name', dimension: -10 });
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: -10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had validation errors: property 'dimension' must be >= 1."
+      );
+    });
+
+    test('should throw if region is not provided', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        'The argument to createIndex must have required property: region.'
+      );
+    });
+
+    test('should throw if region is not a string', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 111,
+          cloud: 'gcp',
+          capacityMode: 'pod',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        "The argument to createIndex had type errors: property 'region' must be string."
+      );
+    });
+
+    test('should throw if cloud is not provided', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 'us-east3',
+          capacityMode: 'pod',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        'The argument to createIndex must have required property: cloud.'
+      );
+    });
+
+    test('should throw if cloud is not a string', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 123,
+          capacityMode: 'pod',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        'The argument to createIndex accepts multiple types. Either 1) 2) 3)'
+      );
+    });
+
+    test('should throw if cloud is not one of the expected strings', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 'pcg',
+          capacityMode: 'pod',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        'The argument to createIndex accepts multiple types. Either 1) 2) 3)'
+      );
+    });
+
+    test('should throw if capacityMode is not provided', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        'The argument to createIndex must have required property: capacityMode.'
+      );
+    });
+
+    test('should throw if capacityMode is not a string', () => {
+      const toThrow = async () =>
+        await createIndex(IOA)({
+          name: 'index-name',
+          dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 321,
+        });
+
+      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      expect(toThrow).rejects.toThrowError(
+        "The argument to createIndex had type errors: property 'capacityMode' must be string."
       );
     });
   });
@@ -94,6 +238,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           metric: 10,
         });
 
@@ -108,6 +255,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           metric: '',
         });
 
@@ -122,6 +272,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           replicas: '10',
         });
 
@@ -136,6 +289,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           replicas: -10,
         });
 
@@ -150,6 +306,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           podType: 10,
         });
 
@@ -164,6 +323,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           podType: '',
         });
 
@@ -178,6 +340,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           pods: '10',
         });
 
@@ -192,6 +357,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           pods: -10,
         });
 
@@ -206,6 +374,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           metadataConfig: '{}',
         });
 
@@ -220,6 +391,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           sourceCollection: 10,
         });
 
@@ -234,6 +408,9 @@ describe('createIndex argument validations', () => {
         await createIndex(IOA)({
           name: 'index-name',
           dimension: 10,
+          region: 'us-east3',
+          cloud: 'gcp',
+          capacityMode: 'pod',
           sourceCollection: '',
         });
 

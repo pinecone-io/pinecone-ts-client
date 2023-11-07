@@ -24,25 +24,25 @@ export interface IndexMetaStatus {
      * @type {boolean}
      * @memberof IndexMetaStatus
      */
-    ready?: boolean;
+    ready: boolean;
     /**
      * 
      * @type {string}
      * @memberof IndexMetaStatus
      */
-    state?: IndexMetaStatusStateEnum;
+    state: IndexMetaStatusStateEnum;
     /**
      * 
      * @type {string}
      * @memberof IndexMetaStatus
      */
-    host?: string;
+    host: string;
     /**
      * 
      * @type {number}
      * @memberof IndexMetaStatus
      */
-    port?: number;
+    port: number;
 }
 
 
@@ -67,6 +67,10 @@ export type IndexMetaStatusStateEnum = typeof IndexMetaStatusStateEnum[keyof typ
  */
 export function instanceOfIndexMetaStatus(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "ready" in value;
+    isInstance = isInstance && "state" in value;
+    isInstance = isInstance && "host" in value;
+    isInstance = isInstance && "port" in value;
 
     return isInstance;
 }
@@ -81,10 +85,10 @@ export function IndexMetaStatusFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
-        'ready': !exists(json, 'ready') ? undefined : json['ready'],
-        'state': !exists(json, 'state') ? undefined : json['state'],
-        'host': !exists(json, 'host') ? undefined : json['host'],
-        'port': !exists(json, 'port') ? undefined : json['port'],
+        'ready': json['ready'],
+        'state': json['state'],
+        'host': json['host'],
+        'port': json['port'],
     };
 }
 

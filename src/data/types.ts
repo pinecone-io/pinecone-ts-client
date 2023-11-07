@@ -41,7 +41,7 @@ export type IndexConfiguration = PineconeConfiguration & {
   /**
    * The host URL for the Index.
    */
-  indexHostUrl?: string;
+  hostUrl?: string;
 };
 
 export const RecordIdSchema = Type.String({ minLength: 1 });
