@@ -123,7 +123,7 @@ const typeErrors = (
       const constValueErrors = propErrorGroups[property];
 
       typeErrorsList.push(
-        `property '${property}' is a constant which must be equal to one of: ` +
+        `property '${property}' must be equal to one of: ` +
           Object.values(constValueErrors)
             .map((group) => `'${group.params.allowedValue}'`)
             .join(', ')
