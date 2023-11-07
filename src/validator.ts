@@ -215,8 +215,6 @@ const validationErrors = (
 };
 
 export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
-  const messageParts: Array<string> = [];
-
   const anyOfArgumentErrors = errors.filter(
     (error) =>
       error.schemaPath.indexOf('anyOf') > -1 &&
@@ -253,6 +251,8 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
         .join(' ')
     );
   }
+
+  const messageParts: Array<string> = [];
 
   neverErrors(subject, errors, messageParts);
   missingPropertiesErrors(subject, errors, messageParts);
