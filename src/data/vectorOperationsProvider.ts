@@ -23,10 +23,10 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
-    if (this.config.indexHostUrl) {
+    if (this.config.hostUrl) {
       this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     } else {
-      this.config.indexHostUrl = await IndexHostSingleton.getHostUrl(
+      this.config.hostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
       );
@@ -39,7 +39,7 @@ export class VectorOperationsProvider {
 
   buildVectorOperationsConfig(config: IndexConfiguration) {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: config.indexHostUrl,
+      basePath: config.hostUrl,
       apiKey: config.apiKey,
       queryParamsStringify,
       headers: {

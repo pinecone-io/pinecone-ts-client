@@ -27,6 +27,6 @@ describe('list indexes', () => {
     expect(indexes).toBeDefined();
     expect(indexes?.length).toBeGreaterThan(0);
 
-    expect(indexes?.map((i) => i.database.name)).toContain(indexName);
+    expect(indexes?.map((i) => i.name)).toContain(indexName);
   });
 });

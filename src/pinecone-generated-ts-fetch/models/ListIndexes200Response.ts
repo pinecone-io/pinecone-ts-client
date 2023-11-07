@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { IndexMeta } from './IndexMeta';
+import type { IndexListMeta } from './IndexListMeta';
 import {
-    IndexMetaFromJSON,
-    IndexMetaFromJSONTyped,
-    IndexMetaToJSON,
-} from './IndexMeta';
+    IndexListMetaFromJSON,
+    IndexListMetaFromJSONTyped,
+    IndexListMetaToJSON,
+} from './IndexListMeta';
 
 /**
  * 
@@ -28,10 +28,10 @@ import {
 export interface ListIndexes200Response {
     /**
      * 
-     * @type {Array<IndexMeta>}
+     * @type {Array<IndexListMeta>}
      * @memberof ListIndexes200Response
      */
-    databases?: Array<IndexMeta>;
+    databases?: Array<IndexListMeta>;
 }
 
 /**
@@ -53,7 +53,7 @@ export function ListIndexes200ResponseFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'databases': !exists(json, 'databases') ? undefined : ((json['databases'] as Array<any>).map(IndexMetaFromJSON)),
+        'databases': !exists(json, 'databases') ? undefined : ((json['databases'] as Array<any>).map(IndexListMetaFromJSON)),
     };
 }
 
@@ -66,7 +66,7 @@ export function ListIndexes200ResponseToJSON(value?: ListIndexes200Response | nu
     }
     return {
         
-        'databases': value.databases === undefined ? undefined : ((value.databases as Array<any>).map(IndexMetaToJSON)),
+        'databases': value.databases === undefined ? undefined : ((value.databases as Array<any>).map(IndexListMetaToJSON)),
     };
 }
 

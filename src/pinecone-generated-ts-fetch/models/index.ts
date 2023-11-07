@@ -10,6 +10,7 @@ export * from './DescribeIndexStatsRequest';
 export * from './DescribeIndexStatsResponse';
 export * from './FetchResponse';
 export * from './HnswConfig';
+export * from './IndexListMeta';
 export * from './IndexMeta';
 export * from './IndexMetaDatabase';
 export * from './IndexMetaDatabaseIndexConfig';

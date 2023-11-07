@@ -16,6 +16,8 @@ export type {
   DescribeCollectionOptions,
   DescribeIndexOptions,
   IndexDescription,
+  IndexList,
+  IndexListDescription,
   IndexName,
   PartialCollectionDescription,
   PodType,

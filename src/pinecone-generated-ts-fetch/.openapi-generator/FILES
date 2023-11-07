@@ -12,6 +12,7 @@ models/DescribeIndexStatsRequest.ts
 models/DescribeIndexStatsResponse.ts
 models/FetchResponse.ts
 models/HnswConfig.ts
+models/IndexListMeta.ts
 models/IndexMeta.ts
 models/IndexMetaDatabase.ts
 models/IndexMetaDatabaseIndexConfig.ts
