@@ -1,5 +1,4 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "1.1.2",
-  "release": "@spruce"
+  "version": "1.1.2"
 }

@@ -10,9 +10,15 @@ export const buildUserAgent = (isLegacy: boolean) => {
     'lang=typescript',
   ];
 
-  // If the @spruce release is in use, add that to the user agent
-  if (packageInfo.release) {
-    userAgentParts.push(`release=${packageInfo.release}`);
+  // If there is a PINECONE_RELEASE_VERSION environment variable
+  // set append to the user agent
+  if (
+    typeof process !== 'undefined' &&
+    process &&
+    process.env &&
+    process.env.PINECONE_RELEASE_VERSION
+  ) {
+    userAgentParts.push(`release=${process.env.PINECONE_RELEASE_VERSION}`);
   }
 
   if (isEdge()) {
