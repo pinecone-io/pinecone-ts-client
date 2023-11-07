@@ -29,10 +29,13 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
+    // if an override has been passed set it, otherwise clear things
+    // out so that hostUrl is properly resolved
+    this.config.hostUrl = this.hostUrlOverride
+      ? this.hostUrlOverride
+      : undefined;
+
     if (this.config.hostUrl) {
-      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
-    } else if (this.hostUrlOverride) {
-      this.config.hostUrl = this.hostUrlOverride;
       this.vectorOperations = this.buildVectorOperationsConfig(this.config);
     } else {
       this.config.hostUrl = await IndexHostSingleton.getHostUrl(
