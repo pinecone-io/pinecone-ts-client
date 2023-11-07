@@ -20,6 +20,9 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
       });
       const description = await pinecone.describeIndex(indexName);
       expect(description.database?.name).toEqual(indexName);
@@ -38,6 +41,9 @@ describe('create index', () => {
         metric: 'euclidean',
         replicas: 2,
         podType: 'p1.x2',
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
       });
 
       const description = await pinecone.describeIndex(indexName);
@@ -54,6 +60,9 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
         waitUntilReady: true,
       });
 
@@ -66,10 +75,16 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
       });
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
         suppressConflicts: true,
       });
 
@@ -84,6 +99,9 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName + '-',
           dimension: 5,
+          cloud: 'gcp',
+          region: 'us-east1',
+          capacityMode: 'pod',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -98,6 +116,9 @@ describe('create index', () => {
           name: indexName,
           dimension: 5,
           replicas: 20,
+          cloud: 'gcp',
+          region: 'us-east1',
+          capacityMode: 'pod',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -112,6 +133,9 @@ describe('create index', () => {
           name: indexName,
           dimension: 5,
           sourceCollection: 'non-existent-collection',
+          cloud: 'gcp',
+          region: 'us-east1',
+          capacityMode: 'pod',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;

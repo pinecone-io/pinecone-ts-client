@@ -26,7 +26,7 @@ export interface CreateCollectionRequest {
      */
     name: string;
     /**
-     * The name of the source index to be used as the source for the collection.
+     * The name of the index to be used as the source for the collection.
      * @type {string}
      * @memberof CreateCollectionRequest
      */

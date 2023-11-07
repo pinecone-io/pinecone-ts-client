@@ -24,31 +24,31 @@ export interface CollectionMeta {
      * @type {string}
      * @memberof CollectionMeta
      */
-    name?: string;
+    name: string;
     /**
      * The size of the collection in bytes.
      * @type {number}
      * @memberof CollectionMeta
      */
-    size?: number;
+    size: number;
     /**
      * The status of the collection.
      * @type {string}
      * @memberof CollectionMeta
      */
-    status?: string;
+    status: string;
     /**
-     * 
+     * The dimension of the records stored in the collection
      * @type {number}
      * @memberof CollectionMeta
      */
-    dimension?: number;
+    dimension: number;
     /**
-     * 
+     * The number of records stored in the collection
      * @type {number}
      * @memberof CollectionMeta
      */
-    vectorCount?: number;
+    vectorCount: number;
 }
 
 /**
@@ -56,6 +56,11 @@ export interface CollectionMeta {
  */
 export function instanceOfCollectionMeta(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "size" in value;
+    isInstance = isInstance && "status" in value;
+    isInstance = isInstance && "dimension" in value;
+    isInstance = isInstance && "vectorCount" in value;
 
     return isInstance;
 }
@@ -70,11 +75,11 @@ export function CollectionMetaFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'size': !exists(json, 'size') ? undefined : json['size'],
-        'status': !exists(json, 'status') ? undefined : json['status'],
-        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
-        'vectorCount': !exists(json, 'vector_count') ? undefined : json['vector_count'],
+        'name': json['name'],
+        'size': json['size'],
+        'status': json['status'],
+        'dimension': json['dimension'],
+        'vectorCount': json['vector_count'],
     };
 }
 

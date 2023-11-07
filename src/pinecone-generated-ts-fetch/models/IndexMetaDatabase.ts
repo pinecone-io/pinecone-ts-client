@@ -31,13 +31,19 @@ export interface IndexMetaDatabase {
      * @type {string}
      * @memberof IndexMetaDatabase
      */
-    name?: string;
+    name: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof IndexMetaDatabase
+     */
+    dimension: number;
     /**
      * 
      * @type {string}
      * @memberof IndexMetaDatabase
      */
-    dimension?: string;
+    capacityMode: string;
     /**
      * 
      * @type {string}
@@ -50,7 +56,7 @@ export interface IndexMetaDatabase {
      * @type {string}
      * @memberof IndexMetaDatabase
      */
-    metric?: string;
+    metric: string;
     /**
      * 
      * @type {number}
@@ -94,6 +100,10 @@ export interface IndexMetaDatabase {
  */
 export function instanceOfIndexMetaDatabase(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "dimension" in value;
+    isInstance = isInstance && "capacityMode" in value;
+    isInstance = isInstance && "metric" in value;
 
     return isInstance;
 }
@@ -108,10 +118,11 @@ export function IndexMetaDatabaseFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'name': json['name'],
+        'dimension': json['dimension'],
+        'capacityMode': json['capacity_mode'],
         'indexType': !exists(json, 'index_type') ? undefined : json['index_type'],
-        'metric': !exists(json, 'metric') ? undefined : json['metric'],
+        'metric': json['metric'],
         'pods': !exists(json, 'pods') ? undefined : json['pods'],
         'replicas': !exists(json, 'replicas') ? undefined : json['replicas'],
         'shards': !exists(json, 'shards') ? undefined : json['shards'],
@@ -132,6 +143,7 @@ export function IndexMetaDatabaseToJSON(value?: IndexMetaDatabase | null): any {
         
         'name': value.name,
         'dimension': value.dimension,
+        'capacity_mode': value.capacityMode,
         'index_type': value.indexType,
         'metric': value.metric,
         'pods': value.pods,

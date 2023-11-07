@@ -13,7 +13,7 @@ const setupCreateIndexResponse = (
   isCreateIndexSuccess = true,
   isDescribeIndexSuccess = true
 ) => {
-  const fakeCreateIndex: (req: CreateIndexRequest) => Promise<string> = jest
+  const fakeCreateIndex: (req: CreateIndexRequest) => Promise<IndexMeta> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
@@ -52,6 +52,9 @@ describe('createIndex', () => {
     const returned = await createIndex(IOA)({
       name: 'index-name',
       dimension: 10,
+      cloud: 'gcp',
+      region: 'us-east1',
+      capacityMode: 'pod',
     });
 
     expect(returned).toBe(void 0);
@@ -59,6 +62,9 @@ describe('createIndex', () => {
       createRequest: {
         name: 'index-name',
         dimension: 10,
+        capacityMode: 'pod',
+        cloud: 'gcp',
+        region: 'us-east1',
       },
     });
   });
@@ -81,6 +87,9 @@ describe('createIndex', () => {
       const returned = await createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
         waitUntilReady: true,
       });
 
@@ -89,6 +98,9 @@ describe('createIndex', () => {
         createRequest: {
           name: 'index-name',
           dimension: 10,
+          cloud: 'gcp',
+          region: 'us-east1',
+          capacityMode: 'pod',
           waitUntilReady: true,
         },
       });
@@ -116,6 +128,9 @@ describe('createIndex', () => {
       const returned = createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
+        cloud: 'gcp',
+        region: 'us-east1',
+        capacityMode: 'pod',
         waitUntilReady: true,
       });
 

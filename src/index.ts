@@ -17,8 +17,8 @@ export type {
   DescribeIndexOptions,
   IndexDescription,
   IndexList,
+  IndexListDescription,
   IndexName,
-  PartialIndexDescription,
   PartialCollectionDescription,
   PodType,
 } from './control';
