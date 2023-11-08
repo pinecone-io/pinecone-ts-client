@@ -47,7 +47,7 @@
     "/dist"
   ],
   "dependencies": {
-    "@edge-runtime/types": "^2.2.3",
+    "@edge-runtime/types": "^2.2.5",
     "@sinclair/typebox": "^0.29.0",
     "@types/node": "^18.11.17",
     "ajv": "^8.12.0",
