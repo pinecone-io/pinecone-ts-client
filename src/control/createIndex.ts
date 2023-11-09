@@ -1,4 +1,4 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import { IndexMeta, IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
 import { handleApiError } from '../errors';
@@ -112,14 +112,18 @@ export const createIndex = (api: IndexOperationsApi) => {
     'createIndex'
   );
 
-  return async (options: CreateIndexOptions): Promise<void> => {
+  return async (
+    options: CreateIndexOptions
+  ): Promise<IndexMeta | undefined> => {
     validator(options);
-
     try {
-      await api.createIndex({ createRequest: options });
+      const createResponse = await api.createIndex({
+        createRequest: options,
+      });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, options.name);
       }
+      return createResponse;
     } catch (e) {
       if (
         !(
@@ -138,7 +142,7 @@ const waitUntilIndexIsReady = async (
   api: IndexOperationsApi,
   indexName: string,
   seconds: number = 0
-): Promise<void> => {
+): Promise<IndexMeta> => {
   try {
     const indexDescription = await api.describeIndex({ indexName });
     if (!indexDescription.status?.ready) {
@@ -146,7 +150,7 @@ const waitUntilIndexIsReady = async (
       return await waitUntilIndexIsReady(api, indexName, seconds + 1);
     } else {
       debugLog(`Index ${indexName} is ready after ${seconds}`);
-      return;
+      return indexDescription;
     }
   } catch (e) {
     const err = await handleApiError(

@@ -57,7 +57,7 @@ describe('createIndex', () => {
       capacityMode: 'pod',
     });
 
-    expect(returned).toBe(void 0);
+    expect(returned).toEqual(void 0);
     expect(IOA.createIndex).toHaveBeenCalledWith({
       createRequest: {
         name: 'index-name',
@@ -93,7 +93,7 @@ describe('createIndex', () => {
         waitUntilReady: true,
       });
 
-      expect(returned).toBe(void 0);
+      expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
       expect(IOA.createIndex).toHaveBeenCalledWith({
         createRequest: {
           name: 'index-name',
@@ -137,7 +137,7 @@ describe('createIndex', () => {
       await jest.advanceTimersByTimeAsync(3000);
 
       return returned.then((result) => {
-        expect(result).toBe(void 0);
+        expect(result).toEqual({ status: { ready: true, state: 'Ready' } });
         expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
         });
