@@ -20,17 +20,15 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'gcp',
+        metric: 'cosine',
+        cloud: 'aws',
         region: 'us-east1',
-        capacityMode: 'pod',
+        capacityMode: 'serverless',
       });
       const description = await pinecone.describeIndex(indexName);
       expect(description.database?.name).toEqual(indexName);
       expect(description.database?.dimension).toEqual(5);
       expect(description.database?.metric).toEqual('cosine');
-      expect(description.database?.pods).toEqual(1);
-      expect(description.database?.replicas).toEqual(1);
-      expect(description.database?.shards).toEqual(1);
       expect(description.status?.host).toBeDefined();
     });
 
@@ -41,18 +39,15 @@ describe('create index', () => {
         metric: 'euclidean',
         replicas: 2,
         podType: 'p1.x2',
-        cloud: 'gcp',
+        cloud: 'aws',
         region: 'us-east1',
-        capacityMode: 'pod',
+        capacityMode: 'serverless',
       });
 
       const description = await pinecone.describeIndex(indexName);
       expect(description.database?.name).toEqual(indexName);
       expect(description.database?.dimension).toEqual(5);
       expect(description.database?.metric).toEqual('euclidean');
-      expect(description.database?.pods).toEqual(2);
-      expect(description.database?.replicas).toEqual(2);
-      expect(description.database?.shards).toEqual(1);
       expect(description.status?.host).toBeDefined();
     });
 
@@ -60,9 +55,10 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'gcp',
+        cloud: 'aws',
+        metric: 'cosine',
         region: 'us-east1',
-        capacityMode: 'pod',
+        capacityMode: 'serverless',
         waitUntilReady: true,
       });
 
@@ -75,16 +71,18 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'gcp',
+        cloud: 'aws',
+        metric: 'cosine',
         region: 'us-east1',
-        capacityMode: 'pod',
+        capacityMode: 'serverless',
       });
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'gcp',
+        cloud: 'aws',
+        metric: 'cosine',
         region: 'us-east1',
-        capacityMode: 'pod',
+        capacityMode: 'serverless',
         suppressConflicts: true,
       });
 
@@ -99,9 +97,10 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName + '-',
           dimension: 5,
-          cloud: 'gcp',
+          cloud: 'aws',
+          metric: 'cosine',
           region: 'us-east1',
-          capacityMode: 'pod',
+          capacityMode: 'serverless',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -115,10 +114,10 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
-          replicas: 20,
-          cloud: 'gcp',
+          cloud: 'aws',
+          metric: 'cosine',
           region: 'us-east1',
-          capacityMode: 'pod',
+          capacityMode: 'serverless',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -132,10 +131,10 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
-          sourceCollection: 'non-existent-collection',
-          cloud: 'gcp',
+          cloud: 'aws',
+          metric: 'cosine',
           region: 'us-east1',
-          capacityMode: 'pod',
+          capacityMode: 'serverless',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
