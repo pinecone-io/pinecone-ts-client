@@ -1,3 +1,4 @@
+import { PineconeUnableToResolveHostError } from '../../errors';
 import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
@@ -136,5 +137,18 @@ describe('IndexHostSingleton', () => {
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
     expect(host2).toBe('https://test-host');
+  });
+
+  test('_set throws an error if hostUrl is empty', async () => {
+    const pineconeConfig = { apiKey: 'test-key' };
+    try {
+      IndexHostSingleton._set(pineconeConfig, 'test-index', '');
+    } catch (e) {
+      const err = e as PineconeUnableToResolveHostError;
+      expect(err.name).toEqual('PineconeUnableToResolveHostError');
+      expect(err.message).toEqual(
+        'An invalid host URL was encountered. Please make sure the index exists and is in a ready state.'
+      );
+    }
   });
 });
