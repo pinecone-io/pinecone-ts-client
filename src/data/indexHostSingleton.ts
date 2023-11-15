@@ -1,5 +1,6 @@
 import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
 import type { PineconeConfiguration } from './types';
+import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
 import { PineconeUnableToResolveHostError } from '../errors';
 
@@ -12,7 +13,7 @@ export const IndexHostSingleton = (function () {
 
   const _describeIndex = async (
     config: PineconeConfiguration,
-    indexName: string
+    indexName: IndexName
   ): Promise<string> => {
     if (!indexOperationsApi) {
       indexOperationsApi = indexOperationsBuilder(config);
@@ -40,7 +41,7 @@ export const IndexHostSingleton = (function () {
   return {
     getHostUrl: async function (
       config: PineconeConfiguration,
-      indexName: string
+      indexName: IndexName
     ) {
       const cacheKey = key(config, indexName);
       if (cacheKey in hostUrls) {
@@ -58,12 +59,21 @@ export const IndexHostSingleton = (function () {
       }
     },
 
-    _set: (config, indexName, hostUrl) => {
+    _set: (
+      config: PineconeConfiguration,
+      indexName: IndexName,
+      hostUrl: string
+    ) => {
+      // prevent adding an empty hostUrl to the cache
+      if (hostUrl === '') {
+        return;
+      }
+
       const cacheKey = key(config, indexName);
       hostUrls[cacheKey] = hostUrl;
     },
 
-    _delete: (config, indexName) => {
+    _delete: (config: PineconeConfiguration, indexName: IndexName) => {
       const cacheKey = key(config, indexName);
       delete hostUrls[cacheKey];
     },
