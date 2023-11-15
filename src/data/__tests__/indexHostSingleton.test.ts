@@ -1,3 +1,4 @@
+import { PineconeUnableToResolveHostError } from '../../errors';
 import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
@@ -136,5 +137,24 @@ describe('IndexHostSingleton', () => {
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
     expect(host2).toBe('https://test-host');
+  });
+
+  test('_set does not cache empty hostUrl values', async () => {
+    const pineconeConfig = { apiKey: 'test-key' };
+
+    mockDescribeIndex.mockResolvedValue({
+      database: {
+        name: 'index-1',
+        dimensions: 10,
+        metric: 'cosine',
+      },
+      status: { ready: true, state: 'Ready', host: 'test-host' },
+    });
+
+    IndexHostSingleton._set(pineconeConfig, 'test-index', '');
+
+    // the empty value was not cached so describeIndex should be called
+    await IndexHostSingleton.getHostUrl(pineconeConfig, 'test-index');
+    expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
   });
 });
