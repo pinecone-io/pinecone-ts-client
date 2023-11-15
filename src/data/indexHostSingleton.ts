@@ -66,9 +66,7 @@ export const IndexHostSingleton = (function () {
     ) => {
       // prevent adding an empty hostUrl to the cache
       if (hostUrl === '') {
-        throw new PineconeUnableToResolveHostError(
-          'An invalid host URL was encountered. Please make sure the index exists and is in a ready state.'
-        );
+        return;
       }
 
       const cacheKey = key(config, indexName);

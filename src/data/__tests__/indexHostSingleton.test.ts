@@ -139,16 +139,22 @@ describe('IndexHostSingleton', () => {
     expect(host2).toBe('https://test-host');
   });
 
-  test('_set throws an error if hostUrl is empty', async () => {
+  test('_set does not cache empty hostUrl values', async () => {
     const pineconeConfig = { apiKey: 'test-key' };
-    try {
-      IndexHostSingleton._set(pineconeConfig, 'test-index', '');
-    } catch (e) {
-      const err = e as PineconeUnableToResolveHostError;
-      expect(err.name).toEqual('PineconeUnableToResolveHostError');
-      expect(err.message).toEqual(
-        'An invalid host URL was encountered. Please make sure the index exists and is in a ready state.'
-      );
-    }
+
+    mockDescribeIndex.mockResolvedValue({
+      database: {
+        name: 'index-1',
+        dimensions: 10,
+        metric: 'cosine',
+      },
+      status: { ready: true, state: 'Ready', host: 'test-host' },
+    });
+
+    IndexHostSingleton._set(pineconeConfig, 'test-index', '');
+
+    // the empty value was not cached so describeIndex should be called
+    await IndexHostSingleton.getHostUrl(pineconeConfig, 'test-index');
+    expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
   });
 });
