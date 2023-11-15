@@ -37,6 +37,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run integration tests (prod)
+        if: matrix.pinecone_env == 'prod'
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
@@ -44,6 +45,7 @@ jobs:
         run: npm run test:integration:${{ matrix.jest_env }}
 
       - name: Run integration tests (staging)
+        if: matrix.pinecone_env == 'staging'
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY_STAGING }}
