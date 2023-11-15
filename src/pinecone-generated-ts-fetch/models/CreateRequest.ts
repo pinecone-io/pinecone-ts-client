@@ -51,6 +51,12 @@ export interface CreateRequest {
      */
     cloud: CreateRequestCloudEnum;
     /**
+     * The environment where you would like your index to be created
+     * @type {string}
+     * @memberof CreateRequest
+     */
+    environment?: string;
+    /**
      * The capacity mode for the index.
      * @type {string}
      * @memberof CreateRequest
@@ -157,6 +163,7 @@ export function CreateRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         'dimension': json['dimension'],
         'region': json['region'],
         'cloud': json['cloud'],
+        'environment': !exists(json, 'environment') ? undefined : json['environment'],
         'capacityMode': json['capacity_mode'],
         'indexType': !exists(json, 'index_type') ? undefined : json['index_type'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
@@ -183,6 +190,7 @@ export function CreateRequestToJSON(value?: CreateRequest | null): any {
         'dimension': value.dimension,
         'region': value.region,
         'cloud': value.cloud,
+        'environment': value.environment,
         'capacity_mode': value.capacityMode,
         'index_type': value.indexType,
         'metric': value.metric,

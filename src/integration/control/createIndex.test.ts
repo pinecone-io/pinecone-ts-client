@@ -105,7 +105,7 @@ describe('create index', () => {
       } catch (e) {
         const err = e as PineconeNotFoundError;
         expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain('alphanumeric characters');
+        expect(err.message).toContain('alphanumeric character');
       }
     });
 
@@ -135,6 +135,7 @@ describe('create index', () => {
           metric: 'cosine',
           region: 'us-east1',
           capacityMode: 'serverless',
+          sourceCollection: 'non-existent-collection',
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;

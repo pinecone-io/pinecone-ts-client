@@ -13,11 +13,13 @@ describe('configure index', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      metric: 'cosine',
       waitUntilReady: true,
       podType: 'p1.x1',
       replicas: 2,
       cloud: 'gcp',
       region: 'us-east1',
+      environment: 'us-east1-gcp',
       capacityMode: 'pod',
     });
   });

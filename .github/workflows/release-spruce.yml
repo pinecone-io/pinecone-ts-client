@@ -4,6 +4,10 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  testing:
+    uses: './.github/workflows/testing.yml'
+    secrets: inherit
+
   version-and-release:
     name: Release dev build to NPM
     runs-on: ubuntu-latest

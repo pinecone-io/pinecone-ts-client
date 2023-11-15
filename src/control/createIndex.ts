@@ -8,6 +8,7 @@ import {
   CapacityModeSchema,
   CloudSchema,
   DimensionSchema,
+  EnvironmentSchema,
   MetricSchema,
   PodsSchema,
   RegionSchema,
@@ -37,6 +38,11 @@ export type CreateIndexOptions = {
    * The public cloud where you would like your index hosted
    */
   cloud: 'gcp' | 'aws' | 'azure';
+
+  /**
+   * The environment where you would like your index to be created
+   */
+  environment?: string;
 
   /**
    * The capacity mode for the index.
@@ -98,6 +104,7 @@ const CreateIndexOptionsSchema = Type.Object(
     pods: Type.Optional(PodsSchema),
     replicas: Type.Optional(ReplicasSchema),
     podType: Type.Optional(PodTypeSchema),
+    environment: Type.Optional(EnvironmentSchema),
     metadataConfig: Type.Optional(MetadataConfigSchema),
     sourceCollection: Type.Optional(CollectionNameSchema),
     waitUntilReady: Type.Optional(Type.Boolean()),

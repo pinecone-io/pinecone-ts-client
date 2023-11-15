@@ -12,8 +12,10 @@ describe('list indexes', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      metric: 'cosine',
       cloud: 'gcp',
       region: 'us-east1',
+      environment: 'us-east1-gcp',
       capacityMode: 'pod',
     });
   });
