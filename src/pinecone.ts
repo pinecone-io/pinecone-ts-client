@@ -8,13 +8,15 @@ import {
   createCollection,
   describeCollection,
   deleteCollection,
-  ConfigureIndexOptions,
-  CreateCollectionOptions,
   CreateIndexOptions,
   IndexName,
   indexOperationsBuilder,
   CollectionName,
 } from './control';
+import {
+  ConfigureIndexRequest,
+  CreateCollectionRequest,
+} from './pinecone-generated-ts-fetch';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -205,8 +207,8 @@ export class Pinecone {
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
     describeIndexPromise.then((indexMeta) => {
-      if (indexMeta.status?.host) {
-        IndexHostSingleton._set(this.config, indexName, indexMeta.status.host);
+      if (indexMeta.host) {
+        IndexHostSingleton._set(this.config, indexName, indexMeta.host);
       }
     });
 
@@ -334,8 +336,8 @@ export class Pinecone {
    * @param indexName - The name of the index to configure.
    * @param options - The configuration properties you would like to update
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options);
+  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
+    return this._configureIndex({ indexName, configureIndexRequest: options });
   }
 
   /**
@@ -356,7 +358,7 @@ export class Pinecone {
    * @param options.source - The name of the index to use as the source for the collection.
    * @returns a promise that resolves when the request to create the collection is completed.
    */
-  createCollection(options: CreateCollectionOptions) {
+  createCollection(options: CreateCollectionRequest) {
     return this._createCollection(options);
   }
 

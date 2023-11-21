@@ -14,10 +14,15 @@ describe('describe index', () => {
       name: indexName,
       dimension: 5,
       metric: 'cosine',
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
-      environment: 'us-east1-gcp',
+      spec: {
+        pod: {
+          environment: 'us-east1-gcp',
+          replicas: 1,
+          shards: 1,
+          podType: 'p1.x1',
+          pods: 1,
+        },
+      },
     });
   });
 
@@ -27,10 +32,10 @@ describe('describe index', () => {
 
   test('describe index', async () => {
     const description = await pinecone.describeIndex(indexName);
-    expect(description.database?.name).toEqual(indexName);
-    expect(description.database?.dimension).toEqual(5);
-    expect(description.database?.metric).toEqual('cosine');
-    expect(description.status?.host).toBeDefined();
+    expect(description.name).toEqual(indexName);
+    expect(description.dimension).toEqual(5);
+    expect(description.metric).toEqual('cosine');
+    expect(description.host).toBeDefined();
   });
 
   test('describe index with invalid index name', async () => {

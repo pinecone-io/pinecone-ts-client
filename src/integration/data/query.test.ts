@@ -11,9 +11,16 @@ describe('query', () => {
     await pinecone.createIndex({
       name: INDEX_NAME,
       dimension: 5,
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-west1-gcp',
+          replicas: 1,
+          shards: 1,
+          podType: 'p1.x1',
+          pods: 1,
+        },
+      },
       waitUntilReady: true,
       suppressConflicts: true,
     });

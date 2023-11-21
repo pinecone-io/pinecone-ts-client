@@ -6,14 +6,15 @@
 
 import { createIndex } from '../createIndex';
 import { PineconeArgumentError } from '../../errors';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
 
+// TODO: Fix up tests
 describe('createIndex argument validations', () => {
-  let IOA: IndexOperationsApi;
+  let MPIA: ManagePodIndexesApi;
   beforeEach(() => {
-    IOA = { createIndex: jest.fn() };
+    MPIA = { createIndex: jest.fn() };
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: IOA,
+      ManagePodIndexesApi: MPIA,
     }));
   });
 

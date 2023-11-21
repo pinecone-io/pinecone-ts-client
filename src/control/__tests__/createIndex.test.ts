@@ -1,9 +1,9 @@
 import { createIndex } from '../createIndex';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
-  CreateIndexRequest,
+  CreateIndexOperationRequest,
   DescribeIndexRequest,
-  IndexMeta,
+  IndexModel,
 } from '../../pinecone-generated-ts-fetch';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
@@ -13,7 +13,9 @@ const setupCreateIndexResponse = (
   isCreateIndexSuccess = true,
   isDescribeIndexSuccess = true
 ) => {
-  const fakeCreateIndex: (req: CreateIndexRequest) => Promise<IndexMeta> = jest
+  const fakeCreateIndex: (
+    req: CreateIndexOperationRequest
+  ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
@@ -35,13 +37,13 @@ const setupCreateIndexResponse = (
     );
   });
 
-  const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexMeta> =
+  const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexModel> =
     describeIndexMock;
 
   const IOA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
-  } as IndexOperationsApi;
+  } as ManagePodIndexesApi;
 
   return IOA;
 };
@@ -52,19 +54,31 @@ describe('createIndex', () => {
     const returned = await createIndex(IOA)({
       name: 'index-name',
       dimension: 10,
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-west1',
+          replicas: 1,
+          shards: 1,
+          pods: 1,
+          podType: 'p1.x1',
+        },
+      },
     });
 
     expect(returned).toEqual(void 0);
     expect(IOA.createIndex).toHaveBeenCalledWith({
-      createRequest: {
-        name: 'index-name',
-        dimension: 10,
-        capacityMode: 'pod',
-        cloud: 'gcp',
-        region: 'us-east1',
+      name: 'index-name',
+      dimension: 10,
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-west1',
+          replicas: 1,
+          shards: 1,
+          pods: 1,
+          podType: 'p1.x1',
+        },
       },
     });
   });
@@ -87,22 +101,34 @@ describe('createIndex', () => {
       const returned = await createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
-        cloud: 'gcp',
-        region: 'us-east1',
-        capacityMode: 'pod',
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
         waitUntilReady: true,
       });
 
       expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
       expect(IOA.createIndex).toHaveBeenCalledWith({
-        createRequest: {
-          name: 'index-name',
-          dimension: 10,
-          cloud: 'gcp',
-          region: 'us-east1',
-          capacityMode: 'pod',
-          waitUntilReady: true,
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
         },
+        waitUntilReady: true,
       });
       expect(IOA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
@@ -128,9 +154,16 @@ describe('createIndex', () => {
       const returned = createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
-        cloud: 'gcp',
-        region: 'us-east1',
-        capacityMode: 'pod',
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
         waitUntilReady: true,
       });
 

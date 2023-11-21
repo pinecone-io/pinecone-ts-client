@@ -21,15 +21,18 @@ describe('create index', () => {
         name: indexName,
         dimension: 5,
         metric: 'cosine',
-        cloud: 'aws',
-        region: 'us-east1',
-        capacityMode: 'serverless',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
       });
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.name).toEqual(indexName);
-      expect(description.database?.dimension).toEqual(5);
-      expect(description.database?.metric).toEqual('cosine');
-      expect(description.status?.host).toBeDefined();
+      expect(description.name).toEqual(indexName);
+      expect(description.dimension).toEqual(5);
+      expect(description.metric).toEqual('cosine');
+      expect(description.host).toBeDefined();
     });
 
     test('create with optional properties', async () => {
@@ -37,33 +40,37 @@ describe('create index', () => {
         name: indexName,
         dimension: 5,
         metric: 'euclidean',
-        replicas: 2,
-        podType: 'p1.x2',
-        cloud: 'aws',
-        region: 'us-east1',
-        capacityMode: 'serverless',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
       });
 
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.name).toEqual(indexName);
-      expect(description.database?.dimension).toEqual(5);
-      expect(description.database?.metric).toEqual('euclidean');
-      expect(description.status?.host).toBeDefined();
+      expect(description.name).toEqual(indexName);
+      expect(description.dimension).toEqual(5);
+      expect(description.metric).toEqual('euclidean');
+      expect(description.host).toBeDefined();
     });
 
     test('create with utility prop: waitUntilReady', async () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'aws',
         metric: 'cosine',
-        region: 'us-east1',
-        capacityMode: 'serverless',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
         waitUntilReady: true,
       });
 
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.name).toEqual(indexName);
+      expect(description.name).toEqual(indexName);
       expect(description.status?.state).toEqual('Ready');
     });
 
@@ -71,23 +78,29 @@ describe('create index', () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'aws',
         metric: 'cosine',
-        region: 'us-east1',
-        capacityMode: 'serverless',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
       });
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        cloud: 'aws',
         metric: 'cosine',
-        region: 'us-east1',
-        capacityMode: 'serverless',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
         suppressConflicts: true,
       });
 
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.name).toEqual(indexName);
+      expect(description.name).toEqual(indexName);
     });
   });
 
@@ -97,10 +110,13 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName + '-',
           dimension: 5,
-          cloud: 'aws',
           metric: 'cosine',
-          region: 'us-east1',
-          capacityMode: 'serverless',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+            },
+          },
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -114,10 +130,13 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
-          cloud: 'aws',
           metric: 'cosine',
-          region: 'us-east1',
-          capacityMode: 'serverless',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+            },
+          },
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
@@ -131,11 +150,17 @@ describe('create index', () => {
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
-          cloud: 'aws',
           metric: 'cosine',
-          region: 'us-east1',
-          capacityMode: 'serverless',
-          sourceCollection: 'non-existent-collection',
+          spec: {
+            pod: {
+              environment: 'us-east-1-aws',
+              replicas: 1,
+              shards: 1,
+              podType: 'p1.x1',
+              pods: 1,
+              sourceCollection: 'non-existent-collection',
+            },
+          },
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;

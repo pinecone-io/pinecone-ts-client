@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import type { FetchAPI } from '../pinecone-generated-ts-fetch';
+import type { FetchAPI, HTTPHeaders } from '../pinecone-generated-ts-fetch';
 
 export const PineconeConfigurationSchema = Type.Object(
   {
@@ -12,6 +12,8 @@ export const PineconeConfigurationSchema = Type.Object(
     // But declaring it here as Type.Any() is needed to avoid getting caught
     // in the additionalProperties check.
     fetchApi: Type.Optional(Type.Any()),
+
+    httpHeaders: Type.Optional(Type.Any()),
   },
   { additionalProperties: false }
 );
@@ -34,6 +36,11 @@ export type PineconeConfiguration = {
    * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
    */
   fetchApi?: FetchAPI;
+
+  /**
+   * Optional headers to be included in all requests.
+   */
+  httpHeaders?: HTTPHeaders;
 };
 
 /** Configuration for a single Pinecone Index */

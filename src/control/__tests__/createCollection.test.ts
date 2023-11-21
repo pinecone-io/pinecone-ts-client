@@ -1,22 +1,63 @@
 import { createCollection } from '../createCollection';
 import { PineconeArgumentError } from '../../errors';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
-  CreateCollectionOperationRequest as CCOR,
-  ListIndexes200Response,
+  CollectionModel,
+  CreateCollectionOperationRequest,
+  IndexList,
 } from '../../pinecone-generated-ts-fetch';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
-  const fakeCreateCollection: (req: CCOR) => Promise<string> = jest
+  const fakeCreateCollection: (
+    req: CreateCollectionOperationRequest
+  ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(fakeCreateCollectionResponse);
-  const fakeListIndexes: () => Promise<ListIndexes200Response> = jest
+  const fakeListIndexes: () => Promise<IndexList> = jest
     .fn()
-    .mockImplementation(() => Promise.resolve(['foo', 'bar']));
+    // TODO: Update mock responses to match actual response objects
+    .mockImplementation(() =>
+      Promise.resolve({
+        indexes: [
+          {
+            name: 'index-1',
+            dimension: 1,
+            metric: 'cosine',
+            host: '123-345-abcd.io',
+            spec: {
+              pod: {
+                environment: 'us-west1',
+                replicas: 1,
+                shards: 1,
+                podType: 'p1.x1',
+                pods: 1,
+              },
+            },
+            status: { ready: true, state: 'Ready' },
+          },
+          {
+            name: 'index-2',
+            dimension: 3,
+            metric: 'cosine',
+            host: '321-543-bcda.io',
+            spec: {
+              pod: {
+                environment: 'us-west1',
+                replicas: 1,
+                shards: 1,
+                podType: 'p1.x1',
+                pods: 1,
+              },
+            },
+            status: { ready: true, state: 'Ready' },
+          },
+        ],
+      })
+    );
   const IOA = {
     createCollection: fakeCreateCollection,
     listIndexes: fakeListIndexes,
-  } as IndexOperationsApi;
+  } as ManagePodIndexesApi;
 
   return IOA;
 };

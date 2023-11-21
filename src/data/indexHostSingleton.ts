@@ -1,4 +1,4 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../pinecone-generated-ts-fetch';
 import type { PineconeConfiguration } from './types';
 import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
@@ -9,7 +9,8 @@ import { PineconeUnableToResolveHostError } from '../errors';
 // and index, so we cache them in a singleton for reuse.
 export const IndexHostSingleton = (function () {
   const hostUrls = {}; // map of apiKey-indexName to hostUrl
-  let indexOperationsApi: InstanceType<typeof IndexOperationsApi> | null = null;
+  let indexOperationsApi: InstanceType<typeof ManagePodIndexesApi> | null =
+    null;
 
   const _describeIndex = async (
     config: PineconeConfiguration,
@@ -20,7 +21,7 @@ export const IndexHostSingleton = (function () {
     }
 
     const describeResponse = await describeIndex(indexOperationsApi)(indexName);
-    const host = describeResponse.status?.host;
+    const host = describeResponse.host;
 
     if (!host) {
       // Generally, middleware will handle most errors from the call itself such as index not found, etc
