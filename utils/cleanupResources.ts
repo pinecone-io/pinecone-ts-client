@@ -14,7 +14,7 @@ var pinecone = require('../dist');
 (async () => {
   const p = new pinecone.Pinecone();
 
-  // TODO: Uncomment when collections are supported 
+  // TODO: Uncomment when collections are supported
   // const collections = await p.listCollections();
   // for (const collection of collections) {
   //   console.log(`Deleting collection ${collection.name}`);
