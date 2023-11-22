@@ -1,23 +1,26 @@
 import { deleteCollection } from '../deleteCollection';
 import { PineconeArgumentError } from '../../errors';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
-import type { DeleteCollectionRequest as DCR } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import type {
+  DeleteCollectionRequest,
+  CollectionList,
+} from '../../pinecone-generated-ts-fetch';
 
 const setupMocks = (
   deleteResponse,
-  listCollectionResponse = () => Promise.resolve([''])
+  listCollectionResponse = () => Promise.resolve([])
 ) => {
-  const fakeDeleteCollection: (req: DCR) => Promise<string> = jest
-    .fn()
-    .mockImplementation(deleteResponse);
-  const fakeListCollections: () => Promise<string[]> = jest
+  const fakeDeleteCollection: (
+    req: DeleteCollectionRequest
+  ) => Promise<string> = jest.fn().mockImplementation(deleteResponse);
+  const fakeListCollections: () => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
   const IOA = {
     deleteCollection: fakeDeleteCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as IndexOperationsApi;
+  return IOA as ManagePodIndexesApi;
 };
 
 describe('deleteCollection', () => {

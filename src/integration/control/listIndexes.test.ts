@@ -12,9 +12,16 @@ describe('list indexes', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-east1-gcp',
+          replicas: 1,
+          shards: 1,
+          podType: 'p1.x1',
+          pods: 1,
+        },
+      },
     });
   });
 
@@ -23,10 +30,10 @@ describe('list indexes', () => {
   });
 
   test('list indexes', async () => {
-    const indexes = await pinecone.listIndexes();
-    expect(indexes).toBeDefined();
-    expect(indexes?.length).toBeGreaterThan(0);
+    const response = await pinecone.listIndexes();
+    expect(response.indexes).toBeDefined();
+    expect(response.indexes?.length).toBeGreaterThan(0);
 
-    expect(indexes?.map((i) => i.name)).toContain(indexName);
+    expect(response.indexes?.map((i) => i.name)).toContain(indexName);
   });
 });

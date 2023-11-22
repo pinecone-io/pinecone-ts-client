@@ -1,4 +1,3 @@
-import { PineconeUnableToResolveHostError } from '../../errors';
 import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
@@ -25,16 +24,12 @@ describe('IndexHostSingleton', () => {
       apiKey: 'api-key-1',
     };
     mockDescribeIndex.mockResolvedValue({
-      database: {
-        name: 'index-1',
-        dimensions: 10,
-        metric: 'cosine',
-        pods: 1,
-        replicas: 1,
-        shards: 1,
-        podType: 'p1.x1',
-      },
-      status: { ready: true, state: 'Ready', host: testHost },
+      name: 'index-1',
+      dimensions: 10,
+      metric: 'cosine',
+      host: testHost,
+      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      status: { ready: true, state: 'Ready' },
     });
 
     const hostUrl = await IndexHostSingleton.getHostUrl(
@@ -55,28 +50,20 @@ describe('IndexHostSingleton', () => {
     };
     mockDescribeIndex
       .mockResolvedValueOnce({
-        database: {
-          name: testIndex,
-          dimensions: 10,
-          metric: 'cosine',
-          pods: 1,
-          replicas: 1,
-          shards: 1,
-          podType: 'p1.x1',
-        },
-        status: { ready: true, state: 'Ready', host: testHost },
+        name: testIndex,
+        dimensions: 10,
+        metric: 'cosine',
+        host: testHost,
+        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        status: { ready: true, state: 'Ready' },
       })
       .mockResolvedValueOnce({
-        database: {
-          name: testIndex2,
-          dimensions: 10,
-          metric: 'cosine',
-          pods: 1,
-          replicas: 1,
-          shards: 1,
-          podType: 'p1.x1',
-        },
-        status: { ready: true, state: 'Ready', host: testHost2 },
+        name: testIndex2,
+        dimensions: 10,
+        metric: 'cosine',
+        host: testHost2,
+        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        status: { ready: true, state: 'Ready' },
       });
 
     const hostUrl = await IndexHostSingleton.getHostUrl(
@@ -108,16 +95,12 @@ describe('IndexHostSingleton', () => {
     const pineconeConfig = { apiKey: 'test-key' };
 
     mockDescribeIndex.mockResolvedValue({
-      database: {
-        name: 'index-1',
-        dimensions: 10,
-        metric: 'cosine',
-        pods: 1,
-        replicas: 1,
-        shards: 1,
-        podType: 'p1.x1',
-      },
-      status: { ready: true, state: 'Ready', host: 'test-host' },
+      name: 'index-1',
+      dimensions: 10,
+      metric: 'cosine',
+      host: 'test-host',
+      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      status: { ready: true, state: 'Ready' },
     });
 
     // _set test
@@ -143,12 +126,12 @@ describe('IndexHostSingleton', () => {
     const pineconeConfig = { apiKey: 'test-key' };
 
     mockDescribeIndex.mockResolvedValue({
-      database: {
-        name: 'index-1',
-        dimensions: 10,
-        metric: 'cosine',
-      },
-      status: { ready: true, state: 'Ready', host: 'test-host' },
+      name: 'index-1',
+      dimensions: 10,
+      metric: 'cosine',
+      host: 'test-host',
+      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      status: { ready: true, state: 'Ready' },
     });
 
     IndexHostSingleton._set(pineconeConfig, 'test-index', '');

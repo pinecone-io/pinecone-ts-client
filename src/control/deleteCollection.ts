@@ -1,4 +1,4 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
@@ -8,7 +8,7 @@ import type { CollectionName } from './types';
  */
 export type DeleteCollectionOptions = CollectionName;
 
-export const deleteCollection = (api: IndexOperationsApi) => {
+export const deleteCollection = (api: ManagePodIndexesApi) => {
   const validator = buildConfigValidator(
     CollectionNameSchema,
     'deleteCollection'

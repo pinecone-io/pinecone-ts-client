@@ -5,33 +5,39 @@ describe('listIndexes', () => {
     const IndexOperationsApi = {
       listIndexes: jest.fn().mockImplementation(() =>
         Promise.resolve({
-          databases: [
+          indexes: [
             {
-              database: {
-                name: 'index-name',
-                dimension: 5,
-                capacityMode: 'pod',
-                metric: 'cosine',
+              name: 'index-name',
+              dimension: 5,
+              capacityMode: 'pod',
+              metric: 'cosine',
+              host: '789-123-foo.svc.efgh.pinecone.io',
+              spec: {
+                serverless: {
+                  cloud: 'aws',
+                  region: 'us-east-1',
+                },
               },
               status: {
                 ready: true,
                 state: 'Ready',
-                host: '789-123-foo.svc.efgh.pinecone.io',
-                port: 443,
               },
             },
             {
-              database: {
-                name: 'index-name-2',
-                dimension: 5,
-                capacityMode: 'pod',
-                metric: 'cosine',
+              name: 'index-name-2',
+              dimension: 5,
+              capacityMode: 'pod',
+              metric: 'cosine',
+              host: '123-456-foo.svc.abcd.pinecone.io',
+              spec: {
+                serverless: {
+                  cloud: 'aws',
+                  region: 'us-east-1',
+                },
               },
               status: {
                 ready: true,
                 state: 'Ready',
-                host: '123-456-foo.svc.abcd.pinecone.io',
-                port: 443,
               },
             },
           ],
@@ -42,35 +48,43 @@ describe('listIndexes', () => {
     // @ts-ignore
     const returned = await listIndexes(IndexOperationsApi)();
 
-    expect(returned).toEqual([
-      {
-        database: {
+    expect(returned).toEqual({
+      indexes: [
+        {
           name: 'index-name',
           dimension: 5,
           capacityMode: 'pod',
           metric: 'cosine',
-        },
-        status: {
-          ready: true,
-          state: 'Ready',
           host: '789-123-foo.svc.efgh.pinecone.io',
-          port: 443,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+            },
+          },
+          status: {
+            ready: true,
+            state: 'Ready',
+          },
         },
-      },
-      {
-        database: {
+        {
           name: 'index-name-2',
           dimension: 5,
           capacityMode: 'pod',
           metric: 'cosine',
-        },
-        status: {
-          ready: true,
-          state: 'Ready',
           host: '123-456-foo.svc.abcd.pinecone.io',
-          port: 443,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+            },
+          },
+          status: {
+            ready: true,
+            state: 'Ready',
+          },
         },
-      },
-    ]);
+      ],
+    });
   });
 });

@@ -24,9 +24,11 @@ export type IndexName = string;
 export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;
+export const ShardsSchema = positiveInteger;
 export const MetricSchema = nonemptyString;
 export const DimensionSchema = positiveInteger;
 export const RegionSchema = nonemptyString;
+export const EnvironmentSchema = nonemptyString;
 export const CloudSchema = Type.Union([
   Type.Literal('gcp'),
   Type.Literal('aws'),

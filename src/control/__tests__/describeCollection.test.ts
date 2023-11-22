@@ -1,26 +1,29 @@
 import { describeCollection } from '../describeCollection';
 import { PineconeArgumentError } from '../../errors';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
-  DescribeCollectionRequest as DCR,
-  CollectionMeta,
+  DescribeCollectionRequest,
+  CollectionList,
+  CollectionModel,
 } from '../../pinecone-generated-ts-fetch';
 
 const setupMocks = (
   describeResponse,
   listCollectionResponse: () => Promise<Array<string>>
 ) => {
-  const fakeDescribeCollection: (req: DCR) => Promise<CollectionMeta> = jest
+  const fakeDescribeCollection: (
+    req: DescribeCollectionRequest
+  ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(describeResponse);
-  const fakeListCollections: () => Promise<Array<string>> = jest
+  const fakeListCollections: () => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
   const IOA = {
     describeCollection: fakeDescribeCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as IndexOperationsApi;
+  return IOA as ManagePodIndexesApi;
 };
 
 describe('describeCollection', () => {
@@ -76,7 +79,7 @@ describe('describeCollection', () => {
             name: 'collection-name',
             size: 3085509,
             status: 'Ready',
-            vectorCount: 120,
+            recordCount: 120,
           }),
         () => Promise.resolve([])
       );

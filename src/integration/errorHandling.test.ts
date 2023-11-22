@@ -2,36 +2,39 @@ import { PineconeConnectionError } from '../errors';
 import { Pinecone } from '../index';
 
 describe('Error handling', () => {
-  describe('when environment is wrong', () => {
+  describe('when API key is wrong', () => {
     test('calling control plane', async () => {
       const p = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY || '',
+        apiKey: '123-456-789',
       });
 
+      expect.assertions(2);
       try {
         await p.listIndexes();
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeConnectionError');
+        expect(err.name).toEqual('PineconeUnmappedHttpError');
         expect(err.message).toEqual(
-          'Request failed to reach Pinecone. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+          'An unexpected error occured while calling the https://api.pinecone.io/indexes endpoint.  Unknown or invalid API Key Status: 403.'
         );
-        expect(err.cause).toBeDefined();
+        // TODO: Update when cause is populated
+        // expect(err.cause).toBeDefined();
       }
     });
 
     test('calling data plane', async () => {
       const p = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY || '',
+        apiKey: '123-456-789',
       });
 
+      expect.assertions(2);
       try {
         await p.index('foo-index').query({ topK: 10, id: '1' });
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeConnectionError');
+        expect(err.name).toEqual('PineconeUnmappedHttpError');
         expect(err.message).toEqual(
-          'Request failed to reach Pinecone while calling https://controller.wrong-environment2.pinecone.io/actions/whoami. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+          'An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.'
         );
       }
     });
@@ -48,6 +51,7 @@ describe('Error handling', () => {
       });
 
       test('calling control plane', async () => {
+        expect.assertions(4);
         try {
           await p.listIndexes();
         } catch (e) {
@@ -68,9 +72,9 @@ describe('Error handling', () => {
           await p.index('foo-index').query({ topK: 10, id: '1' });
         } catch (e) {
           const err = e as PineconeConnectionError;
-          expect(err.name).toEqual('PineconeConnectionError');
+          expect(err.name).toEqual('PineconeUnmappedHttpError');
           expect(err.message).toEqual(
-            `Request failed to reach Pinecone while calling https://controller.${process.env.PINECONE_ENVIRONMENT}.pinecone.io/actions/whoami. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.`
+            `An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.`
           );
         }
       });

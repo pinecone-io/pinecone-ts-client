@@ -1,0 +1,143 @@
+name: Testing
+
+on:
+  workflow_call: {}
+
+jobs:
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run tests
+        env:
+          CI: true
+        run: npm run test:unit -- --coverage
+
+  integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        jest_env: ['node', 'edge']
+        pinecone_env: ['prod', 'staging']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run integration tests (prod)
+        if: matrix.pinecone_env == 'prod'
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_CONTROLLER_HOST: 'https://api.pinecone.io'
+        run: npm run test:integration:${{ matrix.jest_env }}
+
+      - name: Run integration tests (staging)
+        if: matrix.pinecone_env == 'staging'
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY_STAGING }}
+          PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
+        run: npm run test:integration:${{ matrix.jest_env }}
+
+  typescript-compilation-tests:
+    name: TS compile
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tsVersion:
+          [
+            '~4.1.0',
+            '~4.2.0',
+            '~4.3.0',
+            '~4.4.0',
+            '~4.5.0',
+            '~4.6.0',
+            '~4.7.0',
+            '~4.8.0',
+            '~4.9.0',
+            '~5.0.0',
+            '~5.1.0',
+            '~5.2.0',
+            'latest',
+          ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install npm packages
+        run: |
+          npm install --ignore-scripts
+        shell: bash
+      - name: Build TypeScript for Pinecone
+        run: npm run build
+        shell: bash
+      - name: install, compile, and run sample app
+        shell: bash
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        run: |
+          set -x
+          cd ..
+          cp -r pinecone-ts-client/ts-compilation-test ts-compilation-test
+          cd ts-compilation-test
+          npm install typescript@${{ matrix.tsVersion }} --no-cache
+          npm install '../pinecone-ts-client' --no-cache
+          cat package.json
+          cat package-lock.json
+          npm run tsc-version
+          npm run build
+          npm run start
+
+  example-app-semantic-search:
+    name: 'Example app: semantic search'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pinecone-ts-client
+        uses: actions/checkout@v4
+        with:
+          path: pinecone-ts-client
+      - name: Checkout semantic-search-example
+        uses: actions/checkout@v4
+        with:
+          repository: pinecone-io/semantic-search-example
+          path: semantic-search-example
+      - name: Install and build client
+        shell: bash
+        run: |
+          cd pinecone-ts-client
+          npm install --ignore-scripts
+          npm run build
+      - name: Install and build sample app
+        shell: bash
+        run: |
+          cd semantic-search-example
+          npm install --no-cache
+          npm install '../pinecone-ts-client'
+          cat package.json
+      - name: Run example tests with dev version of client
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_INDEX: 'semantic-search'
+        shell: bash
+        run: |
+          cd semantic-search-example
+          npm run test

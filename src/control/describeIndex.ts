@@ -1,15 +1,13 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import type { IndexMeta } from '../pinecone-generated-ts-fetch';
+import { IndexModel } from '../pinecone-generated-ts-fetch';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 
 /** The name of the index to describe */
 export type DescribeIndexOptions = IndexName;
-/** The description of your index returned from { @link Pinecone.describeIndex } */
-export type IndexDescription = IndexMeta;
 
-export const describeIndex = (api: IndexOperationsApi) => {
+export const describeIndex = (api: ManagePodIndexesApi) => {
   const validator = buildConfigValidator(IndexNameSchema, 'describeIndex');
 
   const removeDeprecatedFields = (result: any) => {
@@ -22,7 +20,7 @@ export const describeIndex = (api: IndexOperationsApi) => {
     }
   };
 
-  return async (name: IndexName): Promise<IndexDescription> => {
+  return async (name: DescribeIndexOptions): Promise<IndexModel> => {
     validator(name);
 
     const result = await api.describeIndex({ indexName: name });

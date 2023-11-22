@@ -1,5 +1,5 @@
 import {
-  IndexOperationsApi,
+  ManagePodIndexesApi,
   Configuration,
 } from '../pinecone-generated-ts-fetch';
 import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
@@ -9,19 +9,21 @@ import type { ConfigurationParameters as IndexOperationsApiConfigurationParamete
 
 export const indexOperationsBuilder = (
   config: PineconeConfiguration
-): IndexOperationsApi => {
+): ManagePodIndexesApi => {
   const { apiKey } = config;
   const controllerPath = config.controllerHostUrl || 'https://api.pinecone.io';
+  const headers = config.additionalHeaders || null;
   const apiConfig: IndexOperationsApiConfigurationParameters = {
     basePath: controllerPath,
     apiKey,
     queryParamsStringify,
     headers: {
       'User-Agent': buildUserAgent(false),
+      ...headers,
     },
     fetchApi: getFetch(config),
     middleware,
   };
 
-  return new IndexOperationsApi(new Configuration(apiConfig));
+  return new ManagePodIndexesApi(new Configuration(apiConfig));
 };
