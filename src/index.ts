@@ -5,21 +5,13 @@ export * as Errors from './errors';
 
 // Type exports
 export type {
-  CollectionDescription,
-  CollectionList,
   CollectionName,
   ConfigureIndexOptions,
-  CreateCollectionOptions,
   CreateIndexOptions,
   DeleteCollectionOptions,
   DeleteIndexOptions,
-  DescribeCollectionOptions,
   DescribeIndexOptions,
-  IndexDescription,
-  IndexList,
-  IndexListDescription,
   IndexName,
-  PartialCollectionDescription,
   PodType,
 } from './control';
 export type {
@@ -47,19 +39,24 @@ export type {
   RecordValues,
   ScoredPineconeRecord,
 } from './data';
-export type { FetchAPI } from './pinecone-generated-ts-fetch';
 export type {
-  IndexMeta,
-  IndexMetaStatus,
-  IndexMetaStatusStateEnum,
-  IndexMetaDatabase,
+  CollectionList,
+  CollectionModel,
+  ConfigureIndexRequest,
+  CreateCollectionRequest,
+  CreateIndexRequest,
+  DescribeCollectionRequest,
+  DescribeIndexRequest,
+  FetchAPI,
+  IndexList,
+  IndexModel,
 } from './pinecone-generated-ts-fetch';
 
 // Legacy exports for backwards compatibility
 export { PineconeClient } from './v0';
 export { utils } from './v0/utils';
 export {
-  CreateCollectionRequest,
+  CreateCollectionRequest as CreateCollectionRequestV0,
   CreateRequest,
   DeleteRequest,
   PatchRequest,

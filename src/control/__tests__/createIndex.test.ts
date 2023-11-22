@@ -1,9 +1,9 @@
 import { createIndex } from '../createIndex';
-import { IndexOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
-  CreateIndexRequest,
+  CreateIndexOperationRequest,
   DescribeIndexRequest,
-  IndexMeta,
+  IndexModel,
 } from '../../pinecone-generated-ts-fetch';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
@@ -13,7 +13,9 @@ const setupCreateIndexResponse = (
   isCreateIndexSuccess = true,
   isDescribeIndexSuccess = true
 ) => {
-  const fakeCreateIndex: (req: CreateIndexRequest) => Promise<IndexMeta> = jest
+  const fakeCreateIndex: (
+    req: CreateIndexOperationRequest
+  ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
@@ -35,36 +37,50 @@ const setupCreateIndexResponse = (
     );
   });
 
-  const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexMeta> =
+  const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexModel> =
     describeIndexMock;
 
-  const IOA = {
+  const MPIA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
-  } as IndexOperationsApi;
+  } as ManagePodIndexesApi;
 
-  return IOA;
+  return MPIA;
 };
 
 describe('createIndex', () => {
   test('calls the openapi create index endpoint, passing name and dimension', async () => {
-    const IOA = setupCreateIndexResponse(undefined, undefined);
-    const returned = await createIndex(IOA)({
+    const MPIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = await createIndex(MPIA)({
       name: 'index-name',
       dimension: 10,
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-west1',
+          replicas: 1,
+          shards: 1,
+          pods: 1,
+          podType: 'p1.x1',
+        },
+      },
     });
 
-    expect(returned).toBe(void 0);
-    expect(IOA.createIndex).toHaveBeenCalledWith({
-      createRequest: {
+    expect(returned).toEqual(void 0);
+    expect(MPIA.createIndex).toHaveBeenCalledWith({
+      createIndexRequest: {
         name: 'index-name',
         dimension: 10,
-        capacityMode: 'pod',
-        cloud: 'gcp',
-        region: 'us-east1',
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
       },
     });
   });
@@ -78,33 +94,47 @@ describe('createIndex', () => {
     });
 
     test('when passed waitUntilReady, calls the create index endpoint and begins polling describeIndex', async () => {
-      const IOA = setupCreateIndexResponse(undefined, [
+      const MPIA = setupCreateIndexResponse(undefined, [
         {
           status: { ready: true, state: 'Ready' },
         },
       ]);
 
-      const returned = await createIndex(IOA)({
+      const returned = await createIndex(MPIA)({
         name: 'index-name',
         dimension: 10,
-        cloud: 'gcp',
-        region: 'us-east1',
-        capacityMode: 'pod',
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
         waitUntilReady: true,
       });
 
-      expect(returned).toBe(void 0);
-      expect(IOA.createIndex).toHaveBeenCalledWith({
-        createRequest: {
+      expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
+      expect(MPIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
           name: 'index-name',
           dimension: 10,
-          cloud: 'gcp',
-          region: 'us-east1',
-          capacityMode: 'pod',
+          metric: 'cosine',
+          spec: {
+            pod: {
+              environment: 'us-west1',
+              replicas: 1,
+              shards: 1,
+              pods: 1,
+              podType: 'p1.x1',
+            },
+          },
           waitUntilReady: true,
         },
       });
-      expect(IOA.describeIndex).toHaveBeenCalledWith({
+      expect(MPIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
       });
     });
@@ -128,16 +158,23 @@ describe('createIndex', () => {
       const returned = createIndex(IOA)({
         name: 'index-name',
         dimension: 10,
-        cloud: 'gcp',
-        region: 'us-east1',
-        capacityMode: 'pod',
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
         waitUntilReady: true,
       });
 
       await jest.advanceTimersByTimeAsync(3000);
 
       return returned.then((result) => {
-        expect(result).toBe(void 0);
+        expect(result).toEqual({ status: { ready: true, state: 'Ready' } });
         expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
         });

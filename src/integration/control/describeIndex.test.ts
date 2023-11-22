@@ -1,4 +1,4 @@
-import { BasePineconeError } from '../../errors';
+import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomIndexName } from '../test-helpers';
 
@@ -13,9 +13,16 @@ describe('describe index', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
-      cloud: 'gcp',
-      region: 'us-east1',
-      capacityMode: 'pod',
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-east1-gcp',
+          replicas: 1,
+          shards: 1,
+          podType: 'p1.x1',
+          pods: 1,
+        },
+      },
     });
   });
 
@@ -25,20 +32,18 @@ describe('describe index', () => {
 
   test('describe index', async () => {
     const description = await pinecone.describeIndex(indexName);
-    expect(description.database?.name).toEqual(indexName);
-    expect(description.database?.dimension).toEqual(5);
-    expect(description.database?.metric).toEqual('cosine');
-    expect(description.database?.pods).toEqual(1);
-    expect(description.database?.replicas).toEqual(1);
-    expect(description.database?.shards).toEqual(1);
-    expect(description.status?.host).toBeDefined();
+    expect(description.name).toEqual(indexName);
+    expect(description.dimension).toEqual(5);
+    expect(description.metric).toEqual('cosine');
+    expect(description.host).toBeDefined();
   });
 
   test('describe index with invalid index name', async () => {
+    expect.assertions(1);
     try {
       await pinecone.describeIndex('non-existent-index');
     } catch (e) {
-      const err = e as BasePineconeError;
+      const err = e as PineconeNotFoundError;
       expect(err.name).toEqual('PineconeNotFoundError');
     }
   });

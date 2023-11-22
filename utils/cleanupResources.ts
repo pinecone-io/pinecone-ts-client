@@ -14,11 +14,12 @@ var pinecone = require('../dist');
 (async () => {
   const p = new pinecone.Pinecone();
 
-  const collections = await p.listCollections();
-  for (const collection of collections) {
-    console.log(`Deleting collection ${collection.name}`);
-    await p.deleteCollection(collection.name);
-  }
+  // TODO: Uncomment when collections are supported
+  // const collections = await p.listCollections();
+  // for (const collection of collections) {
+  //   console.log(`Deleting collection ${collection.name}`);
+  //   await p.deleteCollection(collection.name);
+  // }
 
   const indexes = await p.listIndexes();
   for (const index of indexes) {
