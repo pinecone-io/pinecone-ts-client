@@ -13,7 +13,7 @@ export const PineconeConfigurationSchema = Type.Object(
     // in the additionalProperties check.
     fetchApi: Type.Optional(Type.Any()),
 
-    httpHeaders: Type.Optional(Type.Any()),
+    additionalHeaders: Type.Optional(Type.Any()),
   },
   { additionalProperties: false }
 );
@@ -40,7 +40,7 @@ export type PineconeConfiguration = {
   /**
    * Optional headers to be included in all requests.
    */
-  httpHeaders?: HTTPHeaders;
+  additionalHeaders?: HTTPHeaders;
 };
 
 /** Configuration for a single Pinecone Index */

@@ -12,7 +12,7 @@ export const indexOperationsBuilder = (
 ): ManagePodIndexesApi => {
   const { apiKey } = config;
   const controllerPath = config.controllerHostUrl || 'https://api.pinecone.io';
-  const headers = config.httpHeaders || null;
+  const headers = config.additionalHeaders || null;
   const apiConfig: IndexOperationsApiConfigurationParameters = {
     basePath: controllerPath,
     apiKey,
