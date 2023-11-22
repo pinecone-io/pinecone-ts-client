@@ -15,7 +15,7 @@ describe('Error handling', () => {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeUnmappedHttpError');
         expect(err.message).toEqual(
-          'An unexpected error occured while calling the https://api.pinecone.io/databases endpoint.  Unknown or invalid API Key Status: 403.'
+          'An unexpected error occured while calling the https://api.pinecone.io/indexes endpoint.  Unknown or invalid API Key Status: 403.'
         );
         // TODO: Update when cause is populated
         // expect(err.cause).toBeDefined();
@@ -34,7 +34,7 @@ describe('Error handling', () => {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeUnmappedHttpError');
         expect(err.message).toEqual(
-          'An unexpected error occured while calling the https://api.pinecone.io/databases/foo-index endpoint.  Unknown or invalid API Key Status: 403.'
+          'An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.'
         );
       }
     });
@@ -74,7 +74,7 @@ describe('Error handling', () => {
           const err = e as PineconeConnectionError;
           expect(err.name).toEqual('PineconeUnmappedHttpError');
           expect(err.message).toEqual(
-            `An unexpected error occured while calling the https://api.pinecone.io/databases/foo-index endpoint.  Unknown or invalid API Key Status: 403.`
+            `An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.`
           );
         }
       });
