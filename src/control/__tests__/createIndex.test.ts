@@ -40,18 +40,18 @@ const setupCreateIndexResponse = (
   const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexModel> =
     describeIndexMock;
 
-  const IOA = {
+  const MPIA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
   } as ManagePodIndexesApi;
 
-  return IOA;
+  return MPIA;
 };
 
 describe('createIndex', () => {
   test('calls the openapi create index endpoint, passing name and dimension', async () => {
-    const IOA = setupCreateIndexResponse(undefined, undefined);
-    const returned = await createIndex(IOA)({
+    const MPIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = await createIndex(MPIA)({
       name: 'index-name',
       dimension: 10,
       metric: 'cosine',
@@ -67,17 +67,19 @@ describe('createIndex', () => {
     });
 
     expect(returned).toEqual(void 0);
-    expect(IOA.createIndex).toHaveBeenCalledWith({
-      name: 'index-name',
-      dimension: 10,
-      metric: 'cosine',
-      spec: {
-        pod: {
-          environment: 'us-west1',
-          replicas: 1,
-          shards: 1,
-          pods: 1,
-          podType: 'p1.x1',
+    expect(MPIA.createIndex).toHaveBeenCalledWith({
+      createIndexRequest: {
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
         },
       },
     });
@@ -92,13 +94,13 @@ describe('createIndex', () => {
     });
 
     test('when passed waitUntilReady, calls the create index endpoint and begins polling describeIndex', async () => {
-      const IOA = setupCreateIndexResponse(undefined, [
+      const MPIA = setupCreateIndexResponse(undefined, [
         {
           status: { ready: true, state: 'Ready' },
         },
       ]);
 
-      const returned = await createIndex(IOA)({
+      const returned = await createIndex(MPIA)({
         name: 'index-name',
         dimension: 10,
         metric: 'cosine',
@@ -115,22 +117,24 @@ describe('createIndex', () => {
       });
 
       expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
-      expect(IOA.createIndex).toHaveBeenCalledWith({
-        name: 'index-name',
-        dimension: 10,
-        metric: 'cosine',
-        spec: {
-          pod: {
-            environment: 'us-west1',
-            replicas: 1,
-            shards: 1,
-            pods: 1,
-            podType: 'p1.x1',
+      expect(MPIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'index-name',
+          dimension: 10,
+          metric: 'cosine',
+          spec: {
+            pod: {
+              environment: 'us-west1',
+              replicas: 1,
+              shards: 1,
+              pods: 1,
+              podType: 'p1.x1',
+            },
           },
+          waitUntilReady: true,
         },
-        waitUntilReady: true,
       });
-      expect(IOA.describeIndex).toHaveBeenCalledWith({
+      expect(MPIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
       });
     });

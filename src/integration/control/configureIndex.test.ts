@@ -36,7 +36,7 @@ describe.skip('configure index', () => {
     test('configure index with invalid index name', async () => {
       try {
         await pinecone.configureIndex('non-existent-index', {
-          spec: { pod: { replicas: 2 } },
+          replicas: 2,
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -47,7 +47,7 @@ describe.skip('configure index', () => {
     test('configure index when exceeding quota', async () => {
       try {
         await pinecone.configureIndex(indexName, {
-          spec: { pod: { replicas: 20 } },
+          replicas: 20,
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -66,7 +66,7 @@ describe.skip('configure index', () => {
       expect(description.spec.pod?.replicas).toEqual(2);
 
       await pinecone.configureIndex(indexName, {
-        spec: { pod: { replicas: 3 } },
+        replicas: 3,
       });
       const description2 = await pinecone.describeIndex(indexName);
       expect(description2.spec.pod?.replicas).toEqual(3);
@@ -77,7 +77,7 @@ describe.skip('configure index', () => {
       expect(description.spec.pod?.replicas).toEqual(2);
 
       await pinecone.configureIndex(indexName, {
-        spec: { pod: { replicas: 1 } },
+        replicas: 1,
       });
       const description3 = await pinecone.describeIndex(indexName);
       expect(description3.spec.pod?.replicas).toEqual(1);
@@ -93,7 +93,7 @@ describe.skip('configure index', () => {
       try {
         // Try to change the base pod type
         await pinecone.configureIndex(indexName, {
-          spec: { pod: { podType: 'p2.x1' } },
+          podType: 'p2.x1',
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -110,7 +110,7 @@ describe.skip('configure index', () => {
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
       await pinecone.configureIndex(indexName, {
-        spec: { pod: { podType: 'p1.x2' } },
+        podType: 'p1.x2',
       });
       const description2 = await pinecone.describeIndex(indexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
@@ -123,7 +123,7 @@ describe.skip('configure index', () => {
 
       // Size up
       await pinecone.configureIndex(indexName, {
-        spec: { pod: { podType: 'p1.x2' } },
+        podType: 'p1.x2',
       });
       const description2 = await pinecone.describeIndex(indexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
@@ -133,7 +133,7 @@ describe.skip('configure index', () => {
       try {
         // try to size down
         await pinecone.configureIndex(indexName, {
-          spec: { pod: { podType: 'p1.x1' } },
+          podType: 'p1.x1',
         });
         const description3 = await pinecone.describeIndex(indexName);
         expect(description3.spec.pod?.podType).toEqual('p1.x1');

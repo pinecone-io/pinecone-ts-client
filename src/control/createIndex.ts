@@ -9,7 +9,6 @@ import { handleApiError } from '../errors';
 import { Type } from '@sinclair/typebox';
 import {
   IndexNameSchema,
-  CapacityModeSchema,
   CloudSchema,
   DimensionSchema,
   EnvironmentSchema,
@@ -20,8 +19,8 @@ import {
   PodTypeSchema,
   MetadataConfigSchema,
   CollectionNameSchema,
+  ShardsSchema,
 } from './types';
-import type { IndexName, PodType } from './types';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -38,16 +37,29 @@ const CreateIndexOptionsSchema = Type.Object(
   {
     name: IndexNameSchema,
     dimension: DimensionSchema,
-    region: RegionSchema,
-    cloud: CloudSchema,
-    capacityMode: CapacityModeSchema,
-    metric: Type.Optional(MetricSchema),
-    pods: Type.Optional(PodsSchema),
-    replicas: Type.Optional(ReplicasSchema),
-    podType: Type.Optional(PodTypeSchema),
-    environment: Type.Optional(EnvironmentSchema),
-    metadataConfig: Type.Optional(MetadataConfigSchema),
-    sourceCollection: Type.Optional(CollectionNameSchema),
+    metric: MetricSchema,
+
+    spec: Type.Object({
+      serverless: Type.Optional(
+        Type.Object({
+          cloud: CloudSchema,
+          region: RegionSchema,
+        })
+      ),
+
+      pod: Type.Optional(
+        Type.Object({
+          environment: EnvironmentSchema,
+          replicas: ReplicasSchema,
+          shards: ShardsSchema,
+          podType: PodTypeSchema,
+          pods: PodsSchema,
+          metadataConfig: Type.Optional(MetadataConfigSchema),
+          sourceCollection: Type.Optional(CollectionNameSchema),
+        })
+      ),
+    }),
+
     waitUntilReady: Type.Optional(Type.Boolean()),
     suppressConflicts: Type.Optional(Type.Boolean()),
   },
@@ -64,7 +76,7 @@ export const createIndex = (api: ManagePodIndexesApi) => {
     options: CreateIndexOptions
   ): Promise<IndexModel | undefined> => {
     // TODO: Fix runtime validation
-    //validator(options);
+    validator(options);
     try {
       const createResponse = await api.createIndex({
         createIndexRequest: options,

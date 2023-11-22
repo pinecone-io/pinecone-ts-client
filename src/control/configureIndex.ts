@@ -1,6 +1,6 @@
 import {
   ManagePodIndexesApi,
-  ConfigureIndexOperationRequest,
+  ConfigureIndexRequestSpecPod,
 } from '../pinecone-generated-ts-fetch';
 import { PineconeArgumentError } from '../errors';
 import { buildValidator } from '../validator';
@@ -38,18 +38,23 @@ export const configureIndex = (api: ManagePodIndexesApi) => {
     ConfigureIndexOptionsSchema
   );
 
-  return async (options: ConfigureIndexOperationRequest): Promise<void> => {
-    // TODO: Fix runtime validation
-    // indexNameValidator(options.indexName);
-    // patchRequestValidator(options.configureIndexRequest);
+  return async (
+    indexName: IndexName,
+    options: ConfigureIndexRequestSpecPod
+  ): Promise<void> => {
+    indexNameValidator(indexName);
+    patchRequestValidator(options);
 
-    // if (Object.keys(options).length === 0) {
-    //   throw new PineconeArgumentError(
-    //     'The second argument to configureIndex should not be empty object. Please specify at least one property (replicas, podType) to update.'
-    //   );
-    // }
+    if (Object.keys(options).length === 0) {
+      throw new PineconeArgumentError(
+        'The second argument to configureIndex should not be empty object. Please specify at least one property (replicas, podType) to update.'
+      );
+    }
 
-    await api.configureIndex(options);
+    await api.configureIndex({
+      indexName,
+      configureIndexRequest: { spec: { pod: options } },
+    });
     return;
   };
 };

@@ -79,7 +79,7 @@ describe('describeCollection', () => {
             name: 'collection-name',
             size: 3085509,
             status: 'Ready',
-            vectorCount: 120,
+            recordCount: 120,
           }),
         () => Promise.resolve([])
       );

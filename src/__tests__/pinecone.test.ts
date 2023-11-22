@@ -22,11 +22,16 @@ jest.mock('../control', () => {
   return {
     ...realControl,
     describeIndex: () =>
-      jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve({ status: { host: fakeHost } })
-        ),
+      jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          name: 'fake-index',
+          dimension: 1,
+          metric: 'cosine',
+          host: fakeHost,
+          spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+          status: { ready: true, state: 'Ready' },
+        })
+      ),
     deleteIndex: () => jest.fn().mockImplementation(() => Promise.resolve()),
   };
 });

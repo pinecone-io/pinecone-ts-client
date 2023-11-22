@@ -24,6 +24,7 @@ export type IndexName = string;
 export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;
+export const ShardsSchema = positiveInteger;
 export const MetricSchema = nonemptyString;
 export const DimensionSchema = positiveInteger;
 export const RegionSchema = nonemptyString;

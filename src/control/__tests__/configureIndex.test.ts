@@ -12,11 +12,9 @@ describe('configureIndex', () => {
     ) => Promise<IndexModel> = jest.fn();
     const IOA = { configureIndex: fakeConfigure } as ManagePodIndexesApi;
 
-    const returned = await configureIndex(IOA)({
-      indexName: 'index-name',
-      configureIndexRequest: {
-        spec: { pod: { replicas: 4, podType: 'p2.x2' } },
-      },
+    const returned = await configureIndex(IOA)('index-name', {
+      replicas: 4,
+      podType: 'p2.x2',
     });
 
     expect(returned).toBe(void 0);

@@ -14,7 +14,7 @@ import {
   CollectionName,
 } from './control';
 import {
-  ConfigureIndexRequest,
+  ConfigureIndexRequestSpecPod,
   CreateCollectionRequest,
 } from './pinecone-generated-ts-fetch';
 import { IndexHostSingleton } from './data/indexHostSingleton';
@@ -199,16 +199,16 @@ export class Pinecone {
    * ```
    *
    * @param indexName - The name of the index to describe.
-   * @returns A promise that resolves to {@link IndexMeta}
+   * @returns A promise that resolves to {@link IndexModel}
    */
   describeIndex(indexName: IndexName) {
     const describeIndexPromise = this._describeIndex(indexName);
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    describeIndexPromise.then((indexMeta) => {
-      if (indexMeta.host) {
-        IndexHostSingleton._set(this.config, indexName, indexMeta.host);
+    describeIndexPromise.then((indexModel) => {
+      if (indexModel.host) {
+        IndexHostSingleton._set(this.config, indexName, indexModel.host);
       }
     });
 
@@ -336,8 +336,8 @@ export class Pinecone {
    * @param indexName - The name of the index to configure.
    * @param options - The configuration properties you would like to update
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
-    return this._configureIndex({ indexName, configureIndexRequest: options });
+  configureIndex(indexName: IndexName, options: ConfigureIndexRequestSpecPod) {
+    return this._configureIndex(indexName, options);
   }
 
   /**
