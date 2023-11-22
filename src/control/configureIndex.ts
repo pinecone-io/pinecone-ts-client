@@ -1,4 +1,7 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import {
+  ManagePodIndexesApi,
+  ConfigureIndexRequestSpecPod,
+} from '../pinecone-generated-ts-fetch';
 import { PineconeArgumentError } from '../errors';
 import { buildValidator } from '../validator';
 import type { IndexName, PodType } from './types';
@@ -25,7 +28,7 @@ export type ConfigureIndexOptions = {
   podType?: PodType;
 };
 
-export const configureIndex = (api: IndexOperationsApi) => {
+export const configureIndex = (api: ManagePodIndexesApi) => {
   const indexNameValidator = buildValidator(
     'The first argument to configureIndex',
     IndexNameSchema
@@ -36,19 +39,22 @@ export const configureIndex = (api: IndexOperationsApi) => {
   );
 
   return async (
-    name: IndexName,
-    options: ConfigureIndexOptions
+    indexName: IndexName,
+    options: ConfigureIndexRequestSpecPod
   ): Promise<void> => {
-    indexNameValidator(name);
+    indexNameValidator(indexName);
     patchRequestValidator(options);
 
     if (Object.keys(options).length === 0) {
       throw new PineconeArgumentError(
-        'The second argument to configureIndex should not be empty object. Please specify at least one propert (replicas, podType) to update.'
+        'The second argument to configureIndex should not be empty object. Please specify at least one property (replicas, podType) to update.'
       );
     }
 
-    await api.configureIndex({ indexName: name, patchRequest: options });
+    await api.configureIndex({
+      indexName,
+      configureIndexRequest: { spec: { pod: options } },
+    });
     return;
   };
 };

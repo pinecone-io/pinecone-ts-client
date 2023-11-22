@@ -8,13 +8,15 @@ import {
   createCollection,
   describeCollection,
   deleteCollection,
-  ConfigureIndexOptions,
-  CreateCollectionOptions,
   CreateIndexOptions,
   IndexName,
   indexOperationsBuilder,
   CollectionName,
 } from './control';
+import {
+  ConfigureIndexRequestSpecPod,
+  CreateCollectionRequest,
+} from './pinecone-generated-ts-fetch';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -197,16 +199,16 @@ export class Pinecone {
    * ```
    *
    * @param indexName - The name of the index to describe.
-   * @returns A promise that resolves to {@link IndexMeta}
+   * @returns A promise that resolves to {@link IndexModel}
    */
   describeIndex(indexName: IndexName) {
     const describeIndexPromise = this._describeIndex(indexName);
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    describeIndexPromise.then((indexMeta) => {
-      if (indexMeta.status?.host) {
-        IndexHostSingleton._set(this.config, indexName, indexMeta.status.host);
+    describeIndexPromise.then((indexModel) => {
+      if (indexModel.host) {
+        IndexHostSingleton._set(this.config, indexName, indexModel.host);
       }
     });
 
@@ -334,7 +336,7 @@ export class Pinecone {
    * @param indexName - The name of the index to configure.
    * @param options - The configuration properties you would like to update
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
+  configureIndex(indexName: IndexName, options: ConfigureIndexRequestSpecPod) {
     return this._configureIndex(indexName, options);
   }
 
@@ -356,7 +358,7 @@ export class Pinecone {
    * @param options.source - The name of the index to use as the source for the collection.
    * @returns a promise that resolves when the request to create the collection is completed.
    */
-  createCollection(options: CreateCollectionOptions) {
+  createCollection(options: CreateCollectionRequest) {
     return this._createCollection(options);
   }
 
