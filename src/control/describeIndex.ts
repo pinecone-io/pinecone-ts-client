@@ -20,10 +20,10 @@ export const describeIndex = (api: ManagePodIndexesApi) => {
     }
   };
 
-  return async (name: DescribeIndexOptions): Promise<IndexModel> => {
-    validator(name);
+  return async (indexName: DescribeIndexOptions): Promise<IndexModel> => {
+    validator(indexName);
 
-    const result = await api.describeIndex({ indexName: name });
+    const result = await api.describeIndex({ indexName });
     removeDeprecatedFields(result);
 
     return result;

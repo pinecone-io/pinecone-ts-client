@@ -25,7 +25,11 @@ export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;
 export const ShardsSchema = positiveInteger;
-export const MetricSchema = nonemptyString;
+export const MetricSchema = Type.Union([
+  Type.Literal('cosine'),
+  Type.Literal('euclidean'),
+  Type.Literal('dotproduct'),
+]);
 export const DimensionSchema = positiveInteger;
 export const RegionSchema = nonemptyString;
 export const EnvironmentSchema = nonemptyString;

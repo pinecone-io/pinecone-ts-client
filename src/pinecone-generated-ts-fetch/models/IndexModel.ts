@@ -13,12 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { IndexMetric } from './IndexMetric';
-import {
-    IndexMetricFromJSON,
-    IndexMetricFromJSONTyped,
-    IndexMetricToJSON,
-} from './IndexMetric';
 import type { IndexModelSpec } from './IndexModelSpec';
 import {
     IndexModelSpecFromJSON,
@@ -51,11 +45,11 @@ export interface IndexModel {
      */
     dimension: number;
     /**
-     * 
-     * @type {IndexMetric}
+     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
+     * @type {string}
      * @memberof IndexModel
      */
-    metric: IndexMetric;
+    metric: IndexModelMetricEnum;
     /**
      * The URL address where the index is hosted.
      * @type {string}
@@ -75,6 +69,18 @@ export interface IndexModel {
      */
     status: IndexModelStatus;
 }
+
+
+/**
+ * @export
+ */
+export const IndexModelMetricEnum = {
+    Cosine: 'cosine',
+    Euclidean: 'euclidean',
+    Dotproduct: 'dotproduct'
+} as const;
+export type IndexModelMetricEnum = typeof IndexModelMetricEnum[keyof typeof IndexModelMetricEnum];
+
 
 /**
  * Check if a given object implements the IndexModel interface.
@@ -103,7 +109,7 @@ export function IndexModelFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'name': json['name'],
         'dimension': json['dimension'],
-        'metric': IndexMetricFromJSON(json['metric']),
+        'metric': json['metric'],
         'host': json['host'],
         'spec': IndexModelSpecFromJSON(json['spec']),
         'status': IndexModelStatusFromJSON(json['status']),
@@ -121,7 +127,7 @@ export function IndexModelToJSON(value?: IndexModel | null): any {
         
         'name': value.name,
         'dimension': value.dimension,
-        'metric': IndexMetricToJSON(value.metric),
+        'metric': value.metric,
         'host': value.host,
         'spec': IndexModelSpecToJSON(value.spec),
         'status': IndexModelStatusToJSON(value.status),

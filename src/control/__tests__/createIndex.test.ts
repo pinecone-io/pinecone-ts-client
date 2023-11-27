@@ -49,12 +49,47 @@ const setupCreateIndexResponse = (
 };
 
 describe('createIndex', () => {
-  test('calls the openapi create index endpoint, passing name and dimension', async () => {
+  test('calls the openapi create index endpoint, passing name, dimension, metric, and spec', async () => {
     const MPIA = setupCreateIndexResponse(undefined, undefined);
     const returned = await createIndex(MPIA)({
       name: 'index-name',
       dimension: 10,
       metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-west1',
+          replicas: 1,
+          shards: 1,
+          pods: 1,
+          podType: 'p1.x1',
+        },
+      },
+    });
+
+    expect(returned).toEqual(void 0);
+    expect(MPIA.createIndex).toHaveBeenCalledWith({
+      createIndexRequest: {
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            replicas: 1,
+            shards: 1,
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      },
+    });
+  });
+
+  test('default metric to "cosine" if not specified', async () => {
+    const MPIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = await createIndex(MPIA)({
+      name: 'index-name',
+      dimension: 10,
       spec: {
         pod: {
           environment: 'us-west1',

@@ -14,10 +14,10 @@ export const deleteCollection = (api: ManagePodIndexesApi) => {
     'deleteCollection'
   );
 
-  return async (collectionName: CollectionName): Promise<void> => {
+  return async (collectionName: DeleteCollectionOptions): Promise<void> => {
     validator(collectionName);
 
-    await api.deleteCollection({ collectionName: collectionName });
+    await api.deleteCollection({ collectionName });
     return;
   };
 };

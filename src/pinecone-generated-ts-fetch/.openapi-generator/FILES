@@ -1,6 +1,5 @@
 .openapi-generator-ignore
 apis/ManagePodIndexesApi.ts
-apis/ManageServerlessIndexesApi.ts
 apis/VectorOperationsApi.ts
 apis/index.ts
 index.ts
@@ -21,14 +20,12 @@ models/ErrorResponseError.ts
 models/FetchResponse.ts
 models/GcpRegions.ts
 models/IndexList.ts
-models/IndexMetric.ts
 models/IndexModel.ts
 models/IndexModelSpec.ts
 models/IndexModelStatus.ts
 models/NamespaceSummary.ts
 models/PodSpec.ts
 models/PodSpecMetadataConfig.ts
-models/PodSpecPodType.ts
 models/ProtobufAny.ts
 models/ProtobufNullValue.ts
 models/QueryRequest.ts
