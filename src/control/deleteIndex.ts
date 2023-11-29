@@ -9,10 +9,9 @@ export const deleteIndex = (api: ManagePodIndexesApi) => {
   const validator = buildConfigValidator(IndexNameSchema, 'deleteIndex');
 
   return async (indexName: DeleteIndexOptions): Promise<void> => {
-    // TODO: Fix runtime validation
     validator(indexName);
 
-    await api.deleteIndex({ indexName: indexName });
+    await api.deleteIndex({ indexName });
     return;
   };
 };

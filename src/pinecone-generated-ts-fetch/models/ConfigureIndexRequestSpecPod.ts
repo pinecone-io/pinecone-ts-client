@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PodSpecPodType } from './PodSpecPodType';
-import {
-    PodSpecPodTypeFromJSON,
-    PodSpecPodTypeFromJSONTyped,
-    PodSpecPodTypeToJSON,
-} from './PodSpecPodType';
-
 /**
  * 
  * @export
@@ -33,11 +26,11 @@ export interface ConfigureIndexRequestSpecPod {
      */
     replicas?: number;
     /**
-     * 
-     * @type {PodSpecPodType}
+     * The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
+     * @type {string}
      * @memberof ConfigureIndexRequestSpecPod
      */
-    podType?: PodSpecPodType;
+    podType?: string;
 }
 
 /**
@@ -60,7 +53,7 @@ export function ConfigureIndexRequestSpecPodFromJSONTyped(json: any, ignoreDiscr
     return {
         
         'replicas': !exists(json, 'replicas') ? undefined : json['replicas'],
-        'podType': !exists(json, 'pod_type') ? undefined : PodSpecPodTypeFromJSON(json['pod_type']),
+        'podType': !exists(json, 'pod_type') ? undefined : json['pod_type'],
     };
 }
 
@@ -74,7 +67,7 @@ export function ConfigureIndexRequestSpecPodToJSON(value?: ConfigureIndexRequest
     return {
         
         'replicas': value.replicas,
-        'pod_type': PodSpecPodTypeToJSON(value.podType),
+        'pod_type': value.podType,
     };
 }
 

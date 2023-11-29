@@ -19,12 +19,6 @@ import {
     CreateIndexRequestSpecFromJSONTyped,
     CreateIndexRequestSpecToJSON,
 } from './CreateIndexRequestSpec';
-import type { IndexMetric } from './IndexMetric';
-import {
-    IndexMetricFromJSON,
-    IndexMetricFromJSONTyped,
-    IndexMetricToJSON,
-} from './IndexMetric';
 
 /**
  * The configuration needed to create a Pinecone index.
@@ -45,11 +39,11 @@ export interface CreateIndexRequest {
      */
     dimension: number;
     /**
-     * 
-     * @type {IndexMetric}
+     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
+     * @type {string}
      * @memberof CreateIndexRequest
      */
-    metric: IndexMetric;
+    metric: CreateIndexRequestMetricEnum;
     /**
      * 
      * @type {CreateIndexRequestSpec}
@@ -57,6 +51,18 @@ export interface CreateIndexRequest {
      */
     spec: CreateIndexRequestSpec | null;
 }
+
+
+/**
+ * @export
+ */
+export const CreateIndexRequestMetricEnum = {
+    Cosine: 'cosine',
+    Euclidean: 'euclidean',
+    Dotproduct: 'dotproduct'
+} as const;
+export type CreateIndexRequestMetricEnum = typeof CreateIndexRequestMetricEnum[keyof typeof CreateIndexRequestMetricEnum];
+
 
 /**
  * Check if a given object implements the CreateIndexRequest interface.
@@ -83,7 +89,7 @@ export function CreateIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'name': json['name'],
         'dimension': json['dimension'],
-        'metric': IndexMetricFromJSON(json['metric']),
+        'metric': json['metric'],
         'spec': CreateIndexRequestSpecFromJSON(json['spec']),
     };
 }
@@ -99,7 +105,7 @@ export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any
         
         'name': value.name,
         'dimension': value.dimension,
-        'metric': IndexMetricToJSON(value.metric),
+        'metric': value.metric,
         'spec': CreateIndexRequestSpecToJSON(value.spec),
     };
 }
