@@ -2,6 +2,7 @@ import {
   CreateIndexRequest,
   IndexModel,
   ManagePodIndexesApi,
+  CreateIndexRequestMetricEnum,
 } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
@@ -25,7 +26,9 @@ import {
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
-export interface CreateIndexOptions extends CreateIndexRequest {
+export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'metric'> {
+  metric?: CreateIndexRequestMetricEnum;
+
   /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
   waitUntilReady?: boolean;
 
@@ -72,14 +75,16 @@ export const createIndex = (api: ManagePodIndexesApi) => {
     'createIndex'
   );
 
-  return async (
-    options: CreateIndexOptions
-  ): Promise<IndexModel | undefined> => {
-    // TODO: Fix runtime validation
+  return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
+    // If metric is not specified, default to cosine
+    if (options && !options.metric) {
+      options.metric = 'cosine';
+    }
+
     validator(options);
     try {
       const createResponse = await api.createIndex({
-        createIndexRequest: options,
+        createIndexRequest: options as CreateIndexRequest,
       });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, options.name);

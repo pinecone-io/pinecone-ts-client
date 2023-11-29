@@ -231,22 +231,22 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The argument to createIndex had type errors: property 'metric' must be string."
+        "The argument to createIndex had type errors: property 'metric' must be equal to one of: 'cosine', 'euclidean', 'dotproduct'."
       );
     });
 
-    test('metric: should throw if blank string', async () => {
+    test('metric: should throw if not one of the predefined literals', async () => {
       const toThrow = async () =>
         await createIndex(MPIA)({
           name: 'index-name',
           dimension: 10,
-          metric: '',
+          metric: 'foo',
           spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The argument to createIndex had validation errors: property 'metric' must not be blank."
+        "The argument to createIndex had type errors: property 'metric' must be equal to one of: 'cosine', 'euclidean', 'dotproduct'."
       );
     });
 

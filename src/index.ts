@@ -6,11 +6,11 @@ export * as Errors from './errors';
 // Type exports
 export type {
   CollectionName,
-  ConfigureIndexOptions,
   CreateIndexOptions,
   DeleteCollectionOptions,
   DeleteIndexOptions,
   DescribeIndexOptions,
+  DescribeCollectionOptions,
   IndexName,
   PodType,
 } from './control';
@@ -42,9 +42,10 @@ export type {
 export type {
   CollectionList,
   CollectionModel,
-  ConfigureIndexRequest,
+  ConfigureIndexRequestSpecPod,
   CreateCollectionRequest,
   CreateIndexRequest,
+  CreateIndexRequestMetricEnum,
   DescribeCollectionRequest,
   DescribeIndexRequest,
   FetchAPI,

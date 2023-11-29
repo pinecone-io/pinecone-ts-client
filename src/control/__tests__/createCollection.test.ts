@@ -15,7 +15,6 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
     .mockImplementation(fakeCreateCollectionResponse);
   const fakeListIndexes: () => Promise<IndexList> = jest
     .fn()
-    // TODO: Update mock responses to match actual response objects
     .mockImplementation(() =>
       Promise.resolve({
         indexes: [
