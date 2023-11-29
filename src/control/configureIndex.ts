@@ -4,7 +4,7 @@ import {
 } from '../pinecone-generated-ts-fetch';
 import { PineconeArgumentError } from '../errors';
 import { buildValidator } from '../validator';
-import type { IndexName, PodType } from './types';
+import type { IndexName } from './types';
 
 import { Type } from '@sinclair/typebox';
 import { ReplicasSchema, PodTypeSchema, IndexNameSchema } from './types';
@@ -16,17 +16,6 @@ const ConfigureIndexOptionsSchema = Type.Object(
   },
   { additionalProperties: false }
 );
-
-/**
- * @see [Managing indexes](https://docs.pinecone.io/docs/manage-indexes)
- */
-export type ConfigureIndexOptions = {
-  /** The number of replicas in the index. The default number of replicas is 1. */
-  replicas?: number;
-
-  /** The type of pod in the index. This string should combine a base pod type (`s1`, `p1`, or `p2`) with a size (`x1`, `x2`, `x4`, or `x8`) into a string such as `p1.x1` or `s1.x4`. The default pod type is `p1.x1`. For more information on these, see this guide on [pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes) */
-  podType?: PodType;
-};
 
 export const configureIndex = (api: ManagePodIndexesApi) => {
   const indexNameValidator = buildValidator(

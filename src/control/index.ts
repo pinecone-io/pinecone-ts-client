@@ -2,7 +2,6 @@
 export { indexOperationsBuilder } from './indexOperationsBuilder';
 export type { IndexName, PodType } from './types';
 export { configureIndex } from './configureIndex';
-export type { ConfigureIndexOptions } from './configureIndex';
 export { createIndex } from './createIndex';
 export type { CreateIndexOptions } from './createIndex';
 export { deleteIndex } from './deleteIndex';
@@ -17,4 +16,5 @@ export { createCollection } from './createCollection';
 export { deleteCollection } from './deleteCollection';
 export type { DeleteCollectionOptions } from './deleteCollection';
 export { describeCollection } from './describeCollection';
+export type { DescribeCollectionOptions } from './describeCollection';
 export { listCollections } from './listCollections';

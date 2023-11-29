@@ -19,12 +19,6 @@ import {
     PodSpecMetadataConfigFromJSONTyped,
     PodSpecMetadataConfigToJSON,
 } from './PodSpecMetadataConfig';
-import type { PodSpecPodType } from './PodSpecPodType';
-import {
-    PodSpecPodTypeFromJSON,
-    PodSpecPodTypeFromJSONTyped,
-    PodSpecPodTypeToJSON,
-} from './PodSpecPodType';
 
 /**
  * Configuration needed to deploy a pod index
@@ -51,11 +45,11 @@ export interface PodSpec {
      */
     shards: number;
     /**
-     * 
-     * @type {PodSpecPodType}
+     * The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
+     * @type {string}
      * @memberof PodSpec
      */
-    podType: PodSpecPodType;
+    podType: string;
     /**
      * The number of pods to be used in the index. This should be equal to `shards` x `replicas`.
      * @type {number}
@@ -103,7 +97,7 @@ export function PodSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
         'environment': json['environment'],
         'replicas': json['replicas'],
         'shards': json['shards'],
-        'podType': PodSpecPodTypeFromJSON(json['pod_type']),
+        'podType': json['pod_type'],
         'pods': json['pods'],
         'metadataConfig': !exists(json, 'metadata_config') ? undefined : PodSpecMetadataConfigFromJSON(json['metadata_config']),
         'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
@@ -122,7 +116,7 @@ export function PodSpecToJSON(value?: PodSpec | null): any {
         'environment': value.environment,
         'replicas': value.replicas,
         'shards': value.shards,
-        'pod_type': PodSpecPodTypeToJSON(value.podType),
+        'pod_type': value.podType,
         'pods': value.pods,
         'metadata_config': PodSpecMetadataConfigToJSON(value.metadataConfig),
         'source_collection': value.sourceCollection,
