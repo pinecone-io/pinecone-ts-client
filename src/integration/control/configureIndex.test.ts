@@ -32,7 +32,7 @@ describe.skip('configure index', () => {
     await pinecone.deleteIndex(indexName);
   });
 
-  describe('error handling', () => {
+  describe.skip('error handling', () => {
     test('configure index with invalid index name', async () => {
       try {
         await pinecone.configureIndex('non-existent-index', {
@@ -60,7 +60,7 @@ describe.skip('configure index', () => {
     });
   });
 
-  describe('scaling replicas', () => {
+  describe.skip('scaling replicas', () => {
     test('scaling up', async () => {
       const description = await pinecone.describeIndex(indexName);
       expect(description.spec.pod?.replicas).toEqual(2);
@@ -84,7 +84,7 @@ describe.skip('configure index', () => {
     });
   });
 
-  describe('scaling pod type', () => {
+  describe.skip('scaling pod type', () => {
     test('scaling podType: changing base pod type', async () => {
       // Verify the starting state
       const description = await pinecone.describeIndex(indexName);
