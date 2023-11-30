@@ -21,8 +21,8 @@ var pinecone = require('../dist');
   //   await p.deleteCollection(collection.name);
   // }
 
-  const indexes = await p.listIndexes();
-  for (const index of indexes) {
+  const response = await p.listIndexes();
+  for (const index of response.indexes) {
     console.log(`Deleting index ${index.name}`);
     await p.deleteIndex(index.name);
   }

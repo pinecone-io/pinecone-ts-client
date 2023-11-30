@@ -150,7 +150,8 @@ describe('create index', () => {
       }
     });
 
-    test('create from non-existent collection', async () => {
+    // TODO: Uncomment when pod index is supported
+    test.skip('create from non-existent collection', async () => {
       try {
         await pinecone.createIndex({
           name: indexName,
@@ -158,7 +159,7 @@ describe('create index', () => {
           metric: 'cosine',
           spec: {
             pod: {
-              environment: 'us-west-2-aws',
+              environment: 'us-east-1-aws',
               replicas: 1,
               shards: 1,
               podType: 'p1.x1',
