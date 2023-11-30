@@ -16,17 +16,19 @@ describe('create index', () => {
       await pinecone.deleteIndex(indexName);
     });
 
+    // TODO: Add create test for pod index when supported
+
     test('simple create', async () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
-        metric: 'cosine',
         spec: {
           serverless: {
             cloud: 'aws',
-            region: 'us-east-1',
+            region: 'us-west-2',
           },
         },
+        waitUntilReady: true,
       });
       const description = await pinecone.describeIndex(indexName);
       expect(description.name).toEqual(indexName);
@@ -35,7 +37,7 @@ describe('create index', () => {
       expect(description.host).toBeDefined();
     });
 
-    test('create with optional properties', async () => {
+    test('create with metric', async () => {
       await pinecone.createIndex({
         name: indexName,
         dimension: 5,
@@ -43,9 +45,10 @@ describe('create index', () => {
         spec: {
           serverless: {
             cloud: 'aws',
-            region: 'us-east-1',
+            region: 'us-west-2',
           },
         },
+        waitUntilReady: true,
       });
 
       const description = await pinecone.describeIndex(indexName);
@@ -63,7 +66,7 @@ describe('create index', () => {
         spec: {
           serverless: {
             cloud: 'aws',
-            region: 'us-east-1',
+            region: 'us-west-2',
           },
         },
         waitUntilReady: true,
@@ -82,9 +85,10 @@ describe('create index', () => {
         spec: {
           serverless: {
             cloud: 'aws',
-            region: 'us-east-1',
+            region: 'us-west-2',
           },
         },
+        waitUntilReady: true,
       });
       await pinecone.createIndex({
         name: indexName,
@@ -93,10 +97,11 @@ describe('create index', () => {
         spec: {
           serverless: {
             cloud: 'aws',
-            region: 'us-east-1',
+            region: 'us-west-2',
           },
         },
         suppressConflicts: true,
+        waitUntilReady: true,
       });
 
       const description = await pinecone.describeIndex(indexName);
@@ -114,7 +119,7 @@ describe('create index', () => {
           spec: {
             serverless: {
               cloud: 'aws',
-              region: 'us-east-1',
+              region: 'us-west-2',
             },
           },
         });
@@ -134,7 +139,7 @@ describe('create index', () => {
           spec: {
             serverless: {
               cloud: 'aws',
-              region: 'us-east-1',
+              region: 'us-west-2',
             },
           },
         });
@@ -153,7 +158,7 @@ describe('create index', () => {
           metric: 'cosine',
           spec: {
             pod: {
-              environment: 'us-east-1-aws',
+              environment: 'us-west-2-aws',
               replicas: 1,
               shards: 1,
               podType: 'p1.x1',
@@ -164,8 +169,10 @@ describe('create index', () => {
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain('failed to fetch source collection');
+        expect(err.name).toEqual('PineconeNotFoundError');
+        expect(err.message).toContain(
+          'A call to https://api.pinecone.io/indexes returned HTTP status 404.'
+        );
       }
     });
   });

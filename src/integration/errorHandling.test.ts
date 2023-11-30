@@ -13,9 +13,9 @@ describe('Error handling', () => {
         await p.listIndexes();
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeUnmappedHttpError');
+        expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'An unexpected error occured while calling the https://api.pinecone.io/indexes endpoint.  Unknown or invalid API Key Status: 403.'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
         );
         // TODO: Update when cause is populated
         // expect(err.cause).toBeDefined();
@@ -32,9 +32,9 @@ describe('Error handling', () => {
         await p.index('foo-index').query({ topK: 10, id: '1' });
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeUnmappedHttpError');
+        expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
         );
       }
     });
@@ -72,9 +72,9 @@ describe('Error handling', () => {
           await p.index('foo-index').query({ topK: 10, id: '1' });
         } catch (e) {
           const err = e as PineconeConnectionError;
-          expect(err.name).toEqual('PineconeUnmappedHttpError');
+          expect(err.name).toEqual('PineconeAuthorizationError');
           expect(err.message).toEqual(
-            `An unexpected error occured while calling the https://api.pinecone.io/indexes/foo-index endpoint.  Unknown or invalid API Key Status: 403.`
+            'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
           );
         }
       });

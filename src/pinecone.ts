@@ -201,18 +201,16 @@ export class Pinecone {
    * @param indexName - The name of the index to describe.
    * @returns A promise that resolves to {@link IndexModel}
    */
-  describeIndex(indexName: IndexName) {
-    const describeIndexPromise = this._describeIndex(indexName);
+  async describeIndex(indexName: IndexName) {
+    const indexModel = await this._describeIndex(indexName);
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    describeIndexPromise.then((indexModel) => {
-      if (indexModel.host) {
-        IndexHostSingleton._set(this.config, indexName, indexModel.host);
-      }
-    });
+    if (indexModel.host) {
+      IndexHostSingleton._set(this.config, indexName, indexModel.host);
+    }
 
-    return describeIndexPromise;
+    return Promise.resolve(indexModel);
   }
 
   /**
@@ -312,15 +310,13 @@ export class Pinecone {
    * @returns A promise that resolves when the request to delete the index is completed.
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided
    */
-  deleteIndex(indexName: IndexName) {
-    const deleteIndexPromise = this._deleteIndex(indexName);
+  async deleteIndex(indexName: IndexName) {
+    await this._deleteIndex(indexName);
 
     // When an index is deleted, we need to evict the host from the IndexHostSingleton cache.
-    deleteIndexPromise.then(() => {
-      IndexHostSingleton._delete(this.config, indexName);
-    });
+    IndexHostSingleton._delete(this.config, indexName);
 
-    return deleteIndexPromise;
+    return Promise.resolve();
   }
 
   /**

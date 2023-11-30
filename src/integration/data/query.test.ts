@@ -1,7 +1,8 @@
 import { Pinecone, Index } from '../../index';
 import { randomString, generateRecords } from '../test-helpers';
 
-describe('query', () => {
+// TODO: Un-skip when freshness layer is ready
+describe.skip('query', () => {
   const INDEX_NAME = 'ts-integration';
   let pinecone: Pinecone, index: Index, ns: Index, namespace: string;
 

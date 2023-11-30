@@ -2,7 +2,7 @@ import { BasePineconeError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomIndexName, waitUntilReady } from '../test-helpers';
 
-// TODO: Uncomment when configure_index implemented
+// TODO: Uncomment when configure_index / pod indexes implemented
 describe.skip('configure index', () => {
   let indexName;
   let pinecone: Pinecone;
