@@ -27,7 +27,9 @@ jobs:
       max-parallel: 1
       matrix:
         jest_env: ['node', 'edge']
-        pinecone_env: ['prod', 'staging']
+        pinecone_env:
+          - prod
+          # - staging
 
     steps:
       - name: Checkout

@@ -14,14 +14,12 @@ describe('list indexes', () => {
       dimension: 5,
       metric: 'cosine',
       spec: {
-        pod: {
-          environment: 'us-east1-gcp',
-          replicas: 1,
-          shards: 1,
-          podType: 'p1.x1',
-          pods: 1,
+        serverless: {
+          region: 'us-west-2',
+          cloud: 'aws',
         },
       },
+      waitUntilReady: true,
     });
   });
 
