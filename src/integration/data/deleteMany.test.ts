@@ -1,7 +1,8 @@
 import { Pinecone, Index } from '../../index';
 import { randomString, generateRecords } from '../test-helpers';
 
-describe('deleteMany', () => {
+// TODO: Un-skip when freshness layer is ready
+describe.skip('deleteMany', () => {
   const INDEX_NAME = 'ts-integration';
   let pinecone: Pinecone, index: Index, ns: Index, namespace: string;
 
@@ -35,7 +36,7 @@ describe('deleteMany', () => {
     await ns.deleteAll();
   });
 
-  test('verify deleteMany with ids', async () => {
+  test.skip('verify deleteMany with ids', async () => {
     const recordsToUpsert = generateRecords(5, 3);
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');

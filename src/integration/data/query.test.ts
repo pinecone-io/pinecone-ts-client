@@ -1,7 +1,8 @@
 import { Pinecone, Index } from '../../index';
 import { randomString, generateRecords } from '../test-helpers';
 
-describe('query', () => {
+// TODO: Un-skip when freshness layer is ready
+describe.skip('query', () => {
   const INDEX_NAME = 'ts-integration';
   let pinecone: Pinecone, index: Index, ns: Index, namespace: string;
 
@@ -34,7 +35,7 @@ describe('query', () => {
     await ns.deleteAll();
   });
 
-  test('query by id', async () => {
+  test.skip('query by id', async () => {
     const recordsToUpsert = generateRecords(5, 3);
     expect(recordsToUpsert).toHaveLength(3);
 
@@ -53,7 +54,7 @@ describe('query', () => {
     expect(results.matches?.length).toEqual(topK);
   });
 
-  test('query when topK is greater than number of records', async () => {
+  test.skip('query when topK is greater than number of records', async () => {
     const numberOfRecords = 3;
     const recordsToUpsert = generateRecords(5, numberOfRecords);
     expect(recordsToUpsert).toHaveLength(3);
@@ -70,7 +71,7 @@ describe('query', () => {
     expect(results.matches?.length).toEqual(numberOfRecords);
   });
 
-  test('with invalid id, returns empty results', async () => {
+  test.skip('with invalid id, returns empty results', async () => {
     const recordsToUpsert = generateRecords(5, 3);
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');
@@ -86,7 +87,7 @@ describe('query', () => {
     expect(results.matches?.length).toEqual(0);
   });
 
-  test('query with vector values', async () => {
+  test.skip('query with vector values', async () => {
     const numberOfRecords = 3;
     const recordsToUpsert = generateRecords(5, numberOfRecords);
     expect(recordsToUpsert).toHaveLength(3);

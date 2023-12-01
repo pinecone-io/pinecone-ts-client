@@ -6,45 +6,52 @@ describe('describe index', () => {
   let indexName;
   let pinecone: Pinecone;
 
-  beforeEach(async () => {
-    indexName = randomIndexName('describeIndex');
-    pinecone = new Pinecone();
+  describe('happy path', () => {
+    beforeEach(async () => {
+      indexName = randomIndexName('describeIndex');
+      pinecone = new Pinecone();
 
-    await pinecone.createIndex({
-      name: indexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        pod: {
-          environment: 'us-east1-gcp',
-          replicas: 1,
-          shards: 1,
-          podType: 'p1.x1',
-          pods: 1,
+      await pinecone.createIndex({
+        name: indexName,
+        dimension: 5,
+        metric: 'cosine',
+        spec: {
+          serverless: {
+            region: 'us-west-2',
+            cloud: 'aws',
+          },
         },
-      },
+        waitUntilReady: true,
+      });
+    });
+
+    afterEach(async () => {
+      await pinecone.deleteIndex(indexName);
+    });
+
+    test('describe index', async () => {
+      const description = await pinecone.describeIndex(indexName);
+      expect(description.name).toEqual(indexName);
+      expect(description.dimension).toEqual(5);
+      expect(description.metric).toEqual('cosine');
+      expect(description.host).toBeDefined();
+      expect(description.spec.serverless).toBeDefined();
+      expect(description.spec.serverless?.cloud).toEqual('aws');
+      expect(description.spec.serverless?.region).toEqual('us-west-2');
+      expect(description.status.ready).toEqual(true);
+      expect(description.status.state).toEqual('Ready');
     });
   });
 
-  afterEach(async () => {
-    await pinecone.deleteIndex(indexName);
-  });
-
-  test('describe index', async () => {
-    const description = await pinecone.describeIndex(indexName);
-    expect(description.name).toEqual(indexName);
-    expect(description.dimension).toEqual(5);
-    expect(description.metric).toEqual('cosine');
-    expect(description.host).toBeDefined();
-  });
-
-  test('describe index with invalid index name', async () => {
-    expect.assertions(1);
-    try {
-      await pinecone.describeIndex('non-existent-index');
-    } catch (e) {
-      const err = e as PineconeNotFoundError;
-      expect(err.name).toEqual('PineconeNotFoundError');
-    }
+  describe('error case', () => {
+    test('describe index with invalid index name', async () => {
+      expect.assertions(1);
+      try {
+        return await pinecone.describeIndex('non-existent-index');
+      } catch (e) {
+        const err = e as PineconeNotFoundError;
+        expect(err.name).toEqual('PineconeNotFoundError');
+      }
+    });
   });
 });

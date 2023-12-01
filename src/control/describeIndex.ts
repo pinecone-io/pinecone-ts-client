@@ -1,6 +1,8 @@
-import { ManagePodIndexesApi } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
-import { IndexModel } from '../pinecone-generated-ts-fetch';
+import {
+  IndexModel,
+  ManagePodIndexesApi,
+} from '../pinecone-generated-ts-fetch';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 
