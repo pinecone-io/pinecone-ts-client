@@ -91,6 +91,7 @@ export const middleware = [
 
     post: async (context) => {
       const { response } = context;
+
       if (response.status >= 200 && response.status < 300) {
         return response;
       } else {
