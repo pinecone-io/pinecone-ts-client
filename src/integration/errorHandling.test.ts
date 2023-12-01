@@ -17,8 +17,6 @@ describe('Error handling', () => {
         expect(err.message).toEqual(
           'The API key you provided was rejected while calling https://api.pinecone.io/indexes. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
         );
-        // TODO: Update when cause is populated
-        // expect(err.cause).toBeDefined();
       }
     });
 

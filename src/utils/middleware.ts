@@ -85,18 +85,19 @@ export const middleware = [
   ...debugMiddleware,
   {
     onError: async (context) => {
-      const err = await handleApiError(context.error);
+      const err = await handleApiError(context.error, undefined, context.url);
       throw err;
     },
 
     post: async (context) => {
       const { response } = context;
-
       if (response.status >= 200 && response.status < 300) {
         return response;
       } else {
         const err = await handleApiError(
-          new ResponseError(response, 'Response returned an error')
+          new ResponseError(response, 'Response returned an error'),
+          undefined,
+          context.url
         );
         throw err;
       }
