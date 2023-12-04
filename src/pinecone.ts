@@ -224,8 +224,19 @@ export class Pinecone {
    *
    * @returns A promise that resolves to an array of index names
    */
-  listIndexes() {
-    return this._listIndexes();
+  async listIndexes() {
+    const indexList = await this._listIndexes();
+
+    // For any listIndexes calls we want to update the IndexHostSingleton cache.
+    // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
+    if (indexList.indexes && indexList.indexes.length > 0) {
+      for (let i = 0; i < indexList.indexes.length; i++) {
+        const index = indexList.indexes[i];
+        IndexHostSingleton._set(this.config, index.name, index.host);
+      }
+    }
+
+    return Promise.resolve(indexList);
   }
 
   /**
