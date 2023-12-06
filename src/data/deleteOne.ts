@@ -16,7 +16,7 @@ export const deleteOne = (
 ) => {
   const validator = buildConfigValidator(RecordIdSchema, 'deleteOne');
 
-  return async (options: RecordId): Promise<void> => {
+  return async (options: DeleteOneOptions): Promise<void> => {
     validator(options);
 
     const api = await apiProvider.provide();
