@@ -26,4 +26,6 @@ var pinecone = require('../dist');
     console.log(`Deleting index ${index.name}`);
     await p.deleteIndex(index.name);
   }
+
+  process.exit();
 })();
