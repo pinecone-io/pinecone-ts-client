@@ -6,18 +6,11 @@ import type {
 } from '../index';
 import { Pinecone, Index } from '../index';
 
-const metadataKeys = ['genre', 'year'];
 const metadataMap = {
-  [metadataKeys[0]]: [
-    'action',
-    'comedy',
-    'drama',
-    'horror',
-    'romance',
-    'thriller',
-  ],
-  [metadataKeys[1]]: [2010, 2011, 2012, 2013, 2014, 2015],
+  genre: ['action', 'comedy', 'drama', 'horror', 'romance', 'thriller'],
+  year: [2010, 2011, 2012, 2013, 2014, 2015],
 };
+const metadataKeys = Object.keys(metadataMap);
 
 export const INDEX_NAME = 'ts-integration';
 
