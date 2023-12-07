@@ -22,17 +22,44 @@ jest.mock('../control', () => {
   return {
     ...realControl,
     describeIndex: () =>
-      jest.fn().mockImplementation(() =>
-        Promise.resolve({
-          name: 'fake-index',
-          dimension: 1,
-          metric: 'cosine',
-          host: fakeHost,
-          spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-          status: { ready: true, state: 'Ready' },
-        })
-      ),
-    deleteIndex: () => jest.fn().mockImplementation(() => Promise.resolve()),
+      jest.fn().mockResolvedValue({
+        name: 'fake-index',
+        dimension: 1,
+        metric: 'cosine',
+        host: fakeHost,
+        spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+        status: { ready: true, state: 'Ready' },
+      }),
+    deleteIndex: () => jest.fn().mockResolvedValue(undefined),
+    listIndexes: () =>
+      jest.fn().mockResolvedValue({
+        indexes: [
+          {
+            name: 'fake-index1',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+          {
+            name: 'fake-index2',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+          {
+            name: 'fake-index3',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+        ],
+      }),
   };
 });
 
@@ -163,6 +190,30 @@ describe('Pinecone', () => {
       expect(IndexHostSingleton._set).toHaveBeenCalledWith(
         { apiKey: 'foo' },
         'test-index',
+        fakeHost
+      );
+    });
+
+    test('listIndexes triggers calling IndexHostSingleton._set', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      await p.listIndexes();
+
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        1,
+        { apiKey: 'foo' },
+        'fake-index1',
+        fakeHost
+      );
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        2,
+        { apiKey: 'foo' },
+        'fake-index2',
+        fakeHost
+      );
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        3,
+        { apiKey: 'foo' },
+        'fake-index3',
         fakeHost
       );
     });
