@@ -50,7 +50,7 @@ describe('query', () => {
 
     await ns.upsert(recordsToUpsert);
     await waitUntilRecordsReady(ns, namespace, recordIds);
-    sleep(2000);
+    await sleep(1500);
     const topK = 2;
     const results = await ns.query({ id: '0', topK });
     expect(results.matches).toBeDefined();
@@ -69,7 +69,7 @@ describe('query', () => {
 
     await ns.upsert(recordsToUpsert);
     await waitUntilRecordsReady(ns, namespace, recordIds);
-    sleep(2000);
+    await sleep(1500);
     const topK = 5;
     const results = await ns.query({ id: '0', topK });
     console.log('Query Results: ', results);
@@ -107,7 +107,7 @@ describe('query', () => {
 
     await ns.upsert(recordsToUpsert);
     await waitUntilRecordsReady(ns, namespace, recordIds);
-    sleep(2000);
+    await sleep(1500);
     const topK = 1;
     const results = await ns.query({
       vector: [0.11, 0.22, 0.33, 0.44, 0.55],
