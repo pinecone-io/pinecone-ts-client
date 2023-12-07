@@ -48,7 +48,6 @@ describe('upsert and update', () => {
 
     await ns.upsert(recordToUpsert);
     await waitUntilRecordsReady(ns, namespace, recordIds);
-    // await sleep(1500);
 
     // Fetch and inspect records to validate upsert
     const fetchResult = await ns.fetch(recordIds);
