@@ -161,7 +161,6 @@ describe('create index', () => {
             pod: {
               environment: 'us-east-1-aws',
               replicas: 1,
-              shards: 1,
               podType: 'p1.x1',
               pods: 1,
               sourceCollection: 'non-existent-collection',

@@ -19,7 +19,6 @@ describe.skip('configure index', () => {
         pod: {
           environment: 'us-east1-gcp',
           replicas: 2,
-          shards: 1,
           podType: 'p1.x1',
           pods: 2,
         },
