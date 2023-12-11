@@ -51,6 +51,12 @@ export interface CreateIndexRequestSpecPod {
      */
     pods?: number;
     /**
+     * The number of shards. Shards split your data across multiple pods so you can fit more data into an index.
+     * @type {number}
+     * @memberof CreateIndexRequestSpecPod
+     */
+    shards?: number;
+    /**
      * 
      * @type {PodSpecMetadataConfig}
      * @memberof CreateIndexRequestSpecPod
@@ -89,6 +95,7 @@ export function CreateIndexRequestSpecPodFromJSONTyped(json: any, ignoreDiscrimi
         'replicas': !exists(json, 'replicas') ? undefined : json['replicas'],
         'podType': json['pod_type'],
         'pods': !exists(json, 'pods') ? undefined : json['pods'],
+        'shards': !exists(json, 'shards') ? undefined : json['shards'],
         'metadataConfig': !exists(json, 'metadata_config') ? undefined : PodSpecMetadataConfigFromJSON(json['metadata_config']),
         'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
     };
@@ -107,6 +114,7 @@ export function CreateIndexRequestSpecPodToJSON(value?: CreateIndexRequestSpecPo
         'replicas': value.replicas,
         'pod_type': value.podType,
         'pods': value.pods,
+        'shards': value.shards,
         'metadata_config': PodSpecMetadataConfigToJSON(value.metadataConfig),
         'source_collection': value.sourceCollection,
     };
