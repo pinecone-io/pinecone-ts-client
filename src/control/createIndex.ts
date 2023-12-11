@@ -54,9 +54,9 @@ const CreateIndexOptionsSchema = Type.Object(
         Type.Object({
           environment: EnvironmentSchema,
           replicas: Type.Optional(ReplicasSchema),
+          shards: Type.Optional(ShardsSchema),
           podType: Type.Optional(PodTypeSchema),
           pods: Type.Optional(PodsSchema),
-          shards: Type.Optional(ShardsSchema),
           metadataConfig: Type.Optional(MetadataConfigSchema),
           sourceCollection: Type.Optional(CollectionNameSchema),
         })
