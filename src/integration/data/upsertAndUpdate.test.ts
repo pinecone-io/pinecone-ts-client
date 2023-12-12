@@ -73,7 +73,7 @@ describe('upsert and update', () => {
       values: newValues,
       metadata: newMetadata,
     });
-    await sleep(5000);
+    await sleep(7000);
 
     // Fetch and validate update
     const updatedFetchResult = await ns.fetch(['0']);
