@@ -71,7 +71,6 @@ describe('query', () => {
 
     const topK = 5;
     const results = await ns.query({ id: '0', topK });
-    console.log('Query Results: ', results);
     expect(results.matches).toBeDefined();
 
     expect(results.matches?.length).toEqual(numberOfRecords);

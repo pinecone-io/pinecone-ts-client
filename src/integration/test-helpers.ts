@@ -118,5 +118,8 @@ export const waitUntilRecordsReady = async (
     indexStats = await index.describeIndexStats();
   }
 
+  // Sleeping one final time before returning for a bit more breathing room for freshness
+  await sleep(sleepIntervalMs);
+
   return indexStats;
 };
