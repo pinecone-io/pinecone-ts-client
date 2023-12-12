@@ -9,6 +9,7 @@ export * from './ConfigureIndexRequestSpecPod';
 export * from './CreateCollectionRequest';
 export * from './CreateIndexRequest';
 export * from './CreateIndexRequestSpec';
+export * from './CreateIndexRequestSpecPod';
 export * from './DeleteRequest';
 export * from './DescribeIndexStatsRequest';
 export * from './DescribeIndexStatsResponse';
