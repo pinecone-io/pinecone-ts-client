@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PodSpec } from './PodSpec';
+import type { CreateIndexRequestSpecPod } from './CreateIndexRequestSpecPod';
 import {
-    PodSpecFromJSON,
-    PodSpecFromJSONTyped,
-    PodSpecToJSON,
-} from './PodSpec';
+    CreateIndexRequestSpecPodFromJSON,
+    CreateIndexRequestSpecPodFromJSONTyped,
+    CreateIndexRequestSpecPodToJSON,
+} from './CreateIndexRequestSpecPod';
 import type { ServerlessSpec } from './ServerlessSpec';
 import {
     ServerlessSpecFromJSON,
@@ -40,10 +40,10 @@ export interface CreateIndexRequestSpec {
     serverless?: ServerlessSpec;
     /**
      * 
-     * @type {PodSpec}
+     * @type {CreateIndexRequestSpecPod}
      * @memberof CreateIndexRequestSpec
      */
-    pod?: PodSpec;
+    pod?: CreateIndexRequestSpecPod;
 }
 
 /**
@@ -66,7 +66,7 @@ export function CreateIndexRequestSpecFromJSONTyped(json: any, ignoreDiscriminat
     return {
         
         'serverless': !exists(json, 'serverless') ? undefined : ServerlessSpecFromJSON(json['serverless']),
-        'pod': !exists(json, 'pod') ? undefined : PodSpecFromJSON(json['pod']),
+        'pod': !exists(json, 'pod') ? undefined : CreateIndexRequestSpecPodFromJSON(json['pod']),
     };
 }
 
@@ -80,7 +80,7 @@ export function CreateIndexRequestSpecToJSON(value?: CreateIndexRequestSpec | nu
     return {
         
         'serverless': ServerlessSpecToJSON(value.serverless),
-        'pod': PodSpecToJSON(value.pod),
+        'pod': CreateIndexRequestSpecPodToJSON(value.pod),
     };
 }
 

@@ -12,6 +12,7 @@ models/ConfigureIndexRequestSpecPod.ts
 models/CreateCollectionRequest.ts
 models/CreateIndexRequest.ts
 models/CreateIndexRequestSpec.ts
+models/CreateIndexRequestSpecPod.ts
 models/DeleteRequest.ts
 models/DescribeIndexStatsRequest.ts
 models/DescribeIndexStatsResponse.ts
