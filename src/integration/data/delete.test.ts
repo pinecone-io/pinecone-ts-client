@@ -71,7 +71,7 @@ describe('delete', () => {
 
     // Try deleting the record
     await ns.deleteOne('0');
-    await sleep(1000);
+    await sleep(3000);
 
     // Verify the record is removed
     stats = await ns.describeIndexStats();
@@ -117,7 +117,7 @@ describe('delete', () => {
 
     // Try deleting 2 of 3 records
     await ns.deleteMany(['0', '2']);
-    await sleep(1000);
+    await sleep(3000);
     stats = await ns.describeIndexStats();
     if (stats.namespaces) {
       expect(stats.namespaces[namespace].recordCount).toEqual(1);
@@ -142,7 +142,7 @@ describe('delete', () => {
 
     // deleting non-existent records should not throw
     await ns.deleteMany(['0', '1', '2', '3']);
-    await sleep(1000);
+    await sleep(3000);
 
     // Verify all are now removed
     stats = await ns.describeIndexStats();
