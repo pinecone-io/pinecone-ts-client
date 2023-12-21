@@ -45,13 +45,20 @@ describe('VectorOperationsProvider', () => {
       apiKey: 'test-api-key',
     };
     const indexHostUrl = 'http://index-host-url';
-    const provider = new VectorOperationsProvider(config, 'index-name', indexHostUrl);
+    const provider = new VectorOperationsProvider(
+      config,
+      'index-name',
+      indexHostUrl
+    );
 
     jest.spyOn(provider, 'buildVectorOperationsConfig');
 
     await provider.provide();
-    
+
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
-    expect(provider.buildVectorOperationsConfig).toHaveBeenCalledWith({...config, hostUrl: indexHostUrl});
+    expect(provider.buildVectorOperationsConfig).toHaveBeenCalledWith({
+      ...config,
+      hostUrl: indexHostUrl,
+    });
   });
 });

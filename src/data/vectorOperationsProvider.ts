@@ -24,7 +24,7 @@ export class VectorOperationsProvider {
     // If an indexHostUrl has been passed set it, otherwise keep
     // it undefined so that hostUrl is properly resolved
     if (indexHostUrl) {
-      this.config.hostUrl = indexHostUrl; 
+      this.config.hostUrl = indexHostUrl;
     }
   }
 
