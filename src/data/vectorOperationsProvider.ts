@@ -1,4 +1,4 @@
-import type { IndexConfiguration } from './types';
+import type { IndexConfiguration, PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
@@ -12,28 +12,26 @@ export class VectorOperationsProvider {
   private config: IndexConfiguration;
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
-  private hostUrlOverride?: string;
 
   constructor(
-    config: IndexConfiguration,
+    config: PineconeConfiguration,
     indexName: string,
-    hostUrlOverride?: string
+    indexHostUrl?: string
   ) {
     this.config = config;
     this.indexName = indexName;
-    this.hostUrlOverride = hostUrlOverride;
+
+    // If an indexHostUrl has been passed set it, otherwise keep
+    // it undefined so that hostUrl is properly resolved
+    if (indexHostUrl) {
+      this.config.hostUrl = indexHostUrl; 
+    }
   }
 
   async provide() {
     if (this.vectorOperations) {
       return this.vectorOperations;
     }
-
-    // if an override has been passed set it, otherwise clear things
-    // out so that hostUrl is properly resolved
-    this.config.hostUrl = this.hostUrlOverride
-      ? this.hostUrlOverride
-      : undefined;
 
     if (this.config.hostUrl) {
       this.vectorOperations = this.buildVectorOperationsConfig(this.config);

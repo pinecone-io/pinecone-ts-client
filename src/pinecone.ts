@@ -496,9 +496,9 @@ export class Pinecone {
    */
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
-    hostUrlOverride?: string
+    indexHostUrl?: string
   ) {
-    return new Index<T>(indexName, this.config, undefined, hostUrlOverride);
+    return new Index<T>(indexName, this.config, undefined, indexHostUrl);
   }
 
   /**
@@ -507,8 +507,8 @@ export class Pinecone {
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
-    hostUrlOverride?: string
+    indexHostUrl?: string
   ) {
-    return this.index<T>(indexName, hostUrlOverride);
+    return this.index<T>(indexName, indexHostUrl);
   }
 }
