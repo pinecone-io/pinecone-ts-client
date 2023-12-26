@@ -39,4 +39,26 @@ describe('VectorOperationsProvider', () => {
     expect(IndexHostSingleton.getHostUrl).toHaveBeenCalledTimes(1);
     expect(api).toEqual(api2);
   });
+
+  test('passing indexHostUrl skips hostUrl resolution', async () => {
+    const config = {
+      apiKey: 'test-api-key',
+    };
+    const indexHostUrl = 'http://index-host-url';
+    const provider = new VectorOperationsProvider(
+      config,
+      'index-name',
+      indexHostUrl
+    );
+
+    jest.spyOn(provider, 'buildVectorOperationsConfig');
+
+    await provider.provide();
+
+    expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
+    expect(provider.buildVectorOperationsConfig).toHaveBeenCalledWith({
+      ...config,
+      hostUrl: indexHostUrl,
+    });
+  });
 });
