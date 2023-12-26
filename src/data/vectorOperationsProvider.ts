@@ -1,4 +1,4 @@
-import type { IndexConfiguration } from './types';
+import type { IndexConfiguration, PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
@@ -13,9 +13,19 @@ export class VectorOperationsProvider {
   private indexName: string;
   private vectorOperations?: VectorOperationsApi;
 
-  constructor(config: IndexConfiguration, indexName: string) {
+  constructor(
+    config: PineconeConfiguration,
+    indexName: string,
+    indexHostUrl?: string
+  ) {
     this.config = config;
     this.indexName = indexName;
+
+    // If an indexHostUrl has been passed set it, otherwise keep
+    // it undefined so that hostUrl is properly resolved
+    if (indexHostUrl) {
+      this.config.hostUrl = indexHostUrl;
+    }
   }
 
   async provide() {
