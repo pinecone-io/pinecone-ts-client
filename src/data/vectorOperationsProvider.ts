@@ -1,4 +1,4 @@
-import type { IndexConfiguration, PineconeConfiguration } from './types';
+import type { PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
@@ -9,8 +9,9 @@ import { IndexHostSingleton } from './indexHostSingleton';
 import { middleware } from '../utils/middleware';
 
 export class VectorOperationsProvider {
-  private config: IndexConfiguration;
+  private config: PineconeConfiguration;
   private indexName: string;
+  private indexHostUrl?: string;
   private vectorOperations?: VectorOperationsApi;
 
   constructor(
@@ -20,12 +21,7 @@ export class VectorOperationsProvider {
   ) {
     this.config = config;
     this.indexName = indexName;
-
-    // If an indexHostUrl has been passed set it, otherwise keep
-    // it undefined so that hostUrl is properly resolved
-    if (indexHostUrl) {
-      this.config.hostUrl = indexHostUrl;
-    }
+    this.indexHostUrl = indexHostUrl;
   }
 
   async provide() {
@@ -33,29 +29,31 @@ export class VectorOperationsProvider {
       return this.vectorOperations;
     }
 
-    if (this.config.hostUrl) {
-      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
+    // If an indexHostUrl has been manually passed we use that,
+    // otherwise we rely on resolving the host from the IndexHostSingleton
+    if (this.indexHostUrl) {
+      this.vectorOperations = this.buildVectorOperationsConfig();
     } else {
-      this.config.hostUrl = await IndexHostSingleton.getHostUrl(
+      this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
       );
 
-      this.vectorOperations = this.buildVectorOperationsConfig(this.config);
+      this.vectorOperations = this.buildVectorOperationsConfig();
     }
 
     return this.vectorOperations;
   }
 
-  buildVectorOperationsConfig(config: IndexConfiguration) {
+  buildVectorOperationsConfig() {
     const indexConfigurationParameters: ConfigurationParameters = {
-      basePath: config.hostUrl,
-      apiKey: config.apiKey,
+      basePath: this.indexHostUrl,
+      apiKey: this.config.apiKey,
       queryParamsStringify,
       headers: {
         'User-Agent': buildUserAgent(false),
       },
-      fetchApi: getFetch(config),
+      fetchApi: getFetch(this.config),
       middleware,
     };
 

@@ -317,7 +317,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * This `namespace()` method will inherit custom metadata types if you are chaining the call off an { @link Index } client instance that is typed with a user-specified metadata type. See { @link Pinecone.index } for more info.
    */
   namespace(namespace: string): Index<T> {
-    return new Index<T>(this.target.index, this.config, namespace);
+    return new Index<T>(
+      this.target.index,
+      this.config,
+      namespace,
+      this.target.indexHostUrl
+    );
   }
 
   /**
