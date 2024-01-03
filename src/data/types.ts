@@ -43,14 +43,6 @@ export type PineconeConfiguration = {
   additionalHeaders?: HTTPHeaders;
 };
 
-/** Configuration for a single Pinecone Index */
-export type IndexConfiguration = PineconeConfiguration & {
-  /**
-   * The host URL for the Index.
-   */
-  hostUrl?: string;
-};
-
 export const RecordIdSchema = Type.String({ minLength: 1 });
 export const RecordValuesSchema = Type.Array(Type.Number());
 export const RecordSparseValuesSchema = Type.Object(

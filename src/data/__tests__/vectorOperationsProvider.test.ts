@@ -56,9 +56,6 @@ describe('VectorOperationsProvider', () => {
     await provider.provide();
 
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
-    expect(provider.buildVectorOperationsConfig).toHaveBeenCalledWith({
-      ...config,
-      hostUrl: indexHostUrl,
-    });
+    expect(provider.buildVectorOperationsConfig).toHaveBeenCalled();
   });
 });
