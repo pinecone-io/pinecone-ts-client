@@ -1,5 +1,6 @@
 import { Pinecone, Index } from '../../index';
 import {
+  assertWithRetries,
   randomString,
   generateRecords,
   INDEX_NAME,
@@ -43,6 +44,7 @@ describe('upsert and update', () => {
   test('verify upsert and update', async () => {
     const recordToUpsert = generateRecords(5, 1, false, true);
     recordIds = recordToUpsert.map((r) => r.id);
+    const oldMetadata = recordToUpsert['0'].metadata;
     expect(recordToUpsert).toHaveLength(1);
     expect(recordToUpsert[0].id).toEqual('0');
 
@@ -50,20 +52,16 @@ describe('upsert and update', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     // Fetch and inspect records to validate upsert
-    const fetchResult = await ns.fetch(recordIds);
-    const records = fetchResult.records;
-    if (records) {
-      expect(records['0']).toBeDefined();
-      expect(records['0'].values).toEqual(recordToUpsert[0].values);
-      expect(records['0'].metadata).toEqual(recordToUpsert[0].metadata);
-    } else {
-      fail(
-        'Did not find expected records. Fetch result was ' +
-          JSON.stringify(fetchResult)
-      );
-    }
-
-    const oldMetadata = records['0'].metadata;
+    const preUpdateAssertions = [
+      (response) => expect(response.records['0']).toBeDefined(),
+      (response) =>
+        expect(response.records['0'].values).toEqual(recordToUpsert[0].values),
+      (response) =>
+        expect(response.records['0'].metadata).toEqual(
+          recordToUpsert[0].metadata
+        ),
+    ];
+    await assertWithRetries(() => ns.fetch(recordIds), preUpdateAssertions);
 
     // Update record values
     const newValues = [0.5, 0.4, 0.3, 0.2, 0.1];
@@ -73,22 +71,15 @@ describe('upsert and update', () => {
       values: newValues,
       metadata: newMetadata,
     });
-    await sleep(7000);
 
-    // Fetch and validate update
-    const updatedFetchResult = await ns.fetch(['0']);
-    if (Object.keys(updatedFetchResult.records).length > 0) {
-      const updatedRecord = updatedFetchResult.records['0'];
-      expect(updatedRecord.values).toEqual(newValues);
-      expect(updatedRecord.metadata).toEqual({
-        ...oldMetadata,
-        ...newMetadata,
-      });
-    } else {
-      fail(
-        'Did not find expected updated record. Fetch result was ' +
-          JSON.stringify(updatedFetchResult)
-      );
-    }
+    const postUpdateAssertions = [
+      (response) => expect(response.records['0'].values).toEqual(newValues),
+      (response) =>
+        expect(response.records['0'].metadata).toEqual({
+          ...oldMetadata,
+          ...newMetadata,
+        }),
+    ];
+    await assertWithRetries(() => ns.fetch(['0']), postUpdateAssertions);
   });
 });
