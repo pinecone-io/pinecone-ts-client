@@ -4,7 +4,6 @@ import {
   randomString,
   generateRecords,
   INDEX_NAME,
-  sleep,
   waitUntilRecordsReady,
 } from '../test-helpers';
 
