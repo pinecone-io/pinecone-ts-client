@@ -5,7 +5,6 @@ This is the official Node.js client for [Pinecone](https://www.pinecone.io), wri
 ## Documentation
 
 - [**Reference Documentation**](https://sdk.pinecone.io/typescript/classes/Pinecone.html)
-- If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v1-migration.md).
 
 ### Example code
 
@@ -629,7 +628,3 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 If you are ready to take a JavaScript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to provide feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property.
 
 These runtime validations are most helpful for users who are not developing with Typescript or who are experimenting in a REPL or notebook-type setting. But once you've tested an application and have gained confidence things are working as expected, you can disable these checks to gain a small improvement in performance. This will have the most impact if your workload is upserting very large amounts of data.
-
-## Legacy exports
-
-For information about the legacy `PineconeClient` export, see the [old README](https://github.com/pinecone-io/pinecone-ts-client/blob/main/README.v0.md).

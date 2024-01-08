@@ -56,7 +56,7 @@ export class VectorOperationsProvider {
       apiKey: this.config.apiKey,
       queryParamsStringify,
       headers: {
-        'User-Agent': buildUserAgent(false),
+        'User-Agent': buildUserAgent(),
       },
       fetchApi: getFetch(this.config),
       middleware,

@@ -18,7 +18,6 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!**/src/pinecone-generated-ts-fetch/**',
-    '!**/src/v0/**',
     '!**/node_modules/**',
     '!**/vendor/**',
   ],
