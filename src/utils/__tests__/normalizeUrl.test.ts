@@ -20,8 +20,8 @@ describe('normalizeUrl', () => {
   });
 
   test('keeps https:// protocol if present', () => {
-    expect(normalizeUrl('http://index-name-abcdef.svc.pinecone.io')).toBe(
-      'http://index-name-abcdef.svc.pinecone.io'
+    expect(normalizeUrl('https://index-name-abcdef.svc.pinecone.io')).toBe(
+      'https://index-name-abcdef.svc.pinecone.io'
     );
   });
 });
