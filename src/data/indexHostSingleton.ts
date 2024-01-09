@@ -3,6 +3,7 @@ import type { PineconeConfiguration } from './types';
 import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
 import { PineconeUnableToResolveHostError } from '../errors';
+import { normalizeUrl } from '../utils';
 
 // We use describeIndex to retrieve the data plane url (host) for a given API key
 // and index. We only ever want to call describeIndex a maximum of once per API key
@@ -36,9 +37,6 @@ export const IndexHostSingleton = (function () {
 
   const key = (config, indexName) => `${config.apiKey}-${indexName}`;
 
-  // describeIndex returns host without the protocol, prepend on return from cache
-  const hostWithProtocol = (host) => `https://${host}`;
-
   return {
     getHostUrl: async function (
       config: PineconeConfiguration,
@@ -46,11 +44,17 @@ export const IndexHostSingleton = (function () {
     ) {
       const cacheKey = key(config, indexName);
       if (cacheKey in hostUrls) {
-        return hostWithProtocol(hostUrls[cacheKey]);
+        return hostUrls[cacheKey];
       } else {
         const hostUrl = await _describeIndex(config, indexName);
-        hostUrls[cacheKey] = hostUrl;
-        return hostWithProtocol(hostUrl);
+        this._set(config, indexName, hostUrl);
+
+        if (!hostUrls[cacheKey]) {
+          throw new PineconeUnableToResolveHostError(
+            `Could not get host for index: ${indexName}. Call describeIndex('${indexName}') to check the current status.`
+          );
+        }
+        return hostUrls[cacheKey];
       }
     },
 
@@ -65,13 +69,14 @@ export const IndexHostSingleton = (function () {
       indexName: IndexName,
       hostUrl: string
     ) => {
+      const normalizedHostUrl = normalizeUrl(hostUrl);
       // prevent adding an empty hostUrl to the cache
-      if (hostUrl === '') {
+      if (!normalizedHostUrl) {
         return;
       }
 
       const cacheKey = key(config, indexName);
-      hostUrls[cacheKey] = hostUrl;
+      hostUrls[cacheKey] = normalizedHostUrl;
     },
 
     _delete: (config: PineconeConfiguration, indexName: IndexName) => {
