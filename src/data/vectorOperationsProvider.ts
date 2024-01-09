@@ -4,7 +4,12 @@ import {
   ConfigurationParameters,
   VectorOperationsApi,
 } from '../pinecone-generated-ts-fetch';
-import { queryParamsStringify, buildUserAgent, getFetch } from '../utils';
+import {
+  queryParamsStringify,
+  buildUserAgent,
+  getFetch,
+  normalizeUrl,
+} from '../utils';
 import { IndexHostSingleton } from './indexHostSingleton';
 import { middleware } from '../utils/middleware';
 
@@ -21,7 +26,7 @@ export class VectorOperationsProvider {
   ) {
     this.config = config;
     this.indexName = indexName;
-    this.indexHostUrl = indexHostUrl;
+    this.indexHostUrl = normalizeUrl(indexHostUrl);
   }
 
   async provide() {
