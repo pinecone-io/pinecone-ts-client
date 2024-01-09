@@ -173,13 +173,21 @@ describe('createCollection', () => {
   });
 
   test('calls the openapi create collection endpoint', async () => {
-    const IOA = setOpenAPIResponse(() => Promise.resolve(''));
+    const collectionModel = {
+      name: 'collection-name',
+      size: 12346,
+      status: 'Initializing',
+      dimension: 5,
+      recordCount: 50,
+      environment: 'us-east1-gcp',
+    };
+    const IOA = setOpenAPIResponse(() => Promise.resolve(collectionModel));
     const returned = await createCollection(IOA)({
       name: 'collection-name',
       source: 'index-name',
     });
 
-    expect(returned).toBe(void 0);
+    expect(returned).toEqual(collectionModel);
     expect(IOA.createCollection).toHaveBeenCalledWith({
       createCollectionRequest: {
         name: 'collection-name',

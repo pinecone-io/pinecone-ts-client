@@ -1,6 +1,7 @@
 import {
-  ManagePodIndexesApi,
+  CollectionModel,
   CreateCollectionRequest,
+  ManagePodIndexesApi,
 } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { CollectionNameSchema, IndexNameSchema } from './types';
@@ -20,10 +21,9 @@ export const createCollection = (api: ManagePodIndexesApi) => {
     'createCollection'
   );
 
-  return async (options: CreateCollectionRequest): Promise<void> => {
+  return async (options: CreateCollectionRequest): Promise<CollectionModel> => {
     validator(options);
 
-    await api.createCollection({ createCollectionRequest: options });
-    return;
+    return await api.createCollection({ createCollectionRequest: options });
   };
 };

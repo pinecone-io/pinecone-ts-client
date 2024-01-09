@@ -4,6 +4,7 @@ import {
   generateRecords,
   INDEX_NAME,
   waitUntilRecordsReady,
+  assertWithRetries,
 } from '../test-helpers';
 
 describe('query', () => {
@@ -51,10 +52,12 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 2;
-    const results = await ns.query({ id: '0', topK });
-    expect(results.matches).toBeDefined();
+    const assertions = [
+      (results) => expect(results.matches).toBeDefined(),
+      (results) => expect(results.matches?.length).toEqual(topK),
+    ];
 
-    expect(results.matches?.length).toEqual(topK);
+    await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
   });
 
   test('query when topK is greater than number of records', async () => {
@@ -70,10 +73,12 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 5;
-    const results = await ns.query({ id: '0', topK });
-    expect(results.matches).toBeDefined();
+    const assertions = [
+      (results) => expect(results.matches).toBeDefined(),
+      (results) => expect(results.matches?.length).toEqual(numberOfRecords),
+    ];
 
-    expect(results.matches?.length).toEqual(numberOfRecords);
+    await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
   });
 
   test('with invalid id, returns empty results', async () => {
@@ -88,10 +93,12 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 2;
-    const results = await ns.query({ id: '100', topK });
-    expect(results.matches).toBeDefined();
+    const assertions = [
+      (results) => expect(results.matches).toBeDefined(),
+      (results) => expect(results.matches?.length).toEqual(0),
+    ];
 
-    expect(results.matches?.length).toEqual(0);
+    await assertWithRetries(() => ns.query({ id: '100', topK }), assertions);
   });
 
   test('query with vector values', async () => {
@@ -107,11 +114,18 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 1;
-    const results = await ns.query({
-      vector: [0.11, 0.22, 0.33, 0.44, 0.55],
-      topK,
-    });
-    expect(results.matches).toBeDefined();
-    expect(results.matches?.length).toEqual(topK);
+    const assertions = [
+      (results) => expect(results.matches).toBeDefined(),
+      (results) => expect(results.matches?.length).toEqual(topK),
+    ];
+
+    await assertWithRetries(
+      () =>
+        ns.query({
+          vector: [0.11, 0.22, 0.33, 0.44, 0.55],
+          topK,
+        }),
+      assertions
+    );
   });
 });

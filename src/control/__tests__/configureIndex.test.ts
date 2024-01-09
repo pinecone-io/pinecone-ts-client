@@ -7,9 +7,28 @@ import type {
 
 describe('configureIndex', () => {
   test('calls the openapi configure endpoint', async () => {
+    const indexModel = {
+      name: 'index-name',
+      dimension: 5,
+      metric: 'cosine',
+      host: 'https://index-host.com',
+      spec: {
+        pod: {
+          environment: 'us-east1-gcp',
+          replicas: 4,
+          shards: 1,
+          pods: 4,
+          podType: 'p2.x2',
+        },
+      },
+      status: {
+        ready: true,
+        state: 'Ready',
+      },
+    };
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest
-    ) => Promise<IndexModel> = jest.fn();
+    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
     const IOA = { configureIndex: fakeConfigure } as ManagePodIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
@@ -17,7 +36,7 @@ describe('configureIndex', () => {
       podType: 'p2.x2',
     });
 
-    expect(returned).toBe(void 0);
+    expect(returned).toBe(indexModel);
     expect(IOA.configureIndex).toHaveBeenCalledWith({
       indexName: 'index-name',
       configureIndexRequest: {
