@@ -1,5 +1,6 @@
 import {
   ManagePodIndexesApi,
+  IndexModel,
   ConfigureIndexRequestSpecPod,
 } from '../pinecone-generated-ts-fetch';
 import { PineconeArgumentError } from '../errors';
@@ -30,7 +31,7 @@ export const configureIndex = (api: ManagePodIndexesApi) => {
   return async (
     indexName: IndexName,
     options: ConfigureIndexRequestSpecPod
-  ): Promise<void> => {
+  ): Promise<IndexModel> => {
     indexNameValidator(indexName);
     patchRequestValidator(options);
 
@@ -40,10 +41,9 @@ export const configureIndex = (api: ManagePodIndexesApi) => {
       );
     }
 
-    await api.configureIndex({
+    return await api.configureIndex({
       indexName,
       configureIndexRequest: { spec: { pod: options } },
     });
-    return;
   };
 };

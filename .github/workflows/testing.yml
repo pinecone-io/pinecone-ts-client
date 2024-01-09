@@ -120,6 +120,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pinecone-io/semantic-search-example
+          ref: spruce
           path: semantic-search-example
       - name: Install and build client
         shell: bash
