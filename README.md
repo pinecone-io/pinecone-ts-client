@@ -5,6 +5,7 @@ This is the official Node.js client for [Pinecone](https://www.pinecone.io), wri
 ## Documentation
 
 - [**Reference Documentation**](https://sdk.pinecone.io/typescript/classes/Pinecone.html)
+- If you are upgrading from a `v0.x` beta client, check out the [**v1 Migration Guide**](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v1-migration.md).
 
 ### Example code
 
