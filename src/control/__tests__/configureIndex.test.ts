@@ -1,5 +1,5 @@
 import { configureIndex } from '../configureIndex';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
   ConfigureIndexOperationRequest,
   IndexModel,
@@ -29,7 +29,7 @@ describe('configureIndex', () => {
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
-    const IOA = { configureIndex: fakeConfigure } as ManagePodIndexesApi;
+    const IOA = { configureIndex: fakeConfigure } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
       replicas: 4,

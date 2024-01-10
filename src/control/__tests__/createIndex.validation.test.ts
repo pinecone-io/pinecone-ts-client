@@ -6,15 +6,15 @@
 
 import { createIndex } from '../createIndex';
 import { PineconeArgumentError } from '../../errors';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 
 // TODO: Update tests to cover all nested properties inside spec once validator.ts is updated
 describe('createIndex argument validations', () => {
-  let MPIA: ManagePodIndexesApi;
+  let MPIA: ManageIndexesApi;
   beforeEach(() => {
     MPIA = { createIndex: jest.fn() };
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      ManagePodIndexesApi: MPIA,
+      ManageIndexesApi: MPIA,
     }));
   });
 

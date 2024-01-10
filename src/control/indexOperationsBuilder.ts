@@ -1,5 +1,5 @@
 import {
-  ManagePodIndexesApi,
+  ManageIndexesApi,
   Configuration,
 } from '../pinecone-generated-ts-fetch';
 import {
@@ -14,7 +14,7 @@ import type { ConfigurationParameters as IndexOperationsApiConfigurationParamete
 
 export const indexOperationsBuilder = (
   config: PineconeConfiguration
-): ManagePodIndexesApi => {
+): ManageIndexesApi => {
   const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io';
@@ -31,5 +31,5 @@ export const indexOperationsBuilder = (
     middleware,
   };
 
-  return new ManagePodIndexesApi(new Configuration(apiConfig));
+  return new ManageIndexesApi(new Configuration(apiConfig));
 };

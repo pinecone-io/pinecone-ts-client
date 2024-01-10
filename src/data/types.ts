@@ -120,3 +120,7 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
    */
   metadata?: T;
 };
+
+export type OperationUsage = {
+  readUnits?: string;
+};

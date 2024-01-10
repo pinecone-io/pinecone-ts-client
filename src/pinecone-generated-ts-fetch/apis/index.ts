@@ -1,4 +1,4 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './ManagePodIndexesApi';
+export * from './ManageIndexesApi';
 export * from './VectorOperationsApi';
