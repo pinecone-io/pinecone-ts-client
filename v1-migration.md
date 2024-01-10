@@ -1,5 +1,7 @@
 # v1 Migration Guide
 
+**Warning:** This migration guide is specific to migrating from the `v0.x` to `v1.x`. Some of the code examples in this guide will no longer work when upgrading to `v2.0.0`. Please see the [v2-migration guide](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v2-migration.md) for details on migrating to the latest version.
+
 This doc will outline the differences between `v0.x` beta versions of the Pinecone client and the `v1` version. The `v1.0.0` release adds a new `Pinecone` module export alongside the legacy `PineconeClient` export. `PineconeClient` is deprecated and will be removed in a future release.
 
 ## Types and Terminology
