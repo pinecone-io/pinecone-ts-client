@@ -5,7 +5,7 @@
 var dotenv = require('dotenv');
 dotenv.config();
 
-const expectedVars = ['PINECONE_ENVIRONMENT', 'PINECONE_API_KEY'];
+const expectedVars = ['PINECONE_API_KEY'];
 for (const envVar of expectedVars) {
   if (!process.env[envVar]) {
     console.warn(`WARNING Missing environment variable ${envVar} in .env file`);
@@ -22,18 +22,12 @@ for (const [key, value] of Object.entries(pinecone)) {
   myrepl.context[key] = value;
 }
 
-// Even though this export is called PineconeClient, add an alias to
-// LegacyPineconeClient so I don't get confused in manual testing. Allows me
-// to initialize with "new LegacyPineconeClient()" instead of "new PineconeClient()"
-// when working in the REPL.
-myrepl.context['LegacyPineconeClient'] = pinecone.PineconeClient;
-
 console.log(
-  'SUCCESS Pinecone module exports (Pinecone, PineconeClient, etc) automatically imported to this repl session.'
+  'SUCCESS Pinecone module exports (Pinecone, etc) automatically imported to this repl session.'
 );
 console.log('');
 console.log(
-  'Run "await init()" to setup client instances using environment variable configs.'
+  'Run "await init()" to setup client instance using environment variable configs.'
 );
 
 const init = async () => {
@@ -41,16 +35,6 @@ const init = async () => {
   myrepl.context['client'] = client;
   console.log('SUCCESS Created new client "client":');
   console.log(client);
-  console.log('');
-
-  const legacyClient = new pinecone.PineconeClient();
-  await legacyClient.init({
-    apiKey: process.env.PINECONE_API_KEY,
-    environment: process.env.PINECONE_ENVIRONMENT,
-  });
-  myrepl.context['legacy'] = legacyClient;
-  console.log('SUCCESS Created legacy client "legacy":');
-  console.log(legacyClient);
 };
 
 myrepl.context['init'] = init;
