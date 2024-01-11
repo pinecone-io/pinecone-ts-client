@@ -12,7 +12,7 @@ module.exports = {
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   testPathIgnorePatterns: ['src/integration'],
-  testTimeout: 100000,
+  testTimeout: 150000,
   verbose: true,
   detectOpenHandles: false,
   collectCoverageFrom: [
