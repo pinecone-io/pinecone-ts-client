@@ -1,5 +1,5 @@
 import {
-  ManagePodIndexesApi,
+  ManageIndexesApi,
   IndexModel,
   ConfigureIndexRequestSpecPod,
 } from '../pinecone-generated-ts-fetch';
@@ -18,7 +18,7 @@ const ConfigureIndexOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export const configureIndex = (api: ManagePodIndexesApi) => {
+export const configureIndex = (api: ManageIndexesApi) => {
   const indexNameValidator = buildValidator(
     'The first argument to configureIndex',
     IndexNameSchema

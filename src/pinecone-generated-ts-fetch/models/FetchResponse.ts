@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { Usage } from './Usage';
+import {
+    UsageFromJSON,
+    UsageFromJSONTyped,
+    UsageToJSON,
+} from './Usage';
 import type { Vector } from './Vector';
 import {
     VectorFromJSON,
@@ -38,6 +44,12 @@ export interface FetchResponse {
      * @memberof FetchResponse
      */
     namespace?: string;
+    /**
+     * 
+     * @type {Usage}
+     * @memberof FetchResponse
+     */
+    usage?: Usage;
 }
 
 /**
@@ -61,6 +73,7 @@ export function FetchResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'vectors': !exists(json, 'vectors') ? undefined : (mapValues(json['vectors'], VectorFromJSON)),
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
+        'usage': !exists(json, 'usage') ? undefined : UsageFromJSON(json['usage']),
     };
 }
 
@@ -75,6 +88,7 @@ export function FetchResponseToJSON(value?: FetchResponse | null): any {
         
         'vectors': value.vectors === undefined ? undefined : (mapValues(value.vectors, VectorToJSON)),
         'namespace': value.namespace,
+        'usage': UsageToJSON(value.usage),
     };
 }
 

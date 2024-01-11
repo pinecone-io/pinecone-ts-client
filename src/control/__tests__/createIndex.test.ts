@@ -1,5 +1,5 @@
 import { createIndex } from '../createIndex';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
   CreateIndexOperationRequest,
   DescribeIndexRequest,
@@ -43,7 +43,7 @@ const setupCreateIndexResponse = (
   const MPIA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
-  } as ManagePodIndexesApi;
+  } as ManageIndexesApi;
 
   return MPIA;
 };

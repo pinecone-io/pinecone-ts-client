@@ -1,4 +1,4 @@
-import { ManagePodIndexesApi } from '../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../pinecone-generated-ts-fetch';
 import type { PineconeConfiguration } from './types';
 import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
@@ -10,8 +10,7 @@ import { normalizeUrl } from '../utils';
 // and index, so we cache them in a singleton for reuse.
 export const IndexHostSingleton = (function () {
   const hostUrls = {}; // map of apiKey-indexName to hostUrl
-  let indexOperationsApi: InstanceType<typeof ManagePodIndexesApi> | null =
-    null;
+  let indexOperationsApi: InstanceType<typeof ManageIndexesApi> | null = null;
 
   const _describeIndex = async (
     config: PineconeConfiguration,

@@ -1,6 +1,6 @@
 import { describeCollection } from '../describeCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
   DescribeCollectionRequest,
   CollectionList,
@@ -23,7 +23,7 @@ const setupMocks = (
     describeCollection: fakeDescribeCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as ManagePodIndexesApi;
+  return IOA as ManageIndexesApi;
 };
 
 describe('describeCollection', () => {

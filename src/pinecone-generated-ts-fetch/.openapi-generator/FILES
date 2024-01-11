@@ -1,5 +1,5 @@
 .openapi-generator-ignore
-apis/ManagePodIndexesApi.ts
+apis/ManageIndexesApi.ts
 apis/VectorOperationsApi.ts
 apis/index.ts
 index.ts
@@ -40,6 +40,7 @@ models/SparseValues.ts
 models/UpdateRequest.ts
 models/UpsertRequest.ts
 models/UpsertResponse.ts
+models/Usage.ts
 models/Vector.ts
 models/index.ts
 runtime.ts

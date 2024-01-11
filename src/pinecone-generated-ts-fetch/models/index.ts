@@ -37,4 +37,5 @@ export * from './SparseValues';
 export * from './UpdateRequest';
 export * from './UpsertRequest';
 export * from './UpsertResponse';
+export * from './Usage';
 export * from './Vector';

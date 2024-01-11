@@ -120,3 +120,13 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
    */
   metadata?: T;
 };
+
+/**
+ * Metadata detailing usage units for a specific operation.
+ */
+export type OperationUsage = {
+  /**
+   * The number of read units consumed by this operation.
+   */
+  readUnits?: string;
+};
