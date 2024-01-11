@@ -52,19 +52,3 @@ export type {
   IndexList,
   IndexModel,
 } from './pinecone-generated-ts-fetch';
-
-// Legacy exports for backwards compatibility
-export { PineconeClient } from './v0';
-export { utils } from './v0/utils';
-export {
-  CreateCollectionRequest as CreateCollectionRequestV0,
-  CreateRequest,
-  DeleteRequest,
-  PatchRequest,
-  QueryRequest,
-  QueryVector,
-  ScoredVector,
-  UpdateRequest,
-  UpsertRequest,
-  Vector,
-} from './v0/pinecone-generated-ts-fetch';

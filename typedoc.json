@@ -1,7 +1,7 @@
 {
   "name": "Pinecone TypeScript SDK",
   "entryPoints": ["src/index.ts"],
-  "exclude": ["src/v0/**/*"],
+  "exclude": [],
   "hideGenerator": true,
   "includeVersion": true,
   "excludeInternal": true,

@@ -24,7 +24,7 @@ export const indexOperationsBuilder = (
     apiKey,
     queryParamsStringify,
     headers: {
-      'User-Agent': buildUserAgent(false),
+      'User-Agent': buildUserAgent(),
       ...headers,
     },
     fetchApi: getFetch(config),

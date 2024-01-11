@@ -1,4 +1,3 @@
 dist
 node_modules
 src/pinecone-generated-ts-fetch
-src/v0
