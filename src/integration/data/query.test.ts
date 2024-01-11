@@ -128,4 +128,26 @@ describe('query', () => {
       assertions
     );
   });
+
+  test('query with includeValues: true', async () => {
+    const recordsToUpsert = generateRecords(5, 3);
+    expect(recordsToUpsert).toHaveLength(3);
+
+    const queryVec = Array.from({ length: 5 }, () => Math.random());
+
+    const assertions = [
+      (results) => expect(results.matches).toBeDefined(),
+      (results) => expect(results.matches?.length).toEqual(2),
+    ];
+    await assertWithRetries(
+      () =>
+        ns.query({
+          vector: queryVec,
+          topK: 2,
+          includeValues: true,
+          includeMetadata: true,
+        }),
+      assertions
+    );
+  });
 });

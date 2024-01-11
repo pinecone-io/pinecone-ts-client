@@ -24,12 +24,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
-        jest_env: ['node', 'edge']
-        pinecone_env:
-          - prod
-          # - staging
+        config: [
+            # { runner: 'npm', jest_env: 'node' },
+            # { runner: 'npm', jest_env: 'edge' },
+            # { runner: 'bun', jest_env: 'node' },
+            { runner: 'bun', jest_env: 'node', bun_version: '1.0.4' },
+            { runner: 'bun', jest_env: 'node', bun_version: '1.0.5' },
+            { runner: 'bun', jest_env: 'node', bun_version: '1.0.6' },
+            { runner: 'bun', jest_env: 'node', bun_version: '1.0.7' },
+          ]
 
     steps:
       - name: Checkout
@@ -38,21 +43,17 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run integration tests (prod)
-        if: matrix.pinecone_env == 'prod'
+      - name: Setup bun
+        if: matrix.config.runner == 'bun'
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: $ {{ matrix.config.bun_version }}
+
+      - name: Run integration tests
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_CONTROLLER_HOST: 'https://api.pinecone.io'
-        run: npm run test:integration:${{ matrix.jest_env }}
-
-      - name: Run integration tests (staging)
-        if: matrix.pinecone_env == 'staging'
-        env:
-          CI: true
-          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY_STAGING }}
-          PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
-        run: npm run test:integration:${{ matrix.jest_env }}
+        run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
   typescript-compilation-tests:
     name: TS compile
