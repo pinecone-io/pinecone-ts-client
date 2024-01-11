@@ -75,7 +75,7 @@ export interface DescribeIndexRequest {
 /**
  * 
  */
-export class ManagePodIndexesApi extends runtime.BaseAPI {
+export class ManageIndexesApi extends runtime.BaseAPI {
 
     /**
      * This operation specifies the pod type and number of replicas for an index.

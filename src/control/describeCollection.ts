@@ -1,5 +1,5 @@
 import {
-  ManagePodIndexesApi,
+  ManageIndexesApi,
   CollectionModel,
 } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
@@ -11,7 +11,7 @@ import type { CollectionName } from './types';
  */
 export type DescribeCollectionOptions = CollectionName;
 
-export const describeCollection = (api: ManagePodIndexesApi) => {
+export const describeCollection = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CollectionNameSchema,
     'describeCollection'

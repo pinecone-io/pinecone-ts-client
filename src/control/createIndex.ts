@@ -1,7 +1,7 @@
 import {
   CreateIndexRequest,
   IndexModel,
-  ManagePodIndexesApi,
+  ManageIndexesApi,
   CreateIndexRequestMetricEnum,
 } from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
@@ -69,7 +69,7 @@ const CreateIndexOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export const createIndex = (api: ManagePodIndexesApi) => {
+export const createIndex = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CreateIndexOptionsSchema,
     'createIndex'
@@ -105,7 +105,7 @@ export const createIndex = (api: ManagePodIndexesApi) => {
 };
 
 const waitUntilIndexIsReady = async (
-  api: ManagePodIndexesApi,
+  api: ManageIndexesApi,
   indexName: string,
   seconds: number = 0
 ): Promise<IndexModel> => {

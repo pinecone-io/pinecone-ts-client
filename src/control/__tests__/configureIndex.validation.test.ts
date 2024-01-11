@@ -6,10 +6,10 @@
 
 import { configureIndex } from '../configureIndex';
 import { PineconeArgumentError } from '../../errors';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 
 describe('configureIndex argument validations', () => {
-  let MPIA: ManagePodIndexesApi;
+  let MPIA: ManageIndexesApi;
   beforeEach(() => {
     MPIA = { configureIndex: jest.fn() };
     jest.mock('../../pinecone-generated-ts-fetch', () => ({

@@ -25,6 +25,12 @@ import {
     SingleQueryResultsFromJSONTyped,
     SingleQueryResultsToJSON,
 } from './SingleQueryResults';
+import type { Usage } from './Usage';
+import {
+    UsageFromJSON,
+    UsageFromJSONTyped,
+    UsageToJSON,
+} from './Usage';
 
 /**
  * The response for the `Query` operation. These are the matches found for a particular query vector. The matches are ordered from most similar to least similar.
@@ -51,6 +57,12 @@ export interface QueryResponse {
      * @memberof QueryResponse
      */
     namespace?: string;
+    /**
+     * 
+     * @type {Usage}
+     * @memberof QueryResponse
+     */
+    usage?: Usage;
 }
 
 /**
@@ -75,6 +87,7 @@ export function QueryResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
         'results': !exists(json, 'results') ? undefined : ((json['results'] as Array<any>).map(SingleQueryResultsFromJSON)),
         'matches': !exists(json, 'matches') ? undefined : ((json['matches'] as Array<any>).map(ScoredVectorFromJSON)),
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
+        'usage': !exists(json, 'usage') ? undefined : UsageFromJSON(json['usage']),
     };
 }
 
@@ -90,6 +103,7 @@ export function QueryResponseToJSON(value?: QueryResponse | null): any {
         'results': value.results === undefined ? undefined : ((value.results as Array<any>).map(SingleQueryResultsToJSON)),
         'matches': value.matches === undefined ? undefined : ((value.matches as Array<any>).map(ScoredVectorToJSON)),
         'namespace': value.namespace,
+        'usage': UsageToJSON(value.usage),
     };
 }
 

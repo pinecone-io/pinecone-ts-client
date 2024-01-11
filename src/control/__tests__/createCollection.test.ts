@@ -1,6 +1,6 @@
 import { createCollection } from '../createCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManagePodIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 import type {
   CollectionModel,
   CreateCollectionOperationRequest,
@@ -56,7 +56,7 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const IOA = {
     createCollection: fakeCreateCollection,
     listIndexes: fakeListIndexes,
-  } as ManagePodIndexesApi;
+  } as ManageIndexesApi;
 
   return IOA;
 };

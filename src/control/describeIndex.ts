@@ -1,15 +1,12 @@
 import { buildConfigValidator } from '../validator';
-import {
-  IndexModel,
-  ManagePodIndexesApi,
-} from '../pinecone-generated-ts-fetch';
+import { IndexModel, ManageIndexesApi } from '../pinecone-generated-ts-fetch';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 
 /** The name of the index to describe */
 export type DescribeIndexOptions = IndexName;
 
-export const describeIndex = (api: ManagePodIndexesApi) => {
+export const describeIndex = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(IndexNameSchema, 'describeIndex');
 
   const removeDeprecatedFields = (result: any) => {
