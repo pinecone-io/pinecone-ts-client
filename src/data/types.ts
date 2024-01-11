@@ -122,7 +122,7 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
 };
 
 /**
- * Metadata detailing usage details for a specific operation.
+ * Metadata detailing usage units for a specific operation.
  */
 export type OperationUsage = {
   /**
