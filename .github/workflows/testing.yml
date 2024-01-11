@@ -44,10 +44,10 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Setup bun
-        if: matrix.config.runner == 'bun'
+        if: matrix.config.bun_version
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: $ {{ matrix.config.bun_version }}
+          bun-version: ${{ matrix.config.bun_version }}
 
       - name: Run integration tests
         env:
