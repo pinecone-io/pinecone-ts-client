@@ -26,10 +26,13 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        config: [
-            # { runner: 'npm', jest_env: 'node' },
-            # { runner: 'npm', jest_env: 'edge' },
-            # { runner: 'bun', jest_env: 'node' },
+        pinecone_env:
+          - prod
+          # - staging
+        config:
+          [
+            { runner: 'npm', jest_env: 'node' },
+            { runner: 'npm', jest_env: 'edge' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.0.4' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.0.5' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.0.6' },
@@ -49,10 +52,19 @@ jobs:
         with:
           bun-version: ${{ matrix.config.bun_version }}
 
-      - name: Run integration tests
+      - name: Run integration tests (Prod)
+        if: matrix.pinecone_env == 'prod'
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+
+      - name: Run integration tests (Staging)
+        if: matrix.pinecone_env == 'staging'
+        env:
+          CI: true
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
   typescript-compilation-tests:
