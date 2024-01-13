@@ -7,7 +7,18 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build-and-publish-docs:
-    name: Build and publish docs to sdk-docs
-    uses: ./.github/workflows/build-and-publish-docs.yml
-    secrets: inherit
+  build-docs:
+    name: Build sdk-docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build docs
+        uses: ./github/actions/build-docs
+
+  # build-and-publish-docs:
+  #   name: Build and publish docs to sdk-docs
+  #   uses: ./.github/workflows/build-and-publish-docs.yml
+  #   secrets: inherit
