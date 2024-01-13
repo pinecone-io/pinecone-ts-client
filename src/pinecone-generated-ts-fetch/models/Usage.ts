@@ -21,10 +21,10 @@ import { exists, mapValues } from '../runtime';
 export interface Usage {
     /**
      * The number of read units consumed by this operation.
-     * @type {string}
+     * @type {number}
      * @memberof Usage
      */
-    readUnits?: string;
+    readUnits?: number;
 }
 
 /**

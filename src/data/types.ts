@@ -128,5 +128,5 @@ export type OperationUsage = {
   /**
    * The number of read units consumed by this operation.
    */
-  readUnits?: string;
+  readUnits?: number;
 };
