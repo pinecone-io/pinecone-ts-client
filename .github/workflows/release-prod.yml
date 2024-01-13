@@ -57,5 +57,6 @@ jobs:
 
   build-and-publish-docs:
     name: Build and publish docs to sdk-docs
+    needs: version-and-release
     uses: ./.github/workflows/build-and-publish-docs.yml
     secrets: inherit
