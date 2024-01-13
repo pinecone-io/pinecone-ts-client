@@ -181,8 +181,8 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * const indexConfig = await pinecone.describeIndex('my-index')
-   * console.log(indexConfig)
+   * const indexModel = await pinecone.describeIndex('my-index')
+   * console.log(indexModel)
    * // {
    * //     name: 'sample-index-1',
    * //     dimension: 3,
@@ -221,8 +221,8 @@ export class Pinecone {
    * List all Pinecone indexes
    * @example
    * ```js
-   * const indexes = await pinecone.listIndexes()
-   * console.log(indexes)
+   * const indexList = await pinecone.listIndexes()
+   * console.log(indexList)
    * // {
    * //     indexes: [
    * //       {
@@ -327,7 +327,12 @@ export class Pinecone {
    * ```js
    * await pinecone.createIndex({
    *  name: 'my-index',
-   *  dimension: 1536,
+   *   spec: {
+   *     serverless: {
+   *       cloud: 'aws',
+   *       region: 'us-west-2'
+   *     }
+   *   },
    *  waitUntilReady: true
    * });
    *
@@ -343,6 +348,12 @@ export class Pinecone {
    * await pinecone.createIndex({
    *   name: 'my-index',
    *   dimension: 1536,
+   *   spec: {
+   *     serverless: {
+   *       cloud: 'aws',
+   *       region: 'us-west-2'
+   *     }
+   *   },
    *   metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
    * })
    * ```
