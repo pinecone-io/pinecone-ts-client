@@ -33,7 +33,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * ### Initializing the client
  *
- * There is one piece of configuration required to use the Pinecone client: an API key. Theis value can be passed using environment variables or in code through a configuration object. Find your API key in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
+ * There is one piece of configuration required to use the Pinecone client: an API key. This value can be passed using environment variables or in code through a configuration object. Find your API key in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
  *
  * ### Using environment variables
  *
