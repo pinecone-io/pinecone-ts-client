@@ -1,0 +1,31 @@
+name: 'Build and publish documentation to sdk-docs'
+
+on:
+  workflow_dispatch: {}
+  workflow_call:
+    secrets:
+      SSH_DEPLOY_KEY:
+        required: true
+
+jobs:
+  build-and-deploy-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Generate TypeDoc documentation
+        uses: ./.github/actions/build-docs
+      - name: Push documentation artifacts to sdk-docs
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: docs
+          destination-github-username: pinecone-io
+          destination-repository-name: sdk-docs
+          user-email: clients@pinecone.io
+          target-branch: main
+          target-directory: typescript
+          commit-message: 'TypeScript: automated documentation build - pinecone-ts-client merge SHA: ${{ github.sha }}'
