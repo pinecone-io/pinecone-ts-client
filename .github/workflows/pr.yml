@@ -35,6 +35,10 @@ jobs:
       - name: TypeDoc
         uses: ./.github/actions/build-docs
 
+  migration-tests:
+    uses: './.github/workflows/test-migration.yml'
+    secrets: inherit
+
   testing:
     uses: './.github/workflows/testing.yml'
     secrets: inherit

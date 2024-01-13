@@ -1,0 +1,65 @@
+name: 'Create Index (Legacy / Regional Control Plane)'
+description: 'Create an index to be used in other tetss'
+
+inputs:
+  pinecone_client_version:
+    description: 'The version of the Pinecone client to use'
+    required: true
+    default: '1.1.3'
+  index_name_prefix:
+    description: 'The prefix for the index name'
+    required: true
+  dimension:
+    description: 'The dimension of the index'
+    required: false
+    default: '1536'
+  metric:
+    description: 'The metric of the index'
+    required: false
+    default: 'cosine'
+  records_to_upsert:
+    description: 'The number of records to upsert'
+    required: false
+    default: '1000'
+  PINECONE_API_KEY:
+    description: 'The Pinecone API key'
+    required: true
+  PINECONE_ENVIRONMENT:
+    description: 'The Pinecone environment'
+    required: true
+
+outputs:
+  index_name:
+    description: 'The name of the index including randomized suffix'
+    value: ${{ steps.create-index.outputs.index_name}}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install pinecone, compile, and run create index script
+      shell: bash
+      env:
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_ENVIRONMENT: ${{ inputs.PINECONE_ENVIRONMENT}}
+        INDEX_NAME_PREFIX: ${{ inputs.index_name_prefix }}
+        DIMENSION: ${{ inputs.dimension }}
+        METRIC: ${{ inputs.metric }}
+        RECORDS_TO_UPSERET: ${{ inputs.records_to_upsert }}
+      run: |
+        set -x
+        cd ..
+        cp -r pinecone-ts-client/ts-migration-tests ts-migration-tests
+        cd ts-migration-tests
+        npm install typescript@latest --no-cache
+        npm install @pinecone-database/pinecone@{{ inputs.pinecone_client_version }} --no-cache
+        cat package.json
+        cat package-lock.json
+        npm run build
+        npm run createIndexLegacy

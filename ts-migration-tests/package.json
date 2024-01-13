@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "createIndexLegacy": "node ./lib/1.x/createIndexLegacy.js",
+    "testIndex": "node ./lib/2.x/testIndex.js",
+    "deleteAllIndexes": "node ./lib/2.x/deleteAllIndexes.js"
+  }
+}

@@ -1,0 +1,37 @@
+name: 'Delete all indexes owned by API key'
+description: 'Delete all indexes owned by API key'
+
+inputs:
+  pinecone_client_version:
+    description: 'The version of the Pinecone client to use'
+    required: false
+    default: 'spruceDev'
+  PINECONE_API_KEY:
+    description: 'The Pinecone API key'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install pinecone, compile, and run create index script
+      shell: bash
+      env:
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+      run: |
+        set -x
+        cd ..
+        cp -r pinecone-ts-client/ts-migration-tests ts-migration-tests
+        cd ts-migration-tests
+        npm install typescript@latest --no-cache
+        npm install @pinecone-database/pinecone@{{ inputs.pinecone_client_version }} --no-cache
+        cat package.json
+        cat package-lock.json
+        npm run build
+        npm run deleteAllIndexes
