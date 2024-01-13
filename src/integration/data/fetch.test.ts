@@ -55,5 +55,6 @@ describe('fetch', () => {
     expect(results.records['0']).toBeDefined();
     expect(results.records['1']).toBeDefined();
     expect(results.records['2']).toBeDefined();
+    expect(results.usage?.readUnits).toBeDefined();
   });
 });

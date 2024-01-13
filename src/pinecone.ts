@@ -33,7 +33,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * ### Initializing the client
  *
- * There are two pieces of configuration required to use the Pinecone client: an API key and environment value. These values can be passed using environment variables or in code through a configuration object. Find your configuration values in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
+ * There is one piece of configuration required to use the Pinecone client: an API key. This value can be passed using environment variables or in code through a configuration object. Find your API key in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
  *
  * ### Using environment variables
  *
@@ -181,20 +181,24 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * const indexConfig = await pinecone.describeIndex('my-index')
-   * console.log(indexConfig)
+   * const indexModel = await pinecone.describeIndex('my-index')
+   * console.log(indexModel)
    * // {
-   * //    database: {
-   * //      name: 'my-index',
-   * //      metric: 'cosine',
-   * //      dimension: 256,
-   * //      pods: 2,
-   * //      replicas: 2,
-   * //      shards: 1,
-   * //      podType: 'p1.x2',
-   * //      metadataConfig: { indexed: [Array] }
-   * //    },
-   * //    status: { ready: true, state: 'Ready' }
+   * //     name: 'sample-index-1',
+   * //     dimension: 3,
+   * //     metric: 'cosine',
+   * //     host: 'sample-index-1-1390950.svc.apw5-4e34-81fa.pinecone.io',
+   * //     spec: {
+   * //           pod: undefined,
+   * //           serverless: {
+   * //               cloud: 'aws',
+   * //               region: 'us-west-2'
+   * //           }
+   * //     },
+   * //     status: {
+   * //           ready: true,
+   * //           state: 'Ready'
+   * //     }
    * // }
    * ```
    *
@@ -217,12 +221,47 @@ export class Pinecone {
    * List all Pinecone indexes
    * @example
    * ```js
-   * const indexes = await pinecone.listIndexes()
-   * console.log(indexes)
-   * // [ 'my-index', 'my-other-index' ]
+   * const indexList = await pinecone.listIndexes()
+   * console.log(indexList)
+   * // {
+   * //     indexes: [
+   * //       {
+   * //         name: "sample-index-1",
+   * //         dimension: 3,
+   * //         metric: "cosine",
+   * //         host: "sample-index-1-1234567.svc.apw5-2e18-32fa.pinecone.io",
+   * //         spec: {
+   * //           serverless: {
+   * //             cloud: "aws",
+   * //             region: "us-west-2"
+   * //           }
+   * //         },
+   * //         status: {
+   * //           ready: true,
+   * //           state: "Ready"
+   * //         }
+   * //       },
+   * //       {
+   * //         name: "sample-index-2",
+   * //         dimension: 3,
+   * //         metric: "cosine",
+   * //         host: "sample-index-2-1234567.svc.apw2-5e76-83fa.pinecone.io",
+   * //         spec: {
+   * //           serverless: {
+   * //             cloud: "aws",
+   * //             region: "us-west-2"
+   * //           }
+   * //         },
+   * //         status: {
+   * //           ready: true,
+   * //           state: "Ready"
+   * //         }
+   * //       }
+   * //     ]
+   * //   }
    * ```
    *
-   * @returns A promise that resolves to an array of index names
+   * @returns A promise that resolves to {@link IndexList}.
    */
   async listIndexes() {
     const indexList = await this._listIndexes();
@@ -243,20 +282,27 @@ export class Pinecone {
    * Creates a new index.
    *
    * @example
-   * The minimum required configuration to create an index is the index name and dimension.
+   * The minimum required configuration to create an index is the index `name`, `dimension`, and `spec`.
    * ```js
-   * await pinecone.createIndex({ name: 'my-index', dimension: 128 })
+   * await pinecone.createIndex({ name: 'my-index', dimension: 128, spec: { serverless: { cloud: 'aws', region: 'us-west-2' }}})
    * ```
+   *
    * @example
-   * In a more expansive example, you can specify the metric, number of pods, number of replicas, and pod type.
+   * The `spec` object defines how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted.
+   * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
+   * In a more expansive example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
    * ```js
    * await pinecone.createIndex({
    *  name: 'my-index',
    *  dimension: 1536,
    *  metric: 'cosine',
-   *  pods: 1,
-   *  replicas: 2,
-   *  podType: 'p1.x1'
+   *  spec: {
+   *    pod: {
+   *      environment: 'us-west-2-gcp',
+   *      pods: 1,
+   *      podType: 'p1.x1'
+   *    }
+   *   }
    * })
    * ```
    *
@@ -266,6 +312,12 @@ export class Pinecone {
    * await pinecone.createIndex({
    *   name: 'my-index',
    *   dimension: 1536,
+   *   spec: {
+   *     serverless: {
+   *       cloud: 'aws',
+   *       region: 'us-west-2'
+   *     }
+   *   },
    *   suppressConflicts: true
    * })
    * ```
@@ -275,7 +327,12 @@ export class Pinecone {
    * ```js
    * await pinecone.createIndex({
    *  name: 'my-index',
-   *  dimension: 1536,
+   *   spec: {
+   *     serverless: {
+   *       cloud: 'aws',
+   *       region: 'us-west-2'
+   *     }
+   *   },
    *  waitUntilReady: true
    * });
    *
@@ -291,6 +348,12 @@ export class Pinecone {
    * await pinecone.createIndex({
    *   name: 'my-index',
    *   dimension: 1536,
+   *   spec: {
+   *     serverless: {
+   *       cloud: 'aws',
+   *       region: 'us-west-2'
+   *     }
+   *   },
    *   metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
    * })
    * ```
@@ -303,7 +366,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
    *
-   * @returns A promise that resolves when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the `describeIndex` function to check the status of the index.
+   * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
   createIndex(options: CreateIndexOptions) {
     return this._createIndex(options);
@@ -333,7 +396,7 @@ export class Pinecone {
   /**
    * Configure an index
    *
-   * Use this method to update configuration on an existing index. You can update the number of pods, replicas, and pod type. You can also update the metadata configuration.
+   * Use this method to update configuration on an existing index. You can update the number of replicas, and pod type.
    *
    * @example
    * ```js
@@ -341,6 +404,7 @@ export class Pinecone {
    * ```
    *
    * @param indexName - The name of the index to configure.
+   * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    * @param options - The configuration properties you would like to update
    */
   configureIndex(indexName: IndexName, options: ConfigureIndexRequestSpecPod) {
@@ -353,9 +417,10 @@ export class Pinecone {
    * @example
    * ```js
    * const indexList = await pinecone.listIndexes()
+   * const indexName = indexList.indexes[0].name;
    * await pinecone.createCollection({
    *  name: 'my-collection',
-   *  source: indexList[0]
+   *  source: indexName
    * })
    * ```
    *
@@ -363,7 +428,7 @@ export class Pinecone {
    * @param options - The collection configuration.
    * @param options.name - The name of the collection. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
    * @param options.source - The name of the index to use as the source for the collection.
-   * @returns a promise that resolves when the request to create the collection is completed.
+   * @returns a promise that resolves to {@link CollectionModel} when the request to create the collection is completed.
    */
   createCollection(options: CreateCollectionRequest) {
     return this._createCollection(options);
@@ -377,7 +442,7 @@ export class Pinecone {
    * await pinecone.listCollections()
    * ```
    *
-   * @returns A promise that resolves to an array of collection objects.
+   * @returns A promise that resolves to {@link CollectionList}.
    */
   listCollections() {
     return this._listCollections();
@@ -389,7 +454,7 @@ export class Pinecone {
    * @example
    * ```
    * const collectionList = await pinecone.listCollections()
-   * const collectionName = collectionList[0]
+   * const collectionName = collectionList.collections[0].name;
    * await pinecone.deleteCollection(collectionName)
    * ```
    *
@@ -409,7 +474,7 @@ export class Pinecone {
    * ```
    *
    * @param collectionName - The name of the collection to describe.
-   * @returns A promise that resolves to a collection object with type {@link CollectionDescription}.
+   * @returns A promise that resolves to a {@link CollectionModel}.
    */
   describeCollection(collectionName: CollectionName) {
     return this._describeCollection(collectionName);
@@ -491,6 +556,7 @@ export class Pinecone {
    *
    * @typeParam T - The type of metadata associated with each record.
    * @param indexName - The name of the index to target.
+   * @param indexHostUrl - An optional host url to use for operations against this index. If not provided, the host url will be resolved by calling {@link describeIndex}.
    * @typeParam T - The type of the metadata object associated with each record.
    * @returns An {@link Index} object that can be used to perform data operations.
    */

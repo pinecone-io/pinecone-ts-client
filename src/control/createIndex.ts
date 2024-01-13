@@ -27,6 +27,7 @@ import {
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
 export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'metric'> {
+  /** The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. Defaults to 'cosine'. */
   metric?: CreateIndexRequestMetricEnum;
 
   /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
