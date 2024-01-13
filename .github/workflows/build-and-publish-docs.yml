@@ -28,4 +28,4 @@ jobs:
           user-email: clients@pinecone.io
           target-branch: main
           target-directory: typescript
-          commit-message: 'TypeScript: automated documentation build - pinecone-ts-client merge SHA: ${{ github.sha }}'
+          commit-message: "TypeScript: automated documentation build \n\n pinecone-ts-client merge SHA: ${{ github.sha }}"
