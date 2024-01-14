@@ -32,9 +32,7 @@ function randomEmbeddingValues(dimension: number = 2): number[] {
 
 function writeGithubOutput(key: string, value: string): void {
   const output = process.env['GITHUB_OUTPUT'];
-  if (output) {
-    appendFileSync(output, `${key}=${value}${EOL}`);
-  }
+  appendFileSync(output || '', `${key}=${value}${EOL}`);
 }
 
 (async () => {
