@@ -65,8 +65,8 @@ function writeGithubOutput(key: string, value: string): void {
   });
 
   console.info(`Index ${indexName} created!`);
-  const indexDescription = pinecone.describeIndex(indexName);
-  console.info(`Index description: ${indexDescription}`);
+  const indexDescription = await pinecone.describeIndex(indexName);
+  console.info(`Index description: ${JSON.stringify(indexDescription)}`);
 
   console.info(`Beginning to upsert vectors to ${indexName}...`);
   const batchSize = 10;
