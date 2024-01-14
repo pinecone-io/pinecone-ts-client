@@ -64,6 +64,8 @@ function writeGithubOutput(key: string, value: string): void {
     suppressConflicts: true,
   });
 
+  await new Promise((resolve) => setTimeout(resolve, 60000));
+
   console.info(`Index ${indexName} created!`);
   const indexDescription = await pinecone.describeIndex(indexName);
   console.info(`Index description: ${JSON.stringify(indexDescription)}`);
