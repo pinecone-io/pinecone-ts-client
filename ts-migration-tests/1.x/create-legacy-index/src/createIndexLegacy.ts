@@ -1,5 +1,6 @@
 import { Pinecone } from '@pinecone-database/pinecone';
-import * as core from '@actions/core';
+import { appendFileSync } from 'fs';
+import { EOL } from 'os';
 
 function readEnvVar(name: string): string {
   const value = process.env[name];
@@ -30,7 +31,10 @@ function randomEmbeddingValues(dimension: number = 2): number[] {
 }
 
 function writeGithubOutput(key: string, value: string): void {
-  core.setOutput(key, value);
+  const output = process.env['GITHUB_OUTPUT'];
+  if (output) {
+    appendFileSync(output, `${key}=${value}${EOL}`);
+  }
 }
 
 (async () => {
@@ -42,7 +46,7 @@ function writeGithubOutput(key: string, value: string): void {
   const numRecordsToUpsert = parseInt(readEnvVar('RECORDS_TO_UPSERT'));
 
   const indexName = `${indexNamePrefix}-${randomString(10)}`;
-  writeGithubOutput('index_name', indexName);
+  writeGithubOutput('INDEX_NAME', indexName);
   console.info(`Creating index ${indexName}...`);
 
   console.info(

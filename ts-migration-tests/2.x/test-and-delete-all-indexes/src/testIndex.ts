@@ -32,6 +32,6 @@ function readEnvVar(name: string): string {
   console.info(`Index description: ${JSON.stringify(description)}`);
 
   console.info(`Describing index stats...`);
-  const indexStats = pinecone.index(indexName).describeIndexStats();
+  const indexStats = await pinecone.index(indexName).describeIndexStats();
   console.info(`Index stats: ${JSON.stringify(indexStats)}`);
 })();
