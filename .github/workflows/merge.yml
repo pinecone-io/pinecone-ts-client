@@ -16,7 +16,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
       - name: Build docs
-        uses: ./github/actions/build-docs
+        uses: ./.github/actions/build-docs
 
   # build-and-publish-docs:
   #   name: Build and publish docs to sdk-docs
