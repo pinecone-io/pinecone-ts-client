@@ -45,7 +45,7 @@ jobs:
           pinecone_client_version: 1.1.3
           index_name_prefix: ts-migration
           records_to_upsert: ${{ env.NUM_VECTORS }}
-          dimension: 15
+          dimension: 5
           metric: cosine
 
       - name: Inspect on GCPS
