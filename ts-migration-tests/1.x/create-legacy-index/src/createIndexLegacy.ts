@@ -78,7 +78,7 @@ function writeGithubOutput(key: string, value: string): void {
 
     for (let j = 0; j < batchSize; j++) {
       records.push({
-        id: randomString(5),
+        id: randomString(10),
         values: randomEmbeddingValues(dimension),
       });
     }
