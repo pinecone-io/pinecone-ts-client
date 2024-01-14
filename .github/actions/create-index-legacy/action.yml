@@ -51,7 +51,7 @@ runs:
         INDEX_NAME_PREFIX: ${{ inputs.index_name_prefix }}
         DIMENSION: ${{ inputs.dimension }}
         METRIC: ${{ inputs.metric }}
-        RECORDS_TO_UPSERET: ${{ inputs.records_to_upsert }}
+        RECORDS_TO_UPSERT: ${{ inputs.records_to_upsert }}
       run: |
         set -x
         cd ..
