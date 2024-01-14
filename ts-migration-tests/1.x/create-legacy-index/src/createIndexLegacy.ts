@@ -1,6 +1,5 @@
 import { Pinecone } from '@pinecone-database/pinecone';
-import { appendFileSync } from 'fs';
-import { EOL } from 'os';
+import * as core from '@actions/core';
 
 function readEnvVar(name: string): string {
   const value = process.env[name];
@@ -31,8 +30,7 @@ function randomEmbeddingValues(dimension: number = 2): number[] {
 }
 
 function writeGithubOutput(key: string, value: string): void {
-  const output = process.env['GITHUB_OUTPUT'];
-  appendFileSync(output || '', `${key}=${value}${EOL}`);
+  core.exportVariable(key, value);
 }
 
 (async () => {
