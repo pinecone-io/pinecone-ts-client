@@ -1,7 +1,7 @@
 var dotenv = require('dotenv');
 dotenv.config();
 
-for (const envVar of ['PINECONE_ENVIRONMENT', 'PINECONE_API_KEY']) {
+for (const envVar of ['PINECONE_API_KEY']) {
   if (!process.env[envVar]) {
     console.warn(`WARNING Missing environment variable ${envVar} in .env file`);
   } else {
@@ -14,15 +14,18 @@ var pinecone = require('../dist');
 (async () => {
   const p = new pinecone.Pinecone();
 
-  const collections = await p.listCollections();
-  for (const collection of collections) {
-    console.log(`Deleting collection ${collection.name}`);
-    await p.deleteCollection(collection.name);
-  }
+  // TODO: Uncomment when collections are supported
+  // const collections = await p.listCollections();
+  // for (const collection of collections) {
+  //   console.log(`Deleting collection ${collection.name}`);
+  //   await p.deleteCollection(collection.name);
+  // }
 
-  const indexes = await p.listIndexes();
-  for (const index of indexes) {
+  const response = await p.listIndexes();
+  for (const index of response.indexes) {
     console.log(`Deleting index ${index.name}`);
     await p.deleteIndex(index.name);
   }
+
+  process.exit();
 })();

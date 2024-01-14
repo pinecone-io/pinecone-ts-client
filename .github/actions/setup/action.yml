@@ -4,9 +4,6 @@ inputs:
   pinecone_api_key:
     description: 'API key'
     required: true
-  pinecone_environment:
-    description: 'Environment/region to target'
-    required: true
 runs:
   using: 'composite'
   steps:

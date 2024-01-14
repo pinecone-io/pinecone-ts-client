@@ -1,5 +1,18 @@
-import type { PineconeRecord, RecordSparseValues } from '../index';
-import { Pinecone } from '../index';
+import type {
+  IndexStatsDescription,
+  PineconeRecord,
+  RecordSparseValues,
+  RecordMetadata,
+} from '../index';
+import { Pinecone, Index } from '../index';
+
+const metadataMap = {
+  genre: ['action', 'comedy', 'drama', 'horror', 'romance', 'thriller'],
+  year: [2010, 2011, 2012, 2013, 2014, 2015],
+};
+const metadataKeys = Object.keys(metadataMap);
+
+export const INDEX_NAME = 'ts-integration';
 
 export const randomString = (length) => {
   const characters =
@@ -17,13 +30,14 @@ export const randomString = (length) => {
 export const generateRecords = (
   dimension: number,
   quantity: number,
-  withSparseValues?: boolean
+  withSparseValues?: boolean,
+  withMetadata?: boolean
 ): PineconeRecord[] => {
-  const vectors: PineconeRecord[] = [];
+  const records: PineconeRecord[] = [];
   for (let i = 0; i < quantity; i++) {
     const values: number[] = [];
     for (let j = 0; j < dimension; j++) {
-      values.push(Math.random());
+      values.push(parseFloat(Math.random().toFixed(5)));
     }
     let vector: PineconeRecord = {
       id: i.toString(),
@@ -35,10 +49,15 @@ export const generateRecords = (
         sparseValues: generateSparseValues(dimension),
       };
     }
-
-    vectors.push(vector);
+    if (withMetadata) {
+      vector = {
+        ...vector,
+        metadata: generateMetadata(),
+      };
+    }
+    records.push(vector);
   }
-  return vectors;
+  return records;
 };
 
 export const generateSparseValues = (dimension: number): RecordSparseValues => {
@@ -50,6 +69,15 @@ export const generateSparseValues = (dimension: number): RecordSparseValues => {
   }
   const sparseValues: RecordSparseValues = { indices, values };
   return sparseValues;
+};
+
+export const generateMetadata = (): RecordMetadata => {
+  const metaKey = metadataKeys[Math.floor(Math.random() * metadataKeys.length)];
+  const metaValue =
+    metadataMap[metaKey][
+      Math.floor(Math.random() * metadataMap[metaKey].length)
+    ];
+  return { [metaKey]: metaValue };
 };
 
 export const randomIndexName = (testName: string): string => {
@@ -70,5 +98,56 @@ export const waitUntilReady = async (indexName: string) => {
   while (description.status?.state !== 'Ready') {
     await sleep(sleepIntervalMs);
     description = await p.describeIndex(indexName);
+  }
+};
+
+export const waitUntilRecordsReady = async (
+  index: Index,
+  namespace: string,
+  recordIds: string[]
+): Promise<IndexStatsDescription> => {
+  const sleepIntervalMs = 3000;
+  let indexStats = await index.describeIndexStats();
+
+  while (
+    indexStats.namespaces &&
+    !indexStats.namespaces[namespace] &&
+    indexStats.namespaces[namespace]?.recordCount !== recordIds.length
+  ) {
+    await sleep(sleepIntervalMs);
+    indexStats = await index.describeIndexStats();
+  }
+
+  // Sleeping one final time before returning for a bit more breathing room for freshness
+  await sleep(sleepIntervalMs);
+
+  return indexStats;
+};
+
+type Assertion = (result: any) => void;
+
+export const assertWithRetries = async (
+  asyncFn: () => Promise<any>,
+  assertions: Assertion[],
+  maxRetries: number = 5,
+  delay: number = 3000
+) => {
+  let attempts = 0;
+
+  while (attempts < maxRetries) {
+    try {
+      const result = await asyncFn();
+      assertions.forEach((assertion) => assertion(result));
+      return;
+    } catch (error) {
+      attempts++;
+      if (attempts <= maxRetries) {
+        await sleep(delay);
+        // Double the delay for exponential backoff
+        delay *= 2;
+      } else {
+        throw error;
+      }
+    }
   }
 };

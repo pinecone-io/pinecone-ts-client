@@ -9,7 +9,8 @@ export const handleApiError = async (
   customMessage?: (
     statusCode: number,
     rawMessageText: string
-  ) => Promise<string>
+  ) => Promise<string>,
+  url?: string
 ): Promise<Error> => {
   if (e instanceof Error && e.name === 'ResponseError') {
     const responseError = e as ResponseError;
@@ -21,7 +22,7 @@ export const handleApiError = async (
 
     return mapHttpStatusError({
       status: responseError.response.status,
-      url: responseError.response.url,
+      url: responseError.response.url || url,
       message: message,
     });
   } else if (e instanceof PineconeConnectionError) {

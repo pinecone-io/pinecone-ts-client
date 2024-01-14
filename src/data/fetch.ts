@@ -1,7 +1,12 @@
 import { buildConfigValidator } from '../validator';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { RecordIdSchema } from './types';
-import type { PineconeRecord, RecordId, RecordMetadata } from './types';
+import type {
+  OperationUsage,
+  PineconeRecord,
+  RecordId,
+  RecordMetadata,
+} from './types';
 import { Type } from '@sinclair/typebox';
 
 const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
@@ -21,6 +26,9 @@ export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
 
   /** The namespace where records were fetched. */
   namespace: string;
+
+  /** The usage information for the fetch operation. */
+  usage?: OperationUsage;
 };
 
 export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
@@ -46,6 +54,7 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
     return {
       records: response.vectors ? response.vectors : {},
       namespace: response.namespace ? response.namespace : '',
+      ...(response.usage && { usage: response.usage }),
     } as FetchResponse<T>;
   }
 }

@@ -1,5 +1,6 @@
 import { buildConfigValidator } from '../validator';
 import {
+  OperationUsage,
   RecordIdSchema,
   RecordSparseValuesSchema,
   RecordValues,
@@ -125,6 +126,9 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 
   /** The namespace where the query was executed. */
   namespace: string;
+
+  /** The usage information for the query operation. */
+  usage?: OperationUsage;
 };
 
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
@@ -150,6 +154,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
     return {
       matches: matches as Array<ScoredPineconeRecord<T>>,
       namespace: this.namespace,
+      ...(results.usage && { usage: results.usage }),
     };
   }
 }

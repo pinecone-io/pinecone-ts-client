@@ -12,6 +12,14 @@ describe('list indexes', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      metric: 'cosine',
+      spec: {
+        serverless: {
+          region: 'us-west-2',
+          cloud: 'aws',
+        },
+      },
+      waitUntilReady: true,
     });
   });
 
@@ -20,10 +28,10 @@ describe('list indexes', () => {
   });
 
   test('list indexes', async () => {
-    const indexes = await pinecone.listIndexes();
-    expect(indexes).toBeDefined();
-    expect(indexes.length).toBeGreaterThan(0);
+    const response = await pinecone.listIndexes();
+    expect(response.indexes).toBeDefined();
+    expect(response.indexes?.length).toBeGreaterThan(0);
 
-    expect(indexes.map((i) => i.name)).toContain(indexName);
+    expect(response.indexes?.map((i) => i.name)).toContain(indexName);
   });
 });

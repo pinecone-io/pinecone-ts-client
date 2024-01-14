@@ -1,7 +1,10 @@
-import { IndexOperationsApi } from '../pinecone-generated-ts-fetch';
+import {
+  CollectionModel,
+  CreateCollectionRequest,
+  ManageIndexesApi,
+} from '../pinecone-generated-ts-fetch';
 import { buildConfigValidator } from '../validator';
 import { CollectionNameSchema, IndexNameSchema } from './types';
-import type { CollectionName, IndexName } from './types';
 import { Type } from '@sinclair/typebox';
 
 const CreateCollectionOptionsSchema = Type.Object(
@@ -12,27 +15,15 @@ const CreateCollectionOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-/**
- * @see [Understanding collections](https://docs.pinecone.io/docs/collections)
- */
-export type CreateCollectionOptions = {
-  /** The name of the collection you would like to create. */
-  name: CollectionName;
-
-  /** The name of the index you would like to create the collection from. */
-  source: IndexName;
-};
-
-export const createCollection = (api: IndexOperationsApi) => {
+export const createCollection = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CreateCollectionOptionsSchema,
     'createCollection'
   );
 
-  return async (options: CreateCollectionOptions): Promise<void> => {
+  return async (options: CreateCollectionRequest): Promise<CollectionModel> => {
     validator(options);
 
-    await api.createCollection({ createCollectionRequest: options });
-    return;
+    return await api.createCollection({ createCollectionRequest: options });
   };
 };

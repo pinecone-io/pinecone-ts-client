@@ -10,22 +10,24 @@ const positiveInteger = Type.Integer({ minimum: 1 });
 // string. To avoid this confusing case, we require lenth > 1.
 export const IndexNameSchema = nonemptyString;
 
-/**
- * Index names are strings composed of:
- * - alphanumeric characters
- * - hyphens
- *
- * Index names must be unique within a project and may not start or end with a hyphen.
- *
- * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
- */
-export type IndexName = string;
-
 export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;
-export const MetricSchema = nonemptyString;
+export const ShardsSchema = positiveInteger;
+export const MetricSchema = Type.Union([
+  Type.Literal('cosine'),
+  Type.Literal('euclidean'),
+  Type.Literal('dotproduct'),
+]);
 export const DimensionSchema = positiveInteger;
+export const RegionSchema = nonemptyString;
+export const EnvironmentSchema = nonemptyString;
+export const CloudSchema = Type.Union([
+  Type.Literal('gcp'),
+  Type.Literal('aws'),
+  Type.Literal('azure'),
+]);
+export const CapacityModeSchema = nonemptyString;
 export const MetadataConfigSchema = Type.Object(
   {
     indexed: Type.Array(nonemptyString),
@@ -39,6 +41,17 @@ export const MetadataConfigSchema = Type.Object(
 // no descriptive information is returned for an collection named empty
 // string. To avoid this confusing case, we require lenth > 1.
 export const CollectionNameSchema = nonemptyString;
+
+/**
+ * Index names are strings composed of:
+ * - alphanumeric characters
+ * - hyphens
+ *
+ * Index names must be unique within a project and may not start or end with a hyphen.
+ *
+ * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
+ */
+export type IndexName = string;
 
 /**
  * Collection names are strings composed of:

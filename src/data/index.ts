@@ -123,6 +123,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
     /** The namespace where operations will be performed. If not set, the default namespace of `''` will be used. */
     namespace: string;
+
+    /** An optional host address override for data operations. */
+    indexHostUrl?: string;
   };
 
   /**
@@ -225,7 +228,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
-   * @returns A promise that resolve with the {@link IndexStatsDescription} value when the operation is completed.
+   * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats() {
     return this._describeIndexStats();
@@ -255,19 +258,26 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
    * @param config - The configuration from the Pinecone client.
    * @param namespace - The namespace for the index.
+   * @param indexHostUrl - An optional override for the host address used for data operations.
    */
   constructor(
     indexName: string,
     config: PineconeConfiguration,
-    namespace = ''
+    namespace = '',
+    indexHostUrl?: string
   ) {
     this.config = config;
     this.target = {
       index: indexName,
       namespace: namespace,
+      indexHostUrl: indexHostUrl,
     };
 
-    const apiProvider = new VectorOperationsProvider(config, indexName);
+    const apiProvider = new VectorOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl
+    );
 
     this._deleteAll = deleteAll(apiProvider, namespace);
     this._deleteMany = deleteMany(apiProvider, namespace);
@@ -307,7 +317,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * This `namespace()` method will inherit custom metadata types if you are chaining the call off an { @link Index } client instance that is typed with a user-specified metadata type. See { @link Pinecone.index } for more info.
    */
   namespace(namespace: string): Index<T> {
-    return new Index<T>(this.target.index, this.config, namespace);
+    return new Index<T>(
+      this.target.index,
+      this.config,
+      namespace,
+      this.target.indexHostUrl
+    );
   }
 
   /**

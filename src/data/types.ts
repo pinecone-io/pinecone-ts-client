@@ -1,11 +1,10 @@
 import { Type } from '@sinclair/typebox';
-import type { FetchAPI } from '../pinecone-generated-ts-fetch';
+import type { FetchAPI, HTTPHeaders } from '../pinecone-generated-ts-fetch';
 
 export const PineconeConfigurationSchema = Type.Object(
   {
-    environment: Type.String({ minLength: 1 }),
     apiKey: Type.String({ minLength: 1 }),
-    projectId: Type.Optional(Type.String({ minLength: 1 })),
+    controllerHostUrl: Type.Optional(Type.String({ minLength: 1 })),
 
     // fetchApi is a complex type that I don't really want to recreate in the
     // form of a json schema (seems difficult and error prone). So we will
@@ -13,6 +12,8 @@ export const PineconeConfigurationSchema = Type.Object(
     // But declaring it here as Type.Any() is needed to avoid getting caught
     // in the additionalProperties check.
     fetchApi: Type.Optional(Type.Any()),
+
+    additionalHeaders: Type.Optional(Type.Any()),
   },
   { additionalProperties: false }
 );
@@ -22,22 +23,24 @@ export const PineconeConfigurationSchema = Type.Object(
  */
 export type PineconeConfiguration = {
   /**
-   * The environment for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
-   */
-  environment: string;
-
-  /**
    * The API key for your Pinecone project. You can find this in the [Pinecone console](https://app.pinecone.io).
    */
   apiKey: string;
 
-  /** The project ID for your Pinecone project. This optional field can be passed, but if it is not then it will be automatically fetched when needed. */
-  projectId?: string;
+  /**
+   * Optional configuration field for specifying the controller host. If not specified, the client will use the default controller host: https://api.pinecone.io.
+   */
+  controllerHostUrl?: string;
 
   /**
    * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
    */
   fetchApi?: FetchAPI;
+
+  /**
+   * Optional headers to be included in all requests.
+   */
+  additionalHeaders?: HTTPHeaders;
 };
 
 export const RecordIdSchema = Type.String({ minLength: 1 });
@@ -116,4 +119,14 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
    * Any metadata associated with this record.
    */
   metadata?: T;
+};
+
+/**
+ * Metadata detailing usage units for a specific operation.
+ */
+export type OperationUsage = {
+  /**
+   * The number of read units consumed by this operation.
+   */
+  readUnits?: number;
 };

@@ -2,38 +2,37 @@ import { PineconeConnectionError } from '../errors';
 import { Pinecone } from '../index';
 
 describe('Error handling', () => {
-  describe('when environment is wrong', () => {
+  describe('when API key is wrong', () => {
     test('calling control plane', async () => {
       const p = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY || '',
-        environment: 'wrong-environment',
+        apiKey: '123-456-789',
       });
 
+      expect.assertions(2);
       try {
         await p.listIndexes();
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeConnectionError');
+        expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'Request failed to reach Pinecone. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
         );
-        expect(err.cause).toBeDefined();
       }
     });
 
     test('calling data plane', async () => {
       const p = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY || '',
-        environment: 'wrong-environment2',
+        apiKey: '123-456-789',
       });
 
+      expect.assertions(2);
       try {
         await p.index('foo-index').query({ topK: 10, id: '1' });
       } catch (e) {
         const err = e as PineconeConnectionError;
-        expect(err.name).toEqual('PineconeConnectionError');
+        expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'Request failed to reach Pinecone while calling https://controller.wrong-environment2.pinecone.io/actions/whoami. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
         );
       }
     });
@@ -43,7 +42,6 @@ describe('Error handling', () => {
       beforeEach(() => {
         p = new Pinecone({
           apiKey: process.env.PINECONE_API_KEY || '',
-          environment: process.env.PINECONE_ENVIRONMENT || '',
           fetchApi: async () => {
             throw new Error('network failure');
           },
@@ -51,6 +49,7 @@ describe('Error handling', () => {
       });
 
       test('calling control plane', async () => {
+        expect.assertions(4);
         try {
           await p.listIndexes();
         } catch (e) {
@@ -71,9 +70,9 @@ describe('Error handling', () => {
           await p.index('foo-index').query({ topK: 10, id: '1' });
         } catch (e) {
           const err = e as PineconeConnectionError;
-          expect(err.name).toEqual('PineconeConnectionError');
+          expect(err.name).toEqual('PineconeAuthorizationError');
           expect(err.message).toEqual(
-            `Request failed to reach Pinecone while calling https://controller.${process.env.PINECONE_ENVIRONMENT}.pinecone.io/actions/whoami. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.`
+            'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
           );
         }
       });

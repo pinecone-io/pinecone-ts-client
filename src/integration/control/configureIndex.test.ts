@@ -2,7 +2,8 @@ import { BasePineconeError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomIndexName, waitUntilReady } from '../test-helpers';
 
-describe('configure index', () => {
+// TODO: Uncomment when configure_index / pod indexes implemented
+describe.skip('configure index', () => {
   let indexName;
   let pinecone: Pinecone;
 
@@ -13,9 +14,15 @@ describe('configure index', () => {
     await pinecone.createIndex({
       name: indexName,
       dimension: 5,
+      metric: 'cosine',
+      spec: {
+        pod: {
+          environment: 'us-east1-gcp',
+          podType: 'p1.x1',
+          pods: 2,
+        },
+      },
       waitUntilReady: true,
-      podType: 'p1.x1',
-      replicas: 2,
     });
   });
 
@@ -23,10 +30,12 @@ describe('configure index', () => {
     await pinecone.deleteIndex(indexName);
   });
 
-  describe('error handling', () => {
+  describe.skip('error handling', () => {
     test('configure index with invalid index name', async () => {
       try {
-        await pinecone.configureIndex('non-existent-index', { replicas: 2 });
+        await pinecone.configureIndex('non-existent-index', {
+          replicas: 2,
+        });
       } catch (e) {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeNotFoundError');
@@ -35,7 +44,9 @@ describe('configure index', () => {
 
     test('configure index when exceeding quota', async () => {
       try {
-        await pinecone.configureIndex(indexName, { replicas: 20 });
+        await pinecone.configureIndex(indexName, {
+          replicas: 20,
+        });
       } catch (e) {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
@@ -47,35 +58,41 @@ describe('configure index', () => {
     });
   });
 
-  describe('scaling replicas', () => {
+  describe.skip('scaling replicas', () => {
     test('scaling up', async () => {
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.replicas).toEqual(2);
+      expect(description.spec.pod?.replicas).toEqual(2);
 
-      await pinecone.configureIndex(indexName, { replicas: 3 });
+      await pinecone.configureIndex(indexName, {
+        replicas: 3,
+      });
       const description2 = await pinecone.describeIndex(indexName);
-      expect(description2.database?.replicas).toEqual(3);
+      expect(description2.spec.pod?.replicas).toEqual(3);
     });
 
     test('scaling down', async () => {
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.replicas).toEqual(2);
+      expect(description.spec.pod?.replicas).toEqual(2);
 
-      await pinecone.configureIndex(indexName, { replicas: 1 });
+      await pinecone.configureIndex(indexName, {
+        replicas: 1,
+      });
       const description3 = await pinecone.describeIndex(indexName);
-      expect(description3.database?.replicas).toEqual(1);
+      expect(description3.spec.pod?.replicas).toEqual(1);
     });
   });
 
-  describe('scaling pod type', () => {
+  describe.skip('scaling pod type', () => {
     test('scaling podType: changing base pod type', async () => {
       // Verify the starting state
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.podType).toEqual('p1.x1');
+      expect(description.spec.pod?.podType).toEqual('p1.x1');
 
       try {
         // Try to change the base pod type
-        await pinecone.configureIndex(indexName, { podType: 'p2.x1' });
+        await pinecone.configureIndex(indexName, {
+          podType: 'p2.x1',
+        });
       } catch (e) {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
@@ -88,30 +105,36 @@ describe('configure index', () => {
     test('scaling podType: size increase', async () => {
       // Verify the starting state
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.podType).toEqual('p1.x1');
+      expect(description.spec.pod?.podType).toEqual('p1.x1');
 
-      await pinecone.configureIndex(indexName, { podType: 'p1.x2' });
+      await pinecone.configureIndex(indexName, {
+        podType: 'p1.x2',
+      });
       const description2 = await pinecone.describeIndex(indexName);
-      expect(description2.database?.podType).toEqual('p1.x2');
+      expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
 
     test('scaling podType: size down', async () => {
       // Verify the starting state
       const description = await pinecone.describeIndex(indexName);
-      expect(description.database?.podType).toEqual('p1.x1');
+      expect(description.spec.pod?.podType).toEqual('p1.x1');
 
       // Size up
-      await pinecone.configureIndex(indexName, { podType: 'p1.x2' });
+      await pinecone.configureIndex(indexName, {
+        podType: 'p1.x2',
+      });
       const description2 = await pinecone.describeIndex(indexName);
-      expect(description2.database?.podType).toEqual('p1.x2');
+      expect(description2.spec.pod?.podType).toEqual('p1.x2');
 
       await waitUntilReady(indexName);
 
       try {
         // try to size down
-        await pinecone.configureIndex(indexName, { podType: 'p1.x1' });
+        await pinecone.configureIndex(indexName, {
+          podType: 'p1.x1',
+        });
         const description3 = await pinecone.describeIndex(indexName);
-        expect(description3.database?.podType).toEqual('p1.x1');
+        expect(description3.spec.pod?.podType).toEqual('p1.x1');
       } catch (e) {
         const err = e as BasePineconeError;
 

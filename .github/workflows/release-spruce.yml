@@ -4,6 +4,10 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  testing:
+    uses: './.github/workflows/testing.yml'
+    secrets: inherit
+
   version-and-release:
     name: Release dev build to NPM
     runs-on: ubuntu-latest
@@ -25,7 +29,7 @@ jobs:
           jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
           jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
           jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > src/version.json
+          jq --null-input --arg version "$devVersion" --arg release "@spruce" '{"name": "@pinecone-database/pinecone", "version": $version, "release": $release}' > src/version.json
 
       - name: 'Publish to npm'
         run: npm publish --tag spruce

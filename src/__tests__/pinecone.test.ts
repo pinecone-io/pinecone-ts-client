@@ -1,8 +1,10 @@
 import { Pinecone } from '../pinecone';
+import { IndexHostSingleton } from '../data/indexHostSingleton';
 import type { PineconeConfiguration } from '../data';
 import * as utils from '../utils';
 
 const fakeFetch = jest.fn();
+const fakeHost = '123-456.pinecone.io';
 
 jest.mock('../utils', () => {
   const realUtils = jest.requireActual('../utils');
@@ -14,48 +16,67 @@ jest.mock('../utils', () => {
 });
 jest.mock('../data/fetch');
 jest.mock('../data/upsert');
+jest.mock('../data/indexHostSingleton');
+jest.mock('../control', () => {
+  const realControl = jest.requireActual('../control');
+  return {
+    ...realControl,
+    describeIndex: () =>
+      jest.fn().mockResolvedValue({
+        name: 'fake-index',
+        dimension: 1,
+        metric: 'cosine',
+        host: fakeHost,
+        spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+        status: { ready: true, state: 'Ready' },
+      }),
+    deleteIndex: () => jest.fn().mockResolvedValue(undefined),
+    listIndexes: () =>
+      jest.fn().mockResolvedValue({
+        indexes: [
+          {
+            name: 'fake-index1',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+          {
+            name: 'fake-index2',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+          {
+            name: 'fake-index3',
+            dimension: 1,
+            metric: 'cosine',
+            host: fakeHost,
+            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+            status: { ready: true, state: 'Ready' },
+          },
+        ],
+      }),
+  };
+});
 
 describe('Pinecone', () => {
   describe('constructor', () => {
     describe('required properties', () => {
-      test('should throw an error if no properties provided', () => {
+      test('should throw an error if apiKey is not provided', () => {
         expect(() => {
           new Pinecone({} as PineconeConfiguration);
-        }).toThrow(
-          'The client configuration must have required properties: environment, apiKey.'
-        );
-      });
-
-      test('should throw an error if required property not provided', () => {
-        expect(() => {
-          new Pinecone({ apiKey: 'test-key' } as PineconeConfiguration);
-        }).toThrow(
-          'The client configuration must have required property: environment.'
-        );
-
-        expect(() => {
-          new Pinecone({
-            environment: 'test-environment',
-          } as PineconeConfiguration);
         }).toThrow(
           'The client configuration must have required property: apiKey.'
         );
       });
 
-      test('should throw an error if required properties are blank', () => {
-        expect(() => {
-          new Pinecone({
-            environment: '',
-            projectId: '',
-            apiKey: 'test-key',
-          });
-        }).toThrow(
-          "The client configuration had validation errors: property 'environment' must not be blank, property 'projectId' must not be blank."
-        );
-
+      test('should throw an error if apiKey is blank', () => {
         expect(() => {
           const config = {
-            environment: 'test-env',
             apiKey: '',
           } as PineconeConfiguration;
           new Pinecone(config);
@@ -69,9 +90,7 @@ describe('Pinecone', () => {
       test('should throw an error if unknown property provided', () => {
         expect(() => {
           new Pinecone({
-            environment: 'test-env',
             apiKey: 'test-key',
-            projectId: 'test-proj',
             unknownProp: 'banana',
           } as PineconeConfiguration);
         }).toThrow(
@@ -81,12 +100,12 @@ describe('Pinecone', () => {
     });
 
     describe('optional properties', () => {
-      test('should not throw when optional properties provided: fetchAPI', () => {
+      test('should not throw when optional properties provided: fetchAPI, controllerHostUrl', () => {
         expect(() => {
           new Pinecone({
-            environment: 'test-env',
             apiKey: 'test-key',
             fetchApi: utils.getFetch({} as PineconeConfiguration),
+            controllerHostUrl: 'https://foo-bar.io',
           } as PineconeConfiguration);
         }).not.toThrow();
       });
@@ -94,37 +113,28 @@ describe('Pinecone', () => {
 
     describe('configuration with environment variables', () => {
       beforeEach(() => {
-        delete process.env.PINECONE_ENVIRONMENT;
         delete process.env.PINECONE_API_KEY;
-        delete process.env.PINECONE_PROJECT_ID;
       });
 
       test('should read required properties from environment variables if no config object provided', () => {
-        process.env.PINECONE_ENVIRONMENT = 'test-env';
         process.env.PINECONE_API_KEY = 'test-api';
 
         const client = new Pinecone();
 
         expect(client).toBeDefined();
-        expect(client.getConfig().environment).toEqual('test-env');
         expect(client.getConfig().apiKey).toEqual('test-api');
-        expect(client.getConfig().projectId).toEqual(undefined);
       });
 
       test('config object should take precedence when both config object and environment variables are provided', () => {
-        process.env.PINECONE_ENVIRONMENT = 'test';
         process.env.PINECONE_API_KEY = 'test';
         const client = new Pinecone({
-          environment: 'test2',
           apiKey: 'test2',
         });
         expect(client).toBeDefined();
-        expect(client.getConfig().environment).toEqual('test2');
         expect(client.getConfig().apiKey).toEqual('test2');
       });
 
       test('should throw an error if required environment variable is not set', () => {
-        process.env.PINECONE_ENVIRONMENT = 'test';
         delete process.env.PINECONE_API_KEY;
         expect(() => new Pinecone()).toThrow(
           "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
@@ -140,7 +150,7 @@ describe('Pinecone', () => {
         description: string;
       };
 
-      const p = new Pinecone({ apiKey: 'foo', environment: 'bar' });
+      const p = new Pinecone({ apiKey: 'foo' });
       const i = p.index<ProductMetadata>('product-embeddings');
 
       const result = await i.fetch(['1']);
@@ -169,6 +179,53 @@ describe('Pinecone', () => {
           metadata: { color: 'pink', description: 'pink shirt' },
         },
       ]);
+    });
+  });
+
+  describe('control plane operations', () => {
+    test('describeIndex triggers calling IndexHostSingleton._set', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      await p.describeIndex('test-index');
+
+      expect(IndexHostSingleton._set).toHaveBeenCalledWith(
+        { apiKey: 'foo' },
+        'test-index',
+        fakeHost
+      );
+    });
+
+    test('listIndexes triggers calling IndexHostSingleton._set', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      await p.listIndexes();
+
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        1,
+        { apiKey: 'foo' },
+        'fake-index1',
+        fakeHost
+      );
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        2,
+        { apiKey: 'foo' },
+        'fake-index2',
+        fakeHost
+      );
+      expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
+        3,
+        { apiKey: 'foo' },
+        'fake-index3',
+        fakeHost
+      );
+    });
+
+    test('deleteIndex trigger calling IndexHostSingleton._delete', async () => {
+      const p = new Pinecone({ apiKey: 'foo' });
+      await p.deleteIndex('test-index');
+
+      expect(IndexHostSingleton._delete).toHaveBeenCalledWith(
+        { apiKey: 'foo' },
+        'test-index'
+      );
     });
   });
 });
