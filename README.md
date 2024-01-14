@@ -127,39 +127,40 @@ not immediately ready for upserting, querying, or performing other data operatio
 
 ```typescript
 await pinecone.describeIndex('serverless-index');
-{
-   name: 'serverless-index',
-   dimension: 1536,
-   metric: 'cosine',
-   host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-   spec: {
-      serverless: {
-         cloud: 'aws',
-         region: 'us-west-2'
-      }
-   },
-   status: {
-      ready: false,
-      state: 'Initializing'
-   }
-}
+// {
+//    name: 'serverless-index',
+//    dimension: 1536,
+//    metric: 'cosine',
+//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    spec: {
+//       serverless: {
+//          cloud: 'aws',
+//          region: 'us-west-2'
+//       }
+//    },
+//    status: {
+//       ready: false,
+//       state: 'Initializing'
+//    }
+// }
+
 await pinecone.describeIndex('serverless-index');
-{
-   name: 'serverless-index',
-   dimension: 1536,
-   metric: 'cosine',
-   host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-   spec: {
-      serverless: {
-         cloud: 'aws',
-         region: 'us-west-2'
-      }
-   },
-   status: {
-      ready: true,
-      state: 'Ready'
-   }
-}
+// {
+//    name: 'serverless-index',
+//    dimension: 1536,
+//    metric: 'cosine',
+//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    spec: {
+//       serverless: {
+//          cloud: 'aws',
+//          region: 'us-west-2'
+//       }
+//    },
+//    status: {
+//       ready: true,
+//       state: 'Ready'
+//    }
+// }
 ```
 
 #### Waiting until the index is ready
@@ -193,14 +194,14 @@ Given that you have an existing collection:
 
 ```typescript
 > await pinecone.describeCollection('product-description-embeddings');
-{
-  name: 'product-description-embeddings',
-  size: 543427063,
-  status: 'Ready',
-  dimension: 2,
-  vectorCount: 10001498,
-  environment: 'us-east4-gcp'
-}
+// {
+//   name: 'product-description-embeddings',
+//   size: 543427063,
+//   status: 'Ready',
+//   dimension: 2,
+//   vectorCount: 10001498,
+//   environment: 'us-east4-gcp'
+// }
 ```
 
 You can specify a sourceCollection along with other configuration in your `createIndex` options:
@@ -218,19 +219,19 @@ await pinecone.createIndex({
       sourceCollection: 'product-description-embeddings',
     }
   }
-})
+});
 ```
 
 When the new index is ready, it should contain all the data that was in the collection, ready to be queried.
 
 ```typescript
-> await pinecone.index('product-description-p2x2').describeIndexStats()
-{
-  namespaces: { '': { recordCount: 78000 } },
-  dimension: 256,
-  indexFullness: 0.9,
-  totalRecordCount: 78000
-}
+await pinecone.index('product-description-p2x2').describeIndexStats();
+// {
+//   namespaces: { '': { recordCount: 78000 } },
+//   dimension: 256,
+//   indexFullness: 0.9,
+//   totalRecordCount: 78000
+// }
 ```
 
 ### Describe Index
@@ -238,23 +239,23 @@ When the new index is ready, it should contain all the data that was in the coll
 You can fetch the description of any index by name using `describeIndex`.
 
 ```typescript
-> await pinecone.describeIndex('serverless-index')
-{
-   name: 'serverless-index',
-   dimension: 1536,
-   metric: 'cosine',
-   host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-   spec: {
-      serverless: {
-         cloud: 'aws',
-         region: 'us-west-2'
-      }
-   },
-   status: {
-      ready: true,
-      state: 'Ready'
-   }
-}
+await pinecone.describeIndex('serverless-index');
+// {
+//    name: 'serverless-index',
+//    dimension: 1536,
+//    metric: 'cosine',
+//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    spec: {
+//       serverless: {
+//          cloud: 'aws',
+//          region: 'us-west-2'
+//       }
+//    },
+//    status: {
+//       ready: true,
+//       state: 'Ready'
+//    }
+// }
 ```
 
 ### Configure pod-based indexes
@@ -268,25 +269,25 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
 ```typescript
 await pinecone.configureIndex('pod-index', { replicas: 3 });
 const config = await pinecone.describeIndex('pod-index');
-{
-   name: 'pod-index',
-   dimension: 1536,
-   metric: 'cosine',
-   host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-   spec: {
-      pod: {
-        environment: 'us-east1-gcp',
-        pods: 3,
-        replicas: 3,
-        shards: 1,
-        podType: 'p1.x1'
-      }
-   },
-   status: {
-      ready: true,
-      state: 'ScalingUpPodSize'
-   }
-}
+// {
+//    name: 'pod-index',
+//    dimension: 1536,
+//    metric: 'cosine',
+//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    spec: {
+//       pod: {
+//         environment: 'us-east1-gcp',
+//         pods: 3,
+//         replicas: 3,
+//         shards: 1,
+//         podType: 'p1.x1'
+//       }
+//    },
+//    status: {
+//       ready: true,
+//       state: 'ScalingUpPodSize'
+//    }
+// }
 ```
 
 ### Delete Index
@@ -302,46 +303,46 @@ await pinecone.deleteIndex('sample-index');
 The `listIndexes` command returns an object with an array of index models under `indexes`.
 
 ```typescript
-> await pinecone.listIndexes()
-{
-  indexes: [
-    {
-      name: 'serverless-index',
-      dimension: 1536,
-      metric: 'cosine',
-      host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-      spec: {
-        serverless: {
-          cloud: 'aws',
-          region: 'us-west-2',
-        },
-      },
-      status: {
-        ready: true,
-        state: 'Ready',
-      },
-    },
-    {
-      name: 'pod-index',
-      dimension: 1536,
-      metric: 'cosine',
-      host: 'pod-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-      spec: {
-        pod: {
-          environment: 'us-west2-aws',
-          replicas: 1,
-          shards: 1,
-          podType: 'p1.x1',
-          pods: 1,
-        },
-      },
-      status: {
-        ready: true,
-        state: 'Ready',
-      },
-    },
-  ],
-}
+await pinecone.listIndexes();
+// {
+//   indexes: [
+//     {
+//       name: 'serverless-index',
+//       dimension: 1536,
+//       metric: 'cosine',
+//       host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//       spec: {
+//         serverless: {
+//           cloud: 'aws',
+//           region: 'us-west-2',
+//         },
+//       },
+//       status: {
+//         ready: true,
+//         state: 'Ready',
+//       },
+//     },
+//     {
+//       name: 'pod-index',
+//       dimension: 1536,
+//       metric: 'cosine',
+//       host: 'pod-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//       spec: {
+//         pod: {
+//           environment: 'us-west2-aws',
+//           replicas: 1,
+//           shards: 1,
+//           podType: 'p1.x1',
+//           pods: 1,
+//         },
+//       },
+//       status: {
+//         ready: true,
+//         state: 'Ready',
+//       },
+//     },
+//   ],
+// }
 ```
 
 ## Collections
@@ -374,14 +375,14 @@ You can use `listCollections` to confirm the deletion.
 ### Describe Collection
 
 ```typescript
-> const describeCollection = await pinecone.describeCollection('collection3');
-{
-  name: 'collection3',
-  size: 3126700,
-  status: 'Ready',
-  dimension: 3,
-  recordCount: 99
-}
+const describeCollection = await pinecone.describeCollection('collection3');
+// {
+//   name: 'collection3',
+//   size: 3126700,
+//   status: 'Ready',
+//   dimension: 3,
+//   recordCount: 99
+// }
 ```
 
 ### List Collections
@@ -390,26 +391,26 @@ The `listCollections` command returns an object with an array of collection mode
 
 ```typescript
 const list = await pinecone.listCollections();
-{
-  collections: [
-    {
-      name: 'collection1',
-      size: 3089687,
-      status: 'Ready',
-      dimension: 3,
-      vectorCount: 17378,
-      environment: 'us-west1-gcp',
-    },
-    {
-      name: 'collection2',
-      size: 208309,
-      status: 'Ready',
-      dimension: 3,
-      vectorCount: 1000,
-      environment: 'us-east4-gcp',
-    },
-  ];
-}
+// {
+//   collections: [
+//     {
+//       name: 'collection1',
+//       size: 3089687,
+//       status: 'Ready',
+//       dimension: 3,
+//       vectorCount: 17378,
+//       environment: 'us-west1-gcp',
+//     },
+//     {
+//       name: 'collection2',
+//       size: 208309,
+//       status: 'Ready',
+//       dimension: 3,
+//       vectorCount: 1000,
+//       environment: 'us-east4-gcp',
+//     },
+//   ];
+// }
 ```
 
 ## Index operations
@@ -557,17 +558,17 @@ When experimenting with data operations, it's sometimes helpful to know how many
 target the index and use the `describeIndexStats()` command.
 
 ```typescript
-> await pinecone.index('example-index').describeIndexStats()
-{
-  namespaces: {
-    '': { recordCount: 10 }
-    foo: { recordCount: 2000 },
-    bar: { recordCount: 2000 }
-  },
-  dimension: 1536,
-  indexFullness: 0,
-  totalRecordCount: 4010
-}
+await pinecone.index('example-index').describeIndexStats();
+// {
+//   namespaces: {
+//     '': { recordCount: 10 }
+//     foo: { recordCount: 2000 },
+//     bar: { recordCount: 2000 }
+//   },
+//   dimension: 1536,
+//   indexFullness: 0,
+//   totalRecordCount: 4010
+// }
 ```
 
 ### Querying
@@ -593,36 +594,36 @@ type QueryOptions = {
 For example, to query by vector values you would pass the `vector` param in the options configuration. For brevity sake this example query vector is tiny (dimension 2), but in a more realistic use case this query vector would be an embedding outputted by a model. Look at the [Example code](#example-code) to see more realistic examples of how to use `query`.
 
 ```typescript
-await pinecone.index('my-index').query({ topK: 3, vector: [ 0.22, 0.66 ]});
-{
-  matches: [
-    {
-      id: '556',
-      score: 1.00000012,
-      values: [],
-      sparseValues: undefined,
-      metadata: undefined
-    },
-    {
-      id: '137',
-      score: 1.00000012,
-      values: [],
-      sparseValues: undefined,
-      metadata: undefined
-    },
-    {
-      id: '129',
-      score: 1.00000012,
-      values: [],
-      sparseValues: undefined,
-      metadata: undefined
-    }
-  ],
-  namespace: '',
-  usage: {
-    readUnits: 5
-  }
-}
+await pinecone.index('my-index').query({ topK: 3, vector: [0.22, 0.66] });
+// {
+//   matches: [
+//     {
+//       id: '556',
+//       score: 1.00000012,
+//       values: [],
+//       sparseValues: undefined,
+//       metadata: undefined
+//     },
+//     {
+//       id: '137',
+//       score: 1.00000012,
+//       values: [],
+//       sparseValues: undefined,
+//       metadata: undefined
+//     },
+//     {
+//       id: '129',
+//       score: 1.00000012,
+//       values: [],
+//       sparseValues: undefined,
+//       metadata: undefined
+//     }
+//   ],
+//   namespace: '',
+//   usage: {
+//     readUnits: 5
+//   }
+// }
 ```
 
 You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default these are not returned to keep the response payload small.
@@ -729,7 +730,8 @@ await client.index('albums-database').deleteMany({ genre: 'rock' });
 
 #### Delete all records in a namespace
 
-> [!NOTE]
+> ℹ️ **NOTE**
+>
 > Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
 
 To nuke everything in the targeted namespace, use the `deleteAll` method.
