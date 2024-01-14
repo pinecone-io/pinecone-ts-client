@@ -65,7 +65,7 @@ function writeGithubOutput(key: string, value: string): void {
   });
 
   console.info(`Index ${indexName} created!`);
-  const indexDescription = pinecone.describeInex(indexName);
+  const indexDescription = pinecone.describeIndex(indexName);
   console.info(`Index description: ${JSON.stringify(indexDescription)}`);
 
   console.info(`Beginning to upsert vectors to ${indexName}...`);
@@ -87,6 +87,8 @@ function writeGithubOutput(key: string, value: string): void {
 
   console.info(`Upserted ${numRecordsToUpsert} vectors to ${indexName}!`);
   console.info('Test query...');
-  await pinecone.query({ vector: randomEmbeddingValues(dimension), topK: 10 });
+  await pinecone
+    .index(indexName)
+    .query({ vector: randomEmbeddingValues(dimension), topK: 10 });
   console.info('Done querying');
 })();

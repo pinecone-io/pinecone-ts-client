@@ -55,8 +55,8 @@ runs:
       run: |
         set -x
         cd ..
-        cp -r pinecone-ts-client/ts-migration-tests ts-migration-tests
-        cd ts-migration-tests
+        cp -r pinecone-ts-client/ts-migration-tests/1.x/create-legacy-index create-legacy-index
+        cd create-legacy-index
         npm install typescript@latest --no-cache
         npm install @pinecone-database/pinecone@${{ inputs.pinecone_client_version }} --no-cache
         cat package.json
