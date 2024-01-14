@@ -52,6 +52,8 @@ runs:
         DIMENSION: ${{ inputs.dimension }}
         METRIC: ${{ inputs.metric }}
         RECORDS_TO_UPSERT: ${{ inputs.records_to_upsert }}
+        PINECONE_DEBUG: true
+        PINECONE_DEBUG_CURL: true
       run: |
         set -x
         cd ..
