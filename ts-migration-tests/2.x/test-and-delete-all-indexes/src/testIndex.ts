@@ -20,7 +20,7 @@ function readEnvVar(name: string): string {
   const indexList = await pinecone.listIndexes();
 
   if (
-    !indexList.indexes.some(
+    !indexList.indexes?.some(
       (index: { name: string }) => index.name === indexName
     )
   ) {
