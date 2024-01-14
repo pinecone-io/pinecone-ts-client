@@ -30,7 +30,7 @@ function randomEmbeddingValues(dimension: number = 2): number[] {
 }
 
 function writeGithubOutput(key: string, value: string): void {
-  core.exportVariable(key, value);
+  core.setOutput(key, value);
 }
 
 (async () => {
@@ -42,7 +42,7 @@ function writeGithubOutput(key: string, value: string): void {
   const numRecordsToUpsert = parseInt(readEnvVar('RECORDS_TO_UPSERT'));
 
   const indexName = `${indexNamePrefix}-${randomString(10)}`;
-  writeGithubOutput('INDEX_NAME', indexName);
+  writeGithubOutput('index_name', indexName);
   console.info(`Creating index ${indexName}...`);
 
   console.info(

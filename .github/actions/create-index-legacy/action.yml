@@ -45,6 +45,7 @@ runs:
         registry-url: 'https://registry.npmjs.org'
     - name: Install pinecone, compile, and run create index script
       shell: bash
+      id: create-index
       env:
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
         PINECONE_ENVIRONMENT: ${{ inputs.PINECONE_ENVIRONMENT}}
