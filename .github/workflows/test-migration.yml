@@ -4,6 +4,9 @@ on:
   workflow_dispatch: {}
   workflow_call: {}
 
+env:
+  NUM_VECTORS: 1000
+
 jobs:
   create-index-legacy-paid:
     name: Migration testing
@@ -41,6 +44,7 @@ jobs:
           PINECONE_ENVIRONMENT: ${{ matrix.env }}
           pinecone_client_version: 1.1.3
           index_name_prefix: ts-migration
+          records_to_upsert: ${{ env.NUM_VECTORS }}
           dimension: 1536
           metric: cosine
 
