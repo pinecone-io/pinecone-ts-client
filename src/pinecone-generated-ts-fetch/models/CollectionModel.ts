@@ -30,7 +30,7 @@ export interface CollectionModel {
      * @type {number}
      * @memberof CollectionModel
      */
-    size: number;
+    size?: number;
     /**
      * The status of the collection.
      * @type {string}
@@ -42,13 +42,13 @@ export interface CollectionModel {
      * @type {number}
      * @memberof CollectionModel
      */
-    dimension: number;
+    dimension?: number;
     /**
      * The number of records stored in the collection
      * @type {number}
      * @memberof CollectionModel
      */
-    recordCount: number;
+    vectorCount?: number;
     /**
      * The environment where the collection is hosted.
      * @type {string}
@@ -75,10 +75,7 @@ export type CollectionModelStatusEnum = typeof CollectionModelStatusEnum[keyof t
 export function instanceOfCollectionModel(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "size" in value;
     isInstance = isInstance && "status" in value;
-    isInstance = isInstance && "dimension" in value;
-    isInstance = isInstance && "recordCount" in value;
 
     return isInstance;
 }
@@ -94,10 +91,10 @@ export function CollectionModelFromJSONTyped(json: any, ignoreDiscriminator: boo
     return {
         
         'name': json['name'],
-        'size': json['size'],
+        'size': !exists(json, 'size') ? undefined : json['size'],
         'status': json['status'],
-        'dimension': json['dimension'],
-        'recordCount': json['record_count'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'vectorCount': !exists(json, 'vector_count') ? undefined : json['vector_count'],
         'environment': !exists(json, 'environment') ? undefined : json['environment'],
     };
 }
@@ -115,7 +112,7 @@ export function CollectionModelToJSON(value?: CollectionModel | null): any {
         'size': value.size,
         'status': value.status,
         'dimension': value.dimension,
-        'record_count': value.recordCount,
+        'vector_count': value.vectorCount,
         'environment': value.environment,
     };
 }
