@@ -41,7 +41,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * ```bash
  * export PINECONE_API_KEY="your_api_key"
- * export PINECONE_ENVIRONMENT="your_environment"
+ * export PINECONE_CONTROLLER_HOST="your_controller_host"
  * ```
  *
  * When these environment variables are set, the client constructor does not require any additional arguments.
