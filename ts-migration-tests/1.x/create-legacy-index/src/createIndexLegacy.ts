@@ -25,7 +25,7 @@ function randomString(length: number): string {
 function randomEmbeddingValues(dimension: number = 2): number[] {
   const result = [];
   for (let i = 0; i < dimension; i++) {
-    result.push(Math.random());
+    result.push(parseInt(Math.random().toPrecision(4)));
   }
   return result;
 }
