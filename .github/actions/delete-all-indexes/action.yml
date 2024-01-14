@@ -30,7 +30,7 @@ runs:
         cp -r pinecone-ts-client/ts-migration-tests ts-migration-tests
         cd ts-migration-tests
         npm install typescript@latest --no-cache
-        npm install @pinecone-database/pinecone@{{ inputs.pinecone_client_version }} --no-cache
+        npm install @pinecone-database/pinecone@${{ inputs.pinecone_client_version }} --no-cache
         cat package.json
         cat package-lock.json
         npm run build
