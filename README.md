@@ -34,11 +34,10 @@ There is one piece of configuration required to use the Pinecone client: an API 
 
 #### Using environment variables
 
-The environment variables used to configure the client are the following:
+The environment variable used to configure the API key for the client is the following:
 
 ```bash
 PINECONE_API_KEY="your_api_key"
-PINECONE_CONTROLLER_HOST="your_environment"
 ```
 
 `PINECONE_API_KEY` is the only required variable. When this environment variable is set, the client constructor does not require any additional arguments.
@@ -51,13 +50,11 @@ const pinecone = new Pinecone();
 
 #### Using a configuration object
 
-If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` and `pineconeControllerHost` values. This
-could be useful if your application needs to interact with multiple projects, each with a different configuration.
+If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` value.
 
 ```typescript
 const pinecone = new Pinecone({
   apiKey: 'your_api_key',
-  pineconeControllerHost: 'your_controller_host',
 });
 ```
 
@@ -69,7 +66,7 @@ const pinecone = new Pinecone({
 
 > ⚠️ **Warning**
 >
-> Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](TODO) and test thoroughly before using it in production.
+> Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](!TODO) and test thoroughly before using it in production.
 
 At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension` indicates the size of the records you intend to store in the index. For example, if your intention was to store and query embeddings generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
 
@@ -104,10 +101,10 @@ await pinecone.createIndex({
     pod: {
       pods: 2,
       podType: 'p1.x2',
+      metadataConfig: {
+        indexed: ['product_type'],
+      },
     },
-  },
-  metadataConfig: {
-    indexed: ['product_type'],
   },
 
   // This option tells the client not to throw if the index already exists.
@@ -188,12 +185,12 @@ await pinecone.createIndex({
 >
 > Serverless and starter indexes do not support collections.
 
-As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](TODO https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](TODO https://github.com/pinecone-io/pinecone-ts-client#collections).
+As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](!TODO https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](!TODO https://github.com/pinecone-io/pinecone-ts-client#collections).
 
 Given that you have an existing collection:
 
 ```typescript
-> await pinecone.describeCollection('product-description-embeddings');
+await pinecone.describeCollection('product-description-embeddings');
 // {
 //   name: 'product-description-embeddings',
 //   size: 543427063,
@@ -262,9 +259,9 @@ await pinecone.describeIndex('serverless-index');
 
 > ℹ️ **Note**
 >
-> This section applies to [pod-based indexes](TODO indexes#pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources. Instead, serverless indexes scale automatically based on usage.
+> This section applies to [pod-based indexes](!TODO indexes#pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources. Instead, serverless indexes scale automatically based on usage.
 
-You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Pod types and sizes](TODO https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
+You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Pod types and sizes](!TODO https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes). You cannot downgrade pod size or change the base pod type.
 
 ```typescript
 await pinecone.configureIndex('pod-index', { replicas: 3 });
@@ -351,7 +348,7 @@ await pinecone.listIndexes();
 >
 > Serverless and starter indexes do not support collections.
 
-A collection is a static copy of a pod-based index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](TODO https://docs.pinecone.io/docs/collections).
+A collection is a static copy of a pod-based index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](!TODO https://docs.pinecone.io/docs/collections).
 
 ### Create Collection
 
@@ -429,7 +426,7 @@ const index = pinecone.index('test-index');
 await index.fetch(['1']);
 ```
 
-The first argument is the name of the index you are targeting. There's an optional second argument for providing an index host override for all index operations. Unless there is a need to override the index host, it is recommended to allow the Pinecone client to resolve the index's host automatically.
+The first argument is the name of the index you are targeting. There's an optional second argument for providing an index host override for all index operations.
 
 ```typescript
 const pinecone = new Pinecone();
@@ -490,7 +487,7 @@ if (movie.metadata) {
 ### Targeting a namespace
 
 > [!NOTE]
-> Indexes in the [gcp-starter environment](TODO https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
+> Indexes in the [gcp-starter environment](!TODO https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
 
 By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
 
@@ -511,7 +508,7 @@ const index = pinecone.index('test-index').namespace('ns1');
 console.log(index.target); // { index: 'test-index', namespace: 'ns1', indexHostUrl: undefined }
 ```
 
-See [Using namespaces](TODO https://docs.pinecone.io/docs/namespaces) for more information.
+See [Using namespaces](!TODO https://docs.pinecone.io/docs/namespaces) for more information.
 
 ### Upsert records
 
@@ -647,7 +644,7 @@ const results = await pinecone.index('my-index').query({ topK: 10, id: '1' });
 
 #### Hybrid search with sparseVector
 
-If you are working with [sparse-dense vectors](TODO https://docs.pinecone.io/docs/hybrid-search#creating-sparse-vector-embeddings), you can add sparse vector values to perform a hybrid search.
+If you are working with [sparse-dense vectors](!TODO https://docs.pinecone.io/docs/hybrid-search#creating-sparse-vector-embeddings), you can add sparse vector values to perform a hybrid search.
 
 ```typescript
 const pinecone = new Pinecone()
