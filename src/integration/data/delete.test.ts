@@ -57,30 +57,28 @@ describe('delete', () => {
     }
 
     // Look more closely at one of the records to make sure values set
-    const fetchAssertions = [
-      (results) => {
-        if (results.records) {
-          expect(results.records['0'].id).toEqual('0');
-          expect(results.records['0'].values.length).toEqual(5);
-        } else {
-          fail(
-            'Did not find expected records. Fetch result was ' +
-              JSON.stringify(results)
-          );
-        }
-      },
-    ];
+    const fetchAssertions = (results) => {
+      if (results.records) {
+        expect(results.records['0'].id).toEqual('0');
+        expect(results.records['0'].values.length).toEqual(5);
+      } else {
+        fail(
+          'Did not find expected records. Fetch result was ' +
+            JSON.stringify(results)
+        );
+      }
+    };
+
     assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
 
     // Try deleting the record
     await ns.deleteOne('0');
 
     // Verify the record is removed
-    const deleteAssertions = [
-      (stats) => {
-        expect(stats.namespaces[namespace]).toBeUndefined();
-      },
-    ];
+    const deleteAssertions = (stats) => {
+      expect(stats.namespaces[namespace]).toBeUndefined();
+    };
+
     assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
   });
 
@@ -103,68 +101,64 @@ describe('delete', () => {
     }
 
     // Look more closely at one of the records to make sure values set
-    const fetchAssertions = [
-      (results) => {
-        if (results.records) {
-          expect(results.records['0'].id).toEqual('0');
-          expect(results.records['0'].values.length).toEqual(5);
-        } else {
-          fail(
-            'Did not find expected records. Fetch result was ' +
-              JSON.stringify(results)
-          );
-        }
-      },
-    ];
+    const fetchAssertions = (results) => {
+      if (results.records) {
+        expect(results.records['0'].id).toEqual('0');
+        expect(results.records['0'].values.length).toEqual(5);
+      } else {
+        fail(
+          'Did not find expected records. Fetch result was ' +
+            JSON.stringify(results)
+        );
+      }
+    };
+
     assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
 
     // Try deleting 2 of 3 records
     await ns.deleteMany(['0', '2']);
 
-    const deleteAssertions = [
-      (stats) => {
-        if (stats.namespaces) {
-          expect(stats.namespaces[namespace].recordCount).toEqual(1);
-        } else {
-          fail(
-            'Expected namespaces to be defined (second call). Stats were ' +
-              JSON.stringify(stats)
-          );
-        }
-      },
-    ];
+    const deleteAssertions = (stats) => {
+      if (stats.namespaces) {
+        expect(stats.namespaces[namespace].recordCount).toEqual(1);
+      } else {
+        fail(
+          'Expected namespaces to be defined (second call). Stats were ' +
+            JSON.stringify(stats)
+        );
+      }
+    };
+
     assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
 
     // Check that record id='1' still exists
-    const fetchAssertions2 = [
-      (results) => {
-        if (results.records2) {
-          expect(results.records2['1']).not.toBeUndefined();
-        } else {
-          fail(
-            'Expected record 2 to be defined. Fetch result was ' +
-              JSON.stringify(results)
-          );
-        }
-      },
-    ];
+    const fetchAssertions2 = (results) => {
+      if (results.records2) {
+        expect(results.records2['1']).not.toBeUndefined();
+      } else {
+        fail(
+          'Expected record 2 to be defined. Fetch result was ' +
+            JSON.stringify(results)
+        );
+      }
+    };
+
     assertWithRetries(() => ns.fetch(['1']), fetchAssertions2);
 
     // deleting non-existent records should not throw
     await ns.deleteMany(['0', '1', '2', '3']);
 
     // Verify all are now removed
-    const deleteAssertions2 = [
-      (stats) => {
-        if (stats.namespaces) {
-          expect(stats.namespaces[namespace]).toBeUndefined();
-        } else {
-          // no-op. This shouldn't actually happen unless there
-          // are leftover namespaces from previous runs that
-          // failed or stopped without proper cleanup.
-        }
-      },
-    ];
+    const deleteAssertions2 = (stats) => {
+      if (stats.namespaces) {
+        expect(stats.namespaces[namespace]).toBeUndefined();
+      } else {
+        // no-op. This shouldn't actually happen unless there
+        // are leftover namespaces from previous runs that
+        // failed or stopped without proper cleanup.
+      }
+    };
+
     assertWithRetries(() => ns.describeIndexStats(), deleteAssertions2);
   });
 });

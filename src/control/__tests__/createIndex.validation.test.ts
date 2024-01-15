@@ -8,19 +8,18 @@ import { createIndex } from '../createIndex';
 import { PineconeArgumentError } from '../../errors';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 
-// TODO: Update tests to cover all nested properties inside spec once validator.ts is updated
 describe('createIndex argument validations', () => {
-  let MPIA: ManageIndexesApi;
+  let MIA: ManageIndexesApi;
   beforeEach(() => {
-    MPIA = { createIndex: jest.fn() };
+    MIA = { createIndex: jest.fn() };
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      ManageIndexesApi: MPIA,
+      ManageIndexesApi: MIA,
     }));
   });
 
   describe('required configurations', () => {
     test('should throw if index name is not provided', async () => {
-      const toThrow = async () => await createIndex(MPIA)();
+      const toThrow = async () => await createIndex(MIA)();
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -30,7 +29,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if index name is not a string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 12,
           dimension: 10,
           metric: 'cosine',
@@ -45,7 +44,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if index name is empty string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: '',
           dimension: 10,
           metric: 'cosine',
@@ -60,7 +59,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not provided', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           metric: 'cosine',
           spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
@@ -74,7 +73,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not a number', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: '10',
           metric: 'cosine',
@@ -89,7 +88,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is float', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10.5,
           metric: 'cosine',
@@ -104,7 +103,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if dimension is not a positive integer', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: -10,
           metric: 'cosine',
@@ -119,7 +118,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if region is not provided', () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -138,7 +137,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if region is not a string', () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -151,7 +150,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/serverless/properties/region' must be string."
       );
@@ -159,7 +157,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if cloud is not provided', () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -178,7 +176,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if cloud is not a string', () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -191,7 +189,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/serverless/cloud' must be equal to one of: 'gcp', 'aws', 'azure'."
       );
@@ -199,7 +196,7 @@ describe('createIndex argument validations', () => {
 
     test('should throw if cloud is not one of the expected strings', () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -212,7 +209,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/serverless/cloud' must be equal to one of: 'gcp', 'aws', 'azure'."
       );
@@ -222,7 +218,7 @@ describe('createIndex argument validations', () => {
   describe('optional configurations', () => {
     test('metric: should throw if not a string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 10,
@@ -237,7 +233,7 @@ describe('createIndex argument validations', () => {
 
     test('metric: should throw if not one of the predefined literals', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'foo',
@@ -252,7 +248,7 @@ describe('createIndex argument validations', () => {
 
     test('replicas: should throw if not an integer', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -268,7 +264,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/pod/properties/replicas' must be integer."
       );
@@ -276,7 +271,7 @@ describe('createIndex argument validations', () => {
 
     test('replicas: should throw if not a positive integer', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -292,7 +287,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had validation errors: property 'spec/properties/pod/properties/replicas' must be >= 1."
       );
@@ -300,7 +294,7 @@ describe('createIndex argument validations', () => {
 
     test('podType: should throw if not a string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -316,7 +310,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/pod/properties/podType' must be string."
       );
@@ -324,7 +317,7 @@ describe('createIndex argument validations', () => {
 
     test('podType: should throw if not a valid pod type', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -340,7 +333,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had validation errors: property 'spec/properties/pod/properties/podType' must not be blank."
       );
@@ -348,7 +340,7 @@ describe('createIndex argument validations', () => {
 
     test('pods: should throw if not an integer', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -364,7 +356,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/pod/properties/pods' must be integer."
       );
@@ -372,7 +363,7 @@ describe('createIndex argument validations', () => {
 
     test('pods: should throw if not a positive integer', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -388,7 +379,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had validation errors: property 'spec/properties/pod/properties/pods' must be >= 1."
       );
@@ -396,7 +386,7 @@ describe('createIndex argument validations', () => {
 
     test('metadataConfig: should throw if not an object', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -413,7 +403,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/pod/properties/metadataConfig' must be object."
       );
@@ -421,7 +410,7 @@ describe('createIndex argument validations', () => {
 
     test('sourceCollection: should throw if not a string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -438,7 +427,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had type errors: property 'spec/properties/pod/properties/sourceCollection' must be string."
       );
@@ -446,7 +434,7 @@ describe('createIndex argument validations', () => {
 
     test('sourceCollection: should throw if blank string', async () => {
       const toThrow = async () =>
-        await createIndex(MPIA)({
+        await createIndex(MIA)({
           name: 'index-name',
           dimension: 10,
           metric: 'cosine',
@@ -463,7 +451,6 @@ describe('createIndex argument validations', () => {
         });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      // TODO: Update validator.ts to handle nested object properties
       expect(toThrow).rejects.toThrowError(
         "The argument to createIndex had validation errors: property 'spec/properties/pod/properties/sourceCollection' must not be blank."
       );

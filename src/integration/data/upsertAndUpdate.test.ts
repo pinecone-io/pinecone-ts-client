@@ -51,15 +51,14 @@ describe('upsert and update', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     // Fetch and inspect records to validate upsert
-    const preUpdateAssertions = [
-      (response) => expect(response.records['0']).toBeDefined(),
-      (response) =>
-        expect(response.records['0'].values).toEqual(recordToUpsert[0].values),
-      (response) =>
-        expect(response.records['0'].metadata).toEqual(
-          recordToUpsert[0].metadata
-        ),
-    ];
+    const preUpdateAssertions = (response) => {
+      expect(response.records['0']).toBeDefined();
+      expect(response.records['0'].values).toEqual(recordToUpsert[0].values);
+      expect(response.records['0'].metadata).toEqual(
+        recordToUpsert[0].metadata
+      );
+    };
+
     await assertWithRetries(() => ns.fetch(recordIds), preUpdateAssertions);
 
     // Update record values
@@ -71,14 +70,14 @@ describe('upsert and update', () => {
       metadata: newMetadata,
     });
 
-    const postUpdateAssertions = [
-      (response) => expect(response.records['0'].values).toEqual(newValues),
-      (response) =>
-        expect(response.records['0'].metadata).toEqual({
-          ...oldMetadata,
-          ...newMetadata,
-        }),
-    ];
+    const postUpdateAssertions = (response) => {
+      expect(response.records['0'].values).toEqual(newValues);
+      expect(response.records['0'].metadata).toEqual({
+        ...oldMetadata,
+        ...newMetadata,
+      });
+    };
+
     await assertWithRetries(() => ns.fetch(['0']), postUpdateAssertions);
   });
 });
