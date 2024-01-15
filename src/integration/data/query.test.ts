@@ -52,13 +52,11 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 2;
-    const assertions = [
-      (results) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(topK);
-        expect(results.usage.readUnits).toBeDefined();
-      },
-    ];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(topK);
+      expect(results.usage.readUnits).toBeDefined();
+    };
 
     await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
   });
@@ -76,13 +74,11 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 5;
-    const assertions = [
-      (results) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(numberOfRecords);
-        expect(results.usage.readUnits).toBeDefined();
-      },
-    ];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(numberOfRecords);
+      expect(results.usage.readUnits).toBeDefined();
+    };
 
     await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
   });
@@ -99,12 +95,10 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 2;
-    const assertions = [
-      (results) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(0);
-      },
-    ];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(0);
+    };
 
     await assertWithRetries(() => ns.query({ id: '100', topK }), assertions);
   });
@@ -122,13 +116,11 @@ describe('query', () => {
     await waitUntilRecordsReady(ns, namespace, recordIds);
 
     const topK = 1;
-    const assertions = [
-      (results) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(topK);
-        expect(results.usage.readUnits).toBeDefined();
-      },
-    ];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(topK);
+      expect(results.usage.readUnits).toBeDefined();
+    };
 
     await assertWithRetries(
       () =>
@@ -146,13 +138,12 @@ describe('query', () => {
 
     const queryVec = Array.from({ length: 5 }, () => Math.random());
 
-    const assertions = [
-      (results) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(2);
-        expect(results.usage.readUnits).toBeDefined();
-      },
-    ];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(2);
+      expect(results.usage.readUnits).toBeDefined();
+    };
+
     await assertWithRetries(
       () =>
         ns.query({

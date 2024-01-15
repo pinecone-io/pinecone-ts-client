@@ -124,11 +124,11 @@ export const waitUntilRecordsReady = async (
   return indexStats;
 };
 
-type Assertion = (result: any) => void;
+type Assertions = (result: any) => void;
 
 export const assertWithRetries = async (
   asyncFn: () => Promise<any>,
-  assertions: Assertion[],
+  assertionsFn: Assertions,
   maxRetries: number = 5,
   delay: number = 3000
 ) => {
@@ -137,7 +137,7 @@ export const assertWithRetries = async (
   while (attempts < maxRetries) {
     try {
       const result = await asyncFn();
-      assertions.forEach((assertion) => assertion(result));
+      assertionsFn(result);
       return;
     } catch (error) {
       attempts++;
