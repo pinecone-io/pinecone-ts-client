@@ -10,7 +10,7 @@ This is the official Node.js client for [Pinecone](https://www.pinecone.io), wri
 
 ### Example code
 
-Many of the brief examples shown in this README are using very small vectors to keep this documentation concise, but most real world usage will involve much larger embedding vectors. To see some more realistic examples of how this client can be used, explore these examples:
+The snippets shown in this README are intended to be concise. For more realistic examples, explore these examples:
 
 - [Semantic search](https://github.com/pinecone-io/semantic-search-example)
 - [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
@@ -30,7 +30,7 @@ npm install @pinecone-database/pinecone
 
 ### Initializing the client
 
-There is one piece of configuration required to use the Pinecone client: an API key. This value can be passed using an environment variable or in code through a configuration object. Find your API key in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io).
+An API key is required to initialize the client. It can be passed using an environment variable or in code through a configuration object. Get an API key in the [console](https://app.pinecone.io).
 
 #### Using environment variables
 
