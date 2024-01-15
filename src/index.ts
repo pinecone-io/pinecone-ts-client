@@ -51,4 +51,8 @@ export type {
   FetchAPI,
   IndexList,
   IndexModel,
+  ServerlessSpec,
+  ServerlessSpecCloudEnum,
+  PodSpec,
+  PodSpecMetadataConfig,
 } from './pinecone-generated-ts-fetch';
