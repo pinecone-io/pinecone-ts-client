@@ -150,7 +150,7 @@ describe('create index', () => {
       }
     });
 
-    // TODO: Uncomment when pod index is supported
+    // TODO: Re-enable
     test.skip('create from non-existent collection', async () => {
       try {
         await pinecone.createIndex({

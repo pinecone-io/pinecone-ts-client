@@ -40,18 +40,18 @@ const setupCreateIndexResponse = (
   const fakeDescribeIndex: (req: DescribeIndexRequest) => Promise<IndexModel> =
     describeIndexMock;
 
-  const MPIA = {
+  const MIA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
   } as ManageIndexesApi;
 
-  return MPIA;
+  return MIA;
 };
 
 describe('createIndex', () => {
   test('calls the openapi create index endpoint, passing name, dimension, metric, and spec', async () => {
-    const MPIA = setupCreateIndexResponse(undefined, undefined);
-    const returned = await createIndex(MPIA)({
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = await createIndex(MIA)({
       name: 'index-name',
       dimension: 10,
       metric: 'cosine',
@@ -65,7 +65,7 @@ describe('createIndex', () => {
     });
 
     expect(returned).toEqual(void 0);
-    expect(MPIA.createIndex).toHaveBeenCalledWith({
+    expect(MIA.createIndex).toHaveBeenCalledWith({
       createIndexRequest: {
         name: 'index-name',
         dimension: 10,
@@ -82,8 +82,8 @@ describe('createIndex', () => {
   });
 
   test('default metric to "cosine" if not specified', async () => {
-    const MPIA = setupCreateIndexResponse(undefined, undefined);
-    const returned = await createIndex(MPIA)({
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = await createIndex(MIA)({
       name: 'index-name',
       dimension: 10,
       spec: {
@@ -96,7 +96,7 @@ describe('createIndex', () => {
     });
 
     expect(returned).toEqual(void 0);
-    expect(MPIA.createIndex).toHaveBeenCalledWith({
+    expect(MIA.createIndex).toHaveBeenCalledWith({
       createIndexRequest: {
         name: 'index-name',
         dimension: 10,
@@ -121,13 +121,13 @@ describe('createIndex', () => {
     });
 
     test('when passed waitUntilReady, calls the create index endpoint and begins polling describeIndex', async () => {
-      const MPIA = setupCreateIndexResponse(undefined, [
+      const MIA = setupCreateIndexResponse(undefined, [
         {
           status: { ready: true, state: 'Ready' },
         },
       ]);
 
-      const returned = await createIndex(MPIA)({
+      const returned = await createIndex(MIA)({
         name: 'index-name',
         dimension: 10,
         metric: 'cosine',
@@ -142,7 +142,7 @@ describe('createIndex', () => {
       });
 
       expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
-      expect(MPIA.createIndex).toHaveBeenCalledWith({
+      expect(MIA.createIndex).toHaveBeenCalledWith({
         createIndexRequest: {
           name: 'index-name',
           dimension: 10,
@@ -157,7 +157,7 @@ describe('createIndex', () => {
           waitUntilReady: true,
         },
       });
-      expect(MPIA.describeIndex).toHaveBeenCalledWith({
+      expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
       });
     });

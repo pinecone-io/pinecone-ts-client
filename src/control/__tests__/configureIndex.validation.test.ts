@@ -9,17 +9,17 @@ import { PineconeArgumentError } from '../../errors';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
 
 describe('configureIndex argument validations', () => {
-  let MPIA: ManageIndexesApi;
+  let MIA: ManageIndexesApi;
   beforeEach(() => {
-    MPIA = { configureIndex: jest.fn() };
+    MIA = { configureIndex: jest.fn() };
     jest.mock('../../pinecone-generated-ts-fetch', () => ({
-      IndexOperationsApi: MPIA,
+      IndexOperationsApi: MIA,
     }));
   });
 
   describe('required configurations', () => {
     test('should throw if index name is not provided', async () => {
-      const toThrow = async () => await configureIndex(MPIA)();
+      const toThrow = async () => await configureIndex(MIA)();
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -29,7 +29,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if index name is not a string', async () => {
       const toThrow = async () =>
-        await configureIndex(MPIA)(1, { replicas: 10 });
+        await configureIndex(MIA)(1, { replicas: 10 });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -39,7 +39,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if index name is empty string', async () => {
       const toThrow = async () =>
-        await configureIndex(MPIA)('', { replicas: 2 });
+        await configureIndex(MIA)('', { replicas: 2 });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -49,7 +49,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if spec and pod are not provided', async () => {
       const toThrowSpec = async () =>
-        await configureIndex(MPIA)('index-name', {});
+        await configureIndex(MIA)('index-name', {});
 
       expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       expect(toThrowSpec).rejects.toThrowError(
@@ -59,7 +59,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if replicas is not a number', async () => {
       const toThrow = async () =>
-        await configureIndex(MPIA)('index-name', { replicas: '10' });
+        await configureIndex(MIA)('index-name', { replicas: '10' });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -69,7 +69,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if podType is not a string', async () => {
       const toThrow = async () =>
-        await configureIndex(MPIA)('index-name', { podType: 10.5 });
+        await configureIndex(MIA)('index-name', { podType: 10.5 });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
@@ -79,7 +79,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if replicas is not a positive integer', async () => {
       const toThrow = async () =>
-        await configureIndex(MPIA)('index-name', { replicas: 0 });
+        await configureIndex(MIA)('index-name', { replicas: 0 });
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
