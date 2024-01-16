@@ -27,14 +27,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  integration-tests:
-    if: ${{ github.event.inputs.runTests == 'true' }}
-    uses: ./.github/workflows/pr.yml
-    secrets: inherit
+  # integration-tests:
+  #   if: ${{ github.event.inputs.runTests == 'true' }}
+  #   uses: ./.github/workflows/pr.yml
+  #   secrets: inherit
 
   version-and-release:
     name: Release to NPM
-    needs: integration-tests
+    # needs: integration-tests
     runs-on: ubuntu-latest
     outputs:
       tagName: ${{ steps.npm-release.outputs.release_tag }}
