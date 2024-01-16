@@ -34,7 +34,7 @@ Thanks to changes implemented in the Global Control Plane, there is no longer a 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pinecone = new Pinecone({
+const pc = new Pinecone({
   apiKey: 'your_api_key',
   environment: 'your_environmet',
 });
@@ -45,7 +45,7 @@ const pinecone = new Pinecone({
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pinecone = new Pinecone({ apiKey: 'your_api_key' });
+const pc = new Pinecone({ apiKey: 'your_api_key' });
 ```
 
 ### Initialization with environment variables
@@ -70,7 +70,7 @@ In both cases, when the proper environment variables are set initialization does
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pinecone = new Pinecone();
+const pc = new Pinecone();
 ```
 
 ## New Feature: View verbose debug output about requests
@@ -94,7 +94,10 @@ In the new `v2.0.0` client, there is a lot more flexibility in how indexes are c
 Serverless indexes are newly available with the `v2.0.0` client, and you must be on this version or greater to work with them. Creating a serverless index requires defining the `cloud` and `region` where the server should be hosted via the `spec` object with the key `serverless`.
 
 ```typescript
-await pinecone.createIndex({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
   name: 'sample-index',
   dimension: 1536,
   metric: 'cosine',
@@ -117,7 +120,10 @@ The most important changes to how pod indexes are created are:
 **Before: ≤ 1.1.2**
 
 ```typescript
-await pinecone.createIndex({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
   name: 'sample-index',
   dimension: 1536,
   metric: 'cosine',
@@ -132,7 +138,10 @@ await pinecone.createIndex({
 **After: ≥ 2.0.0**
 
 ```typescript
-await pinecone.createIndex({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
   name: 'sample-index',
   dimension: 1536,
   metric: 'cosine',
@@ -156,7 +165,10 @@ Starter indexes are a special case of the “pod-based index” described above.
 **Before: ≤ 1.1.2**
 
 ```typescript
-await pinecone.createIndex({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
   name: 'sample-index',
   dimension: 1536,
   metric: 'cosine',
@@ -166,7 +178,10 @@ await pinecone.createIndex({
 **After: ≥ 2.0.0**
 
 ```typescript
-await pinecone.createIndex({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
   name: 'sample-index',
   dimension: 1536,
   metric: 'cosine',
@@ -187,7 +202,10 @@ In the past the `listIndexes` operation returned an array of index names and no 
 **Before: ≤ 1.1.2**
 
 ```typescript
-const indexes = await pinecone.listIndexes();
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const indexes = await pc.listIndexes();
 console.log(indexes);
 //[ { name: 'sample-index1' }, { name: 'sample-index2' } ]
 ```
@@ -195,7 +213,10 @@ console.log(indexes);
 **After: ≥ 2.0.0**
 
 ```typescript
-const indexes = await pinecone.listIndexes();
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const indexes = await pc.listIndexes();
 console.log(indexes);
 // {
 //     indexes: [
@@ -259,7 +280,10 @@ The `describeIndex` operation still takes one argument (the name of an index) wh
 **Before: ≤ 1.1.2**
 
 ```typescript
-const index = await pinecone.describeIndex('sample-index');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const index = await pc.describeIndex('sample-index');
 console.log(index);
 // {
 //     database: {
@@ -283,7 +307,10 @@ console.log(index);
 **After: ≥ 2.0.0**
 
 ```typescript
-const index = await pinecone.describeIndex('sample-index');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const index = await pc.describeIndex('sample-index');
 console.log(index);
 // {
 //     name: 'sample-index-1',
@@ -309,7 +336,10 @@ console.log(index);
 There are no significant changes to the `deleteIndex` operation.
 
 ```typescript
-await pinecone.deleteIndex('sample-index');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.deleteIndex('sample-index');
 ```
 
 ## Configure pod-based indexes
@@ -319,14 +349,20 @@ Configuring an index after creation is specific to pod indexes. With serverless 
 **Before: ≤ 1.1.2**
 
 ```typescript
-await client.configureIndex('sample-index', { replicas: 5, podType: 'p2.x2' });
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.configureIndex('sample-index', { replicas: 5, podType: 'p2.x2' });
 // undefined
 ```
 
 **After: ≥ 2.0.0**
 
 ```typescript
-await client.configureIndex('sample-index', { replicas: 5, podType: 'p2.x2' });
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.configureIndex('sample-index', { replicas: 5, podType: 'p2.x2' });
 // {
 //   name: 'sample-index',
 //   dimension: 3,
@@ -363,7 +399,10 @@ The `createCollection` operation is unchanged. However, `v2.0.0` will return the
 **Before: ≤ 1.1.2**
 
 ```typescript
-await client.createCollection({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createCollection({
   name: 'sample-collection',
   source: 'sample-index',
 });
@@ -373,7 +412,10 @@ await client.createCollection({
 **After: ≥ 2.0.0**
 
 ```typescript
-await client.createCollection({
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createCollection({
   name: 'sample-collection',
   source: 'sample-index',
 });
@@ -394,14 +436,20 @@ The `listCollections` response now contains the full collection models.
 **Before: ≤ 1.1.2**
 
 ```typescript
-await client.listCollections();
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.listCollections();
 // [{ name: 'sample-collection-1' }, { name: 'sample-collection-2' }];
 ```
 
 **After: ≥ 2.0.0**
 
 ```typescript
-await client.listCollections();
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.listCollections();
 // {
 //   collections: [
 //     {
@@ -429,7 +477,10 @@ await client.listCollections();
 The `describeCollections` operation is unchanged. `v2.0.0` will return an additional field denoting the environment in which the collection is hosted.
 
 ```typescript
-await client.describeCollection('sample-collection');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.describeCollection('sample-collection');
 // {
 // 	name: 'sample-collection',
 // 	size: 1532895,
@@ -445,7 +496,10 @@ await client.describeCollection('sample-collection');
 The `deleteCollection` operation is unchanged.
 
 ```typescript
-await client.deleteCollection('sample-collection');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.deleteCollection('sample-collection');
 ```
 
 # Data Plane Operations
@@ -453,7 +507,10 @@ await client.deleteCollection('sample-collection');
 Across both client versions data plane operations remain unchanged. Data plane operations are performed against specific indexes. The SDK will resolve the relevant host for each index automatically when you target an index for operations. Targeting an index involves using the `index` method and providing an index name.
 
 ```typescript
-const index = client.index('my-index');
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const index = pc.index('my-index');
 
 // Now perform data plane operations against 'my-index'
 await index.fetch(['1', '2', '3']);
