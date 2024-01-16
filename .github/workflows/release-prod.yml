@@ -29,7 +29,7 @@ concurrency:
 jobs:
   integration-tests:
     if: ${{ github.event.inputs.runTests == 'true' }}
-    uses: ./.github/workflows/PR.yml
+    uses: ./.github/workflows/pr.yml
     secrets: inherit
 
   version-and-release:
