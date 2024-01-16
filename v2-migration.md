@@ -89,7 +89,7 @@ In the new `v2.0.0` client, there is a lot more flexibility in how indexes are c
 
 > ⚠️ **Warning**
 >
-> Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](!TODO) and test thoroughly before using it in production.
+> Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](https://docs.pinecone.io/docs/limits#serverless-index-limitations) and test thoroughly before using it in production.
 
 Serverless indexes are newly available with the `v2.0.0` client, and you must be on this version or greater to work with them. Creating a serverless index requires defining the `cloud` and `region` where the server should be hosted via the `spec` object with the key `serverless`.
 
@@ -518,4 +518,4 @@ await index.fetch(['1', '2', '3']);
 
 ## Upsert, query, fetch, etc
 
-Once you've targeted an index, the usage for data plane operations has not changed. Please see the section in the `README.md` [Index operations](!TODO).
+Once you've targeted an index, the usage for data plane operations has not changed. Please see the section in the `README.md` [Index operations](https://github.com/pinecone-io/pinecone-ts-client#index-operations).
