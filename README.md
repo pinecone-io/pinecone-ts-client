@@ -92,9 +92,7 @@ await pc.createIndex({
 
 #### Create a pod-based index with optional configurations
 
-To create a pod-based index, you define `pod` in the `spec` object which contains the `environment` where the index should be hosted, and the `podType` and `pods` size to use. Many optional configuration fields allow greater control over hardware resources and availability. To learn more
-about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
-and [Scaling indexes](https://docs.pinecone.io/docs/scaling-indexes).
+To create a pod-based index, you define `pod` in the `spec` object which contains the `environment` where the index should be hosted, and the `podType` and `pods` size to use. Many optional configuration fields allow greater control over hardware resources and availability. To learn more about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/docs/indexes) and [Scaling indexes](https://docs.pinecone.io/docs/scaling-indexes).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
