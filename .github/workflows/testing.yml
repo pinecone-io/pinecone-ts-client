@@ -177,6 +177,8 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_INDEX: 'semantic-search'
+          PINECONE_CLOUD: 'aws'
+          PINECONE_REGION: 'us-west-2'
         shell: bash
         run: |
           cd semantic-search-example

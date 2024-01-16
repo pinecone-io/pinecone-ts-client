@@ -41,7 +41,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  *
  * ```bash
  * export PINECONE_API_KEY="your_api_key"
- * export PINECONE_ENVIRONMENT="your_environment"
+ * export PINECONE_CONTROLLER_HOST="your_controller_host"
  * ```
  *
  * When these environment variables are set, the client constructor does not require any additional arguments.
@@ -99,7 +99,7 @@ export class Pinecone {
    * ```
    *
    * @constructor
-   * @param options - The configuration options for the Pinecone client.
+   * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -288,9 +288,14 @@ export class Pinecone {
    * ```
    *
    * @example
+   *
+   * > ⚠️ **Warning**
+   * >
+   * > Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](https://docs.pinecone.io/docs/limits#serverless-index-limitations) and test thoroughly before using it in production.
+   *
    * The `spec` object defines how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted.
    * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
-   * In a more expansive example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
+   * In a different example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
    * ```js
    * await pinecone.createIndex({
    *  name: 'my-index',
@@ -351,10 +356,10 @@ export class Pinecone {
    *   spec: {
    *     serverless: {
    *       cloud: 'aws',
-   *       region: 'us-west-2'
+   *       region: 'us-west-2',
+   *       metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
    *     }
    *   },
-   *   metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
    * })
    * ```
    *
