@@ -99,7 +99,7 @@ export class Pinecone {
    * ```
    *
    * @constructor
-   * @param options - The configuration options for the Pinecone client.
+   * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
