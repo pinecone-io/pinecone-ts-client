@@ -502,9 +502,9 @@ const pc = new Pinecone();
 await pc.deleteCollection('sample-collection');
 ```
 
-# Data Plane Operations
+# Vector Operations
 
-Across both client versions data plane operations remain unchanged. Data plane operations are performed against specific indexes. The SDK will resolve the relevant host for each index automatically when you target an index for operations. Targeting an index involves using the `index` method and providing an index name.
+Across both client versions vector operations remain largely unchanged. Data plane operations are performed against specific indexes. The SDK will resolve the relevant host for each index automatically when you target an index for operations. Targeting an index involves using the `index` method and providing an index name.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -516,6 +516,47 @@ const index = pc.index('my-index');
 await index.fetch(['1', '2', '3']);
 ```
 
-## Upsert, query, fetch, etc
+## Vector Operations: Upsert, query, fetch, etc
 
 Once you've targeted an index, the usage for data plane operations has not changed. Please see the section in the `README.md` [Index operations](https://github.com/pinecone-io/pinecone-ts-client#index-operations).
+
+### For serverless indexes, see cost information in responses
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const index = pc.index('my-index');
+
+index.fetch(['1']);
+// {
+//   records: {
+//     '1': {
+//       id: '1',
+//       values: [0.5, 0.7],
+//       sparseValues: undefined,
+//       metadata: undefined
+//     }
+//   },
+//   namespace: '',
+//   usage: {
+//     readUnits: 5
+//   }
+// }
+
+index.query({ vector: [0.3, 0.5], topK: 1 });
+// {
+//   matches: [
+//     {
+//       id: '556',
+//       score: 1.00000012,
+//       values: [],
+//       sparseValues: undefined,
+//       metadata: undefined
+//     }
+//   ],
+//   namespace: '',
+//   usage: {
+//     readUnits: 5
+//   }
+// }
+```
