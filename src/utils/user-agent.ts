@@ -10,11 +10,6 @@ export const buildUserAgent = () => {
     'lang=typescript',
   ];
 
-  // If there's a release in packageInfo, append to the user agent
-  if (packageInfo.release && packageInfo.release !== '') {
-    userAgentParts.push(`release=${packageInfo.release}`);
-  }
-
   if (isEdge()) {
     userAgentParts.push('Edge Runtime');
   }
