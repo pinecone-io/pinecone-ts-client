@@ -16,6 +16,7 @@ import {
 import {
   ConfigureIndexRequestSpecPod,
   CreateCollectionRequest,
+  type HTTPHeaders,
 } from './pinecone-generated-ts-fetch';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
@@ -619,14 +620,22 @@ export class Pinecone {
    * @typeParam T - The type of metadata associated with each record.
    * @param indexName - The name of the index to target.
    * @param indexHostUrl - An optional host url to use for operations against this index. If not provided, the host url will be resolved by calling {@link describeIndex}.
+   * @param additionalHeaders - An optional object containing additional headers to pass with each index request.
    * @typeParam T - The type of the metadata object associated with each record.
    * @returns An {@link Index} object that can be used to perform data operations.
    */
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
-    indexHostUrl?: string
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
   ) {
-    return new Index<T>(indexName, this.config, undefined, indexHostUrl);
+    return new Index<T>(
+      indexName,
+      this.config,
+      undefined,
+      indexHostUrl,
+      additionalHeaders
+    );
   }
 
   /**
@@ -635,8 +644,9 @@ export class Pinecone {
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
-    indexHostUrl?: string
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
   ) {
-    return this.index<T>(indexName, indexHostUrl);
+    return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }
 }
