@@ -3,8 +3,8 @@ import {
   Configuration,
   ConfigurationParameters,
   DataPlaneApi,
-  type HTTPHeaders,
 } from '../pinecone-generated-ts-fetch';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch';
 import {
   queryParamsStringify,
   buildUserAgent,
