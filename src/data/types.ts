@@ -41,6 +41,11 @@ export type PineconeConfiguration = {
    * Optional headers to be included in all requests.
    */
   additionalHeaders?: HTTPHeaders;
+
+  /**
+   * Optional integration id that is applied to the User-Agent header with all requests.
+   */
+  integrationId?: string;
 };
 
 export const RecordIdSchema = Type.String({ minLength: 1 });

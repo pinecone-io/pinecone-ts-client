@@ -3,6 +3,7 @@ import {
   Configuration,
   ConfigurationParameters,
   DataPlaneApi,
+  type HTTPHeaders,
 } from '../pinecone-generated-ts-fetch';
 import {
   queryParamsStringify,
@@ -18,15 +19,18 @@ export class DataOperationsProvider {
   private indexName: string;
   private indexHostUrl?: string;
   private dataOperations?: DataPlaneApi;
+  private additionalHeaders?: HTTPHeaders;
 
   constructor(
     config: PineconeConfiguration,
     indexName: string,
-    indexHostUrl?: string
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
   ) {
     this.config = config;
     this.indexName = indexName;
     this.indexHostUrl = normalizeUrl(indexHostUrl);
+    this.additionalHeaders = additionalHeaders;
   }
 
   async provide() {
@@ -51,12 +55,15 @@ export class DataOperationsProvider {
   }
 
   buildDataOperationsConfig() {
+    const headers = this.additionalHeaders || null;
+
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: this.indexHostUrl,
       apiKey: this.config.apiKey,
       queryParamsStringify,
       headers: {
-        'User-Agent': buildUserAgent(),
+        'User-Agent': buildUserAgent(this.config),
+        ...headers,
       },
       fetchApi: getFetch(this.config),
       middleware,
