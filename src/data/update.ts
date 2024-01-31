@@ -45,7 +45,7 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   /**
    * The metadata you would like to store with this record.
    */
-  metadata?: T;
+  metadata?: Partial<T>;
 };
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
