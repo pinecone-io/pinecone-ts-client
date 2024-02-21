@@ -27,20 +27,29 @@ export const randomString = (length) => {
   return result;
 };
 
-export const generateRecords = (
-  dimension: number,
-  quantity: number,
-  withSparseValues?: boolean,
-  withMetadata?: boolean
-): PineconeRecord[] => {
+export const generateRecords = ({
+  dimension = 5,
+  quantity = 3,
+  prefix = null,
+  withSparseValues = false,
+  withMetadata = false,
+}: {
+  dimension?: number;
+  quantity?: number;
+  prefix?: string | null;
+  withSparseValues?: boolean;
+  withMetadata?: boolean;
+}): PineconeRecord[] => {
   const records: PineconeRecord[] = [];
   for (let i = 0; i < quantity; i++) {
     const values: number[] = [];
     for (let j = 0; j < dimension; j++) {
       values.push(parseFloat(Math.random().toFixed(5)));
     }
+    const id = prefix === null ? i.toString() : `${prefix}-${i}`;
+
     let vector: PineconeRecord = {
-      id: i.toString(),
+      id,
       values,
     };
     if (withSparseValues) {

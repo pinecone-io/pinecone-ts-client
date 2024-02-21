@@ -41,7 +41,12 @@ describe('upsert and update', () => {
   });
 
   test('verify upsert and update', async () => {
-    const recordToUpsert = generateRecords(5, 1, false, true);
+    const recordToUpsert = generateRecords({
+      dimension: 5,
+      quantity: 1,
+      withSparseValues: false,
+      withMetadata: true,
+    });
     recordIds = recordToUpsert.map((r) => r.id);
     const oldMetadata = recordToUpsert['0'].metadata;
     expect(recordToUpsert).toHaveLength(1);

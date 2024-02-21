@@ -6,10 +6,14 @@ import type { UpdateOptions } from './update';
 import { QueryCommand } from './query';
 import type { QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
+import type { DeleteOneOptions } from './deleteOne';
 import { deleteMany } from './deleteMany';
+import type { DeleteManyOptions } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
+import { list } from './list';
+import type { ListOptions } from './list';
 import type {
   PineconeConfiguration,
   RecordMetadata,
@@ -47,6 +51,7 @@ export type {
   QueryResponse,
   QueryShared,
 } from './query';
+export type { ListOptions } from './list';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -197,7 +202,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteMany(options) {
+  deleteMany(options: DeleteManyOptions) {
     return this._deleteMany(options);
   }
   /** @hidden */
@@ -219,7 +224,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteOne(id) {
+  deleteOne(id: DeleteOneOptions) {
     return this._deleteOne(id);
   }
   /** @hidden */
@@ -254,6 +259,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
   /** @hidden */
   _describeIndexStats: ReturnType<typeof describeIndexStats>;
+
+  /**
+   * TODO - describe list operations for docs
+   * @param options
+   * @returns
+   */
+  list(options?: ListOptions) {
+    return this._list(options);
+  }
+  /** @hidden */
+  _list: ReturnType<typeof list>;
 
   /** @hidden */
   private _fetchCommand: FetchCommand<T>;
@@ -304,6 +320,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._deleteMany = deleteMany(apiProvider, namespace);
     this._deleteOne = deleteOne(apiProvider, namespace);
     this._describeIndexStats = describeIndexStats(apiProvider);
+    this._list = list(apiProvider, namespace);
 
     this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
     this._queryCommand = new QueryCommand<T>(apiProvider, namespace);

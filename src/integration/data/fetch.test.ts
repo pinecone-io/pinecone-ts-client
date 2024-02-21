@@ -41,7 +41,7 @@ describe('fetch', () => {
   });
 
   test('fetch by id', async () => {
-    const recordsToUpsert = generateRecords(5, 3);
+    const recordsToUpsert = generateRecords({ dimension: 5, quantity: 3 });
     recordIds = recordsToUpsert.map((r) => r.id);
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');

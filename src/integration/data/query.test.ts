@@ -38,7 +38,10 @@ describe('query', () => {
     numberOfRecords = 3;
 
     // Seed with records for testing
-    const recordsToUpsert = generateRecords(5, numberOfRecords);
+    const recordsToUpsert = generateRecords({
+      dimension: 5,
+      quantity: numberOfRecords,
+    });
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');
     expect(recordsToUpsert[1].id).toEqual('1');
