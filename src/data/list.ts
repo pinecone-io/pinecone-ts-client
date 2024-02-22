@@ -25,7 +25,9 @@ export const list = (
   const validator = buildConfigValidator(ListOptionsSchema, 'list');
 
   return async (options?: ListOptions): Promise<ListResponse> => {
-    validator(options);
+    if (options) {
+      validator(options);
+    }
 
     const listRequest: ListRequest = {
       ...options,

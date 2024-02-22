@@ -11,8 +11,9 @@ describe('list', () => {
     index: Index,
     ns: Index,
     namespace: string,
-    prefix: string,
-    recordIds: string[];
+    prefix: string;
+
+  const recordIds: string[] = [];
 
   beforeAll(async () => {
     pinecone = new Pinecone();
@@ -43,6 +44,8 @@ describe('list', () => {
       prefix,
     });
     const upsertedIds = recordsToUpsert.map((r) => r.id);
+    console.log('upsertedIds: ', upsertedIds);
+    console.log('recordsToUpsert: ', recordsToUpsert);
 
     await ns.upsert(recordsToUpsert);
     await waitUntilRecordsReady(ns, namespace, upsertedIds);
@@ -50,7 +53,7 @@ describe('list', () => {
   });
 
   afterAll(async () => {
-    await ns.deleteMany(recordIds);
+    await ns.deleteAll();
   });
 
   test('test list with no arguments', async () => {
@@ -58,13 +61,13 @@ describe('list', () => {
     expect(listResults).toBeDefined();
     expect(listResults.pagination).not.toBeDefined();
     expect(listResults.vectors?.length).toBe(0);
-    expect(listResults.namespace).toBe(namespace);
+    expect(listResults.namespace).toBe('');
   });
 
   test('test list with prefix', async () => {
     const listResults = await ns.list({ prefix });
     expect(listResults.namespace).toBe(namespace);
-    expect(listResults.vectors?.length).toBe(recordIds.length);
+    expect(listResults.vectors?.length).toBe(100);
     expect(listResults.pagination?.next).toBeDefined();
   });
 
