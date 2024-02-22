@@ -12,9 +12,10 @@ describe('query', () => {
     index: Index,
     ns: Index,
     namespace: string,
-    recordIds: string[];
+    recordIds: string[],
+    numberOfRecords: number;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     pinecone = new Pinecone();
 
     await pinecone.createIndex({
@@ -34,87 +35,65 @@ describe('query', () => {
     namespace = randomString(16);
     index = pinecone.index(INDEX_NAME);
     ns = index.namespace(namespace);
+    numberOfRecords = 3;
+
+    // Seed with records for testing
+    const recordsToUpsert = generateRecords(5, numberOfRecords);
+    expect(recordsToUpsert).toHaveLength(3);
+    expect(recordsToUpsert[0].id).toEqual('query-0');
+    expect(recordsToUpsert[1].id).toEqual('query-1');
+    expect(recordsToUpsert[2].id).toEqual('query-2');
+
+    await ns.upsert(recordsToUpsert);
+    recordIds = recordsToUpsert.map((r) => r.id);
+    await waitUntilRecordsReady(ns, namespace, recordIds);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await ns.deleteMany(recordIds);
   });
 
   test('query by id', async () => {
-    const recordsToUpsert = generateRecords(5, 3);
-    recordIds = recordsToUpsert.map((r) => r.id);
-    expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('0');
-    expect(recordsToUpsert[1].id).toEqual('1');
-    expect(recordsToUpsert[2].id).toEqual('2');
-
-    await ns.upsert(recordsToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
-
     const topK = 2;
+    const queryId = recordIds[0];
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(topK);
       expect(results.usage.readUnits).toBeDefined();
+      expect(results.matches).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: queryId })])
+      );
     };
 
-    await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
+    await assertWithRetries(() => ns.query({ id: queryId, topK }), assertions);
   });
 
   test('query when topK is greater than number of records', async () => {
-    const numberOfRecords = 3;
-    const recordsToUpsert = generateRecords(5, numberOfRecords);
-    recordIds = recordsToUpsert.map((r) => r.id);
-    expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('0');
-    expect(recordsToUpsert[1].id).toEqual('1');
-    expect(recordsToUpsert[2].id).toEqual('2');
-
-    await ns.upsert(recordsToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
-
-    const topK = 5;
+    const topK = numberOfRecords + 2;
+    const queryId = recordIds[1];
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(numberOfRecords);
       expect(results.usage.readUnits).toBeDefined();
     };
 
-    await assertWithRetries(() => ns.query({ id: '0', topK }), assertions);
+    await assertWithRetries(() => ns.query({ id: queryId, topK }), assertions);
   });
 
   test('with invalid id, returns empty results', async () => {
-    const recordsToUpsert = generateRecords(5, 3);
-    recordIds = recordsToUpsert.map((r) => r.id);
-    expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('0');
-    expect(recordsToUpsert[1].id).toEqual('1');
-    expect(recordsToUpsert[2].id).toEqual('2');
-
-    await ns.upsert(recordsToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
-
     const topK = 2;
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(0);
     };
 
-    await assertWithRetries(() => ns.query({ id: '100', topK }), assertions);
+    await assertWithRetries(
+      () => ns.query({ id: '12354523423', topK }),
+      assertions
+    );
   });
 
   test('query with vector values', async () => {
-    const numberOfRecords = 3;
-    const recordsToUpsert = generateRecords(5, numberOfRecords);
-    recordIds = recordsToUpsert.map((r) => r.id);
-    expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('0');
-    expect(recordsToUpsert[1].id).toEqual('1');
-    expect(recordsToUpsert[2].id).toEqual('2');
-
-    await ns.upsert(recordsToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
-
     const topK = 1;
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
@@ -133,9 +112,6 @@ describe('query', () => {
   });
 
   test('query with includeValues: true', async () => {
-    const recordsToUpsert = generateRecords(5, 3);
-    expect(recordsToUpsert).toHaveLength(3);
-
     const queryVec = Array.from({ length: 5 }, () => Math.random());
 
     const assertions = (results) => {
