@@ -1,9 +1,9 @@
 import { deleteOne } from '../deleteOne';
 import type {
   DeleteOperationRequest,
-  VectorOperationsApi,
+  DataPlaneApi,
 } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteOperationRequest) => Promise<object> = jest
@@ -11,9 +11,9 @@ const setupDeleteResponse = (response, isSuccess) => {
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const VOA = { _delete: fakeDelete } as VectorOperationsApi;
-  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  return { VOA, VoaProvider };
+  const DPA = { _delete: fakeDelete } as DataPlaneApi;
+  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
+  return { DPA, VoaProvider };
 };
 export const setupDeleteSuccess = (response) => {
   return setupDeleteResponse(response, true);
@@ -24,13 +24,13 @@ export const setupDeleteFailure = (response) => {
 
 describe('deleteOne', () => {
   test('calls the openapi delete endpoint, passing target namespace and the vector id to delete', async () => {
-    const { VoaProvider, VOA } = setupDeleteSuccess(undefined);
+    const { VoaProvider, DPA } = setupDeleteSuccess(undefined);
 
     const deleteOneFn = deleteOne(VoaProvider, 'namespace');
     const returned = await deleteOneFn('123');
 
     expect(returned).toBe(void 0);
-    expect(VOA._delete).toHaveBeenCalledWith({
+    expect(DPA._delete).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'namespace' },
     });
   });

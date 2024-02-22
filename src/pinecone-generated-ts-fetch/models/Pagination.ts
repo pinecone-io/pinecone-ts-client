@@ -16,41 +16,41 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Usage
+ * @interface Pagination
  */
-export interface Usage {
+export interface Pagination {
     /**
-     * The number of read units consumed by this operation.
-     * @type {number}
-     * @memberof Usage
+     * 
+     * @type {string}
+     * @memberof Pagination
      */
-    readUnits?: number;
+    next?: string;
 }
 
 /**
- * Check if a given object implements the Usage interface.
+ * Check if a given object implements the Pagination interface.
  */
-export function instanceOfUsage(value: object): boolean {
+export function instanceOfPagination(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function UsageFromJSON(json: any): Usage {
-    return UsageFromJSONTyped(json, false);
+export function PaginationFromJSON(json: any): Pagination {
+    return PaginationFromJSONTyped(json, false);
 }
 
-export function UsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Usage {
+export function PaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean): Pagination {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'readUnits': !exists(json, 'readUnits') ? undefined : json['readUnits'],
+        'next': !exists(json, 'next') ? undefined : json['next'],
     };
 }
 
-export function UsageToJSON(value?: Usage | null): any {
+export function PaginationToJSON(value?: Pagination | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -59,7 +59,7 @@ export function UsageToJSON(value?: Usage | null): any {
     }
     return {
         
-        'readUnits': value.readUnits,
+        'next': value.next,
     };
 }
 

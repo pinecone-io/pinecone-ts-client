@@ -1,7 +1,7 @@
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 import { IndexHostSingleton } from '../indexHostSingleton';
 
-describe('VectorOperationsProvider', () => {
+describe('DataOperationsProvider', () => {
   let real;
 
   beforeAll(() => {
@@ -21,7 +21,7 @@ describe('VectorOperationsProvider', () => {
     const config = {
       apiKey: 'test-api-key',
     };
-    new VectorOperationsProvider(config, 'index-name');
+    new DataOperationsProvider(config, 'index-name');
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
   });
 
@@ -29,7 +29,7 @@ describe('VectorOperationsProvider', () => {
     const config = {
       apiKey: 'test-api-key',
     };
-    const provider = new VectorOperationsProvider(config, 'index-name');
+    const provider = new DataOperationsProvider(config, 'index-name');
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
 
     const api = await provider.provide();
@@ -45,17 +45,17 @@ describe('VectorOperationsProvider', () => {
       apiKey: 'test-api-key',
     };
     const indexHostUrl = 'http://index-host-url';
-    const provider = new VectorOperationsProvider(
+    const provider = new DataOperationsProvider(
       config,
       'index-name',
       indexHostUrl
     );
 
-    jest.spyOn(provider, 'buildVectorOperationsConfig');
+    jest.spyOn(provider, 'buildDataOperationsConfig');
 
     await provider.provide();
 
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
-    expect(provider.buildVectorOperationsConfig).toHaveBeenCalled();
+    expect(provider.buildDataOperationsConfig).toHaveBeenCalled();
   });
 });

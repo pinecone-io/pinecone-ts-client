@@ -1,4 +1,4 @@
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import { buildConfigValidator } from '../validator';
 import { RecordIdSchema } from './types';
 import type { RecordId } from './types';
@@ -11,7 +11,7 @@ import type { RecordId } from './types';
 export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (
-  apiProvider: VectorOperationsProvider,
+  apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
   const validator = buildConfigValidator(RecordIdSchema, 'deleteOne');

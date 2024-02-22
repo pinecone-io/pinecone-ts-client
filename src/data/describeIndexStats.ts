@@ -1,6 +1,6 @@
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 
 /**
  * A count of the number of records found inside a namespace
@@ -59,7 +59,7 @@ export type DescribeIndexStatsOptions = {
   filter: object;
 };
 
-export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
+export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
   const validator = buildConfigValidator(
     DescribeIndexStatsOptionsSchema,
     'describeIndexStats'

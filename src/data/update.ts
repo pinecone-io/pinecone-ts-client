@@ -1,6 +1,6 @@
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import {
   RecordIdSchema,
   RecordValuesSchema,
@@ -49,7 +49,7 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
 };
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: VectorOperationsProvider;
+  apiProvider: DataOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;
 
