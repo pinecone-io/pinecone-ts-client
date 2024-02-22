@@ -44,8 +44,6 @@ describe('list', () => {
       prefix,
     });
     const upsertedIds = recordsToUpsert.map((r) => r.id);
-    console.log('upsertedIds: ', upsertedIds);
-    console.log('recordsToUpsert: ', recordsToUpsert);
 
     await ns.upsert(recordsToUpsert);
     await waitUntilRecordsReady(ns, namespace, upsertedIds);
