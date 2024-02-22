@@ -10,9 +10,9 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { update: fakeUpdate } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  const cmd = new UpdateCommand(VoaProvider, 'namespace');
-  return { fakeUpdate, DPA, VoaProvider, cmd };
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const cmd = new UpdateCommand(DataProvider, 'namespace');
+  return { fakeUpdate, DPA, DataProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

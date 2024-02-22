@@ -13,9 +13,9 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { fetch: fakeFetch } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  const cmd = new FetchCommand(VoaProvider, 'namespace');
-  return { DPA, VoaProvider, cmd };
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const cmd = new FetchCommand(DataProvider, 'namespace');
+  return { DPA, DataProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

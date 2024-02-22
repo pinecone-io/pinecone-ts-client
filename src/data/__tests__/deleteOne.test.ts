@@ -12,8 +12,8 @@ const setupDeleteResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { _delete: fakeDelete } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  return { DPA, VoaProvider };
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  return { DPA, DataProvider };
 };
 export const setupDeleteSuccess = (response) => {
   return setupDeleteResponse(response, true);
@@ -24,9 +24,9 @@ export const setupDeleteFailure = (response) => {
 
 describe('deleteOne', () => {
   test('calls the openapi delete endpoint, passing target namespace and the vector id to delete', async () => {
-    const { VoaProvider, DPA } = setupDeleteSuccess(undefined);
+    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
 
-    const deleteOneFn = deleteOne(VoaProvider, 'namespace');
+    const deleteOneFn = deleteOne(DataProvider, 'namespace');
     const returned = await deleteOneFn('123');
 
     expect(returned).toBe(void 0);

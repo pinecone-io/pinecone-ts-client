@@ -10,10 +10,10 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { upsert: fakeUpsert } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  const cmd = new UpsertCommand(VoaProvider, 'namespace');
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const cmd = new UpsertCommand(DataProvider, 'namespace');
 
-  return { fakeUpsert, DPA, VoaProvider, cmd };
+  return { fakeUpsert, DPA, DataProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

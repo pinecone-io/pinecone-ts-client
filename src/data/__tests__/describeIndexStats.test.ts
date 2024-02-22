@@ -14,8 +14,8 @@ const setupResponse = (response, isSuccess) => {
   const DPA = {
     describeIndexStats: fakeDescribeIndexStats,
   } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  return { DPA, VoaProvider };
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  return { DPA, DataProvider };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -23,7 +23,7 @@ const setupSuccess = (response) => {
 
 describe('describeIndexStats', () => {
   test('calls the openapi describe_index_stats endpoint passing filter if provided', async () => {
-    const { DPA, VoaProvider } = setupSuccess({
+    const { DPA, DataProvider } = setupSuccess({
       namespaces: {
         '': { vectorCount: 50 },
       },
@@ -32,7 +32,7 @@ describe('describeIndexStats', () => {
       totalVectorCount: 50,
     });
 
-    const describeIndexStatsFn = describeIndexStats(VoaProvider);
+    const describeIndexStatsFn = describeIndexStats(DataProvider);
     const returned = await describeIndexStatsFn({
       filter: { genre: 'classical' },
     });
