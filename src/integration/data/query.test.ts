@@ -40,9 +40,9 @@ describe('query', () => {
     // Seed with records for testing
     const recordsToUpsert = generateRecords(5, numberOfRecords);
     expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('query-0');
-    expect(recordsToUpsert[1].id).toEqual('query-1');
-    expect(recordsToUpsert[2].id).toEqual('query-2');
+    expect(recordsToUpsert[0].id).toEqual('0');
+    expect(recordsToUpsert[1].id).toEqual('1');
+    expect(recordsToUpsert[2].id).toEqual('2');
 
     await ns.upsert(recordsToUpsert);
     recordIds = recordsToUpsert.map((r) => r.id);
