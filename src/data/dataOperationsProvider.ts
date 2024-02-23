@@ -2,7 +2,7 @@ import type { PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
-  VectorOperationsApi,
+  DataPlaneApi,
 } from '../pinecone-generated-ts-fetch';
 import {
   queryParamsStringify,
@@ -13,11 +13,11 @@ import {
 import { IndexHostSingleton } from './indexHostSingleton';
 import { middleware } from '../utils/middleware';
 
-export class VectorOperationsProvider {
+export class DataOperationsProvider {
   private config: PineconeConfiguration;
   private indexName: string;
   private indexHostUrl?: string;
-  private vectorOperations?: VectorOperationsApi;
+  private dataOperations?: DataPlaneApi;
 
   constructor(
     config: PineconeConfiguration,
@@ -30,27 +30,27 @@ export class VectorOperationsProvider {
   }
 
   async provide() {
-    if (this.vectorOperations) {
-      return this.vectorOperations;
+    if (this.dataOperations) {
+      return this.dataOperations;
     }
 
     // If an indexHostUrl has been manually passed we use that,
     // otherwise we rely on resolving the host from the IndexHostSingleton
     if (this.indexHostUrl) {
-      this.vectorOperations = this.buildVectorOperationsConfig();
+      this.dataOperations = this.buildDataOperationsConfig();
     } else {
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
       );
 
-      this.vectorOperations = this.buildVectorOperationsConfig();
+      this.dataOperations = this.buildDataOperationsConfig();
     }
 
-    return this.vectorOperations;
+    return this.dataOperations;
   }
 
-  buildVectorOperationsConfig() {
+  buildDataOperationsConfig() {
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: this.indexHostUrl,
       apiKey: this.config.apiKey,
@@ -63,8 +63,8 @@ export class VectorOperationsProvider {
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);
-    const vectorOperations = new VectorOperationsApi(indexConfiguration);
+    const dataOperations = new DataPlaneApi(indexConfiguration);
 
-    return vectorOperations;
+    return dataOperations;
   }
 }

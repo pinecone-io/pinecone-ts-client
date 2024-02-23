@@ -16,31 +16,31 @@ import { exists, mapValues } from '../runtime';
 /**
  * Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `metadata_config` is present, only specified metadata fields are indexed. These configurations are only valid for use with pod-based indexes.
  * @export
- * @interface PodSpecMetadataConfig
+ * @interface CreateIndexRequestSpecPodMetadataConfig
  */
-export interface PodSpecMetadataConfig {
+export interface CreateIndexRequestSpecPodMetadataConfig {
     /**
-     * By default, all metadata is indexed; to change this behavior, use this property to specify an array of metadata fields that should be indexed.
+     * By default, all metadata is indexed; to change this behavior, use this property to specify an array of metadata fields which should be indexed.
      * @type {Array<string>}
-     * @memberof PodSpecMetadataConfig
+     * @memberof CreateIndexRequestSpecPodMetadataConfig
      */
     indexed?: Array<string>;
 }
 
 /**
- * Check if a given object implements the PodSpecMetadataConfig interface.
+ * Check if a given object implements the CreateIndexRequestSpecPodMetadataConfig interface.
  */
-export function instanceOfPodSpecMetadataConfig(value: object): boolean {
+export function instanceOfCreateIndexRequestSpecPodMetadataConfig(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function PodSpecMetadataConfigFromJSON(json: any): PodSpecMetadataConfig {
-    return PodSpecMetadataConfigFromJSONTyped(json, false);
+export function CreateIndexRequestSpecPodMetadataConfigFromJSON(json: any): CreateIndexRequestSpecPodMetadataConfig {
+    return CreateIndexRequestSpecPodMetadataConfigFromJSONTyped(json, false);
 }
 
-export function PodSpecMetadataConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean): PodSpecMetadataConfig {
+export function CreateIndexRequestSpecPodMetadataConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateIndexRequestSpecPodMetadataConfig {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -50,7 +50,7 @@ export function PodSpecMetadataConfigFromJSONTyped(json: any, ignoreDiscriminato
     };
 }
 
-export function PodSpecMetadataConfigToJSON(value?: PodSpecMetadataConfig | null): any {
+export function CreateIndexRequestSpecPodMetadataConfigToJSON(value?: CreateIndexRequestSpecPodMetadataConfig | null): any {
     if (value === undefined) {
         return undefined;
     }

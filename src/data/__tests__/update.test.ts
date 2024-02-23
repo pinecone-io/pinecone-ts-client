@@ -1,6 +1,6 @@
 import { UpdateCommand } from '../update';
-import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch';
 
 const setupResponse = (response, isSuccess) => {
@@ -9,10 +9,10 @@ const setupResponse = (response, isSuccess) => {
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const VOA = { update: fakeUpdate } as VectorOperationsApi;
-  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  const cmd = new UpdateCommand(VoaProvider, 'namespace');
-  return { fakeUpdate, VOA, VoaProvider, cmd };
+  const DPA = { update: fakeUpdate } as DataPlaneApi;
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const cmd = new UpdateCommand(DataProvider, 'namespace');
+  return { fakeUpdate, DPA, DataProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

@@ -9,7 +9,7 @@ import { deleteOne } from './deleteOne';
 import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import type {
   PineconeConfiguration,
   RecordMetadata,
@@ -273,7 +273,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
-    const apiProvider = new VectorOperationsProvider(
+    const apiProvider = new DataOperationsProvider(
       config,
       indexName,
       indexHostUrl

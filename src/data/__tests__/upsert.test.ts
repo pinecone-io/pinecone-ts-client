@@ -1,7 +1,7 @@
 import { UpsertCommand } from '../upsert';
-import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
 import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertOperationRequest) => Promise<object> = jest
@@ -9,11 +9,11 @@ const setupResponse = (response, isSuccess) => {
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const VOA = { upsert: fakeUpsert } as VectorOperationsApi;
-  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  const cmd = new UpsertCommand(VoaProvider, 'namespace');
+  const DPA = { upsert: fakeUpsert } as DataPlaneApi;
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const cmd = new UpsertCommand(DataProvider, 'namespace');
 
-  return { fakeUpsert, VOA, VoaProvider, cmd };
+  return { fakeUpsert, DPA, DataProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

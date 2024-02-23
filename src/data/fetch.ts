@@ -1,5 +1,5 @@
 import { buildConfigValidator } from '../validator';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import { RecordIdSchema } from './types';
 import type {
   OperationUsage,
@@ -32,7 +32,7 @@ export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
 };
 
 export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: VectorOperationsProvider;
+  apiProvider: DataOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;
 

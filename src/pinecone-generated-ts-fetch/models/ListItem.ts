@@ -16,41 +16,41 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Usage
+ * @interface ListItem
  */
-export interface Usage {
+export interface ListItem {
     /**
-     * The number of read units consumed by this operation.
-     * @type {number}
-     * @memberof Usage
+     * 
+     * @type {string}
+     * @memberof ListItem
      */
-    readUnits?: number;
+    id?: string;
 }
 
 /**
- * Check if a given object implements the Usage interface.
+ * Check if a given object implements the ListItem interface.
  */
-export function instanceOfUsage(value: object): boolean {
+export function instanceOfListItem(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function UsageFromJSON(json: any): Usage {
-    return UsageFromJSONTyped(json, false);
+export function ListItemFromJSON(json: any): ListItem {
+    return ListItemFromJSONTyped(json, false);
 }
 
-export function UsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Usage {
+export function ListItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListItem {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'readUnits': !exists(json, 'readUnits') ? undefined : json['readUnits'],
+        'id': !exists(json, 'id') ? undefined : json['id'],
     };
 }
 
-export function UsageToJSON(value?: Usage | null): any {
+export function ListItemToJSON(value?: ListItem | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -59,7 +59,7 @@ export function UsageToJSON(value?: Usage | null): any {
     }
     return {
         
-        'readUnits': value.readUnits,
+        'id': value.id,
     };
 }
 

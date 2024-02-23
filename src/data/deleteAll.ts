@@ -1,7 +1,7 @@
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 
 export const deleteAll = (
-  apiProvider: VectorOperationsProvider,
+  apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
   return async (): Promise<void> => {

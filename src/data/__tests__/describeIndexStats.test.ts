@@ -1,6 +1,6 @@
 import { describeIndexStats } from '../describeIndexStats';
-import { VectorOperationsApi } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch';
 
 const setupResponse = (response, isSuccess) => {
@@ -11,11 +11,11 @@ const setupResponse = (response, isSuccess) => {
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const VOA = {
+  const DPA = {
     describeIndexStats: fakeDescribeIndexStats,
-  } as VectorOperationsApi;
-  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
-  return { VOA, VoaProvider };
+  } as DataPlaneApi;
+  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  return { DPA, DataProvider };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -23,7 +23,7 @@ const setupSuccess = (response) => {
 
 describe('describeIndexStats', () => {
   test('calls the openapi describe_index_stats endpoint passing filter if provided', async () => {
-    const { VOA, VoaProvider } = setupSuccess({
+    const { DPA, DataProvider } = setupSuccess({
       namespaces: {
         '': { vectorCount: 50 },
       },
@@ -32,7 +32,7 @@ describe('describeIndexStats', () => {
       totalVectorCount: 50,
     });
 
-    const describeIndexStatsFn = describeIndexStats(VoaProvider);
+    const describeIndexStatsFn = describeIndexStats(DataProvider);
     const returned = await describeIndexStatsFn({
       filter: { genre: 'classical' },
     });
@@ -46,7 +46,7 @@ describe('describeIndexStats', () => {
       indexFullness: 0,
       totalRecordCount: 50,
     });
-    expect(VOA.describeIndexStats).toHaveBeenCalledWith({
+    expect(DPA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
     });
   });

@@ -8,7 +8,7 @@ import {
 } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { Type } from '@sinclair/typebox';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 
 const shared = {
   topK: Type.Number(),
@@ -132,7 +132,7 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 };
 
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: VectorOperationsProvider;
+  apiProvider: DataOperationsProvider;
   namespace: string;
   validator: ReturnType<typeof buildConfigValidator>;
 

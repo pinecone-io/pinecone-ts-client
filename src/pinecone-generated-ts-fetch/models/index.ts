@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './AwsRegions';
 export * from './CollectionList';
 export * from './CollectionModel';
 export * from './ConfigureIndexRequest';
@@ -10,18 +9,21 @@ export * from './CreateCollectionRequest';
 export * from './CreateIndexRequest';
 export * from './CreateIndexRequestSpec';
 export * from './CreateIndexRequestSpecPod';
+export * from './CreateIndexRequestSpecPodMetadataConfig';
 export * from './DeleteRequest';
 export * from './DescribeIndexStatsRequest';
 export * from './DescribeIndexStatsResponse';
 export * from './ErrorResponse';
 export * from './ErrorResponseError';
 export * from './FetchResponse';
-export * from './GcpRegions';
 export * from './IndexList';
 export * from './IndexModel';
 export * from './IndexModelSpec';
 export * from './IndexModelStatus';
+export * from './ListItem';
+export * from './ListResponse';
 export * from './NamespaceSummary';
+export * from './Pagination';
 export * from './PodSpec';
 export * from './PodSpecMetadataConfig';
 export * from './ProtobufAny';

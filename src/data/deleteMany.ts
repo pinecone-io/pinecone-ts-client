@@ -1,4 +1,4 @@
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/models/DeleteRequest';
@@ -35,7 +35,7 @@ export type DeleteManyOptions =
   | DeleteManyByFilterOptions;
 
 export const deleteMany = (
-  apiProvider: VectorOperationsProvider,
+  apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
   const validator = buildConfigValidator(DeleteManySchema, 'deleteMany');
