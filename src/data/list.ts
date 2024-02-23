@@ -1,6 +1,6 @@
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
-import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { DataOperationsProvider } from './dataOperationsProvider';
 import type { ListRequest, ListResponse } from '../pinecone-generated-ts-fetch';
 
 export type ListOptions = {
@@ -19,7 +19,7 @@ const ListOptionsSchema = Type.Object(
 );
 
 export const list = (
-  apiProvider: VectorOperationsProvider,
+  apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
   const validator = buildConfigValidator(ListOptionsSchema, 'list');

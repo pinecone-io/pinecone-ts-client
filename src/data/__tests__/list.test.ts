@@ -4,7 +4,7 @@ import type {
   ListResponse,
   DataPlaneApi,
 } from '../../pinecone-generated-ts-fetch';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListRequest) => Promise<ListResponse> = jest
@@ -13,7 +13,7 @@ const setupListResponse = (response, isSuccess = true) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { list: fakeList } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as VectorOperationsProvider;
+  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
   return { DPA, VoaProvider };
 };
 
