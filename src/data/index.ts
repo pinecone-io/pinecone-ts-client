@@ -261,9 +261,42 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   _describeIndexStats: ReturnType<typeof describeIndexStats>;
 
   /**
-   * TODO - describe list operations for docs
-   * @param options
-   * @returns
+   * Lists the IDs of vectors in a single namespace of a serverless index.
+   * An optional prefix can be passed to limit the results to IDs with a common prefix.
+   * The list operation returns up to 100 IDs at a time by default in sorted order (bitwise/"C" collation).
+   * If the `limit` parameter is set, `list` returns up to that number of IDs instead.
+   * Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs.
+   * When the response does not include a `pagination_token`, there are no more IDs to return.
+   * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
+   *
+   * @example
+   * ```js
+   * const pc = new Pinecone();
+   * await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1' });
+   *
+   * // {
+   * //   vectors: [
+   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
+   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
+   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+   * //     ...
+   * //   ],
+   * //   pagination: {
+   * //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
+   * //   },
+   * //   namespace: 'my-namespace',
+   * //   usage: { readUnits: 1 }
+   * // }
+   * ```
+   *
+   * > ⚠️ **Note:**
+   * >
+   * > `list` is supported only for serverless indexes.
+   *
+   * @param options - The {@link ListOptions} for the operation.
+   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
+   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   list(options?: ListOptions) {
     return this._list(options);
