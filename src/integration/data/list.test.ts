@@ -82,9 +82,7 @@ describe('list', () => {
         pageSizes.push(ids.length);
         pageCount++;
       }
-      console.log(
-        `pages: ${pages} --- pageSizes: ${pageSizes} --- pageCount: ${pageCount}`
-      );
+
       expect(pageCount).toBe(2);
       expect(pageSizes).toEqual([100, 20]);
       expect(pages[0]).toContain('preTest-0');
@@ -102,13 +100,25 @@ describe('list', () => {
         pageSizes.push(ids.length);
         pageCount++;
       }
-      console.log(
-        `pages: ${pages} --- pageSizes: ${pageSizes} --- pageCount: ${pageCount}`
-      );
+
       expect(pageCount).toBe(2);
       expect(pageSizes).toEqual([60, 60]);
       expect(pages[0]).toContain('preTest-0');
       expect(pages[1]).toContain('preTest-99');
+    });
+
+    test('test list then fetch', async () => {
+      const idGenerator = ns.list({ prefix, limit: 10 });
+      const { value } = await idGenerator.next();
+      expect(value?.length).toBe(10);
+
+      if (value) {
+        const fetchedRecords = await ns.fetch(value);
+        const recordIds = Object.keys(fetchedRecords.records);
+        for (const id of recordIds) {
+          expect(recordIds).toContain(id);
+        }
+      }
     });
   });
 
