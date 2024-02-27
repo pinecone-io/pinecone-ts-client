@@ -18,11 +18,11 @@ const ListOptionsSchema = Type.Object(
   { additionalProperties: false }
 );
 
-export const list = (
+export const listPaginated = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const validator = buildConfigValidator(ListOptionsSchema, 'list');
+  const validator = buildConfigValidator(ListOptionsSchema, 'listPaginated');
 
   return async (options?: ListOptions): Promise<ListResponse> => {
     if (options) {
@@ -36,5 +36,51 @@ export const list = (
 
     const api = await apiProvider.provide();
     return await api.list(listRequest);
+  };
+};
+
+export const list = (
+  apiProvider: DataOperationsProvider,
+  namespace: string
+) => {
+  const validator = buildConfigValidator(ListOptionsSchema, 'list');
+
+  return async function* (
+    options?: ListOptions
+  ): AsyncGenerator<Array<string>, void, void> {
+    let done = false;
+
+    while (!done) {
+      if (options) {
+        validator(options);
+      }
+
+      const listRequest: ListRequest = {
+        ...options,
+        namespace,
+      };
+
+      const api = await apiProvider.provide();
+      const results = await api.list(listRequest);
+
+      if (results.vectors && results.vectors.length > 0) {
+        const idResults = results.vectors.reduce((acc, result) => {
+          if (result.id) {
+            acc.push(result.id);
+          }
+          return acc;
+        }, [] as Array<string>);
+        yield new Promise<Array<string>>((resolve) => resolve(idResults));
+      }
+
+      if (results.pagination?.next) {
+        options = {
+          ...options,
+          paginationToken: results.pagination.next,
+        };
+      } else {
+        done = true;
+      }
+    }
   };
 };

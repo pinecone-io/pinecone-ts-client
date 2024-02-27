@@ -35,7 +35,7 @@ describe('list', () => {
     namespace = randomString(16);
     index = pinecone.index(INDEX_NAME);
     ns = index.namespace(namespace);
-    prefix = 'preTest-';
+    prefix = 'preTest';
 
     // Seed the namespace with records for testing
     const recordsToUpsert = generateRecords({
@@ -54,35 +54,95 @@ describe('list', () => {
     await ns.deleteAll();
   });
 
-  test('test list with no arguments', async () => {
-    const listResults = await index.list();
-    expect(listResults).toBeDefined();
-    expect(listResults.pagination).not.toBeDefined();
-    expect(listResults.vectors?.length).toBe(0);
-    expect(listResults.namespace).toBe('');
-  });
+  describe('list', () => {
+    test('test list with no arguments', async () => {
+      const idGenerator = index.list();
 
-  test('test list with prefix', async () => {
-    const listResults = await ns.list({ prefix });
-    expect(listResults.namespace).toBe(namespace);
-    expect(listResults.vectors?.length).toBe(100);
-    expect(listResults.pagination?.next).toBeDefined();
-  });
-
-  test('test list with limit and pagination', async () => {
-    const listResults = await ns.list({ prefix, limit: 60 });
-    expect(listResults.namespace).toBe(namespace);
-    expect(listResults.vectors?.length).toBe(60);
-    expect(listResults.pagination?.next).toBeDefined();
-
-    const listResultsPg2 = await ns.list({
-      prefix,
-      limit: 60,
-      paginationToken: listResults.pagination?.next,
+      const pages: string[][] = [];
+      const pageSizes: number[] = [];
+      let pageCount = 0;
+      for await (const ids of idGenerator) {
+        pages.push(ids);
+        pageSizes.push(ids.length || 0);
+        pageCount++;
+      }
+      expect(pageCount).toBe(0);
+      expect(pageSizes).toEqual([]);
+      expect(pages).toEqual([]);
     });
 
-    expect(listResultsPg2.namespace).toBe(namespace);
-    expect(listResultsPg2.vectors?.length).toBe(60);
-    // expect(listResultsPg2.pagination?.next).not.toBeDefined();
+    test('test list with prefix', async () => {
+      const idGenerator = ns.list({ prefix });
+
+      const pages: string[][] = [];
+      const pageSizes: number[] = [];
+      let pageCount = 0;
+      for await (const ids of idGenerator) {
+        pages.push(ids);
+        pageSizes.push(ids.length);
+        pageCount++;
+      }
+      console.log(
+        `pages: ${pages} --- pageSizes: ${pageSizes} --- pageCount: ${pageCount}`
+      );
+      expect(pageCount).toBe(2);
+      expect(pageSizes).toEqual([100, 20]);
+      expect(pages[0]).toContain('preTest-0');
+      expect(pages[1]).toContain('preTest-99');
+    });
+
+    test('test list with limit and pagination', async () => {
+      const idGenerator = ns.list({ prefix, limit: 60 });
+
+      const pages: string[][] = [];
+      const pageSizes: number[] = [];
+      let pageCount = 0;
+      for await (const ids of idGenerator) {
+        pages.push(ids);
+        pageSizes.push(ids.length);
+        pageCount++;
+      }
+      console.log(
+        `pages: ${pages} --- pageSizes: ${pageSizes} --- pageCount: ${pageCount}`
+      );
+      expect(pageCount).toBe(2);
+      expect(pageSizes).toEqual([60, 60]);
+      expect(pages[0]).toContain('preTest-0');
+      expect(pages[1]).toContain('preTest-99');
+    });
+  });
+
+  describe('listPaginated', () => {
+    test('test listPaginated with no arguments', async () => {
+      const listResults = await index.listPaginated();
+      expect(listResults).toBeDefined();
+      expect(listResults.pagination).not.toBeDefined();
+      expect(listResults.vectors?.length).toBe(0);
+      expect(listResults.namespace).toBe('');
+    });
+
+    test('test listPaginated with prefix', async () => {
+      const listResults = await ns.listPaginated({ prefix });
+      expect(listResults.namespace).toBe(namespace);
+      expect(listResults.vectors?.length).toBe(100);
+      expect(listResults.pagination?.next).toBeDefined();
+    });
+
+    test('test listPaginated with limit and pagination', async () => {
+      const listResults = await ns.listPaginated({ prefix, limit: 60 });
+      expect(listResults.namespace).toBe(namespace);
+      expect(listResults.vectors?.length).toBe(60);
+      expect(listResults.pagination?.next).toBeDefined();
+
+      const listResultsPg2 = await ns.listPaginated({
+        prefix,
+        limit: 60,
+        paginationToken: listResults.pagination?.next,
+      });
+
+      expect(listResultsPg2.namespace).toBe(namespace);
+      expect(listResultsPg2.vectors?.length).toBe(60);
+      // expect(listResultsPg2.pagination?.next).not.toBeDefined();
+    });
   });
 });

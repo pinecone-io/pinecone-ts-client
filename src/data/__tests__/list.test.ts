@@ -1,4 +1,4 @@
-import { list } from '../list';
+import { list, listPaginated } from '../list';
 import type {
   ListRequest,
   ListResponse,
@@ -18,7 +18,30 @@ const setupListResponse = (response, isSuccess = true) => {
 };
 
 describe('list', () => {
-  test('calls the openapi list endpoint, passing target namespace with ListOptions', async () => {
+  test('listPaginated calls the openapi list endpoint, passing target namespace with ListOptions', async () => {
+    const listResponse = {
+      vectors: [
+        { id: 'prefix-1', values: [0.2, 0.4] },
+        { id: 'prefix-2', values: [0.3, 0.5] },
+        { id: 'prefix-3', values: [0.4, 0.6] },
+      ],
+      pagination: { next: 'fake-pagination-token-123123123' },
+      namespace: 'list-namespace',
+      usage: { readUnits: 1 },
+    };
+    const { VoaProvider, DPA } = setupListResponse(listResponse);
+
+    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const returned = await listPaginatedFn({ prefix: 'prefix-' });
+
+    expect(returned).toBe(listResponse);
+    expect(DPA.list).toHaveBeenCalledWith({
+      prefix: 'prefix-',
+      namespace: 'list-namespace',
+    });
+  });
+
+  test('list calls the openapi list endpoint on iteration, passing target namespace with ListOptions', async () => {
     const listResponse = {
       vectors: [
         { id: 'prefix-1', values: [0.2, 0.4] },
@@ -32,12 +55,22 @@ describe('list', () => {
     const { VoaProvider, DPA } = setupListResponse(listResponse);
 
     const listFn = list(VoaProvider, 'list-namespace');
-    const returned = await listFn({ prefix: 'prefix-' });
+    const asyncGenerator = listFn({ prefix: 'prefix-' });
 
-    expect(returned).toBe(listResponse);
+    // Iterate once
+    const { value } = await asyncGenerator.next();
+    expect(value).toEqual(['prefix-1', 'prefix-2', 'prefix-3']);
     expect(DPA.list).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
+    });
+
+    // Iterate again, make sure we pass the pagination token
+    await asyncGenerator.next();
+    expect(DPA.list).toHaveBeenCalledWith({
+      prefix: 'prefix-',
+      namespace: 'list-namespace',
+      paginationToken: 'fake-pagination-token-123123123',
     });
   });
 });

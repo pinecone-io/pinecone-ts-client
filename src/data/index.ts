@@ -12,7 +12,7 @@ import type { DeleteManyOptions } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { list } from './list';
+import { list, listPaginated } from './list';
 import type { ListOptions } from './list';
 import type {
   PineconeConfiguration,
@@ -261,19 +261,16 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   _describeIndexStats: ReturnType<typeof describeIndexStats>;
 
   /**
-   * Lists the IDs of vectors in a single namespace of a serverless index.
-   * An optional prefix can be passed to limit the results to IDs with a common prefix.
-   * The list operation returns up to 100 IDs at a time by default in sorted order (bitwise/"C" collation).
-   * If the `limit` parameter is set, `list` returns up to that number of IDs instead.
-   * Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs.
-   * When the response does not include a `pagination_token`, there are no more IDs to return.
+   * The `listPaginated` operation finds vectors vased on an id prefix within a single namespace.
+   * It returns matching ids in a paginated form, with a pagination token to fetch the next page of results.
+   * This id list can then be passed to fetch or delete options to perform operations on the matching records.
    * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
    *
    * @example
    * ```js
    * const pc = new Pinecone();
-   * await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1' });
-   *
+   * const results = await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1' });
+   * console.log(results);
    * // {
    * //   vectors: [
    * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
@@ -287,6 +284,41 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   namespace: 'my-namespace',
    * //   usage: { readUnits: 1 }
    * // }
+   *
+   * // Fetch the next page of results
+   * await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', paginationToken: results.pagination.next});
+   * ```
+   *
+   * > ⚠️ **Note:**
+   * >
+   * > `listPaginated` is supported only for serverless indexes.
+   *
+   * @param options - The {@link ListOptions} for the operation.
+   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
+   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
+   */
+  listPaginated(options?: ListOptions) {
+    return this._listPaginated(options);
+  }
+  /** @hidden */
+  _listPaginated: ReturnType<typeof listPaginated>;
+
+  /**
+   * The `list` operations accepts all of the same arguments as `listPaginated`, and returns an async generator function
+   * that yields a list of the matching vector ids in each page of results. It automatically handles pagination tokens on
+   * your behalf.
+   * See more on how to use the returned `AsyncGenerator` object here: [MDN: AsyncGenerator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator).
+   *
+   * @example
+   * ```js
+   * const pc = new Pinecone();
+   * const idGenerator = pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', limit: 5 });
+   * for await (const ids of idGenerator) {
+   *   console.log(ids);
+   * }
+   * // ['doc1#01', 'doc1#02','doc1#03', 'doc1#04', 'doc1#05']
+   * // ['doc1#06', 'doc1#07','doc1#08', 'doc1#09', 'doc1#10']
    * ```
    *
    * > ⚠️ **Note:**
@@ -294,13 +326,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * > `list` is supported only for serverless indexes.
    *
    * @param options - The {@link ListOptions} for the operation.
-   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
+   * @returns - An `AsyncGenerator` object which allows iteration via a `for await...of` loop. Each iteration yields a list of matching vector ids.
    * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   list(options?: ListOptions) {
     return this._list(options);
   }
+
   /** @hidden */
   _list: ReturnType<typeof list>;
 
@@ -354,6 +387,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._deleteOne = deleteOne(apiProvider, namespace);
     this._describeIndexStats = describeIndexStats(apiProvider);
     this._list = list(apiProvider, namespace);
+    this._listPaginated = listPaginated(apiProvider, namespace);
 
     this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
     this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
