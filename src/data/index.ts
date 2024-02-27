@@ -269,7 +269,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * const pc = new Pinecone();
-   * const results = await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1' });
+   * const results = await pc.index('my-index').namespace('my-namespace').list({ prefix: 'doc1' });
    * console.log(results);
    * // {
    * //   vectors: [
@@ -286,7 +286,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * // }
    *
    * // Fetch the next page of results
-   * await pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', paginationToken: results.pagination.next});
+   * await pc.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', paginationToken: results.pagination.next});
    * ```
    *
    * > ⚠️ **Note:**
@@ -313,7 +313,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * const pc = new Pinecone();
-   * const idGenerator = pinecone.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', limit: 5 });
+   * const idGenerator = pc.index('my-index').namespace('my-namespace').list({ prefix: 'doc1', limit: 5 });
    * for await (const ids of idGenerator) {
    *   console.log(ids);
    * }
