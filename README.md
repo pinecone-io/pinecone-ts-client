@@ -773,10 +773,8 @@ The `list` method returns an `AsyncGenerator` that handles pagination on your be
 
 ```typescript
 const pc = new Pinecone();
-const idGenerator = pinecone
-  .index('my-index')
-  .namespace('my-namespace')
-  .list({ prefix: 'doc1', limit: 5 });
+const index = pinecone.index('my-index').namespace('my-namespace');
+const idGenerator = index.list({ prefix: 'doc1', limit: 5 });
 
 // You can use the generator with the `for await...of` syntax to iterate over resulting pages
 const recordIds = [];
@@ -792,10 +790,8 @@ The `listPaginated` method allows you to handle pagination manually.
 
 ```typescript
 const pc = new Pinecone();
-const results = await pinecone
-  .index('my-index')
-  .namespace('my-namespace')
-  .list({ prefix: 'doc1' });
+const index = pinecone.index('my-index').namespace('my-namespace');
+const results = await index.list({ prefix: 'doc1' });
 console.log(results);
 // {
 //   vectors: [
@@ -812,10 +808,7 @@ console.log(results);
 // }
 
 // Fetch the next page of results
-await pinecone
-  .index('my-index')
-  .namespace('my-namespace')
-  .list({ prefix: 'doc1', paginationToken: results.pagination.next });
+await index.list({ prefix: 'doc1', paginationToken: results.pagination.next });
 ```
 
 ### Fetch records by their IDs
