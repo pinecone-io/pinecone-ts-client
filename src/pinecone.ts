@@ -182,7 +182,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * const indexModel = await client.describeIndex('my-index')
@@ -229,7 +228,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * const indexList = await client.listIndexes()
@@ -314,6 +312,9 @@ export class Pinecone {
    * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
    * In a different example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
    * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
    * await pinecone.createIndex({
    *  name: 'my-index',
    *  dimension: 1536,
@@ -332,7 +333,6 @@ export class Pinecone {
    * If you would like to create the index only if it does not already exist, you can use the `suppressConflicts` boolean option.
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.createIndex({
@@ -352,7 +352,6 @@ export class Pinecone {
    * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.createIndex({
@@ -376,7 +375,6 @@ export class Pinecone {
    * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.createIndex({
@@ -412,7 +410,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.deleteIndex('my-index')
@@ -440,7 +437,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
@@ -462,7 +458,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * const indexList = await client.listIndexes()
@@ -490,7 +485,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.listCollections()
@@ -510,7 +504,6 @@ export class Pinecone {
    * @example
    * ```
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * const collectionList = await client.listCollections()
@@ -533,7 +526,6 @@ export class Pinecone {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone();
    *
    * await client.describeCollection('my-collection')
@@ -568,7 +560,6 @@ export class Pinecone {
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
-   *
    * const client = new Pinecone()
    *
    * const index = client.index('index-name')

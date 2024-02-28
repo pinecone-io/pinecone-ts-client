@@ -137,8 +137,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').describeIndexStats();
+   * await index.describeIndexStats();
    * // {
    * //  namespaces: {
    * //    '': { recordCount: 10 },
@@ -149,10 +150,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 11
    * // }
    *
-   * await client.index('my-index').deleteAll();
+   * await index.deleteAll();
    *
    * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
-   * await client.index('my-index').describeIndexStats();
+   * await index.describeIndexStats();
    * // {
    * //  namespaces: {
    * //   foo: { recordCount: 1 }
@@ -162,7 +163,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 1
    * // }
    *
-   * await client.index('my-index').deleteAll();
+   * await index.deleteAll();
    * // Since no namespace was specified, records in default namespace '' are now deleted.
    *
    * ```
@@ -184,11 +185,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').deleteMany(['record-1', 'record-2']);
+   * await index.deleteMany(['record-1', 'record-2']);
    *
    * // or
-   * await client.index('my-index').deleteMany({ genre: 'classical' });
+   * await index.deleteMany({ genre: 'classical' });
    * ```
    * @param options - An array of record id values or a filter object.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -208,8 +210,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').deleteOne('record-1');
+   * await index.deleteOne('record-1');
    * ```
    * @param id - The id of the record to delete.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -229,9 +232,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').describeIndexStats();
-   *
+   * await index.describeIndexStats();
    * // {
    * //  namespaces: {
    * //    '': { recordCount: 10 }
@@ -351,8 +354,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').upsert([{
+   * await index.upsert([{
    *  id: 'record-1',
    *  values: [0.176, 0.345, 0.263],
    * },{
@@ -377,8 +381,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').fetch(['record-1', 'record-2']);
+   * await index.fetch(['record-1', 'record-2']);
    * ```
    * @param options - The {@link FetchOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -398,11 +403,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('my-index');
    *
-   * await client.index('my-index').query({ topK: 3, id: 'record-1'});
+   * await index.query({ topK: 3, id: 'record-1'});
    *
    * // or
-   * await client.index('my-index').query({ topK: 3, vector: [0.176, 0.345, 0.263] });
+   * await index.query({ topK: 3, vector: [0.176, 0.345, 0.263] });
    * ```
    *
    * @param options - The {@link QueryOptions} for the operation.
@@ -421,8 +427,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const client = new Pinecone();
+   * const index = client.index('imdb-movies');
    *
-   * await client.index('imdb-movies').update({
+   * await index.update({
    *   id: '18593',
    *   metadata: { genre: 'romance' },
    * });

@@ -45,7 +45,7 @@ PINECONE_API_KEY="your_api_key"
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pc = new Pinecone();
+const client = new Pinecone();
 ```
 
 #### Using a configuration object
@@ -55,7 +55,7 @@ If you prefer to pass configuration in code, the constructor accepts a config ob
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pc = new Pinecone({
+const client = new Pinecone({
   apiKey: 'your_api_key',
 });
 ```
@@ -76,9 +76,9 @@ The `spec` configures how the index should be deployed. For serverless indexes, 
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createIndex({
+await client.createIndex({
   name: 'sample-index',
   dimension: 1536,
   spec: {
@@ -96,9 +96,9 @@ To create a pod-based index, you define `pod` in the `spec` object which contain
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createIndex({
+await client.createIndex({
   name: 'sample-index-2',
   dimension: 1536,
   metric: 'dotproduct',
@@ -129,9 +129,9 @@ not immediately ready for upserting, querying, or performing other data operatio
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.describeIndex('serverless-index');
+await client.describeIndex('serverless-index');
 // {
 //    name: 'serverless-index',
 //    dimension: 1536,
@@ -149,7 +149,7 @@ await pc.describeIndex('serverless-index');
 //    }
 // }
 
-await pc.describeIndex('serverless-index');
+await client.describeIndex('serverless-index');
 // {
 //    name: 'serverless-index',
 //    dimension: 1536,
@@ -174,9 +174,9 @@ If you pass the `waitUntilReady` option, the client will handle polling for stat
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createIndex({
+await client.createIndex({
   name: 'serverless-index',
   dimension: 1536,
   spec: {
@@ -201,9 +201,9 @@ Given that you have an existing collection:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.describeCollection('product-description-embeddings');
+await client.describeCollection('product-description-embeddings');
 // {
 //   name: 'product-description-embeddings',
 //   size: 543427063,
@@ -218,9 +218,9 @@ You can specify a sourceCollection along with other configuration in your `creat
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createIndex({
+await client.createIndex({
   name: 'product-description-p1x1',
   dimension: 256,
   metric: 'cosine'
@@ -239,9 +239,9 @@ When the new index is ready, it should contain all the data that was in the coll
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.index('product-description-p2x2').describeIndexStats();
+await client.index('product-description-p2x2').describeIndexStats();
 // {
 //   namespaces: { '': { recordCount: 78000 } },
 //   dimension: 256,
@@ -256,9 +256,9 @@ You can fetch the description of any index by name using `describeIndex`.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.describeIndex('serverless-index');
+await client.describeIndex('serverless-index');
 // {
 //    name: 'serverless-index',
 //    dimension: 1536,
@@ -287,10 +287,10 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.configureIndex('pod-index', { replicas: 3 });
-const config = await pc.describeIndex('pod-index');
+await client.configureIndex('pod-index', { replicas: 3 });
+const config = await client.describeIndex('pod-index');
 // {
 //    name: 'pod-index',
 //    dimension: 1536,
@@ -318,9 +318,9 @@ Indexes are deleted by name.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.deleteIndex('sample-index');
+await client.deleteIndex('sample-index');
 ```
 
 ### List Indexes
@@ -329,9 +329,9 @@ The `listIndexes` command returns an object with an array of index models under 
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.listIndexes();
+await client.listIndexes();
 // {
 //   indexes: [
 //     {
@@ -385,9 +385,9 @@ A collection is a static copy of a pod-based index that may be used to create ba
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createCollection({
+await client.createCollection({
   name: 'collection-name',
   source: 'index-name',
 });
@@ -399,9 +399,9 @@ This API call should return quickly, but the creation of a collection can take f
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.deleteCollection('collection-name');
+await client.deleteCollection('collection-name');
 ```
 
 You can use `listCollections` to confirm the deletion.
@@ -410,9 +410,9 @@ You can use `listCollections` to confirm the deletion.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-const describeCollection = await pc.describeCollection('collection3');
+const describeCollection = await client.describeCollection('collection3');
 // {
 //   name: 'collection3',
 //   size: 3126700,
@@ -428,9 +428,9 @@ The `listCollections` command returns an object with an array of collection mode
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-const list = await pc.listCollections();
+const list = await client.listCollections();
 // {
 //   collections: [
 //     {
@@ -463,9 +463,9 @@ To perform data operations on an index, you target it using the `index` method.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('test-index');
 
-const index = pc.index('test-index');
 // Now perform index operations
 await index.fetch(['1']);
 ```
@@ -474,9 +474,9 @@ The first argument is the name of the index you are targeting. There's an option
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('test-index', 'my-index-host-1532-svc.io');
 
-const index = pc.index('test-index', 'my-index-host-1532-svc.io');
 // Now perform index operations against: https://my-index-host-1532-svc.io
 await index.fetch(['1']);
 ```
@@ -487,7 +487,7 @@ If you are storing metadata alongside your vector values, you can pass a type pa
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
 type MovieMetadata = {
   title: string,
@@ -496,7 +496,7 @@ type MovieMetadata = {
 }
 
 // Specify a custom metadata type while targeting the index
-const index = pc.index<MovieMetadata>('test-index');
+const index = client.index<MovieMetadata>('test-index');
 
 // Now you get type errors if upserting malformed metadata
 await index.upsert([{
@@ -539,9 +539,9 @@ By default, all data operations take place inside the default namespace of `''`.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('test-index').namespace('ns1');
 
-const index = pc.index('test-index').namespace('ns1');
 // Now perform index operations in the targeted index and namespace
 await index.fetch(['1']);
 ```
@@ -550,9 +550,9 @@ If needed, you can check the currently targeted index and namespace by inspectin
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('test-index').namespace('ns1');
 
-const index = pc.index('test-index').namespace('ns1');
 console.log(index.target); // { index: 'test-index', namespace: 'ns1', indexHostUrl: undefined }
 ```
 
@@ -575,10 +575,10 @@ To upsert some records, you can use the client like so:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
 // Target an index
-const index = pc.index('sample-index');
+const index = client.index('sample-index');
 
 // Prepare your data. The length of each array
 // of vector values must match the dimension of
@@ -605,9 +605,10 @@ target the index and use the `describeIndexStats()` command.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('example-index');
 
-await pc.index('example-index').describeIndexStats();
+await index.describeIndexStats();
 // {
 //   namespaces: {
 //     '': { recordCount: 10 }
@@ -644,9 +645,10 @@ For example, to query by vector values you would pass the `vector` param in the 
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
-await pc.index('my-index').query({ topK: 3, vector: [0.22, 0.66] });
+await index.query({ topK: 3, vector: [0.22, 0.66] });
 // {
 //   matches: [
 //     {
@@ -684,12 +686,12 @@ Remember that data operations take place within the context of a namespace, so i
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-const results = await pc
-  .index('my-index')
-  .namespace('my-namespace')
-  .query({ topK: 3, vector: [0.22, 0.66] });
+// Target the index and namespace
+const index = client.index('my-index').namespace('my-namespace');
+
+const results = await index.query({ topK: 3, vector: [0.22, 0.66] });
 ```
 
 #### Querying by record id
@@ -698,9 +700,10 @@ You can query using the vector values of an existing record in the index by pass
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
-const results = await pc.index('my-index').query({ topK: 10, id: '1' });
+const results = await index.query({ topK: 10, id: '1' });
 ```
 
 #### Hybrid search with sparseVector
@@ -709,9 +712,9 @@ If you are working with [sparse-dense vectors](https://docs.pinecone.io/v2/docs/
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
 
-await pc.createIndex({
+await client.createIndex({
   name: 'hyrbid-image-search',
   metric: 'dotproduct',
   dimension: 512,
@@ -724,7 +727,7 @@ await pc.createIndex({
   },
   waitUntilReady: true
 });
-const index = pc.index('hybrid-image-search');
+const index = client.index('hybrid-image-search');
 
 // Create some vector embeddings using your model of choice.
 const records = [...]
@@ -752,9 +755,10 @@ You may want to update vector `values`, `sparseValues`, or `metadata`. Specify t
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('imdb-movies');
 
-await pc.index('imdb-movies').update({
+await index.update({
   id: '18593',
   metadata: { genre: 'romance' },
 });
@@ -764,7 +768,8 @@ await pc.index('imdb-movies').update({
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
 const fetchResult = await index.fetch(['id-1', 'id-2']);
 ```
@@ -777,9 +782,9 @@ For convenience there are several delete-related methods. You can verify the res
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
-const index = pc.index('my-index');
 await index.deleteOne('id-to-delete');
 ```
 
@@ -787,9 +792,9 @@ await index.deleteOne('id-to-delete');
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
-const index = pc.index('my-index');
 await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```
 
@@ -797,9 +802,10 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('albums-database');
 
-await pc.index('albums-database').deleteMany({ genre: 'rock' });
+await index.deleteMany({ genre: 'rock' });
 ```
 
 #### Delete all records in a namespace
@@ -812,9 +818,9 @@ To nuke everything in the targeted namespace, use the `deleteAll` method.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
+const client = new Pinecone();
+const index = client.index('my-index');
 
-const index = pc.index('my-index');
 await index.namespace('foo-namespace').deleteAll();
 ```
 
