@@ -56,9 +56,9 @@ export type {
  *
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
+ * const client = new Pinecone()
  *
- * const pinecone = new Pinecone()
- * const index = pinecone.index('index-name')
+ * const index = client.index('index-name')
  * ```
  *
  * ### Targeting an index, with user-defined Metadata types
@@ -66,7 +66,8 @@ export type {
  * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
  *
  * ```typescript
- * const pinecone = new Pinecone();
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const client = new Pinecone();
  *
  * type MovieMetadata = {
  *   title: string,
@@ -75,7 +76,7 @@ export type {
  * }
  *
  * // Specify a custom metadata type while targeting the index
- * const index = pinecone.index<MovieMetadata>('test-index');
+ * const index = client.index<MovieMetadata>('test-index');
  *
  * // Now you get type errors if upserting malformed metadata
  * await index.upsert([{
@@ -134,8 +135,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').describeIndexStats();
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').describeIndexStats();
    * // {
    * //  namespaces: {
    * //    '': { recordCount: 10 },
@@ -146,9 +149,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 11
    * // }
    *
-   * await pinecone.index('my-index').deleteAll();
+   * await client.index('my-index').deleteAll();
    *
-   * // Records in default namespace '' are now gone, but records in namespace 'foo' are not modified.
+   * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
    * await client.index('my-index').describeIndexStats();
    * // {
    * //  namespaces: {
@@ -159,7 +162,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 1
    * // }
    *
+   * await client.index('my-index').deleteAll();
+   * // Since no namespace was specified, records in default namespace '' are now deleted.
+   *
    * ```
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
   deleteAll() {
@@ -175,15 +182,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').deleteMany(['record-1', 'record-2']);
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').deleteMany(['record-1', 'record-2']);
    *
    * // or
-   * await pinecone.index('my-index').deleteMany({ genre: 'classical' });
+   * await client.index('my-index').deleteMany({ genre: 'classical' });
    * ```
    * @param options - An array of record id values or a filter object.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   deleteMany(options) {
     return this._deleteMany(options);
@@ -196,12 +206,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').deleteOne('record-1');
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').deleteOne('record-1');
    * ```
    * @param id - The id of the record to delete.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   deleteOne(id) {
     return this._deleteOne(id);
@@ -214,8 +227,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').describeIndexStats();
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').describeIndexStats();
    *
    * // {
    * //  namespaces: {
@@ -228,6 +243,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats() {
@@ -250,8 +266,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * const index = pinecone.index('my-index');
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * const index = client.index('my-index');
    * ```
    *
    * @constructor
@@ -295,11 +313,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
    *
    * // Create an Index client instance scoped to operate on a
    * // single namespace
-   * const ns = pinecone.index('my-index').namespace('my-namespace');
+   * const ns = client.index('my-index').namespace('my-namespace');
    *
    * // Now operations against this intance only affect records in
    * // the targeted namespace
@@ -313,8 +332,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    *
    * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
-   *
-   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an { @link Index } client instance that is typed with a user-specified metadata type. See { @link Pinecone.index } for more info.
+   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
+   * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
    */
   namespace(namespace: string): Index<T> {
     return new Index<T>(
@@ -330,8 +349,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').upsert([{
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').upsert([{
    *  id: 'record-1',
    *  values: [0.176, 0.345, 0.263],
    * },{
@@ -341,9 +362,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    *
    * @param data - An array of {@link PineconeRecord} objects to upsert.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   async upsert(data: Array<PineconeRecord<T>>) {
     return await this._upsertCommand.run(data);
@@ -354,13 +375,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').fetch(['record-1', 'record-2']);
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').fetch(['record-1', 'record-2']);
    * ```
    * @param options - The {@link FetchOptions} for the operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link FetchResponse} when the fetch is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   async fetch(options: FetchOptions) {
     return await this._fetchCommand.run(options);
@@ -373,17 +396,19 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const pinecone = new Pinecone();
-   * await pinecone.index('my-index').query({ topK: 3, id: 'record-1'});
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('my-index').query({ topK: 3, id: 'record-1'});
    *
    * // or
-   * await pinecone.index('my-index').query({ topK: 3, vector: [0.176, 0.345, 0.263] });
+   * await client.index('my-index').query({ topK: 3, vector: [0.176, 0.345, 0.263] });
    * ```
    *
    * @param options - The {@link QueryOptions} for the operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link QueryResponse} when the query is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   async query(options: QueryOptions) {
     return await this._queryCommand.run(options);
@@ -392,10 +417,21 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Update a record in the index by id.
    *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const client = new Pinecone();
+   *
+   * await client.index('imdb-movies').update({
+   *   id: '18593',
+   *   metadata: { genre: 'romance' },
+   * });
+   * ```
+   *
    * @param options - The {@link UpdateOptions} for the operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the update is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   async update(options: UpdateOptions<T>) {
     return await this._updateCommand.run(options);
