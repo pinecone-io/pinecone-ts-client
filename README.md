@@ -766,27 +766,8 @@ await index.update({
 
 ### List records
 
-The `list` and `listPaginated` methods can be used to list record ids matching a particular id prefix. With clever assignment
+The `listPaginated` method can be used to list record ids matching a particular id prefix in a paginated format. With clever assignment
 of record ids, this can be used to help model hierarchical relationships between different records such as when there are embeddings for multiple chunks or fragments related to the same document.
-
-The `list` method returns an `AsyncGenerator` that handles pagination on your behalf.
-
-```typescript
-const pc = new Pinecone();
-const index = pinecone.index('my-index').namespace('my-namespace');
-const idGenerator = index.list({ prefix: 'doc1', limit: 5 });
-
-// You can use the generator with the `for await...of` syntax to iterate over resulting pages
-const recordIds = [];
-for await (const ids of idGenerator) {
-  recordIds.concat(ids);
-  console.log(ids);
-}
-// ['doc1#01', 'doc1#02','doc1#03', 'doc1#04', 'doc1#05']
-// ['doc1#06', 'doc1#07','doc1#08', 'doc1#09', 'doc1#10']
-```
-
-The `listPaginated` method allows you to handle pagination manually.
 
 ```typescript
 const pc = new Pinecone();

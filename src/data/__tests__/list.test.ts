@@ -1,4 +1,4 @@
-import { list, listPaginated } from '../list';
+import { listPaginated } from '../list';
 import type {
   ListRequest,
   ListResponse,
@@ -38,39 +38,6 @@ describe('list', () => {
     expect(DPA.list).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
-    });
-  });
-
-  test('list calls the openapi list endpoint on iteration, passing target namespace with ListOptions', async () => {
-    const listResponse = {
-      vectors: [
-        { id: 'prefix-1', values: [0.2, 0.4] },
-        { id: 'prefix-2', values: [0.3, 0.5] },
-        { id: 'prefix-3', values: [0.4, 0.6] },
-      ],
-      pagination: { next: 'fake-pagination-token-123123123' },
-      namespace: 'list-namespace',
-      usage: { readUnits: 1 },
-    };
-    const { VoaProvider, DPA } = setupListResponse(listResponse);
-
-    const listFn = list(VoaProvider, 'list-namespace');
-    const asyncGenerator = listFn({ prefix: 'prefix-' });
-
-    // Iterate once
-    const { value } = await asyncGenerator.next();
-    expect(value).toEqual(['prefix-1', 'prefix-2', 'prefix-3']);
-    expect(DPA.list).toHaveBeenCalledWith({
-      prefix: 'prefix-',
-      namespace: 'list-namespace',
-    });
-
-    // Iterate again, make sure we pass the pagination token
-    await asyncGenerator.next();
-    expect(DPA.list).toHaveBeenCalledWith({
-      prefix: 'prefix-',
-      namespace: 'list-namespace',
-      paginationToken: 'fake-pagination-token-123123123',
     });
   });
 });
