@@ -333,9 +333,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *   // ... query records in namespace 'my-namespace'
    * })
    * ```
+   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
    *
    * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
-   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
    * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
    */
   namespace(namespace: string): Index<T> {
