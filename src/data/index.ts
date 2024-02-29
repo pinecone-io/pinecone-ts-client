@@ -268,8 +268,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @example
    * ```js
-   * const client = new Pinecone();
-   * const index = client.index('my-index').namespace('my-namespace');
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.index('my-index').namespace('my-namespace');
+   *
    * const results = await index.listPaginated({ prefix: 'doc1' });
    * console.log(results);
    * // {

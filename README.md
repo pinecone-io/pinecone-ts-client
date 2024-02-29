@@ -771,7 +771,7 @@ of record ids, this can be used to help model hierarchical relationships between
 
 ```typescript
 const pc = new Pinecone();
-const index = pinecone.index('my-index').namespace('my-namespace');
+const index = pc.index('my-index').namespace('my-namespace');
 const results = await index.list({ prefix: 'doc1' });
 console.log(results);
 // {
