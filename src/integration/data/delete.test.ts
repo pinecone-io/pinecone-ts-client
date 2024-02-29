@@ -41,7 +41,7 @@ describe('delete', () => {
   });
 
   test('verify delete with id', async () => {
-    const recordToUpsert = generateRecords(5, 1);
+    const recordToUpsert = generateRecords({ dimension: 5, quantity: 1 });
     recordIds = recordToUpsert.map((r) => r.id);
     expect(recordToUpsert).toHaveLength(1);
     expect(recordToUpsert[0].id).toEqual(recordIds[0]);
@@ -83,7 +83,7 @@ describe('delete', () => {
   });
 
   test('verify deleteMany with ids', async () => {
-    const recordsToUpsert = generateRecords(5, 3);
+    const recordsToUpsert = generateRecords({ dimension: 5, quantity: 3 });
     recordIds = recordsToUpsert.map((r) => r.id);
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');

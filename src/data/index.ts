@@ -6,10 +6,14 @@ import type { UpdateOptions } from './update';
 import { QueryCommand } from './query';
 import type { QueryOptions } from './query';
 import { deleteOne } from './deleteOne';
+import type { DeleteOneOptions } from './deleteOne';
 import { deleteMany } from './deleteMany';
+import type { DeleteManyOptions } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
+import { listPaginated } from './list';
+import type { ListOptions } from './list';
 import type {
   PineconeConfiguration,
   RecordMetadata,
@@ -47,6 +51,7 @@ export type {
   QueryResponse,
   QueryShared,
 } from './query';
+export type { ListOptions } from './list';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -197,7 +202,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteMany(options) {
+  deleteMany(options: DeleteManyOptions) {
     return this._deleteMany(options);
   }
   /** @hidden */
@@ -219,7 +224,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteOne(id) {
+  deleteOne(id: DeleteOneOptions) {
     return this._deleteOne(id);
   }
   /** @hidden */
@@ -254,6 +259,54 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
   /** @hidden */
   _describeIndexStats: ReturnType<typeof describeIndexStats>;
+
+  /**
+   * The `listPaginated` operation finds vectors based on an id prefix within a single namespace.
+   * It returns matching ids in a paginated form, with a pagination token to fetch the next page of results.
+   * This id list can then be passed to fetch or delete options to perform operations on the matching records.
+   * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.index('my-index').namespace('my-namespace');
+   *
+   * const results = await index.listPaginated({ prefix: 'doc1' });
+   * console.log(results);
+   * // {
+   * //   vectors: [
+   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
+   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
+   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+   * //     ...
+   * //   ],
+   * //   pagination: {
+   * //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
+   * //   },
+   * //   namespace: 'my-namespace',
+   * //   usage: { readUnits: 1 }
+   * // }
+   *
+   * // Fetch the next page of results
+   * await index.listPaginated({ prefix: 'doc1', paginationToken: results.pagination.next});
+   * ```
+   *
+   * > ⚠️ **Note:**
+   * >
+   * > `listPaginated` is supported only for serverless indexes.
+   *
+   * @param options - The {@link ListOptions} for the operation.
+   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
+   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
+   */
+  listPaginated(options?: ListOptions) {
+    return this._listPaginated(options);
+  }
+  /** @hidden */
+  _listPaginated: ReturnType<typeof listPaginated>;
 
   /** @hidden */
   private _fetchCommand: FetchCommand<T>;
@@ -304,6 +357,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._deleteMany = deleteMany(apiProvider, namespace);
     this._deleteOne = deleteOne(apiProvider, namespace);
     this._describeIndexStats = describeIndexStats(apiProvider);
+    this._listPaginated = listPaginated(apiProvider, namespace);
 
     this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
     this._queryCommand = new QueryCommand<T>(apiProvider, namespace);

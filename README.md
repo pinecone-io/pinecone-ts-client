@@ -764,6 +764,34 @@ await index.update({
 });
 ```
 
+### List records
+
+The `listPaginated` method can be used to list record ids matching a particular id prefix in a paginated format. With clever assignment
+of record ids, this can be used to help model hierarchical relationships between different records such as when there are embeddings for multiple chunks or fragments related to the same document.
+
+```typescript
+const pc = new Pinecone();
+const index = pc.index('my-index').namespace('my-namespace');
+const results = await index.list({ prefix: 'doc1' });
+console.log(results);
+// {
+//   vectors: [
+//     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
+//     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
+//     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+//     ...
+//   ],
+//   pagination: {
+//     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
+//   },
+//   namespace: 'my-namespace',
+//   usage: { readUnits: 1 }
+// }
+
+// Fetch the next page of results
+await index.list({ prefix: 'doc1', paginationToken: results.pagination.next });
+```
+
 ### Fetch records by their IDs
 
 ```typescript
