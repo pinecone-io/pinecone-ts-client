@@ -56,9 +56,9 @@ export type {
  *
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const client = new Pinecone()
+ * const pc = new Pinecone()
  *
- * const index = client.index('index-name')
+ * const index = pc.index('index-name')
  * ```
  *
  * ### Targeting an index, with user-defined Metadata types
@@ -67,7 +67,7 @@ export type {
  *
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const client = new Pinecone();
+ * const pc = new Pinecone();
  *
  * type MovieMetadata = {
  *   title: string,
@@ -76,7 +76,7 @@ export type {
  * }
  *
  * // Specify a custom metadata type while targeting the index
- * const index = client.index<MovieMetadata>('test-index');
+ * const index = pc.index<MovieMetadata>('test-index');
  *
  * // Now you get type errors if upserting malformed metadata
  * await index.upsert([{
@@ -136,8 +136,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.describeIndexStats();
    * // {
@@ -184,8 +184,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.deleteMany(['record-1', 'record-2']);
    *
@@ -209,8 +209,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.deleteOne('record-1');
    * ```
@@ -231,8 +231,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.describeIndexStats();
    * // {
@@ -270,9 +270,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
+   * const pc = new Pinecone();
    *
-   * const index = client.index('my-index');
+   * const index = pc.index('my-index');
    * ```
    *
    * @constructor
@@ -317,11 +317,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
+   * const pc = new Pinecone();
    *
    * // Create an Index client instance scoped to operate on a
    * // single namespace
-   * const ns = client.index('my-index').namespace('my-namespace');
+   * const ns = pc.index('my-index').namespace('my-namespace');
    *
    * // Now operations against this intance only affect records in
    * // the targeted namespace
@@ -353,8 +353,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.upsert([{
    *  id: 'record-1',
@@ -380,8 +380,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.fetch(['record-1', 'record-2']);
    * ```
@@ -402,8 +402,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('my-index');
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
    *
    * await index.query({ topK: 3, id: 'record-1'});
    *
@@ -426,8 +426,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const client = new Pinecone();
-   * const index = client.index('imdb-movies');
+   * const pc = new Pinecone();
+   * const index = pc.index('imdb-movies');
    *
    * await index.update({
    *   id: '18593',
