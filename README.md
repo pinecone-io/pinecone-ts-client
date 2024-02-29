@@ -727,7 +727,7 @@ await pc.createIndex({
   },
   waitUntilReady: true
 });
-const index = client.index('hybrid-image-search');
+const index = pc.index('hybrid-image-search');
 
 // Create some vector embeddings using your model of choice.
 const records = [...]
