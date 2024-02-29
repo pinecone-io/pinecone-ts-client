@@ -6,7 +6,7 @@ import type { ErrorContext } from '../pinecone-generated-ts-fetch';
  * request and never receives any response.
  *
  * This could be due to:
- * - Incorrect configuration of the client. If the apiKey value is incorrect the request will not reach a Pinecone server.
+ * - Network problems which prevent the request from being completed.
  * - An outage of Pinecone's APIs. See [Pinecone's status page](https://status.pinecone.io/) to find out whether there is an ongoing incident.
  *
  * The `cause` property will contain a reference to the underlying error. Inspect its value to find out more about the root cause of the error.
@@ -35,7 +35,7 @@ export class PineconeConnectionError extends BasePineconeError {
     }
 
     super(
-      `Request failed to reach Pinecone${urlMessage}. This can occur for reasons such as incorrect configuration (environment, project id, index name), network problems that prevent the request from being completed, or a Pinecone API outage. Check your client configuration, check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.`,
+      `Request failed to reach Pinecone${urlMessage}. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.`,
       e
     );
     this.name = 'PineconeConnectionError';

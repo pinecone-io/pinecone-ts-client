@@ -49,7 +49,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  *
- * const pinecone = new Pinecone();
+ * const pc = new Pinecone();
  * ```
  *
  * ### Using a configuration object
@@ -60,7 +60,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  *
- * const pinecone = new Pinecone({
+ * const pc = new Pinecone({
  *   apiKey: 'your_api_key',
  * });
  *
@@ -93,7 +93,7 @@ export class Pinecone {
    * ```
    * import { Pinecone } from '@pinecone-database/pinecone';
    *
-   * const pinecone = new Pinecone({
+   * const pc = new Pinecone({
    *  apiKey: 'my-api-key',
    * });
    * ```
@@ -181,7 +181,10 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * const indexModel = await pinecone.describeIndex('my-index')
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const indexModel = await pc.describeIndex('my-index')
    * console.log(indexModel)
    * // {
    * //     name: 'sample-index-1',
@@ -203,7 +206,9 @@ export class Pinecone {
    * ```
    *
    * @param indexName - The name of the index to describe.
-   * @returns A promise that resolves to {@link IndexModel}
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to {@link IndexModel}.
    */
   async describeIndex(indexName: IndexName) {
     const indexModel = await this._describeIndex(indexName);
@@ -219,9 +224,13 @@ export class Pinecone {
 
   /**
    * List all Pinecone indexes
+   *
    * @example
    * ```js
-   * const indexList = await pinecone.listIndexes()
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const indexList = await pc.listIndexes()
    * console.log(indexList)
    * // {
    * //     indexes: [
@@ -261,6 +270,8 @@ export class Pinecone {
    * //   }
    * ```
    *
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexList}.
    */
   async listIndexes() {
@@ -284,7 +295,11 @@ export class Pinecone {
    * @example
    * The minimum required configuration to create an index is the index `name`, `dimension`, and `spec`.
    * ```js
-   * await pinecone.createIndex({ name: 'my-index', dimension: 128, spec: { serverless: { cloud: 'aws', region: 'us-west-2' }}})
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndex({ name: 'my-index', dimension: 128, spec: { serverless: { cloud: 'aws', region: 'us-west-2' }}})
    * ```
    *
    * @example
@@ -297,7 +312,10 @@ export class Pinecone {
    * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
    * In a different example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
    * ```js
-   * await pinecone.createIndex({
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndex({
    *  name: 'my-index',
    *  dimension: 1536,
    *  metric: 'cosine',
@@ -314,7 +332,10 @@ export class Pinecone {
    * @example
    * If you would like to create the index only if it does not already exist, you can use the `suppressConflicts` boolean option.
    * ```js
-   * await pinecone.createIndex({
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndex({
    *   name: 'my-index',
    *   dimension: 1536,
    *   spec: {
@@ -330,7 +351,10 @@ export class Pinecone {
    * @example
    * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
    * ```js
-   * await pinecone.createIndex({
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndex({
    *  name: 'my-index',
    *   spec: {
    *     serverless: {
@@ -344,13 +368,16 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pinecone.index('my-index').upsert(records)
+   * await pc.index('my-index').upsert(records)
    * ```
    *
    * @example
    * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
    * ```js
-   * await pinecone.createIndex({
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndex({
    *   name: 'my-index',
    *   dimension: 1536,
    *   spec: {
@@ -367,10 +394,10 @@ export class Pinecone {
    *
    * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
    * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided.
-   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
-   *
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
   createIndex(options: CreateIndexOptions) {
@@ -382,12 +409,16 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * await pinecone.deleteIndex('my-index')
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.deleteIndex('my-index')
    * ```
    *
    * @param indexName - The name of the index to delete.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @returns A promise that resolves when the request to delete the index is completed.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are provided
    */
   async deleteIndex(indexName: IndexName) {
     await this._deleteIndex(indexName);
@@ -405,12 +436,17 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * await pinecone.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
    * ```
    *
    * @param indexName - The name of the index to configure.
-   * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    * @param options - The configuration properties you would like to update
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
   configureIndex(indexName: IndexName, options: ConfigureIndexRequestSpecPod) {
     return this._configureIndex(indexName, options);
@@ -421,18 +457,22 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * const indexList = await pinecone.listIndexes()
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const indexList = await pc.listIndexes()
    * const indexName = indexList.indexes[0].name;
-   * await pinecone.createCollection({
+   * await pc.createCollection({
    *  name: 'my-collection',
    *  source: indexName
    * })
    * ```
    *
-   *
    * @param options - The collection configuration.
    * @param options.name - The name of the collection. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
    * @param options.source - The name of the index to use as the source for the collection.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns a promise that resolves to {@link CollectionModel} when the request to create the collection is completed.
    */
   createCollection(options: CreateCollectionRequest) {
@@ -444,9 +484,14 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * await pinecone.listCollections()
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.listCollections()
    * ```
    *
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link CollectionList}.
    */
   listCollections() {
@@ -458,12 +503,17 @@ export class Pinecone {
    *
    * @example
    * ```
-   * const collectionList = await pinecone.listCollections()
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const collectionList = await pc.listCollections()
    * const collectionName = collectionList.collections[0].name;
-   * await pinecone.deleteCollection(collectionName)
+   * await pc.deleteCollection(collectionName)
    * ```
    *
    * @param collectionName - The name of the collection to delete.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the request to delete the collection is completed.
    */
   deleteCollection(collectionName: CollectionName) {
@@ -475,10 +525,15 @@ export class Pinecone {
    *
    * @example
    * ```js
-   * await pinecone.describeCollection('my-collection')
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.describeCollection('my-collection')
    * ```
    *
    * @param collectionName - The name of the collection to describe.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link CollectionModel}.
    */
   describeCollection(collectionName: CollectionName) {
@@ -505,9 +560,9 @@ export class Pinecone {
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
    *
-   * const pinecone = new Pinecone()
-   * const index = pinecone.index('index-name')
+   * const index = pc.index('index-name')
    * ```
    *
    * #### Targeting an index, with user-defined Metadata types
@@ -515,7 +570,9 @@ export class Pinecone {
    * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
    *
    * ```typescript
-   * const pinecone = new Pinecone();
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
    *
    * type MovieMetadata = {
    *   title: string,
@@ -524,7 +581,7 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const index = pinecone.index<MovieMetadata>('test-index');
+   * const index = pc.index<MovieMetadata>('test-index');
    *
    * // Now you get type errors if upserting malformed metadata
    * await index.upsert([{

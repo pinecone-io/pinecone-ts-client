@@ -464,8 +464,8 @@ To perform data operations on an index, you target it using the `index` method.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('test-index');
+
 // Now perform index operations
 await index.fetch(['1']);
 ```
@@ -475,8 +475,8 @@ The first argument is the name of the index you are targeting. There's an option
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('test-index', 'my-index-host-1532-svc.io');
+
 // Now perform index operations against: https://my-index-host-1532-svc.io
 await index.fetch(['1']);
 ```
@@ -540,8 +540,8 @@ By default, all data operations take place inside the default namespace of `''`.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('test-index').namespace('ns1');
+
 // Now perform index operations in the targeted index and namespace
 await index.fetch(['1']);
 ```
@@ -551,8 +551,8 @@ If needed, you can check the currently targeted index and namespace by inspectin
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('test-index').namespace('ns1');
+
 console.log(index.target); // { index: 'test-index', namespace: 'ns1', indexHostUrl: undefined }
 ```
 
@@ -606,8 +606,9 @@ target the index and use the `describeIndexStats()` command.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('example-index');
 
-await pc.index('example-index').describeIndexStats();
+await index.describeIndexStats();
 // {
 //   namespaces: {
 //     '': { recordCount: 10 }
@@ -645,8 +646,9 @@ For example, to query by vector values you would pass the `vector` param in the 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('my-index');
 
-await pc.index('my-index').query({ topK: 3, vector: [0.22, 0.66] });
+await index.query({ topK: 3, vector: [0.22, 0.66] });
 // {
 //   matches: [
 //     {
@@ -686,10 +688,10 @@ Remember that data operations take place within the context of a namespace, so i
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-const results = await pc
-  .index('my-index')
-  .namespace('my-namespace')
-  .query({ topK: 3, vector: [0.22, 0.66] });
+// Target the index and namespace
+const index = pc.index('my-index').namespace('my-namespace');
+
+const results = await index.query({ topK: 3, vector: [0.22, 0.66] });
 ```
 
 #### Querying by record id
@@ -699,8 +701,9 @@ You can query using the vector values of an existing record in the index by pass
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('my-index');
 
-const results = await pc.index('my-index').query({ topK: 10, id: '1' });
+const results = await index.query({ topK: 10, id: '1' });
 ```
 
 #### Hybrid search with sparseVector
@@ -753,8 +756,9 @@ You may want to update vector `values`, `sparseValues`, or `metadata`. Specify t
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('imdb-movies');
 
-await pc.index('imdb-movies').update({
+await index.update({
   id: '18593',
   metadata: { genre: 'romance' },
 });
@@ -765,6 +769,7 @@ await pc.index('imdb-movies').update({
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('my-index');
 
 const fetchResult = await index.fetch(['id-1', 'id-2']);
 ```
@@ -778,8 +783,8 @@ For convenience there are several delete-related methods. You can verify the res
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('my-index');
+
 await index.deleteOne('id-to-delete');
 ```
 
@@ -788,8 +793,8 @@ await index.deleteOne('id-to-delete');
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('my-index');
+
 await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```
 
@@ -798,8 +803,9 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
+const index = pc.index('albums-database');
 
-await pc.index('albums-database').deleteMany({ genre: 'rock' });
+await index.deleteMany({ genre: 'rock' });
 ```
 
 #### Delete all records in a namespace
@@ -813,8 +819,8 @@ To nuke everything in the targeted namespace, use the `deleteAll` method.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
 const index = pc.index('my-index');
+
 await index.namespace('foo-namespace').deleteAll();
 ```
 
