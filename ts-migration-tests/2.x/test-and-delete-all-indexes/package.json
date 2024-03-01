@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "testIndex": "node ./lib/testIndex.js",
+    "deleteAllIndexes": "node ./lib/deleteAllIndexes.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0"
+  }
+}

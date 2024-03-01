@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "createIndexLegacy": "node ./lib/createIndexLegacy.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0"
+  }
+}
