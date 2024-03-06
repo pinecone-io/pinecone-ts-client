@@ -772,7 +772,7 @@ of record ids, this can be used to help model hierarchical relationships between
 ```typescript
 const pc = new Pinecone();
 const index = pc.index('my-index').namespace('my-namespace');
-const results = await index.list({ prefix: 'doc1' });
+const results = await index.listPaginated({ prefix: 'doc1' });
 console.log(results);
 // {
 //   vectors: [
@@ -789,7 +789,10 @@ console.log(results);
 // }
 
 // Fetch the next page of results
-await index.list({ prefix: 'doc1', paginationToken: results.pagination.next });
+await index.listPaginated({
+  prefix: 'doc1',
+  paginationToken: results.pagination.next,
+});
 ```
 
 ### Fetch records by their IDs
