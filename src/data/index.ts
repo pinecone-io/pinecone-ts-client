@@ -273,7 +273,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * const index = pc.index('my-index').namespace('my-namespace');
    *
-   * const results = await index.listPaginated({ prefix: 'doc1' });
+   * const results = await index.listPaginated({ prefix: 'doc1#' });
    * console.log(results);
    * // {
    * //   vectors: [
@@ -290,7 +290,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * // }
    *
    * // Fetch the next page of results
-   * await index.listPaginated({ prefix: 'doc1', paginationToken: results.pagination.next});
+   * await index.listPaginated({ prefix: 'doc1#', paginationToken: results.pagination.next});
    * ```
    *
    * > ⚠️ **Note:**
