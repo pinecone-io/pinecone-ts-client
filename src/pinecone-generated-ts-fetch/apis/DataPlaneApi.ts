@@ -250,7 +250,7 @@ export class DataPlaneApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/reference/fetch).
+     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/docs/fetch-data).
      * Fetch vectors
      */
     async fetchRaw(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
@@ -285,7 +285,7 @@ export class DataPlaneApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/reference/fetch).
+     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/docs/fetch-data).
      * Fetch vectors
      */
     async fetch(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {
@@ -381,7 +381,7 @@ export class DataPlaneApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/reference/update).
+     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/docs/update-data).
      * Update a vector
      */
     async updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -411,7 +411,7 @@ export class DataPlaneApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/reference/update).
+     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/docs/update-data).
      * Update a vector
      */
     async update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
