@@ -532,9 +532,6 @@ if (movie.metadata) {
 
 ### Targeting a namespace
 
-> [!NOTE]
-> Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/v1/starter-environment) do not support namespaces.
-
 By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
 
 ```typescript
