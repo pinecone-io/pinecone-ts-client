@@ -51,6 +51,7 @@ export type {
   FetchAPI,
   IndexList,
   IndexModel,
+  ListResponse,
   ServerlessSpec,
   ServerlessSpecCloudEnum,
   PodSpec,
