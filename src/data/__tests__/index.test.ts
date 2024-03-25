@@ -2,7 +2,7 @@ import { FetchCommand } from '../fetch';
 import { QueryCommand } from '../query';
 import { UpdateCommand } from '../update';
 import { UpsertCommand } from '../upsert';
-import { VectorOperationsProvider } from '../vectorOperationsProvider';
+import { DataOperationsProvider } from '../dataOperationsProvider';
 import { Index } from '../index';
 import type { ScoredPineconeRecord } from '../query';
 
@@ -10,7 +10,7 @@ jest.mock('../fetch');
 jest.mock('../query');
 jest.mock('../update');
 jest.mock('../upsert');
-jest.mock('../vectorOperationsProvider');
+jest.mock('../dataOperationsProvider');
 
 describe('Index', () => {
   let config;
@@ -27,7 +27,7 @@ describe('Index', () => {
   });
 
   describe('index initialization', () => {
-    test('passes config, indexName, indexHostUrl, and additionalHeaders to VectorOperationsProvider', () => {
+    test('passes config, indexName, indexHostUrl, and additionalHeaders to DataOperationsProvider', () => {
       const indexHostUrl = 'https://test-api-pinecone.io';
       const additionalHeaders = { 'x-custom-header': 'custom-value' };
       new Index(
@@ -37,8 +37,8 @@ describe('Index', () => {
         indexHostUrl,
         additionalHeaders
       );
-      expect(VectorOperationsProvider).toHaveBeenCalledTimes(1);
-      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+      expect(DataOperationsProvider).toHaveBeenCalledTimes(1);
+      expect(DataOperationsProvider).toHaveBeenCalledWith(
         config,
         'index-name',
         indexHostUrl,
