@@ -20,9 +20,28 @@ export const buildUserAgent = (config: PineconeConfiguration) => {
     userAgentParts.push(`node ${process.version}`);
   }
 
-  if (config.integrationId) {
-    userAgentParts.push(`integrationId=${config.integrationId}`);
+  if (config.sourceTag) {
+    userAgentParts.push(`source_tag=${normalizeSourceTag(config.sourceTag)}`);
   }
 
   return userAgentParts.join('; ');
+};
+
+const normalizeSourceTag = (sourceTag: string) => {
+  if (!sourceTag) {
+    return;
+  }
+
+  /**
+   * normalize sourceTag
+   * 1. Lowercase
+   * 2. Limit charset to [a-z0-9_ ]
+   * 3. Trim left/right spaces
+   * 4. Condense multiple spaces to one, and replace with underscore
+   */
+  return sourceTag
+    .toLowerCase()
+    .replace(/[^a-z0-9_ ]/g, '')
+    .trim()
+    .replace(/[ ]+/g, '_');
 };
