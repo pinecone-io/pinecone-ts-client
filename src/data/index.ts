@@ -14,6 +14,7 @@ import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import { listPaginated } from './list';
 import type { ListOptions } from './list';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch';
 import type {
   PineconeConfiguration,
   RecordMetadata,
@@ -333,12 +334,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param config - The configuration from the Pinecone client.
    * @param namespace - The namespace for the index.
    * @param indexHostUrl - An optional override for the host address used for data operations.
+   * @param additionalHeaders - An optional object of additional header to send with each request.
    */
   constructor(
     indexName: string,
     config: PineconeConfiguration,
     namespace = '',
-    indexHostUrl?: string
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
   ) {
     this.config = config;
     this.target = {
@@ -350,7 +353,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     const apiProvider = new DataOperationsProvider(
       config,
       indexName,
-      indexHostUrl
+      indexHostUrl,
+      additionalHeaders
     );
 
     this._deleteAll = deleteAll(apiProvider, namespace);
