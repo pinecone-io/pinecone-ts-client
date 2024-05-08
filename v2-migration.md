@@ -87,11 +87,7 @@ In the new `v2.0.0` client, there is a lot more flexibility in how indexes are c
 
 ### Creating a serverless index
 
-> ⚠️ **Warning**
->
-> Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](https://docs.pinecone.io/docs/limits#serverless-index-limitations) and test thoroughly before using it in production.
-
-Serverless indexes are newly available with the `v2.0.0` client, and you must be on this version or greater to work with them. Creating a serverless index requires defining the `cloud` and `region` where the server should be hosted via the `spec` object with the key `serverless`.
+Serverless indexes are newly available with the `v2.0.0` client, and you must be on this version or greater to work with them. Creating a serverless index requires defining the `cloud` and `region` where the server should be hosted via the `spec` object with the key `serverless`. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';

@@ -304,14 +304,10 @@ export class Pinecone {
    * ```
    *
    * @example
-   *
-   * > ⚠️ **Warning**
-   * >
-   * > Serverless indexes are in **public preview** and are available only on AWS in the `us-west-2` region. Check the [current limitations](https://docs.pinecone.io/docs/limits#serverless-index-limitations) and test thoroughly before using it in production.
-   *
    * The `spec` object defines how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted.
    * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
    * In a different example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
+   * For more information on creating indexes, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes).
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
