@@ -29,7 +29,8 @@ import {
 /**
  * The spec object defines how the index should be deployed. For serverless indexes, you define only the cloud and region 
  * where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, 
- * the pod type and size to use, and other index characteristics.
+ * the pod type and size to use, and other index characteristics. For more information on creating indexes, 
+ * see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes).
  * 
  * @export
  * @interface CreateIndexRequestSpec
