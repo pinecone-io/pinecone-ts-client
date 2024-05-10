@@ -106,7 +106,7 @@ describe('Pinecone', () => {
             apiKey: 'test-key',
             fetchApi: utils.getFetch({} as PineconeConfiguration),
             controllerHostUrl: 'https://foo-bar.io',
-            sourceTag: 'integration-test-123',
+            sourceTag: 'test-tag-123',
           } as PineconeConfiguration);
         }).not.toThrow();
       });
