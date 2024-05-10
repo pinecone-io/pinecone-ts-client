@@ -100,12 +100,13 @@ describe('Pinecone', () => {
     });
 
     describe('optional properties', () => {
-      test('should not throw when optional properties provided: fetchAPI, controllerHostUrl', () => {
+      test('should not throw when optional properties provided: fetchAPI, controllerHostUrl, sourceTag', () => {
         expect(() => {
           new Pinecone({
             apiKey: 'test-key',
             fetchApi: utils.getFetch({} as PineconeConfiguration),
             controllerHostUrl: 'https://foo-bar.io',
+            sourceTag: 'test-tag-123',
           } as PineconeConfiguration);
         }).not.toThrow();
       });

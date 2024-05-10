@@ -14,6 +14,7 @@ export const PineconeConfigurationSchema = Type.Object(
     fetchApi: Type.Optional(Type.Any()),
 
     additionalHeaders: Type.Optional(Type.Any()),
+    sourceTag: Type.Optional(Type.String({ minLength: 1 })),
   },
   { additionalProperties: false }
 );
