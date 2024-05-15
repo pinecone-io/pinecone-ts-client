@@ -88,7 +88,7 @@ await pc.createIndex({
 
 #### Create a pod-based index with optional configurations
 
-To create a pod-based index, you define `pod` in the `spec` object which contains the `environment` where the index should be hosted, and the `podType` and `pods` size to use. Many optional configuration fields allow greater control over hardware resources and availability. To learn more about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/docs/indexes) and [Scaling indexes](https://docs.pinecone.io/docs/scaling-indexes).
+To create a pod-based index, you define `pod` in the `spec` object which contains the `environment` where the index should be hosted, and the `podType` and `pods` size to use. Many optional configuration fields allow greater control over hardware resources and availability. To learn more about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes) and [Scale pod-based indexes](https://docs.pinecone.io/guides/indexes/scale-pod-based-indexes).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -191,7 +191,7 @@ await pc.createIndex({
 >
 > Serverless and starter indexes do not support collections.
 
-As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](https://docs.pinecone.io/docs/collections) provide an easy way to do this. See other client methods for working with collections [here](https://github.com/pinecone-io/pinecone-ts-client#collections).
+As you use Pinecone for more things, you may wish to explore different index configurations with the same vector data. [Collections](https://docs.pinecone.io/guides/indexes/understanding-collections) provide an easy way to do this. See other client methods for working with collections [here](https://github.com/pinecone-io/pinecone-ts-client#collections).
 
 Given that you have an existing collection:
 
@@ -277,9 +277,9 @@ await pc.describeIndex('serverless-index');
 
 > ℹ️ **Note**
 >
-> This section applies to [pod-based indexes](https://docs.pinecone.io/docs/indexes#pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources. Instead, serverless indexes scale automatically based on usage.
+> This section applies to [pod-based indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources. Instead, serverless indexes scale automatically based on usage.
 
-You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Scale pod-based indexes](https://docs.pinecone.io/docs/scaling-indexes). You cannot downgrade pod size or change the base pod type.
+You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Scale pod-based indexes](https://docs.pinecone.io/guides/indexes/scale-pod-based-indexes). You cannot downgrade pod size or change the base pod type.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -375,7 +375,7 @@ await pc.listIndexes();
 >
 > Serverless and starter indexes do not support collections.
 
-A collection is a static copy of a pod-based index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/docs/collections).
+A collection is a static copy of a pod-based index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/guides/indexes/understanding-collections).
 
 ### Create Collection
 
@@ -549,7 +549,7 @@ const index = pc.index('test-index').namespace('ns1');
 console.log(index.target); // { index: 'test-index', namespace: 'ns1', indexHostUrl: undefined }
 ```
 
-See [Using namespaces](https://docs.pinecone.io/docs/namespaces) for more information.
+See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for more information.
 
 ### Upsert records
 
@@ -701,7 +701,7 @@ const results = await index.query({ topK: 10, id: '1' });
 
 #### Hybrid search with sparseVector
 
-If you are working with [sparse-dense vectors](https://docs.pinecone.io/v2/docs/hybrid-search#sparse-dense-workflow), you can add sparse vector values to perform a hybrid search.
+If you are working with [sparse-dense vectors](https://docs.pinecone.io/guides/data/understanding-hybrid-search#sparse-dense-workflow), you can add sparse vector values to perform a hybrid search.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -836,7 +836,7 @@ await index.deleteMany({ genre: 'rock' });
 
 > ℹ️ **NOTE**
 >
-> Indexes in the [gcp-starter environment](https://docs.pinecone.io/docs/starter-environment) do not support namespaces.
+> Indexes in the [gcp-starter environment](https://docs.pinecone.io/guides/indexes/convert-a-gcp-starter-index-to-serverless) do not support namespaces.
 
 To nuke everything in the targeted namespace, use the `deleteAll` method.
 
