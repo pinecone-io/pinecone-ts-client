@@ -1,4 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './DataPlaneApi';
 export * from './ManageIndexesApi';
+/* tslint:disable */
+/* eslint-disable */
+export * from './DataPlaneApi';
