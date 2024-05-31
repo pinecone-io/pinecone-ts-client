@@ -1,13 +1,14 @@
 import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
+const mockIndexOperationsBuilder = jest.fn();
 
 jest.mock('../../control', () => {
   const realControl = jest.requireActual('../../control');
-
   return {
     ...realControl,
     describeIndex: () => mockDescribeIndex,
+    indexOperationsBuilder: (config) => mockIndexOperationsBuilder(config),
   };
 });
 
@@ -15,6 +16,7 @@ describe('IndexHostSingleton', () => {
   afterEach(() => {
     IndexHostSingleton._reset();
     mockDescribeIndex.mockReset();
+    mockIndexOperationsBuilder.mockReset();
   });
 
   test('calls describeIndex to resolve host for a specific apiKey and indexName, prepends protocol to host', async () => {
@@ -139,5 +141,51 @@ describe('IndexHostSingleton', () => {
     // the empty value was not cached so describeIndex should be called
     await IndexHostSingleton.getHostUrl(pineconeConfig, 'test-index');
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
+  });
+
+  test.only('calling getHostUrl with different apiKey configurations should instantiate new ManageIndexesApi classes', async () => {
+    const pineconeConfig1 = { apiKey: 'test-key-1' };
+    const pineconeConfig2 = { apiKey: 'test-key-2' };
+
+    mockDescribeIndex
+      .mockResolvedValueOnce({
+        name: 'index-1',
+        dimensions: 10,
+        metric: 'cosine',
+        host: 'test-host-1',
+        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        status: { ready: true, state: 'Ready' },
+      })
+      .mockResolvedValueOnce({
+        name: 'index-2',
+        dimensions: 10,
+        metric: 'cosine',
+        host: 'test-host-2',
+        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        status: { ready: true, state: 'Ready' },
+      });
+    mockIndexOperationsBuilder.mockReturnValue({ test: 'one', test2: 'two' });
+
+    await IndexHostSingleton.getHostUrl(pineconeConfig1, 'index-1');
+    await IndexHostSingleton.getHostUrl(pineconeConfig2, 'index-2');
+
+    expect(mockDescribeIndex).toHaveBeenCalledTimes(2);
+    expect(mockDescribeIndex).toHaveBeenNthCalledWith(1, 'index-1');
+    expect(mockDescribeIndex).toHaveBeenNthCalledWith(2, 'index-2');
+
+    console.log(
+      'mockIndexOperationsBuilder',
+      JSON.stringify(mockIndexOperationsBuilder.mock)
+    );
+
+    expect(mockIndexOperationsBuilder).toHaveBeenCalledTimes(2);
+    expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
+      1,
+      pineconeConfig1
+    );
+    expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
+      2,
+      pineconeConfig2
+    );
   });
 });

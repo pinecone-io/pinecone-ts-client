@@ -1,4 +1,3 @@
-import { ManageIndexesApi } from '../pinecone-generated-ts-fetch';
 import type { PineconeConfiguration } from './types';
 import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
@@ -10,16 +9,12 @@ import { normalizeUrl } from '../utils';
 // and index, so we cache them in a singleton for reuse.
 export const IndexHostSingleton = (function () {
   const hostUrls = {}; // map of apiKey-indexName to hostUrl
-  let indexOperationsApi: InstanceType<typeof ManageIndexesApi> | null = null;
 
   const _describeIndex = async (
     config: PineconeConfiguration,
     indexName: IndexName
   ): Promise<string> => {
-    if (!indexOperationsApi) {
-      indexOperationsApi = indexOperationsBuilder(config);
-    }
-
+    const indexOperationsApi = indexOperationsBuilder(config);
     const describeResponse = await describeIndex(indexOperationsApi)(indexName);
     const host = describeResponse.host;
 
@@ -34,19 +29,17 @@ export const IndexHostSingleton = (function () {
     }
   };
 
-  const key = (config, indexName) => `${config.apiKey}-${indexName}`;
+  const _key = (config: PineconeConfiguration, indexName: string) =>
+    `${config.apiKey}-${indexName}`;
 
-  return {
-    getHostUrl: async function (
-      config: PineconeConfiguration,
-      indexName: IndexName
-    ) {
-      const cacheKey = key(config, indexName);
+  const singleton = {
+    getHostUrl: async (config: PineconeConfiguration, indexName: IndexName) => {
+      const cacheKey = _key(config, indexName);
       if (cacheKey in hostUrls) {
         return hostUrls[cacheKey];
       } else {
         const hostUrl = await _describeIndex(config, indexName);
-        this._set(config, indexName, hostUrl);
+        singleton._set(config, indexName, hostUrl);
 
         if (!hostUrls[cacheKey]) {
           throw new PineconeUnableToResolveHostError(
@@ -74,13 +67,15 @@ export const IndexHostSingleton = (function () {
         return;
       }
 
-      const cacheKey = key(config, indexName);
+      const cacheKey = _key(config, indexName);
       hostUrls[cacheKey] = normalizedHostUrl;
     },
 
     _delete: (config: PineconeConfiguration, indexName: IndexName) => {
-      const cacheKey = key(config, indexName);
+      const cacheKey = _key(config, indexName);
       delete hostUrls[cacheKey];
     },
   };
+
+  return singleton;
 })();
