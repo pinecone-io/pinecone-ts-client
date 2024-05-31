@@ -69,7 +69,7 @@ describe('delete', () => {
       }
     };
 
-    assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
+    await assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
 
     // Try deleting the record
     await ns.deleteOne('0');
@@ -79,7 +79,7 @@ describe('delete', () => {
       expect(stats.namespaces[namespace]).toBeUndefined();
     };
 
-    assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
+    await assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
   });
 
   test('verify deleteMany with ids', async () => {
@@ -113,7 +113,7 @@ describe('delete', () => {
       }
     };
 
-    assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
+    await assertWithRetries(() => ns.fetch(['0']), fetchAssertions);
 
     // Try deleting 2 of 3 records
     await ns.deleteMany(['0', '2']);
@@ -129,7 +129,7 @@ describe('delete', () => {
       }
     };
 
-    assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
+    await assertWithRetries(() => ns.describeIndexStats(), deleteAssertions);
 
     // Check that record id='1' still exists
     const fetchAssertions2 = (results) => {
@@ -143,7 +143,7 @@ describe('delete', () => {
       }
     };
 
-    assertWithRetries(() => ns.fetch(['1']), fetchAssertions2);
+    await assertWithRetries(() => ns.fetch(['1']), fetchAssertions2);
 
     // deleting non-existent records should not throw
     await ns.deleteMany(['0', '1', '2', '3']);
@@ -159,6 +159,6 @@ describe('delete', () => {
       }
     };
 
-    assertWithRetries(() => ns.describeIndexStats(), deleteAssertions2);
+    await assertWithRetries(() => ns.describeIndexStats(), deleteAssertions2);
   });
 });
