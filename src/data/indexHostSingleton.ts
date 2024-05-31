@@ -29,19 +29,17 @@ export const IndexHostSingleton = (function () {
     }
   };
 
-  const key = (config, indexName) => `${config.apiKey}-${indexName}`;
+  const _key = (config: PineconeConfiguration, indexName: string) =>
+    `${config.apiKey}-${indexName}`;
 
-  return {
-    getHostUrl: async function (
-      config: PineconeConfiguration,
-      indexName: IndexName
-    ) {
-      const cacheKey = key(config, indexName);
+  const singleton = {
+    getHostUrl: async (config: PineconeConfiguration, indexName: IndexName) => {
+      const cacheKey = _key(config, indexName);
       if (cacheKey in hostUrls) {
         return hostUrls[cacheKey];
       } else {
         const hostUrl = await _describeIndex(config, indexName);
-        this._set(config, indexName, hostUrl);
+        singleton._set(config, indexName, hostUrl);
 
         if (!hostUrls[cacheKey]) {
           throw new PineconeUnableToResolveHostError(
@@ -69,13 +67,15 @@ export const IndexHostSingleton = (function () {
         return;
       }
 
-      const cacheKey = key(config, indexName);
+      const cacheKey = _key(config, indexName);
       hostUrls[cacheKey] = normalizedHostUrl;
     },
 
     _delete: (config: PineconeConfiguration, indexName: IndexName) => {
-      const cacheKey = key(config, indexName);
+      const cacheKey = _key(config, indexName);
       delete hostUrls[cacheKey];
     },
   };
+
+  return singleton;
 })();
