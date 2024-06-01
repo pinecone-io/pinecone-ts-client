@@ -143,7 +143,7 @@ describe('IndexHostSingleton', () => {
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
   });
 
-  test.only('calling getHostUrl with different apiKey configurations should instantiate new ManageIndexesApi classes', async () => {
+  test('calling getHostUrl with different apiKey configurations should instantiate new ManageIndexesApi classes', async () => {
     const pineconeConfig1 = { apiKey: 'test-key-1' };
     const pineconeConfig2 = { apiKey: 'test-key-2' };
 
