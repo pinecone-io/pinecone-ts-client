@@ -48,7 +48,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
         with:
-          pinecone_api_key: ${{ secrets.PINECONE_API_KEY }}
           node_version: ${{ matrix.node_version }}
 
       - name: Setup bun
