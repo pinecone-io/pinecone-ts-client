@@ -29,6 +29,7 @@ jobs:
         pinecone_env:
           - prod
           # - staging
+        node_version: [16.x, 18.x, 20.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },
@@ -46,6 +47,9 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+        with:
+          pinecone_api_key: ${{ secrets.PINECONE_API_KEY }}
+          node_version: ${{ matrix.node_version }}
 
       - name: Setup bun
         if: matrix.config.bun_version
@@ -98,20 +102,20 @@ jobs:
       fail-fast: false
       matrix:
         tsVersion: [
-            '~4.1.0',
-            '~4.2.0',
-            '~4.3.0',
-            '~4.4.0',
-            '~4.5.0',
-            '~4.6.0',
-            '~4.7.0',
-            '~4.8.0',
-            '~4.9.0',
-            '~5.0.0',
-            '~5.1.0',
-            '~5.2.0',
-            # 'latest', - typebox breaks with latest TypeScript, re-enable later
-          ]
+          '~4.1.0',
+          '~4.2.0',
+          '~4.3.0',
+          '~4.4.0',
+          '~4.5.0',
+          '~4.6.0',
+          '~4.7.0',
+          '~4.8.0',
+          '~4.9.0',
+          '~5.0.0',
+          '~5.1.0',
+          '~5.2.0',
+          # 'latest', - typebox breaks with latest TypeScript, re-enable later
+        ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
