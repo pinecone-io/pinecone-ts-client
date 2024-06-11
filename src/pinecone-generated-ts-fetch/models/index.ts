@@ -8,12 +8,6 @@ export * from './ConfigureIndexRequestSpecPod';
 export * from './CreateCollectionRequest';
 export * from './CreateIndexRequest';
 export * from './CreateIndexRequestSpec';
-export * from './EmbedRequest';
-export * from './EmbedRequestInputsInner';
-export * from './EmbedRequestParameters';
-export * from './Embedding';
-export * from './EmbeddingsList';
-export * from './EmbeddingsListUsage';
 export * from './IndexList';
 export * from './IndexModel';
 export * from './IndexModelSpec';
@@ -23,8 +17,6 @@ export * from './ListIndexes401ResponseError';
 export * from './PodSpec';
 export * from './PodSpecMetadataConfig';
 export * from './ServerlessSpec';
-/* tslint:disable */
-/* eslint-disable */
 export * from './DeleteRequest';
 export * from './DescribeIndexStatsRequest';
 export * from './DescribeIndexStatsResponse';
