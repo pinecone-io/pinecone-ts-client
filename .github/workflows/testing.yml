@@ -115,7 +115,7 @@ jobs:
             '~5.1.0',
             '~5.2.0',
             # 'latest', - typebox breaks with latest TypeScript, re-enable later
-        ]
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
