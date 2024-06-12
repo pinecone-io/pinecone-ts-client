@@ -173,15 +173,15 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-    name: 'serverless-index',
-    dimension: 1536,
-    spec: {
-        serverless: {
-            cloud: 'aws',
-            region: 'us-west-2',
+  name: 'serverless-index',
+  dimension: 1536, 
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
         }
     }
-    waitUntilReady: true,
+  waitUntilReady: true,
 });
 ```
 
