@@ -44,7 +44,7 @@ export class EmbeddingsList
 
   /* Customize format of output. */
   public toString(): string {
-    const truncatedData = this.truncateData();
+    const truncatedData = this.truncateDataForDisplay();
     const dataObject = truncatedData
       .map((embedding) => {
         if (typeof embedding === 'string') {
@@ -93,7 +93,7 @@ export class EmbeddingsList
   public toJSON(): any {
     return {
       model: this.model,
-      data: this.truncateData(),
+      data: this.truncateDataForDisplay(),
       usage: this.usage,
     };
   }
@@ -107,7 +107,7 @@ export class EmbeddingsList
   }
 
   /* Truncate the content of an embedding in the output when there are >5 numbers. */
-  truncateValues(values: number[]): any[] {
+  truncateValuesForDisplay(values: number[]): any[] {
     if (!values || values.length <= 4) {
       return values ? values : [];
     }
@@ -115,20 +115,20 @@ export class EmbeddingsList
   }
 
   /* Truncate the number of embedding objects in the output when there are more >6 embeddings. */
-  truncateData(): Array<any> {
+  truncateDataForDisplay(): Array<any> {
     if (!this.data) return [];
     if (this.data.length <= 5) {
       return this.data.map((embedding) => ({
-        values: embedding.values ? this.truncateValues(embedding.values) : [],
+        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
       }));
     }
     return [
       ...this.data.slice(0, 2).map((embedding) => ({
-        values: embedding.values ? this.truncateValues(embedding.values) : [],
+        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
       })),
       `   ... (${this.data.length - 4} more embeddings) ...`,
       ...this.data.slice(-2).map((embedding) => ({
-        values: embedding.values ? this.truncateValues(embedding.values) : [],
+        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
       })),
     ];
   }

@@ -34,11 +34,11 @@ describe('EmbeddingsList', () => {
 
   it('Should truncate output of values when necessary', () => {
     const manyValues = [1, 2, 3, 4, 5, 6, 7, 8];
-    const truncatedManyValues = embeddingsList.truncateValues(manyValues);
+    const truncatedManyValues = embeddingsList.truncateValuesForDisplay(manyValues);
     expect(truncatedManyValues).toEqual([1, 2, '...', 7, 8]);
 
     const fewValues = [1, 2];
-    const truncatedFewValues = embeddingsList.truncateValues(fewValues);
+    const truncatedFewValues = embeddingsList.truncateValuesForDisplay(fewValues);
     expect(truncatedFewValues).toEqual(fewValues);
   });
 });
@@ -59,7 +59,7 @@ describe('truncateData', () => {
   // Mock the truncateValues method to avoid side effects
   beforeEach(() => {
     jest
-      .spyOn(EmbeddingsList.prototype, 'truncateValues')
+      .spyOn(EmbeddingsList.prototype, 'truncateValuesForDisplay')
       .mockImplementation((values: number[]) => {
         if (!values || values.length <= 4) {
           return values ? values : [];
@@ -86,7 +86,7 @@ describe('truncateData', () => {
       { values: [7, 8, 9] },
     ];
 
-    expect(embeddingsList['truncateData']()).toEqual(expectedTruncatedData);
+    expect(embeddingsList['truncateDataForDisplay']()).toEqual(expectedTruncatedData);
   });
 
   it('should truncate data correctly when there are more than 5 embeddings', () => {
@@ -112,6 +112,6 @@ describe('truncateData', () => {
       { values: [26, 27, '...', 29, 30] },
     ];
 
-    expect(embeddingsList['truncateData']()).toEqual(expectedTruncatedData);
+    expect(embeddingsList['truncateDataForDisplay']()).toEqual(expectedTruncatedData);
   });
 });
