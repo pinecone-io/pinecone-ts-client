@@ -173,15 +173,15 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-  name: 'serverless-index',
-  dimension: 1536,
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
+    name: 'serverless-index',
+    dimension: 1536,
+    spec: {
+        serverless: {
+            cloud: 'aws',
+            region: 'us-west-2',
+        }
     }
-  }
-  waitUntilReady: true,
+    waitUntilReady: true,
 });
 ```
 
@@ -217,17 +217,17 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-  name: 'product-description-p1x1',
-  dimension: 256,
-  metric: 'cosine'
-  spec: {
-    pod: {
-      environment: 'us-east4-gcp',
-      pods: 1,
-      podType: 'p1.x1',
-      sourceCollection: 'product-description-embeddings',
+    name: 'product-description-p1x1',
+    dimension: 256,
+    metric: 'cosine'
+    spec: {
+        pod: {
+            environment: 'us-east4-gcp',
+            pods: 1,
+            podType: 'p1.x1',
+            sourceCollection: 'product-description-embeddings',
+        }
     }
-  }
 });
 ```
 
@@ -486,9 +486,9 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 type MovieMetadata = {
-  title: string,
-  runtime: numbers,
-  genre: 'comedy' | 'horror' | 'drama' | 'action'
+    title: string,
+    runtime: numbers,
+    genre: 'comedy' | 'horror' | 'drama' | 'action'
 }
 
 // Specify a custom metadata type while targeting the index
@@ -496,33 +496,33 @@ const index = pc.index<MovieMetadata>('test-index');
 
 // Now you get type errors if upserting malformed metadata
 await index.upsert([{
-  id: '1234',
-  values: [
-    .... // embedding values
-  ],
-  metadata: {
+        id: '1234',
+        values: [
+            .... // embedding values
+    ],
+    metadata: {
     genre: 'Gone with the Wind',
-    runtime: 238,
-    genre: 'drama',
-    // @ts-expect-error because category property not in MovieMetadata
-    category: 'classic'
-  }
+        runtime: 238,
+        genre: 'drama',
+        // @ts-expect-error because category property not in MovieMetadata
+        category: 'classic'
+}
 }])
 
 const results = await index.query({
-  vector: [
-    ... // query embedding
-  ],
-  filter: { genre: { '$eq': 'drama' }}
+    vector: [
+        ... // query embedding
+    ],
+    filter: { genre: { '$eq': 'drama' }}
 })
 const movie = results.matches[0];
 
 if (movie.metadata) {
-  // Since we passed the MovieMetadata type parameter above,
-  // we can interact with metadata fields without having to
-  // do any typecasting.
-  const { title, runtime, genre } = movie.metadata;
-  console.log(`The best match in drama was ${title}`)
+    // Since we passed the MovieMetadata type parameter above,
+    // we can interact with metadata fields without having to
+    // do any typecasting.
+    const { title, runtime, genre } = movie.metadata;
+    console.log(`The best match in drama was ${title}`)
 }
 ```
 
@@ -708,17 +708,17 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-  name: 'hyrbid-image-search',
-  metric: 'dotproduct',
-  dimension: 512,
-  spec: {
-    pod: {
-      environment: 'us-west4-gcp',
-      pods: 1
-      podType: 's1.x1',
-    }
-  },
-  waitUntilReady: true
+    name: 'hyrbid-image-search',
+    metric: 'dotproduct',
+    dimension: 512,
+    spec: {
+        pod: {
+            environment: 'us-west4-gcp',
+            pods: 1
+            podType: 's1.x1',
+        }
+    },
+    waitUntilReady: true
 });
 const index = pc.index('hybrid-image-search');
 
@@ -730,12 +730,12 @@ await index.upsert(records)
 
 // Prepare query values. In a more realistic example, these would both come out of a model.
 const vector = [
-  // The dimension of this index needs to match the index dimension.
-  // Pretend this is a 512 dimension vector.
+    // The dimension of this index needs to match the index dimension.
+    // Pretend this is a 512 dimension vector.
 ]
 const sparseVector = {
-  indices: [23, 399, 251, 17],
-  values: [ 0.221, 0.967, 0.016, 0.572]
+    indices: [23, 399, 251, 17],
+    values: [ 0.221, 0.967, 0.016, 0.572]
 }
 
 // Execute the query
@@ -849,6 +849,81 @@ await index.namespace('foo-namespace').deleteAll();
 ```
 
 If you do not specify a namespace, the records in the default namespace `''` will be deleted.
+
+## Inference
+
+Interact with Pinecone's Inference API (currently in preview).
+
+**Notes:**
+
+- The Inference API only works with Node `>=18`. If you are using older versions of Node, you must pass in a custom `fetch` implementation into the Pinecone client.
+
+Models currently supported:
+
+- [multilingual-e5-large](https://arxiv.org/pdf/2402.05672)
+
+## Create embeddings
+
+Send text to Pinecone's Inference API to generate embeddings for documents and queries.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const client = new Pinecone({ apiKey: '<Your API key from app.pinecone.io>' });
+
+const embeddingModel = 'multilingual-e5-large';
+
+const documents = [
+  'Turkey is a classic meat to eat at American Thanksgiving.',
+  'Many people enjoy the beautiful mosques in Turkey.',
+];
+const docParameters = {
+  inputType: 'passage',
+  truncate: 'END',
+};
+async function generateDocEmbeddings() {
+  try {
+    return await client.inference.embed(
+      embeddingModel,
+      documents,
+      docParameters
+    );
+  } catch (error) {
+    console.error('Error generating embeddings:', error);
+  }
+}
+generateDocEmbeddings().then((embeddingsResponse) => {
+  if (embeddingsResponse) {
+    console.log(embeddingsResponse);
+  }
+});
+
+// << Upsert documents into Pinecone >>
+
+const userQuery = ['How should I prepare my turkey?'];
+const queryParameters = {
+  inputType: 'query',
+  truncate: 'END',
+};
+async function generateQueryEmbeddings() {
+  try {
+    return await client.inference.embed(
+      embeddingModel,
+      userQuery,
+      queryParameters
+    );
+  } catch (error) {
+    console.error('Error generating embeddings:', error);
+  }
+}
+generateQueryEmbeddings().then((embeddingsResponse) => {
+  if (embeddingsResponse) {
+    console.log(embeddingsResponse);
+  }
+});
+
+// << Send query to Pinecone to retrieve similar documents >>
+```
 
 ## Productionizing
 

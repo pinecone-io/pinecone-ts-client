@@ -26,6 +26,8 @@ import {
 import { Index, PineconeConfigurationSchema } from './data';
 import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
+import { Inference } from './inference';
+import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -89,6 +91,8 @@ export class Pinecone {
   /** @hidden */
   private _listIndexes: ReturnType<typeof listIndexes>;
 
+  public inference: Inference;
+
   /**
    * @example
    * ```
@@ -112,6 +116,7 @@ export class Pinecone {
     this.config = options;
 
     const api = indexOperationsBuilder(this.config);
+    const infApi = inferenceOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -122,6 +127,7 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
+    this.inference = new Inference(infApi);
   }
 
   /**

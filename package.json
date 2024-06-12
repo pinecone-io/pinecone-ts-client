@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pinecone-io/pinecone-ts-client"
+    "url": "https://github.com/pinecone-io/private-pinecone-ts-client"
   },
   "contributors": [
     "Jen Hamon (https://github.com/jhamon)",

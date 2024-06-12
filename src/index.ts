@@ -3,6 +3,8 @@ export { Index } from './data';
 
 export * as Errors from './errors';
 
+export { EmbeddingsList } from './models/embeddingsList';
+
 // Type exports
 export type {
   CollectionName,
@@ -56,4 +58,5 @@ export type {
   ServerlessSpecCloudEnum,
   PodSpec,
   PodSpecMetadataConfig,
+  Embedding,
 } from './pinecone-generated-ts-fetch';
