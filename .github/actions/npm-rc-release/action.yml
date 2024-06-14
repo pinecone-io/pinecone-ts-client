@@ -1,4 +1,4 @@
-name: 'npm rc release'
+name: 'Npm RC release'
 description: 'Publish code changes to npmjs.org'
 inputs:
   git_email:
@@ -8,12 +8,8 @@ inputs:
     description: 'Commit author name'
     required: true
   npm_token:
-    description: 'npm token for publishing. Login to npmjs.org to generate this.'
+    description: 'Npm token for publishing. Login to npmjs.org to generate this.'
     required: true
-outputs:
-  release_tag:
-    description: 'The name of the created git tag'
-    value: ${{ steps.release-tag-step.outputs.release-tag }}
 runs:
   using: 'composite'
   steps:
@@ -25,20 +21,15 @@ runs:
     - name: 'Bump version'
       shell: bash
       run: npm version prerelease --preid=rc --no-git-tag-version
-    - name: 'Commit and tag version changes'
+    - name: 'Commit changes'
       shell: bash
       run: |
         git add .
         newVersion=$(jq -r '.version' package.json)
-        git commit -m "[skip ci] Publish release v$newVersion"
-        git tag "v$newVersion"
-    - name: 'Output release tag'
-      shell: bash
-      id: release-tag-step
-      run: echo "release-tag=$(git describe --tags)" >> $GITHUB_OUTPUT
+        git commit -m "[skip ci] Publish RC release v$newVersion"
     - name: 'Push changes'
       shell: bash
-      run: git push --follow-tags
+      run: git push
     - name: 'Publish to npm'
       run: npm publish
       shell: bash
