@@ -21,15 +21,6 @@ runs:
     - name: 'Bump version'
       shell: bash
       run: npm version prerelease --preid=rc --no-git-tag-version
-    - name: 'Commit changes'
-      shell: bash
-      run: |
-        git add .
-        newVersion=$(jq -r '.version' package.json)
-        git commit -m "[skip ci] Publish RC release v$newVersion"
-    - name: 'Push changes'
-      shell: bash
-      run: git push
     - name: 'Publish to npm'
       run: npm publish
       shell: bash
