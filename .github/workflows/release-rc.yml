@@ -1,0 +1,35 @@
+name: 'Release RC build'
+
+on:
+  workflow_dispatch:
+    inputs:
+      nameRc:
+        description: 'Input which RC your code changes are for'
+        required: true
+        type: string
+        default: '2024-07'
+
+# prevent concurrent releases
+concurrency:
+  group: npm-rc-release
+  cancel-in-progress: true
+
+jobs:
+  version-and-release:
+    name: Release RC build to NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Version and publish to npm
+        id: npm-rc-release
+        uses: ./.github/actions/npm-rc-release
+        with:
+          git_email: clients@pinecone.io
+          git_username: ${{ github.actor }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          nameRc: ${{ inputs.nameRc }}
