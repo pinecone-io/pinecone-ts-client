@@ -34,11 +34,13 @@ describe('EmbeddingsList', () => {
 
   it('Should truncate output of values when necessary', () => {
     const manyValues = [1, 2, 3, 4, 5, 6, 7, 8];
-    const truncatedManyValues = embeddingsList.truncateValuesForDisplay(manyValues);
+    const truncatedManyValues =
+      embeddingsList.truncateValuesForDisplay(manyValues);
     expect(truncatedManyValues).toEqual([1, 2, '...', 7, 8]);
 
     const fewValues = [1, 2];
-    const truncatedFewValues = embeddingsList.truncateValuesForDisplay(fewValues);
+    const truncatedFewValues =
+      embeddingsList.truncateValuesForDisplay(fewValues);
     expect(truncatedFewValues).toEqual(fewValues);
   });
 });
@@ -86,7 +88,9 @@ describe('truncateData', () => {
       { values: [7, 8, 9] },
     ];
 
-    expect(embeddingsList['truncateDataForDisplay']()).toEqual(expectedTruncatedData);
+    expect(embeddingsList['truncateDataForDisplay']()).toEqual(
+      expectedTruncatedData
+    );
   });
 
   it('should truncate data correctly when there are more than 5 embeddings', () => {
@@ -112,6 +116,8 @@ describe('truncateData', () => {
       { values: [26, 27, '...', 29, 30] },
     ];
 
-    expect(embeddingsList['truncateDataForDisplay']()).toEqual(expectedTruncatedData);
+    expect(embeddingsList['truncateDataForDisplay']()).toEqual(
+      expectedTruncatedData
+    );
   });
 });

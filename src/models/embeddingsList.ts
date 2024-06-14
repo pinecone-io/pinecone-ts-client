@@ -119,16 +119,22 @@ export class EmbeddingsList
     if (!this.data) return [];
     if (this.data.length <= 5) {
       return this.data.map((embedding) => ({
-        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
+        values: embedding.values
+          ? this.truncateValuesForDisplay(embedding.values)
+          : [],
       }));
     }
     return [
       ...this.data.slice(0, 2).map((embedding) => ({
-        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
+        values: embedding.values
+          ? this.truncateValuesForDisplay(embedding.values)
+          : [],
       })),
       `   ... (${this.data.length - 4} more embeddings) ...`,
       ...this.data.slice(-2).map((embedding) => ({
-        values: embedding.values ? this.truncateValuesForDisplay(embedding.values) : [],
+        values: embedding.values
+          ? this.truncateValuesForDisplay(embedding.values)
+          : [],
       })),
     ];
   }
