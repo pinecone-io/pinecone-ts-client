@@ -10,6 +10,9 @@ inputs:
   npm_token:
     description: 'Npm token for publishing. Login to npmjs.org to generate this.'
     required: true
+  rc_name:
+    description: 'Which RC your code changes are for.'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -20,7 +23,7 @@ runs:
         git config --global user.name "${{ inputs.git_username }}"
     - name: 'Bump version'
       shell: bash
-      run: npm version prerelease --preid=rc --no-git-tag-version
+      run: npm version prerelease --preid=rc."${{ inputs.nameRc }}" --no-git-tag-version
     - name: 'Publish to npm'
       run: npm publish
       shell: bash
