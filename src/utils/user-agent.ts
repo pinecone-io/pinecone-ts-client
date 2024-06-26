@@ -35,13 +35,13 @@ const normalizeSourceTag = (sourceTag: string) => {
   /**
    * normalize sourceTag
    * 1. Lowercase
-   * 2. Limit charset to [a-z0-9_ ]
+   * 2. Limit charset to [a-z0-9_ :]
    * 3. Trim left/right spaces
    * 4. Condense multiple spaces to one, and replace with underscore
    */
   return sourceTag
     .toLowerCase()
-    .replace(/[^a-z0-9_ ]/g, '')
+    .replace(/[^a-z0-9_ :]/g, '')
     .trim()
     .replace(/[ ]+/g, '_');
 };
