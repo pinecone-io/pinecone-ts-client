@@ -1,5 +1,5 @@
 import { buildConfigValidator } from '../validator';
-import { IndexModel, ManageIndexesApi } from '../pinecone-generated-ts-fetch';
+import { IndexModel, ManageIndexesApi } from '../pinecone-generated-ts-fetch/control';
 import { IndexNameSchema } from './types';
 import type { IndexName } from './types';
 

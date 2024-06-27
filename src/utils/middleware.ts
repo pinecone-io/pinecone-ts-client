@@ -1,4 +1,4 @@
-import { Middleware, ResponseError } from '../pinecone-generated-ts-fetch';
+import { Middleware, ResponseError } from '../pinecone-generated-ts-fetch/control';
 import { handleApiError } from '../errors';
 
 const debugMiddleware: Middleware[] = [];

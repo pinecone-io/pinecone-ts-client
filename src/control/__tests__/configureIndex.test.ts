@@ -1,9 +1,9 @@
 import { configureIndex } from '../configureIndex';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 import type {
   ConfigureIndexOperationRequest,
   IndexModel,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/control';
 
 describe('configureIndex', () => {
   test('calls the openapi configure endpoint', async () => {

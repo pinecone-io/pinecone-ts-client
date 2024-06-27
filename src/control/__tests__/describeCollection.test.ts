@@ -1,11 +1,11 @@
 import { describeCollection } from '../describeCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 import type {
   DescribeCollectionRequest,
   CollectionList,
   CollectionModel,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/control';
 
 const setupMocks = (
   describeResponse,

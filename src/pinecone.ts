@@ -16,8 +16,8 @@ import {
 import {
   ConfigureIndexRequestSpecPod,
   CreateCollectionRequest,
-} from './pinecone-generated-ts-fetch';
-import type { HTTPHeaders } from './pinecone-generated-ts-fetch';
+} from './pinecone-generated-ts-fetch/control';
+import type { HTTPHeaders } from './pinecone-generated-ts-fetch/control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,

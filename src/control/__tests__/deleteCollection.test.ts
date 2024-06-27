@@ -1,10 +1,10 @@
 import { deleteCollection } from '../deleteCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 import type {
   DeleteCollectionRequest,
   CollectionList,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/control';
 
 const setupMocks = (
   deleteResponse,
@@ -12,7 +12,7 @@ const setupMocks = (
 ) => {
   const fakeDeleteCollection: (
     req: DeleteCollectionRequest
-  ) => Promise<string> = jest.fn().mockImplementation(deleteResponse);
+  ) => Promise<void> = jest.fn().mockImplementation(deleteResponse);
   const fakeListCollections: () => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);

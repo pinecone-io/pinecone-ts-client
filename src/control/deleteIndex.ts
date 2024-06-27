@@ -1,4 +1,4 @@
-import { ManageIndexesApi } from '../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { IndexName, IndexNameSchema } from './types';
 

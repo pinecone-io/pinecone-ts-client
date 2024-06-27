@@ -1,7 +1,7 @@
 import {
   ManageIndexesApi,
   CollectionList,
-} from '../pinecone-generated-ts-fetch';
+} from '../pinecone-generated-ts-fetch/control';
 
 export const listCollections = (api: ManageIndexesApi) => {
   return async (): Promise<CollectionList> => {
