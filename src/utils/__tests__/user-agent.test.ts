@@ -42,6 +42,10 @@ describe('user-agent', () => {
       config.sourceTag = '  MY SOURCE TAG     1234     ##### !!!!!!';
       userAgent = buildUserAgent(config);
       expect(userAgent).toContain('source_tag=my_source_tag_1234');
+
+      config.sourceTag = ' MY SOURCE TAG :1234-ABCD';
+      userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('source_tag=my_source_tag_:1234abcd');
     });
   });
 });
