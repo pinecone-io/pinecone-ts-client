@@ -2,7 +2,7 @@ import { buildConfigValidator } from '../validator';
 import { PineconeRecordSchema } from './types';
 import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import type { Vector } from '../pinecone-generated-ts-fetch';
+import type { Vector } from '../pinecone-generated-ts-fetch/data';
 import type { PineconeRecord, RecordMetadata } from './types';
 
 const RecordArray = Type.Array(PineconeRecordSchema);

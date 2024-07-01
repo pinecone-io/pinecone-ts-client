@@ -3,7 +3,7 @@ import {
   IndexModel,
   ManageIndexesApi,
   CreateIndexRequestMetricEnum,
-} from '../pinecone-generated-ts-fetch';
+} from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
 import { handleApiError } from '../errors';

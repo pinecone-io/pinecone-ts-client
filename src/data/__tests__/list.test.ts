@@ -3,7 +3,7 @@ import type {
   ListRequest,
   ListResponse,
   DataPlaneApi,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {

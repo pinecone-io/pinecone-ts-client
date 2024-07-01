@@ -1,4 +1,7 @@
-import { ManageIndexesApi, IndexList } from '../pinecone-generated-ts-fetch';
+import {
+  ManageIndexesApi,
+  IndexList,
+} from '../pinecone-generated-ts-fetch/control';
 
 export const listIndexes = (api: ManageIndexesApi) => {
   return async (): Promise<IndexList> => {

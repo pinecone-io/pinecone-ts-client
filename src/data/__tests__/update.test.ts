@@ -1,7 +1,7 @@
 import { UpdateCommand } from '../update';
-import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
-import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch';
+import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch/data';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest

@@ -2,7 +2,7 @@ import {
   CollectionModel,
   CreateCollectionRequest,
   ManageIndexesApi,
-} from '../pinecone-generated-ts-fetch';
+} from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { CollectionNameSchema, IndexNameSchema } from './types';
 import { Type } from '@sinclair/typebox';

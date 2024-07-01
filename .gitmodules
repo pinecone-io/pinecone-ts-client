@@ -1,0 +1,3 @@
+[submodule "codegen/apis"]
+	path = codegen/apis
+	url = git@github.com:pinecone-io/apis.git

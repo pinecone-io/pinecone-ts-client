@@ -39,6 +39,7 @@ export type {
   RecordValues,
   ScoredPineconeRecord,
 } from './data';
+
 export type {
   CollectionList,
   CollectionModel,
@@ -51,9 +52,9 @@ export type {
   FetchAPI,
   IndexList,
   IndexModel,
-  ListResponse,
   ServerlessSpec,
   ServerlessSpecCloudEnum,
   PodSpec,
   PodSpecMetadataConfig,
-} from './pinecone-generated-ts-fetch';
+} from './pinecone-generated-ts-fetch/control';
+export type { ListResponse } from './pinecone-generated-ts-fetch/data';
