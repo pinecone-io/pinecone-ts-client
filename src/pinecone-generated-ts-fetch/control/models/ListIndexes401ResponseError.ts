@@ -19,92 +19,95 @@ import { exists, mapValues } from '../runtime';
  * @interface ListIndexes401ResponseError
  */
 export interface ListIndexes401ResponseError {
-    /**
-     * 
-     * @type {string}
-     * @memberof ListIndexes401ResponseError
-     */
-    code: ListIndexes401ResponseErrorCodeEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof ListIndexes401ResponseError
-     */
-    message: string;
-    /**
-     * Additional information about the error. This field is not guaranteed to be present.
-     * @type {object}
-     * @memberof ListIndexes401ResponseError
-     */
-    details?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ListIndexes401ResponseError
+   */
+  code: ListIndexes401ResponseErrorCodeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ListIndexes401ResponseError
+   */
+  message: string;
+  /**
+   * Additional information about the error. This field is not guaranteed to be present.
+   * @type {object}
+   * @memberof ListIndexes401ResponseError
+   */
+  details?: object;
 }
-
 
 /**
  * @export
  */
 export const ListIndexes401ResponseErrorCodeEnum = {
-    Ok: 'OK',
-    Unknown: 'UNKNOWN',
-    InvalidArgument: 'INVALID_ARGUMENT',
-    DeadlineExceeded: 'DEADLINE_EXCEEDED',
-    QuotaExceeded: 'QUOTA_EXCEEDED',
-    NotFound: 'NOT_FOUND',
-    AlreadyExists: 'ALREADY_EXISTS',
-    PermissionDenied: 'PERMISSION_DENIED',
-    Unauthenticated: 'UNAUTHENTICATED',
-    ResourceExhausted: 'RESOURCE_EXHAUSTED',
-    FailedPrecondition: 'FAILED_PRECONDITION',
-    Aborted: 'ABORTED',
-    OutOfRange: 'OUT_OF_RANGE',
-    Unimplemented: 'UNIMPLEMENTED',
-    Internal: 'INTERNAL',
-    Unavailable: 'UNAVAILABLE',
-    DataLoss: 'DATA_LOSS',
-    Forbidden: 'FORBIDDEN'
+  Ok: 'OK',
+  Unknown: 'UNKNOWN',
+  InvalidArgument: 'INVALID_ARGUMENT',
+  DeadlineExceeded: 'DEADLINE_EXCEEDED',
+  QuotaExceeded: 'QUOTA_EXCEEDED',
+  NotFound: 'NOT_FOUND',
+  AlreadyExists: 'ALREADY_EXISTS',
+  PermissionDenied: 'PERMISSION_DENIED',
+  Unauthenticated: 'UNAUTHENTICATED',
+  ResourceExhausted: 'RESOURCE_EXHAUSTED',
+  FailedPrecondition: 'FAILED_PRECONDITION',
+  Aborted: 'ABORTED',
+  OutOfRange: 'OUT_OF_RANGE',
+  Unimplemented: 'UNIMPLEMENTED',
+  Internal: 'INTERNAL',
+  Unavailable: 'UNAVAILABLE',
+  DataLoss: 'DATA_LOSS',
+  Forbidden: 'FORBIDDEN',
 } as const;
-export type ListIndexes401ResponseErrorCodeEnum = typeof ListIndexes401ResponseErrorCodeEnum[keyof typeof ListIndexes401ResponseErrorCodeEnum];
-
+export type ListIndexes401ResponseErrorCodeEnum =
+  (typeof ListIndexes401ResponseErrorCodeEnum)[keyof typeof ListIndexes401ResponseErrorCodeEnum];
 
 /**
  * Check if a given object implements the ListIndexes401ResponseError interface.
  */
 export function instanceOfListIndexes401ResponseError(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "code" in value;
-    isInstance = isInstance && "message" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'code' in value;
+  isInstance = isInstance && 'message' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function ListIndexes401ResponseErrorFromJSON(json: any): ListIndexes401ResponseError {
-    return ListIndexes401ResponseErrorFromJSONTyped(json, false);
+export function ListIndexes401ResponseErrorFromJSON(
+  json: any
+): ListIndexes401ResponseError {
+  return ListIndexes401ResponseErrorFromJSONTyped(json, false);
 }
 
-export function ListIndexes401ResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListIndexes401ResponseError {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'code': json['code'],
-        'message': json['message'],
-        'details': !exists(json, 'details') ? undefined : json['details'],
-    };
+export function ListIndexes401ResponseErrorFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ListIndexes401ResponseError {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    code: json['code'],
+    message: json['message'],
+    details: !exists(json, 'details') ? undefined : json['details'],
+  };
 }
 
-export function ListIndexes401ResponseErrorToJSON(value?: ListIndexes401ResponseError | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'code': value.code,
-        'message': value.message,
-        'details': value.details,
-    };
+export function ListIndexes401ResponseErrorToJSON(
+  value?: ListIndexes401ResponseError | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    code: value.code,
+    message: value.message,
+    details: value.details,
+  };
 }
-

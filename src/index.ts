@@ -57,6 +57,4 @@ export type {
   PodSpec,
   PodSpecMetadataConfig,
 } from './pinecone-generated-ts-fetch/control';
-export type {
-  ListResponse
-} from './pinecone-generated-ts-fetch/data';
+export type { ListResponse } from './pinecone-generated-ts-fetch/data';

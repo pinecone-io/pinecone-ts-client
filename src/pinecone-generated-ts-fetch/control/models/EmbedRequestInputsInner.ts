@@ -14,52 +14,56 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface EmbedRequestInputsInner
  */
 export interface EmbedRequestInputsInner {
-    /**
-     * 
-     * @type {string}
-     * @memberof EmbedRequestInputsInner
-     */
-    text?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EmbedRequestInputsInner
+   */
+  text?: string;
 }
 
 /**
  * Check if a given object implements the EmbedRequestInputsInner interface.
  */
 export function instanceOfEmbedRequestInputsInner(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function EmbedRequestInputsInnerFromJSON(json: any): EmbedRequestInputsInner {
-    return EmbedRequestInputsInnerFromJSONTyped(json, false);
+export function EmbedRequestInputsInnerFromJSON(
+  json: any
+): EmbedRequestInputsInner {
+  return EmbedRequestInputsInnerFromJSONTyped(json, false);
 }
 
-export function EmbedRequestInputsInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): EmbedRequestInputsInner {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'text': !exists(json, 'text') ? undefined : json['text'],
-    };
+export function EmbedRequestInputsInnerFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): EmbedRequestInputsInner {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    text: !exists(json, 'text') ? undefined : json['text'],
+  };
 }
 
-export function EmbedRequestInputsInnerToJSON(value?: EmbedRequestInputsInner | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'text': value.text,
-    };
+export function EmbedRequestInputsInnerToJSON(
+  value?: EmbedRequestInputsInner | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    text: value.text,
+  };
 }
-

@@ -19,69 +19,68 @@ import { exists, mapValues } from '../runtime';
  * @interface ServerlessSpec
  */
 export interface ServerlessSpec {
-    /**
-     * The public cloud where you would like your index hosted. Serverless indexes can be hosted only in AWS at this time.
-     * @type {string}
-     * @memberof ServerlessSpec
-     */
-    cloud: ServerlessSpecCloudEnum;
-    /**
-     * The region where you would like your index to be created.  Serverless indexes can be created only in the us-east-1,us-west-2, and eu-west-1 regions of AWS at this time.
-     * @type {string}
-     * @memberof ServerlessSpec
-     */
-    region: string;
+  /**
+   * The public cloud where you would like your index hosted. Serverless indexes can be hosted only in AWS at this time.
+   * @type {string}
+   * @memberof ServerlessSpec
+   */
+  cloud: ServerlessSpecCloudEnum;
+  /**
+   * The region where you would like your index to be created.  Serverless indexes can be created only in the us-east-1,us-west-2, and eu-west-1 regions of AWS at this time.
+   * @type {string}
+   * @memberof ServerlessSpec
+   */
+  region: string;
 }
-
 
 /**
  * @export
  */
 export const ServerlessSpecCloudEnum = {
-    Gcp: 'gcp',
-    Aws: 'aws',
-    Azure: 'azure'
+  Gcp: 'gcp',
+  Aws: 'aws',
+  Azure: 'azure',
 } as const;
-export type ServerlessSpecCloudEnum = typeof ServerlessSpecCloudEnum[keyof typeof ServerlessSpecCloudEnum];
-
+export type ServerlessSpecCloudEnum =
+  (typeof ServerlessSpecCloudEnum)[keyof typeof ServerlessSpecCloudEnum];
 
 /**
  * Check if a given object implements the ServerlessSpec interface.
  */
 export function instanceOfServerlessSpec(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "cloud" in value;
-    isInstance = isInstance && "region" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'cloud' in value;
+  isInstance = isInstance && 'region' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function ServerlessSpecFromJSON(json: any): ServerlessSpec {
-    return ServerlessSpecFromJSONTyped(json, false);
+  return ServerlessSpecFromJSONTyped(json, false);
 }
 
-export function ServerlessSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServerlessSpec {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'cloud': json['cloud'],
-        'region': json['region'],
-    };
+export function ServerlessSpecFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ServerlessSpec {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    cloud: json['cloud'],
+    region: json['region'],
+  };
 }
 
 export function ServerlessSpecToJSON(value?: ServerlessSpec | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'cloud': value.cloud,
-        'region': value.region,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    cloud: value.cloud,
+    region: value.region,
+  };
 }
-

@@ -19,49 +19,53 @@ import { exists, mapValues } from '../runtime';
  * @interface DescribeIndexStatsRequest
  */
 export interface DescribeIndexStatsRequest {
-    /**
-     * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter. See [Filter with metadata](https://docs.pinecone.io/guides/data/filter-with-metadata).
-     * 
-     * Serverless indexes do not support filtering `describe_index_stats` by metadata.
-     * @type {object}
-     * @memberof DescribeIndexStatsRequest
-     */
-    filter?: object;
+  /**
+   * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter. See [Filter with metadata](https://docs.pinecone.io/guides/data/filter-with-metadata).
+   *
+   * Serverless indexes do not support filtering `describe_index_stats` by metadata.
+   * @type {object}
+   * @memberof DescribeIndexStatsRequest
+   */
+  filter?: object;
 }
 
 /**
  * Check if a given object implements the DescribeIndexStatsRequest interface.
  */
 export function instanceOfDescribeIndexStatsRequest(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function DescribeIndexStatsRequestFromJSON(json: any): DescribeIndexStatsRequest {
-    return DescribeIndexStatsRequestFromJSONTyped(json, false);
+export function DescribeIndexStatsRequestFromJSON(
+  json: any
+): DescribeIndexStatsRequest {
+  return DescribeIndexStatsRequestFromJSONTyped(json, false);
 }
 
-export function DescribeIndexStatsRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): DescribeIndexStatsRequest {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'filter': !exists(json, 'filter') ? undefined : json['filter'],
-    };
+export function DescribeIndexStatsRequestFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): DescribeIndexStatsRequest {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    filter: !exists(json, 'filter') ? undefined : json['filter'],
+  };
 }
 
-export function DescribeIndexStatsRequestToJSON(value?: DescribeIndexStatsRequest | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'filter': value.filter,
-    };
+export function DescribeIndexStatsRequestToJSON(
+  value?: DescribeIndexStatsRequest | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    filter: value.filter,
+  };
 }
-

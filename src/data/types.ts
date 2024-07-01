@@ -1,5 +1,8 @@
 import { Type } from '@sinclair/typebox';
-import type { FetchAPI, HTTPHeaders } from '../pinecone-generated-ts-fetch/data';
+import type {
+  FetchAPI,
+  HTTPHeaders,
+} from '../pinecone-generated-ts-fetch/data';
 
 export const PineconeConfigurationSchema = Type.Object(
   {

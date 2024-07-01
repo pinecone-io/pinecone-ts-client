@@ -14,79 +14,78 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface IndexModelStatus
  */
 export interface IndexModelStatus {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof IndexModelStatus
-     */
-    ready: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof IndexModelStatus
-     */
-    state: IndexModelStatusStateEnum;
+  /**
+   *
+   * @type {boolean}
+   * @memberof IndexModelStatus
+   */
+  ready: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof IndexModelStatus
+   */
+  state: IndexModelStatusStateEnum;
 }
-
 
 /**
  * @export
  */
 export const IndexModelStatusStateEnum = {
-    Initializing: 'Initializing',
-    InitializationFailed: 'InitializationFailed',
-    ScalingUp: 'ScalingUp',
-    ScalingDown: 'ScalingDown',
-    ScalingUpPodSize: 'ScalingUpPodSize',
-    ScalingDownPodSize: 'ScalingDownPodSize',
-    Terminating: 'Terminating',
-    Ready: 'Ready'
+  Initializing: 'Initializing',
+  InitializationFailed: 'InitializationFailed',
+  ScalingUp: 'ScalingUp',
+  ScalingDown: 'ScalingDown',
+  ScalingUpPodSize: 'ScalingUpPodSize',
+  ScalingDownPodSize: 'ScalingDownPodSize',
+  Terminating: 'Terminating',
+  Ready: 'Ready',
 } as const;
-export type IndexModelStatusStateEnum = typeof IndexModelStatusStateEnum[keyof typeof IndexModelStatusStateEnum];
-
+export type IndexModelStatusStateEnum =
+  (typeof IndexModelStatusStateEnum)[keyof typeof IndexModelStatusStateEnum];
 
 /**
  * Check if a given object implements the IndexModelStatus interface.
  */
 export function instanceOfIndexModelStatus(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "ready" in value;
-    isInstance = isInstance && "state" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'ready' in value;
+  isInstance = isInstance && 'state' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function IndexModelStatusFromJSON(json: any): IndexModelStatus {
-    return IndexModelStatusFromJSONTyped(json, false);
+  return IndexModelStatusFromJSONTyped(json, false);
 }
 
-export function IndexModelStatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexModelStatus {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'ready': json['ready'],
-        'state': json['state'],
-    };
+export function IndexModelStatusFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): IndexModelStatus {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    ready: json['ready'],
+    state: json['state'],
+  };
 }
 
 export function IndexModelStatusToJSON(value?: IndexModelStatus | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'ready': value.ready,
-        'state': value.state,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    ready: value.ready,
+    state: value.state,
+  };
 }
-

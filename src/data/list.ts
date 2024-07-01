@@ -1,7 +1,10 @@
 import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import type { ListRequest, ListResponse } from '../pinecone-generated-ts-fetch/data';
+import type {
+  ListRequest,
+  ListResponse,
+} from '../pinecone-generated-ts-fetch/data';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)

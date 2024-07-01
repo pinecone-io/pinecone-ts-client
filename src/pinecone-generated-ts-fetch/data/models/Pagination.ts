@@ -14,52 +14,52 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface Pagination
  */
 export interface Pagination {
-    /**
-     * 
-     * @type {string}
-     * @memberof Pagination
-     */
-    next?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Pagination
+   */
+  next?: string;
 }
 
 /**
  * Check if a given object implements the Pagination interface.
  */
 export function instanceOfPagination(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function PaginationFromJSON(json: any): Pagination {
-    return PaginationFromJSONTyped(json, false);
+  return PaginationFromJSONTyped(json, false);
 }
 
-export function PaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean): Pagination {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'next': !exists(json, 'next') ? undefined : json['next'],
-    };
+export function PaginationFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): Pagination {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    next: !exists(json, 'next') ? undefined : json['next'],
+  };
 }
 
 export function PaginationToJSON(value?: Pagination | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'next': value.next,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    next: value.next,
+  };
 }
-

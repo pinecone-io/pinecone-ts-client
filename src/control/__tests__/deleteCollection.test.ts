@@ -10,9 +10,8 @@ const setupMocks = (
   deleteResponse,
   listCollectionResponse = () => Promise.resolve([])
 ) => {
-  const fakeDeleteCollection: (
-    req: DeleteCollectionRequest
-  ) => Promise<void> = jest.fn().mockImplementation(deleteResponse);
+  const fakeDeleteCollection: (req: DeleteCollectionRequest) => Promise<void> =
+    jest.fn().mockImplementation(deleteResponse);
   const fakeListCollections: () => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);

@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import type {
   EmbedRequest,
@@ -20,56 +19,65 @@ import type {
   ListIndexes401Response,
 } from '../models/index';
 import {
-    EmbedRequestFromJSON,
-    EmbedRequestToJSON,
-    EmbeddingsListFromJSON,
-    EmbeddingsListToJSON,
-    ListIndexes401ResponseFromJSON,
-    ListIndexes401ResponseToJSON,
+  EmbedRequestFromJSON,
+  EmbedRequestToJSON,
+  EmbeddingsListFromJSON,
+  EmbeddingsListToJSON,
+  ListIndexes401ResponseFromJSON,
+  ListIndexes401ResponseToJSON,
 } from '../models/index';
 
 export interface EmbedOperationRequest {
-    embedRequest?: EmbedRequest;
+  embedRequest?: EmbedRequest;
 }
 
 /**
- * 
+ *
  */
 export class InferenceApi extends runtime.BaseAPI {
+  /**
+   * Generate embeddings for input data
+   * Embed data
+   */
+  async embedRaw(
+    requestParameters: EmbedOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<EmbeddingsList>> {
+    const queryParameters: any = {};
 
-    /**
-     * Generate embeddings for input data
-     * Embed data
-     */
-    async embedRaw(requestParameters: EmbedOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EmbeddingsList>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/embed`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: EmbedRequestToJSON(requestParameters.embedRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => EmbeddingsListFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * Generate embeddings for input data
-     * Embed data
-     */
-    async embed(requestParameters: EmbedOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EmbeddingsList> {
-        const response = await this.embedRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+    const response = await this.request(
+      {
+        path: `/embed`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: EmbedRequestToJSON(requestParameters.embedRequest),
+      },
+      initOverrides
+    );
 
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      EmbeddingsListFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * Generate embeddings for input data
+   * Embed data
+   */
+  async embed(
+    requestParameters: EmbedOperationRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<EmbeddingsList> {
+    const response = await this.embedRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
 }

@@ -14,52 +14,52 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface Usage
  */
 export interface Usage {
-    /**
-     * The number of read units consumed by this operation.
-     * @type {number}
-     * @memberof Usage
-     */
-    readUnits?: number;
+  /**
+   * The number of read units consumed by this operation.
+   * @type {number}
+   * @memberof Usage
+   */
+  readUnits?: number;
 }
 
 /**
  * Check if a given object implements the Usage interface.
  */
 export function instanceOfUsage(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function UsageFromJSON(json: any): Usage {
-    return UsageFromJSONTyped(json, false);
+  return UsageFromJSONTyped(json, false);
 }
 
-export function UsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Usage {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'readUnits': !exists(json, 'readUnits') ? undefined : json['readUnits'],
-    };
+export function UsageFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): Usage {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    readUnits: !exists(json, 'readUnits') ? undefined : json['readUnits'],
+  };
 }
 
 export function UsageToJSON(value?: Usage | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'readUnits': value.readUnits,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    readUnits: value.readUnits,
+  };
 }
-

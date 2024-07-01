@@ -15,9 +15,9 @@
 import { exists, mapValues } from '../runtime';
 import type { ConfigureIndexRequestSpec } from './ConfigureIndexRequestSpec';
 import {
-    ConfigureIndexRequestSpecFromJSON,
-    ConfigureIndexRequestSpecFromJSONTyped,
-    ConfigureIndexRequestSpecToJSON,
+  ConfigureIndexRequestSpecFromJSON,
+  ConfigureIndexRequestSpecFromJSONTyped,
+  ConfigureIndexRequestSpecToJSON,
 } from './ConfigureIndexRequestSpec';
 
 /**
@@ -26,48 +26,52 @@ import {
  * @interface ConfigureIndexRequest
  */
 export interface ConfigureIndexRequest {
-    /**
-     * 
-     * @type {ConfigureIndexRequestSpec}
-     * @memberof ConfigureIndexRequest
-     */
-    spec: ConfigureIndexRequestSpec;
+  /**
+   *
+   * @type {ConfigureIndexRequestSpec}
+   * @memberof ConfigureIndexRequest
+   */
+  spec: ConfigureIndexRequestSpec;
 }
 
 /**
  * Check if a given object implements the ConfigureIndexRequest interface.
  */
 export function instanceOfConfigureIndexRequest(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "spec" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'spec' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function ConfigureIndexRequestFromJSON(json: any): ConfigureIndexRequest {
-    return ConfigureIndexRequestFromJSONTyped(json, false);
+export function ConfigureIndexRequestFromJSON(
+  json: any
+): ConfigureIndexRequest {
+  return ConfigureIndexRequestFromJSONTyped(json, false);
 }
 
-export function ConfigureIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigureIndexRequest {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'spec': ConfigureIndexRequestSpecFromJSON(json['spec']),
-    };
+export function ConfigureIndexRequestFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ConfigureIndexRequest {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    spec: ConfigureIndexRequestSpecFromJSON(json['spec']),
+  };
 }
 
-export function ConfigureIndexRequestToJSON(value?: ConfigureIndexRequest | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'spec': ConfigureIndexRequestSpecToJSON(value.spec),
-    };
+export function ConfigureIndexRequestToJSON(
+  value?: ConfigureIndexRequest | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    spec: ConfigureIndexRequestSpecToJSON(value.spec),
+  };
 }
-

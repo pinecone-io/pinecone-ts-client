@@ -15,9 +15,9 @@
 import { exists, mapValues } from '../runtime';
 import type { ListIndexes401ResponseError } from './ListIndexes401ResponseError';
 import {
-    ListIndexes401ResponseErrorFromJSON,
-    ListIndexes401ResponseErrorFromJSONTyped,
-    ListIndexes401ResponseErrorToJSON,
+  ListIndexes401ResponseErrorFromJSON,
+  ListIndexes401ResponseErrorFromJSONTyped,
+  ListIndexes401ResponseErrorToJSON,
 } from './ListIndexes401ResponseError';
 
 /**
@@ -26,57 +26,61 @@ import {
  * @interface ListIndexes401Response
  */
 export interface ListIndexes401Response {
-    /**
-     * The HTTP status code of the error.
-     * @type {number}
-     * @memberof ListIndexes401Response
-     */
-    status: number;
-    /**
-     * 
-     * @type {ListIndexes401ResponseError}
-     * @memberof ListIndexes401Response
-     */
-    error: ListIndexes401ResponseError;
+  /**
+   * The HTTP status code of the error.
+   * @type {number}
+   * @memberof ListIndexes401Response
+   */
+  status: number;
+  /**
+   *
+   * @type {ListIndexes401ResponseError}
+   * @memberof ListIndexes401Response
+   */
+  error: ListIndexes401ResponseError;
 }
 
 /**
  * Check if a given object implements the ListIndexes401Response interface.
  */
 export function instanceOfListIndexes401Response(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "status" in value;
-    isInstance = isInstance && "error" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'status' in value;
+  isInstance = isInstance && 'error' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function ListIndexes401ResponseFromJSON(json: any): ListIndexes401Response {
-    return ListIndexes401ResponseFromJSONTyped(json, false);
+export function ListIndexes401ResponseFromJSON(
+  json: any
+): ListIndexes401Response {
+  return ListIndexes401ResponseFromJSONTyped(json, false);
 }
 
-export function ListIndexes401ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListIndexes401Response {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'status': json['status'],
-        'error': ListIndexes401ResponseErrorFromJSON(json['error']),
-    };
+export function ListIndexes401ResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ListIndexes401Response {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    status: json['status'],
+    error: ListIndexes401ResponseErrorFromJSON(json['error']),
+  };
 }
 
-export function ListIndexes401ResponseToJSON(value?: ListIndexes401Response | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'status': value.status,
-        'error': ListIndexes401ResponseErrorToJSON(value.error),
-    };
+export function ListIndexes401ResponseToJSON(
+  value?: ListIndexes401Response | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    status: value.status,
+    error: ListIndexes401ResponseErrorToJSON(value.error),
+  };
 }
-

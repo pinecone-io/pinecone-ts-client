@@ -14,17 +14,9 @@
 
 import { exists, mapValues } from '../runtime';
 import type { Usage } from './Usage';
-import {
-    UsageFromJSON,
-    UsageFromJSONTyped,
-    UsageToJSON,
-} from './Usage';
+import { UsageFromJSON, UsageFromJSONTyped, UsageToJSON } from './Usage';
 import type { Vector } from './Vector';
-import {
-    VectorFromJSON,
-    VectorFromJSONTyped,
-    VectorToJSON,
-} from './Vector';
+import { VectorFromJSON, VectorFromJSONTyped, VectorToJSON } from './Vector';
 
 /**
  * The response for the `fetch` operation.
@@ -32,63 +24,68 @@ import {
  * @interface FetchResponse
  */
 export interface FetchResponse {
-    /**
-     * 
-     * @type {{ [key: string]: Vector; }}
-     * @memberof FetchResponse
-     */
-    vectors?: { [key: string]: Vector; };
-    /**
-     * The namespace of the vectors.
-     * @type {string}
-     * @memberof FetchResponse
-     */
-    namespace?: string;
-    /**
-     * 
-     * @type {Usage}
-     * @memberof FetchResponse
-     */
-    usage?: Usage;
+  /**
+   *
+   * @type {{ [key: string]: Vector; }}
+   * @memberof FetchResponse
+   */
+  vectors?: { [key: string]: Vector };
+  /**
+   * The namespace of the vectors.
+   * @type {string}
+   * @memberof FetchResponse
+   */
+  namespace?: string;
+  /**
+   *
+   * @type {Usage}
+   * @memberof FetchResponse
+   */
+  usage?: Usage;
 }
 
 /**
  * Check if a given object implements the FetchResponse interface.
  */
 export function instanceOfFetchResponse(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function FetchResponseFromJSON(json: any): FetchResponse {
-    return FetchResponseFromJSONTyped(json, false);
+  return FetchResponseFromJSONTyped(json, false);
 }
 
-export function FetchResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): FetchResponse {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'vectors': !exists(json, 'vectors') ? undefined : (mapValues(json['vectors'], VectorFromJSON)),
-        'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
-        'usage': !exists(json, 'usage') ? undefined : UsageFromJSON(json['usage']),
-    };
+export function FetchResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): FetchResponse {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    vectors: !exists(json, 'vectors')
+      ? undefined
+      : mapValues(json['vectors'], VectorFromJSON),
+    namespace: !exists(json, 'namespace') ? undefined : json['namespace'],
+    usage: !exists(json, 'usage') ? undefined : UsageFromJSON(json['usage']),
+  };
 }
 
 export function FetchResponseToJSON(value?: FetchResponse | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'vectors': value.vectors === undefined ? undefined : (mapValues(value.vectors, VectorToJSON)),
-        'namespace': value.namespace,
-        'usage': UsageToJSON(value.usage),
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    vectors:
+      value.vectors === undefined
+        ? undefined
+        : mapValues(value.vectors, VectorToJSON),
+    namespace: value.namespace,
+    usage: UsageToJSON(value.usage),
+  };
 }
-
