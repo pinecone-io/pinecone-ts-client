@@ -4,6 +4,7 @@ import {
   RecordIdSchema,
   RecordSparseValuesSchema,
   RecordValues,
+  RecordSparseValues,
   RecordValuesSchema,
 } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
@@ -94,6 +95,11 @@ export type QueryByVectorValues = QueryShared & {
    * Vector values output from an embedding model.
    */
   vector: RecordValues;
+
+  /**
+   * The sparse values of the query vector, if applicable.
+   */
+  sparseVector?: RecordSparseValues;
 };
 /**
  * The options that may be passed to {@link Index.query }

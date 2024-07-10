@@ -41,6 +41,7 @@ describe('query', () => {
     const recordsToUpsert = generateRecords({
       dimension: 5,
       quantity: numberOfRecords,
+      withSparseValues: true,
     });
     expect(recordsToUpsert).toHaveLength(3);
     expect(recordsToUpsert[0].id).toEqual('0');
@@ -96,7 +97,7 @@ describe('query', () => {
     );
   });
 
-  test('query with vector values', async () => {
+  test('query with vector and sparseVector values', async () => {
     const topK = 1;
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
@@ -108,6 +109,10 @@ describe('query', () => {
       () =>
         ns.query({
           vector: [0.11, 0.22, 0.33, 0.44, 0.55],
+          sparseVector: {
+            indices: [32, 5, 3, 2, 1],
+            values: [0.11, 0.22, 0.33, 0.44, 0.55],
+          },
           topK,
         }),
       assertions
@@ -116,6 +121,10 @@ describe('query', () => {
 
   test('query with includeValues: true', async () => {
     const queryVec = Array.from({ length: 5 }, () => Math.random());
+    const sparseVec = {
+      indices: [0, 1, 2, 3, 4],
+      values: Array.from({ length: 5 }, () => Math.random()),
+    };
 
     const assertions = (results) => {
       expect(results.matches).toBeDefined();
@@ -127,6 +136,7 @@ describe('query', () => {
       () =>
         ns.query({
           vector: queryVec,
+          sparseVector: sparseVec,
           topK: 2,
           includeValues: true,
           includeMetadata: true,
