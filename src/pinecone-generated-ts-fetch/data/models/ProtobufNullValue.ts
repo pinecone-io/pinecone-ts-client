@@ -12,28 +12,27 @@
  * Do not edit the class manually.
  */
 
+
 /**
  * `NullValue` is a singleton enumeration to represent the null value for the `Value` type union.
  * The JSON representation for `NullValue` is JSON `null`.
  * @export
  */
 export const ProtobufNullValue = {
-  NullValue: 'NULL_VALUE',
+    NullValue: 'NULL_VALUE'
 } as const;
-export type ProtobufNullValue =
-  (typeof ProtobufNullValue)[keyof typeof ProtobufNullValue];
+export type ProtobufNullValue = typeof ProtobufNullValue[keyof typeof ProtobufNullValue];
+
 
 export function ProtobufNullValueFromJSON(json: any): ProtobufNullValue {
-  return ProtobufNullValueFromJSONTyped(json, false);
+    return ProtobufNullValueFromJSONTyped(json, false);
 }
 
-export function ProtobufNullValueFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): ProtobufNullValue {
-  return json as ProtobufNullValue;
+export function ProtobufNullValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProtobufNullValue {
+    return json as ProtobufNullValue;
 }
 
 export function ProtobufNullValueToJSON(value?: ProtobufNullValue | null): any {
-  return value as any;
+    return value as any;
 }
+

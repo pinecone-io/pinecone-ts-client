@@ -19,51 +19,47 @@ import { exists, mapValues } from '../runtime';
  * @interface PodSpecMetadataConfig
  */
 export interface PodSpecMetadataConfig {
-  /**
-   * By default, all metadata is indexed; to change this behavior, use this property to specify an array of metadata fields that should be indexed.
-   * @type {Array<string>}
-   * @memberof PodSpecMetadataConfig
-   */
-  indexed?: Array<string>;
+    /**
+     * By default, all metadata is indexed; to change this behavior, use this property to specify an array of metadata fields that should be indexed.
+     * @type {Array<string>}
+     * @memberof PodSpecMetadataConfig
+     */
+    indexed?: Array<string>;
 }
 
 /**
  * Check if a given object implements the PodSpecMetadataConfig interface.
  */
 export function instanceOfPodSpecMetadataConfig(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
-export function PodSpecMetadataConfigFromJSON(
-  json: any
-): PodSpecMetadataConfig {
-  return PodSpecMetadataConfigFromJSONTyped(json, false);
+export function PodSpecMetadataConfigFromJSON(json: any): PodSpecMetadataConfig {
+    return PodSpecMetadataConfigFromJSONTyped(json, false);
 }
 
-export function PodSpecMetadataConfigFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): PodSpecMetadataConfig {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    indexed: !exists(json, 'indexed') ? undefined : json['indexed'],
-  };
+export function PodSpecMetadataConfigFromJSONTyped(json: any, ignoreDiscriminator: boolean): PodSpecMetadataConfig {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'indexed': !exists(json, 'indexed') ? undefined : json['indexed'],
+    };
 }
 
-export function PodSpecMetadataConfigToJSON(
-  value?: PodSpecMetadataConfig | null
-): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    indexed: value.indexed,
-  };
+export function PodSpecMetadataConfigToJSON(value?: PodSpecMetadataConfig | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'indexed': value.indexed,
+    };
 }
+

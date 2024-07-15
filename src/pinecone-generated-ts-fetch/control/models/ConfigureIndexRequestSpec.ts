@@ -15,63 +15,59 @@
 import { exists, mapValues } from '../runtime';
 import type { ConfigureIndexRequestSpecPod } from './ConfigureIndexRequestSpecPod';
 import {
-  ConfigureIndexRequestSpecPodFromJSON,
-  ConfigureIndexRequestSpecPodFromJSONTyped,
-  ConfigureIndexRequestSpecPodToJSON,
+    ConfigureIndexRequestSpecPodFromJSON,
+    ConfigureIndexRequestSpecPodFromJSONTyped,
+    ConfigureIndexRequestSpecPodToJSON,
 } from './ConfigureIndexRequestSpecPod';
 
 /**
- *
+ * 
  * @export
  * @interface ConfigureIndexRequestSpec
  */
 export interface ConfigureIndexRequestSpec {
-  /**
-   *
-   * @type {ConfigureIndexRequestSpecPod}
-   * @memberof ConfigureIndexRequestSpec
-   */
-  pod: ConfigureIndexRequestSpecPod;
+    /**
+     * 
+     * @type {ConfigureIndexRequestSpecPod}
+     * @memberof ConfigureIndexRequestSpec
+     */
+    pod: ConfigureIndexRequestSpecPod;
 }
 
 /**
  * Check if a given object implements the ConfigureIndexRequestSpec interface.
  */
 export function instanceOfConfigureIndexRequestSpec(value: object): boolean {
-  let isInstance = true;
-  isInstance = isInstance && 'pod' in value;
+    let isInstance = true;
+    isInstance = isInstance && "pod" in value;
 
-  return isInstance;
+    return isInstance;
 }
 
-export function ConfigureIndexRequestSpecFromJSON(
-  json: any
-): ConfigureIndexRequestSpec {
-  return ConfigureIndexRequestSpecFromJSONTyped(json, false);
+export function ConfigureIndexRequestSpecFromJSON(json: any): ConfigureIndexRequestSpec {
+    return ConfigureIndexRequestSpecFromJSONTyped(json, false);
 }
 
-export function ConfigureIndexRequestSpecFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): ConfigureIndexRequestSpec {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    pod: ConfigureIndexRequestSpecPodFromJSON(json['pod']),
-  };
+export function ConfigureIndexRequestSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigureIndexRequestSpec {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'pod': ConfigureIndexRequestSpecPodFromJSON(json['pod']),
+    };
 }
 
-export function ConfigureIndexRequestSpecToJSON(
-  value?: ConfigureIndexRequestSpec | null
-): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    pod: ConfigureIndexRequestSpecPodToJSON(value.pod),
-  };
+export function ConfigureIndexRequestSpecToJSON(value?: ConfigureIndexRequestSpec | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'pod': ConfigureIndexRequestSpecPodToJSON(value.pod),
+    };
 }
+

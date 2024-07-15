@@ -15,76 +15,74 @@
 import { exists, mapValues } from '../runtime';
 import type { PodSpec } from './PodSpec';
 import {
-  PodSpecFromJSON,
-  PodSpecFromJSONTyped,
-  PodSpecToJSON,
+    PodSpecFromJSON,
+    PodSpecFromJSONTyped,
+    PodSpecToJSON,
 } from './PodSpec';
 import type { ServerlessSpec } from './ServerlessSpec';
 import {
-  ServerlessSpecFromJSON,
-  ServerlessSpecFromJSONTyped,
-  ServerlessSpecToJSON,
+    ServerlessSpecFromJSON,
+    ServerlessSpecFromJSONTyped,
+    ServerlessSpecToJSON,
 } from './ServerlessSpec';
 
 /**
  * The spec object defines how the index should be deployed.
- *
- * For serverless indexes, you define only the cloud and region where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
+ * 
+ * For serverless indexes, you define only the [cloud and region](http://docs.pinecone.io/guides/indexes/understanding-indexes#cloud-regions) where the index should be hosted. For pod-based indexes, you define the [environment](http://docs.pinecone.io/guides/indexes/understanding-indexes#pod-environments) where the index should be hosted, the [pod type and size](http://docs.pinecone.io/guides/indexes/understanding-indexes#pod-types) to use, and other index characteristics.
  * @export
  * @interface IndexSpec
  */
 export interface IndexSpec {
-  /**
-   *
-   * @type {ServerlessSpec}
-   * @memberof IndexSpec
-   */
-  serverless?: ServerlessSpec;
-  /**
-   *
-   * @type {PodSpec}
-   * @memberof IndexSpec
-   */
-  pod?: PodSpec;
+    /**
+     * 
+     * @type {ServerlessSpec}
+     * @memberof IndexSpec
+     */
+    serverless?: ServerlessSpec;
+    /**
+     * 
+     * @type {PodSpec}
+     * @memberof IndexSpec
+     */
+    pod?: PodSpec;
 }
 
 /**
  * Check if a given object implements the IndexSpec interface.
  */
 export function instanceOfIndexSpec(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function IndexSpecFromJSON(json: any): IndexSpec {
-  return IndexSpecFromJSONTyped(json, false);
+    return IndexSpecFromJSONTyped(json, false);
 }
 
-export function IndexSpecFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): IndexSpec {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    serverless: !exists(json, 'serverless')
-      ? undefined
-      : ServerlessSpecFromJSON(json['serverless']),
-    pod: !exists(json, 'pod') ? undefined : PodSpecFromJSON(json['pod']),
-  };
+export function IndexSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexSpec {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'serverless': !exists(json, 'serverless') ? undefined : ServerlessSpecFromJSON(json['serverless']),
+        'pod': !exists(json, 'pod') ? undefined : PodSpecFromJSON(json['pod']),
+    };
 }
 
 export function IndexSpecToJSON(value?: IndexSpec | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    serverless: ServerlessSpecToJSON(value.serverless),
-    pod: PodSpecToJSON(value.pod),
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'serverless': ServerlessSpecToJSON(value.serverless),
+        'pod': PodSpecToJSON(value.pod),
+    };
 }
+

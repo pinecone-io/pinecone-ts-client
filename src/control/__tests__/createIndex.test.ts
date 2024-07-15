@@ -59,6 +59,8 @@ describe('createIndex', () => {
         pod: {
           environment: 'us-west1',
           pods: 1,
+          shards: 1,
+          replicas: 1,
           podType: 'p1.x1',
         },
       },
@@ -74,6 +76,8 @@ describe('createIndex', () => {
           pod: {
             environment: 'us-west1',
             pods: 1,
+            shards: 1,
+            replicas: 1,
             podType: 'p1.x1',
           },
         },
@@ -90,6 +94,8 @@ describe('createIndex', () => {
         pod: {
           environment: 'us-west1',
           pods: 1,
+          shards: 1,
+          replicas: 1,
           podType: 'p1.x1',
         },
       },
@@ -105,6 +111,8 @@ describe('createIndex', () => {
           pod: {
             environment: 'us-west1',
             pods: 1,
+            shards: 1,
+            replicas: 1,
             podType: 'p1.x1',
           },
         },
@@ -135,6 +143,8 @@ describe('createIndex', () => {
           pod: {
             environment: 'us-west1',
             pods: 1,
+            shards: 1,
+            replicas: 1,
             podType: 'p1.x1',
           },
         },
@@ -151,6 +161,8 @@ describe('createIndex', () => {
             pod: {
               environment: 'us-west1',
               pods: 1,
+              shards: 1,
+              replicas: 1,
               podType: 'p1.x1',
             },
           },
@@ -186,6 +198,8 @@ describe('createIndex', () => {
           pod: {
             environment: 'us-west1',
             pods: 1,
+            shards: 1,
+            replicas: 1,
             podType: 'p1.x1',
           },
         },

@@ -13,11 +13,17 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DeletionProtection } from './DeletionProtection';
+import {
+    DeletionProtectionFromJSON,
+    DeletionProtectionFromJSONTyped,
+    DeletionProtectionToJSON,
+} from './DeletionProtection';
 import type { IndexSpec } from './IndexSpec';
 import {
-  IndexSpecFromJSON,
-  IndexSpecFromJSONTyped,
-  IndexSpecToJSON,
+    IndexSpecFromJSON,
+    IndexSpecFromJSONTyped,
+    IndexSpecToJSON,
 } from './IndexSpec';
 
 /**
@@ -26,87 +32,94 @@ import {
  * @interface CreateIndexRequest
  */
 export interface CreateIndexRequest {
-  /**
-   * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
-   * @type {string}
-   * @memberof CreateIndexRequest
-   */
-  name: string;
-  /**
-   * The dimensions of the vectors to be inserted in the index.
-   * @type {number}
-   * @memberof CreateIndexRequest
-   */
-  dimension: number;
-  /**
-   * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
-   * @type {string}
-   * @memberof CreateIndexRequest
-   */
-  metric?: CreateIndexRequestMetricEnum;
-  /**
-   *
-   * @type {IndexSpec}
-   * @memberof CreateIndexRequest
-   */
-  spec: IndexSpec | null;
+    /**
+     * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
+     * @type {string}
+     * @memberof CreateIndexRequest
+     */
+    name: string;
+    /**
+     * The dimensions of the vectors to be inserted in the index.
+     * @type {number}
+     * @memberof CreateIndexRequest
+     */
+    dimension: number;
+    /**
+     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
+     * @type {string}
+     * @memberof CreateIndexRequest
+     */
+    metric?: CreateIndexRequestMetricEnum;
+    /**
+     * 
+     * @type {DeletionProtection}
+     * @memberof CreateIndexRequest
+     */
+    deletionProtection?: DeletionProtection;
+    /**
+     * 
+     * @type {IndexSpec}
+     * @memberof CreateIndexRequest
+     */
+    spec: IndexSpec | null;
 }
+
 
 /**
  * @export
  */
 export const CreateIndexRequestMetricEnum = {
-  Cosine: 'cosine',
-  Euclidean: 'euclidean',
-  Dotproduct: 'dotproduct',
+    Cosine: 'cosine',
+    Euclidean: 'euclidean',
+    Dotproduct: 'dotproduct'
 } as const;
-export type CreateIndexRequestMetricEnum =
-  (typeof CreateIndexRequestMetricEnum)[keyof typeof CreateIndexRequestMetricEnum];
+export type CreateIndexRequestMetricEnum = typeof CreateIndexRequestMetricEnum[keyof typeof CreateIndexRequestMetricEnum];
+
 
 /**
  * Check if a given object implements the CreateIndexRequest interface.
  */
 export function instanceOfCreateIndexRequest(value: object): boolean {
-  let isInstance = true;
-  isInstance = isInstance && 'name' in value;
-  isInstance = isInstance && 'dimension' in value;
-  isInstance = isInstance && 'spec' in value;
+    let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "dimension" in value;
+    isInstance = isInstance && "spec" in value;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function CreateIndexRequestFromJSON(json: any): CreateIndexRequest {
-  return CreateIndexRequestFromJSONTyped(json, false);
+    return CreateIndexRequestFromJSONTyped(json, false);
 }
 
-export function CreateIndexRequestFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): CreateIndexRequest {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    name: json['name'],
-    dimension: json['dimension'],
-    metric: !exists(json, 'metric') ? undefined : json['metric'],
-    spec: IndexSpecFromJSON(json['spec']),
-  };
+export function CreateIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateIndexRequest {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'name': json['name'],
+        'dimension': json['dimension'],
+        'metric': !exists(json, 'metric') ? undefined : json['metric'],
+        'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
+        'spec': IndexSpecFromJSON(json['spec']),
+    };
 }
 
-export function CreateIndexRequestToJSON(
-  value?: CreateIndexRequest | null
-): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    name: value.name,
-    dimension: value.dimension,
-    metric: value.metric,
-    spec: IndexSpecToJSON(value.spec),
-  };
+export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'name': value.name,
+        'dimension': value.dimension,
+        'metric': value.metric,
+        'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
+        'spec': IndexSpecToJSON(value.spec),
+    };
 }
+

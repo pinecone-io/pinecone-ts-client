@@ -15,9 +15,9 @@
 import { exists, mapValues } from '../runtime';
 import type { CollectionModel } from './CollectionModel';
 import {
-  CollectionModelFromJSON,
-  CollectionModelFromJSONTyped,
-  CollectionModelToJSON,
+    CollectionModelFromJSON,
+    CollectionModelFromJSONTyped,
+    CollectionModelToJSON,
 } from './CollectionModel';
 
 /**
@@ -26,52 +26,47 @@ import {
  * @interface CollectionList
  */
 export interface CollectionList {
-  /**
-   *
-   * @type {Array<CollectionModel>}
-   * @memberof CollectionList
-   */
-  collections?: Array<CollectionModel>;
+    /**
+     * 
+     * @type {Array<CollectionModel>}
+     * @memberof CollectionList
+     */
+    collections?: Array<CollectionModel>;
 }
 
 /**
  * Check if a given object implements the CollectionList interface.
  */
 export function instanceOfCollectionList(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function CollectionListFromJSON(json: any): CollectionList {
-  return CollectionListFromJSONTyped(json, false);
+    return CollectionListFromJSONTyped(json, false);
 }
 
-export function CollectionListFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): CollectionList {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    collections: !exists(json, 'collections')
-      ? undefined
-      : (json['collections'] as Array<any>).map(CollectionModelFromJSON),
-  };
+export function CollectionListFromJSONTyped(json: any, ignoreDiscriminator: boolean): CollectionList {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'collections': !exists(json, 'collections') ? undefined : ((json['collections'] as Array<any>).map(CollectionModelFromJSON)),
+    };
 }
 
 export function CollectionListToJSON(value?: CollectionList | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    collections:
-      value.collections === undefined
-        ? undefined
-        : (value.collections as Array<any>).map(CollectionModelToJSON),
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'collections': value.collections === undefined ? undefined : ((value.collections as Array<any>).map(CollectionModelToJSON)),
+    };
 }
+

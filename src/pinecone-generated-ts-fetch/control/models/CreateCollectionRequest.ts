@@ -19,61 +19,57 @@ import { exists, mapValues } from '../runtime';
  * @interface CreateCollectionRequest
  */
 export interface CreateCollectionRequest {
-  /**
-   * The name of the collection to be created. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
-   * @type {string}
-   * @memberof CreateCollectionRequest
-   */
-  name: string;
-  /**
-   * The name of the index to be used as the source for the collection.
-   * @type {string}
-   * @memberof CreateCollectionRequest
-   */
-  source: string;
+    /**
+     * The name of the collection to be created. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
+     * @type {string}
+     * @memberof CreateCollectionRequest
+     */
+    name: string;
+    /**
+     * The name of the index to be used as the source for the collection.
+     * @type {string}
+     * @memberof CreateCollectionRequest
+     */
+    source: string;
 }
 
 /**
  * Check if a given object implements the CreateCollectionRequest interface.
  */
 export function instanceOfCreateCollectionRequest(value: object): boolean {
-  let isInstance = true;
-  isInstance = isInstance && 'name' in value;
-  isInstance = isInstance && 'source' in value;
+    let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "source" in value;
 
-  return isInstance;
+    return isInstance;
 }
 
-export function CreateCollectionRequestFromJSON(
-  json: any
-): CreateCollectionRequest {
-  return CreateCollectionRequestFromJSONTyped(json, false);
+export function CreateCollectionRequestFromJSON(json: any): CreateCollectionRequest {
+    return CreateCollectionRequestFromJSONTyped(json, false);
 }
 
-export function CreateCollectionRequestFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): CreateCollectionRequest {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    name: json['name'],
-    source: json['source'],
-  };
+export function CreateCollectionRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateCollectionRequest {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'name': json['name'],
+        'source': json['source'],
+    };
 }
 
-export function CreateCollectionRequestToJSON(
-  value?: CreateCollectionRequest | null
-): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    name: value.name,
-    source: value.source,
-  };
+export function CreateCollectionRequestToJSON(value?: CreateCollectionRequest | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'name': value.name,
+        'source': value.source,
+    };
 }
+

@@ -15,9 +15,9 @@
 import { exists, mapValues } from '../runtime';
 import type { IndexModel } from './IndexModel';
 import {
-  IndexModelFromJSON,
-  IndexModelFromJSONTyped,
-  IndexModelToJSON,
+    IndexModelFromJSON,
+    IndexModelFromJSONTyped,
+    IndexModelToJSON,
 } from './IndexModel';
 
 /**
@@ -26,52 +26,47 @@ import {
  * @interface IndexList
  */
 export interface IndexList {
-  /**
-   *
-   * @type {Array<IndexModel>}
-   * @memberof IndexList
-   */
-  indexes?: Array<IndexModel>;
+    /**
+     * 
+     * @type {Array<IndexModel>}
+     * @memberof IndexList
+     */
+    indexes?: Array<IndexModel>;
 }
 
 /**
  * Check if a given object implements the IndexList interface.
  */
 export function instanceOfIndexList(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function IndexListFromJSON(json: any): IndexList {
-  return IndexListFromJSONTyped(json, false);
+    return IndexListFromJSONTyped(json, false);
 }
 
-export function IndexListFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): IndexList {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    indexes: !exists(json, 'indexes')
-      ? undefined
-      : (json['indexes'] as Array<any>).map(IndexModelFromJSON),
-  };
+export function IndexListFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexList {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'indexes': !exists(json, 'indexes') ? undefined : ((json['indexes'] as Array<any>).map(IndexModelFromJSON)),
+    };
 }
 
 export function IndexListToJSON(value?: IndexList | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    indexes:
-      value.indexes === undefined
-        ? undefined
-        : (value.indexes as Array<any>).map(IndexModelToJSON),
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'indexes': value.indexes === undefined ? undefined : ((value.indexes as Array<any>).map(IndexModelToJSON)),
+    };
 }
+

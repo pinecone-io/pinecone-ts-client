@@ -19,47 +19,47 @@ import { exists, mapValues } from '../runtime';
  * @interface Embedding
  */
 export interface Embedding {
-  /**
-   * The embedding values.
-   * @type {Array<number>}
-   * @memberof Embedding
-   */
-  values?: Array<number>;
+    /**
+     * The embedding values.
+     * @type {Array<number>}
+     * @memberof Embedding
+     */
+    values?: Array<number>;
 }
 
 /**
  * Check if a given object implements the Embedding interface.
  */
 export function instanceOfEmbedding(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function EmbeddingFromJSON(json: any): Embedding {
-  return EmbeddingFromJSONTyped(json, false);
+    return EmbeddingFromJSONTyped(json, false);
 }
 
-export function EmbeddingFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): Embedding {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    values: !exists(json, 'values') ? undefined : json['values'],
-  };
+export function EmbeddingFromJSONTyped(json: any, ignoreDiscriminator: boolean): Embedding {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'values': !exists(json, 'values') ? undefined : json['values'],
+    };
 }
 
 export function EmbeddingToJSON(value?: Embedding | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    values: value.values,
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'values': value.values,
+    };
 }
+

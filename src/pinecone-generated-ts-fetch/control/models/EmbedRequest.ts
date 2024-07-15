@@ -15,15 +15,15 @@
 import { exists, mapValues } from '../runtime';
 import type { EmbedRequestInputsInner } from './EmbedRequestInputsInner';
 import {
-  EmbedRequestInputsInnerFromJSON,
-  EmbedRequestInputsInnerFromJSONTyped,
-  EmbedRequestInputsInnerToJSON,
+    EmbedRequestInputsInnerFromJSON,
+    EmbedRequestInputsInnerFromJSONTyped,
+    EmbedRequestInputsInnerToJSON,
 } from './EmbedRequestInputsInner';
 import type { EmbedRequestParameters } from './EmbedRequestParameters';
 import {
-  EmbedRequestParametersFromJSON,
-  EmbedRequestParametersFromJSONTyped,
-  EmbedRequestParametersToJSON,
+    EmbedRequestParametersFromJSON,
+    EmbedRequestParametersFromJSONTyped,
+    EmbedRequestParametersToJSON,
 } from './EmbedRequestParameters';
 
 /**
@@ -32,67 +32,65 @@ import {
  * @interface EmbedRequest
  */
 export interface EmbedRequest {
-  /**
-   *
-   * @type {string}
-   * @memberof EmbedRequest
-   */
-  model: string;
-  /**
-   *
-   * @type {EmbedRequestParameters}
-   * @memberof EmbedRequest
-   */
-  parameters?: EmbedRequestParameters;
-  /**
-   *
-   * @type {Array<EmbedRequestInputsInner>}
-   * @memberof EmbedRequest
-   */
-  inputs: Array<EmbedRequestInputsInner>;
+    /**
+     * 
+     * @type {string}
+     * @memberof EmbedRequest
+     */
+    model: string;
+    /**
+     * 
+     * @type {EmbedRequestParameters}
+     * @memberof EmbedRequest
+     */
+    parameters?: EmbedRequestParameters;
+    /**
+     * 
+     * @type {Array<EmbedRequestInputsInner>}
+     * @memberof EmbedRequest
+     */
+    inputs: Array<EmbedRequestInputsInner>;
 }
 
 /**
  * Check if a given object implements the EmbedRequest interface.
  */
 export function instanceOfEmbedRequest(value: object): boolean {
-  let isInstance = true;
-  isInstance = isInstance && 'model' in value;
-  isInstance = isInstance && 'inputs' in value;
+    let isInstance = true;
+    isInstance = isInstance && "model" in value;
+    isInstance = isInstance && "inputs" in value;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function EmbedRequestFromJSON(json: any): EmbedRequest {
-  return EmbedRequestFromJSONTyped(json, false);
+    return EmbedRequestFromJSONTyped(json, false);
 }
 
-export function EmbedRequestFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): EmbedRequest {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    model: json['model'],
-    parameters: !exists(json, 'parameters')
-      ? undefined
-      : EmbedRequestParametersFromJSON(json['parameters']),
-    inputs: (json['inputs'] as Array<any>).map(EmbedRequestInputsInnerFromJSON),
-  };
+export function EmbedRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): EmbedRequest {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'model': json['model'],
+        'parameters': !exists(json, 'parameters') ? undefined : EmbedRequestParametersFromJSON(json['parameters']),
+        'inputs': ((json['inputs'] as Array<any>).map(EmbedRequestInputsInnerFromJSON)),
+    };
 }
 
 export function EmbedRequestToJSON(value?: EmbedRequest | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    model: value.model,
-    parameters: EmbedRequestParametersToJSON(value.parameters),
-    inputs: (value.inputs as Array<any>).map(EmbedRequestInputsInnerToJSON),
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'model': value.model,
+        'parameters': EmbedRequestParametersToJSON(value.parameters),
+        'inputs': ((value.inputs as Array<any>).map(EmbedRequestInputsInnerToJSON)),
+    };
 }
+

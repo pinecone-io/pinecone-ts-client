@@ -15,73 +15,66 @@
 import { exists, mapValues } from '../runtime';
 import type { ScoredVector } from './ScoredVector';
 import {
-  ScoredVectorFromJSON,
-  ScoredVectorFromJSONTyped,
-  ScoredVectorToJSON,
+    ScoredVectorFromJSON,
+    ScoredVectorFromJSONTyped,
+    ScoredVectorToJSON,
 } from './ScoredVector';
 
 /**
- *
+ * 
  * @export
  * @interface SingleQueryResults
  */
 export interface SingleQueryResults {
-  /**
-   * The matches for the vectors.
-   * @type {Array<ScoredVector>}
-   * @memberof SingleQueryResults
-   */
-  matches?: Array<ScoredVector>;
-  /**
-   * The namespace for the vectors.
-   * @type {string}
-   * @memberof SingleQueryResults
-   */
-  namespace?: string;
+    /**
+     * The matches for the vectors.
+     * @type {Array<ScoredVector>}
+     * @memberof SingleQueryResults
+     */
+    matches?: Array<ScoredVector>;
+    /**
+     * The namespace for the vectors.
+     * @type {string}
+     * @memberof SingleQueryResults
+     */
+    namespace?: string;
 }
 
 /**
  * Check if a given object implements the SingleQueryResults interface.
  */
 export function instanceOfSingleQueryResults(value: object): boolean {
-  let isInstance = true;
+    let isInstance = true;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function SingleQueryResultsFromJSON(json: any): SingleQueryResults {
-  return SingleQueryResultsFromJSONTyped(json, false);
+    return SingleQueryResultsFromJSONTyped(json, false);
 }
 
-export function SingleQueryResultsFromJSONTyped(
-  json: any,
-  ignoreDiscriminator: boolean
-): SingleQueryResults {
-  if (json === undefined || json === null) {
-    return json;
-  }
-  return {
-    matches: !exists(json, 'matches')
-      ? undefined
-      : (json['matches'] as Array<any>).map(ScoredVectorFromJSON),
-    namespace: !exists(json, 'namespace') ? undefined : json['namespace'],
-  };
+export function SingleQueryResultsFromJSONTyped(json: any, ignoreDiscriminator: boolean): SingleQueryResults {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'matches': !exists(json, 'matches') ? undefined : ((json['matches'] as Array<any>).map(ScoredVectorFromJSON)),
+        'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
+    };
 }
 
-export function SingleQueryResultsToJSON(
-  value?: SingleQueryResults | null
-): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-    matches:
-      value.matches === undefined
-        ? undefined
-        : (value.matches as Array<any>).map(ScoredVectorToJSON),
-    namespace: value.namespace,
-  };
+export function SingleQueryResultsToJSON(value?: SingleQueryResults | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'matches': value.matches === undefined ? undefined : ((value.matches as Array<any>).map(ScoredVectorToJSON)),
+        'namespace': value.namespace,
+    };
 }
+
