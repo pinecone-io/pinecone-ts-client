@@ -1,7 +1,7 @@
 import { describeIndexStats } from '../describeIndexStats';
-import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
-import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch';
+import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch/data';
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (

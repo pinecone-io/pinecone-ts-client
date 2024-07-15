@@ -2,6 +2,7 @@
 .env
 
 # Generated files
+build/
 coverage/
 dist/
 docs/

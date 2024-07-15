@@ -1,6 +1,6 @@
 import { UpsertCommand } from '../upsert';
-import { DataPlaneApi } from '../../pinecone-generated-ts-fetch';
-import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch';
+import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
+import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {

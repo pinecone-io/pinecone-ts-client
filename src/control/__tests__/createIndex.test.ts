@@ -1,10 +1,10 @@
 import { createIndex } from '../createIndex';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 import type {
   CreateIndexOperationRequest,
   DescribeIndexRequest,
   IndexModel,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/control';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexResponse = (

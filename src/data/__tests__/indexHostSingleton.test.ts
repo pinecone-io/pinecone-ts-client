@@ -173,11 +173,6 @@ describe('IndexHostSingleton', () => {
     expect(mockDescribeIndex).toHaveBeenNthCalledWith(1, 'index-1');
     expect(mockDescribeIndex).toHaveBeenNthCalledWith(2, 'index-2');
 
-    console.log(
-      'mockIndexOperationsBuilder',
-      JSON.stringify(mockIndexOperationsBuilder.mock)
-    );
-
     expect(mockIndexOperationsBuilder).toHaveBeenCalledTimes(2);
     expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
       1,

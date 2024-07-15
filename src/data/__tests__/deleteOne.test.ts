@@ -2,7 +2,7 @@ import { deleteOne } from '../deleteOne';
 import type {
   DeleteOperationRequest,
   DataPlaneApi,
-} from '../../pinecone-generated-ts-fetch';
+} from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupDeleteResponse = (response, isSuccess) => {
