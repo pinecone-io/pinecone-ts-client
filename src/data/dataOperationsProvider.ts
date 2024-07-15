@@ -3,8 +3,9 @@ import {
   Configuration,
   ConfigurationParameters,
   DataPlaneApi,
-} from '../pinecone-generated-ts-fetch';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch';
+  X_PINECONE_API_VERSION,
+} from '../pinecone-generated-ts-fetch/data';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/data';
 import {
   queryParamsStringify,
   buildUserAgent,
@@ -63,6 +64,7 @@ export class DataOperationsProvider {
       queryParamsStringify,
       headers: {
         'User-Agent': buildUserAgent(this.config),
+        'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
         ...headers,
       },
       fetchApi: getFetch(this.config),

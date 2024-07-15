@@ -14,7 +14,7 @@ import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import { listPaginated } from './list';
 import type { ListOptions } from './list';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/data';
 import type {
   PineconeConfiguration,
   RecordMetadata,

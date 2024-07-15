@@ -6,13 +6,13 @@
 
 import { createIndex } from '../createIndex';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 
 describe('createIndex argument validations', () => {
   let MIA: ManageIndexesApi;
   beforeEach(() => {
     MIA = { createIndex: jest.fn() };
-    jest.mock('../../pinecone-generated-ts-fetch', () => ({
+    jest.mock('../../pinecone-generated-ts-fetch/control', () => ({
       ManageIndexesApi: MIA,
     }));
   });

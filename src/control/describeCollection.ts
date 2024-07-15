@@ -1,7 +1,7 @@
 import {
   ManageIndexesApi,
   CollectionModel,
-} from '../pinecone-generated-ts-fetch';
+} from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
