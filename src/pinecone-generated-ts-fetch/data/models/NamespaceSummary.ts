@@ -19,47 +19,47 @@ import { exists, mapValues } from '../runtime';
  * @interface NamespaceSummary
  */
 export interface NamespaceSummary {
-    /**
-     * The number of vectors stored in this namespace. Note that updates to this field may lag behind updates to the underlying index and corresponding query results, etc.
-     * @type {number}
-     * @memberof NamespaceSummary
-     */
-    vectorCount?: number;
+  /**
+   * The number of vectors stored in this namespace. Note that updates to this field may lag behind updates to the underlying index and corresponding query results, etc.
+   * @type {number}
+   * @memberof NamespaceSummary
+   */
+  vectorCount?: number;
 }
 
 /**
  * Check if a given object implements the NamespaceSummary interface.
  */
 export function instanceOfNamespaceSummary(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function NamespaceSummaryFromJSON(json: any): NamespaceSummary {
-    return NamespaceSummaryFromJSONTyped(json, false);
+  return NamespaceSummaryFromJSONTyped(json, false);
 }
 
-export function NamespaceSummaryFromJSONTyped(json: any, ignoreDiscriminator: boolean): NamespaceSummary {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'vectorCount': !exists(json, 'vectorCount') ? undefined : json['vectorCount'],
-    };
+export function NamespaceSummaryFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): NamespaceSummary {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    vectorCount: !exists(json, 'vectorCount') ? undefined : json['vectorCount'],
+  };
 }
 
 export function NamespaceSummaryToJSON(value?: NamespaceSummary | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'vectorCount': value.vectorCount,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    vectorCount: value.vectorCount,
+  };
 }
-

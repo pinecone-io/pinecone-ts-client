@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import type {
   CollectionList,
@@ -25,383 +24,554 @@ import type {
   IndexModel,
 } from '../models/index';
 import {
-    CollectionListFromJSON,
-    CollectionListToJSON,
-    CollectionModelFromJSON,
-    CollectionModelToJSON,
-    ConfigureIndexRequestFromJSON,
-    ConfigureIndexRequestToJSON,
-    CreateCollectionRequestFromJSON,
-    CreateCollectionRequestToJSON,
-    CreateIndexRequestFromJSON,
-    CreateIndexRequestToJSON,
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    IndexListFromJSON,
-    IndexListToJSON,
-    IndexModelFromJSON,
-    IndexModelToJSON,
+  CollectionListFromJSON,
+  CollectionListToJSON,
+  CollectionModelFromJSON,
+  CollectionModelToJSON,
+  ConfigureIndexRequestFromJSON,
+  ConfigureIndexRequestToJSON,
+  CreateCollectionRequestFromJSON,
+  CreateCollectionRequestToJSON,
+  CreateIndexRequestFromJSON,
+  CreateIndexRequestToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  IndexListFromJSON,
+  IndexListToJSON,
+  IndexModelFromJSON,
+  IndexModelToJSON,
 } from '../models/index';
 
 export interface ConfigureIndexOperationRequest {
-    indexName: string;
-    configureIndexRequest: ConfigureIndexRequest;
+  indexName: string;
+  configureIndexRequest: ConfigureIndexRequest;
 }
 
 export interface CreateCollectionOperationRequest {
-    createCollectionRequest: CreateCollectionRequest;
+  createCollectionRequest: CreateCollectionRequest;
 }
 
 export interface CreateIndexOperationRequest {
-    createIndexRequest: CreateIndexRequest;
+  createIndexRequest: CreateIndexRequest;
 }
 
 export interface DeleteCollectionRequest {
-    collectionName: string;
+  collectionName: string;
 }
 
 export interface DeleteIndexRequest {
-    indexName: string;
+  indexName: string;
 }
 
 export interface DescribeCollectionRequest {
-    collectionName: string;
+  collectionName: string;
 }
 
 export interface DescribeIndexRequest {
-    indexName: string;
+  indexName: string;
 }
 
 /**
- * 
+ *
  */
 export class ManageIndexesApi extends runtime.BaseAPI {
-
-    /**
-     * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
-     * Configure an index
-     */
-    async configureIndexRaw(requestParameters: ConfigureIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
-        if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling configureIndex.');
-        }
-
-        if (requestParameters.configureIndexRequest === null || requestParameters.configureIndexRequest === undefined) {
-            throw new runtime.RequiredError('configureIndexRequest','Required parameter requestParameters.configureIndexRequest was null or undefined when calling configureIndex.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/indexes/{index_name}`.replace(`{${"index_name"}}`, encodeURIComponent(String(requestParameters.indexName))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ConfigureIndexRequestToJSON(requestParameters.configureIndexRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
+  /**
+   * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
+   * Configure an index
+   */
+  async configureIndexRaw(
+    requestParameters: ConfigureIndexOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<IndexModel>> {
+    if (
+      requestParameters.indexName === null ||
+      requestParameters.indexName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'indexName',
+        'Required parameter requestParameters.indexName was null or undefined when calling configureIndex.'
+      );
     }
 
-    /**
-     * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
-     * Configure an index
-     */
-    async configureIndex(requestParameters: ConfigureIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
-        const response = await this.configureIndexRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (
+      requestParameters.configureIndexRequest === null ||
+      requestParameters.configureIndexRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'configureIndexRequest',
+        'Required parameter requestParameters.configureIndexRequest was null or undefined when calling configureIndex.'
+      );
     }
 
-    /**
-     * This operation creates a Pinecone collection.    Serverless indexes do not support collections. 
-     * Create a collection
-     */
-    async createCollectionRaw(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionModel>> {
-        if (requestParameters.createCollectionRequest === null || requestParameters.createCollectionRequest === undefined) {
-            throw new runtime.RequiredError('createCollectionRequest','Required parameter requestParameters.createCollectionRequest was null or undefined when calling createCollection.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/collections`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateCollectionRequestToJSON(requestParameters.createCollectionRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionModelFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation creates a Pinecone collection.    Serverless indexes do not support collections. 
-     * Create a collection
-     */
-    async createCollection(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionModel> {
-        const response = await this.createCollectionRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/indexes/{index_name}`.replace(
+          `{${'index_name'}}`,
+          encodeURIComponent(String(requestParameters.indexName))
+        ),
+        method: 'PATCH',
+        headers: headerParameters,
+        query: queryParameters,
+        body: ConfigureIndexRequestToJSON(
+          requestParameters.configureIndexRequest
+        ),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      IndexModelFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
+   * Configure an index
+   */
+  async configureIndex(
+    requestParameters: ConfigureIndexOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<IndexModel> {
+    const response = await this.configureIndexRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * This operation creates a Pinecone collection.    Serverless indexes do not support collections.
+   * Create a collection
+   */
+  async createCollectionRaw(
+    requestParameters: CreateCollectionOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<CollectionModel>> {
+    if (
+      requestParameters.createCollectionRequest === null ||
+      requestParameters.createCollectionRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'createCollectionRequest',
+        'Required parameter requestParameters.createCollectionRequest was null or undefined when calling createCollection.'
+      );
     }
 
-    /**
-     * This operation deploys a Pinecone index. This is where you specify the measure of similarity, the dimension of vectors to be stored in the index, which cloud provider you would like to deploy with, and more.    For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/indexes/create-an-index#create-a-serverless-index). 
-     * Create an index
-     */
-    async createIndexRaw(requestParameters: CreateIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
-        if (requestParameters.createIndexRequest === null || requestParameters.createIndexRequest === undefined) {
-            throw new runtime.RequiredError('createIndexRequest','Required parameter requestParameters.createIndexRequest was null or undefined when calling createIndex.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/indexes`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateIndexRequestToJSON(requestParameters.createIndexRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation deploys a Pinecone index. This is where you specify the measure of similarity, the dimension of vectors to be stored in the index, which cloud provider you would like to deploy with, and more.    For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/indexes/create-an-index#create-a-serverless-index). 
-     * Create an index
-     */
-    async createIndex(requestParameters: CreateIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
-        const response = await this.createIndexRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/collections`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: CreateCollectionRequestToJSON(
+          requestParameters.createCollectionRequest
+        ),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      CollectionModelFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * This operation creates a Pinecone collection.    Serverless indexes do not support collections.
+   * Create a collection
+   */
+  async createCollection(
+    requestParameters: CreateCollectionOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<CollectionModel> {
+    const response = await this.createCollectionRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * This operation deploys a Pinecone index. This is where you specify the measure of similarity, the dimension of vectors to be stored in the index, which cloud provider you would like to deploy with, and more.    For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/indexes/create-an-index#create-a-serverless-index).
+   * Create an index
+   */
+  async createIndexRaw(
+    requestParameters: CreateIndexOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<IndexModel>> {
+    if (
+      requestParameters.createIndexRequest === null ||
+      requestParameters.createIndexRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'createIndexRequest',
+        'Required parameter requestParameters.createIndexRequest was null or undefined when calling createIndex.'
+      );
     }
 
-    /**
-     * This operation deletes an existing collection. Serverless indexes do not support collections. 
-     * Delete a collection
-     */
-    async deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/collections/{collection_name}`.replace(`{${"collection_name"}}`, encodeURIComponent(String(requestParameters.collectionName))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation deletes an existing collection. Serverless indexes do not support collections. 
-     * Delete a collection
-     */
-    async deleteCollection(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.deleteCollectionRaw(requestParameters, initOverrides);
+    const response = await this.request(
+      {
+        path: `/indexes`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: CreateIndexRequestToJSON(requestParameters.createIndexRequest),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      IndexModelFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * This operation deploys a Pinecone index. This is where you specify the measure of similarity, the dimension of vectors to be stored in the index, which cloud provider you would like to deploy with, and more.    For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/indexes/create-an-index#create-a-serverless-index).
+   * Create an index
+   */
+  async createIndex(
+    requestParameters: CreateIndexOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<IndexModel> {
+    const response = await this.createIndexRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * This operation deletes an existing collection. Serverless indexes do not support collections.
+   * Delete a collection
+   */
+  async deleteCollectionRaw(
+    requestParameters: DeleteCollectionRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.collectionName === null ||
+      requestParameters.collectionName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'collectionName',
+        'Required parameter requestParameters.collectionName was null or undefined when calling deleteCollection.'
+      );
     }
 
-    /**
-     * This operation deletes an existing index.
-     * Delete an index
-     */
-    async deleteIndexRaw(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/indexes/{index_name}`.replace(`{${"index_name"}}`, encodeURIComponent(String(requestParameters.indexName))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation deletes an existing index.
-     * Delete an index
-     */
-    async deleteIndex(requestParameters: DeleteIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.deleteIndexRaw(requestParameters, initOverrides);
+    const response = await this.request(
+      {
+        path: `/collections/{collection_name}`.replace(
+          `{${'collection_name'}}`,
+          encodeURIComponent(String(requestParameters.collectionName))
+        ),
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * This operation deletes an existing collection. Serverless indexes do not support collections.
+   * Delete a collection
+   */
+  async deleteCollection(
+    requestParameters: DeleteCollectionRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.deleteCollectionRaw(requestParameters, initOverrides);
+  }
+
+  /**
+   * This operation deletes an existing index.
+   * Delete an index
+   */
+  async deleteIndexRaw(
+    requestParameters: DeleteIndexRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<void>> {
+    if (
+      requestParameters.indexName === null ||
+      requestParameters.indexName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'indexName',
+        'Required parameter requestParameters.indexName was null or undefined when calling deleteIndex.'
+      );
     }
 
-    /**
-     * This operation gets a description of a collection. Serverless indexes do not support collections. 
-     * Describe a collection
-     */
-    async describeCollectionRaw(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionModel>> {
-        if (requestParameters.collectionName === null || requestParameters.collectionName === undefined) {
-            throw new runtime.RequiredError('collectionName','Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/collections/{collection_name}`.replace(`{${"collection_name"}}`, encodeURIComponent(String(requestParameters.collectionName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionModelFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation gets a description of a collection. Serverless indexes do not support collections. 
-     * Describe a collection
-     */
-    async describeCollection(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionModel> {
-        const response = await this.describeCollectionRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/indexes/{index_name}`.replace(
+          `{${'index_name'}}`,
+          encodeURIComponent(String(requestParameters.indexName))
+        ),
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * This operation deletes an existing index.
+   * Delete an index
+   */
+  async deleteIndex(
+    requestParameters: DeleteIndexRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<void> {
+    await this.deleteIndexRaw(requestParameters, initOverrides);
+  }
+
+  /**
+   * This operation gets a description of a collection. Serverless indexes do not support collections.
+   * Describe a collection
+   */
+  async describeCollectionRaw(
+    requestParameters: DescribeCollectionRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<CollectionModel>> {
+    if (
+      requestParameters.collectionName === null ||
+      requestParameters.collectionName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'collectionName',
+        'Required parameter requestParameters.collectionName was null or undefined when calling describeCollection.'
+      );
     }
 
-    /**
-     * Get a description of an index.
-     * Describe an index
-     */
-    async describeIndexRaw(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
-        if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
-            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling describeIndex.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/indexes/{index_name}`.replace(`{${"index_name"}}`, encodeURIComponent(String(requestParameters.indexName))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * Get a description of an index.
-     * Describe an index
-     */
-    async describeIndex(requestParameters: DescribeIndexRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
-        const response = await this.describeIndexRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/collections/{collection_name}`.replace(
+          `{${'collection_name'}}`,
+          encodeURIComponent(String(requestParameters.collectionName))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      CollectionModelFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * This operation gets a description of a collection. Serverless indexes do not support collections.
+   * Describe a collection
+   */
+  async describeCollection(
+    requestParameters: DescribeCollectionRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<CollectionModel> {
+    const response = await this.describeCollectionRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * Get a description of an index.
+   * Describe an index
+   */
+  async describeIndexRaw(
+    requestParameters: DescribeIndexRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<IndexModel>> {
+    if (
+      requestParameters.indexName === null ||
+      requestParameters.indexName === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'indexName',
+        'Required parameter requestParameters.indexName was null or undefined when calling describeIndex.'
+      );
     }
 
-    /**
-     * This operation returns a list of all collections in a project. Serverless indexes do not support collections. 
-     * List collections
-     */
-    async listCollectionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionList>> {
-        const queryParameters: any = {};
+    const queryParameters: any = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/collections`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionListFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation returns a list of all collections in a project. Serverless indexes do not support collections. 
-     * List collections
-     */
-    async listCollections(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionList> {
-        const response = await this.listCollectionsRaw(initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/indexes/{index_name}`.replace(
+          `{${'index_name'}}`,
+          encodeURIComponent(String(requestParameters.indexName))
+        ),
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      IndexModelFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * Get a description of an index.
+   * Describe an index
+   */
+  async describeIndex(
+    requestParameters: DescribeIndexRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<IndexModel> {
+    const response = await this.describeIndexRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * This operation returns a list of all collections in a project. Serverless indexes do not support collections.
+   * List collections
+   */
+  async listCollectionsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<CollectionList>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation returns a list of all indexes in a project.
-     * List indexes
-     */
-    async listIndexesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexList>> {
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: `/collections`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      CollectionListFromJSON(jsonValue)
+    );
+  }
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
+  /**
+   * This operation returns a list of all collections in a project. Serverless indexes do not support collections.
+   * List collections
+   */
+  async listCollections(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<CollectionList> {
+    const response = await this.listCollectionsRaw(initOverrides);
+    return await response.value();
+  }
 
-        const response = await this.request({
-            path: `/indexes`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+  /**
+   * This operation returns a list of all indexes in a project.
+   * List indexes
+   */
+  async listIndexesRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<IndexList>> {
+    const queryParameters: any = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => IndexListFromJSON(jsonValue));
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * This operation returns a list of all indexes in a project.
-     * List indexes
-     */
-    async listIndexes(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexList> {
-        const response = await this.listIndexesRaw(initOverrides);
-        return await response.value();
-    }
+    const response = await this.request(
+      {
+        path: `/indexes`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      IndexListFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * This operation returns a list of all indexes in a project.
+   * List indexes
+   */
+  async listIndexes(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<IndexList> {
+    const response = await this.listIndexesRaw(initOverrides);
+    return await response.value();
+  }
 }

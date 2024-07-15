@@ -15,15 +15,15 @@
 import { exists, mapValues } from '../runtime';
 import type { ConfigureIndexRequestSpec } from './ConfigureIndexRequestSpec';
 import {
-    ConfigureIndexRequestSpecFromJSON,
-    ConfigureIndexRequestSpecFromJSONTyped,
-    ConfigureIndexRequestSpecToJSON,
+  ConfigureIndexRequestSpecFromJSON,
+  ConfigureIndexRequestSpecFromJSONTyped,
+  ConfigureIndexRequestSpecToJSON,
 } from './ConfigureIndexRequestSpec';
 import type { DeletionProtection } from './DeletionProtection';
 import {
-    DeletionProtectionFromJSON,
-    DeletionProtectionFromJSONTyped,
-    DeletionProtectionToJSON,
+  DeletionProtectionFromJSON,
+  DeletionProtectionFromJSONTyped,
+  DeletionProtectionToJSON,
 } from './DeletionProtection';
 
 /**
@@ -32,55 +32,63 @@ import {
  * @interface ConfigureIndexRequest
  */
 export interface ConfigureIndexRequest {
-    /**
-     * 
-     * @type {ConfigureIndexRequestSpec}
-     * @memberof ConfigureIndexRequest
-     */
-    spec?: ConfigureIndexRequestSpec;
-    /**
-     * 
-     * @type {DeletionProtection}
-     * @memberof ConfigureIndexRequest
-     */
-    deletionProtection?: DeletionProtection;
+  /**
+   *
+   * @type {ConfigureIndexRequestSpec}
+   * @memberof ConfigureIndexRequest
+   */
+  spec?: ConfigureIndexRequestSpec;
+  /**
+   *
+   * @type {DeletionProtection}
+   * @memberof ConfigureIndexRequest
+   */
+  deletionProtection?: DeletionProtection;
 }
 
 /**
  * Check if a given object implements the ConfigureIndexRequest interface.
  */
 export function instanceOfConfigureIndexRequest(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
-export function ConfigureIndexRequestFromJSON(json: any): ConfigureIndexRequest {
-    return ConfigureIndexRequestFromJSONTyped(json, false);
+export function ConfigureIndexRequestFromJSON(
+  json: any
+): ConfigureIndexRequest {
+  return ConfigureIndexRequestFromJSONTyped(json, false);
 }
 
-export function ConfigureIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): ConfigureIndexRequest {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'spec': !exists(json, 'spec') ? undefined : ConfigureIndexRequestSpecFromJSON(json['spec']),
-        'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
-    };
+export function ConfigureIndexRequestFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ConfigureIndexRequest {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    spec: !exists(json, 'spec')
+      ? undefined
+      : ConfigureIndexRequestSpecFromJSON(json['spec']),
+    deletionProtection: !exists(json, 'deletion_protection')
+      ? undefined
+      : DeletionProtectionFromJSON(json['deletion_protection']),
+  };
 }
 
-export function ConfigureIndexRequestToJSON(value?: ConfigureIndexRequest | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'spec': ConfigureIndexRequestSpecToJSON(value.spec),
-        'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
-    };
+export function ConfigureIndexRequestToJSON(
+  value?: ConfigureIndexRequest | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    spec: ConfigureIndexRequestSpecToJSON(value.spec),
+    deletion_protection: DeletionProtectionToJSON(value.deletionProtection),
+  };
 }
-

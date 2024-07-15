@@ -19,47 +19,49 @@ import { exists, mapValues } from '../runtime';
  * @interface UpsertResponse
  */
 export interface UpsertResponse {
-    /**
-     * The number of vectors upserted.
-     * @type {number}
-     * @memberof UpsertResponse
-     */
-    upsertedCount?: number;
+  /**
+   * The number of vectors upserted.
+   * @type {number}
+   * @memberof UpsertResponse
+   */
+  upsertedCount?: number;
 }
 
 /**
  * Check if a given object implements the UpsertResponse interface.
  */
 export function instanceOfUpsertResponse(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function UpsertResponseFromJSON(json: any): UpsertResponse {
-    return UpsertResponseFromJSONTyped(json, false);
+  return UpsertResponseFromJSONTyped(json, false);
 }
 
-export function UpsertResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpsertResponse {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'upsertedCount': !exists(json, 'upsertedCount') ? undefined : json['upsertedCount'],
-    };
+export function UpsertResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): UpsertResponse {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    upsertedCount: !exists(json, 'upsertedCount')
+      ? undefined
+      : json['upsertedCount'],
+  };
 }
 
 export function UpsertResponseToJSON(value?: UpsertResponse | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'upsertedCount': value.upsertedCount,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    upsertedCount: value.upsertedCount,
+  };
 }
-

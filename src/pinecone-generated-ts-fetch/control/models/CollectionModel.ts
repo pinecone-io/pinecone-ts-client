@@ -19,102 +19,103 @@ import { exists, mapValues } from '../runtime';
  * @interface CollectionModel
  */
 export interface CollectionModel {
-    /**
-     * The name of the collection.
-     * @type {string}
-     * @memberof CollectionModel
-     */
-    name: string;
-    /**
-     * The size of the collection in bytes.
-     * @type {number}
-     * @memberof CollectionModel
-     */
-    size?: number;
-    /**
-     * The status of the collection.
-     * @type {string}
-     * @memberof CollectionModel
-     */
-    status: CollectionModelStatusEnum;
-    /**
-     * The dimension of the vectors stored in each record held in the collection.
-     * @type {number}
-     * @memberof CollectionModel
-     */
-    dimension?: number;
-    /**
-     * The number of records stored in the collection.
-     * @type {number}
-     * @memberof CollectionModel
-     */
-    vectorCount?: number;
-    /**
-     * The environment where the collection is hosted.
-     * @type {string}
-     * @memberof CollectionModel
-     */
-    environment: string;
+  /**
+   * The name of the collection.
+   * @type {string}
+   * @memberof CollectionModel
+   */
+  name: string;
+  /**
+   * The size of the collection in bytes.
+   * @type {number}
+   * @memberof CollectionModel
+   */
+  size?: number;
+  /**
+   * The status of the collection.
+   * @type {string}
+   * @memberof CollectionModel
+   */
+  status: CollectionModelStatusEnum;
+  /**
+   * The dimension of the vectors stored in each record held in the collection.
+   * @type {number}
+   * @memberof CollectionModel
+   */
+  dimension?: number;
+  /**
+   * The number of records stored in the collection.
+   * @type {number}
+   * @memberof CollectionModel
+   */
+  vectorCount?: number;
+  /**
+   * The environment where the collection is hosted.
+   * @type {string}
+   * @memberof CollectionModel
+   */
+  environment: string;
 }
-
 
 /**
  * @export
  */
 export const CollectionModelStatusEnum = {
-    Initializing: 'Initializing',
-    Ready: 'Ready',
-    Terminating: 'Terminating'
+  Initializing: 'Initializing',
+  Ready: 'Ready',
+  Terminating: 'Terminating',
 } as const;
-export type CollectionModelStatusEnum = typeof CollectionModelStatusEnum[keyof typeof CollectionModelStatusEnum];
-
+export type CollectionModelStatusEnum =
+  (typeof CollectionModelStatusEnum)[keyof typeof CollectionModelStatusEnum];
 
 /**
  * Check if a given object implements the CollectionModel interface.
  */
 export function instanceOfCollectionModel(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "status" in value;
-    isInstance = isInstance && "environment" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'name' in value;
+  isInstance = isInstance && 'status' in value;
+  isInstance = isInstance && 'environment' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function CollectionModelFromJSON(json: any): CollectionModel {
-    return CollectionModelFromJSONTyped(json, false);
+  return CollectionModelFromJSONTyped(json, false);
 }
 
-export function CollectionModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): CollectionModel {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'name': json['name'],
-        'size': !exists(json, 'size') ? undefined : json['size'],
-        'status': json['status'],
-        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
-        'vectorCount': !exists(json, 'vector_count') ? undefined : json['vector_count'],
-        'environment': json['environment'],
-    };
+export function CollectionModelFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): CollectionModel {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    name: json['name'],
+    size: !exists(json, 'size') ? undefined : json['size'],
+    status: json['status'],
+    dimension: !exists(json, 'dimension') ? undefined : json['dimension'],
+    vectorCount: !exists(json, 'vector_count')
+      ? undefined
+      : json['vector_count'],
+    environment: json['environment'],
+  };
 }
 
 export function CollectionModelToJSON(value?: CollectionModel | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'name': value.name,
-        'size': value.size,
-        'status': value.status,
-        'dimension': value.dimension,
-        'vector_count': value.vectorCount,
-        'environment': value.environment,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    name: value.name,
+    size: value.size,
+    status: value.status,
+    dimension: value.dimension,
+    vector_count: value.vectorCount,
+    environment: value.environment,
+  };
 }
-

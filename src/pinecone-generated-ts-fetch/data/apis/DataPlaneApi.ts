@@ -12,7 +12,6 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
 import type {
   DeleteRequest,
@@ -28,434 +27,561 @@ import type {
   UpsertResponse,
 } from '../models/index';
 import {
-    DeleteRequestFromJSON,
-    DeleteRequestToJSON,
-    DescribeIndexStatsRequestFromJSON,
-    DescribeIndexStatsRequestToJSON,
-    DescribeIndexStatsResponseFromJSON,
-    DescribeIndexStatsResponseToJSON,
-    FetchResponseFromJSON,
-    FetchResponseToJSON,
-    ListResponseFromJSON,
-    ListResponseToJSON,
-    QueryRequestFromJSON,
-    QueryRequestToJSON,
-    QueryResponseFromJSON,
-    QueryResponseToJSON,
-    RpcStatusFromJSON,
-    RpcStatusToJSON,
-    UpdateRequestFromJSON,
-    UpdateRequestToJSON,
-    UpsertRequestFromJSON,
-    UpsertRequestToJSON,
-    UpsertResponseFromJSON,
-    UpsertResponseToJSON,
+  DeleteRequestFromJSON,
+  DeleteRequestToJSON,
+  DescribeIndexStatsRequestFromJSON,
+  DescribeIndexStatsRequestToJSON,
+  DescribeIndexStatsResponseFromJSON,
+  DescribeIndexStatsResponseToJSON,
+  FetchResponseFromJSON,
+  FetchResponseToJSON,
+  ListResponseFromJSON,
+  ListResponseToJSON,
+  QueryRequestFromJSON,
+  QueryRequestToJSON,
+  QueryResponseFromJSON,
+  QueryResponseToJSON,
+  RpcStatusFromJSON,
+  RpcStatusToJSON,
+  UpdateRequestFromJSON,
+  UpdateRequestToJSON,
+  UpsertRequestFromJSON,
+  UpsertRequestToJSON,
+  UpsertResponseFromJSON,
+  UpsertResponseToJSON,
 } from '../models/index';
 
 export interface DeleteOperationRequest {
-    deleteRequest: DeleteRequest;
+  deleteRequest: DeleteRequest;
 }
 
 export interface AltDeleteRequest {
-    ids?: Array<string>;
-    deleteAll?: boolean;
-    namespace?: string;
+  ids?: Array<string>;
+  deleteAll?: boolean;
+  namespace?: string;
 }
 
 export interface DescribeIndexStatsOperationRequest {
-    describeIndexStatsRequest: DescribeIndexStatsRequest;
+  describeIndexStatsRequest: DescribeIndexStatsRequest;
 }
 
 export interface FetchRequest {
-    ids: Array<string>;
-    namespace?: string;
+  ids: Array<string>;
+  namespace?: string;
 }
 
 export interface ListRequest {
-    prefix?: string;
-    limit?: number;
-    paginationToken?: string;
-    namespace?: string;
+  prefix?: string;
+  limit?: number;
+  paginationToken?: string;
+  namespace?: string;
 }
 
 export interface QueryOperationRequest {
-    queryRequest: QueryRequest;
+  queryRequest: QueryRequest;
 }
 
 export interface UpdateOperationRequest {
-    updateRequest: UpdateRequest;
+  updateRequest: UpdateRequest;
 }
 
 export interface UpsertOperationRequest {
-    upsertRequest: UpsertRequest;
+  upsertRequest: UpsertRequest;
 }
 
 /**
- * 
+ *
  */
 export class DataPlaneApi extends runtime.BaseAPI {
-
-    /**
-     * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
-     * Delete vectors
-     */
-    async _deleteRaw(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
-        if (requestParameters.deleteRequest === null || requestParameters.deleteRequest === undefined) {
-            throw new runtime.RequiredError('deleteRequest','Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/delete`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DeleteRequestToJSON(requestParameters.deleteRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse<any>(response);
+  /**
+   * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+   * Delete vectors
+   */
+  async _deleteRaw(
+    requestParameters: DeleteOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<object>> {
+    if (
+      requestParameters.deleteRequest === null ||
+      requestParameters.deleteRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'deleteRequest',
+        'Required parameter requestParameters.deleteRequest was null or undefined when calling _delete.'
+      );
     }
 
-    /**
-     * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
-     * Delete vectors
-     */
-    async _delete(requestParameters: DeleteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this._deleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * DEPRECATED. Use [`POST /delete`](https://docs.pinecone.io/reference/api/data-plane/delete) instead.
-     * Delete vectors
-     */
-    async altDeleteRaw(requestParameters: AltDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: `/vectors/delete`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: DeleteRequestToJSON(requestParameters.deleteRequest),
+      },
+      initOverrides
+    );
 
-        if (requestParameters.ids) {
-            queryParameters['ids'] = requestParameters.ids;
-        }
+    return new runtime.JSONApiResponse<any>(response);
+  }
 
-        if (requestParameters.deleteAll !== undefined) {
-            queryParameters['deleteAll'] = requestParameters.deleteAll;
-        }
+  /**
+   * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+   * Delete vectors
+   */
+  async _delete(
+    requestParameters: DeleteOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<object> {
+    const response = await this._deleteRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
 
-        if (requestParameters.namespace !== undefined) {
-            queryParameters['namespace'] = requestParameters.namespace;
-        }
+  /**
+   * DEPRECATED. Use [`POST /delete`](https://docs.pinecone.io/reference/api/data-plane/delete) instead.
+   * Delete vectors
+   */
+  async altDeleteRaw(
+    requestParameters: AltDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<object>> {
+    const queryParameters: any = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/delete`,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse<any>(response);
+    if (requestParameters.ids) {
+      queryParameters['ids'] = requestParameters.ids;
     }
 
-    /**
-     * DEPRECATED. Use [`POST /delete`](https://docs.pinecone.io/reference/api/data-plane/delete) instead.
-     * Delete vectors
-     */
-    async altDelete(requestParameters: AltDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this.altDeleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters.deleteAll !== undefined) {
+      queryParameters['deleteAll'] = requestParameters.deleteAll;
     }
 
-    /**
-     * DEPRECATED. Use [`POST /describe_index_stats`](https://docs.pinecone.io/reference/api/data-plane/describeindexstats) instead.
-     * Get index stats
-     */
-    async altDescribeIndexStatsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/describe_index_stats`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => DescribeIndexStatsResponseFromJSON(jsonValue));
+    if (requestParameters.namespace !== undefined) {
+      queryParameters['namespace'] = requestParameters.namespace;
     }
 
-    /**
-     * DEPRECATED. Use [`POST /describe_index_stats`](https://docs.pinecone.io/reference/api/data-plane/describeindexstats) instead.
-     * Get index stats
-     */
-    async altDescribeIndexStats(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DescribeIndexStatsResponse> {
-        const response = await this.altDescribeIndexStatsRaw(initOverrides);
-        return await response.value();
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
-     * Get index stats
-     */
-    async describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
-        if (requestParameters.describeIndexStatsRequest === null || requestParameters.describeIndexStatsRequest === undefined) {
-            throw new runtime.RequiredError('describeIndexStatsRequest','Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.');
-        }
+    const response = await this.request(
+      {
+        path: `/vectors/delete`,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const queryParameters: any = {};
+    return new runtime.JSONApiResponse<any>(response);
+  }
 
-        const headerParameters: runtime.HTTPHeaders = {};
+  /**
+   * DEPRECATED. Use [`POST /delete`](https://docs.pinecone.io/reference/api/data-plane/delete) instead.
+   * Delete vectors
+   */
+  async altDelete(
+    requestParameters: AltDeleteRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<object> {
+    const response = await this.altDeleteRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
 
-        headerParameters['Content-Type'] = 'application/json';
+  /**
+   * DEPRECATED. Use [`POST /describe_index_stats`](https://docs.pinecone.io/reference/api/data-plane/describeindexstats) instead.
+   * Get index stats
+   */
+  async altDescribeIndexStatsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
+    const queryParameters: any = {};
 
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const response = await this.request({
-            path: `/describe_index_stats`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: DescribeIndexStatsRequestToJSON(requestParameters.describeIndexStatsRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => DescribeIndexStatsResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
-     * Get index stats
-     */
-    async describeIndexStats(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DescribeIndexStatsResponse> {
-        const response = await this.describeIndexStatsRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/describe_index_stats`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      DescribeIndexStatsResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * DEPRECATED. Use [`POST /describe_index_stats`](https://docs.pinecone.io/reference/api/data-plane/describeindexstats) instead.
+   * Get index stats
+   */
+  async altDescribeIndexStats(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<DescribeIndexStatsResponse> {
+    const response = await this.altDescribeIndexStatsRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+   * Get index stats
+   */
+  async describeIndexStatsRaw(
+    requestParameters: DescribeIndexStatsOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<DescribeIndexStatsResponse>> {
+    if (
+      requestParameters.describeIndexStatsRequest === null ||
+      requestParameters.describeIndexStatsRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'describeIndexStatsRequest',
+        'Required parameter requestParameters.describeIndexStatsRequest was null or undefined when calling describeIndexStats.'
+      );
     }
 
-    /**
-     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
-     * Fetch vectors
-     */
-    async fetchRaw(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
-        if (requestParameters.ids === null || requestParameters.ids === undefined) {
-            throw new runtime.RequiredError('ids','Required parameter requestParameters.ids was null or undefined when calling fetch.');
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (requestParameters.ids) {
-            queryParameters['ids'] = requestParameters.ids;
-        }
+    headerParameters['Content-Type'] = 'application/json';
 
-        if (requestParameters.namespace !== undefined) {
-            queryParameters['namespace'] = requestParameters.namespace;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/fetch`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => FetchResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
-     * Fetch vectors
-     */
-    async fetch(requestParameters: FetchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {
-        const response = await this.fetchRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/describe_index_stats`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: DescribeIndexStatsRequestToJSON(
+          requestParameters.describeIndexStatsRequest
+        ),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      DescribeIndexStatsResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+   * Get index stats
+   */
+  async describeIndexStats(
+    requestParameters: DescribeIndexStatsOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<DescribeIndexStatsResponse> {
+    const response = await this.describeIndexStatsRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+   * Fetch vectors
+   */
+  async fetchRaw(
+    requestParameters: FetchRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<FetchResponse>> {
+    if (requestParameters.ids === null || requestParameters.ids === undefined) {
+      throw new runtime.RequiredError(
+        'ids',
+        'Required parameter requestParameters.ids was null or undefined when calling fetch.'
+      );
     }
 
-    /**
-     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
-     * List vector IDs
-     */
-    async listRaw(requestParameters: ListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResponse>> {
-        const queryParameters: any = {};
+    const queryParameters: any = {};
 
-        if (requestParameters.prefix !== undefined) {
-            queryParameters['prefix'] = requestParameters.prefix;
-        }
-
-        if (requestParameters.limit !== undefined) {
-            queryParameters['limit'] = requestParameters.limit;
-        }
-
-        if (requestParameters.paginationToken !== undefined) {
-            queryParameters['paginationToken'] = requestParameters.paginationToken;
-        }
-
-        if (requestParameters.namespace !== undefined) {
-            queryParameters['namespace'] = requestParameters.namespace;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/list`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListResponseFromJSON(jsonValue));
+    if (requestParameters.ids) {
+      queryParameters['ids'] = requestParameters.ids;
     }
 
-    /**
-     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
-     * List vector IDs
-     */
-    async list(requestParameters: ListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResponse> {
-        const response = await this.listRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters.namespace !== undefined) {
+      queryParameters['namespace'] = requestParameters.namespace;
     }
 
-    /**
-     * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
-     * Query vectors
-     */
-    async queryRaw(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
-        if (requestParameters.queryRequest === null || requestParameters.queryRequest === undefined) {
-            throw new runtime.RequiredError('queryRequest','Required parameter requestParameters.queryRequest was null or undefined when calling query.');
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/query`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: QueryRequestToJSON(requestParameters.queryRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => QueryResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
-    /**
-     * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
-     * Query vectors
-     */
-    async query(requestParameters: QueryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QueryResponse> {
-        const response = await this.queryRaw(requestParameters, initOverrides);
-        return await response.value();
+    const response = await this.request(
+      {
+        path: `/vectors/fetch`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      FetchResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+   * Fetch vectors
+   */
+  async fetch(
+    requestParameters: FetchRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<FetchResponse> {
+    const response = await this.fetchRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+   * List vector IDs
+   */
+  async listRaw(
+    requestParameters: ListRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<ListResponse>> {
+    const queryParameters: any = {};
+
+    if (requestParameters.prefix !== undefined) {
+      queryParameters['prefix'] = requestParameters.prefix;
     }
 
-    /**
-     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
-     * Update a vector
-     */
-    async updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
-        if (requestParameters.updateRequest === null || requestParameters.updateRequest === undefined) {
-            throw new runtime.RequiredError('updateRequest','Required parameter requestParameters.updateRequest was null or undefined when calling update.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/update`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UpdateRequestToJSON(requestParameters.updateRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse<any>(response);
+    if (requestParameters.limit !== undefined) {
+      queryParameters['limit'] = requestParameters.limit;
     }
 
-    /**
-     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
-     * Update a vector
-     */
-    async update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this.updateRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters.paginationToken !== undefined) {
+      queryParameters['paginationToken'] = requestParameters.paginationToken;
     }
 
-    /**
-     * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
-     * Upsert vectors
-     */
-    async upsertRaw(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
-        if (requestParameters.upsertRequest === null || requestParameters.upsertRequest === undefined) {
-            throw new runtime.RequiredError('upsertRequest','Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/vectors/upsert`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UpsertRequestToJSON(requestParameters.upsertRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => UpsertResponseFromJSON(jsonValue));
+    if (requestParameters.namespace !== undefined) {
+      queryParameters['namespace'] = requestParameters.namespace;
     }
 
-    /**
-     * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
-     * Upsert vectors
-     */
-    async upsert(requestParameters: UpsertOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertResponse> {
-        const response = await this.upsertRaw(requestParameters, initOverrides);
-        return await response.value();
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
     }
 
+    const response = await this.request(
+      {
+        path: `/vectors/list`,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ListResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+   * List vector IDs
+   */
+  async list(
+    requestParameters: ListRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<ListResponse> {
+    const response = await this.listRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+   * Query vectors
+   */
+  async queryRaw(
+    requestParameters: QueryOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<QueryResponse>> {
+    if (
+      requestParameters.queryRequest === null ||
+      requestParameters.queryRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'queryRequest',
+        'Required parameter requestParameters.queryRequest was null or undefined when calling query.'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
+    }
+
+    const response = await this.request(
+      {
+        path: `/query`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: QueryRequestToJSON(requestParameters.queryRequest),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      QueryResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+   * Query vectors
+   */
+  async query(
+    requestParameters: QueryOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<QueryResponse> {
+    const response = await this.queryRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+   * Update a vector
+   */
+  async updateRaw(
+    requestParameters: UpdateOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<object>> {
+    if (
+      requestParameters.updateRequest === null ||
+      requestParameters.updateRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'updateRequest',
+        'Required parameter requestParameters.updateRequest was null or undefined when calling update.'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
+    }
+
+    const response = await this.request(
+      {
+        path: `/vectors/update`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: UpdateRequestToJSON(requestParameters.updateRequest),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse<any>(response);
+  }
+
+  /**
+   * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+   * Update a vector
+   */
+  async update(
+    requestParameters: UpdateOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<object> {
+    const response = await this.updateRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
+   * Upsert vectors
+   */
+  async upsertRaw(
+    requestParameters: UpsertOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<UpsertResponse>> {
+    if (
+      requestParameters.upsertRequest === null ||
+      requestParameters.upsertRequest === undefined
+    ) {
+      throw new runtime.RequiredError(
+        'upsertRequest',
+        'Required parameter requestParameters.upsertRequest was null or undefined when calling upsert.'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.apiKey) {
+      headerParameters['Api-Key'] = this.configuration.apiKey('Api-Key'); // ApiKeyAuth authentication
+    }
+
+    const response = await this.request(
+      {
+        path: `/vectors/upsert`,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: UpsertRequestToJSON(requestParameters.upsertRequest),
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      UpsertResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
+   * Upsert vectors
+   */
+  async upsert(
+    requestParameters: UpsertOperationRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<UpsertResponse> {
+    const response = await this.upsertRaw(requestParameters, initOverrides);
+    return await response.value();
+  }
 }

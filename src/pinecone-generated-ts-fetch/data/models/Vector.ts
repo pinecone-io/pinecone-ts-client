@@ -15,84 +15,86 @@
 import { exists, mapValues } from '../runtime';
 import type { SparseValues } from './SparseValues';
 import {
-    SparseValuesFromJSON,
-    SparseValuesFromJSONTyped,
-    SparseValuesToJSON,
+  SparseValuesFromJSON,
+  SparseValuesFromJSONTyped,
+  SparseValuesToJSON,
 } from './SparseValues';
 
 /**
- * 
+ *
  * @export
  * @interface Vector
  */
 export interface Vector {
-    /**
-     * This is the vector's unique id.
-     * @type {string}
-     * @memberof Vector
-     */
-    id: string;
-    /**
-     * This is the vector data included in the request.
-     * @type {Array<number>}
-     * @memberof Vector
-     */
-    values: Array<number>;
-    /**
-     * 
-     * @type {SparseValues}
-     * @memberof Vector
-     */
-    sparseValues?: SparseValues;
-    /**
-     * This is the metadata included in the request.
-     * @type {object}
-     * @memberof Vector
-     */
-    metadata?: object;
+  /**
+   * This is the vector's unique id.
+   * @type {string}
+   * @memberof Vector
+   */
+  id: string;
+  /**
+   * This is the vector data included in the request.
+   * @type {Array<number>}
+   * @memberof Vector
+   */
+  values: Array<number>;
+  /**
+   *
+   * @type {SparseValues}
+   * @memberof Vector
+   */
+  sparseValues?: SparseValues;
+  /**
+   * This is the metadata included in the request.
+   * @type {object}
+   * @memberof Vector
+   */
+  metadata?: object;
 }
 
 /**
  * Check if a given object implements the Vector interface.
  */
 export function instanceOfVector(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "values" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'id' in value;
+  isInstance = isInstance && 'values' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function VectorFromJSON(json: any): Vector {
-    return VectorFromJSONTyped(json, false);
+  return VectorFromJSONTyped(json, false);
 }
 
-export function VectorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Vector {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'id': json['id'],
-        'values': json['values'],
-        'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
-        'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
-    };
+export function VectorFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): Vector {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    id: json['id'],
+    values: json['values'],
+    sparseValues: !exists(json, 'sparseValues')
+      ? undefined
+      : SparseValuesFromJSON(json['sparseValues']),
+    metadata: !exists(json, 'metadata') ? undefined : json['metadata'],
+  };
 }
 
 export function VectorToJSON(value?: Vector | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'id': value.id,
-        'values': value.values,
-        'sparseValues': SparseValuesToJSON(value.sparseValues),
-        'metadata': value.metadata,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    id: value.id,
+    values: value.values,
+    sparseValues: SparseValuesToJSON(value.sparseValues),
+    metadata: value.metadata,
+  };
 }
-

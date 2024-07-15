@@ -19,47 +19,51 @@ import { exists, mapValues } from '../runtime';
  * @interface EmbeddingsListUsage
  */
 export interface EmbeddingsListUsage {
-    /**
-     * 
-     * @type {number}
-     * @memberof EmbeddingsListUsage
-     */
-    totalTokens?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof EmbeddingsListUsage
+   */
+  totalTokens?: number;
 }
 
 /**
  * Check if a given object implements the EmbeddingsListUsage interface.
  */
 export function instanceOfEmbeddingsListUsage(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function EmbeddingsListUsageFromJSON(json: any): EmbeddingsListUsage {
-    return EmbeddingsListUsageFromJSONTyped(json, false);
+  return EmbeddingsListUsageFromJSONTyped(json, false);
 }
 
-export function EmbeddingsListUsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): EmbeddingsListUsage {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'totalTokens': !exists(json, 'total_tokens') ? undefined : json['total_tokens'],
-    };
+export function EmbeddingsListUsageFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): EmbeddingsListUsage {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    totalTokens: !exists(json, 'total_tokens')
+      ? undefined
+      : json['total_tokens'],
+  };
 }
 
-export function EmbeddingsListUsageToJSON(value?: EmbeddingsListUsage | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'total_tokens': value.totalTokens,
-    };
+export function EmbeddingsListUsageToJSON(
+  value?: EmbeddingsListUsage | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    total_tokens: value.totalTokens,
+  };
 }
-

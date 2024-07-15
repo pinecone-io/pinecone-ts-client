@@ -14,52 +14,52 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ListItem
  */
 export interface ListItem {
-    /**
-     * 
-     * @type {string}
-     * @memberof ListItem
-     */
-    id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ListItem
+   */
+  id?: string;
 }
 
 /**
  * Check if a given object implements the ListItem interface.
  */
 export function instanceOfListItem(value: object): boolean {
-    let isInstance = true;
+  let isInstance = true;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function ListItemFromJSON(json: any): ListItem {
-    return ListItemFromJSONTyped(json, false);
+  return ListItemFromJSONTyped(json, false);
 }
 
-export function ListItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListItem {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'id': !exists(json, 'id') ? undefined : json['id'],
-    };
+export function ListItemFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ListItem {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    id: !exists(json, 'id') ? undefined : json['id'],
+  };
 }
 
 export function ListItemToJSON(value?: ListItem | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'id': value.id,
-    };
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    id: value.id,
+  };
 }
-

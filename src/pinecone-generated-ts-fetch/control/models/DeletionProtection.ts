@@ -12,27 +12,30 @@
  * Do not edit the class manually.
  */
 
-
 /**
  * Whether delete protection is enabled/disabled for the resource.
  * @export
  */
 export const DeletionProtection = {
-    Disabled: 'disabled',
-    Enabled: 'enabled'
+  Disabled: 'disabled',
+  Enabled: 'enabled',
 } as const;
-export type DeletionProtection = typeof DeletionProtection[keyof typeof DeletionProtection];
-
+export type DeletionProtection =
+  (typeof DeletionProtection)[keyof typeof DeletionProtection];
 
 export function DeletionProtectionFromJSON(json: any): DeletionProtection {
-    return DeletionProtectionFromJSONTyped(json, false);
+  return DeletionProtectionFromJSONTyped(json, false);
 }
 
-export function DeletionProtectionFromJSONTyped(json: any, ignoreDiscriminator: boolean): DeletionProtection {
-    return json as DeletionProtection;
+export function DeletionProtectionFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): DeletionProtection {
+  return json as DeletionProtection;
 }
 
-export function DeletionProtectionToJSON(value?: DeletionProtection | null): any {
-    return value as any;
+export function DeletionProtectionToJSON(
+  value?: DeletionProtection | null
+): any {
+  return value as any;
 }
-

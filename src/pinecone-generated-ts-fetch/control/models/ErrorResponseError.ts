@@ -19,93 +19,94 @@ import { exists, mapValues } from '../runtime';
  * @interface ErrorResponseError
  */
 export interface ErrorResponseError {
-    /**
-     * 
-     * @type {string}
-     * @memberof ErrorResponseError
-     */
-    code: ErrorResponseErrorCodeEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof ErrorResponseError
-     */
-    message: string;
-    /**
-     * Additional information about the error. This field is not guaranteed to be present.
-     * @type {object}
-     * @memberof ErrorResponseError
-     */
-    details?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorResponseError
+   */
+  code: ErrorResponseErrorCodeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorResponseError
+   */
+  message: string;
+  /**
+   * Additional information about the error. This field is not guaranteed to be present.
+   * @type {object}
+   * @memberof ErrorResponseError
+   */
+  details?: object;
 }
-
 
 /**
  * @export
  */
 export const ErrorResponseErrorCodeEnum = {
-    Ok: 'OK',
-    Unknown: 'UNKNOWN',
-    InvalidArgument: 'INVALID_ARGUMENT',
-    DeadlineExceeded: 'DEADLINE_EXCEEDED',
-    QuotaExceeded: 'QUOTA_EXCEEDED',
-    NotFound: 'NOT_FOUND',
-    AlreadyExists: 'ALREADY_EXISTS',
-    PermissionDenied: 'PERMISSION_DENIED',
-    Unauthenticated: 'UNAUTHENTICATED',
-    ResourceExhausted: 'RESOURCE_EXHAUSTED',
-    FailedPrecondition: 'FAILED_PRECONDITION',
-    Aborted: 'ABORTED',
-    OutOfRange: 'OUT_OF_RANGE',
-    Unimplemented: 'UNIMPLEMENTED',
-    Internal: 'INTERNAL',
-    Unavailable: 'UNAVAILABLE',
-    DataLoss: 'DATA_LOSS',
-    Forbidden: 'FORBIDDEN',
-    UnprocessableEntity: 'UNPROCESSABLE_ENTITY'
+  Ok: 'OK',
+  Unknown: 'UNKNOWN',
+  InvalidArgument: 'INVALID_ARGUMENT',
+  DeadlineExceeded: 'DEADLINE_EXCEEDED',
+  QuotaExceeded: 'QUOTA_EXCEEDED',
+  NotFound: 'NOT_FOUND',
+  AlreadyExists: 'ALREADY_EXISTS',
+  PermissionDenied: 'PERMISSION_DENIED',
+  Unauthenticated: 'UNAUTHENTICATED',
+  ResourceExhausted: 'RESOURCE_EXHAUSTED',
+  FailedPrecondition: 'FAILED_PRECONDITION',
+  Aborted: 'ABORTED',
+  OutOfRange: 'OUT_OF_RANGE',
+  Unimplemented: 'UNIMPLEMENTED',
+  Internal: 'INTERNAL',
+  Unavailable: 'UNAVAILABLE',
+  DataLoss: 'DATA_LOSS',
+  Forbidden: 'FORBIDDEN',
+  UnprocessableEntity: 'UNPROCESSABLE_ENTITY',
 } as const;
-export type ErrorResponseErrorCodeEnum = typeof ErrorResponseErrorCodeEnum[keyof typeof ErrorResponseErrorCodeEnum];
-
+export type ErrorResponseErrorCodeEnum =
+  (typeof ErrorResponseErrorCodeEnum)[keyof typeof ErrorResponseErrorCodeEnum];
 
 /**
  * Check if a given object implements the ErrorResponseError interface.
  */
 export function instanceOfErrorResponseError(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "code" in value;
-    isInstance = isInstance && "message" in value;
+  let isInstance = true;
+  isInstance = isInstance && 'code' in value;
+  isInstance = isInstance && 'message' in value;
 
-    return isInstance;
+  return isInstance;
 }
 
 export function ErrorResponseErrorFromJSON(json: any): ErrorResponseError {
-    return ErrorResponseErrorFromJSONTyped(json, false);
+  return ErrorResponseErrorFromJSONTyped(json, false);
 }
 
-export function ErrorResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponseError {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'code': json['code'],
-        'message': json['message'],
-        'details': !exists(json, 'details') ? undefined : json['details'],
-    };
+export function ErrorResponseErrorFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ErrorResponseError {
+  if (json === undefined || json === null) {
+    return json;
+  }
+  return {
+    code: json['code'],
+    message: json['message'],
+    details: !exists(json, 'details') ? undefined : json['details'],
+  };
 }
 
-export function ErrorResponseErrorToJSON(value?: ErrorResponseError | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'code': value.code,
-        'message': value.message,
-        'details': value.details,
-    };
+export function ErrorResponseErrorToJSON(
+  value?: ErrorResponseError | null
+): any {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  return {
+    code: value.code,
+    message: value.message,
+    details: value.details,
+  };
 }
-
