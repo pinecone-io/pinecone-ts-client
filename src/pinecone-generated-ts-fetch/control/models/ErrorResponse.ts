@@ -13,37 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ListIndexes401ResponseError } from './ListIndexes401ResponseError';
+import type { ErrorResponseError } from './ErrorResponseError';
 import {
-  ListIndexes401ResponseErrorFromJSON,
-  ListIndexes401ResponseErrorFromJSONTyped,
-  ListIndexes401ResponseErrorToJSON,
-} from './ListIndexes401ResponseError';
+  ErrorResponseErrorFromJSON,
+  ErrorResponseErrorFromJSONTyped,
+  ErrorResponseErrorToJSON,
+} from './ErrorResponseError';
 
 /**
  * The response shape used for all error responses.
  * @export
- * @interface ListIndexes401Response
+ * @interface ErrorResponse
  */
-export interface ListIndexes401Response {
+export interface ErrorResponse {
   /**
    * The HTTP status code of the error.
    * @type {number}
-   * @memberof ListIndexes401Response
+   * @memberof ErrorResponse
    */
   status: number;
   /**
    *
-   * @type {ListIndexes401ResponseError}
-   * @memberof ListIndexes401Response
+   * @type {ErrorResponseError}
+   * @memberof ErrorResponse
    */
-  error: ListIndexes401ResponseError;
+  error: ErrorResponseError;
 }
 
 /**
- * Check if a given object implements the ListIndexes401Response interface.
+ * Check if a given object implements the ErrorResponse interface.
  */
-export function instanceOfListIndexes401Response(value: object): boolean {
+export function instanceOfErrorResponse(value: object): boolean {
   let isInstance = true;
   isInstance = isInstance && 'status' in value;
   isInstance = isInstance && 'error' in value;
@@ -51,28 +51,24 @@ export function instanceOfListIndexes401Response(value: object): boolean {
   return isInstance;
 }
 
-export function ListIndexes401ResponseFromJSON(
-  json: any
-): ListIndexes401Response {
-  return ListIndexes401ResponseFromJSONTyped(json, false);
+export function ErrorResponseFromJSON(json: any): ErrorResponse {
+  return ErrorResponseFromJSONTyped(json, false);
 }
 
-export function ListIndexes401ResponseFromJSONTyped(
+export function ErrorResponseFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListIndexes401Response {
+): ErrorResponse {
   if (json === undefined || json === null) {
     return json;
   }
   return {
     status: json['status'],
-    error: ListIndexes401ResponseErrorFromJSON(json['error']),
+    error: ErrorResponseErrorFromJSON(json['error']),
   };
 }
 
-export function ListIndexes401ResponseToJSON(
-  value?: ListIndexes401Response | null
-): any {
+export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
   if (value === undefined) {
     return undefined;
   }
@@ -81,6 +77,6 @@ export function ListIndexes401ResponseToJSON(
   }
   return {
     status: value.status,
-    error: ListIndexes401ResponseErrorToJSON(value.error),
+    error: ErrorResponseErrorToJSON(value.error),
   };
 }

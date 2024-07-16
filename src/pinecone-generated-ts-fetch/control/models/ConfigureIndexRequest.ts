@@ -19,6 +19,12 @@ import {
   ConfigureIndexRequestSpecFromJSONTyped,
   ConfigureIndexRequestSpecToJSON,
 } from './ConfigureIndexRequestSpec';
+import type { DeletionProtection } from './DeletionProtection';
+import {
+  DeletionProtectionFromJSON,
+  DeletionProtectionFromJSONTyped,
+  DeletionProtectionToJSON,
+} from './DeletionProtection';
 
 /**
  * Configuration used to scale an index.
@@ -31,7 +37,13 @@ export interface ConfigureIndexRequest {
    * @type {ConfigureIndexRequestSpec}
    * @memberof ConfigureIndexRequest
    */
-  spec: ConfigureIndexRequestSpec;
+  spec?: ConfigureIndexRequestSpec;
+  /**
+   *
+   * @type {DeletionProtection}
+   * @memberof ConfigureIndexRequest
+   */
+  deletionProtection?: DeletionProtection;
 }
 
 /**
@@ -39,7 +51,6 @@ export interface ConfigureIndexRequest {
  */
 export function instanceOfConfigureIndexRequest(value: object): boolean {
   let isInstance = true;
-  isInstance = isInstance && 'spec' in value;
 
   return isInstance;
 }
@@ -58,7 +69,12 @@ export function ConfigureIndexRequestFromJSONTyped(
     return json;
   }
   return {
-    spec: ConfigureIndexRequestSpecFromJSON(json['spec']),
+    spec: !exists(json, 'spec')
+      ? undefined
+      : ConfigureIndexRequestSpecFromJSON(json['spec']),
+    deletionProtection: !exists(json, 'deletion_protection')
+      ? undefined
+      : DeletionProtectionFromJSON(json['deletion_protection']),
   };
 }
 
@@ -73,5 +89,6 @@ export function ConfigureIndexRequestToJSON(
   }
   return {
     spec: ConfigureIndexRequestSpecToJSON(value.spec),
+    deletion_protection: DeletionProtectionToJSON(value.deletionProtection),
   };
 }

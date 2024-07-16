@@ -20,13 +20,13 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ServerlessSpec {
   /**
-   * The public cloud where you would like your index hosted. Serverless indexes can be hosted only in AWS at this time.
+   * The public cloud where you would like your index hosted.
    * @type {string}
    * @memberof ServerlessSpec
    */
   cloud: ServerlessSpecCloudEnum;
   /**
-   * The region where you would like your index to be created.  Serverless indexes can be created only in the us-east-1,us-west-2, and eu-west-1 regions of AWS at this time.
+   * The region where you would like your index to be created.
    * @type {string}
    * @memberof ServerlessSpec
    */

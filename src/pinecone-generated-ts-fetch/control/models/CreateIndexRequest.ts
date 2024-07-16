@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DeletionProtection } from './DeletionProtection';
+import {
+  DeletionProtectionFromJSON,
+  DeletionProtectionFromJSONTyped,
+  DeletionProtectionToJSON,
+} from './DeletionProtection';
 import type { IndexSpec } from './IndexSpec';
 import {
   IndexSpecFromJSON,
@@ -44,6 +50,12 @@ export interface CreateIndexRequest {
    * @memberof CreateIndexRequest
    */
   metric?: CreateIndexRequestMetricEnum;
+  /**
+   *
+   * @type {DeletionProtection}
+   * @memberof CreateIndexRequest
+   */
+  deletionProtection?: DeletionProtection;
   /**
    *
    * @type {IndexSpec}
@@ -90,6 +102,9 @@ export function CreateIndexRequestFromJSONTyped(
     name: json['name'],
     dimension: json['dimension'],
     metric: !exists(json, 'metric') ? undefined : json['metric'],
+    deletionProtection: !exists(json, 'deletion_protection')
+      ? undefined
+      : DeletionProtectionFromJSON(json['deletion_protection']),
     spec: IndexSpecFromJSON(json['spec']),
   };
 }
@@ -107,6 +122,7 @@ export function CreateIndexRequestToJSON(
     name: value.name,
     dimension: value.dimension,
     metric: value.metric,
+    deletion_protection: DeletionProtectionToJSON(value.deletionProtection),
     spec: IndexSpecToJSON(value.spec),
   };
 }

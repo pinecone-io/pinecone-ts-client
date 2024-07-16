@@ -16,25 +16,25 @@ import { exists, mapValues } from '../runtime';
 /**
  * Detailed information about the error that occurred.
  * @export
- * @interface ListIndexes401ResponseError
+ * @interface ErrorResponseError
  */
-export interface ListIndexes401ResponseError {
+export interface ErrorResponseError {
   /**
    *
    * @type {string}
-   * @memberof ListIndexes401ResponseError
+   * @memberof ErrorResponseError
    */
-  code: ListIndexes401ResponseErrorCodeEnum;
+  code: ErrorResponseErrorCodeEnum;
   /**
    *
    * @type {string}
-   * @memberof ListIndexes401ResponseError
+   * @memberof ErrorResponseError
    */
   message: string;
   /**
    * Additional information about the error. This field is not guaranteed to be present.
    * @type {object}
-   * @memberof ListIndexes401ResponseError
+   * @memberof ErrorResponseError
    */
   details?: object;
 }
@@ -42,7 +42,7 @@ export interface ListIndexes401ResponseError {
 /**
  * @export
  */
-export const ListIndexes401ResponseErrorCodeEnum = {
+export const ErrorResponseErrorCodeEnum = {
   Ok: 'OK',
   Unknown: 'UNKNOWN',
   InvalidArgument: 'INVALID_ARGUMENT',
@@ -61,14 +61,15 @@ export const ListIndexes401ResponseErrorCodeEnum = {
   Unavailable: 'UNAVAILABLE',
   DataLoss: 'DATA_LOSS',
   Forbidden: 'FORBIDDEN',
+  UnprocessableEntity: 'UNPROCESSABLE_ENTITY',
 } as const;
-export type ListIndexes401ResponseErrorCodeEnum =
-  (typeof ListIndexes401ResponseErrorCodeEnum)[keyof typeof ListIndexes401ResponseErrorCodeEnum];
+export type ErrorResponseErrorCodeEnum =
+  (typeof ErrorResponseErrorCodeEnum)[keyof typeof ErrorResponseErrorCodeEnum];
 
 /**
- * Check if a given object implements the ListIndexes401ResponseError interface.
+ * Check if a given object implements the ErrorResponseError interface.
  */
-export function instanceOfListIndexes401ResponseError(value: object): boolean {
+export function instanceOfErrorResponseError(value: object): boolean {
   let isInstance = true;
   isInstance = isInstance && 'code' in value;
   isInstance = isInstance && 'message' in value;
@@ -76,16 +77,14 @@ export function instanceOfListIndexes401ResponseError(value: object): boolean {
   return isInstance;
 }
 
-export function ListIndexes401ResponseErrorFromJSON(
-  json: any
-): ListIndexes401ResponseError {
-  return ListIndexes401ResponseErrorFromJSONTyped(json, false);
+export function ErrorResponseErrorFromJSON(json: any): ErrorResponseError {
+  return ErrorResponseErrorFromJSONTyped(json, false);
 }
 
-export function ListIndexes401ResponseErrorFromJSONTyped(
+export function ErrorResponseErrorFromJSONTyped(
   json: any,
   ignoreDiscriminator: boolean
-): ListIndexes401ResponseError {
+): ErrorResponseError {
   if (json === undefined || json === null) {
     return json;
   }
@@ -96,8 +95,8 @@ export function ListIndexes401ResponseErrorFromJSONTyped(
   };
 }
 
-export function ListIndexes401ResponseErrorToJSON(
-  value?: ListIndexes401ResponseError | null
+export function ErrorResponseErrorToJSON(
+  value?: ErrorResponseError | null
 ): any {
   if (value === undefined) {
     return undefined;
