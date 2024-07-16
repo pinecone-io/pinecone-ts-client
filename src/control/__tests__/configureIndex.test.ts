@@ -32,8 +32,7 @@ describe('configureIndex', () => {
     const IOA = { configureIndex: fakeConfigure } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
-      replicas: 4,
-      podType: 'p2.x2',
+      spec: { pod: { replicas: 4, podType: 'p2.x2' } },
     });
 
     expect(returned).toBe(indexModel);

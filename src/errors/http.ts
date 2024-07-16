@@ -150,6 +150,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeBadRequestError(failedRequestInfo);
     case 401:
       return new PineconeAuthorizationError(failedRequestInfo);
+    case 403:
+      return new PineconeBadRequestError(failedRequestInfo);
     case 404:
       return new PineconeNotFoundError(failedRequestInfo);
     case 409:
