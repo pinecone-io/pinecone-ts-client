@@ -19,9 +19,9 @@ import type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
   CreateIndexRequest,
+  ErrorResponse,
   IndexList,
   IndexModel,
-  ListIndexes401Response,
 } from '../models/index';
 import {
   CollectionListFromJSON,
@@ -34,12 +34,12 @@ import {
   CreateCollectionRequestToJSON,
   CreateIndexRequestFromJSON,
   CreateIndexRequestToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
   IndexListFromJSON,
   IndexListToJSON,
   IndexModelFromJSON,
   IndexModelToJSON,
-  ListIndexes401ResponseFromJSON,
-  ListIndexes401ResponseToJSON,
 } from '../models/index';
 
 export interface ConfigureIndexOperationRequest {
@@ -76,7 +76,7 @@ export interface DescribeIndexRequest {
  */
 export class ManageIndexesApi extends runtime.BaseAPI {
   /**
-   * This operation specifies the pod type and number of replicas for an index. It applies to pod-based indexes only. Serverless indexes scale automatically based on usage.
+   * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
    * Configure an index
    */
   async configureIndexRaw(
@@ -135,7 +135,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
   }
 
   /**
-   * This operation specifies the pod type and number of replicas for an index. It applies to pod-based indexes only. Serverless indexes scale automatically based on usage.
+   * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
    * Configure an index
    */
   async configureIndex(

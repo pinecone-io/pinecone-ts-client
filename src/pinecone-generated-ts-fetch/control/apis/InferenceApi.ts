@@ -16,15 +16,15 @@ import * as runtime from '../runtime';
 import type {
   EmbedRequest,
   EmbeddingsList,
-  ListIndexes401Response,
+  ErrorResponse,
 } from '../models/index';
 import {
   EmbedRequestFromJSON,
   EmbedRequestToJSON,
   EmbeddingsListFromJSON,
   EmbeddingsListToJSON,
-  ListIndexes401ResponseFromJSON,
-  ListIndexes401ResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
 } from '../models/index';
 
 export interface EmbedOperationRequest {

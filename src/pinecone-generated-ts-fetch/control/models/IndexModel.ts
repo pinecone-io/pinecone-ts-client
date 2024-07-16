@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DeletionProtection } from './DeletionProtection';
+import {
+  DeletionProtectionFromJSON,
+  DeletionProtectionFromJSONTyped,
+  DeletionProtectionToJSON,
+} from './DeletionProtection';
 import type { IndexModelSpec } from './IndexModelSpec';
 import {
   IndexModelSpecFromJSON,
@@ -56,6 +62,12 @@ export interface IndexModel {
    * @memberof IndexModel
    */
   host: string;
+  /**
+   *
+   * @type {DeletionProtection}
+   * @memberof IndexModel
+   */
+  deletionProtection?: DeletionProtection;
   /**
    *
    * @type {IndexModelSpec}
@@ -112,6 +124,9 @@ export function IndexModelFromJSONTyped(
     dimension: json['dimension'],
     metric: json['metric'],
     host: json['host'],
+    deletionProtection: !exists(json, 'deletion_protection')
+      ? undefined
+      : DeletionProtectionFromJSON(json['deletion_protection']),
     spec: IndexModelSpecFromJSON(json['spec']),
     status: IndexModelStatusFromJSON(json['status']),
   };
@@ -129,6 +144,7 @@ export function IndexModelToJSON(value?: IndexModel | null): any {
     dimension: value.dimension,
     metric: value.metric,
     host: value.host,
+    deletion_protection: DeletionProtectionToJSON(value.deletionProtection),
     spec: IndexModelSpecToJSON(value.spec),
     status: IndexModelStatusToJSON(value.status),
   };

@@ -37,13 +37,13 @@ export interface PodSpec {
    * @type {number}
    * @memberof PodSpec
    */
-  replicas?: number;
+  replicas: number;
   /**
    * The number of shards. Shards split your data across multiple pods so you can fit more data into an index.
    * @type {number}
    * @memberof PodSpec
    */
-  shards?: number;
+  shards: number;
   /**
    * The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
    * @type {string}
@@ -76,6 +76,8 @@ export interface PodSpec {
 export function instanceOfPodSpec(value: object): boolean {
   let isInstance = true;
   isInstance = isInstance && 'environment' in value;
+  isInstance = isInstance && 'replicas' in value;
+  isInstance = isInstance && 'shards' in value;
   isInstance = isInstance && 'podType' in value;
   isInstance = isInstance && 'pods' in value;
 
@@ -95,8 +97,8 @@ export function PodSpecFromJSONTyped(
   }
   return {
     environment: json['environment'],
-    replicas: !exists(json, 'replicas') ? undefined : json['replicas'],
-    shards: !exists(json, 'shards') ? undefined : json['shards'],
+    replicas: json['replicas'],
+    shards: json['shards'],
     podType: json['pod_type'],
     pods: json['pods'],
     metadataConfig: !exists(json, 'metadata_config')

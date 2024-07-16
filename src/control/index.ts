@@ -3,7 +3,12 @@ export { indexOperationsBuilder } from './indexOperationsBuilder';
 export type { IndexName, PodType } from './types';
 export { configureIndex } from './configureIndex';
 export { createIndex } from './createIndex';
-export type { CreateIndexOptions } from './createIndex';
+export type {
+  CreateIndexOptions,
+  CreateIndexSpec,
+  CreateIndexServerlessSpec,
+  CreateIndexPodSpec,
+} from './createIndex';
 export { deleteIndex } from './deleteIndex';
 export type { DeleteIndexOptions } from './deleteIndex';
 export { describeIndex } from './describeIndex';
