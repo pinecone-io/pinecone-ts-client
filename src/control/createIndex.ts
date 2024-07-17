@@ -103,7 +103,7 @@ const CreateIndexOptionsSchema = Type.Object(
     name: IndexNameSchema,
     dimension: DimensionSchema,
     metric: MetricSchema,
-
+    deletionProtection: Type.Optional(Type.String()),
     spec: Type.Object({
       serverless: Type.Optional(
         Type.Object({

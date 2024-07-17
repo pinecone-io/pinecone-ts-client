@@ -10,6 +10,7 @@ const positiveInteger = Type.Integer({ minimum: 1 });
 // string. To avoid this confusing case, we require lenth > 1.
 export const IndexNameSchema = nonemptyString;
 
+export const DeletionProtectionSchema = nonemptyString;
 export const PodTypeSchema = nonemptyString;
 export const ReplicasSchema = positiveInteger;
 export const PodsSchema = positiveInteger;

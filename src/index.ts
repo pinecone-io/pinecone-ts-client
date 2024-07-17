@@ -49,6 +49,7 @@ export type {
   CreateCollectionRequest,
   CreateIndexRequest,
   CreateIndexRequestMetricEnum,
+  DeletionProtection,
   DescribeCollectionRequest,
   DescribeIndexRequest,
   Embedding,
