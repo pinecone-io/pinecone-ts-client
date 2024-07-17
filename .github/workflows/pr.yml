@@ -25,8 +25,7 @@ jobs:
       - name: Check for prettier changes
         shell: bash
         run: |
-          git diff --exit-code >/dev/null 2>&1
-          EXIT_CODE=$?
+          git diff --exit-code > /dev/null 2>&1 || EXIT_CODE=$?; echo "Exit code: $EXIT_CODE"
           if [ $EXIT_CODE -ne 0 ]; then
             echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
             git diff
