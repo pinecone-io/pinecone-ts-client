@@ -21,7 +21,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
         with:
-          node_version: 20.x
+          node_version: '18.17.1'
       - name: Prettier
         run: npm run format
       - name: Check for prettier changes
@@ -30,8 +30,11 @@ jobs:
           EXIT_CODE=$?
           if [ $EXIT_CODE -ne 0 ]; then
             echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
+            echo "Summary of changes:"
+            git diff
             exit 1
           fi
+        shell: bash
       - name: ESLint
         run: npm run lint
       - name: TypeDoc
