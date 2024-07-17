@@ -29,7 +29,7 @@ jobs:
         pinecone_env:
           - prod
           # - staging
-        node_version: [16.x, 18.x, 20.x]
+        node_version: [18.x, 20.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },

@@ -2,7 +2,6 @@ import {
   CreateIndexRequest,
   IndexModel,
   ManageIndexesApi,
-  CreateIndexRequestMetricEnum,
   ServerlessSpecCloudEnum,
   PodSpecMetadataConfig,
 } from '../pinecone-generated-ts-fetch/control';
