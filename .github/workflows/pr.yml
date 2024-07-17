@@ -28,6 +28,7 @@ jobs:
           git diff --exit-code > /dev/null 2>&1 || EXIT_CODE=$?; echo "Exit code: $EXIT_CODE"
           if [ $EXIT_CODE -ne 0 ]; then
             echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
+            echo "Summary of changes: "
             git diff
             exit 1
           fi
