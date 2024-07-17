@@ -17,7 +17,10 @@ import {
   ConfigureIndexRequestSpecPod,
   CreateCollectionRequest,
 } from './pinecone-generated-ts-fetch/control';
-import type { HTTPHeaders } from './pinecone-generated-ts-fetch/control';
+import type {
+  ConfigureIndexRequest,
+  HTTPHeaders,
+} from './pinecone-generated-ts-fetch/control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -435,14 +438,18 @@ export class Pinecone {
   /**
    * Configure an index
    *
-   * Use this method to update configuration on an existing index. You can update the number of replicas, and pod type.
+   * Use this method to update configuration on an existing index. For both pod-based and serverless indexes you can update
+   * the deletionProtection status of an index. For pod-based index you can also configure the number of replicas and pod type.
    *
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.configureIndex('my-index', { replicas: 2, podType: 'p1.x2' })
+   * await pc.configureIndex('my-index', {
+   *   deletionProtection: 'enabled',
+   *   spec:{ pod:{ replicas: 2, podType: 'p1.x2' }},
+   * });
    * ```
    *
    * @param indexName - The name of the index to configure.
@@ -451,7 +458,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexRequestSpecPod) {
+  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
     return this._configureIndex(indexName, options);
   }
 
