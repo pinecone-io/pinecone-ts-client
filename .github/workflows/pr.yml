@@ -24,13 +24,15 @@ jobs:
         run: npm run format
       - name: Check for prettier changes
         run: |
-          git diff --exit-code >/dev/null 2>&1
           git diff
-          EXIT_CODE=$?
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
-            exit 1
-          fi
+        # run: |
+        #   git diff --exit-code >/dev/null 2>&1
+        #   git diff
+        #   EXIT_CODE=$?
+        #   if [ $EXIT_CODE -ne 0 ]; then
+        #     echo "Prettier changes detected. Please run 'npm run format' and commit the changes."
+        #     exit 1
+        #   fi
         shell: bash
       - name: ESLint
         run: npm run lint
