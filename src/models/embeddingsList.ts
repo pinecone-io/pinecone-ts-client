@@ -25,9 +25,9 @@ export class EmbeddingsList
   extends Array<Embedding>
   implements OpenAPIEmbeddingsList
 {
-  model: string;
-  data: Array<Embedding>;
-  usage: EmbeddingsListUsage;
+  model?: string;
+  data?: Array<Embedding>;
+  usage?: EmbeddingsListUsage;
 
   constructor(
     model: string,

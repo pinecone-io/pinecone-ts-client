@@ -22,7 +22,7 @@ describe('EmbeddingsList', () => {
     expect(embeddingsList.model).toEqual(mockModel);
     expect(embeddingsList.data).toEqual(mockEmbeddings);
     expect(embeddingsList.usage).toEqual(mockUsage);
-    expect(embeddingsList.data.values).toEqual(mockEmbeddings.values);
+    expect(embeddingsList.data?.values).toEqual(mockEmbeddings.values);
   });
 
   it('Should return correct Embedding by index and by element', () => {
