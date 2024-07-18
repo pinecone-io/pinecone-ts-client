@@ -2,6 +2,7 @@ import { Pinecone } from '../pinecone';
 import { IndexHostSingleton } from '../data/indexHostSingleton';
 import type { PineconeConfiguration } from '../data';
 import * as utils from '../utils';
+import { warn } from 'console';
 
 const fakeFetch = jest.fn();
 const fakeHost = '123-456.pinecone.io';
@@ -64,6 +65,12 @@ jest.mock('../control', () => {
 });
 
 describe('Pinecone', () => {
+  let originalWindow: typeof globalThis.window;
+
+  beforeEach(() => {
+    originalWindow = global.window;
+  });
+
   describe('constructor', () => {
     describe('required properties', () => {
       test('should throw an error if apiKey is not provided', () => {
@@ -136,11 +143,32 @@ describe('Pinecone', () => {
       });
 
       test('should throw an error if required environment variable is not set', () => {
-        delete process.env.PINECONE_API_KEY;
         expect(() => new Pinecone()).toThrow(
           "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
         );
       });
+    });
+
+    test('should log a warning if the SDK is used in a browser context', () => {
+      // Mock the window object since our unit tests are not running in a browser context
+      (global as any).window = Object.create(window);
+      Object.defineProperty(window, 'document', {
+        value: {},
+        writable: true,
+      });
+
+      const warnSpy = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => null);
+
+      new Pinecone({ apiKey: 'test-api-key' });
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Warning: The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context in a production setting could lead to exposing your API key to third parties. If you have deployed the SDK to production in a browser, please rotate your API keys.'
+      );
+
+      // Rstore the original window
+      delete (global as any).window;
     });
   });
 

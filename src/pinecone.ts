@@ -13,12 +13,9 @@ import {
   indexOperationsBuilder,
   CollectionName,
 } from './control';
-import {
-  ConfigureIndexRequestSpecPod,
-  CreateCollectionRequest,
-} from './pinecone-generated-ts-fetch/control';
 import type {
   ConfigureIndexRequest,
+  CreateCollectionRequest,
   HTTPHeaders,
 } from './pinecone-generated-ts-fetch/control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
@@ -31,6 +28,7 @@ import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
+import { isBrowser } from './utils/environment';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -115,8 +113,9 @@ export class Pinecone {
     }
 
     this._validateConfig(options);
-
     this.config = options;
+
+    this._checkForBrowser();
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
@@ -556,6 +555,15 @@ export class Pinecone {
       'The client configuration',
       PineconeConfigurationSchema
     )(options);
+  }
+
+  /** @internal */
+  _checkForBrowser() {
+    if (isBrowser()) {
+      console.warn(
+        'Warning: The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context in a production setting could lead to exposing your API key to third parties. If you have deployed the SDK to production in a browser, please rotate your API keys.'
+      );
+    }
   }
 
   /**

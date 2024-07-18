@@ -3,6 +3,7 @@ import {
   Configuration,
   type ConfigurationParameters as IndexOperationsApiConfigurationParameters,
   InferenceApi,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/control';
 import {
   buildUserAgent,
@@ -25,7 +26,7 @@ export const inferenceOperationsBuilder = (
     queryParamsStringify,
     headers: {
       'User-Agent': buildUserAgent(config),
-      'X-Pinecone-API-Version': '2024-07',
+      'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
       ...headers,
     },
     fetchApi: getFetch(config),
