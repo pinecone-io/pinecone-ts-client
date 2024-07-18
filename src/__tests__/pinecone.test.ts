@@ -154,7 +154,7 @@ describe('Pinecone', () => {
       new Pinecone({ apiKey: 'test-api-key' });
 
       expect(warnSpy).toHaveBeenCalledWith(
-        'Warning: The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context in a production setting could lead to exposing your API key to third parties. If you have deployed the SDK to production in a browser, please rotate your API keys.'
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
       );
 
       // Clean up: remove the mock window object
