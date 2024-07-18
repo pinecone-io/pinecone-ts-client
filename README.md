@@ -134,7 +134,9 @@ await pc.describeIndex('serverless-index');
 //    dimension: 1536,
 //    metric: 'cosine',
 //    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    deletionProtection: 'disabled',
 //    spec: {
+//       pod: undefined,
 //       serverless: {
 //          cloud: 'aws',
 //          region: 'us-west-2'
@@ -143,24 +145,6 @@ await pc.describeIndex('serverless-index');
 //    status: {
 //       ready: false,
 //       state: 'Initializing'
-//    }
-// }
-
-await pc.describeIndex('serverless-index');
-// {
-//    name: 'serverless-index',
-//    dimension: 1536,
-//    metric: 'cosine',
-//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-//    spec: {
-//       serverless: {
-//          cloud: 'aws',
-//          region: 'us-west-2'
-//       }
-//    },
-//    status: {
-//       ready: true,
-//       state: 'Ready'
 //    }
 // }
 ```
@@ -211,7 +195,8 @@ await pc.describeCollection('product-description-embeddings');
 // }
 ```
 
-You can specify a `sourceCollection` along with other configuration in your `createIndex` options:
+**Note:** For pod-based indexes, you can specify a `sourceCollection` from which to create an index. The 
+collection must be in the same environment as the index.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -220,7 +205,7 @@ const pc = new Pinecone();
 await pc.createIndex({
     name: 'product-description-p1x1',
     dimension: 256,
-    metric: 'cosine'
+    metric: 'cosine',
     spec: {
         pod: {
             environment: 'us-east4-gcp',
@@ -261,11 +246,13 @@ await pc.describeIndex('serverless-index');
 //    dimension: 1536,
 //    metric: 'cosine',
 //    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    deletionProtection: 'disabled',
 //    spec: {
+//       pod: undefined,
 //       serverless: {
 //          cloud: 'aws',
 //          region: 'us-west-2'
-//       }
+//       },
 //    },
 //    status: {
 //       ready: true,
@@ -285,22 +272,32 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-
-await pc.configureIndex('pod-index', { replicas: 3 });
+await pc.configureIndex('pod-index', {
+    spec: {
+        pod: {
+            replicas: 2,
+            podType: 'p1.x4',
+        },
+    },
+});
 const config = await pc.describeIndex('pod-index');
 // {
 //    name: 'pod-index',
 //    dimension: 1536,
 //    metric: 'cosine',
-//    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//    host: 'pod-index-4zo0ijk.svc.us-east1-gcp.pinecone.io',
+//    deletionProtection: 'disabled',
 //    spec: {
 //       pod: {
 //         environment: 'us-east1-gcp',
-//         pods: 3,
-//         replicas: 3,
-//         shards: 1,
-//         podType: 'p1.x1'
+//         replicas: 2,
+//         shards: 2,
+//         podType: 'p1.x4',
+//         pods: 4,
+//         metadataConfig: [Object],
+//         sourceCollection: undefined
 //       }
+//     serverless: undefined
 //    },
 //    status: {
 //       ready: true,
@@ -336,6 +333,7 @@ await pc.listIndexes();
 //       dimension: 1536,
 //       metric: 'cosine',
 //       host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//       deletionProtection: 'disabled',
 //       spec: {
 //         serverless: {
 //           cloud: 'aws',
@@ -352,6 +350,7 @@ await pc.listIndexes();
 //       dimension: 1536,
 //       metric: 'cosine',
 //       host: 'pod-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
+//       deletionProtection: 'disabled',
 //       spec: {
 //         pod: {
 //           environment: 'us-west2-aws',
