@@ -26,7 +26,7 @@ export const inferenceOperationsBuilder = (
     queryParamsStringify,
     headers: {
       'User-Agent': buildUserAgent(config),
-      'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
+      'X-Pinecone-API-Version': X_PINECONE_API_VERSION,
       ...headers,
     },
     fetchApi: getFetch(config),
