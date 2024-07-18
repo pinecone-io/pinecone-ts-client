@@ -181,7 +181,7 @@ await pc.createIndex({
             cloud: 'aws',
             region: 'us-west-2',
         }
-    }
+    },
     waitUntilReady: true,
 });
 ```
@@ -211,7 +211,7 @@ await pc.describeCollection('product-description-embeddings');
 // }
 ```
 
-You can specify a sourceCollection along with other configuration in your `createIndex` options:
+You can specify a `sourceCollection` along with other configuration in your `createIndex` options:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -467,7 +467,9 @@ const index = pc.index('test-index');
 await index.fetch(['1']);
 ```
 
-The first argument is the name of the index you are targeting. There's an optional second argument for providing an index host override for all index operations.
+The first argument is the name of the index you are targeting. There's an optional second argument for providing an 
+index host override. Providing this second argument allows you to bypass the SDK's default behavior of resolving 
+your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -483,12 +485,12 @@ await index.fetch(['1']);
 If you are storing metadata alongside your vector values, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking.
 
 ```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
+import { Pinecone, PineconeRecord } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 type MovieMetadata = {
     title: string,
-    runtime: numbers,
+    runtime: number,
     genre: 'comedy' | 'horror' | 'drama' | 'action'
 }
 
@@ -538,16 +540,6 @@ const index = pc.index('test-index').namespace('ns1');
 
 // Now perform index operations in the targeted index and namespace
 await index.fetch(['1']);
-```
-
-If needed, you can check the currently targeted index and namespace by inspecting the `target` property of an index object.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
-const index = pc.index('test-index').namespace('ns1');
-
-console.log(index.target); // { index: 'test-index', namespace: 'ns1', indexHostUrl: undefined }
 ```
 
 See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for more information.
@@ -785,7 +777,7 @@ console.log(results);
 // Fetch the next page of results
 await index.listPaginated({
   prefix: 'doc1#',
-  paginationToken: results.pagination.next,
+  paginationToken: results.pagination?.next,
 });
 ```
 
@@ -824,6 +816,8 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```
 
 ### Delete many by metadata filter
+
+**Note:** deletion by metadata filter only applies to pod-based indexes.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
