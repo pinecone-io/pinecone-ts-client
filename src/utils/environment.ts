@@ -4,3 +4,7 @@ export const isEdge = () => {
   // to Vercel docs.
   return typeof EdgeRuntime === 'string';
 };
+
+export const isBrowser = () => {
+  return typeof window !== 'undefined';
+};

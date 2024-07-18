@@ -25,14 +25,14 @@ export class EmbeddingsList
   extends Array<Embedding>
   implements OpenAPIEmbeddingsList
 {
-  model: string;
+  model?: string;
   data: Array<Embedding>;
-  usage: EmbeddingsListUsage;
+  usage?: EmbeddingsListUsage;
 
   constructor(
-    model: string,
-    data: Array<Embedding>,
-    usage: EmbeddingsListUsage
+    model?: string,
+    data: Array<Embedding> = [],
+    usage?: EmbeddingsListUsage
   ) {
     super(...data);
     // Set the prototype explicitly to ensure the instance is of type EmbeddingsList
