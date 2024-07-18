@@ -136,11 +136,30 @@ describe('Pinecone', () => {
       });
 
       test('should throw an error if required environment variable is not set', () => {
-        delete process.env.PINECONE_API_KEY;
         expect(() => new Pinecone()).toThrow(
           "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
         );
       });
+    });
+
+    test('should log a warning if the SDK is used in a browser context', () => {
+      // Mock window simulate browser context
+      const mockWindow = {} as any;
+      global.window = mockWindow;
+
+      const warnSpy = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => null);
+
+      new Pinecone({ apiKey: 'test-api-key' });
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
+      );
+
+      // Clean up: remove the mock window object
+      // @ts-ignore
+      delete global.window;
     });
   });
 

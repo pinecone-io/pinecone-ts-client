@@ -100,6 +100,7 @@ await pc.createIndex({
   metric: 'dotproduct',
   spec: {
     pod: {
+      environment: 'us-east4-gcp',
       pods: 2,
       podType: 'p1.x2',
       metadataConfig: {
@@ -926,6 +927,8 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 ```
 
 ## Productionizing
+
+**Note:** The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.
 
 If you are ready to take a JavaScript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to provide feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property.
 
