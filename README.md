@@ -100,6 +100,7 @@ await pc.createIndex({
   metric: 'dotproduct',
   spec: {
     pod: {
+      environment: 'us-east4-gcp',
       pods: 2,
       podType: 'p1.x2',
       metadataConfig: {
