@@ -34,36 +34,17 @@ export class Inference {
     inputs: Array<string>,
     params: Record<string, string>
   ): Promise<EmbeddingsList> {
-    try {
-      const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
-        this._formatInputs(inputs);
-      const typedParams: EmbedRequestParameters = this._formatParams(params);
-      const typedRequest: EmbedOperationRequest = {
-        embedRequest: {
-          model: model,
-          inputs: typedAndFormattedInputs,
-          parameters: typedParams,
-        },
-      };
-      const response = await this._inferenceApi.embed(typedRequest);
-      if (response.model && response.data && response.usage) {
-        return new EmbeddingsList(
-          response.model,
-          response.data,
-          response.usage
-        );
-      } else {
-        console.log(
-          'Response from Inference API is missing required fields; response:',
-          response
-        );
-        throw new Error(
-          'Response from Inference API is missing required fields'
-        );
-      }
-    } catch (error) {
-      console.log('Error occurred while generating embeddings:', error);
-      throw error;
-    }
+    const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
+      this._formatInputs(inputs);
+    const typedParams: EmbedRequestParameters = this._formatParams(params);
+    const typedRequest: EmbedOperationRequest = {
+      embedRequest: {
+        model: model,
+        inputs: typedAndFormattedInputs,
+        parameters: typedParams,
+      },
+    };
+    const response = await this._inferenceApi.embed(typedRequest);
+    return new EmbeddingsList(response.model, response.data, response.usage);
   }
 }
