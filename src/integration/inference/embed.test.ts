@@ -15,10 +15,7 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
     };
     model = 'multilingual-e5-large';
     const apiKey = process.env.PINECONE_API_KEY || '';
-    pinecone = new Pinecone({
-      apiKey,
-      additionalHeaders: { 'X-Pinecone-API-Version': '2024-07' },
-    });
+    pinecone = new Pinecone({ apiKey });
   });
 
   it('Confirm output types', async () => {
