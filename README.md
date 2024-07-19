@@ -414,7 +414,8 @@ const describeCollection = await pc.describeCollection('collection3');
 //   size: 3126700,
 //   status: 'Ready',
 //   dimension: 3,
-//   recordCount: 99
+//   vectorCount: 1234,
+//   environment: 'us-east1-gcp',
 // }
 ```
 
@@ -572,10 +573,12 @@ const records = [
   {
     id: '1',
     values: [0.236, 0.971, 0.559],
+    sparseValues: {indices: [0, 1], values:[ 0.236, .340]}, // Optional; for hybrid search
   },
   {
     id: '2',
-    values: [0.685, 0.111, 0.857],
+    values: [0.685, 0.111, 0.857], 
+    sparseValues: {indices: [0, 1], values:[ 0.345, .980]}, // Optional; for hybrid search
   },
 ];
 
@@ -665,9 +668,10 @@ await index.query({ topK: 3, vector: [0.22, 0.66] });
 // }
 ```
 
-You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default these are not returned to keep the response payload small.
+You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default, 
+these are not returned to keep the response payload small.
 
-Remember that data operations take place within the context of a namespace, so if you are working with namespaces and do not see expected results you should check that you are targeting the correct namespace with your query.
+Remember that data operations take place within the context of a `namespace`, so if you are working with namespaces and do not see expected results you should check that you are targeting the correct namespace with your query.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -706,7 +710,7 @@ await pc.createIndex({
     spec: {
         pod: {
             environment: 'us-west4-gcp',
-            pods: 1
+            pods: 1,
             podType: 's1.x1',
         }
     },
