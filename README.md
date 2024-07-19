@@ -136,7 +136,6 @@ await pc.describeIndex('serverless-index');
 //    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
 //    deletionProtection: 'disabled',
 //    spec: {
-//       pod: undefined,
 //       serverless: {
 //          cloud: 'aws',
 //          region: 'us-west-2'
@@ -158,15 +157,15 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-    name: 'serverless-index',
-    dimension: 1536,
-    spec: {
-        serverless: {
-            cloud: 'aws',
-            region: 'us-west-2',
-        }
+  name: 'serverless-index',
+  dimension: 1536,
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
     },
-    waitUntilReady: true,
+  },
+  waitUntilReady: true,
 });
 ```
 
@@ -195,7 +194,7 @@ await pc.describeCollection('product-description-embeddings');
 // }
 ```
 
-**Note:** For pod-based indexes, you can specify a `sourceCollection` from which to create an index. The 
+**Note:** For pod-based indexes, you can specify a `sourceCollection` from which to create an index. The
 collection must be in the same environment as the index.
 
 ```typescript
@@ -203,17 +202,17 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-    name: 'product-description-p1x1',
-    dimension: 256,
-    metric: 'cosine',
-    spec: {
-        pod: {
-            environment: 'us-east4-gcp',
-            pods: 1,
-            podType: 'p1.x1',
-            sourceCollection: 'product-description-embeddings',
-        }
-    }
+  name: 'product-description-p1x1',
+  dimension: 256,
+  metric: 'cosine',
+  spec: {
+    pod: {
+      environment: 'us-east4-gcp',
+      pods: 1,
+      podType: 'p1.x1',
+      sourceCollection: 'product-description-embeddings',
+    },
+  },
 });
 ```
 
@@ -232,6 +231,39 @@ await pc.index('product-description-p2x2').describeIndexStats();
 // }
 ```
 
+#### Create or configure an index with deletion protection
+
+You can configure both serverless and pod indexes with `deletionProtection`. Any index with this property set to `'enabled'` will be unable to be deleted. By default, `deletionProtection` will be set to `'disabled'` if not provided as a part of the `createIndex` request. To enable `deletionProtection` you can pass the value while calling `createIndex`.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
+  name: 'deletion-protected-index',
+  dimension: 1536,
+  metric: 'cosine',
+  deletionProtection: 'enabled',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+});
+```
+
+To disable deletion protection, you can use the `configureIndex` operation.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.configureIndex('deletion-protected-index', {
+  deletionProtection: 'disabled',
+});
+```
+
 ### Describe Index
 
 You can fetch the description of any index by name using `describeIndex`.
@@ -248,7 +280,6 @@ await pc.describeIndex('serverless-index');
 //    host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
 //    deletionProtection: 'disabled',
 //    spec: {
-//       pod: undefined,
 //       serverless: {
 //          cloud: 'aws',
 //          region: 'us-west-2'
@@ -273,12 +304,12 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 await pc.configureIndex('pod-index', {
-    spec: {
-        pod: {
-            replicas: 2,
-            podType: 'p1.x4',
-        },
+  spec: {
+    pod: {
+      replicas: 2,
+      podType: 'p1.x4',
     },
+  },
 });
 const config = await pc.describeIndex('pod-index');
 // {
@@ -297,7 +328,6 @@ const config = await pc.describeIndex('pod-index');
 //         metadataConfig: [Object],
 //         sourceCollection: undefined
 //       }
-//     serverless: undefined
 //    },
 //    status: {
 //       ready: true,
@@ -467,9 +497,9 @@ const index = pc.index('test-index');
 await index.fetch(['1']);
 ```
 
-The first argument is the name of the index you are targeting. There's an optional second argument for providing an 
-index host override. Providing this second argument allows you to bypass the SDK's default behavior of resolving 
-your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io).
+The first argument is the name of the index you are targeting. There's an optional second argument for providing an
+index host override. Providing this second argument allows you to bypass the SDK's default behavior of resolving
+your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io), or by using the `describeIndex` or `listIndexes` operations.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -573,12 +603,12 @@ const records = [
   {
     id: '1',
     values: [0.236, 0.971, 0.559],
-    sparseValues: {indices: [0, 1], values:[ 0.236, .340]}, // Optional; for hybrid search
+    sparseValues: { indices: [0, 1], values: [0.236, 0.34] }, // Optional; for hybrid search
   },
   {
     id: '2',
-    values: [0.685, 0.111, 0.857], 
-    sparseValues: {indices: [0, 1], values:[ 0.345, .980]}, // Optional; for hybrid search
+    values: [0.685, 0.111, 0.857],
+    sparseValues: { indices: [0, 1], values: [0.345, 0.98] }, // Optional; for hybrid search
   },
 ];
 
@@ -668,7 +698,7 @@ await index.query({ topK: 3, vector: [0.22, 0.66] });
 // }
 ```
 
-You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default, 
+You include options to `includeMetadata: true` or `includeValues: true` if you need this information. By default,
 these are not returned to keep the response payload small.
 
 Remember that data operations take place within the context of a `namespace`, so if you are working with namespaces and do not see expected results you should check that you are targeting the correct namespace with your query.
