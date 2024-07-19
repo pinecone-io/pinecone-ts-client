@@ -16,6 +16,18 @@ The snippets shown in this README are intended to be concise. For more realistic
 - [Article recommender](https://github.com/pinecone-io/recommender-example-typescript)
 - [Image search](https://github.com/pinecone-io/image-search-example)
 
+## Upgrading your client
+
+#### Upgrading from `2.x` to `3.x`
+
+There is a breaking change involving the `configureIndex` operation in this update. The structure of the object passed
+when configuring an index has changed to include `deletionProtection`. The `podType` and `replicas` fields can now be updated through the `spec.pod` object. See [Configure pod-based indexes](#configure-pod-based-indexes) for an example of the code.
+
+#### Upgrading from older versions
+
+- **Upgrading to `2.x`** : There were many changes made in this release to support Pinecone's new Serverless index offering. The changes are covered in detail in the [**v2 Migration Guide**](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v2-migration.md). Serverless indexes are only available in `2.x` release versions or greater.
+- **Upgrading to `1.x`** : This release officially moved the SDK out of beta, and there are a number of breaking changes that need to be addressed when upgrading from a `0.x` client. See the [**v1 Migration Guide**](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v1-migration.md) for details.
+
 ## Prerequisites
 
 The Pinecone TypeScript client is compatible with TypeScript 4.1 and greater.
@@ -880,7 +892,8 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 
 ## Inference
 
-Interact with Pinecone's Inference API (currently in preview).
+Interact with Pinecone's Inference API (currently in public preview). The Pinecone Inference API is a service that gives
+you access to embedding models hosted on Pinecone's infrastructure. Read more at [Understanding Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).
 
 **Notes:**
 
