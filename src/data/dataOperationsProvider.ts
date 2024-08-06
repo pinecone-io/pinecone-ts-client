@@ -26,7 +26,7 @@ export class DataOperationsProvider {
     config: PineconeConfiguration,
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -46,7 +46,7 @@ export class DataOperationsProvider {
     } else {
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.dataOperations = this.buildDataOperationsConfig();

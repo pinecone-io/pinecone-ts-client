@@ -65,7 +65,7 @@ describe('query', () => {
       expect(results.matches?.length).toEqual(topK);
       expect(results.usage.readUnits).toBeDefined();
       expect(results.matches).toEqual(
-        expect.arrayContaining([expect.objectContaining({ id: queryId })])
+        expect.arrayContaining([expect.objectContaining({ id: queryId })]),
       );
     };
 
@@ -93,7 +93,7 @@ describe('query', () => {
 
     await assertWithRetries(
       () => ns.query({ id: '12354523423', topK }),
-      assertions
+      assertions,
     );
   });
 
@@ -115,7 +115,7 @@ describe('query', () => {
           },
           topK,
         }),
-      assertions
+      assertions,
     );
   });
 
@@ -141,7 +141,7 @@ describe('query', () => {
           includeValues: true,
           includeMetadata: true,
         }),
-      assertions
+      assertions,
     );
   });
 });

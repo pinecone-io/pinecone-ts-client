@@ -109,7 +109,7 @@ const CreateIndexOptionsSchema = Type.Object(
         Type.Object({
           cloud: CloudSchema,
           region: RegionSchema,
-        })
+        }),
       ),
 
       pod: Type.Optional(
@@ -121,20 +121,20 @@ const CreateIndexOptionsSchema = Type.Object(
           pods: Type.Optional(PodsSchema),
           metadataConfig: Type.Optional(MetadataConfigSchema),
           sourceCollection: Type.Optional(CollectionNameSchema),
-        })
+        }),
       ),
     }),
 
     waitUntilReady: Type.Optional(Type.Boolean()),
     suppressConflicts: Type.Optional(Type.Boolean()),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 
 export const createIndex = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CreateIndexOptionsSchema,
-    'createIndex'
+    'createIndex',
   );
 
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
@@ -169,7 +169,7 @@ export const createIndex = (api: ManageIndexesApi) => {
 const waitUntilIndexIsReady = async (
   api: ManageIndexesApi,
   indexName: string,
-  seconds: number = 0
+  seconds: number = 0,
 ): Promise<IndexModel> => {
   try {
     const indexDescription = await api.describeIndex({ indexName });
@@ -184,7 +184,7 @@ const waitUntilIndexIsReady = async (
     const err = await handleApiError(
       e,
       async (_, rawMessageText) =>
-        `Error creating index ${indexName}: ${rawMessageText}`
+        `Error creating index ${indexName}: ${rawMessageText}`,
     );
     throw err;
   }

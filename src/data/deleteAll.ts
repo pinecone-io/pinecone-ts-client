@@ -2,7 +2,7 @@ import { DataOperationsProvider } from './dataOperationsProvider';
 
 export const deleteAll = (
   apiProvider: DataOperationsProvider,
-  namespace: string
+  namespace: string,
 ) => {
   return async (): Promise<void> => {
     const api = await apiProvider.provide();

@@ -60,7 +60,7 @@ describe('upsert and update', () => {
       expect(response.records['0']).toBeDefined();
       expect(response.records['0'].values).toEqual(recordToUpsert[0].values);
       expect(response.records['0'].metadata).toEqual(
-        recordToUpsert[0].metadata
+        recordToUpsert[0].metadata,
       );
     };
 

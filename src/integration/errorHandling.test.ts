@@ -15,7 +15,7 @@ describe('Error handling', () => {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'The API key you provided was rejected while calling https://api.pinecone.io/indexes. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io',
         );
       }
     });
@@ -32,7 +32,7 @@ describe('Error handling', () => {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeAuthorizationError');
         expect(err.message).toEqual(
-          'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io'
+          'The API key you provided was rejected while calling https://api.pinecone.io/indexes/foo-index. Please check your configuration values and try again. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io',
         );
       }
     });
@@ -56,7 +56,7 @@ describe('Error handling', () => {
           const err = e as PineconeConnectionError;
           expect(err.name).toEqual('PineconeConnectionError');
           expect(err.message).toEqual(
-            'Request failed to reach Pinecone. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+            'Request failed to reach Pinecone. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.',
           );
           // @ts-ignore
           expect(err.cause.name).toEqual('Error');
@@ -72,7 +72,7 @@ describe('Error handling', () => {
           const err = e as PineconeConnectionError;
           expect(err.name).toEqual('PineconeConnectionError');
           expect(err.message).toEqual(
-            'Request failed to reach Pinecone. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.'
+            'Request failed to reach Pinecone. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.',
           );
         }
       });

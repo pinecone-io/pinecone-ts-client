@@ -5,11 +5,11 @@ import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generate
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (
-    req: DescribeIndexStatsOperationRequest
+    req: DescribeIndexStatsOperationRequest,
   ) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const DPA = {
     describeIndexStats: fakeDescribeIndexStats,

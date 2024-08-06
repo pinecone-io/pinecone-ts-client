@@ -11,16 +11,16 @@ const setupCreateIndexResponse = (
   createIndexResponse,
   describeIndexResponse,
   isCreateIndexSuccess = true,
-  isDescribeIndexSuccess = true
+  isDescribeIndexSuccess = true,
 ) => {
   const fakeCreateIndex: (
-    req: CreateIndexOperationRequest
+    req: CreateIndexOperationRequest,
   ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
         ? Promise.resolve(createIndexResponse)
-        : Promise.reject(createIndexResponse)
+        : Promise.reject(createIndexResponse),
     );
 
   // unfold describeIndexResponse
@@ -33,7 +33,7 @@ const setupCreateIndexResponse = (
     describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
         ? Promise.resolve(response)
-        : Promise.reject({ response })
+        : Promise.reject({ response }),
     );
   });
 

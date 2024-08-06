@@ -145,7 +145,7 @@ export class Pinecone {
   _readEnvironmentConfig(): PineconeConfiguration {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
-        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
+        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()',
       );
     }
 
@@ -164,8 +164,8 @@ export class Pinecone {
     if (missingVars.length > 0) {
       throw new PineconeConfigurationError(
         `Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: ${missingVars.join(
-          ', '
-        )}.`
+          ', ',
+        )}.`,
       );
     }
 
@@ -553,7 +553,7 @@ export class Pinecone {
   _validateConfig(options: PineconeConfiguration) {
     buildValidator(
       'The client configuration',
-      PineconeConfigurationSchema
+      PineconeConfigurationSchema,
     )(options);
   }
 
@@ -561,7 +561,7 @@ export class Pinecone {
   _checkForBrowser() {
     if (isBrowser()) {
       console.warn(
-        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.',
       );
     }
   }
@@ -644,14 +644,14 @@ export class Pinecone {
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     return new Index<T>(
       indexName,
       this.config,
       undefined,
       indexHostUrl,
-      additionalHeaders
+      additionalHeaders,
     );
   }
 
@@ -662,7 +662,7 @@ export class Pinecone {
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }

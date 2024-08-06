@@ -64,7 +64,7 @@ describe('delete', () => {
       } else {
         fail(
           'Did not find expected records. Fetch result was ' +
-            JSON.stringify(results)
+            JSON.stringify(results),
         );
       }
     };
@@ -108,7 +108,7 @@ describe('delete', () => {
       } else {
         fail(
           'Did not find expected records. Fetch result was ' +
-            JSON.stringify(results)
+            JSON.stringify(results),
         );
       }
     };
@@ -124,7 +124,7 @@ describe('delete', () => {
       } else {
         fail(
           'Expected namespaces to be defined (second call). Stats were ' +
-            JSON.stringify(stats)
+            JSON.stringify(stats),
         );
       }
     };
@@ -138,7 +138,7 @@ describe('delete', () => {
       } else {
         fail(
           'Expected record 2 to be defined. Fetch result was ' +
-            JSON.stringify(results)
+            JSON.stringify(results),
         );
       }
     };

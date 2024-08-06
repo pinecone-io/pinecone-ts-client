@@ -927,7 +927,7 @@ async function generateDocEmbeddings() {
     return await client.inference.embed(
       embeddingModel,
       documents,
-      docParameters
+      docParameters,
     );
   } catch (error) {
     console.error('Error generating embeddings:', error);
@@ -951,7 +951,7 @@ async function generateQueryEmbeddings() {
     return await client.inference.embed(
       embeddingModel,
       userQuery,
-      queryParameters
+      queryParameters,
     );
   } catch (error) {
     console.error('Error generating embeddings:', error);

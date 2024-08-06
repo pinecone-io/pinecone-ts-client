@@ -32,7 +32,7 @@ export class EmbeddingsList
   constructor(
     model?: string,
     data: Array<Embedding> = [],
-    usage?: EmbeddingsListUsage
+    usage?: EmbeddingsListUsage,
   ) {
     super(...data);
     // Set the prototype explicitly to ensure the instance is of type EmbeddingsList
@@ -51,7 +51,7 @@ export class EmbeddingsList
           return `    ${embedding}`;
         }
         let embeddingObject = JSON.stringify(embedding, (key, value) =>
-          key === 'values' && Array.isArray(value) ? value : value
+          key === 'values' && Array.isArray(value) ? value : value,
         );
         embeddingObject = embeddingObject.replace(/:/g, ': ');
 
@@ -66,7 +66,7 @@ export class EmbeddingsList
         // Replace the right side of the colon after "values: "
         embeddingObject = embeddingObject.replace(
           /("values": )\[(.*?)\]/,
-          `$1[${formattedEmbedding}]`
+          `$1[${formattedEmbedding}]`,
         );
 
         return `    ${embeddingObject}`;

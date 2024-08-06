@@ -7,7 +7,7 @@ import type { HTTPQuery } from '../pinecone-generated-ts-fetch/control';
 // See https://github.com/pinecone-io/pinecone-ts-client/pull/74
 export function queryParamsStringify(
   params: HTTPQuery,
-  prefix: string = ''
+  prefix: string = '',
 ): string {
   return Object.keys(params)
     .map((key) => querystringSingleKey(key, params[key], prefix))
@@ -26,7 +26,7 @@ function querystringSingleKey(
     | Array<string | number | null | boolean>
     | Set<string | number | null | boolean>
     | HTTPQuery,
-  keyPrefix: string = ''
+  keyPrefix: string = '',
 ): string {
   const fullKey = keyPrefix + (keyPrefix.length ? `[${key}]` : key);
 
@@ -45,7 +45,7 @@ function querystringSingleKey(
   }
   if (value instanceof Date) {
     return `${encodeURIComponent(fullKey)}=${encodeURIComponent(
-      value.toISOString()
+      value.toISOString(),
     )}`;
   }
   if (value instanceof Object) {

@@ -113,7 +113,7 @@ export const waitUntilReady = async (indexName: string) => {
 export const waitUntilRecordsReady = async (
   index: Index,
   namespace: string,
-  recordIds: string[]
+  recordIds: string[],
 ): Promise<IndexStatsDescription> => {
   const sleepIntervalMs = 3000;
   let indexStats = await index.describeIndexStats();
@@ -139,7 +139,7 @@ export const assertWithRetries = async (
   asyncFn: () => Promise<any>,
   assertionsFn: Assertions,
   maxRetries: number = 5,
-  delay: number = 3000
+  delay: number = 3000,
 ) => {
   let attempts = 0;
 

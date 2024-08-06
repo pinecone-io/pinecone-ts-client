@@ -35,14 +35,14 @@ describe('Index', () => {
         config,
         undefined,
         indexHostUrl,
-        additionalHeaders
+        additionalHeaders,
       );
       expect(DataOperationsProvider).toHaveBeenCalledTimes(1);
       expect(DataOperationsProvider).toHaveBeenCalledWith(
         config,
         'index-name',
         indexHostUrl,
-        additionalHeaders
+        additionalHeaders,
       );
     });
   });

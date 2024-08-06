@@ -7,7 +7,7 @@ const setupResponse = (response, isSuccess) => {
   const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const DPA = { update: fakeUpdate } as DataPlaneApi;
   const DataProvider = { provide: async () => DPA } as DataOperationsProvider;

@@ -170,7 +170,7 @@ describe('create index', () => {
         const err = e as PineconeNotFoundError;
         expect(err.name).toEqual('PineconeNotFoundError');
         expect(err.message).toContain(
-          'A call to https://api.pinecone.io/indexes returned HTTP status 404.'
+          'A call to https://api.pinecone.io/indexes returned HTTP status 404.',
         );
       }
     });

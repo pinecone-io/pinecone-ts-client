@@ -19,7 +19,7 @@ export const PineconeConfigurationSchema = Type.Object(
     additionalHeaders: Type.Optional(Type.Any()),
     sourceTag: Type.Optional(Type.String({ minLength: 1 })),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 
 /**
@@ -59,7 +59,7 @@ export const RecordSparseValuesSchema = Type.Object(
     indices: Type.Array(Type.Integer()),
     values: Type.Array(Type.Number()),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 export const PineconeRecordSchema = Type.Object(
   {
@@ -68,7 +68,7 @@ export const PineconeRecordSchema = Type.Object(
     sparseValues: Type.Optional(RecordSparseValuesSchema),
     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
   },
-  { additionalProperties: false }
+  { additionalProperties: false },
 );
 
 /** The id of the record */
