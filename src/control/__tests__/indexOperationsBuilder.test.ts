@@ -11,7 +11,7 @@ describe('indexOperationsBuilder', () => {
     const config = { apiKey: 'test-api-key' };
     indexOperationsBuilder(config);
     expect(Configuration).toHaveBeenCalledWith(
-      expect.objectContaining({ basePath: 'https://api.pinecone.io' }),
+      expect.objectContaining({ basePath: 'https://api.pinecone.io' })
     );
   });
 
@@ -23,7 +23,7 @@ describe('indexOperationsBuilder', () => {
     };
     indexOperationsBuilder(config);
     expect(Configuration).toHaveBeenCalledWith(
-      expect.objectContaining({ basePath: controllerHostUrl }),
+      expect.objectContaining({ basePath: controllerHostUrl })
     );
   });
 
@@ -34,7 +34,7 @@ describe('indexOperationsBuilder', () => {
     expect(Configuration).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expect.objectContaining(additionalHeaders),
-      }),
+      })
     );
   });
 });

@@ -1,13 +1,14 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: '[Feature Request]'
+title: "[Feature Request]"
 labels: 'enhancement'
 assignees: ''
+
 ---
 
 **What motivated you to submit this feature request?**
-A clear and concise description of why you are requesting this feature - e.g. "Being able to do x would allow me to..."
+A clear and concise description of why you are requesting this feature - e.g. "Being able to do x would allow me to..." 
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.

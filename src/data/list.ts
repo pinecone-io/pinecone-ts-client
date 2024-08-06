@@ -24,12 +24,12 @@ const ListOptionsSchema = Type.Object(
     limit: Type.Optional(Type.Number()),
     paginationToken: Type.Optional(Type.String({ minLength: 1 })),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 export const listPaginated = (
   apiProvider: DataOperationsProvider,
-  namespace: string,
+  namespace: string
 ) => {
   const validator = buildConfigValidator(ListOptionsSchema, 'listPaginated');
 

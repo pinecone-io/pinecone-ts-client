@@ -79,7 +79,7 @@ describe('truncateData', () => {
     embeddingsList = new EmbeddingsList(
       mockModel,
       mockEmbeddingsWithoutTruncationExpected,
-      mockUsage,
+      mockUsage
     );
 
     const expectedTruncatedData = [
@@ -89,7 +89,7 @@ describe('truncateData', () => {
     ];
 
     expect(embeddingsList['truncateDataForDisplay']()).toEqual(
-      expectedTruncatedData,
+      expectedTruncatedData
     );
   });
 
@@ -105,7 +105,7 @@ describe('truncateData', () => {
     embeddingsList = new EmbeddingsList(
       mockModel,
       mockEmbeddingsWithTruncationExpected,
-      mockUsage,
+      mockUsage
     );
 
     const expectedTruncatedData = [
@@ -117,7 +117,7 @@ describe('truncateData', () => {
     ];
 
     expect(embeddingsList['truncateDataForDisplay']()).toEqual(
-      expectedTruncatedData,
+      expectedTruncatedData
     );
   });
 });

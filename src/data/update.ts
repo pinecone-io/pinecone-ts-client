@@ -20,7 +20,7 @@ const UpdateRecordOptionsSchema = Type.Object(
     sparseValues: Type.Optional(RecordSparseValuesSchema),
     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 /**

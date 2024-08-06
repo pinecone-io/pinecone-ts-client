@@ -23,33 +23,33 @@ const ConfigureIndexOptionsSchema = Type.Object(
           replicas: Type.Optional(ReplicasSchema),
           podType: Type.Optional(PodTypeSchema),
         }),
-      }),
+      })
     ),
     deletionProtection: Type.Optional(DeletionProtectionSchema),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 export const configureIndex = (api: ManageIndexesApi) => {
   const indexNameValidator = buildValidator(
     'The first argument to configureIndex',
-    IndexNameSchema,
+    IndexNameSchema
   );
   const patchRequestValidator = buildValidator(
     'The second argument to configureIndex',
-    ConfigureIndexOptionsSchema,
+    ConfigureIndexOptionsSchema
   );
 
   return async (
     indexName: IndexName,
-    options: ConfigureIndexRequest,
+    options: ConfigureIndexRequest
   ): Promise<IndexModel> => {
     indexNameValidator(indexName);
     patchRequestValidator(options);
 
     if (Object.keys(options).length === 0) {
       throw new PineconeArgumentError(
-        'The second argument to configureIndex should not be empty object. Please specify at least one property (spec, deletionProtection) to update.',
+        'The second argument to configureIndex should not be empty object. Please specify at least one property (spec, deletionProtection) to update.'
       );
     }
 

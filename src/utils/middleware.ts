@@ -32,7 +32,7 @@ if (
   const debugLogMiddleware = {
     pre: async (context) => {
       console.debug(
-        chalk(`>>> Request: ${context.init.method} ${context.url}`, 'blue'),
+        chalk(`>>> Request: ${context.init.method} ${context.url}`, 'blue')
       );
 
       const headers = JSON.parse(JSON.stringify(context.init.headers));
@@ -48,7 +48,7 @@ if (
     post: async (context) => {
       console.debug(chalk(`<<< Status: ${context.response.status}`, 'green'));
       console.debug(
-        chalk(`<<< Body: ${await context.response.text()}`, 'green'),
+        chalk(`<<< Body: ${await context.response.text()}`, 'green')
       );
       console.debug('');
     },
@@ -101,7 +101,7 @@ export const middleware = [
         const err = await handleApiError(
           new ResponseError(response, 'Response returned an error'),
           undefined,
-          context.url,
+          context.url
         );
         throw err;
       }

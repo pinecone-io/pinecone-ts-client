@@ -26,7 +26,7 @@ const formatIndividualError = (e, formattedMessageList) => {
       const itemIndexMatch = instancePathItemIndexRegex.exec(e.instancePath);
       const itemIndex = itemIndexMatch ? itemIndexMatch[1] : 'unknown';
       formattedMessageList.push(
-        `item at index ${itemIndex} of the '${propName}' array ${e.message}`,
+        `item at index ${itemIndex} of the '${propName}' array ${e.message}`
       );
     } else {
       // property is not an array
@@ -39,7 +39,7 @@ const formatIndividualError = (e, formattedMessageList) => {
     const itemIndexMatch = instancePathItemIndexRegex.exec(e.instancePath);
     const itemIndex = itemIndexMatch ? itemIndexMatch[1] : 'unknown';
     formattedMessageList.push(
-      `item at index ${itemIndex} of the array ${e.message}`,
+      `item at index ${itemIndex} of the array ${e.message}`
     );
   } else if (e.instancePath === '') {
     // parameter is something other than an object, e.g. string
@@ -50,7 +50,7 @@ const formatIndividualError = (e, formattedMessageList) => {
 const missingPropertiesErrors = (
   subject: string,
   errors: Array<ErrorObject>,
-  messageParts: Array<string>,
+  messageParts: Array<string>
 ) => {
   const missingPropertyNames = errors
     .filter((error) => error.keyword === 'required')
@@ -64,7 +64,7 @@ const missingPropertiesErrors = (
       subject,
       `${messageParts.length > 0 ? 'M' : 'm'}ust have required ${
         missingPropertyNames.length > 1 ? 'properties' : 'property'
-      }: ${missingPropertyNames.join(', ')}.`,
+      }: ${missingPropertyNames.join(', ')}.`
     );
     messageParts.push(missingMessage);
   }
@@ -73,7 +73,7 @@ const missingPropertiesErrors = (
 const neverErrors = (
   subject: string,
   errors: Array<ErrorObject>,
-  messageParts: Array<string>,
+  messageParts: Array<string>
 ) => {
   const neverPropertyErrors = errors
     .filter((error) => error.keyword === 'not')
@@ -85,7 +85,7 @@ const neverErrors = (
       subject,
       `must not have ${
         neverPropertyErrors.length > 1 ? 'properties' : 'property'
-      }: ${neverPropertyErrors.join(', ')}.`,
+      }: ${neverPropertyErrors.join(', ')}.`
     );
     messageParts.push(neverMessage);
   }
@@ -94,14 +94,14 @@ const neverErrors = (
 const typeErrors = (
   subject: string,
   errors: Array<ErrorObject>,
-  messageParts: Array<string>,
+  messageParts: Array<string>
 ) => {
   const typeErrorsList: Array<string> = [];
   const anyOfConstPropErrors: Array<ErrorObject> = errors.filter(
     (error) =>
       error.schemaPath.indexOf('anyOf') > -1 &&
       error.keyword === 'const' &&
-      error.instancePath.length > 0,
+      error.instancePath.length > 0
   );
   let errorCount = 0;
 
@@ -126,7 +126,7 @@ const typeErrors = (
         `property '${property}' must be equal to one of: ` +
           Object.values(constValueErrors)
             .map((group) => `'${group.params.allowedValue}'`)
-            .join(', '),
+            .join(', ')
       );
     });
   }
@@ -162,7 +162,7 @@ const typeErrors = (
 const validationErrors = (
   subject: string,
   errors: Array<ErrorObject>,
-  messageParts: Array<string>,
+  messageParts: Array<string>
 ) => {
   const validationErrors: Array<string> = [];
   let errorCount = 0;
@@ -220,7 +220,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
       error.schemaPath.indexOf('anyOf') > -1 &&
       error.keyword !== 'anyOf' &&
       error.keyword !== 'const' &&
-      error.keyword !== 'type',
+      error.keyword !== 'type'
   );
 
   if (anyOfArgumentErrors.length > 0) {
@@ -246,7 +246,7 @@ export const errorFormatter = (subject: string, errors: Array<ErrorObject>) => {
         .map(
           ([key, group]) =>
             `${parseInt(key) + 1})` +
-            errorFormatter('', group as Array<ErrorObject>),
+            errorFormatter('', group as Array<ErrorObject>)
         )
         .join(' ')
     );

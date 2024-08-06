@@ -9,7 +9,7 @@ const DeleteManyByRecordIdSchema = Type.Array(RecordIdSchema);
 
 const DeleteManyByFilterSchema = Type.Object(
   {},
-  { additionalProperties: true, minProperties: 1 },
+  { additionalProperties: true, minProperties: 1 }
 );
 
 const DeleteManySchema = Type.Union([
@@ -36,7 +36,7 @@ export type DeleteManyOptions =
 
 export const deleteMany = (
   apiProvider: DataOperationsProvider,
-  namespace: string,
+  namespace: string
 ) => {
   const validator = buildConfigValidator(DeleteManySchema, 'deleteMany');
 

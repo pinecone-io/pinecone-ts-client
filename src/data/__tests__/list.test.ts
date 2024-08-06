@@ -10,7 +10,7 @@ const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListRequest) => Promise<ListResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response),
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { list: fakeList } as DataPlaneApi;
   const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;

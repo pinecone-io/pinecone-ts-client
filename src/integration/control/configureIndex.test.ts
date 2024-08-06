@@ -88,7 +88,7 @@ describe('configure index', () => {
         const err = e as PineconeBadRequestError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'Deletion protection is enabled for this index',
+          'Deletion protection is enabled for this index'
         );
       });
 
@@ -120,10 +120,10 @@ describe('configure index', () => {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          `You've reached the max pods allowed in project`,
+          `You've reached the max pods allowed in project`
         );
         expect(err.message).toContain(
-          'To increase this limit, adjust your project settings in the console',
+          'To increase this limit, adjust your project settings in the console'
         );
       }
     });
@@ -151,7 +151,7 @@ describe('configure index', () => {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'Invalid deletion_protection, value should be either enabled or disabled',
+          'Invalid deletion_protection, value should be either enabled or disabled'
         );
       }
     });
@@ -165,7 +165,7 @@ describe('configure index', () => {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'Configuring replicas and pod type is not supported for serverless',
+          'Configuring replicas and pod type is not supported for serverless'
         );
       }
     });

@@ -8,9 +8,9 @@ export const handleApiError = async (
   e: unknown,
   customMessage?: (
     statusCode: number,
-    rawMessageText: string,
+    rawMessageText: string
   ) => Promise<string>,
-  url?: string,
+  url?: string
 ): Promise<Error> => {
   if (e instanceof Error && e.name === 'ResponseError') {
     const responseError = e as ResponseError;

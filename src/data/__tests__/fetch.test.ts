@@ -10,7 +10,7 @@ const setupResponse = (response, isSuccess) => {
   const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response),
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { fetch: fakeFetch } as DataPlaneApi;
   const DataProvider = { provide: async () => DPA } as DataOperationsProvider;

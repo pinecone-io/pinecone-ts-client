@@ -23,7 +23,7 @@ export class Inference {
 
   /* Format the parameters object into the correct format for the Inference API request. */
   public _formatParams(
-    parameters: Record<string, string>,
+    parameters: Record<string, string>
   ): EmbedRequestParameters {
     return parameters;
   }
@@ -32,7 +32,7 @@ export class Inference {
   async embed(
     model: string,
     inputs: Array<string>,
-    params: Record<string, string>,
+    params: Record<string, string>
   ): Promise<EmbeddingsList> {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
       this._formatInputs(inputs);

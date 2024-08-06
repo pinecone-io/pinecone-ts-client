@@ -12,7 +12,7 @@ export const IndexHostSingleton = (function () {
 
   const _describeIndex = async (
     config: PineconeConfiguration,
-    indexName: IndexName,
+    indexName: IndexName
   ): Promise<string> => {
     const indexOperationsApi = indexOperationsBuilder(config);
     const describeResponse = await describeIndex(indexOperationsApi)(indexName);
@@ -22,7 +22,7 @@ export const IndexHostSingleton = (function () {
       // Generally, middleware will handle most errors from the call itself such as index not found, etc
       // However, we need to explicitly handle the optionality of status.host
       throw new PineconeUnableToResolveHostError(
-        'The HTTP call succeeded but the host URL could not be resolved. Please make sure the index exists and is in a ready state.',
+        'The HTTP call succeeded but the host URL could not be resolved. Please make sure the index exists and is in a ready state.'
       );
     } else {
       return host;
@@ -43,7 +43,7 @@ export const IndexHostSingleton = (function () {
 
         if (!hostUrls[cacheKey]) {
           throw new PineconeUnableToResolveHostError(
-            `Could not get host for index: ${indexName}. Call describeIndex('${indexName}') to check the current status.`,
+            `Could not get host for index: ${indexName}. Call describeIndex('${indexName}') to check the current status.`
           );
         }
         return hostUrls[cacheKey];
@@ -59,7 +59,7 @@ export const IndexHostSingleton = (function () {
     _set: (
       config: PineconeConfiguration,
       indexName: IndexName,
-      hostUrl: string,
+      hostUrl: string
     ) => {
       const normalizedHostUrl = normalizeUrl(hostUrl);
       // prevent adding an empty hostUrl to the cache

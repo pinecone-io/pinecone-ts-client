@@ -45,7 +45,7 @@ const DescribeIndexStatsOptionsSchema = Type.Object(
   {
     filter: Type.Optional(Type.Object({}, { additionalProperties: true })),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 /**
@@ -62,11 +62,11 @@ export type DescribeIndexStatsOptions = {
 export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
   const validator = buildConfigValidator(
     DescribeIndexStatsOptionsSchema,
-    'describeIndexStats',
+    'describeIndexStats'
   );
 
   return async (
-    options?: DescribeIndexStatsOptions,
+    options?: DescribeIndexStatsOptions
   ): Promise<IndexStatsDescription> => {
     if (options) {
       validator(options);

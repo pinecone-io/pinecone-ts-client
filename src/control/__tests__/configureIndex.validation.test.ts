@@ -23,7 +23,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: argument must be string.',
+        'The first argument to configureIndex had type errors: argument must be string.'
       );
     });
 
@@ -33,7 +33,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: argument must be string.',
+        'The first argument to configureIndex had type errors: argument must be string.'
       );
     });
 
@@ -43,7 +43,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had validation errors: argument must not be blank.',
+        'The first argument to configureIndex had validation errors: argument must not be blank.'
       );
     });
 
@@ -53,7 +53,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       expect(toThrowSpec).rejects.toThrowError(
-        'The second argument to configureIndex should not be empty object. Please specify at least one property (spec, deletionProtection) to update.',
+        'The second argument to configureIndex should not be empty object. Please specify at least one property (spec, deletionProtection) to update.'
       );
     });
 
@@ -65,7 +65,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/replicas' must be integer.",
+        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/replicas' must be integer."
       );
     });
 
@@ -77,7 +77,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/podType' must be string.",
+        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/podType' must be string."
       );
     });
 
@@ -89,7 +89,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had validation errors: property 'spec/properties/pod/properties/replicas' must be >= 1.",
+        "The second argument to configureIndex had validation errors: property 'spec/properties/pod/properties/replicas' must be >= 1."
       );
     });
 
@@ -99,7 +99,7 @@ describe('configureIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had validation errors: property 'deletionProtection' must not be blank.",
+        "The second argument to configureIndex had validation errors: property 'deletionProtection' must not be blank."
       );
     });
   });

@@ -8,7 +8,7 @@ import type {
 
 const setupMocks = (
   deleteResponse,
-  listCollectionResponse = () => Promise.resolve([]),
+  listCollectionResponse = () => Promise.resolve([])
 ) => {
   const fakeDeleteCollection: (req: DeleteCollectionRequest) => Promise<void> =
     jest.fn().mockImplementation(deleteResponse);
@@ -31,7 +31,7 @@ describe('deleteCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to deleteCollection had type errors: argument must be string.',
+        'The argument to deleteCollection had type errors: argument must be string.'
       );
     });
 
@@ -42,7 +42,7 @@ describe('deleteCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to deleteCollection had type errors: argument must be string.',
+        'The argument to deleteCollection had type errors: argument must be string.'
       );
     });
 
@@ -53,7 +53,7 @@ describe('deleteCollection', () => {
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to deleteCollection had validation errors: argument must not be blank.',
+        'The argument to deleteCollection had validation errors: argument must not be blank.'
       );
     });
   });

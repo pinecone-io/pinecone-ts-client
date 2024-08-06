@@ -11,7 +11,7 @@ export type DeleteCollectionOptions = CollectionName;
 export const deleteCollection = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CollectionNameSchema,
-    'deleteCollection',
+    'deleteCollection'
   );
 
   return async (collectionName: DeleteCollectionOptions): Promise<void> => {

@@ -12,13 +12,13 @@ const CreateCollectionOptionsSchema = Type.Object(
     name: CollectionNameSchema,
     source: IndexNameSchema,
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 export const createCollection = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CreateCollectionOptionsSchema,
-    'createCollection',
+    'createCollection'
   );
 
   return async (options: CreateCollectionRequest): Promise<CollectionModel> => {

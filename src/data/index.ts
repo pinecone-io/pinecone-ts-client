@@ -341,7 +341,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     config: PineconeConfiguration,
     namespace = '',
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders,
+    additionalHeaders?: HTTPHeaders
   ) {
     this.config = config;
     this.target = {
@@ -354,7 +354,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       indexName,
       indexHostUrl,
-      additionalHeaders,
+      additionalHeaders
     );
 
     this._deleteAll = deleteAll(apiProvider, namespace);
@@ -401,7 +401,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       this.target.index,
       this.config,
       namespace,
-      this.target.indexHostUrl,
+      this.target.indexHostUrl
     );
   }
 

@@ -9,7 +9,7 @@ const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteOperationRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response),
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const DPA = { _delete: fakeDelete } as DataPlaneApi;
   const DataProvider = { provide: async () => DPA } as DataOperationsProvider;

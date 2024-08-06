@@ -33,7 +33,7 @@ export const MetadataConfigSchema = Type.Object(
   {
     indexed: Type.Array(nonemptyString),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 // If user passes the empty string for collection name, the generated

@@ -23,7 +23,7 @@ describe('listCollections', () => {
               environment: 'us-east-1',
             },
           ],
-        }),
+        })
       ),
     };
 

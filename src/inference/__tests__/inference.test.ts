@@ -52,7 +52,7 @@ describe('Inference Class: embed', () => {
 
     const mockedIncorrectResponse = { model: 'test-model' };
     const expectedError = Error(
-      'Response from Inference API is missing required fields',
+      'Response from Inference API is missing required fields'
     );
     const embed = jest.spyOn(inference._inferenceApi, 'embed');
     embed.mockResolvedValue(mockedIncorrectResponse);

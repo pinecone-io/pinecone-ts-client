@@ -14,7 +14,7 @@ export type DescribeCollectionOptions = CollectionName;
 export const describeCollection = (api: ManageIndexesApi) => {
   const validator = buildConfigValidator(
     CollectionNameSchema,
-    'describeCollection',
+    'describeCollection'
   );
 
   return async (name: DescribeCollectionOptions): Promise<CollectionModel> => {

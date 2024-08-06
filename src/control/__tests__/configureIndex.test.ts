@@ -27,7 +27,7 @@ describe('configureIndex', () => {
       },
     };
     const fakeConfigure: (
-      req: ConfigureIndexOperationRequest,
+      req: ConfigureIndexOperationRequest
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
     const IOA = { configureIndex: fakeConfigure } as ManageIndexesApi;
 

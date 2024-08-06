@@ -12,7 +12,7 @@ export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (
   apiProvider: DataOperationsProvider,
-  namespace: string,
+  namespace: string
 ) => {
   const validator = buildConfigValidator(RecordIdSchema, 'deleteOne');
 

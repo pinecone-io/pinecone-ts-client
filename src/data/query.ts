@@ -25,7 +25,7 @@ const QueryByRecordId = Type.Object(
     vector: Type.Optional(Type.Never()),
     sparseVector: Type.Optional(Type.Never()),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 const QueryByVectorValues = Type.Object(
@@ -35,7 +35,7 @@ const QueryByVectorValues = Type.Object(
     sparseVector: Type.Optional(RecordSparseValuesSchema),
     id: Type.Optional(Type.Never()),
   },
-  { additionalProperties: false },
+  { additionalProperties: false }
 );
 
 const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);

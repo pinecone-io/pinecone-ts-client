@@ -9,10 +9,10 @@ import type {
 
 const setupMocks = (
   describeResponse,
-  listCollectionResponse: () => Promise<Array<string>>,
+  listCollectionResponse: () => Promise<Array<string>>
 ) => {
   const fakeDescribeCollection: (
-    req: DescribeCollectionRequest,
+    req: DescribeCollectionRequest
   ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(describeResponse);
@@ -31,42 +31,42 @@ describe('describeCollection', () => {
     test('should throw if collection name is not provided', async () => {
       const IOA = setupMocks(
         () => Promise.resolve(''),
-        () => Promise.resolve([]),
+        () => Promise.resolve([])
       );
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)();
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had type errors: argument must be string.',
+        'The argument to describeCollection had type errors: argument must be string.'
       );
     });
 
     test('should throw if collection name is not a string', async () => {
       const IOA = setupMocks(
         () => Promise.resolve(''),
-        () => Promise.resolve([]),
+        () => Promise.resolve([])
       );
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)({});
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had type errors: argument must be string.',
+        'The argument to describeCollection had type errors: argument must be string.'
       );
     });
 
     test('should throw if collection name is empty string', async () => {
       const IOA = setupMocks(
         () => Promise.resolve(''),
-        () => Promise.resolve([]),
+        () => Promise.resolve([])
       );
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)('');
 
       expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had validation errors: argument must not be blank.',
+        'The argument to describeCollection had validation errors: argument must not be blank.'
       );
     });
   });
@@ -81,7 +81,7 @@ describe('describeCollection', () => {
             status: 'Ready',
             recordCount: 120,
           }),
-        () => Promise.resolve([]),
+        () => Promise.resolve([])
       );
 
       // @ts-ignore
