@@ -40,6 +40,7 @@ export type {
   RecordSparseValues,
   RecordValues,
   ScoredPineconeRecord,
+
 } from './data';
 
 export type {
@@ -53,7 +54,7 @@ export type {
   DescribeCollectionRequest,
   DescribeIndexRequest,
   Embedding,
-  FetchAPI,
+  // FetchAPI,
   IndexList,
   IndexModel,
   ServerlessSpec,
@@ -62,3 +63,5 @@ export type {
   PodSpecMetadataConfig,
 } from './pinecone-generated-ts-fetch/control';
 export type { ListResponse } from './pinecone-generated-ts-fetch/data';
+
+export type { FetchAPI } from './utils';

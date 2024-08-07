@@ -26,6 +26,7 @@ import {
   ErrorResponseFromJSON,
   ErrorResponseToJSON,
 } from '../models/index';
+import {ToStandardResponse} from "../../../utils";
 
 export interface EmbedOperationRequest {
   embedRequest?: EmbedRequest;
@@ -64,7 +65,9 @@ export class InferenceApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       EmbeddingsListFromJSON(jsonValue)
     );
   }
