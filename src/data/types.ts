@@ -1,8 +1,12 @@
 import { Type } from '@sinclair/typebox';
 import type {
-  FetchAPI,
   HTTPHeaders,
 } from '../pinecone-generated-ts-fetch/data';
+import { fetch as undiciFetch } from 'undici';
+import {FetchAPI2} from "../utils/fetch";
+
+export type CustomFetch = WindowOrWorkerGlobalScope['fetch'] | typeof undiciFetch;
+export type FetchAPI = CustomFetch;
 
 export const PineconeConfigurationSchema = Type.Object(
   {
@@ -39,7 +43,8 @@ export type PineconeConfiguration = {
   /**
    * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
    */
-  fetchApi?: FetchAPI;
+  // fetchApi?: FetchAPI;
+  fetchApi?: FetchAPI2;
 
   /**
    * Optional headers to be included in all requests.

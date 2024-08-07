@@ -7,11 +7,12 @@ import {
   queryParamsStringify,
   buildUserAgent,
   getFetch,
-  normalizeUrl,
+  normalizeUrl, FetchAPI2,
 } from '../utils';
 import { middleware } from '../utils/middleware';
 import type { PineconeConfiguration } from '../data/types';
 import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch/control';
+
 
 export const indexOperationsBuilder = (
   config: PineconeConfiguration
@@ -29,7 +30,7 @@ export const indexOperationsBuilder = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
       ...headers,
     },
-    fetchApi: getFetch(config),
+    fetchApi: getFetch(config) as FetchAPI2,
     middleware,
   };
 

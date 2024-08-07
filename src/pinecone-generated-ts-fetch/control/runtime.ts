@@ -1,5 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
+import {FetchAPI2, UnifiedRequestInit, UnifiedResponse} from "../../utils/fetch";
+
 /**
  * Pinecone Control Plane API
  * Pinecone is a vector database that makes it easy to search and retrieve billions of high-dimensional vectors.
@@ -16,8 +18,8 @@ export const BASE_PATH = 'https://api.pinecone.io'.replace(/\/+$/, '');
 
 export interface ConfigurationParameters {
   basePath?: string; // override base path
-  fetchApi?: FetchAPI; // override for fetch implementation
-  middleware?: Middleware[]; // middleware to apply before/after fetch requests
+  fetchApi?: FetchAPI2; // override for fetch implementation
+  middleware?: Middleware2[]; // middleware to apply before/after fetch requests
   queryParamsStringify?: (params: HTTPQuery) => string; // stringify function for query strings
   username?: string; // parameter for basic security
   password?: string; // parameter for basic security
@@ -43,11 +45,11 @@ export class Configuration {
       : BASE_PATH;
   }
 
-  get fetchApi(): FetchAPI | undefined {
+  get fetchApi(): FetchAPI2 | undefined {
     return this.configuration.fetchApi;
   }
 
-  get middleware(): Middleware[] {
+  get middleware(): Middleware2[] {
     return this.configuration.middleware || [];
   }
 
@@ -102,13 +104,13 @@ export class BaseAPI {
     '^(:?application/json|[^;/ \t]+/[^;/ \t]+[+]json)[ \t]*(:?;.*)?$',
     'i'
   );
-  private middleware: Middleware[];
+  private middleware: Middleware2[];
 
   constructor(protected configuration = DefaultConfig) {
     this.middleware = configuration.middleware;
   }
 
-  withMiddleware<T extends BaseAPI>(this: T, ...middlewares: Middleware[]) {
+  withMiddleware<T extends BaseAPI>(this: T, ...middlewares: Middleware2[]) {
     const next = this.clone<T>();
     next.middleware = next.middleware.concat(...middlewares);
     return next;
@@ -116,7 +118,7 @@ export class BaseAPI {
 
   withPreMiddleware<T extends BaseAPI>(
     this: T,
-    ...preMiddlewares: Array<Middleware['pre']>
+    ...preMiddlewares: Array<Middleware2['pre']>
   ) {
     const middlewares = preMiddlewares.map((pre) => ({ pre }));
     return this.withMiddleware<T>(...middlewares);
@@ -124,7 +126,7 @@ export class BaseAPI {
 
   withPostMiddleware<T extends BaseAPI>(
     this: T,
-    ...postMiddlewares: Array<Middleware['post']>
+    ...postMiddlewares: Array<Middleware2['post']>
   ) {
     const middlewares = postMiddlewares.map((post) => ({ post }));
     return this.withMiddleware<T>(...middlewares);
@@ -150,9 +152,9 @@ export class BaseAPI {
   protected async request(
     context: RequestOpts,
     initOverrides?: RequestInit | InitOverrideFunction
-  ): Promise<Response> {
+  ): Promise<UnifiedResponse> {
     const { url, init } = await this.createFetchParams(context, initOverrides);
-    const response = await this.fetchApi(url, init);
+    const response = await this.fetchApi(url, init as UnifiedRequestInit);
     if (response && response.status >= 200 && response.status < 300) {
       return response;
     }
@@ -224,8 +226,8 @@ export class BaseAPI {
     return { url, init };
   }
 
-  private fetchApi = async (url: string, init: RequestInit) => {
-    let fetchParams = { url, init };
+  private fetchApi: FetchAPI2 = async (input: RequestInfo | URL, init?: UnifiedRequestInit): Promise<UnifiedResponse> => {
+    let fetchParams: {url: string, init: UnifiedRequestInit} = { url: input.toString(), init: init || {} };
     for (const middleware of this.middleware) {
       if (middleware.pre) {
         fetchParams =
@@ -235,12 +237,18 @@ export class BaseAPI {
           })) || fetchParams;
       }
     }
-    let response: Response | undefined = undefined;
+    // let response: Response | undefined = undefined;
+    let response: UnifiedResponse | undefined = undefined;
+
     try {
       response = await (this.configuration.fetchApi || fetch)(
-        fetchParams.url,
-        fetchParams.init
-      );
+          fetchParams.url,
+          fetchParams.init as UnifiedRequestInit // No need for explicit type assertion if we ensure consistency
+      ) as UnifiedResponse;
+      // response = await (this.configuration.fetchApi || fetch)(
+      //   fetchParams.url,
+      //   fetchParams.init
+      // );
     } catch (e) {
       for (const middleware of this.middleware) {
         if (middleware.onError) {
@@ -248,9 +256,9 @@ export class BaseAPI {
             (await middleware.onError({
               fetch: this.fetchApi,
               url: fetchParams.url,
-              init: fetchParams.init,
+              init: fetchParams.init as UnifiedRequestInit, // Explicit type assertion
               error: e,
-              response: response ? response.clone() : undefined,
+              response: response ? response.clone() as UnifiedResponse : undefined, // Ensure UnifiedResponse type
             })) || response;
         }
       }
@@ -301,7 +309,7 @@ function isFormData(value: any): value is FormData {
 
 export class ResponseError extends Error {
   override name: 'ResponseError' = 'ResponseError';
-  constructor(public response: Response, msg?: string) {
+  constructor(public response: UnifiedResponse, msg?: string) {
     super(msg);
   }
 }
@@ -473,6 +481,20 @@ export interface Middleware {
   post?(context: ResponseContext): Promise<Response | void>;
   onError?(context: ErrorContext): Promise<Response | void>;
 }
+
+// export interface Middleware2 {
+//   pre?: (context: { fetch: FetchAPI2; url: string; init: RequestInit }) => Promise<{ url: string; init: RequestInit } | void>;
+//   onError?: (context: { fetch: FetchAPI2; url: string; init: RequestInit; error: any; response?: Response }) => Promise<Response | void>;
+//   post?: (context: { fetch: FetchAPI2; url: string; init: RequestInit; response: Response }) => Promise<Response | void>;
+// }
+
+export interface Middleware2 {
+  pre?: (context: { fetch: FetchAPI2; url: string; init: UnifiedRequestInit }) => Promise<{ url: string; init: UnifiedRequestInit } | void>;
+  onError?: (context: { fetch: FetchAPI2; url: string; init: UnifiedRequestInit; error: any; response?: UnifiedResponse }) => Promise<UnifiedResponse | void>;
+  post?: (context: { fetch: FetchAPI2; url: string; init: UnifiedRequestInit; response: UnifiedResponse }) => Promise<UnifiedResponse | void>;
+}
+
+
 
 export interface ApiResponse<T> {
   raw: Response;

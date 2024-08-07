@@ -41,6 +41,7 @@ import {
   IndexModelFromJSON,
   IndexModelToJSON,
 } from '../models/index';
+import {ToStandardResponse} from '../../../utils';
 
 export interface ConfigureIndexOperationRequest {
   indexName: string;
@@ -75,6 +76,7 @@ export interface DescribeIndexRequest {
  *
  */
 export class ManageIndexesApi extends runtime.BaseAPI {
+
   /**
    * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
    * Configure an index
@@ -129,10 +131,14 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       IndexModelFromJSON(jsonValue)
     );
   }
+
+
 
   /**
    * This operation configures the pod size and number of replicas for a pod-based index.  It is not possible to change the pod type of an index. However, you can create a collection from an index and then [create a new index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection.
@@ -190,7 +196,9 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       CollectionModelFromJSON(jsonValue)
     );
   }
@@ -249,7 +257,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       IndexModelFromJSON(jsonValue)
     );
   }
@@ -308,7 +319,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.VoidApiResponse(response);
+    const standardResponse = await ToStandardResponse(response);
+
+
+    return new runtime.VoidApiResponse(standardResponse);
   }
 
   /**
@@ -361,7 +375,9 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.VoidApiResponse(response);
+    const standardResponse = await ToStandardResponse(response);
+
+    return new runtime.VoidApiResponse(standardResponse);
   }
 
   /**
@@ -413,8 +429,9 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       },
       initOverrides
     );
+    const standardResponse = await ToStandardResponse(response);
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       CollectionModelFromJSON(jsonValue)
     );
   }
@@ -473,7 +490,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       IndexModelFromJSON(jsonValue)
     );
   }
@@ -518,7 +538,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       CollectionListFromJSON(jsonValue)
     );
   }
@@ -559,7 +582,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
+    const standardResponse = await ToStandardResponse(response);
+
+
+    return new runtime.JSONApiResponse(standardResponse, (jsonValue) =>
       IndexListFromJSON(jsonValue)
     );
   }

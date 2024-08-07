@@ -1,10 +1,10 @@
 import {
-  Middleware,
+  Middleware, Middleware2,
   ResponseError,
 } from '../pinecone-generated-ts-fetch/control';
 import { handleApiError } from '../errors';
 
-const debugMiddleware: Middleware[] = [];
+const debugMiddleware: Middleware2[] = [];
 
 const chalk = (str, color) => {
   const colors = {
