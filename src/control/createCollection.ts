@@ -1,16 +1,5 @@
 import {CollectionModel, CreateCollectionRequest, ManageIndexesApi,} from '../pinecone-generated-ts-fetch/control';
 import {PineconeArgumentError} from "../errors";
-// import { buildConfigValidator } from '../validator';
-// import { CollectionNameSchema, IndexNameSchema } from './types';
-// import { Type } from '@sinclair/typebox';
-
-// const CreateCollectionOptionsSchema = Type.Object(
-//   {
-//     name: CollectionNameSchema,
-//     source: IndexNameSchema,
-//   },
-//   { additionalProperties: false }
-// );
 
 export const createCollection = (api: ManageIndexesApi) => {
     const createCollectionsValidator = (options: CreateCollectionRequest) => {
@@ -30,7 +19,6 @@ export const createCollection = (api: ManageIndexesApi) => {
                 );
             }
         }
-
 
         // Confirm there aren't extraneous fields
         const optionKeys = Object.keys(options);
