@@ -1,13 +1,13 @@
 import {
-    CreateIndexRequest,
-    IndexModel,
-    ManageIndexesApi,
-    PodSpecMetadataConfig,
-    ServerlessSpecCloudEnum,
+  CreateIndexRequest,
+  IndexModel,
+  ManageIndexesApi,
+  PodSpecMetadataConfig,
+  ServerlessSpecCloudEnum,
 } from '../pinecone-generated-ts-fetch/control';
 // import { buildConfigValidator } from '../validator';
-import {debugLog} from '../utils';
-import {handleApiError, PineconeArgumentError} from '../errors';
+import { debugLog } from '../utils';
+import { handleApiError, PineconeArgumentError } from '../errors';
 // import { Type } from '@sinclair/typebox';
 // import {
 //   IndexNameSchema,
@@ -28,14 +28,14 @@ import {handleApiError, PineconeArgumentError} from '../errors';
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
 export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
-    /** This option specifies how the index should be deployed. */
-    spec: CreateIndexSpec;
+  /** This option specifies how the index should be deployed. */
+  spec: CreateIndexSpec;
 
-    /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
-    waitUntilReady?: boolean;
+  /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
+  waitUntilReady?: boolean;
 
-    /** This option tells the client not to throw if you attempt to create an index that already exists. */
-    suppressConflicts?: boolean;
+  /** This option tells the client not to throw if you attempt to create an index that already exists. */
+  suppressConflicts?: boolean;
 }
 
 /**
@@ -46,11 +46,11 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
  * the [pod type and size](http://docs.pinecone.io/guides/indexes/understanding-indexes#pod-types) to use, and other index characteristics.
  */
 export interface CreateIndexSpec {
-    /** The serverless object allows you to configure a serverless index. */
-    serverless?: CreateIndexServerlessSpec;
+  /** The serverless object allows you to configure a serverless index. */
+  serverless?: CreateIndexServerlessSpec;
 
-    /** The pod object allows you to configure a pods-based index. */
-    pod?: CreateIndexPodSpec;
+  /** The pod object allows you to configure a pods-based index. */
+  pod?: CreateIndexPodSpec;
 }
 
 /**
@@ -59,11 +59,11 @@ export interface CreateIndexSpec {
  * @see [Understanding Serverless indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes)
  */
 export interface CreateIndexServerlessSpec {
-    /** The public cloud where you would like your index hosted. */
-    cloud: ServerlessSpecCloudEnum;
+  /** The public cloud where you would like your index hosted. */
+  cloud: ServerlessSpecCloudEnum;
 
-    /** The region where you would like your index to be created. */
-    region: string;
+  /** The region where you would like your index to be created. */
+  region: string;
 }
 
 /**
@@ -72,30 +72,30 @@ export interface CreateIndexServerlessSpec {
  * @see [Understanding Pod-based indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#pod-based-indexes)
  */
 export interface CreateIndexPodSpec {
-    /** The environment where the index is hosted. */
-    environment: string;
+  /** The environment where the index is hosted. */
+  environment: string;
 
-    /** The number of replicas. Replicas duplicate your index. They provide higher availability and throughput. Replicas can be scaled up or down as your needs change. */
-    replicas?: number;
+  /** The number of replicas. Replicas duplicate your index. They provide higher availability and throughput. Replicas can be scaled up or down as your needs change. */
+  replicas?: number;
 
-    /** The number of shards. Shards split your data across multiple pods so you can fit more data into an index. */
-    shards?: number;
+  /** The number of shards. Shards split your data across multiple pods so you can fit more data into an index. */
+  shards?: number;
 
-    /** The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`. */
-    podType: string;
+  /** The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`. */
+  podType: string;
 
-    /** The number of pods to be used in the index. This should be equal to `shards` x `replicas`.' */
-    pods?: number;
+  /** The number of pods to be used in the index. This should be equal to `shards` x `replicas`.' */
+  pods?: number;
 
-    /**
-     * Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed;
-     * when `metadataConfig` is present, only specified metadata fields are indexed. These configurations are only valid
-     * for use with pod-based indexes.
-     */
-    metadataConfig?: PodSpecMetadataConfig;
+  /**
+   * Configuration for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed;
+   * when `metadataConfig` is present, only specified metadata fields are indexed. These configurations are only valid
+   * for use with pod-based indexes.
+   */
+  metadataConfig?: PodSpecMetadataConfig;
 
-    /** The name of the collection to be used as the source for the index. */
-    sourceCollection?: string;
+  /** The name of the collection to be used as the source for the index. */
+  sourceCollection?: string;
 }
 
 // const CreateIndexOptionsSchema = Type.Object(
@@ -132,147 +132,159 @@ export interface CreateIndexPodSpec {
 // );
 
 function isServerlessSpecCloudEnum(obj: any): obj is ServerlessSpecCloudEnum {
-    return typeof obj === 'string' && ['gcp', 'aws', 'azure'].includes(obj);
+  return typeof obj === 'string' && ['gcp', 'aws', 'azure'].includes(obj);
 }
 
-
-function isCreateIndexServerlessSpec(obj: any): obj is CreateIndexServerlessSpec {
-    return typeof obj === 'object' &&
-        typeof obj.region === 'string' &&
-        isServerlessSpecCloudEnum(obj.cloud);
+function isCreateIndexServerlessSpec(
+  obj: any
+): obj is CreateIndexServerlessSpec {
+  return (
+    typeof obj === 'object' &&
+    typeof obj.region === 'string' &&
+    isServerlessSpecCloudEnum(obj.cloud)
+  );
 }
 
 function isCreateIndexPodSpec(obj: any): obj is CreateIndexPodSpec {
-    return typeof obj === 'object' &&
-        typeof obj.environment === 'string' &&
-        typeof obj.podType == 'string';
+  return (
+    typeof obj === 'object' &&
+    typeof obj.environment === 'string' &&
+    typeof obj.podType == 'string'
+  );
 }
 
 function isCreateIndexSpec(obj: any): obj is CreateIndexSpec {
-    return typeof obj === 'object' &&
-        (typeof obj.serverless === 'undefined' || isCreateIndexServerlessSpec(obj.serverless)) &&
-        (typeof obj.pod === 'undefined' || isCreateIndexPodSpec(obj.pod))
-        ;
+  return (
+    typeof obj === 'object' &&
+    (typeof obj.serverless === 'undefined' ||
+      isCreateIndexServerlessSpec(obj.serverless)) &&
+    (typeof obj.pod === 'undefined' || isCreateIndexPodSpec(obj.pod))
+  );
 }
 
 export const createIndex = (api: ManageIndexesApi) => {
-    const createIndexValidator = (options: CreateIndexOptions) => {
-        if (options) {
-            // Confirm req'd fields present
-            if (!options['spec']) {
-                throw new PineconeArgumentError(
-                    'All calls to createIndex must include a `spec` object of type CreateIndexSpec.'
-                );
-            }
+  const createIndexValidator = (options: CreateIndexOptions) => {
+    if (options) {
+      // Confirm req'd fields present
+      if (!options['spec']) {
+        throw new PineconeArgumentError(
+          'All calls to createIndex must include a `spec` object of type CreateIndexSpec.'
+        );
+      }
 
-            if (!isCreateIndexSpec(options.spec)) {
-                throw new PineconeArgumentError('The `spec` object does not conform to the required structure.');
-                // todo: add more specific error messages to print out missing required fields depending on which
-                //  spec was passed
-            }
-        }
+      if (!isCreateIndexSpec(options.spec)) {
+        throw new PineconeArgumentError(
+          'The `spec` object does not conform to the required structure.'
+        );
+        // todo: add more specific error messages to print out missing required fields depending on which
+        //  spec was passed
+      }
+    }
 
+    // General checks
+    if (
+      !options ||
+      typeof options !== 'object' ||
+      Array.isArray(options) ||
+      Object.keys(options).length === 0
+    ) {
+      throw new PineconeArgumentError(
+        'The argument passed to createIndex must be a non-empty object.'
+      );
+    }
 
-        // General checks
-        if (!options || typeof options !== 'object' || Array.isArray(options) || Object.keys(options).length === 0) {
-            throw new PineconeArgumentError(
-                'The argument passed to createIndex must be a non-empty object.'
-            );
-        }
+    // Confirm spec is an object
+    if (options['spec']) {
+      const specObject = options['spec'];
+      if (typeof specObject !== 'object') {
+        throw new PineconeArgumentError(
+          'The `spec` field must be an object of type CreateIndexSpec.'
+        );
+      }
+    }
 
+    // If metric is not specified, default to cosine
+    if (options && !options.metric) {
+      options.metric = 'cosine';
+    }
 
-        // Confirm spec is an object
-        if (options['spec']) {
-            const specObject = options['spec'];
-            if (typeof specObject !== 'object') {
-                throw new PineconeArgumentError(
-                    'The `spec` field must be an object of type CreateIndexSpec.'
-                );
-            }
-        }
+    // Confirm there aren't extraneous fields
+    const allowedFields: string[] = [
+      'spec', // from CreateIndexOptions
+      'waitUntilReady', // from CreateIndexOptions
+      'suppressConflicts', // from CreateIndexOptions
+      'name', // from CreateIndexRequest
+      'dimension', // from CreateIndexRequest
+      'metric', // from CreateIndexRequest
+      'deletionProtection', // from CreateIndexRequest
+      'sourceCollection', // from CreateIndexRequest
+      'replicas', // from CreateIndexRequest
+      'shards', // from CreateIndexRequest
+      'podType', // from CreateIndexRequest
+      'pods', // from CreateIndexRequest
+      'metadataConfig', // from CreateIndexRequest
+      'cloud', // from CreateIndexRequest
+      'region', // from CreateIndexRequest
+      'environment', // from CreateIndexRequest
+    ];
 
-        // If metric is not specified, default to cosine
-        if (options && !options.metric) {
-            options.metric = 'cosine';
-        }
+    // Extraneous fields
+    const optionKeys = Object.keys(options);
+    const extraneousFields = optionKeys.filter(
+      (key) => !allowedFields.includes(key)
+    );
+    if (extraneousFields.length > 0) {
+      throw new PineconeArgumentError(
+        `Extraneous fields are not allowed: ${extraneousFields.join(', ')}`
+      );
+    }
+  };
 
-        // Confirm there aren't extraneous fields
-        const allowedFields: string[] = [
-            'spec', // from CreateIndexOptions
-            'waitUntilReady',  // from CreateIndexOptions
-            'suppressConflicts',  // from CreateIndexOptions
-            'name',  // from CreateIndexRequest
-            'dimension',  // from CreateIndexRequest
-            'metric',  // from CreateIndexRequest
-            'deletionProtection',  // from CreateIndexRequest
-            'sourceCollection',  // from CreateIndexRequest
-            'replicas',  // from CreateIndexRequest
-            'shards',  // from CreateIndexRequest
-            'podType',  // from CreateIndexRequest
-            'pods',  // from CreateIndexRequest
-            'metadataConfig',  // from CreateIndexRequest
-            'cloud',  // from CreateIndexRequest
-            'region',  // from CreateIndexRequest
-            'environment',  // from CreateIndexRequest
-        ];
+  return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
+    createIndexValidator(options);
 
-        // Extraneous fields
-        const optionKeys = Object.keys(options);
-        const extraneousFields = optionKeys.filter(key => !allowedFields.includes(key));
-        if (extraneousFields.length > 0) {
-            throw new PineconeArgumentError(
-                `Extraneous fields are not allowed: ${extraneousFields.join(', ')}`
-            );
-        }
-    };
-
-
-    return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
-
-        createIndexValidator(options);
-
-        try {
-            const createResponse = await api.createIndex({
-                createIndexRequest: options as CreateIndexRequest,
-            });
-            if (options.waitUntilReady) {
-                return await waitUntilIndexIsReady(api, options.name);
-            }
-            return createResponse;
-        } catch (e) {
-            if (
-                !(
-                    options.suppressConflicts &&
-                    e instanceof Error &&
-                    e.name === 'PineconeConflictError'
-                )
-            ) {
-                throw e;
-            }
-        }
-    };
+    try {
+      const createResponse = await api.createIndex({
+        createIndexRequest: options as CreateIndexRequest,
+      });
+      if (options.waitUntilReady) {
+        return await waitUntilIndexIsReady(api, options.name);
+      }
+      return createResponse;
+    } catch (e) {
+      if (
+        !(
+          options.suppressConflicts &&
+          e instanceof Error &&
+          e.name === 'PineconeConflictError'
+        )
+      ) {
+        throw e;
+      }
+    }
+  };
 };
 
 const waitUntilIndexIsReady = async (
-    api: ManageIndexesApi,
-    indexName: string,
-    seconds: number = 0
+  api: ManageIndexesApi,
+  indexName: string,
+  seconds: number = 0
 ): Promise<IndexModel> => {
-    try {
-        const indexDescription = await api.describeIndex({indexName});
-        if (!indexDescription.status?.ready) {
-            await new Promise((r) => setTimeout(r, 1000));
-            return await waitUntilIndexIsReady(api, indexName, seconds + 1);
-        } else {
-            debugLog(`Index ${indexName} is ready after ${seconds}`);
-            return indexDescription;
-        }
-    } catch (e) {
-        const err = await handleApiError(
-            e,
-            async (_, rawMessageText) =>
-                `Error creating index ${indexName}: ${rawMessageText}`
-        );
-        throw err;
+  try {
+    const indexDescription = await api.describeIndex({ indexName });
+    if (!indexDescription.status?.ready) {
+      await new Promise((r) => setTimeout(r, 1000));
+      return await waitUntilIndexIsReady(api, indexName, seconds + 1);
+    } else {
+      debugLog(`Index ${indexName} is ready after ${seconds}`);
+      return indexDescription;
     }
+  } catch (e) {
+    const err = await handleApiError(
+      e,
+      async (_, rawMessageText) =>
+        `Error creating index ${indexName}: ${rawMessageText}`
+    );
+    throw err;
+  }
 };

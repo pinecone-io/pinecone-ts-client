@@ -25,11 +25,11 @@ import {PineconeArgumentError} from '../errors';
 
 export const configureIndex = (api: ManageIndexesApi) => {
     const indexNameValidator = (indexName: string) => {
-        if (indexName.length === 0) {
-            throw new PineconeArgumentError(
-                'The first argument to configureIndex must be a non-empty string.'
-            );
-        }
+      if (indexName.length === 0) {
+        throw new PineconeArgumentError(
+          'The first argument to configureIndex must be a non-empty string.'
+        );
+      }
     };
     const patchRequestValidator = (options: ConfigureIndexRequest) => {
         if (Object.keys(options).length === 0) {
