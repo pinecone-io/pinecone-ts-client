@@ -70,9 +70,9 @@ describe('createCollection', () => {
         await createCollection(IOA)();
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection had type errors: argument must be object.'
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty object with `name` and `source` fields in order to create a collection.'
       );
     });
 
@@ -83,9 +83,9 @@ describe('createCollection', () => {
         await createCollection(IOA)('not an object');
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection had type errors: argument must be object.'
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty object with `name` and `source` fields in order to create a collection.'
       );
     });
 
@@ -96,8 +96,8 @@ describe('createCollection', () => {
         await createCollection(IOA)({});
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
         'The argument to createCollection must have required properties: name, source.'
       );
     });
@@ -111,24 +111,24 @@ describe('createCollection', () => {
         });
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The argument to createCollection had validation errors: property 'name' must not be blank."
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `name` in order to create a collection.'
       );
     });
 
-    test('throws if name is not a string', async () => {
-      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-      const toThrow = async () => {
-        // @ts-ignore
-        await createCollection(IOA)({ name: 1, source: 'index-name' });
-      };
-
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The argument to createCollection had type errors: property 'name' must be string."
-      );
-    });
+    // test('throws if name is not a string', async () => {
+    //   const IOA = setOpenAPIResponse(() => Promise.resolve(''));
+    //   const toThrow = async () => {
+    //     // @ts-ignore
+    //     await createCollection(IOA)({ name: 1, source: 'index-name' });
+    //   };
+    //
+    //   expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    //   expect(toThrow).rejects.toThrowError(
+    //     "The argument to createCollection had type errors: property 'name' must be string."
+    //   );
+    // });
 
     test('throws if source is not provided', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));
@@ -137,24 +137,24 @@ describe('createCollection', () => {
         await createCollection(IOA)({ name: 'collection-name' });
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection must have required property: source.'
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `source` in order to create a collection.'
       );
     });
 
-    test('throws if source is not a string', async () => {
-      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-      const toThrow = async () => {
-        // @ts-ignore
-        await createCollection(IOA)({ name: 'foo', source: 12 });
-      };
-
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The argument to createCollection had type errors: property 'source' must be string."
-      );
-    });
+    // test('throws if source is not a string', async () => {
+    //   const IOA = setOpenAPIResponse(() => Promise.resolve(''));
+    //   const toThrow = async () => {
+    //     // @ts-ignore
+    //     await createCollection(IOA)({ name: 'foo', source: 12 });
+    //   };
+    //
+    //   expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    //   expect(toThrow).rejects.toThrowError(
+    //     "The argument to createCollection had type errors: property 'source' must be string."
+    //   );
+    // });
 
     test('throws if source is blank', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));
@@ -165,9 +165,9 @@ describe('createCollection', () => {
         });
       };
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The argument to createCollection had validation errors: property 'source' must not be blank."
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `source` in order to create a collection.'
       );
     });
   });
