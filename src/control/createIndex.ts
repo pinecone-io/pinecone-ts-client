@@ -135,20 +135,60 @@ function isServerlessSpecCloudEnum(obj: any): obj is ServerlessSpecCloudEnum {
   return typeof obj === 'string' && ['gcp', 'aws', 'azure'].includes(obj);
 }
 
+function isValidMetric(obj: any): obj is string {
+  return (
+    typeof obj === 'string' &&
+    ['cosine', 'euclidean', 'dotproduct'].includes(obj)
+  );
+}
+
+function isValidPodType(obj: any): obj is string {
+  return (
+    typeof obj === 'string' &&
+    [
+      's1.x1',
+      's1.x2',
+      's1.x4',
+      's1.x8',
+      'p1.x1',
+      'p1.x2',
+      'p1.x4',
+      'p1.x8',
+      'p2.x1',
+      'p2.x2',
+      'p2.x4',
+      'p2.x8',
+    ].includes(obj)
+  );
+}
+
+function isValidMetadataConfig(obj: any): obj is PodSpecMetadataConfig {
+  return (
+    typeof obj === 'object' &&
+    obj.key === 'indexed' &&
+    Array.isArray(obj.indexed) &&
+    obj.indexed.every((field) => typeof field === 'string')
+  );
+}
+
 function isCreateIndexServerlessSpec(
   obj: any
 ): obj is CreateIndexServerlessSpec {
   return (
     typeof obj === 'object' &&
-    typeof obj.region === 'string' &&
-    isServerlessSpecCloudEnum(obj.cloud)
+    obj.cloud &&
+    isServerlessSpecCloudEnum(obj.cloud) &&
+    obj.region &&
+    typeof obj.region === 'string'
   );
 }
 
 function isCreateIndexPodSpec(obj: any): obj is CreateIndexPodSpec {
   return (
     typeof obj === 'object' &&
+    obj.environment &&
     typeof obj.environment === 'string' &&
+    obj.podType &&
     typeof obj.podType == 'string'
   );
 }
@@ -156,6 +196,9 @@ function isCreateIndexPodSpec(obj: any): obj is CreateIndexPodSpec {
 function isCreateIndexSpec(obj: any): obj is CreateIndexSpec {
   return (
     typeof obj === 'object' &&
+    (typeof obj.metric === 'undefined' || isValidMetric(obj.metric)) &&
+    (typeof obj.metadataConfig === 'undefined' ||
+      isValidMetadataConfig(obj.metadataConfig)) &&
     (typeof obj.serverless === 'undefined' ||
       isCreateIndexServerlessSpec(obj.serverless)) &&
     (typeof obj.pod === 'undefined' || isCreateIndexPodSpec(obj.pod))
@@ -165,7 +208,17 @@ function isCreateIndexSpec(obj: any): obj is CreateIndexSpec {
 export const createIndex = (api: ManageIndexesApi) => {
   const createIndexValidator = (options: CreateIndexOptions) => {
     if (options) {
-      // Confirm req'd fields present
+      // Confirm req'd fields present (name, dimension, spec)
+      if (!options['name']) {
+        throw new PineconeArgumentError(
+          'All calls to createIndex must include a `name` field.'
+        );
+      }
+      if (!options['dimension']) {
+        throw new PineconeArgumentError(
+          'All calls to createIndex must include a `dimension` field.'
+        );
+      }
       if (!options['spec']) {
         throw new PineconeArgumentError(
           'All calls to createIndex must include a `spec` object of type CreateIndexSpec.'
@@ -176,8 +229,6 @@ export const createIndex = (api: ManageIndexesApi) => {
         throw new PineconeArgumentError(
           'The `spec` object does not conform to the required structure.'
         );
-        // todo: add more specific error messages to print out missing required fields depending on which
-        //  spec was passed
       }
     }
 
@@ -193,50 +244,9 @@ export const createIndex = (api: ManageIndexesApi) => {
       );
     }
 
-    // Confirm spec is an object
-    if (options['spec']) {
-      const specObject = options['spec'];
-      if (typeof specObject !== 'object') {
-        throw new PineconeArgumentError(
-          'The `spec` field must be an object of type CreateIndexSpec.'
-        );
-      }
-    }
-
     // If metric is not specified, default to cosine
     if (options && !options.metric) {
       options.metric = 'cosine';
-    }
-
-    // Confirm there aren't extraneous fields
-    const allowedFields: string[] = [
-      'spec', // from CreateIndexOptions
-      'waitUntilReady', // from CreateIndexOptions
-      'suppressConflicts', // from CreateIndexOptions
-      'name', // from CreateIndexRequest
-      'dimension', // from CreateIndexRequest
-      'metric', // from CreateIndexRequest
-      'deletionProtection', // from CreateIndexRequest
-      'sourceCollection', // from CreateIndexRequest
-      'replicas', // from CreateIndexRequest
-      'shards', // from CreateIndexRequest
-      'podType', // from CreateIndexRequest
-      'pods', // from CreateIndexRequest
-      'metadataConfig', // from CreateIndexRequest
-      'cloud', // from CreateIndexRequest
-      'region', // from CreateIndexRequest
-      'environment', // from CreateIndexRequest
-    ];
-
-    // Extraneous fields
-    const optionKeys = Object.keys(options);
-    const extraneousFields = optionKeys.filter(
-      (key) => !allowedFields.includes(key)
-    );
-    if (extraneousFields.length > 0) {
-      throw new PineconeArgumentError(
-        `Extraneous fields are not allowed: ${extraneousFields.join(', ')}`
-      );
     }
   };
 

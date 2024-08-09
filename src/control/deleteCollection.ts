@@ -1,7 +1,7 @@
 import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
-import { CollectionNameSchema } from './types';
-import type { CollectionName } from './types';
+// import { buildConfigValidator } from '../validator';
+// import { CollectionNameSchema } from './types';
+// import type { CollectionName } from './types';
 
 /**
  * The name of collection to delete.

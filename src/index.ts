@@ -7,14 +7,14 @@ export { EmbeddingsList } from './models/embeddingsList';
 
 // Type exports
 export type {
-  CollectionName,
+  // CollectionName,
   CreateIndexOptions,
   DeleteCollectionOptions,
   DeleteIndexOptions,
   DescribeIndexOptions,
   DescribeCollectionOptions,
-  IndexName,
-  PodType,
+  // IndexName,
+  // PodType,
 } from './control';
 export type {
   DeleteManyByFilterOptions,

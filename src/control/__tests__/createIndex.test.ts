@@ -50,14 +50,14 @@ const setupCreateIndexResponse = (
 };
 
 describe('createIndex', () => {
-  test('test invalid fields', async () => {
+  test('test missing required name field', async () => {
     const MIA = setupCreateIndexResponse(undefined, undefined);
     const returned = async () => {
       await createIndex(MIA)({
         // @ts-ignore
-        nameNameNamey: 'index-name', // invalid field name
-        dimension: 10,
-        metrixxxxx: 'cosine', // invalid field name
+        nasdfme: 'index-name', // invalid field name
+        dimension: 10, // invalid field name,
+        metric: 'cosine',
         spec: {
           pod: {
             environment: 'us-west1',
@@ -70,7 +70,7 @@ describe('createIndex', () => {
 
     await expect(returned).rejects.toThrowError(PineconeArgumentError);
     await expect(returned).rejects.toThrowError(
-      'Extraneous fields are not allowed: nameNameNamey, metrixxxxx'
+      'All calls to createIndex must include a `name` field.'
     );
   });
 
@@ -88,7 +88,7 @@ describe('createIndex', () => {
 
     await expect(returned).rejects.toThrowError(PineconeArgumentError);
     await expect(returned).rejects.toThrowError(
-      'The `spec` field must be an object of type CreateIndexSpec.'
+      'The `spec` object does not conform to the required structure.'
     );
   });
 
@@ -161,7 +161,69 @@ describe('createIndex', () => {
     );
   });
 
-  // todo: add test to check against only valid podType values
+  test('test invalid podType value within pod spec obj', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            podType: 'gobblygook', // invalid, nested field value
+          },
+        },
+      });
+    };
+  });
+
+  test('test invalid podType data type within pod spec obj', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            podType: Array['woo'], // invalid, nested field data type
+          },
+        },
+      });
+    };
+
+    await expect(returned).rejects.toThrowError(PineconeArgumentError);
+    await expect(returned).rejects.toThrowError(
+      'The `spec` object does not conform to the required structure.'
+    );
+  });
+
+  test('test invalid field name type within pod spec obj', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const returned = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        metric: 'cosine',
+        spec: {
+          pod: {
+            // @ts-ignore
+            environmenttytytytyt: 'us-west1', // invalid field name
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(returned).rejects.toThrowError(PineconeArgumentError);
+    await expect(returned).rejects.toThrowError(
+      'The `spec` object does not conform to the required structure.'
+    );
+  });
+
+  // todo: add test to check against pod spec nested field names
 
   test('calls the openapi create index endpoint, passing name, dimension, metric, and spec', async () => {
     const MIA = setupCreateIndexResponse(undefined, undefined);

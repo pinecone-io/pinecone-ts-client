@@ -9,9 +9,9 @@ import {
   describeCollection,
   deleteCollection,
   CreateIndexOptions,
-  IndexName,
+  // IndexName,
   indexOperationsBuilder,
-  CollectionName,
+  // CollectionName,
 } from './control';
 import type {
   ConfigureIndexRequest,
@@ -23,8 +23,8 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { Index, PineconeConfigurationSchema } from './data';
-import { buildValidator } from './validator';
+import { Index } from './data';
+// import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
@@ -112,7 +112,7 @@ export class Pinecone {
       options = this._readEnvironmentConfig();
     }
 
-    this._validateConfig(options);
+    // this._validateConfig(options);
     this.config = options;
 
     this._checkForBrowser();
@@ -219,7 +219,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel}.
    */
-  async describeIndex(indexName: IndexName) {
+  async describeIndex(indexName: string) {
     const indexModel = await this._describeIndex(indexName);
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
@@ -425,7 +425,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @returns A promise that resolves when the request to delete the index is completed.
    */
-  async deleteIndex(indexName: IndexName) {
+  async deleteIndex(indexName: string) {
     await this._deleteIndex(indexName);
 
     // When an index is deleted, we need to evict the host from the IndexHostSingleton cache.
@@ -457,7 +457,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
+  configureIndex(indexName: string, options: ConfigureIndexRequest) {
     return this._configureIndex(indexName, options);
   }
 
@@ -525,7 +525,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the request to delete the collection is completed.
    */
-  deleteCollection(collectionName: CollectionName) {
+  deleteCollection(collectionName: string) {
     return this._deleteCollection(collectionName);
   }
 
@@ -545,17 +545,17 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link CollectionModel}.
    */
-  describeCollection(collectionName: CollectionName) {
+  describeCollection(collectionName: string) {
     return this._describeCollection(collectionName);
   }
 
   /** @internal */
-  _validateConfig(options: PineconeConfiguration) {
-    buildValidator(
-      'The client configuration',
-      PineconeConfigurationSchema
-    )(options);
-  }
+  // _validateConfig(options: PineconeConfiguration) {
+  //   buildValidator(
+  //     'The client configuration',
+  //     PineconeConfigurationSchema
+  //   )(options);
+  // }
 
   /** @internal */
   _checkForBrowser() {
