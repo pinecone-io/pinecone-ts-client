@@ -36,9 +36,9 @@ describe('describeCollection', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)();
 
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had type errors: argument must be string.'
+      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrowError(
+        'You must enter a non-empty string for the `collectionName` field.'
       );
     });
 
@@ -50,9 +50,9 @@ describe('describeCollection', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)({});
 
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had type errors: argument must be string.'
+      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrowError(
+        'You must enter a non-empty string for the `collectionName` field.'
       );
     });
 
@@ -64,9 +64,9 @@ describe('describeCollection', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)('');
 
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeCollection had validation errors: argument must not be blank.'
+      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrowError(
+        'You must enter a non-empty string for the `collectionName` field.'
       );
     });
   });

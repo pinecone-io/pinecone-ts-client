@@ -2,23 +2,15 @@ import {
   ManageIndexesApi,
   CollectionModel,
 } from '../pinecone-generated-ts-fetch/control';
-// import { buildConfigValidator } from '../validator';
-// import { CollectionNameSchema } from './types';
-// import type { CollectionName } from './types';
-
-/**
- * The name of collection to describe.
- */
-export type DescribeCollectionOptions = CollectionName;
+import { PineconeArgumentError } from '../errors';
 
 export const describeCollection = (api: ManageIndexesApi) => {
-  const validator = buildConfigValidator(
-    CollectionNameSchema,
-    'describeCollection'
-  );
-
-  return async (name: DescribeCollectionOptions): Promise<CollectionModel> => {
-    validator(name);
+  return async (name: string): Promise<CollectionModel> => {
+    if (!name || name.length === 0 || typeof name !== 'string') {
+      throw new PineconeArgumentError(
+        'You must enter a non-empty string for the `collectionName` field.'
+      );
+    }
 
     return await api.describeCollection({ collectionName: name });
   };
