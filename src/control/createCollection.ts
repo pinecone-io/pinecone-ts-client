@@ -3,25 +3,9 @@ import {
   CreateCollectionRequest,
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
-// import { CollectionNameSchema, IndexNameSchema } from './types';
-import { Type } from '@sinclair/typebox';
 import { PineconeArgumentError } from '../errors';
 
-// const CreateCollectionOptionsSchema = Type.Object(
-//   {
-//     name: CollectionNameSchema,
-//     source: IndexNameSchema,
-//   },
-//   { additionalProperties: false }
-// );
-
 export const createCollection = (api: ManageIndexesApi) => {
-  // const validator = buildConfigValidator(
-  //   CreateCollectionOptionsSchema,
-  //   'createCollection'
-  // );
-
   const validator = async (options: CreateCollectionRequest) => {
     if (!options || typeof options !== 'object') {
       throw new PineconeArgumentError(

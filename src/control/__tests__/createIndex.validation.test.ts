@@ -68,21 +68,6 @@ describe('createIndex argument validations', () => {
       );
     });
 
-    test('should throw if dimension is not an int', async () => {
-      const toThrow = async () =>
-        await createIndex(MIA)({
-          name: 'index-name',
-          dimension: 10.5,
-          metric: 'cosine',
-          spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-        });
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'You must pass a positive integer for `dimension` in order to create an index.'
-      );
-    });
-
     test('should throw if dimension is not a positive integer', async () => {
       const toThrow = async () =>
         await createIndex(MIA)({

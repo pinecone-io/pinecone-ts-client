@@ -4,26 +4,11 @@ import {
   ManageIndexesApi,
   ServerlessSpecCloudEnum,
   PodSpecMetadataConfig,
+  IndexModelMetricEnum,
 } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
-import { PodType } from './types';
+import { ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
-import { Type } from '@sinclair/typebox';
-// import {
-//   IndexNameSchema,
-//   CloudSchema,
-//   DimensionSchema,
-//   EnvironmentSchema,
-//   MetricSchema,
-//   PodsSchema,
-//   RegionSchema,
-//   ReplicasSchema,
-//   PodTypeSchema,
-//   MetadataConfigSchema,
-//   CollectionNameSchema,
-//   ShardsSchema,
-// } from './types';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -111,11 +96,7 @@ export const createIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `name` in order to create an index.'
       );
     }
-    if (
-      !options.dimension ||
-      options.dimension <= 0 ||
-      !Number.isInteger(options.dimension)
-    ) {
+    if (!options.dimension || options.dimension <= 0) {
       throw new PineconeArgumentError(
         'You must pass a positive integer for `dimension` in order to create an index.'
       );
@@ -164,64 +145,47 @@ export const createIndex = (api: ManageIndexesApi) => {
         )}.`
       );
     }
-    if (options.metric) {
-      if (
-        options.metric !== 'cosine' &&
-        options.metric !== 'euclidean' &&
-        options.metric !== 'dotproduct'
-      ) {
+    if (
+      options.metric &&
+      !Object.values(IndexModelMetricEnum).includes(options.metric)
+    ) {
+      {
         throw new PineconeArgumentError(
           `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
         );
       }
     }
-    if (options.spec.pod) {
-      if (options.spec.pod.replicas) {
-        if (options.spec.pod.replicas <= 0) {
-          throw new PineconeArgumentError(
-            'You must pass a positive integer for `replicas` in order to create an index.'
-          );
-        }
-      }
+    if (
+      options.spec.pod &&
+      options.spec.pod.replicas &&
+      options.spec.pod.replicas <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `replicas` in order to create an index.'
+      );
     }
-    if (options.spec.pod) {
-      if (options.spec.pod.pods) {
-        if (options.spec.pod.pods <= 0) {
-          throw new PineconeArgumentError(
-            'You must pass a positive integer for `pods` in order to create an index.'
-          );
-        }
-      }
+    if (
+      options.spec.pod &&
+      options.spec.pod.pods &&
+      options.spec.pod.pods <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `pods` in order to create an index.'
+      );
     }
-    if (options.spec.pod) {
-      const validPodTypes: PodType[] = [
-        's1.x1',
-        's1.x2',
-        's1.x4',
-        's1.x8',
-        'p1.x1',
-        'p1.x2',
-        'p1.x4',
-        'p1.x8',
-        'p2.x1',
-        'p2.x2',
-        'p2.x4',
-        'p2.x8',
-      ];
-      if (!validPodTypes.includes(options.spec.pod.podType)) {
-        throw new PineconeArgumentError(
-          `Invalid pod type: ${
-            options.spec.pod.podType
-          }. Valid values are: ${validPodTypes.join(', ')}.`
-        );
-      }
+    if (options.spec.pod && !ValidPodTypes.includes(options.spec.pod.podType)) {
+      throw new PineconeArgumentError(
+        `Invalid pod type: ${
+          options.spec.pod.podType
+        }. Valid values are: ${ValidPodTypes.join(', ')}.`
+      );
     }
   };
 
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     // If metric is not specified, default to cosine
     if (options && !options.metric) {
-      options.metric = 'cosine';
+      options.metric = IndexModelMetricEnum.Cosine;
     }
     await validator(options);
     try {

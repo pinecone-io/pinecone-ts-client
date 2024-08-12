@@ -2,8 +2,6 @@ import {
   ManageIndexesApi,
   CollectionModel,
 } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
-// import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
 import { PineconeArgumentError } from '../errors';
 
@@ -13,11 +11,6 @@ import { PineconeArgumentError } from '../errors';
 export type DescribeCollectionOptions = CollectionName;
 
 export const describeCollection = (api: ManageIndexesApi) => {
-  // const validator = buildConfigValidator(
-  //   CollectionNameSchema,
-  //   'describeCollection'
-  // );
-
   return async (name: DescribeCollectionOptions): Promise<CollectionModel> => {
     if (!name || name.length === 0) {
       throw new PineconeArgumentError(
