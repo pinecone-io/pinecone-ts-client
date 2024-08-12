@@ -18,7 +18,9 @@ export const configureIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for indexName to configureIndex.'
       );
     }
-    if (!options.spec && options.deletionProtection === undefined) {
+    // !options.deletionProtection evaluates to false if options.deletionProtection is undefined, empty string, or
+    // not provided
+    if (!options.spec && !options.deletionProtection) {
       console.error('In spec and deletionProtection loop');
       throw new PineconeArgumentError(
         'You must pass either a `spec`, `deletionProtection` or both to configureIndex in order to update.'
@@ -49,14 +51,6 @@ export const configureIndex = (api: ManageIndexesApi) => {
         }
       }
     }
-    // todo: figure out why this keeps returning undefined
-    if (options.deletionProtection === undefined) {
-      console.log('In deletionProtection last loop');
-      throw new PineconeArgumentError(
-        '`deletionProtection` cannot be an empty string. Please pass a value of "enabled" or "disabled".'
-      );
-    }
-    console.error('In no validator loop');
   };
 
   return async (

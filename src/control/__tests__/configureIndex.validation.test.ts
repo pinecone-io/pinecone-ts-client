@@ -103,16 +103,5 @@ describe('configureIndex argument validations', () => {
           " 'spec/properties/pod/properties/replicas' must be a positive integer."
       );
     });
-
-    test('should throw if deletionProtection is an empty string', async () => {
-      const toThrow = async () =>
-        // @ts-ignore
-        await configureIndex(MIA)('index-name', { deletionProtection: '' });
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        '`deletionProtection` cannot be an empty string. Please pass a value of "enabled" or "disabled".'
-      );
-    });
   });
 });

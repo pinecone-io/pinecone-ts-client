@@ -7,6 +7,7 @@ import {
 } from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
+import { PodType } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
 import { Type } from '@sinclair/typebox';
 // import {
@@ -98,47 +99,23 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
-// const CreateIndexOptionsSchema = Type.Object(
-//   {
-//     name: IndexNameSchema,
-//     dimension: DimensionSchema,
-//     metric: MetricSchema,
-//     deletionProtection: Type.Optional(Type.String()),
-//     spec: Type.Object({
-//       serverless: Type.Optional(
-//         Type.Object({
-//           cloud: CloudSchema,
-//           region: RegionSchema,
-//         })
-//       ),
-//
-//       pod: Type.Optional(
-//         Type.Object({
-//           environment: EnvironmentSchema,
-//           replicas: Type.Optional(ReplicasSchema),
-//           shards: Type.Optional(ShardsSchema),
-//           podType: Type.Optional(PodTypeSchema),
-//           pods: Type.Optional(PodsSchema),
-//           metadataConfig: Type.Optional(MetadataConfigSchema),
-//           sourceCollection: Type.Optional(CollectionNameSchema),
-//         })
-//       ),
-//     }),
-//
-//     waitUntilReady: Type.Optional(Type.Boolean()),
-//     suppressConflicts: Type.Optional(Type.Boolean()),
-//   },
-//   { additionalProperties: false }
-// );
-
 export const createIndex = (api: ManageIndexesApi) => {
   const validator = async (options: CreateIndexOptions) => {
+    if (!options) {
+      throw new PineconeArgumentError(
+        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+      );
+    }
     if (!options.name || options.name.length === 0) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `name` in order to create an index.'
       );
     }
-    if (!options.dimension || options.dimension <= 0) {
+    if (
+      !options.dimension ||
+      options.dimension <= 0 ||
+      !Number.isInteger(options.dimension)
+    ) {
       throw new PineconeArgumentError(
         'You must pass a positive integer for `dimension` in order to create an index.'
       );
@@ -147,6 +124,97 @@ export const createIndex = (api: ManageIndexesApi) => {
       throw new PineconeArgumentError(
         'You must pass a pods or serverless `spec` object in order to create an index.'
       );
+    }
+    if (options.spec.serverless) {
+      if (!options.spec.serverless.cloud) {
+        throw new PineconeArgumentError(
+          'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
+        );
+      }
+      if (!options.spec.serverless.region) {
+        throw new PineconeArgumentError(
+          'You must pass a `region` for the serverless `spec` object in order to create an index.'
+        );
+      }
+    }
+    if (options.spec.pod) {
+      if (!options.spec.pod.environment) {
+        throw new PineconeArgumentError(
+          'You must pass an `environment` for the pod `spec` object in order to create an index.'
+        );
+      }
+      if (!options.spec.pod.podType) {
+        throw new PineconeArgumentError(
+          'You must pass a `podType` for the pod `spec` object in order to create an index.'
+        );
+      }
+    }
+    if (
+      options.spec.serverless &&
+      options.spec.serverless.cloud &&
+      !Object.values(ServerlessSpecCloudEnum).includes(
+        options.spec.serverless.cloud
+      )
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid cloud value: ${
+          options.spec.serverless.cloud
+        }. Valid values are: ${Object.values(ServerlessSpecCloudEnum).join(
+          ', '
+        )}.`
+      );
+    }
+    if (options.metric) {
+      if (
+        options.metric !== 'cosine' &&
+        options.metric !== 'euclidean' &&
+        options.metric !== 'dotproduct'
+      ) {
+        throw new PineconeArgumentError(
+          `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
+        );
+      }
+    }
+    if (options.spec.pod) {
+      if (options.spec.pod.replicas) {
+        if (options.spec.pod.replicas <= 0) {
+          throw new PineconeArgumentError(
+            'You must pass a positive integer for `replicas` in order to create an index.'
+          );
+        }
+      }
+    }
+    if (options.spec.pod) {
+      if (options.spec.pod.pods) {
+        if (options.spec.pod.pods <= 0) {
+          throw new PineconeArgumentError(
+            'You must pass a positive integer for `pods` in order to create an index.'
+          );
+        }
+      }
+    }
+    if (options.spec.pod) {
+      const validPodTypes: PodType[] = [
+        's1.x1',
+        's1.x2',
+        's1.x4',
+        's1.x8',
+        'p1.x1',
+        'p1.x2',
+        'p1.x4',
+        'p1.x8',
+        'p2.x1',
+        'p2.x2',
+        'p2.x4',
+        'p2.x8',
+      ];
+      if (!validPodTypes.includes(options.spec.pod.podType)) {
+        throw new PineconeArgumentError(
+          `Invalid pod type: ${
+            options.spec.pod.podType
+          }. Valid values are: ${validPodTypes.join(', ')}.`
+        );
+      }
     }
   };
 
