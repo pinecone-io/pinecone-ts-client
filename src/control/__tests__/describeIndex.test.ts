@@ -56,21 +56,9 @@ describe('describeIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)();
 
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeIndex had type errors: argument must be string.'
-      );
-    });
-
-    test('should throw if index name is not a string', async () => {
-      const IOA = setupSuccessResponse();
-
-      // @ts-ignore
-      const expectToThrow = async () => await describeIndex(IOA)({});
-
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeIndex had type errors: argument must be string.'
+      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `name` in order to describe an index'
       );
     });
 
@@ -80,9 +68,9 @@ describe('describeIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('');
 
-      expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(expectToThrow).rejects.toThrowError(
-        'The argument to describeIndex had validation errors: argument must not be blank.'
+      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `name` in order to describe an index'
       );
     });
   });

@@ -7,22 +7,22 @@ import {
 } from '../pinecone-generated-ts-fetch/control';
 import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
-import { handleApiError } from '../errors';
+import { handleApiError, PineconeArgumentError } from '../errors';
 import { Type } from '@sinclair/typebox';
-import {
-  IndexNameSchema,
-  CloudSchema,
-  DimensionSchema,
-  EnvironmentSchema,
-  MetricSchema,
-  PodsSchema,
-  RegionSchema,
-  ReplicasSchema,
-  PodTypeSchema,
-  MetadataConfigSchema,
-  CollectionNameSchema,
-  ShardsSchema,
-} from './types';
+// import {
+//   IndexNameSchema,
+//   CloudSchema,
+//   DimensionSchema,
+//   EnvironmentSchema,
+//   MetricSchema,
+//   PodsSchema,
+//   RegionSchema,
+//   ReplicasSchema,
+//   PodTypeSchema,
+//   MetadataConfigSchema,
+//   CollectionNameSchema,
+//   ShardsSchema,
+// } from './types';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -98,52 +98,64 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
-const CreateIndexOptionsSchema = Type.Object(
-  {
-    name: IndexNameSchema,
-    dimension: DimensionSchema,
-    metric: MetricSchema,
-    deletionProtection: Type.Optional(Type.String()),
-    spec: Type.Object({
-      serverless: Type.Optional(
-        Type.Object({
-          cloud: CloudSchema,
-          region: RegionSchema,
-        })
-      ),
-
-      pod: Type.Optional(
-        Type.Object({
-          environment: EnvironmentSchema,
-          replicas: Type.Optional(ReplicasSchema),
-          shards: Type.Optional(ShardsSchema),
-          podType: Type.Optional(PodTypeSchema),
-          pods: Type.Optional(PodsSchema),
-          metadataConfig: Type.Optional(MetadataConfigSchema),
-          sourceCollection: Type.Optional(CollectionNameSchema),
-        })
-      ),
-    }),
-
-    waitUntilReady: Type.Optional(Type.Boolean()),
-    suppressConflicts: Type.Optional(Type.Boolean()),
-  },
-  { additionalProperties: false }
-);
+// const CreateIndexOptionsSchema = Type.Object(
+//   {
+//     name: IndexNameSchema,
+//     dimension: DimensionSchema,
+//     metric: MetricSchema,
+//     deletionProtection: Type.Optional(Type.String()),
+//     spec: Type.Object({
+//       serverless: Type.Optional(
+//         Type.Object({
+//           cloud: CloudSchema,
+//           region: RegionSchema,
+//         })
+//       ),
+//
+//       pod: Type.Optional(
+//         Type.Object({
+//           environment: EnvironmentSchema,
+//           replicas: Type.Optional(ReplicasSchema),
+//           shards: Type.Optional(ShardsSchema),
+//           podType: Type.Optional(PodTypeSchema),
+//           pods: Type.Optional(PodsSchema),
+//           metadataConfig: Type.Optional(MetadataConfigSchema),
+//           sourceCollection: Type.Optional(CollectionNameSchema),
+//         })
+//       ),
+//     }),
+//
+//     waitUntilReady: Type.Optional(Type.Boolean()),
+//     suppressConflicts: Type.Optional(Type.Boolean()),
+//   },
+//   { additionalProperties: false }
+// );
 
 export const createIndex = (api: ManageIndexesApi) => {
-  const validator = buildConfigValidator(
-    CreateIndexOptionsSchema,
-    'createIndex'
-  );
+  const validator = async (options: CreateIndexOptions) => {
+    if (!options.name || options.name.length === 0) {
+      throw new PineconeArgumentError(
+        'You must pass a non-empty string for `name` in order to create an index.'
+      );
+    }
+    if (!options.dimension || options.dimension <= 0) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `dimension` in order to create an index.'
+      );
+    }
+    if (!options.spec) {
+      throw new PineconeArgumentError(
+        'You must pass a pods or serverless `spec` object in order to create an index.'
+      );
+    }
+  };
 
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     // If metric is not specified, default to cosine
     if (options && !options.metric) {
       options.metric = 'cosine';
     }
-
-    validator(options);
+    await validator(options);
     try {
       const createResponse = await api.createIndex({
         createIndexRequest: options as CreateIndexRequest,

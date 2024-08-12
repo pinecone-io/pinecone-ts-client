@@ -5,6 +5,7 @@ import type {
   DescribeIndexRequest,
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/control';
+import { PineconeArgumentError } from '../../errors';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexResponse = (
@@ -110,6 +111,57 @@ describe('createIndex', () => {
         },
       },
     });
+  });
+
+  test('Throw error if name, dimension, or spec are not passed', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    let toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        dimension: 10,
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a non-empty string for `name` in order to create an index.'
+    );
+    toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+      });
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a pods or serverless `spec` object in order to create an index.'
+    );
+
+    toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        name: 'index-name',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a positive integer for `dimension` in order to create an index.'
+    );
   });
 
   describe('waitUntilReady', () => {
