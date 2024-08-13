@@ -96,7 +96,8 @@ describe('Pinecone', () => {
             unknownProp: 'banana',
           } as PineconeConfiguration);
         }).toThrow(
-          'Object contained invalid properties. Valid properties include apiKey, controllerHostUrl, fetchApi, additionalHeaders, sourceTag.'
+          'Object contained invalid properties: unknownProp. Valid properties include apiKey, controllerHostUrl,' +
+            ' fetchApi, additionalHeaders, sourceTag.'
         );
       });
     });
