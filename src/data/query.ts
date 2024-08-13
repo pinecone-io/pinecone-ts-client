@@ -1,44 +1,7 @@
-import { buildConfigValidator } from '../validator';
-import {
-  OperationUsage,
-  // RecordIdSchema,
-  // RecordSparseValuesSchema,
-  RecordValues,
-  RecordSparseValues,
-  // RecordValuesSchema,
-} from './types';
+import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
-// import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-
-// const shared = {
-//   topK: Type.Number(),
-//   includeValues: Type.Optional(Type.Boolean()),
-//   includeMetadata: Type.Optional(Type.Boolean()),
-//   filter: Type.Optional(Type.Object({})),
-// };
-
-// const QueryByRecordId = Type.Object(
-//   {
-//     ...shared,
-//     id: RecordIdSchema,
-//     vector: Type.Optional(Type.Never()),
-//     sparseVector: Type.Optional(Type.Never()),
-//   },
-//   { additionalProperties: false }
-// );
-
-// const QueryByVectorValues = Type.Object(
-//   {
-//     ...shared,
-//     vector: RecordValuesSchema,
-//     sparseVector: Type.Optional(RecordSparseValuesSchema),
-//     id: Type.Optional(Type.Never()),
-//   },
-//   { additionalProperties: false }
-// );
-
-// const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
+import { PineconeArgumentError } from '../errors';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -140,21 +103,57 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  // validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    // this.validator = buildConfigValidator(QuerySchema, 'query');
   }
 
-  // todo: implement validator
   validator = async (options: QueryOptions) => {
-    return;
+    console.log('Validator called with options:', options);
+    if (options && !options.topK) {
+      throw new PineconeArgumentError(
+        'You must enter an integer for the `topK` search results to be returned.'
+      );
+    }
+    if (options && options.topK && options.topK < 1) {
+      throw new PineconeArgumentError('`topK` field must be greater than 0.');
+    }
+    if (options && options.filter) {
+      const keys = Object.keys(options.filter);
+      if (keys.length === 0) {
+        throw new PineconeArgumentError(
+          'You must enter a filter object with at least one key-value pair.'
+        );
+      }
+    }
+    if ('id' in options) {
+      if (!options.id) {
+        throw new PineconeArgumentError(
+          'You must enter non-empty string for recordID to query by record ID.'
+        );
+      }
+    }
+    if ('vector' in options) {
+      if (!options.vector) {
+        throw new PineconeArgumentError(
+          'You must enter an Array of RecordValues to query by vector values.'
+        );
+      }
+    }
+    if ('sparseVector' in options) {
+      if (!options.sparseVector) {
+        throw new PineconeArgumentError(
+          'You must enter a RecordSparseValues object in order to query by sparse' +
+            ' vector' +
+            ' values.'
+        );
+      }
+    }
   };
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
-    // this.validator(query);
+    await this.validator(query);
 
     const api = await this.apiProvider.provide();
     const results = await api.query({

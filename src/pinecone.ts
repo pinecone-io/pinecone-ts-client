@@ -23,7 +23,7 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-// import { Index, PineconeConfigurationSchema } from './data';
+import { Index } from './data';
 // import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
@@ -112,7 +112,8 @@ export class Pinecone {
       options = this._readEnvironmentConfig();
     }
 
-    this._validateConfig(options);
+    // todo: replace
+    // this._validateConfig(options);
     this.config = options;
 
     this._checkForBrowser();

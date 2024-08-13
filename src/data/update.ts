@@ -1,27 +1,28 @@
-import { buildConfigValidator } from '../validator';
+// import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import {
-  RecordIdSchema,
-  RecordValuesSchema,
-  RecordSparseValuesSchema,
-} from './types';
+// import {
+//   RecordIdSchema,
+//   RecordValuesSchema,
+//   RecordSparseValuesSchema,
+// } from './types';
 import type {
   RecordId,
   RecordValues,
   RecordSparseValues,
   RecordMetadata,
 } from './types';
+import { PineconeArgumentError } from '../errors';
 
-const UpdateRecordOptionsSchema = Type.Object(
-  {
-    id: RecordIdSchema,
-    values: Type.Optional(RecordValuesSchema),
-    sparseValues: Type.Optional(RecordSparseValuesSchema),
-    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  },
-  { additionalProperties: false }
-);
+// const UpdateRecordOptionsSchema = Type.Object(
+//   {
+//     id: RecordIdSchema,
+//     values: Type.Optional(RecordValuesSchema),
+//     sparseValues: Type.Optional(RecordSparseValuesSchema),
+//     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
+//   },
+//   { additionalProperties: false }
+// );
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the
@@ -51,16 +52,24 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
+  // validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
+    // this.validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
   }
 
+  validator = async (options: UpdateOptions<T>) => {
+    if (options && !options.id) {
+      throw new PineconeArgumentError(
+        'You must enter a non-empty string for the `id` field in order to Update a record.'
+      );
+    }
+  };
+
   async run(options: UpdateOptions<T>): Promise<void> {
-    this.validator(options);
+    await this.validator(options);
 
     const requestOptions = {
       id: options['id'],

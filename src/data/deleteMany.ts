@@ -1,5 +1,5 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { buildConfigValidator } from '../validator';
+// import { buildConfigValidator } from '../validator';
 import { Type } from '@sinclair/typebox';
 import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data/models/DeleteRequest';
 // import { RecordIdSchema } from './types';
