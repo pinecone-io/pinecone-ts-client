@@ -98,7 +98,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tsVersion: [
+        tsVersion:
+          [
             '~4.1.0',
             '~4.2.0',
             '~4.3.0',
