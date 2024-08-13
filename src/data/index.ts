@@ -475,6 +475,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link QueryResponse} when the query is completed.
    */
   async query(options: QueryOptions) {
+    console.log('In index.ts Query method');
     return await this._queryCommand.run(options);
   }
 

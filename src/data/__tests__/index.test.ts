@@ -170,19 +170,6 @@ describe('Index', () => {
       }
     });
 
-    // todo: add query tests here when fix possible issues in pinecone.io with query command
-    // test('query: throws error when topk not provided', async () => {
-    //   const index = new Index<MovieMetadata>('index-name', config, 'namespace');
-    //   expect(QueryCommand).toHaveBeenCalledTimes(1);
-    //
-    //   const toThrow = async () => {
-    //     // @ts-ignore
-    //     await index.query({});
-    //   };
-    //
-    //   await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    // });
-
     test('update: has typed arguments', async () => {
       const index = new Index<MovieMetadata>('index-name', config, 'namespace');
       expect(UpdateCommand).toHaveBeenCalledTimes(1);

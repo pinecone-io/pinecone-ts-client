@@ -110,7 +110,11 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = async (options: QueryOptions) => {
-    console.log('Validator called with options:', options);
+    if (!options) {
+      throw new PineconeArgumentError(
+        'You must enter a query configuration object to query the index.'
+      );
+    }
     if (options && !options.topK) {
       throw new PineconeArgumentError(
         'You must enter an integer for the `topK` search results to be returned.'
@@ -135,18 +139,20 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
       }
     }
     if ('vector' in options) {
-      if (!options.vector) {
+      if (options.vector.length === 0) {
         throw new PineconeArgumentError(
           'You must enter an Array of RecordValues to query by vector values.'
         );
       }
     }
     if ('sparseVector' in options) {
-      if (!options.sparseVector) {
+      if (
+        options.sparseVector?.indices.length === 0 ||
+        options.sparseVector?.values.length === 0
+      ) {
         throw new PineconeArgumentError(
-          'You must enter a RecordSparseValues object in order to query by sparse' +
-            ' vector' +
-            ' values.'
+          'You must enter a RecordSparseValues object with indices and values in order to query by sparse' +
+            ' vector values.'
         );
       }
     }
@@ -154,7 +160,6 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     await this.validator(query);
-
     const api = await this.apiProvider.provide();
     const results = await api.query({
       queryRequest: { ...query, namespace: this.namespace },
