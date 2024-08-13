@@ -20,6 +20,8 @@ import type {
 } from './pinecone-generated-ts-fetch/control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
+  BasePineconeError,
+  PineconeArgumentError,
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
@@ -112,7 +114,28 @@ export class Pinecone {
       options = this._readEnvironmentConfig();
     }
 
-    // todo: replace
+    if (!options.apiKey) {
+      throw new PineconeConfigurationError(
+        'The client configuration must have required property: apiKey.'
+      );
+    }
+
+    const validFields = [
+      'apiKey',
+      'controllerHostUrl',
+      'fetchApi',
+      'additionalHeaders',
+      'sourceTag',
+    ];
+    if (Object.keys(options).some((key) => !validFields.includes(key))) {
+      throw new PineconeConfigurationError(
+        `The client configuration contained invalid properties. Valid properties include ${validFields.join(
+          ', '
+        )}.'`
+      );
+    }
+
+    // todo: replace?
     // this._validateConfig(options);
     this.config = options;
 
@@ -146,7 +169,8 @@ export class Pinecone {
   _readEnvironmentConfig(): PineconeConfiguration {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
-        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
+        'Your execution environment does not support reading environment variables from process.env, so a' +
+          ' configuration object is required when calling new Pinecone().'
       );
     }
 
@@ -550,7 +574,7 @@ export class Pinecone {
     return this._describeCollection(collectionName);
   }
 
-  // todo: replace this
+  // todo: replace this?
   /** @internal */
   // _validateConfig(options: PineconeConfiguration) {
   //   buildValidator(
