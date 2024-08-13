@@ -3,6 +3,7 @@ import type {
   ListRequest,
   ListResponse,
 } from '../pinecone-generated-ts-fetch/data';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -21,6 +22,9 @@ export const listPaginated = (
   namespace: string
 ) => {
   const validator = async (options: ListOptions) => {
+    if (options) {
+      ValidateProperties(options, ['prefix', 'limit', 'paginationToken']);
+    }
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {
       throw new Error('Limit must be greater than 0');

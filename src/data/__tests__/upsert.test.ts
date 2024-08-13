@@ -33,4 +33,48 @@ describe('upsert', () => {
       },
     });
   });
+
+  test('throw error if known property is misspelled', async () => {
+    const { fakeUpsert, cmd } = setupSuccess('');
+    const toThrow = async () => {
+      // @ts-ignore
+      await cmd.run([{ id: '1', valuess: [1, 2, 3] }]);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Object contained invalid properties: valuess. Valid properties include id, values, sparseValues, metadata.'
+    );
+  });
+
+  test('throw error if records array is empty', async () => {
+    const { fakeUpsert, cmd } = setupSuccess('');
+    const toThrow = async () => {
+      // @ts-ignore
+      await cmd.run([]);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Must pass in at least 1 record to upsert.'
+    );
+  });
+
+  test('throw error if any item in records array is incomplete', async () => {
+    const { fakeUpsert, cmd } = setupSuccess('');
+
+    // Missing `values` property
+    let toThrow = async () => {
+      // @ts-ignore
+      await cmd.run([{ id: 'abc' }]);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Every record must include a `values` property in order to upsert.'
+    );
+
+    // Missing `id` property
+    toThrow = async () => {
+      // @ts-ignore
+      await cmd.run([{ values: [1, 2, 3] }]);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Every record must have an `id` property in order to upsert.'
+    );
+  });
 });

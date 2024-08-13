@@ -2,6 +2,7 @@ import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -110,6 +111,17 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = async (options: QueryOptions) => {
+    if (options) {
+      ValidateProperties(options, [
+        'id',
+        'vector',
+        'sparseVector',
+        'includeValues',
+        'includeMetadata',
+        'filter',
+        'topK',
+      ]);
+    }
     if (!options) {
       throw new PineconeArgumentError(
         'You must enter a query configuration object to query the index.'

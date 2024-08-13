@@ -76,19 +76,6 @@ describe('createCollection', () => {
       );
     });
 
-    test('throws if argument is not an object', async () => {
-      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-      const toThrow = async () => {
-        // @ts-ignore
-        await createCollection(IOA)('not an object');
-      };
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty object with `name` and `source` fields in order to create a collection.'
-      );
-    });
-
     test('throws if empty object', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));
       const toThrow = async () => {
@@ -99,6 +86,39 @@ describe('createCollection', () => {
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
         'The argument to createCollection must have required properties: name, source.'
+      );
+    });
+
+    test('throws if unknown property is added', async () => {
+      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
+      const toThrow = async () => {
+        await createCollection(IOA)({
+          name: 'collection-name',
+          source: 'index-name',
+          // @ts-ignore
+          unknown: 'property',
+        });
+      };
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'Object contained invalid properties: unknown. Valid properties include name, source.'
+      );
+    });
+
+    test('throws if known property is misspelled', async () => {
+      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
+      const toThrow = async () => {
+        await createCollection(IOA)({
+          name: 'collection-name',
+          // @ts-ignore
+          sourceeeee: 'index-name',
+        });
+      };
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'Object contained invalid properties: sourceeeee. Valid properties include name, source.'
       );
     });
 

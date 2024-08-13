@@ -33,6 +33,17 @@ describe('configureIndex argument validations', () => {
       );
     });
 
+    test('should throw if unknown property is passed at top level', async () => {
+      const toThrow = async () =>
+        // @ts-ignore
+        await configureIndex(MIA)('', { speculoos: { pod: { replicas: 2 } } });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'Object contained invalid properties: speculoos. Valid properties include spec, deletionProtection.'
+      );
+    });
+
     test('should throw if spec or deletionProtection are not provided', async () => {
       const toThrowSpec = async () =>
         await configureIndex(MIA)('index-name', {});
@@ -43,46 +54,16 @@ describe('configureIndex argument validations', () => {
       );
     });
 
-    test('should throw if replicas is not a number', async () => {
+    test('should throw if unknown property is passed at spec/pod level', async () => {
       const toThrow = async () =>
         await configureIndex(MIA)('index-name', {
           // @ts-ignore
-          spec: { pod: { replicas: '10' } },
+          spec: { pod: { replicasroonies: 2 } },
         });
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had a type error: property 'spec/properties/pod/properties/replicas'" +
-          ' must be an integer.'
-      );
-    });
-
-    test('should throw if podType is not a string', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)('index-name', {
-          // @ts-ignore
-          spec: { pod: { podType: 10.5 } },
-        });
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'The second argument to configureIndex had validation errors: property' +
-          " 'spec/properties/pod/properties/podType' must" +
-          ' be string.'
-      );
-    });
-
-    test('should throw if replicas is not an integer', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)('index-name', {
-          // @ts-ignore
-          spec: { pod: { replicas: 'not a number' } },
-        });
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'The second argument to configureIndex had a type error: property' +
-          " 'spec/properties/pod/properties/replicas' must be an integer."
+        'Object contained invalid properties: replicasroonies. Valid properties include replicas, podType.'
       );
     });
 

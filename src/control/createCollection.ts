@@ -4,9 +4,13 @@ import {
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/control';
 import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 export const createCollection = (api: ManageIndexesApi) => {
   const validator = async (options: CreateCollectionRequest) => {
+    if (options) {
+      ValidateProperties(options, ['name', 'source']);
+    }
     if (!options || typeof options !== 'object') {
       throw new PineconeArgumentError(
         'You must pass a non-empty object with `name` and `source` fields in order to create a collection.'

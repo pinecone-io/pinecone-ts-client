@@ -46,4 +46,52 @@ describe('update', () => {
       },
     });
   });
+
+  test('throws error if no id is provided', async () => {
+    const { fakeUpdate, cmd } = setupSuccess('');
+    const toThrow = async () => {
+      // @ts-ignore
+      await cmd.run({
+        values: [1, 2, 3, 4, 5],
+        sparseValues: { indices: [15, 30, 25], values: [0.5, 0.5, 0.2] },
+        metadata: { genre: 'ambient' },
+      });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'You must enter a non-empty string for the `id` field in order to Update a record.'
+    );
+  });
+
+  test('throws error if no unknown property is passed', async () => {
+    const { fakeUpdate, cmd } = setupSuccess('');
+    const toThrow = async () => {
+      await cmd.run({
+        id: 'abc',
+        values: [1, 2, 3, 4, 5],
+        sparseValues: { indices: [15, 30, 25], values: [0.5, 0.5, 0.2] },
+        metadata: { genre: 'ambient' },
+        // @ts-ignore
+        unknown: 'property',
+      });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Object contained invalid properties: unknown. Valid properties include id, values, sparseValues, metadata.'
+    );
+  });
+
+  test('throws error if no known property is misspelled', async () => {
+    const { fakeUpdate, cmd } = setupSuccess('');
+    const toThrow = async () => {
+      await cmd.run({
+        id: 'abc',
+        values: [1, 2, 3, 4, 5],
+        sparseValues: { indices: [15, 30, 25], values: [0.5, 0.5, 0.2] },
+        // @ts-ignore
+        metadataaaa: { genre: 'ambient' },
+      });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Object contained invalid properties: metadataaaa. Valid properties include id, values, sparseValues, metadata.'
+    );
+  });
 });

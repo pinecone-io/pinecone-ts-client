@@ -28,6 +28,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
+import { ValidateProperties } from './utils/validateProperties';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -117,20 +118,15 @@ export class Pinecone {
       );
     }
 
-    const validFields = [
+    type PineconeConfigurationKeys = keyof PineconeConfiguration;
+    const validPineconeConfigProperties: PineconeConfigurationKeys[] = [
       'apiKey',
       'controllerHostUrl',
       'fetchApi',
       'additionalHeaders',
       'sourceTag',
     ];
-    if (Object.keys(options).some((key) => !validFields.includes(key))) {
-      throw new PineconeConfigurationError(
-        `The client configuration contained invalid properties. Valid properties include ${validFields.join(
-          ', '
-        )}.'`
-      );
-    }
+    ValidateProperties(options, validPineconeConfigProperties);
 
     this.config = options;
 

@@ -17,6 +17,23 @@ describe('Query command tests', () => {
     });
   });
 
+  test('should throw error when known property is misspelled', async () => {
+    const queryCommand = new QueryCommand(apiProvider, 'test-namespace');
+
+    await expect(
+      // @ts-ignore
+      queryCommand.run({ id: 'abc', topK: 2, includeMetadataaaaa: true })
+    ).rejects.toThrow(PineconeArgumentError);
+
+    await expect(
+      // @ts-ignore
+      queryCommand.run({ id: 'abc', topK: 2, includeMetadataaaaa: true })
+    ).rejects.toThrow(
+      'Object contained invalid properties: includeMetadataaaaa. Valid properties include id, vector, sparseVector,' +
+        ' includeValues, includeMetadata, filter, topK.'
+    );
+  });
+
   test('should throw error when no options obj is passed', async () => {
     const queryCommand = new QueryCommand(apiProvider, 'test-namespace');
     // @ts-ignore

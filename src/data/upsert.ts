@@ -2,6 +2,7 @@ import { DataOperationsProvider } from './dataOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch/data';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
@@ -13,6 +14,9 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = async (records: Array<PineconeRecord<T>>) => {
+    for (const record of records) {
+      ValidateProperties(record, ['id', 'values', 'sparseValues', 'metadata']);
+    }
     if (records.length === 0) {
       throw new PineconeArgumentError(
         'Must pass in at least 1 record to upsert.'
@@ -21,12 +25,12 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     records.forEach((record) => {
       if (!record.id) {
         throw new PineconeArgumentError(
-          'Every record must have an id in order to upsert.'
+          'Every record must have an `id` property in order to upsert.'
         );
       }
       if (!record.values) {
         throw new PineconeArgumentError(
-          'Every record must contain (at least) dense vector values in order to upsert.'
+          'Every record must include a `values` property in order to upsert.'
         );
       }
     });

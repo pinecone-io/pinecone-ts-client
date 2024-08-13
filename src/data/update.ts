@@ -6,6 +6,7 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the
@@ -42,6 +43,9 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = async (options: UpdateOptions<T>) => {
+    if (options) {
+      ValidateProperties(options, ['id', 'values', 'sparseValues', 'metadata']);
+    }
     if (options && !options.id) {
       throw new PineconeArgumentError(
         'You must enter a non-empty string for the `id` field in order to Update a record.'

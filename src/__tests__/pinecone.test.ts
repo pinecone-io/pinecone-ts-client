@@ -96,7 +96,7 @@ describe('Pinecone', () => {
             unknownProp: 'banana',
           } as PineconeConfiguration);
         }).toThrow(
-          "The client configuration contained invalid properties. Valid properties include apiKey, controllerHostUrl, fetchApi, additionalHeaders, sourceTag.' You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io."
+          'Object contained invalid properties. Valid properties include apiKey, controllerHostUrl, fetchApi, additionalHeaders, sourceTag.'
         );
       });
     });

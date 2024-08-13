@@ -9,6 +9,7 @@ import {
 import { debugLog } from '../utils';
 import { ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -86,6 +87,17 @@ export interface CreateIndexPodSpec {
 
 export const createIndex = (api: ManageIndexesApi) => {
   const validator = async (options: CreateIndexOptions) => {
+    if (options) {
+      ValidateProperties(options, [
+        'spec',
+        'name',
+        'dimension',
+        'metric',
+        'deletionProtection',
+        'waitUntilReady',
+        'suppressConflicts',
+      ]);
+    }
     if (!options) {
       throw new PineconeArgumentError(
         'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
@@ -106,7 +118,11 @@ export const createIndex = (api: ManageIndexesApi) => {
         'You must pass a pods or serverless `spec` object in order to create an index.'
       );
     }
+    if (options.spec) {
+      ValidateProperties(options.spec, ['serverless', 'pod']);
+    }
     if (options.spec.serverless) {
+      ValidateProperties(options.spec.serverless, ['cloud', 'region']);
       if (!options.spec.serverless.cloud) {
         throw new PineconeArgumentError(
           'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
@@ -119,6 +135,15 @@ export const createIndex = (api: ManageIndexesApi) => {
       }
     }
     if (options.spec.pod) {
+      ValidateProperties(options.spec.pod, [
+        'environment',
+        'podType',
+        'replicas',
+        'shards',
+        'pods',
+        'metadataConfig',
+        'sourceCollection',
+      ]);
       if (!options.spec.pod.environment) {
         throw new PineconeArgumentError(
           'You must pass an `environment` for the pod `spec` object in order to create an index.'
