@@ -5,7 +5,6 @@ import { UpsertCommand } from '../upsert';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 import { Index } from '../index';
 import type { ScoredPineconeRecord } from '../query';
-import { PineconeArgumentError } from '../../errors';
 
 jest.mock('../fetch');
 jest.mock('../query');

@@ -117,19 +117,6 @@ describe('createCollection', () => {
       );
     });
 
-    // test('throws if name is not a string', async () => {
-    //   const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-    //   const toThrow = async () => {
-    //     // @ts-ignore
-    //     await createCollection(IOA)({ name: 1, source: 'index-name' });
-    //   };
-    //
-    //   expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    //   expect(toThrow).rejects.toThrowError(
-    //     "The argument to createCollection had type errors: property 'name' must be string."
-    //   );
-    // });
-
     test('throws if source is not provided', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));
       const toThrow = async () => {
@@ -142,19 +129,6 @@ describe('createCollection', () => {
         'You must pass a non-empty string for `source` in order to create a collection.'
       );
     });
-
-    // test('throws if source is not a string', async () => {
-    //   const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-    //   const toThrow = async () => {
-    //     // @ts-ignore
-    //     await createCollection(IOA)({ name: 'foo', source: 12 });
-    //   };
-    //
-    //   expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    //   expect(toThrow).rejects.toThrowError(
-    //     "The argument to createCollection had type errors: property 'source' must be string."
-    //   );
-    // });
 
     test('throws if source is blank', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));

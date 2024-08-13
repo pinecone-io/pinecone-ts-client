@@ -1,22 +1,7 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-// import { buildConfigValidator } from '../validator';
-import { Type } from '@sinclair/typebox';
-import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data/models/DeleteRequest';
-// import { RecordIdSchema } from './types';
+import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data';
 import type { RecordId } from './types';
 import { PineconeArgumentError } from '../errors';
-
-// const DeleteManyByRecordIdSchema = Type.Array(RecordIdSchema);
-
-// const DeleteManyByFilterSchema = Type.Object(
-//   {},
-//   { additionalProperties: true, minProperties: 1 }
-// );
-
-// const DeleteManySchema = Type.Union([
-//   DeleteManyByRecordIdSchema,
-//   DeleteManyByFilterSchema,
-// ]);
 
 /**
  * A list of record ids to delete from the index.

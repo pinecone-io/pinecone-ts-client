@@ -1,7 +1,3 @@
-// Disabling typescript in this file because the entire point is to catch
-// cases where library callers (who may not be using typescript) pass
-// incorrect argument values.
-
 import { configureIndex } from '../configureIndex';
 import { PineconeArgumentError } from '../../errors';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';

@@ -143,7 +143,6 @@ describe('createIndex argument validations', () => {
     });
   });
 
-  // todo
   describe('optional configurations', () => {
     test('metric: should throw if not one of the predefined literals', async () => {
       const toThrow = async () =>

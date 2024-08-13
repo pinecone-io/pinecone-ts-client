@@ -20,13 +20,10 @@ import type {
 } from './pinecone-generated-ts-fetch/control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
-  BasePineconeError,
-  PineconeArgumentError,
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
 import { Index } from './data';
-// import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
@@ -135,8 +132,6 @@ export class Pinecone {
       );
     }
 
-    // todo: replace?
-    // this._validateConfig(options);
     this.config = options;
 
     this._checkForBrowser();
@@ -573,15 +568,6 @@ export class Pinecone {
   describeCollection(collectionName: CollectionName) {
     return this._describeCollection(collectionName);
   }
-
-  // todo: replace this?
-  /** @internal */
-  // _validateConfig(options: PineconeConfiguration) {
-  //   buildValidator(
-  //     'The client configuration',
-  //     PineconeConfigurationSchema
-  //   )(options);
-  // }
 
   /** @internal */
   _checkForBrowser() {

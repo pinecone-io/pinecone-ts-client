@@ -11,9 +11,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     indexName: IndexName,
     options: ConfigureIndexRequest
   ) => {
-    console.log('In validator');
     if (!indexName || indexName.length === 0) {
-      console.error('In indexName loop');
       throw new PineconeArgumentError(
         'You must pass a non-empty string for indexName to configureIndex.'
       );
@@ -21,13 +19,11 @@ export const configureIndex = (api: ManageIndexesApi) => {
     // !options.deletionProtection evaluates to false if options.deletionProtection is undefined, empty string, or
     // not provided
     if (!options.spec && !options.deletionProtection) {
-      console.error('In spec and deletionProtection loop');
       throw new PineconeArgumentError(
         'You must pass either a `spec`, `deletionProtection` or both to configureIndex in order to update.'
       );
     }
     if (options.spec) {
-      console.error('In spec loop');
       if (options.spec.pod && options.spec.pod.replicas) {
         if (typeof options.spec.pod.replicas !== 'number') {
           throw new PineconeArgumentError(
@@ -57,10 +53,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     indexName: IndexName,
     options: ConfigureIndexRequest
   ): Promise<IndexModel> => {
-    console.log('Before validator');
-
     await validator(indexName, options);
-    console.log('After validator');
 
     return await api.configureIndex({
       indexName,

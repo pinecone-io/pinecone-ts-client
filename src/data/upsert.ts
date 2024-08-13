@@ -1,22 +1,15 @@
-// import { buildConfigValidator } from '../validator';
-// import { PineconeRecordSchema } from './types';
-// import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch/data';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { PineconeArgumentError } from '../errors';
 
-// const RecordArray = Type.Array(PineconeRecordSchema);
-
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  // validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    // this.validator = buildConfigValidator(RecordArray, 'upsert');
   }
 
   validator = async (records: Array<PineconeRecord<T>>) => {
