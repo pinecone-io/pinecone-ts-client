@@ -23,8 +23,8 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { Index, PineconeConfigurationSchema } from './data';
-import { buildValidator } from './validator';
+// import { Index, PineconeConfigurationSchema } from './data';
+// import { buildValidator } from './validator';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
@@ -549,13 +549,14 @@ export class Pinecone {
     return this._describeCollection(collectionName);
   }
 
+  // todo: replace this
   /** @internal */
-  _validateConfig(options: PineconeConfiguration) {
-    buildValidator(
-      'The client configuration',
-      PineconeConfigurationSchema
-    )(options);
-  }
+  // _validateConfig(options: PineconeConfiguration) {
+  //   buildValidator(
+  //     'The client configuration',
+  //     PineconeConfigurationSchema
+  //   )(options);
+  // }
 
   /** @internal */
   _checkForBrowser() {

@@ -1,5 +1,6 @@
 import { deleteMany } from '../deleteMany';
 import { setupDeleteSuccess } from './deleteOne.test';
+import { PineconeArgumentError } from '../../errors';
 
 describe('deleteMany', () => {
   test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
@@ -24,5 +25,27 @@ describe('deleteMany', () => {
     expect(DPA._delete).toHaveBeenCalledWith({
       deleteRequest: { filter: { genre: 'ambient' }, namespace: 'namespace' },
     });
+  });
+
+  test('throws if pass in empty filter obj', async () => {
+    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const toThrow = async () => {
+      await deleteManyFn({ some: '' });
+    };
+    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrowError('Filter cannot be empty');
+  });
+
+  test('throws if pass no record IDs', async () => {
+    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const toThrow = async () => {
+      await deleteManyFn([]);
+    };
+    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrowError(
+      'Must pass in at least 1 recordID.'
+    );
   });
 });

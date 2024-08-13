@@ -32,4 +32,14 @@ describe('fetch', () => {
       namespace: 'namespace',
     });
   });
+
+  test('Throws error if pass in empty array', async () => {
+    const { DPA, cmd } = setupSuccess({ vectors: [] });
+    const toThrow = async () => {
+      await cmd.run([]);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Must pass in at least 1 recordID.'
+    );
+  });
 });

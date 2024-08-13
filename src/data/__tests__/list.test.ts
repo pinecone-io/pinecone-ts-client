@@ -40,4 +40,15 @@ describe('list', () => {
       namespace: 'list-namespace',
     });
   });
+
+  test('Throw error if pass in empty prefix', async () => {
+    const { VoaProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const toThrow = async () => {
+      await listPaginatedFn({ limit: -3 });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Limit must be greater than 0'
+    );
+  });
 });

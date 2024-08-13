@@ -1,26 +1,26 @@
-import { Type } from '@sinclair/typebox';
+// import { Type } from '@sinclair/typebox';
 import type {
   FetchAPI,
   HTTPHeaders,
 } from '../pinecone-generated-ts-fetch/data';
 
-export const PineconeConfigurationSchema = Type.Object(
-  {
-    apiKey: Type.String({ minLength: 1 }),
-    controllerHostUrl: Type.Optional(Type.String({ minLength: 1 })),
-
-    // fetchApi is a complex type that I don't really want to recreate in the
-    // form of a json schema (seems difficult and error prone). So we will
-    // rely on TypeScript to guide people in the right direction here.
-    // But declaring it here as Type.Any() is needed to avoid getting caught
-    // in the additionalProperties check.
-    fetchApi: Type.Optional(Type.Any()),
-
-    additionalHeaders: Type.Optional(Type.Any()),
-    sourceTag: Type.Optional(Type.String({ minLength: 1 })),
-  },
-  { additionalProperties: false }
-);
+// export const PineconeConfigurationSchema = Type.Object(
+//   {
+//     apiKey: Type.String({ minLength: 1 }),
+//     controllerHostUrl: Type.Optional(Type.String({ minLength: 1 })),
+//
+//     // fetchApi is a complex type that I don't really want to recreate in the
+//     // form of a json schema (seems difficult and error prone). So we will
+//     // rely on TypeScript to guide people in the right direction here.
+//     // But declaring it here as Type.Any() is needed to avoid getting caught
+//     // in the additionalProperties check.
+//     fetchApi: Type.Optional(Type.Any()),
+//
+//     additionalHeaders: Type.Optional(Type.Any()),
+//     sourceTag: Type.Optional(Type.String({ minLength: 1 })),
+//   },
+//   { additionalProperties: false }
+// );
 
 /**
  * @see [Understanding projects](https://docs.pinecone.io/docs/projects)
@@ -52,24 +52,24 @@ export type PineconeConfiguration = {
   sourceTag?: string;
 };
 
-export const RecordIdSchema = Type.String({ minLength: 1 });
-export const RecordValuesSchema = Type.Array(Type.Number());
-export const RecordSparseValuesSchema = Type.Object(
-  {
-    indices: Type.Array(Type.Integer()),
-    values: Type.Array(Type.Number()),
-  },
-  { additionalProperties: false }
-);
-export const PineconeRecordSchema = Type.Object(
-  {
-    id: RecordIdSchema,
-    values: RecordValuesSchema,
-    sparseValues: Type.Optional(RecordSparseValuesSchema),
-    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  },
-  { additionalProperties: false }
-);
+// export const RecordIdSchema = Type.String({ minLength: 1 });
+// export const RecordValuesSchema = Type.Array(Type.Number());
+// export const RecordSparseValuesSchema = Type.Object(
+//   {
+//     indices: Type.Array(Type.Integer()),
+//     values: Type.Array(Type.Number()),
+//   },
+//   { additionalProperties: false }
+// );
+// export const PineconeRecordSchema = Type.Object(
+//   {
+//     id: RecordIdSchema,
+//     values: RecordValuesSchema,
+//     sparseValues: Type.Optional(RecordSparseValuesSchema),
+//     metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
+//   },
+//   { additionalProperties: false }
+// );
 
 /** The id of the record */
 export type RecordId = string;

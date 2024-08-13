@@ -1,44 +1,44 @@
 import { buildConfigValidator } from '../validator';
 import {
   OperationUsage,
-  RecordIdSchema,
-  RecordSparseValuesSchema,
+  // RecordIdSchema,
+  // RecordSparseValuesSchema,
   RecordValues,
   RecordSparseValues,
-  RecordValuesSchema,
+  // RecordValuesSchema,
 } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
-import { Type } from '@sinclair/typebox';
+// import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
 
-const shared = {
-  topK: Type.Number(),
-  includeValues: Type.Optional(Type.Boolean()),
-  includeMetadata: Type.Optional(Type.Boolean()),
-  filter: Type.Optional(Type.Object({})),
-};
+// const shared = {
+//   topK: Type.Number(),
+//   includeValues: Type.Optional(Type.Boolean()),
+//   includeMetadata: Type.Optional(Type.Boolean()),
+//   filter: Type.Optional(Type.Object({})),
+// };
 
-const QueryByRecordId = Type.Object(
-  {
-    ...shared,
-    id: RecordIdSchema,
-    vector: Type.Optional(Type.Never()),
-    sparseVector: Type.Optional(Type.Never()),
-  },
-  { additionalProperties: false }
-);
+// const QueryByRecordId = Type.Object(
+//   {
+//     ...shared,
+//     id: RecordIdSchema,
+//     vector: Type.Optional(Type.Never()),
+//     sparseVector: Type.Optional(Type.Never()),
+//   },
+//   { additionalProperties: false }
+// );
 
-const QueryByVectorValues = Type.Object(
-  {
-    ...shared,
-    vector: RecordValuesSchema,
-    sparseVector: Type.Optional(RecordSparseValuesSchema),
-    id: Type.Optional(Type.Never()),
-  },
-  { additionalProperties: false }
-);
+// const QueryByVectorValues = Type.Object(
+//   {
+//     ...shared,
+//     vector: RecordValuesSchema,
+//     sparseVector: Type.Optional(RecordSparseValuesSchema),
+//     id: Type.Optional(Type.Never()),
+//   },
+//   { additionalProperties: false }
+// );
 
-const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
+// const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -140,16 +140,21 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
+  // validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(QuerySchema, 'query');
+    // this.validator = buildConfigValidator(QuerySchema, 'query');
   }
 
+  // todo: implement validator
+  validator = async (options: QueryOptions) => {
+    return;
+  };
+
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
-    this.validator(query);
+    // this.validator(query);
 
     const api = await this.apiProvider.provide();
     const results = await api.query({

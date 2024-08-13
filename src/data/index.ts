@@ -30,7 +30,7 @@ export type {
   RecordMetadata,
   RecordMetadataValue,
 } from './types';
-export { PineconeConfigurationSchema } from './types';
+// export { PineconeConfigurationSchema } from './types';
 export type {
   DeleteManyOptions,
   DeleteManyByFilterOptions,

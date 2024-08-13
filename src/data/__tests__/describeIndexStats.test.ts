@@ -2,6 +2,7 @@ import { describeIndexStats } from '../describeIndexStats';
 import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch/data';
+import { PineconeArgumentError } from '../../errors';
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (
@@ -49,5 +50,22 @@ describe('describeIndexStats', () => {
     expect(DPA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
     });
+  });
+
+  test('Throws error if empty filter is provided', async () => {
+    const { DPA, DataProvider } = setupSuccess({
+      namespaces: {
+        '': { vectorCount: 50 },
+      },
+      dimension: 1586,
+      indexFullness: 0,
+      totalVectorCount: 50,
+    });
+    const describeIndexStatsFn = describeIndexStats(DataProvider);
+    const toThrow = async () => {
+      await describeIndexStatsFn({ filter: { someKey: '' } });
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError('Filter cannot be empty');
   });
 });
