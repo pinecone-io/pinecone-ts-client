@@ -53,7 +53,7 @@ describe('describeIndexStats', () => {
   });
 
   test('Throws error if empty filter is provided', async () => {
-    const { DPA, DataProvider } = setupSuccess({
+    const { DataProvider } = setupSuccess({
       namespaces: {
         '': { vectorCount: 50 },
       },
@@ -70,7 +70,7 @@ describe('describeIndexStats', () => {
   });
 
   test('Throws error if known property is misspelled', async () => {
-    const { DPA, DataProvider } = setupSuccess({
+    const { DataProvider } = setupSuccess({
       namespaces: {
         '': { vectorCount: 50 },
       },
@@ -90,7 +90,7 @@ describe('describeIndexStats', () => {
   });
 
   test('Throws error if unknown property is passed', async () => {
-    const { DPA, DataProvider } = setupSuccess({
+    const { DataProvider } = setupSuccess({
       namespaces: {
         '': { vectorCount: 50 },
       },

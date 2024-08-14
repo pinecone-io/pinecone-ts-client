@@ -48,7 +48,7 @@ describe('update', () => {
   });
 
   test('throws error if no id is provided', async () => {
-    const { fakeUpdate, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
       await cmd.run({
@@ -63,7 +63,7 @@ describe('update', () => {
   });
 
   test('throws error if no unknown property is passed', async () => {
-    const { fakeUpdate, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
     const toThrow = async () => {
       await cmd.run({
         id: 'abc',
@@ -80,7 +80,7 @@ describe('update', () => {
   });
 
   test('throws error if no known property is misspelled', async () => {
-    const { fakeUpdate, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
     const toThrow = async () => {
       await cmd.run({
         id: 'abc',

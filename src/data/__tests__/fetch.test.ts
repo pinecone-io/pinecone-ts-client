@@ -34,7 +34,7 @@ describe('fetch', () => {
   });
 
   test('Throws error if pass in empty array', async () => {
-    const { DPA, cmd } = setupSuccess({ vectors: [] });
+    const { cmd } = setupSuccess({ vectors: [] });
     const toThrow = async () => {
       await cmd.run([]);
     };

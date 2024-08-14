@@ -28,7 +28,7 @@ describe('deleteMany', () => {
   });
 
   test('throws if pass in empty filter obj', async () => {
-    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const { DataProvider } = setupDeleteSuccess(undefined);
     const deleteManyFn = deleteMany(DataProvider, 'namespace');
     const toThrow = async () => {
       await deleteManyFn({ some: '' });
@@ -38,7 +38,7 @@ describe('deleteMany', () => {
   });
 
   test('throws if pass no record IDs', async () => {
-    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const { DataProvider } = setupDeleteSuccess(undefined);
     const deleteManyFn = deleteMany(DataProvider, 'namespace');
     const toThrow = async () => {
       await deleteManyFn([]);

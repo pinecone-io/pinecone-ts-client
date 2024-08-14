@@ -34,7 +34,7 @@ describe('deleteOne', () => {
   });
 
   test('Throw error if pass empty string as ID', async () => {
-    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const { DataProvider } = setupDeleteSuccess(undefined);
     const deleteOneFn = deleteOne(DataProvider, 'namespace');
     const toThrow = async () => {
       await deleteOneFn('');
