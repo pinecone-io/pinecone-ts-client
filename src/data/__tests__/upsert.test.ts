@@ -35,7 +35,7 @@ describe('upsert', () => {
   });
 
   test('throw error if known property is misspelled', async () => {
-    const { fakeUpsert, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
       await cmd.run([{ id: '1', valuess: [1, 2, 3] }]);
@@ -46,7 +46,7 @@ describe('upsert', () => {
   });
 
   test('throw error if records array is empty', async () => {
-    const { fakeUpsert, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
       await cmd.run([]);
@@ -57,7 +57,7 @@ describe('upsert', () => {
   });
 
   test('throw error if any item in records array is incomplete', async () => {
-    const { fakeUpsert, cmd } = setupSuccess('');
+    const { cmd } = setupSuccess('');
 
     // Missing `values` property
     let toThrow = async () => {
