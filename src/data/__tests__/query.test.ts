@@ -58,7 +58,7 @@ describe('Query command tests', () => {
     const queryCommand = new QueryCommand(apiProvider, 'test-namespace');
     await expect(
       queryCommand.run({ id: 'some-id', topK: -100 })
-    ).rejects.toThrow('`topK` field must be greater than 0.');
+    ).rejects.toThrow('`topK` property must be greater than 0.');
     await expect(
       queryCommand.run({ id: 'some-id', topK: -100 })
     ).rejects.toThrow(PineconeArgumentError);
@@ -69,7 +69,7 @@ describe('Query command tests', () => {
     await expect(
       queryCommand.run({ id: 'some-id', topK: 1, filter: {} })
     ).rejects.toThrow(
-      'You must enter a filter object with at least one key-value pair.'
+      'You must enter a `filter` object with at least one key-value pair.'
     );
     await expect(
       queryCommand.run({ id: 'some-id', topK: 1, filter: {} })
@@ -79,7 +79,7 @@ describe('Query command tests', () => {
   test('should throw error when id is blank string', async () => {
     const queryCommand = new QueryCommand(apiProvider, 'test-namespace');
     await expect(queryCommand.run({ id: '', topK: 1 })).rejects.toThrow(
-      'You must enter non-empty string for recordID to query by record ID.'
+      'You must enter non-empty string for `id` to query by record ID.'
     );
     await expect(queryCommand.run({ id: '', topK: 1 })).rejects.toThrow(
       PineconeArgumentError
@@ -89,7 +89,7 @@ describe('Query command tests', () => {
   test('should throw error when vector is empty array', async () => {
     const queryCommand = new QueryCommand(apiProvider, 'test-namespace');
     await expect(queryCommand.run({ vector: [], topK: 1 })).rejects.toThrow(
-      'You must enter an Array of RecordValues to query by vector values.'
+      'You must enter an array of `RecordValues` in order to query by vector values.'
     );
     await expect(queryCommand.run({ vector: [], topK: 1 })).rejects.toThrow(
       PineconeArgumentError
@@ -106,8 +106,8 @@ describe('Query command tests', () => {
         sparseVector: { indices: [], values: [0.1, 0.2] },
       })
     ).rejects.toThrow(
-      'You must enter a RecordSparseValues object with indices and values in order to query by sparse' +
-        ' vector values.'
+      'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
+        ' sparse vector values.'
     );
     await expect(
       queryCommand.run({
@@ -125,8 +125,8 @@ describe('Query command tests', () => {
         sparseVector: { indices: [0.1, 0.2], values: [] },
       })
     ).rejects.toThrow(
-      'You must enter a RecordSparseValues object with indices and values in order to query by sparse' +
-        ' vector values.'
+      'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
+        ' sparse vector values.'
     );
     await expect(
       queryCommand.run({
@@ -144,8 +144,8 @@ describe('Query command tests', () => {
         sparseVector: { indices: [], values: [] },
       })
     ).rejects.toThrow(
-      'You must enter a RecordSparseValues object with indices and values in order to query by sparse' +
-        ' vector values.'
+      'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
+        ' sparse vector values.'
     );
     await expect(
       queryCommand.run({

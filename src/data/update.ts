@@ -48,7 +48,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     }
     if (options && !options.id) {
       throw new PineconeArgumentError(
-        'You must enter a non-empty string for the `id` field in order to Update a record.'
+        'You must enter a non-empty string for the `id` field in order to update a record.'
       );
     }
   };

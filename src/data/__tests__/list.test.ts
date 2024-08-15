@@ -48,7 +48,7 @@ describe('list', () => {
       await listPaginatedFn({ limit: -3 });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Limit must be greater than 0'
+      '`limit` property must be greater than 0'
     );
   });
 

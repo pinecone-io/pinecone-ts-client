@@ -145,7 +145,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a pods or serverless `spec` object in order to create an index.'
+      'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
     );
 
     // Missing dimension

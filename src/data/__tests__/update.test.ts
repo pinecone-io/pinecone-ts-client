@@ -58,7 +58,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must enter a non-empty string for the `id` field in order to Update a record.'
+      'You must enter a non-empty string for the `id` field in order to update a record.'
     );
   });
 

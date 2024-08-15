@@ -27,7 +27,7 @@ export const deleteMany = (
   const FilterValidator = async (options: DeleteManyByFilterOptions) => {
     for (const key in options) {
       if (!options[key]) {
-        throw new PineconeArgumentError('Filter cannot be empty');
+        throw new PineconeArgumentError('`filter` property cannot be empty');
       }
     }
   };
@@ -37,7 +37,7 @@ export const deleteMany = (
       return FilterValidator(options);
     } else {
       if (options.length === 0) {
-        throw new PineconeArgumentError('Must pass in at least 1 recordID.');
+        throw new PineconeArgumentError('Must pass in at least 1 record ID.');
       }
     }
   };

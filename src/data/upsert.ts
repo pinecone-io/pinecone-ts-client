@@ -25,7 +25,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     records.forEach((record) => {
       if (!record.id) {
         throw new PineconeArgumentError(
-          'Every record must have an `id` property in order to upsert.'
+          'Every record must include an `id` property in order to upsert.'
         );
       }
       if (!record.values) {

@@ -34,7 +34,9 @@ describe('deleteMany', () => {
       await deleteManyFn({ some: '' });
     };
     await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow()).rejects.toThrowError('Filter cannot be empty');
+    await expect(toThrow()).rejects.toThrowError(
+      '`filter` property cannot be empty'
+    );
   });
 
   test('throws if pass no record IDs', async () => {
@@ -45,7 +47,7 @@ describe('deleteMany', () => {
     };
     await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 recordID.'
+      'Must pass in at least 1 record ID.'
     );
   });
 });

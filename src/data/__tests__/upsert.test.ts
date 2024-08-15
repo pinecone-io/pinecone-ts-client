@@ -74,7 +74,7 @@ describe('upsert', () => {
       await cmd.run([{ values: [1, 2, 3] }]);
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Every record must have an `id` property in order to upsert.'
+      'Every record must include an `id` property in order to upsert.'
     );
   });
 });

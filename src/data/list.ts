@@ -27,7 +27,7 @@ export const listPaginated = (
     }
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {
-      throw new Error('Limit must be greater than 0');
+      throw new Error('`limit` property must be greater than 0');
     }
   };
 

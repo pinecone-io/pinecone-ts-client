@@ -133,27 +133,29 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
       );
     }
     if (options && options.topK && options.topK < 1) {
-      throw new PineconeArgumentError('`topK` field must be greater than 0.');
+      throw new PineconeArgumentError(
+        '`topK` property must be greater than 0.'
+      );
     }
     if (options && options.filter) {
       const keys = Object.keys(options.filter);
       if (keys.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter a filter object with at least one key-value pair.'
+          'You must enter a `filter` object with at least one key-value pair.'
         );
       }
     }
     if ('id' in options) {
       if (!options.id) {
         throw new PineconeArgumentError(
-          'You must enter non-empty string for recordID to query by record ID.'
+          'You must enter non-empty string for `id` to query by record ID.'
         );
       }
     }
     if ('vector' in options) {
       if (options.vector.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter an Array of RecordValues to query by vector values.'
+          'You must enter an array of `RecordValues` in order to query by vector values.'
         );
       }
     }
@@ -163,8 +165,8 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
         options.sparseVector?.values.length === 0
       ) {
         throw new PineconeArgumentError(
-          'You must enter a RecordSparseValues object with indices and values in order to query by sparse' +
-            ' vector values.'
+          'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
+            ' sparse vector values.'
         );
       }
     }

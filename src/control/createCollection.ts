@@ -18,7 +18,7 @@ export const createCollection = (api: ManageIndexesApi) => {
     }
     if (!options.name && !options.source) {
       throw new PineconeArgumentError(
-        'The argument to createCollection must have required properties: name, source.'
+        'The argument to createCollection must have required properties: `name`, `source`.'
       );
     }
     if (!options.name) {

@@ -18,7 +18,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
 
     if (!indexName) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for indexName to configureIndex.'
+        'You must pass a non-empty string for `indexName` to configureIndex.'
       );
     }
     // !options.deletionProtection evaluates to false if options.deletionProtection is undefined, empty string, or
@@ -35,8 +35,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
       if (options.spec.pod && options.spec.pod.replicas) {
         if (options.spec.pod.replicas <= 0) {
           throw new PineconeArgumentError(
-            'The second argument to configureIndex had validation errors: property' +
-              " 'spec/properties/pod/properties/replicas' must be a positive integer."
+            '`replicas` must be a positive integer.'
           );
         }
       }

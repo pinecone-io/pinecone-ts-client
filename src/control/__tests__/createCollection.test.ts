@@ -85,7 +85,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection must have required properties: name, source.'
+        'The argument to createCollection must have required properties: `name`, `source`.'
       );
     });
 

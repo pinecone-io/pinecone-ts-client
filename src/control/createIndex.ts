@@ -115,7 +115,7 @@ export const createIndex = (api: ManageIndexesApi) => {
     }
     if (!options.spec) {
       throw new PineconeArgumentError(
-        'You must pass a pods or serverless `spec` object in order to create an index.'
+        'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
       );
     }
     if (options.spec) {
