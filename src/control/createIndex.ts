@@ -103,7 +103,7 @@ export const createIndex = (api: ManageIndexesApi) => {
         'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
       );
     }
-    if (!options.name || options.name.length === 0) {
+    if (!options.name) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `name` in order to create an index.'
       );

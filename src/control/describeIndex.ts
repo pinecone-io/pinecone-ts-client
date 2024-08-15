@@ -20,7 +20,7 @@ export const describeIndex = (api: ManageIndexesApi) => {
   };
 
   return async (indexName: DescribeIndexOptions): Promise<IndexModel> => {
-    if (!indexName || indexName.length === 0) {
+    if (!indexName) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `name` in order to describe an index'
       );

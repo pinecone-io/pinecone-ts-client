@@ -16,7 +16,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
       ValidateProperties(options, ['spec', 'deletionProtection']);
     }
 
-    if (!indexName || indexName.length === 0) {
+    if (!indexName) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for indexName to configureIndex.'
       );

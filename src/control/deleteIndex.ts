@@ -7,7 +7,7 @@ export type DeleteIndexOptions = IndexName;
 
 export const deleteIndex = (api: ManageIndexesApi) => {
   return async (indexName: DeleteIndexOptions): Promise<void> => {
-    if (!indexName || indexName.length === 0) {
+    if (!indexName) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `indexName` in order to delete an index'
       );

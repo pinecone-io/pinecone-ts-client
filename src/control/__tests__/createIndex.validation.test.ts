@@ -3,13 +3,10 @@ import { PineconeArgumentError } from '../../errors';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 
 describe('createIndex argument validations', () => {
-  let MIA: ManageIndexesApi;
+  let MIA: jest.Mocked<ManageIndexesApi>;
   beforeEach(() => {
-    // @ts-ignore
-    MIA = { createIndex: jest.fn() };
-    jest.mock('../../pinecone-generated-ts-fetch/control', () => ({
-      ManageIndexesApi: MIA,
-    }));
+    MIA = new ManageIndexesApi() as jest.Mocked<ManageIndexesApi>;
+    MIA.createIndex = jest.fn();
   });
 
   describe('required configurations', () => {
