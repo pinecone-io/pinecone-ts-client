@@ -1,4 +1,3 @@
-import crossFetch from 'cross-fetch';
 import type { PineconeConfiguration } from '../data';
 
 export const getFetch = (config: PineconeConfiguration) => {
@@ -10,9 +9,13 @@ export const getFetch = (config: PineconeConfiguration) => {
     // scope, use that. This should prevent confusing failures in
     // nextjs projects where @vercel/fetch is mandated and
     // other implementations are stubbed out.
+    console.log(
+      'Failed to find any user-provided fetch implementation. Searching for global fetch implementation...'
+    );
     return global.fetch;
   } else {
-    // Use ponyfill as last resort
-    return crossFetch;
+    console.error(
+      'No global or user-provided fetch implementations found. Please supply a fetch implementation.'
+    );
   }
 };
