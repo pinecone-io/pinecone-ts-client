@@ -1,21 +1,7 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { buildConfigValidator } from '../validator';
-import { Type } from '@sinclair/typebox';
-import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data/models/DeleteRequest';
-import { RecordIdSchema } from './types';
+import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data';
 import type { RecordId } from './types';
-
-const DeleteManyByRecordIdSchema = Type.Array(RecordIdSchema);
-
-const DeleteManyByFilterSchema = Type.Object(
-  {},
-  { additionalProperties: true, minProperties: 1 }
-);
-
-const DeleteManySchema = Type.Union([
-  DeleteManyByRecordIdSchema,
-  DeleteManyByFilterSchema,
-]);
+import { PineconeArgumentError } from '../errors';
 
 /**
  * A list of record ids to delete from the index.
@@ -38,7 +24,25 @@ export const deleteMany = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const validator = buildConfigValidator(DeleteManySchema, 'deleteMany');
+  const FilterValidator = (options: DeleteManyByFilterOptions) => {
+    for (const key in options) {
+      if (!options[key]) {
+        throw new PineconeArgumentError(
+          `\`filter\` property cannot be empty for key ${key}`
+        );
+      }
+    }
+  };
+
+  const validator = (options: DeleteManyOptions) => {
+    if (!Array.isArray(options)) {
+      return FilterValidator(options);
+    } else {
+      if (options.length === 0) {
+        throw new PineconeArgumentError('Must pass in at least 1 record ID.');
+      }
+    }
+  };
 
   return async (options: DeleteManyOptions): Promise<void> => {
     validator(options);

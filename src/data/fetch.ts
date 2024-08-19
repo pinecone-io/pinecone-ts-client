@@ -1,15 +1,11 @@
-import { buildConfigValidator } from '../validator';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { RecordIdSchema } from './types';
 import type {
   OperationUsage,
   PineconeRecord,
   RecordId,
   RecordMetadata,
 } from './types';
-import { Type } from '@sinclair/typebox';
-
-const RecordIdsArray = Type.Array(RecordIdSchema, { minItems: 1 });
+import { PineconeArgumentError } from '../errors';
 
 /** The list of record ids you would like to fetch using { @link Index.fetch } */
 export type FetchOptions = Array<RecordId>;
@@ -34,17 +30,20 @@ export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
 export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(RecordIdsArray, 'fetch');
   }
+
+  validator = (options: FetchOptions) => {
+    if (options.length === 0) {
+      throw new PineconeArgumentError('Must pass in at least 1 recordID.');
+    }
+  };
 
   async run(ids: FetchOptions): Promise<FetchResponse<T>> {
     this.validator(ids);
-
     const api = await this.apiProvider.provide();
     const response = await api.fetch({ ids: ids, namespace: this.namespace });
 

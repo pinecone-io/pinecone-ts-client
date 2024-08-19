@@ -1,5 +1,5 @@
 import { isEdge } from './environment';
-import type { PineconeConfiguration } from '../data/types';
+import type { PineconeConfiguration } from '../data';
 import * as packageInfo from '../version.json';
 
 export const buildUserAgent = (config: PineconeConfiguration) => {

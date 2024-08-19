@@ -98,7 +98,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tsVersion: [
+        tsVersion:
+          [
             '~4.1.0',
             '~4.2.0',
             '~4.3.0',
@@ -111,7 +112,7 @@ jobs:
             '~5.0.0',
             '~5.1.0',
             '~5.2.0',
-            # 'latest', - typebox breaks with latest TypeScript, re-enable later
+            'latest',
           ]
     steps:
       - name: Checkout

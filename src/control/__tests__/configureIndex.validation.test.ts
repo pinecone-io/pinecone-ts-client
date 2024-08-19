@@ -1,39 +1,22 @@
-// @ts-nocheck
-
-// Disabling typescript in this file because the entire point is to catch
-// cases where library callers (who may not be using typescript) pass
-// incorrect argument values.
-
 import { configureIndex } from '../configureIndex';
 import { PineconeArgumentError } from '../../errors';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
 
 describe('configureIndex argument validations', () => {
-  let MIA: ManageIndexesApi;
+  let MIA: jest.Mocked<ManageIndexesApi>;
   beforeEach(() => {
-    MIA = { configureIndex: jest.fn() };
-    jest.mock('../../pinecone-generated-ts-fetch/control', () => ({
-      IndexOperationsApi: MIA,
-    }));
+    MIA = new ManageIndexesApi() as jest.Mocked<ManageIndexesApi>;
+    MIA.configureIndex = jest.fn();
   });
 
   describe('required configurations', () => {
     test('should throw if index name is not provided', async () => {
+      // @ts-ignore
       const toThrow = async () => await configureIndex(MIA)();
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: argument must be string.'
-      );
-    });
-
-    test('should throw if index name is not a string', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)(1, { spec: { pod: { replicas: 10 } } });
-
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had type errors: argument must be string.'
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `indexName` to configureIndex.'
       );
     });
 
@@ -41,9 +24,20 @@ describe('configureIndex argument validations', () => {
       const toThrow = async () =>
         await configureIndex(MIA)('', { spec: { pod: { replicas: 2 } } });
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        'The first argument to configureIndex had validation errors: argument must not be blank.'
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass a non-empty string for `indexName` to configureIndex.'
+      );
+    });
+
+    test('should throw if unknown property is passed at top level', async () => {
+      const toThrow = async () =>
+        // @ts-ignore
+        await configureIndex(MIA)('', { speculoos: { pod: { replicas: 2 } } });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, spec.'
       );
     });
 
@@ -51,55 +45,35 @@ describe('configureIndex argument validations', () => {
       const toThrowSpec = async () =>
         await configureIndex(MIA)('index-name', {});
 
-      expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrowSpec).rejects.toThrowError(
-        'The second argument to configureIndex should not be empty object. Please specify at least one property (spec, deletionProtection) to update.'
+      await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrowSpec).rejects.toThrowError(
+        'You must pass either a `spec`, `deletionProtection` or both to configureIndex in order to update.'
       );
     });
 
-    test('should throw if replicas is not a number', async () => {
+    test('should throw if unknown property is passed at spec/pod level', async () => {
       const toThrow = async () =>
         await configureIndex(MIA)('index-name', {
-          spec: { pod: { replicas: '10' } },
+          // @ts-ignore
+          spec: { pod: { replicasroonies: 2 } },
         });
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/replicas' must be integer."
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'Object contained invalid properties: replicasroonies. Valid properties include replicas, podType.'
       );
     });
 
-    test('should throw if podType is not a string', async () => {
+    test('should throw if replicas is not greater than 0', async () => {
       const toThrow = async () =>
         await configureIndex(MIA)('index-name', {
-          spec: { pod: { podType: 10.5 } },
+          // @ts-ignore
+          spec: { pod: { replicas: -1 } },
         });
 
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had type errors: property 'spec/properties/pod/properties/podType' must be string."
-      );
-    });
-
-    test('should throw if replicas is not a positive integer', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)('index-name', {
-          spec: { pod: { replicas: 0 } },
-        });
-
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had validation errors: property 'spec/properties/pod/properties/replicas' must be >= 1."
-      );
-    });
-
-    test('should throw if deletionProtection is an empty string', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)('index-name', { deletionProtection: '' });
-
-      expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      expect(toThrow).rejects.toThrowError(
-        "The second argument to configureIndex had validation errors: property 'deletionProtection' must not be blank."
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        '`replicas` must be a positive integer.'
       );
     });
   });
