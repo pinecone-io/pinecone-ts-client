@@ -35,8 +35,7 @@ export type PodType =
   | 'p2.x1'
   | 'p2.x2'
   | 'p2.x4'
-  | 'p2.x8'
-  | string;
+  | 'p2.x8';
 
 export const ValidPodTypes: PodType[] = [
   's1.x1',

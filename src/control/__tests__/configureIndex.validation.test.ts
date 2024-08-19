@@ -37,7 +37,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: speculoos. Valid properties include spec, deletionProtection.'
+        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, spec.'
       );
     });
 

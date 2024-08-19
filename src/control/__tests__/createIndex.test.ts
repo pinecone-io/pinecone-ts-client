@@ -187,8 +187,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension,' +
-        ' metric, deletionProtection, waitUntilReady, suppressConflicts.'
+      'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension, metric, deletionProtection, waitUntilReady, suppressConflicts.'
     );
   });
 
@@ -234,8 +233,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: environmentsdf. Valid properties include environment, podType, replicas,' +
-        ' shards, pods, metadataConfig, sourceCollection.'
+      'Object contained invalid properties: environmentsdf. Valid properties include environment, replicas, shards, podType, pods, metadataConfig, sourceCollection.'
     );
   });
 

@@ -4,12 +4,15 @@ import {
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/control';
 import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import {
+  CreateCollectionRequestProperties,
+  ValidateProperties,
+} from '../utils/validateProperties';
 
 export const createCollection = (api: ManageIndexesApi) => {
   const validator = async (options: CreateCollectionRequest) => {
     if (options) {
-      ValidateProperties(options, ['name', 'source']);
+      ValidateProperties(options, CreateCollectionRequestProperties);
     }
     if (!options || typeof options !== 'object') {
       throw new PineconeArgumentError(

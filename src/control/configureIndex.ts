@@ -5,7 +5,10 @@ import {
 } from '../pinecone-generated-ts-fetch/control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
-import { ValidateProperties } from '../utils/validateProperties';
+import {
+  ConfigureIndexRequestProperties,
+  ValidateProperties,
+} from '../utils/validateProperties';
 
 export const configureIndex = (api: ManageIndexesApi) => {
   const validator = async (
@@ -13,7 +16,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     options: ConfigureIndexRequest
   ) => {
     if (options) {
-      ValidateProperties(options, ['spec', 'deletionProtection']);
+      ValidateProperties(options, ConfigureIndexRequestProperties);
     }
 
     if (!indexName) {

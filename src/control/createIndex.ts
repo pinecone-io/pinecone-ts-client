@@ -7,7 +7,7 @@ import {
   IndexModelMetricEnum,
 } from '../pinecone-generated-ts-fetch/control';
 import { debugLog } from '../utils';
-import { ValidPodTypes } from './types';
+import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
 import { ValidateProperties } from '../utils/validateProperties';
 
@@ -25,6 +25,18 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
   suppressConflicts?: boolean;
 }
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexOptionsType = keyof CreateIndexOptions;
+const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
+  'spec',
+  'name',
+  'dimension',
+  'metric',
+  'deletionProtection',
+  'waitUntilReady',
+  'suppressConflicts',
+];
+
 /**
  * The spec object defines how the index should be deployed.
  *
@@ -40,6 +52,10 @@ export interface CreateIndexSpec {
   pod?: CreateIndexPodSpec;
 }
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexSpecType = keyof CreateIndexSpec;
+const CreateIndexSpecProperties: CreateIndexSpecType[] = ['serverless', 'pod'];
+
 /**
  * Configuration needed to deploy a serverless index.
  *
@@ -52,6 +68,13 @@ export interface CreateIndexServerlessSpec {
   /** The region where you would like your index to be created. */
   region: string;
 }
+
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexServerlessSpecType = keyof CreateIndexServerlessSpec;
+const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
+  'cloud',
+  'region',
+];
 
 /**
  * Configuration needed to deploy a serverless index.
@@ -85,18 +108,22 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexPodSpecType = keyof CreateIndexPodSpec;
+const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
+  'environment',
+  'replicas',
+  'shards',
+  'podType',
+  'pods',
+  'metadataConfig',
+  'sourceCollection',
+];
+
 export const createIndex = (api: ManageIndexesApi) => {
   const validator = async (options: CreateIndexOptions) => {
     if (options) {
-      ValidateProperties(options, [
-        'spec',
-        'name',
-        'dimension',
-        'metric',
-        'deletionProtection',
-        'waitUntilReady',
-        'suppressConflicts',
-      ]);
+      ValidateProperties(options, CreateIndexOptionsProperties);
     }
     if (!options) {
       throw new PineconeArgumentError(
@@ -119,10 +146,13 @@ export const createIndex = (api: ManageIndexesApi) => {
       );
     }
     if (options.spec) {
-      ValidateProperties(options.spec, ['serverless', 'pod']);
+      ValidateProperties(options.spec, CreateIndexSpecProperties);
     }
     if (options.spec.serverless) {
-      ValidateProperties(options.spec.serverless, ['cloud', 'region']);
+      ValidateProperties(
+        options.spec.serverless,
+        CreateIndexServerlessSpecProperties
+      );
       if (!options.spec.serverless.cloud) {
         throw new PineconeArgumentError(
           'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
@@ -135,15 +165,7 @@ export const createIndex = (api: ManageIndexesApi) => {
       }
     }
     if (options.spec.pod) {
-      ValidateProperties(options.spec.pod, [
-        'environment',
-        'podType',
-        'replicas',
-        'shards',
-        'pods',
-        'metadataConfig',
-        'sourceCollection',
-      ]);
+      ValidateProperties(options.spec.pod, CreateIndexPodSpecProperties);
       if (!options.spec.pod.environment) {
         throw new PineconeArgumentError(
           'You must pass an `environment` for the pod `spec` object in order to create an index.'
@@ -198,7 +220,10 @@ export const createIndex = (api: ManageIndexesApi) => {
         'You must pass a positive integer for `pods` in order to create an index.'
       );
     }
-    if (options.spec.pod && !ValidPodTypes.includes(options.spec.pod.podType)) {
+    if (
+      options.spec.pod &&
+      !ValidPodTypes.includes(<PodType>options.spec.pod.podType)
+    ) {
       throw new PineconeArgumentError(
         `Invalid pod type: ${
           options.spec.pod.podType

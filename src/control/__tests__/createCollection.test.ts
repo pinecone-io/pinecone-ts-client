@@ -102,7 +102,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: unknown. Valid properties include name, source.'
+        'Object contained invalid properties: unknown. Valid properties include source, name.'
       );
     });
 
@@ -118,7 +118,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: sourceeeee. Valid properties include name, source.'
+        'Object contained invalid properties: sourceeeee. Valid properties include source, name.'
       );
     });
 
