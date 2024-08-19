@@ -92,6 +92,15 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
   metadata?: T;
 };
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type PineconeRecordsType = keyof PineconeRecord;
+export const PineconeRecordsProperties: PineconeRecordsType[] = [
+  'id',
+  'values',
+  'sparseValues',
+  'metadata',
+];
+
 /**
  * Metadata detailing usage units for a specific operation.
  */

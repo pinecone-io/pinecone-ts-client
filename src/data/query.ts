@@ -70,6 +70,18 @@ export type QueryByVectorValues = QueryShared & {
  */
 export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type QueryOptionsType = keyof QueryByRecordId | keyof QueryByVectorValues;
+const QueryOptionsProperties: QueryOptionsType[] = [
+  'id',
+  'vector',
+  'sparseVector',
+  'includeValues',
+  'includeMetadata',
+  'filter',
+  'topK',
+];
+
 /**
  * A {@link PineconeRecord} with a similarity score.
  */
@@ -112,15 +124,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = async (options: QueryOptions) => {
     if (options) {
-      ValidateProperties(options, [
-        'id',
-        'vector',
-        'sparseVector',
-        'includeValues',
-        'includeMetadata',
-        'filter',
-        'topK',
-      ]);
+      ValidateProperties(options, QueryOptionsProperties);
     }
     if (!options) {
       throw new PineconeArgumentError(

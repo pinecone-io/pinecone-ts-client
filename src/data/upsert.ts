@@ -1,6 +1,10 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch/data';
-import type { PineconeRecord, RecordMetadata } from './types';
+import {
+  PineconeRecord,
+  PineconeRecordsProperties,
+  RecordMetadata,
+} from './types';
 import { PineconeArgumentError } from '../errors';
 import { ValidateProperties } from '../utils/validateProperties';
 
@@ -15,7 +19,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = async (records: Array<PineconeRecord<T>>) => {
     for (const record of records) {
-      ValidateProperties(record, ['id', 'values', 'sparseValues', 'metadata']);
+      ValidateProperties(record, PineconeRecordsProperties);
     }
     if (records.length === 0) {
       throw new PineconeArgumentError(

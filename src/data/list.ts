@@ -17,13 +17,21 @@ export type ListOptions = {
   paginationToken?: string;
 };
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type ListOptionsType = keyof ListOptions;
+const ListOptionsProperties: ListOptionsType[] = [
+  'prefix',
+  'limit',
+  'paginationToken',
+];
+
 export const listPaginated = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
   const validator = async (options: ListOptions) => {
     if (options) {
-      ValidateProperties(options, ['prefix', 'limit', 'paginationToken']);
+      ValidateProperties(options, ListOptionsProperties);
     }
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {

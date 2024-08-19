@@ -33,6 +33,15 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   metadata?: Partial<T>;
 };
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type UpdateOptionsType = keyof UpdateOptions;
+const UpdateOptionsProperties: UpdateOptionsType[] = [
+  'id',
+  'values',
+  'sparseValues',
+  'metadata',
+];
+
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
@@ -44,7 +53,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = async (options: UpdateOptions<T>) => {
     if (options) {
-      ValidateProperties(options, ['id', 'values', 'sparseValues', 'metadata']);
+      ValidateProperties(options, UpdateOptionsProperties);
     }
     if (options && !options.id) {
       throw new PineconeArgumentError(
