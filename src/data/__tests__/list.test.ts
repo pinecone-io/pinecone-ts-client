@@ -40,4 +40,39 @@ describe('list', () => {
       namespace: 'list-namespace',
     });
   });
+
+  test('Throw error if pass in empty prefix', async () => {
+    const { VoaProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const toThrow = async () => {
+      await listPaginatedFn({ limit: -3 });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      '`limit` property must be greater than 0'
+    );
+  });
+
+  test('Throw error if misspell property', async () => {
+    const { VoaProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const toThrow = async () => {
+      // @ts-ignore
+      await listPaginatedFn({ limitgadsf: -3 });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Object contained invalid properties: limitgadsf. Valid properties include prefix, limit, paginationToken.'
+    );
+  });
+
+  test('Throw error if add unknown property', async () => {
+    const { VoaProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const toThrow = async () => {
+      // @ts-ignore
+      await listPaginatedFn({ limit: 3, testy: 'test' });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Object contained invalid properties: testy. Valid properties include prefix, limit, paginationToken.'
+    );
+  });
 });

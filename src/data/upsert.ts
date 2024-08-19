@@ -1,22 +1,44 @@
-import { buildConfigValidator } from '../validator';
-import { PineconeRecordSchema } from './types';
-import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import type { Vector } from '../pinecone-generated-ts-fetch/data';
-import type { PineconeRecord, RecordMetadata } from './types';
-
-const RecordArray = Type.Array(PineconeRecordSchema);
+import {
+  PineconeRecord,
+  PineconeRecordsProperties,
+  RecordMetadata,
+} from './types';
+import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(RecordArray, 'upsert');
   }
+
+  validator = (records: Array<PineconeRecord<T>>) => {
+    for (const record of records) {
+      ValidateProperties(record, PineconeRecordsProperties);
+    }
+    if (records.length === 0) {
+      throw new PineconeArgumentError(
+        'Must pass in at least 1 record to upsert.'
+      );
+    }
+    records.forEach((record) => {
+      if (!record.id) {
+        throw new PineconeArgumentError(
+          'Every record must include an `id` property in order to upsert.'
+        );
+      }
+      if (!record.values) {
+        throw new PineconeArgumentError(
+          'Every record must include a `values` property in order to upsert.'
+        );
+      }
+    });
+  };
 
   async run(records: Array<PineconeRecord<T>>): Promise<void> {
     this.validator(records);

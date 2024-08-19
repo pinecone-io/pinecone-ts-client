@@ -70,7 +70,8 @@ describe('Pinecone', () => {
         expect(() => {
           new Pinecone({} as PineconeConfiguration);
         }).toThrow(
-          'The client configuration must have required property: apiKey.'
+          'The client configuration must have required property: apiKey. You can find the configuration values for' +
+            ' your project in the Pinecone developer console at https://app.pinecone.io.'
         );
       });
 
@@ -81,7 +82,8 @@ describe('Pinecone', () => {
           } as PineconeConfiguration;
           new Pinecone(config);
         }).toThrow(
-          "The client configuration had validation errors: property 'apiKey' must not be blank."
+          'The client configuration must have required property: apiKey. You can find the configuration values for' +
+            ' your project in the Pinecone developer console at https://app.pinecone.io.'
         );
       });
     });
@@ -94,7 +96,8 @@ describe('Pinecone', () => {
             unknownProp: 'banana',
           } as PineconeConfiguration);
         }).toThrow(
-          'The client configuration had validation errors: argument must NOT have additional properties.'
+          'Object contained invalid properties: unknownProp. Valid properties include apiKey, controllerHostUrl,' +
+            ' fetchApi, additionalHeaders, sourceTag.'
         );
       });
     });

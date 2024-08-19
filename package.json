@@ -9,7 +9,8 @@
   "contributors": [
     "Jen Hamon (https://github.com/jhamon)",
     "Roie Schwaber-Cohen (https://github.com/rschwabco)",
-    "Austin DeNoble (https://github.com/austin-denoble)"
+    "Austin DeNoble (https://github.com/austin-denoble)",
+    "Audrey Lorberfeld (https://github.com/aulorbe)"
   ],
   "license": "Apache-2.0",
   "scripts": {
@@ -51,8 +52,6 @@
     "/dist"
   ],
   "dependencies": {
-    "@sinclair/typebox": "^0.29.0",
-    "ajv": "^8.12.0",
     "cross-fetch": "^3.1.5",
     "encoding": "^0.1.13"
   }

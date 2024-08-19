@@ -5,6 +5,7 @@ import type {
   DescribeIndexRequest,
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/control';
+import { PineconeArgumentError } from '../../errors';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexResponse = (
@@ -110,6 +111,152 @@ describe('createIndex', () => {
         },
       },
     });
+  });
+
+  test('Throw error if name, dimension, or spec are not passed', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    // Missing name
+    let toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        dimension: 10,
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a non-empty string for `name` in order to create an index.'
+    );
+
+    // Missing spec
+    toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+      });
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
+    );
+
+    // Missing dimension
+    toThrow = async () => {
+      // @ts-ignore
+      await createIndex(MIA)({
+        name: 'index-name',
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
+      'You must pass a positive integer for `dimension` in order to create an index.'
+    );
+  });
+
+  test('Throw error if unknown property is passed at top level', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    // Missing name
+    const toThrow = async () => {
+      await createIndex(MIA)({
+        // @ts-ignore
+        dimensionlshgoiwe: 10,
+        spec: {
+          pod: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension, metric, deletionProtection, waitUntilReady, suppressConflicts.'
+    );
+  });
+
+  test('Throw error if unknown property is passed at spec level', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const toThrow = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        spec: {
+          // @ts-ignore
+          poddf: {
+            environment: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      'Object contained invalid properties: poddf. Valid properties include serverless, pod.'
+    );
+  });
+
+  test('Throw error if unknown property is passed at spec/pod level', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const toThrow = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        spec: {
+          pod: {
+            // @ts-ignore
+            environmentsdf: 'us-west1',
+            pods: 1,
+            podType: 'p1.x1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      'Object contained invalid properties: environmentsdf. Valid properties include environment, replicas, shards, podType, pods, metadataConfig, sourceCollection.'
+    );
+  });
+
+  test('Throw error if unknown property is passed at spec/serverless level', async () => {
+    const MIA = setupCreateIndexResponse(undefined, undefined);
+    const toThrow = async () => {
+      await createIndex(MIA)({
+        name: 'index-name',
+        dimension: 10,
+        spec: {
+          serverless: {
+            // @ts-ignore
+            cloudsdfd: 'wooo',
+            region: 'us-west1',
+          },
+        },
+      });
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      'Object contained invalid properties: cloudsdfd. Valid properties include cloud, region.'
+    );
   });
 
   describe('waitUntilReady', () => {

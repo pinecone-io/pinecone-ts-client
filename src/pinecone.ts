@@ -23,12 +23,13 @@ import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
 } from './errors';
-import { Index, PineconeConfigurationSchema } from './data';
-import { buildValidator } from './validator';
+import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
+import { ValidateProperties } from './utils/validateProperties';
+import { PineconeConfigurationProperties } from './data/types';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -112,7 +113,14 @@ export class Pinecone {
       options = this._readEnvironmentConfig();
     }
 
-    this._validateConfig(options);
+    if (!options.apiKey) {
+      throw new PineconeConfigurationError(
+        'The client configuration must have required property: apiKey.'
+      );
+    }
+
+    ValidateProperties(options, PineconeConfigurationProperties);
+
     this.config = options;
 
     this._checkForBrowser();
@@ -145,7 +153,8 @@ export class Pinecone {
   _readEnvironmentConfig(): PineconeConfiguration {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
-        'Your execution environment does not support reading environment variables from process.env, so a configuration object is required when calling new Pinecone()'
+        'Your execution environment does not support reading environment variables from process.env, so a' +
+          ' configuration object is required when calling new Pinecone().'
       );
     }
 
@@ -547,14 +556,6 @@ export class Pinecone {
    */
   describeCollection(collectionName: CollectionName) {
     return this._describeCollection(collectionName);
-  }
-
-  /** @internal */
-  _validateConfig(options: PineconeConfiguration) {
-    buildValidator(
-      'The client configuration',
-      PineconeConfigurationSchema
-    )(options);
   }
 
   /** @internal */

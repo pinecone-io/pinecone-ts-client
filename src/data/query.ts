@@ -1,44 +1,8 @@
-import { buildConfigValidator } from '../validator';
-import {
-  OperationUsage,
-  RecordIdSchema,
-  RecordSparseValuesSchema,
-  RecordValues,
-  RecordSparseValues,
-  RecordValuesSchema,
-} from './types';
+import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
-import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-
-const shared = {
-  topK: Type.Number(),
-  includeValues: Type.Optional(Type.Boolean()),
-  includeMetadata: Type.Optional(Type.Boolean()),
-  filter: Type.Optional(Type.Object({})),
-};
-
-const QueryByRecordId = Type.Object(
-  {
-    ...shared,
-    id: RecordIdSchema,
-    vector: Type.Optional(Type.Never()),
-    sparseVector: Type.Optional(Type.Never()),
-  },
-  { additionalProperties: false }
-);
-
-const QueryByVectorValues = Type.Object(
-  {
-    ...shared,
-    vector: RecordValuesSchema,
-    sparseVector: Type.Optional(RecordSparseValuesSchema),
-    id: Type.Optional(Type.Never()),
-  },
-  { additionalProperties: false }
-);
-
-const QuerySchema = Type.Union([QueryByRecordId, QueryByVectorValues]);
+import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -106,6 +70,18 @@ export type QueryByVectorValues = QueryShared & {
  */
 export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type QueryOptionsType = keyof QueryByRecordId | keyof QueryByVectorValues;
+const QueryOptionsProperties: QueryOptionsType[] = [
+  'id',
+  'vector',
+  'sparseVector',
+  'includeValues',
+  'includeMetadata',
+  'filter',
+  'topK',
+];
+
 /**
  * A {@link PineconeRecord} with a similarity score.
  */
@@ -140,17 +116,68 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(QuerySchema, 'query');
   }
+
+  validator = (options: QueryOptions) => {
+    if (options) {
+      ValidateProperties(options, QueryOptionsProperties);
+    }
+    if (!options) {
+      throw new PineconeArgumentError(
+        'You must enter a query configuration object to query the index.'
+      );
+    }
+    if (options && !options.topK) {
+      throw new PineconeArgumentError(
+        'You must enter an integer for the `topK` search results to be returned.'
+      );
+    }
+    if (options && options.topK && options.topK < 1) {
+      throw new PineconeArgumentError(
+        '`topK` property must be greater than 0.'
+      );
+    }
+    if (options && options.filter) {
+      const keys = Object.keys(options.filter);
+      if (keys.length === 0) {
+        throw new PineconeArgumentError(
+          'You must enter a `filter` object with at least one key-value pair.'
+        );
+      }
+    }
+    if ('id' in options) {
+      if (!options.id) {
+        throw new PineconeArgumentError(
+          'You must enter non-empty string for `id` to query by record ID.'
+        );
+      }
+    }
+    if ('vector' in options) {
+      if (options.vector.length === 0) {
+        throw new PineconeArgumentError(
+          'You must enter an array of `RecordValues` in order to query by vector values.'
+        );
+      }
+    }
+    if ('sparseVector' in options) {
+      if (
+        options.sparseVector?.indices.length === 0 ||
+        options.sparseVector?.values.length === 0
+      ) {
+        throw new PineconeArgumentError(
+          'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
+            ' sparse vector values.'
+        );
+      }
+    }
+  };
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     this.validator(query);
-
     const api = await this.apiProvider.provide();
     const results = await api.query({
       queryRequest: { ...query, namespace: this.namespace },

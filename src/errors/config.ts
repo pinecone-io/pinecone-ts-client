@@ -1,6 +1,6 @@
 import { BasePineconeError } from './base';
 
-const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io`;
+const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io.`;
 
 /**
  * This exception indicates there is a problem with the configuration values
