@@ -33,6 +33,16 @@ export type PineconeConfiguration = {
   sourceTag?: string;
 };
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type PineconeConfigurationType = keyof PineconeConfiguration;
+export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
+  'apiKey',
+  'controllerHostUrl',
+  'fetchApi',
+  'additionalHeaders',
+  'sourceTag',
+];
+
 /** The id of the record */
 export type RecordId = string;
 

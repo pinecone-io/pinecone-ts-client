@@ -51,7 +51,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     this.namespace = namespace;
   }
 
-  validator = async (options: UpdateOptions<T>) => {
+  validator = (options: UpdateOptions<T>) => {
     if (options) {
       ValidateProperties(options, UpdateOptionsProperties);
     }
@@ -63,7 +63,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   };
 
   async run(options: UpdateOptions<T>): Promise<void> {
-    await this.validator(options);
+    this.validator(options);
 
     const requestOptions = {
       id: options['id'],

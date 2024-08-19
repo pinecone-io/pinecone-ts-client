@@ -29,7 +29,7 @@ export const listPaginated = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const validator = async (options: ListOptions) => {
+  const validator = (options: ListOptions) => {
     if (options) {
       ValidateProperties(options, ListOptionsProperties);
     }
@@ -41,7 +41,7 @@ export const listPaginated = (
 
   return async (options?: ListOptions): Promise<ListResponse> => {
     if (options) {
-      await validator(options);
+      validator(options);
     }
 
     const listRequest: ListRequest = {

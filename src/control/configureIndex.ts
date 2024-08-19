@@ -15,10 +15,7 @@ export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
 ];
 
 export const configureIndex = (api: ManageIndexesApi) => {
-  const validator = async (
-    indexName: IndexName,
-    options: ConfigureIndexRequest
-  ) => {
+  const validator = (indexName: IndexName, options: ConfigureIndexRequest) => {
     if (options) {
       ValidateProperties(options, ConfigureIndexRequestProperties);
     }
@@ -53,7 +50,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     indexName: IndexName,
     options: ConfigureIndexRequest
   ): Promise<IndexModel> => {
-    await validator(indexName, options);
+    validator(indexName, options);
 
     return await api.configureIndex({
       indexName,

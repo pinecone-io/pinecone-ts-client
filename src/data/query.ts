@@ -122,7 +122,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
     this.namespace = namespace;
   }
 
-  validator = async (options: QueryOptions) => {
+  validator = (options: QueryOptions) => {
     if (options) {
       ValidateProperties(options, QueryOptionsProperties);
     }
@@ -177,7 +177,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   };
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
-    await this.validator(query);
+    this.validator(query);
     const api = await this.apiProvider.provide();
     const results = await api.query({
       queryRequest: { ...query, namespace: this.namespace },

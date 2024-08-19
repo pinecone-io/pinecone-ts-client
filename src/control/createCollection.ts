@@ -10,7 +10,7 @@ import {
 } from '../utils/validateProperties';
 
 export const createCollection = (api: ManageIndexesApi) => {
-  const validator = async (options: CreateCollectionRequest) => {
+  const validator = (options: CreateCollectionRequest) => {
     if (options) {
       ValidateProperties(options, CreateCollectionRequestProperties);
     }
@@ -37,7 +37,7 @@ export const createCollection = (api: ManageIndexesApi) => {
   };
 
   return async (options: CreateCollectionRequest): Promise<CollectionModel> => {
-    await validator(options);
+    validator(options);
     return await api.createCollection({ createCollectionRequest: options });
   };
 };

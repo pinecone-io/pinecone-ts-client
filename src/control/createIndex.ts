@@ -121,7 +121,7 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
 ];
 
 export const createIndex = (api: ManageIndexesApi) => {
-  const validator = async (options: CreateIndexOptions) => {
+  const validator = (options: CreateIndexOptions) => {
     if (options) {
       ValidateProperties(options, CreateIndexOptionsProperties);
     }
@@ -237,7 +237,7 @@ export const createIndex = (api: ManageIndexesApi) => {
     if (options && !options.metric) {
       options.metric = IndexModelMetricEnum.Cosine;
     }
-    await validator(options);
+    validator(options);
     try {
       const createResponse = await api.createIndex({
         createIndexRequest: options as CreateIndexRequest,

@@ -53,7 +53,7 @@ export type DescribeIndexStatsOptions = {
 };
 
 export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
-  const validator = async (options: DescribeIndexStatsOptions) => {
+  const validator = (options: DescribeIndexStatsOptions) => {
     if (options) {
       ValidateProperties(options, ['filter']);
     }
@@ -69,7 +69,7 @@ export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
     options?: DescribeIndexStatsOptions
   ): Promise<IndexStatsDescription> => {
     if (options) {
-      await validator(options);
+      validator(options);
     }
 
     const api = await apiProvider.provide();

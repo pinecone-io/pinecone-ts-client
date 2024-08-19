@@ -29,6 +29,7 @@ import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
+import { PineconeConfigurationProperties } from './data/types';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -118,15 +119,7 @@ export class Pinecone {
       );
     }
 
-    type PineconeConfigurationKeys = keyof PineconeConfiguration;
-    const validPineconeConfigProperties: PineconeConfigurationKeys[] = [
-      'apiKey',
-      'controllerHostUrl',
-      'fetchApi',
-      'additionalHeaders',
-      'sourceTag',
-    ];
-    ValidateProperties(options, validPineconeConfigProperties);
+    ValidateProperties(options, PineconeConfigurationProperties);
 
     this.config = options;
 
