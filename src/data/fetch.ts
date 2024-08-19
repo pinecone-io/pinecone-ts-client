@@ -36,15 +36,14 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
     this.namespace = namespace;
   }
 
-  validator = async (options: FetchOptions) => {
+  validator = (options: FetchOptions) => {
     if (options.length === 0) {
       throw new PineconeArgumentError('Must pass in at least 1 recordID.');
     }
   };
 
   async run(ids: FetchOptions): Promise<FetchResponse<T>> {
-    await this.validator(ids);
-
+    this.validator(ids);
     const api = await this.apiProvider.provide();
     const response = await api.fetch({ ids: ids, namespace: this.namespace });
 

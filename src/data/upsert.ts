@@ -17,7 +17,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     this.namespace = namespace;
   }
 
-  validator = async (records: Array<PineconeRecord<T>>) => {
+  validator = (records: Array<PineconeRecord<T>>) => {
     for (const record of records) {
       ValidateProperties(record, PineconeRecordsProperties);
     }
@@ -41,7 +41,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   };
 
   async run(records: Array<PineconeRecord<T>>): Promise<void> {
-    await this.validator(records);
+    this.validator(records);
 
     const api = await this.apiProvider.provide();
     await api.upsert({

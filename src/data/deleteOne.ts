@@ -13,7 +13,7 @@ export const deleteOne = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const validator = async (options: DeleteOneOptions) => {
+  const validator = (options: DeleteOneOptions) => {
     if (!options) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `options` in order to delete a record.'
@@ -21,7 +21,7 @@ export const deleteOne = (
     }
   };
   return async (options: DeleteOneOptions): Promise<void> => {
-    await validator(options);
+    validator(options);
     const api = await apiProvider.provide();
     await api._delete({ deleteRequest: { ids: [options], namespace } });
     return;
