@@ -24,15 +24,17 @@ export const deleteMany = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const FilterValidator = async (options: DeleteManyByFilterOptions) => {
+  const FilterValidator = (options: DeleteManyByFilterOptions) => {
     for (const key in options) {
       if (!options[key]) {
-        throw new PineconeArgumentError('`filter` property cannot be empty');
+        throw new PineconeArgumentError(
+          `\`filter\` property cannot be empty for key ${key}`
+        );
       }
     }
   };
 
-  const validator = async (options: DeleteManyOptions) => {
+  const validator = (options: DeleteManyOptions) => {
     if (!Array.isArray(options)) {
       return FilterValidator(options);
     } else {
@@ -43,7 +45,7 @@ export const deleteMany = (
   };
 
   return async (options: DeleteManyOptions): Promise<void> => {
-    await validator(options);
+    validator(options);
 
     const requestOptions: DeleteRequest = {};
 

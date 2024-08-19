@@ -31,8 +31,7 @@ describe('deleteCollection', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `collectionName` in order to delete a' +
-          ' collection'
+        'You must pass a non-empty string for `collectionName`'
       );
     });
 
@@ -43,8 +42,7 @@ describe('deleteCollection', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `collectionName` in order to delete a' +
-          ' collection'
+        'You must pass a non-empty string for `collectionName`'
       );
     });
   });

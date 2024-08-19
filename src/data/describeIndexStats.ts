@@ -60,7 +60,9 @@ export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
     const map = options['filter'];
     for (const key in map) {
       if (!map[key]) {
-        throw new PineconeArgumentError('`filter` property cannot be empty');
+        throw new PineconeArgumentError(
+          `\`filter\` property cannot be empty for ${key}`
+        );
       }
     }
   };
