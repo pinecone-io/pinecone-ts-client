@@ -4,6 +4,7 @@ import type {
   DataPlaneApi,
 } from '../../pinecone-generated-ts-fetch/data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
+import { PineconeArgumentError } from '../../errors';
 
 const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteOperationRequest) => Promise<object> = jest
@@ -18,12 +19,9 @@ const setupDeleteResponse = (response, isSuccess) => {
 export const setupDeleteSuccess = (response) => {
   return setupDeleteResponse(response, true);
 };
-export const setupDeleteFailure = (response) => {
-  return setupDeleteResponse(response, false);
-};
 
 describe('deleteOne', () => {
-  test('calls the openapi delete endpoint, passing target namespace and the vector id to delete', async () => {
+  test('Calls the openapi delete endpoint, passing target namespace and the vector id to delete', async () => {
     const { DataProvider, DPA } = setupDeleteSuccess(undefined);
 
     const deleteOneFn = deleteOne(DataProvider, 'namespace');
@@ -33,5 +31,17 @@ describe('deleteOne', () => {
     expect(DPA._delete).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'namespace' },
     });
+  });
+
+  test('Throw error if pass empty string as ID', async () => {
+    const { DataProvider } = setupDeleteSuccess(undefined);
+    const deleteOneFn = deleteOne(DataProvider, 'namespace');
+    const toThrow = async () => {
+      await deleteOneFn('');
+    };
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      'You must pass a non-empty string for `options` in order to delete a record.'
+    );
   });
 });

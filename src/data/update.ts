@@ -1,27 +1,12 @@
-import { buildConfigValidator } from '../validator';
-import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import {
-  RecordIdSchema,
-  RecordValuesSchema,
-  RecordSparseValuesSchema,
-} from './types';
 import type {
   RecordId,
   RecordValues,
   RecordSparseValues,
   RecordMetadata,
 } from './types';
-
-const UpdateRecordOptionsSchema = Type.Object(
-  {
-    id: RecordIdSchema,
-    values: Type.Optional(RecordValuesSchema),
-    sparseValues: Type.Optional(RecordSparseValuesSchema),
-    metadata: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  },
-  { additionalProperties: false }
-);
+import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the
@@ -48,16 +33,34 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   metadata?: Partial<T>;
 };
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type UpdateOptionsType = keyof UpdateOptions;
+const UpdateOptionsProperties: UpdateOptionsType[] = [
+  'id',
+  'values',
+  'sparseValues',
+  'metadata',
+];
+
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;
   namespace: string;
-  validator: ReturnType<typeof buildConfigValidator>;
 
   constructor(apiProvider, namespace) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
-    this.validator = buildConfigValidator(UpdateRecordOptionsSchema, 'update');
   }
+
+  validator = (options: UpdateOptions<T>) => {
+    if (options) {
+      ValidateProperties(options, UpdateOptionsProperties);
+    }
+    if (options && !options.id) {
+      throw new PineconeArgumentError(
+        'You must enter a non-empty string for the `id` field in order to update a record.'
+      );
+    }
+  };
 
   async run(options: UpdateOptions<T>): Promise<void> {
     this.validator(options);

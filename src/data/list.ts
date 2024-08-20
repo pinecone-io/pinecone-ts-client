@@ -1,10 +1,9 @@
-import { buildConfigValidator } from '../validator';
-import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import type {
   ListRequest,
   ListResponse,
 } from '../pinecone-generated-ts-fetch/data';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -18,20 +17,27 @@ export type ListOptions = {
   paginationToken?: string;
 };
 
-const ListOptionsSchema = Type.Object(
-  {
-    prefix: Type.Optional(Type.String({ minLength: 1 })),
-    limit: Type.Optional(Type.Number()),
-    paginationToken: Type.Optional(Type.String({ minLength: 1 })),
-  },
-  { additionalProperties: false }
-);
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type ListOptionsType = keyof ListOptions;
+const ListOptionsProperties: ListOptionsType[] = [
+  'prefix',
+  'limit',
+  'paginationToken',
+];
 
 export const listPaginated = (
   apiProvider: DataOperationsProvider,
   namespace: string
 ) => {
-  const validator = buildConfigValidator(ListOptionsSchema, 'listPaginated');
+  const validator = (options: ListOptions) => {
+    if (options) {
+      ValidateProperties(options, ListOptionsProperties);
+    }
+    // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
+    if (options.limit && options.limit < 0) {
+      throw new Error('`limit` property must be greater than 0');
+    }
+  };
 
   return async (options?: ListOptions): Promise<ListResponse> => {
     if (options) {

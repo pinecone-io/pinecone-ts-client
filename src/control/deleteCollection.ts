@@ -1,7 +1,6 @@
 import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
-import { CollectionNameSchema } from './types';
 import type { CollectionName } from './types';
+import { PineconeArgumentError } from '../errors';
 
 /**
  * The name of collection to delete.
@@ -9,14 +8,12 @@ import type { CollectionName } from './types';
 export type DeleteCollectionOptions = CollectionName;
 
 export const deleteCollection = (api: ManageIndexesApi) => {
-  const validator = buildConfigValidator(
-    CollectionNameSchema,
-    'deleteCollection'
-  );
-
   return async (collectionName: DeleteCollectionOptions): Promise<void> => {
-    validator(collectionName);
-
+    if (!collectionName) {
+      throw new PineconeArgumentError(
+        'You must pass a non-empty string for `collectionName`'
+      );
+    }
     await api.deleteCollection({ collectionName });
     return;
   };

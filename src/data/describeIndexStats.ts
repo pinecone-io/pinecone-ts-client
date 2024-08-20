@@ -1,6 +1,6 @@
-import { buildConfigValidator } from '../validator';
-import { Type } from '@sinclair/typebox';
 import { DataOperationsProvider } from './dataOperationsProvider';
+import { PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * A count of the number of records found inside a namespace
@@ -41,13 +41,6 @@ export type IndexStatsDescription = {
   totalRecordCount?: number;
 };
 
-const DescribeIndexStatsOptionsSchema = Type.Object(
-  {
-    filter: Type.Optional(Type.Object({}, { additionalProperties: true })),
-  },
-  { additionalProperties: false }
-);
-
 /**
  * Optionally specify a filter expression to limit results from
  * {@link Index.describeIndexStats}.
@@ -60,10 +53,19 @@ export type DescribeIndexStatsOptions = {
 };
 
 export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
-  const validator = buildConfigValidator(
-    DescribeIndexStatsOptionsSchema,
-    'describeIndexStats'
-  );
+  const validator = (options: DescribeIndexStatsOptions) => {
+    if (options) {
+      ValidateProperties(options, ['filter']);
+    }
+    const map = options['filter'];
+    for (const key in map) {
+      if (!map[key]) {
+        throw new PineconeArgumentError(
+          `\`filter\` property cannot be empty for ${key}`
+        );
+      }
+    }
+  };
 
   return async (
     options?: DescribeIndexStatsOptions

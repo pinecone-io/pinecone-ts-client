@@ -4,25 +4,12 @@ import {
   ManageIndexesApi,
   ServerlessSpecCloudEnum,
   PodSpecMetadataConfig,
+  IndexModelMetricEnum,
 } from '../pinecone-generated-ts-fetch/control';
-import { buildConfigValidator } from '../validator';
 import { debugLog } from '../utils';
-import { handleApiError } from '../errors';
-import { Type } from '@sinclair/typebox';
-import {
-  IndexNameSchema,
-  CloudSchema,
-  DimensionSchema,
-  EnvironmentSchema,
-  MetricSchema,
-  PodsSchema,
-  RegionSchema,
-  ReplicasSchema,
-  PodTypeSchema,
-  MetadataConfigSchema,
-  CollectionNameSchema,
-  ShardsSchema,
-} from './types';
+import { PodType, ValidPodTypes } from './types';
+import { handleApiError, PineconeArgumentError } from '../errors';
+import { ValidateProperties } from '../utils/validateProperties';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -37,6 +24,18 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
   /** This option tells the client not to throw if you attempt to create an index that already exists. */
   suppressConflicts?: boolean;
 }
+
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexOptionsType = keyof CreateIndexOptions;
+const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
+  'spec',
+  'name',
+  'dimension',
+  'metric',
+  'deletionProtection',
+  'waitUntilReady',
+  'suppressConflicts',
+];
 
 /**
  * The spec object defines how the index should be deployed.
@@ -53,6 +52,10 @@ export interface CreateIndexSpec {
   pod?: CreateIndexPodSpec;
 }
 
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexSpecType = keyof CreateIndexSpec;
+const CreateIndexSpecProperties: CreateIndexSpecType[] = ['serverless', 'pod'];
+
 /**
  * Configuration needed to deploy a serverless index.
  *
@@ -65,6 +68,13 @@ export interface CreateIndexServerlessSpec {
   /** The region where you would like your index to be created. */
   region: string;
 }
+
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexServerlessSpecType = keyof CreateIndexServerlessSpec;
+const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
+  'cloud',
+  'region',
+];
 
 /**
  * Configuration needed to deploy a serverless index.
@@ -98,51 +108,135 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
-const CreateIndexOptionsSchema = Type.Object(
-  {
-    name: IndexNameSchema,
-    dimension: DimensionSchema,
-    metric: MetricSchema,
-    deletionProtection: Type.Optional(Type.String()),
-    spec: Type.Object({
-      serverless: Type.Optional(
-        Type.Object({
-          cloud: CloudSchema,
-          region: RegionSchema,
-        })
-      ),
-
-      pod: Type.Optional(
-        Type.Object({
-          environment: EnvironmentSchema,
-          replicas: Type.Optional(ReplicasSchema),
-          shards: Type.Optional(ShardsSchema),
-          podType: Type.Optional(PodTypeSchema),
-          pods: Type.Optional(PodsSchema),
-          metadataConfig: Type.Optional(MetadataConfigSchema),
-          sourceCollection: Type.Optional(CollectionNameSchema),
-        })
-      ),
-    }),
-
-    waitUntilReady: Type.Optional(Type.Boolean()),
-    suppressConflicts: Type.Optional(Type.Boolean()),
-  },
-  { additionalProperties: false }
-);
+// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+type CreateIndexPodSpecType = keyof CreateIndexPodSpec;
+const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
+  'environment',
+  'replicas',
+  'shards',
+  'podType',
+  'pods',
+  'metadataConfig',
+  'sourceCollection',
+];
 
 export const createIndex = (api: ManageIndexesApi) => {
-  const validator = buildConfigValidator(
-    CreateIndexOptionsSchema,
-    'createIndex'
-  );
+  const validator = (options: CreateIndexOptions) => {
+    if (options) {
+      ValidateProperties(options, CreateIndexOptionsProperties);
+    }
+    if (!options) {
+      throw new PineconeArgumentError(
+        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+      );
+    }
+    if (!options.name) {
+      throw new PineconeArgumentError(
+        'You must pass a non-empty string for `name` in order to create an index.'
+      );
+    }
+    if (!options.dimension || options.dimension <= 0) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `dimension` in order to create an index.'
+      );
+    }
+    if (!options.spec) {
+      throw new PineconeArgumentError(
+        'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
+      );
+    }
+    if (options.spec) {
+      ValidateProperties(options.spec, CreateIndexSpecProperties);
+    }
+    if (options.spec.serverless) {
+      ValidateProperties(
+        options.spec.serverless,
+        CreateIndexServerlessSpecProperties
+      );
+      if (!options.spec.serverless.cloud) {
+        throw new PineconeArgumentError(
+          'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
+        );
+      }
+      if (!options.spec.serverless.region) {
+        throw new PineconeArgumentError(
+          'You must pass a `region` for the serverless `spec` object in order to create an index.'
+        );
+      }
+    }
+    if (options.spec.pod) {
+      ValidateProperties(options.spec.pod, CreateIndexPodSpecProperties);
+      if (!options.spec.pod.environment) {
+        throw new PineconeArgumentError(
+          'You must pass an `environment` for the pod `spec` object in order to create an index.'
+        );
+      }
+      if (!options.spec.pod.podType) {
+        throw new PineconeArgumentError(
+          'You must pass a `podType` for the pod `spec` object in order to create an index.'
+        );
+      }
+    }
+    if (
+      options.spec.serverless &&
+      options.spec.serverless.cloud &&
+      !Object.values(ServerlessSpecCloudEnum).includes(
+        options.spec.serverless.cloud
+      )
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid cloud value: ${
+          options.spec.serverless.cloud
+        }. Valid values are: ${Object.values(ServerlessSpecCloudEnum).join(
+          ', '
+        )}.`
+      );
+    }
+    if (
+      options.metric &&
+      !Object.values(IndexModelMetricEnum).includes(options.metric)
+    ) {
+      {
+        throw new PineconeArgumentError(
+          `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
+        );
+      }
+    }
+    if (
+      options.spec.pod &&
+      options.spec.pod.replicas &&
+      options.spec.pod.replicas <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `replicas` in order to create an index.'
+      );
+    }
+    if (
+      options.spec.pod &&
+      options.spec.pod.pods &&
+      options.spec.pod.pods <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `pods` in order to create an index.'
+      );
+    }
+    if (
+      options.spec.pod &&
+      !ValidPodTypes.includes(<PodType>options.spec.pod.podType)
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid pod type: ${
+          options.spec.pod.podType
+        }. Valid values are: ${ValidPodTypes.join(', ')}.`
+      );
+    }
+  };
 
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     // If metric is not specified, default to cosine
     if (options && !options.metric) {
-      options.metric = 'cosine';
+      options.metric = IndexModelMetricEnum.Cosine;
     }
-
     validator(options);
     try {
       const createResponse = await api.createIndex({
