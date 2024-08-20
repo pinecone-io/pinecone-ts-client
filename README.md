@@ -30,7 +30,7 @@ when configuring an index has changed to include `deletionProtection`. The `podT
 
 ## Prerequisites
 
-The Pinecone TypeScript SDK is compatible with TypeScript 4.1 and greater.
+The Pinecone TypeScript SDK is compatible with TypeScript >=4.1 and Node >=18.x.
 
 ## Installation
 
@@ -896,8 +896,6 @@ Interact with Pinecone's Inference API (currently in public preview). The Pineco
 you access to embedding models hosted on Pinecone's infrastructure. Read more at [Understanding Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).
 
 **Notes:**
-
-- The Inference API only works with Node `>=18`. If you are using older versions of Node, you must pass in a custom `fetch` implementation into the Pinecone client.
 
 Models currently supported:
 
