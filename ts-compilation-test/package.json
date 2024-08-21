@@ -4,5 +4,11 @@
     "tsc-version": "tsc -v",
     "start": "node lib/index.js"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@pinecone-database/pinecone": "^3.0.1"
+  }
 }
