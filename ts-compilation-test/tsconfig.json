@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "target": "es2015",
+    "module": "ESNext",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "moduleResolution": "Node"
   },
   "compileOnSave": true,
   "include": ["src"]
