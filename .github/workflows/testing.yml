@@ -139,8 +139,17 @@ jobs:
           cp -r pinecone-ts-client/ts-compilation-test ts-compilation-test
           cd ts-compilation-test
           npm install typescript@${{ matrix.tsVersion }} --no-cache
+          
+          # Determine appropriate @types/node version
+          NODE_TYPES_VERSION="latest"
+          if [[ "${{ matrix.tsVersion }}" =~ ^~4\.[0-9]+\.[0-9]+$ ]]; then
+          NODE_TYPES_VERSION="^14.14.0"
+          elif [[ "${{ matrix.tsVersion }}" =~ ^~5\.[0-9]+\.[0-9]+$ ]]; then
+          NODE_TYPES_VERSION="18"  # Compatible with Node.js 18.x and TypeScript 5.x.x
+          fi
+          
           npm install @pinecone-database/pinecone --no-cache
-          npm install @types/node --save-dev
+          npm install @types/node@$NODE_TYPES_VERSION --save-dev
           cat package.json
           cat package-lock.json
           npm run tsc-version
