@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import pinecone from '../dist/index.js'; // Explicitly include the '.js' extension
+import pinecone from '../dist/index.js';
 
 dotenv.config();
 
