@@ -24,7 +24,7 @@
     "repl": "npm run build && node utils/replInit.ts",
     "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --runInBand --bail",
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --runInBand --bail",
-    "test:integration:cleanup": "npm run build && node utils/cleanupResources.ts",
+    "test:integration:cleanup": "npm run build && npx utils/cleanupResources.ts",
     "test:unit": "jest src/"
   },
   "engines": {
@@ -45,6 +45,7 @@
     "jest-skipped-reporter": "^0.0.5",
     "prettier": "^2.8.8",
     "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.2",
     "typedoc": "^0.24.8",
     "typescript": "^4.9.4"
   },
