@@ -140,6 +140,7 @@ jobs:
           cd ts-compilation-test
           npm install typescript@${{ matrix.tsVersion }} --no-cache
           npm install @pinecone-database/pinecone --no-cache
+          npm install @types/node --save-dev
           cat package.json
           cat package-lock.json
           npm run tsc-version
