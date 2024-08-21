@@ -2,7 +2,7 @@
   "scripts": {
     "build": "tsc",
     "tsc-version": "tsc -v",
-    "start": "node lib/index.js",
-    "type": "module"
-  }
+    "start": "node lib/index.js"
+  },
+  "type": "module"
 }
