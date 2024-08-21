@@ -1,4 +1,6 @@
-var dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import pinecone from '../dist/index.js'; // Explicitly include the '.js' extension
+
 dotenv.config();
 
 for (const envVar of ['PINECONE_API_KEY']) {
@@ -9,21 +11,27 @@ for (const envVar of ['PINECONE_API_KEY']) {
   }
 }
 
-var pinecone = require('../dist');
-
 (async () => {
   const p = new pinecone.Pinecone();
 
   const collectionList = await p.listCollections();
-  for (const collection of collectionList.collections) {
-    console.log(`Deleting collection ${collection.name}`);
-    await p.deleteCollection(collection.name);
+  if (collectionList.collections) {
+    for (const collection of collectionList.collections) {
+      console.log(`Deleting collection ${collection.name}`);
+      await p.deleteCollection(collection.name);
+    }
+  } else {
+    console.log('No collections found to delete');
   }
 
   const response = await p.listIndexes();
-  for (const index of response.indexes) {
-    console.log(`Deleting index ${index.name}`);
-    await p.deleteIndex(index.name);
+  if (response.indexes) {
+    for (const index of response.indexes) {
+      console.log(`Deleting index ${index.name}`);
+      await p.deleteIndex(index.name);
+    }
+  } else {
+    console.log('No indexes found to delete');
   }
 
   process.exit();
