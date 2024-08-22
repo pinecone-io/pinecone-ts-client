@@ -4,6 +4,9 @@ inputs:
   pinecone_api_key:
     description: 'API key'
     required: true
+  node_version:
+    description: 'Node.js version to setup'
+    required: true
 runs:
   using: 'composite'
   steps:
