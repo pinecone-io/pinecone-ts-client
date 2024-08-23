@@ -4,6 +4,9 @@ inputs:
   pinecone_api_key:
     description: 'API key'
     required: true
+  node_version:
+    description: 'Node.js version to setup'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -13,7 +16,7 @@ runs:
         node-version: ${{ inputs.node_version }}
         registry-url: 'https://registry.npmjs.org'
     - name: Cache NPM dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.npm
         key: npm-${{ hashFiles('package-lock.json') }}
