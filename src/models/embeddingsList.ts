@@ -3,7 +3,6 @@ import {
   EmbeddingsList as OpenAPIEmbeddingsList,
   EmbeddingsListUsage,
 } from '../pinecone-generated-ts-fetch/control';
-import * as util from 'node:util';
 
 /* This class wraps the OpenAPI-generated EmbeddingsList interface so that an EmbeddingsList object acts like an Array.
 This class also customizes the output of an EmbeddingsList to improve UX.
@@ -83,11 +82,6 @@ export class EmbeddingsList
       `  "usage": ${usageObject}\n` +
       `  })`
     );
-  }
-
-  // Customize console output
-  [util.inspect.custom](): string {
-    return this.toString();
   }
 
   public toJSON(): any {
