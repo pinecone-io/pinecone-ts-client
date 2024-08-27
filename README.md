@@ -43,7 +43,6 @@ npm install @pinecone-database/pinecone
 The Pinecone Typescript SDK is intended for **server-side use only**. Using the SDK within a browser context can **expose
 your API key(s)**. If you have deployed the SDK to production in a browser, **please rotate your API keys.**
 
-
 ## Usage
 
 ### Initializing the client
