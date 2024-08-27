@@ -33,17 +33,13 @@ jobs:
         run: git clone git@github.com:pinecone-io/pinecone-rag-demo.git && cd pinecone-rag-demo && git pull origin main
 
       - name: Move package to pinecone-rag-demo
-        run: mv pinecone-database-pinecone-*.tgz pinecone-rag-demo/
+        run: mv pinecone-database-pinecone-*.tgz .
 
       - name: Install Pinecone Vercel app dependencies
-        run: |
-          cd pinecone-rag-demo
-          npm install
+        run: npm install
 
       - name: Install pinecone-ts-client "main" branch code into the Vercel app
-        run: |
-          cd pinecone-rag-demo
-          npm install ../pinecone-database-pinecone-*.tgz
+        run: npm install pinecone-database-pinecone-*.tgz
 
       - name: Set up environment variables
         env:
@@ -57,16 +53,13 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies with pnpm
-        run: |
-          cd pinecone-rag-demo
-          pnpm install
+        run: pnpm install
 
       - name: Remove linting temporarily
-        run: rm -rf pinecone-rag-demo/.eslintrc.json
+        run: rm -rf .eslintrc.json
 
       - name: Build Pinecone Vercel app
         run: |
-          cd pinecone-rag-demo
           pnpm run build
 
       - name: Install Vercel CLI
@@ -76,6 +69,4 @@ jobs:
         env:
           VERCEL_TEAM_SCOPE: ${{ secrets.VERCEL_TEAM_SCOPE }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          cd pinecone-rag-demo
-          vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
+        run: vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
