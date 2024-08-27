@@ -1,8 +1,20 @@
 name: Spin up Vercel App
 
-on:
-  pull_request: {}
-  push: {}
+inputs:
+  VERCEL_TOKEN:
+    required: true
+  VERCEL_PROJECT_ID:
+    required: true
+  VERCEL_ORG_ID:
+    required: true
+  PINECONE_API_KEY:
+    required: true
+  OPENAI_API_KEY:
+    required: true
+  VERCEL_TEAM_SCOPE:
+    required: true
+
+
 
 jobs:
   spin-up-vercel-app:
@@ -18,10 +30,10 @@ jobs:
 
       - name: Setup Vercel
         uses: amondnet/setup-vercel@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        env:
+          VERCEL_TOKEN: ${{ inputs.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ inputs.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ inputs.VERCEL_ORG_ID }}
 
       - name: Build pinecone-ts-client code
         run: npm run build
@@ -43,11 +55,11 @@ jobs:
 
       - name: Set up environment variables
         env:
-          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
           PINECONE_REGION: us-west-2
           PINECONE_INDEX: end-to-end-edge-test
           PINECONE_CLOUD: aws
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -67,6 +79,6 @@ jobs:
 
       - name: Deploy to Vercel
         env:
-          VERCEL_TEAM_SCOPE: ${{ secrets.VERCEL_TEAM_SCOPE }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
+          VERCEL_TOKEN: ${{ inputs.VERCEL_TOKEN }}
         run: vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
