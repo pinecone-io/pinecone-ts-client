@@ -34,21 +34,29 @@ runs:
 
     - name: Build pinecone-ts-client code
       run: npm run build
+      shell: bash
 
     - name: Package pinecone-ts-client code
       run: npm pack
+      shell: bash
 
     - name: Clone Pinecone Vercel app into pinecone-ts-client
-      run: git clone git@github.com:pinecone-io/pinecone-rag-demo.git && cd pinecone-rag-demo && git pull origin main
+      run: |
+        git clone git@github.com:pinecone-io/pinecone-rag-demo.git
+        cd pinecone-rag-demo
+        git pull origin main
+      shell: bash
 
     - name: Move package to pinecone-rag-demo
       run: mv pinecone-database-pinecone-*.tgz .
 
     - name: Install Pinecone Vercel app dependencies
       run: npm install
+      shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
       run: npm install pinecone-database-pinecone-*.tgz
+      shell: bash
 
     - name: Set up environment variables
       env:
@@ -60,22 +68,27 @@ runs:
 
     - name: Install pnpm
       run: npm install -g pnpm
+      shell: bash
 
     - name: Install dependencies with pnpm
       run: pnpm install
+      shell: bash
 
     - name: Remove linting temporarily
       run: rm -rf .eslintrc.json
+      shell: bash
 
     - name: Build Pinecone Vercel app
-      run: |
-        pnpm run build
+      run: pnpm run build
+      shell: bash
 
     - name: Install Vercel CLI
       run: pnpm add -g vercel
+      shell: bash
 
     - name: Deploy to Vercel
       env:
         VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
         VERCEL_TOKEN: ${{ inputs.VERCEL_TOKEN }}
       run: vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
+      shell: bash
