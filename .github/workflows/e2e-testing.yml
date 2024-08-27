@@ -1,7 +1,7 @@
 name: End to end testing
 
 on:
-  workflow_call: {}
+  workflow_dispatch: {}
 
 jobs:
   e2e-tests:
