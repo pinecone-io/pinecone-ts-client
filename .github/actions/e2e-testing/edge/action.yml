@@ -2,19 +2,7 @@ name: Spin up Vercel App
 
 on:
   pull_request: {}
-  push:
-  branches:
-    - main
-  workflow_call:
-    secrets:
-      PINECONE_API_KEY:
-        required: true
-      VERCEL_TOKEN:
-        required: true
-      VERCEL_PROJECT_ID:
-        required: true
-      VERCEL_ORG_ID:
-        required: true
+  push: {}
 
 # todo: set up with different node versions
 jobs:
