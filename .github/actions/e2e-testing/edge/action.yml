@@ -4,11 +4,13 @@ on:
   pull_request: {}
   push: {}
 
-# todo: set up with different node versions
 jobs:
   spin-up-vercel-app:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out current repository (pinecone-ts-client)
+        uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -21,9 +23,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
 
-      - name: Check out current repository (pinecone-ts-client)
-        uses: actions/checkout@v4
-
       - name: Build pinecone-ts-client code
         run: npm run build
 
@@ -34,16 +33,20 @@ jobs:
         run: git clone git@github.com:pinecone-io/pinecone-rag-demo.git && cd pinecone-rag-demo && git pull origin main
 
       - name: Move package to pinecone-rag-demo
-        run: mv ../pinecone-database-pinecone-*.tgz .
+        run: mv pinecone-database-pinecone-*.tgz pinecone-rag-demo/
 
       - name: Install Pinecone Vercel app dependencies
-        run: npm install
+        run: |
+          cd pinecone-rag-demo
+          npm install
 
       - name: Install pinecone-ts-client "main" branch code into the Vercel app
-        run: npm install pinecone-database-pinecone-*.tgz
+        run: |
+          cd pinecone-rag-demo
+          npm install ../pinecone-database-pinecone-*.tgz
 
       - name: Set up environment variables
-        with:
+        env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_REGION: us-west-2
           PINECONE_INDEX: end-to-end-edge-test
@@ -51,20 +54,28 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Install pnpm
-        run: npm install pnpm
+        run: npm install -g pnpm
 
-      - name: Install dependencies
-        run: pnpm i
+      - name: Install dependencies with pnpm
+        run: |
+          cd pinecone-rag-demo
+          pnpm install
 
-        # todo: remove linting
-      - name: remove linting temporarily
-        run: rm -rf ./eslintrc.json
+      - name: Remove linting temporarily
+        run: rm -rf pinecone-rag-demo/.eslintrc.json
 
       - name: Build Pinecone Vercel app
-        run: pnpm run build
+        run: |
+          cd pinecone-rag-demo
+          pnpm run build
 
       - name: Install Vercel CLI
-        run: pnpm add vercel
+        run: pnpm add -g vercel
 
       - name: Deploy to Vercel
-        run: vercel deploy --scope=${{ secrets.VERCEL_TEAM_SCOPE }}
+        env:
+          VERCEL_TEAM_SCOPE: ${{ secrets.VERCEL_TEAM_SCOPE }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd pinecone-rag-demo
+          vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
