@@ -966,8 +966,5 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 ## Productionizing
 
-**Note:** The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.
-
-If you are ready to take a JavaScript application to production where raw performance is the overriding concern, you can set the environment variable `PINECONE_DISABLE_RUNTIME_VALIDATIONS="true"` to disable runtime argument validation in the Pinecone client. Runtime validations are used to provide feedback when incorrect method options are provided, for example if you attempt to create an index without specifying a required dimension property.
-
-These runtime validations are most helpful for users who are not developing with Typescript or who are experimenting in a REPL or notebook-type setting. But once you've tested an application and have gained confidence things are working as expected, you can disable these checks to gain a small improvement in performance. This will have the most impact if your workload is upserting very large amounts of data.
+The Pinecone Typescript SDK is intended for server-side use only. Using the SDK within a browser context can **expose 
+your API key(s)**. If you have deployed the SDK to production in a browser, **please rotate your API keys.**
