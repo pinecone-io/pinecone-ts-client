@@ -80,28 +80,3 @@ jobs:
 
       - name: Deploy to Vercel
         run: vercel deploy --scope=${{ secrets.VERCEL_TEAM_SCOPE }}
-
-      # todo: how to interact with vercel cli in ci?
-      #      - name: Build Pinecone Vercel app
-      #        run: |
-      #          npm run build
-      #          npm install -g pnpm
-      #          pnpm setup
-      #          source ~/.zshrc
-      #          pnpm i -g vercel
-      #          pnpm i
-      #          vercel deploy  --scope=${{ secrets.VERCEL_TEAM_SCOPE }}
-#      - name: Run Vercel app tests
-#        run: npm run test:e2e
-
-#      - name: Install playwright
-#        run: npm i playwright && npx playwright test
-#        env:
-#          BASE_URL: https://vercel.live/link/pinecone-rag-demo-4rrbeb03q-pinecone-io.vercel.app?via=deployment-domains-list-commit
-
-# todo: figure out how to log into vercel while inside playwright
-# todo: figure out how to override localhost in actual test file -- maybe just make your own?
-# or don't? because we don't care about the ui...
-
-#      - name: Hit endpoints
-#        run: npx hitVercelAppEndpoints.ts # tsc? need tsconfig.json etc?

@@ -1,4 +1,4 @@
-name: Testing
+name: End to end testing
 
 on:
   workflow_call: {}
@@ -11,5 +11,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
+      - name: Run test
         uses: ./.github/actions/e2d-testing/edge/vercel-deploy.yml
