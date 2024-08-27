@@ -1,0 +1,15 @@
+name: Testing
+
+on:
+  workflow_call: {}
+
+jobs:
+  e2e-tests:
+    name: Run end-to-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/e2d-testing/edge/vercel-deploy.yml
