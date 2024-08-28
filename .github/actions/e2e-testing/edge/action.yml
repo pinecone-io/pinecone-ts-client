@@ -36,10 +36,6 @@ runs:
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
 
-    - name: Test Vercel Auth
-      run: vercel build --yes --token=${{ inputs.vercel-token }}
-      shell: bash
-
     - name: Build pinecone-ts-client code
       run: npm run build
       shell: bash
@@ -103,6 +99,10 @@ runs:
             }
           }
         }' > vercel.json
+      shell: bash
+
+    - name: Test Vercel Auth
+      run: cd pinecone-rag-demo && vercel build --yes --token=${{ inputs.vercel-token }}
       shell: bash
 
     - name: Deploy to Vercel
