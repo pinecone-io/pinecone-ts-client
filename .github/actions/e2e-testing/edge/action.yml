@@ -63,6 +63,10 @@ runs:
       run: npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
+    - name: Install NextJS explicitly
+      run: npm install -g next@latest
+      shell: bash
+
     - name: Install pnpm
       run: npm install -g pnpm
       shell: bash
@@ -93,11 +97,9 @@ runs:
           },
           "buildCommand": "next build",
           "installCommand": "npm install"
-          "framework": "nextjs",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
               "runtime": "edge",
-              "includeFiles": "src/app/**/*"
             }
           }
         }' > vercel.json
