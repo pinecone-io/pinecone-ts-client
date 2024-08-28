@@ -25,9 +25,6 @@ runs:
       with:
         node-version: '18.20.3'
 
-    - name: Authenticate into Vercel
-      run:
-
     - name: Setup Vercel
       uses: amondnet/vercel-action@master
       with:
@@ -41,6 +38,7 @@ runs:
 
     - name: Test Vercel Auth
       run: vercel build --yes --token=${{ inputs.vercel-token }}
+      shell: bash
 
     - name: Build pinecone-ts-client code
       run: npm run build
