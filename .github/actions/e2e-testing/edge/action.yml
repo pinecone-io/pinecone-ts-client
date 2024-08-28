@@ -87,7 +87,14 @@ runs:
           "github": {
             "enabled": false
           },
-          "builds": [{ "src": ".", "use": "@vercel/static" }]
+          "buildCommand": "next build",
+          "framework": "nextjs",
+          "functions": {
+            "src/app/**/*.{ts,tsx}": {
+              "runtime": "edge",
+              "includeFiles": "src/app/**/*"
+            }
+          }
         }' > vercel.json
       shell: bash
 
