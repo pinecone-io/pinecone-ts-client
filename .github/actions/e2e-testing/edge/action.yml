@@ -96,7 +96,7 @@ runs:
           "installCommand": "npm install",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
-              "runtime": "edge",
+              "runtime": "edge-runtime@3.0.1",
               "includeFiles": "src/app/**/*"
             }
           }
