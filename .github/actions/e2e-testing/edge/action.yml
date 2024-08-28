@@ -15,7 +15,7 @@ inputs:
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Check out current repository (pinecone-ts-client)
       uses: actions/checkout@v4
@@ -63,7 +63,7 @@ runs:
       run: npm install -g pnpm
       shell: bash
 
-    - name: Install dependencies with pnpm
+    - name: Install rag app dependencies with pnpm
       run: pnpm install
       shell: bash
 
@@ -79,6 +79,18 @@ runs:
       run: pnpm add -g vercel
       shell: bash
 
+    - name: Create vercel.json file
+      run: |
+        echo '{
+          "version": 2,
+          "public": false,
+          "github": {
+            "enabled": false
+          },
+          "builds": [{ "src": "src/*", "use": "@vercel/static" }]
+        }' > vercel.json
+      shell: bash
+
     - name: Deploy to Vercel
       env:
         VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
@@ -88,5 +100,5 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
+      run: vercel --yes --logs --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
       shell: bash
