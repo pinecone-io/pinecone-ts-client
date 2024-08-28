@@ -110,5 +110,5 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo &&  && vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
+      run: cd pinecone-rag-demo && vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
       shell: bash
