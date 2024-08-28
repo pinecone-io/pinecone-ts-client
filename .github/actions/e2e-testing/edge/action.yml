@@ -25,6 +25,10 @@ runs:
       with:
         node-version: '18.20.3'
 
+    - name: Install pinecone-ts-client deps
+      run: npm install
+      shelL: bash
+
     - name: Build pinecone-ts-client code
       run: npm run build && echo "Step 3, building pinecone-ts-client!"
       shell: bash
