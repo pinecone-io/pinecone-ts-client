@@ -27,7 +27,7 @@ runs:
 
     - name: Install pinecone-ts-client deps
       run: npm install
-      shelL: bash
+      shell: bash
 
     - name: Build pinecone-ts-client code
       run: npm run build && echo "Step 3, building pinecone-ts-client!"
