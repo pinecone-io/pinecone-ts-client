@@ -104,6 +104,8 @@ runs:
     - name: Deploy to Vercel
       env:
         vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
         PINECONE_REGION: us-west-2
         PINECONE_INDEX: end-to-end-edge-test
