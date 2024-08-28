@@ -16,7 +16,6 @@ inputs:
 
 runs:
   using: 'composite'
-  working-directory:
   steps:
     - name: Check out current repository (pinecone-ts-client)
       uses: actions/checkout@v4
@@ -52,7 +51,6 @@ runs:
 
     - name: Setup Vercel
       uses: amondnet/vercel-action@master
-      working-directory:
       with:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
