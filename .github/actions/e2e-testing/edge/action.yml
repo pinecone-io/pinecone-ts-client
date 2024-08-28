@@ -92,8 +92,6 @@ runs:
           "github": {
             "enabled": false
           },
-          "buildCommand": "next build",
-          "installCommand": "npm install",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
               "runtime": "edge-runtime@3.0.1",
