@@ -25,17 +25,6 @@ runs:
       with:
         node-version: '18.20.3'
 
-    - name: Setup Vercel
-      uses: amondnet/vercel-action@master
-      with:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-      env:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-
     - name: Build pinecone-ts-client code
       run: npm run build
       shell: bash
