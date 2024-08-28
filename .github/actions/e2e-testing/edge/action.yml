@@ -25,6 +25,9 @@ runs:
       with:
         node-version: '18.20.3'
 
+    - name: Authenticate into Vercel
+      run:
+
     - name: Setup Vercel
       uses: amondnet/vercel-action@master
       with:
@@ -35,6 +38,9 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
+
+    - name: Test Vercel Auth
+      run: vercel build --yes --token=${{ inputs.vercel-token }}
 
     - name: Build pinecone-ts-client code
       run: npm run build
@@ -111,5 +117,5 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel --yes --logs --token=$vercel-token
+      run: cd pinecone-rag-demo && vercel --yes --logs --token=$vercel-token --scope=${{ inputs.vercel-org-id }}
       shell: bash
