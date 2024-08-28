@@ -26,7 +26,7 @@ runs:
         node-version: '18.20.3'
 
     - name: Setup Vercel
-      uses: amondnet/setup-vercel@v25
+      uses: amondnet/setup-vercel@master
       env:
         VERCEL_TOKEN: ${{ inputs.VERCEL_TOKEN }}
         VERCEL_PROJECT_ID: ${{ inputs.VERCEL_PROJECT_ID }}
