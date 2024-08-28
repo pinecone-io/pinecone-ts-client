@@ -85,6 +85,7 @@ runs:
 
     - name: Create vercel.json file
       run: |
+        cd pinecone-rag-demo
         echo '{
           "version": 2,
           "public": false,
@@ -92,7 +93,7 @@ runs:
             "enabled": false
           },
           "buildCommand": "next build",
-          "installCommand": "npm install"
+          "installCommand": "npm install",
           "framework": "nextjs",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
