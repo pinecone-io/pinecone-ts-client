@@ -19,29 +19,22 @@ runs:
   steps:
     - name: Check out current repository (pinecone-ts-client)
       uses: actions/checkout@v4
+      run: echo "Step 1, Checking out current dir!"
+      shell: bash
 
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: '18.20.3'
-
-    - name: Setup Vercel
-      uses: amondnet/vercel-action@master
-      with:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-      env:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
+      run: echo "Step 2, Setting up Node!"
+      shell: bash
 
     - name: Build pinecone-ts-client code
-      run: npm run build
+      run: npm run build && echo "Step 3, building pinecone-ts-client!"
       shell: bash
 
     - name: Package pinecone-ts-client code
-      run: npm pack
+      run: npm pack && echo "Step 4, running npm pack"
       shell: bash
 
     - name: Clone Pinecone Vercel app into pinecone-ts-client
@@ -49,42 +42,56 @@ runs:
         git clone git@github.com:pinecone-io/pinecone-rag-demo.git
         cd pinecone-rag-demo
         git pull origin main
+        echo "Step 5, Cloning Vercel app into TS client"
       shell: bash
 
     - name: Move package to pinecone-rag-demo
-      run: mv pinecone-database-pinecone-*.tgz .
+      run: mv pinecone-database-pinecone-*.tgz . && echo "Step 6, Moving client package to rag-demo"
       shell: bash
 
+    - name: Setup Vercel
+      uses: amondnet/vercel-action@master
+      with:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+      run: echo "Step 7, Setting Vercel!"
+      shell: bash
+      env:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+
     - name: Install Pinecone Vercel app dependencies
-      run: npm install
+      run: npm install && echo "Step 8, Installing Vercel deps"
       shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: npm install pinecone-database-pinecone-*.tgz
+      run: npm install pinecone-database-pinecone-*.tgz && echo "Step 9, Installing main branch code into rag-demo"
       shell: bash
 
     - name: Install NextJS explicitly
-      run: npm install -g next@latest
+      run: npm install -g next@latest && echo "Step 10, Installing NextJS"
       shell: bash
 
     - name: Install pnpm
-      run: npm install -g pnpm
+      run: npm install -g pnpm && echo "Step 11, Installing pnpm"
       shell: bash
 
     - name: Install rag app dependencies with pnpm
-      run: pnpm install
+      run: pnpm install && echo "Step 12, Installing rag-demo deps"
       shell: bash
 
     - name: Remove linting temporarily
-      run: rm -rf .eslintrc.json
+      run: rm -rf .eslintrc.json && echo "Step 13, remove linting"
       shell: bash
 
     - name: Build Pinecone Vercel app
-      run: pnpm run build
+      run: pnpm run build && echo "Step 14, build Vercel app"
       shell: bash
 
     - name: Install Vercel CLI
-      run: pnpm add -g vercel
+      run: pnpm add -g vercel && echo "Step 15, Vercel CLI"
       shell: bash
 
     - name: Create vercel.json file
@@ -103,7 +110,7 @@ runs:
               "runtime": "edge-runtime@3.0.1",
             }
           }
-        }' > vercel.json
+        }' > vercel.json && echo "Step 16, create vercel.json file"
       shell: bash
 
     - name: Deploy to Vercel
@@ -115,5 +122,7 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
+      run: |
+        vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
+        echo "!! Step 17, You are here = " + pwd
       shell: bash
