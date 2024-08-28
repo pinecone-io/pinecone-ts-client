@@ -1,11 +1,11 @@
 name: Spin up Vercel App
 
 inputs:
-  VERCEL_TOKEN:
+  vercel-token:
     required: true
-  VERCEL_PROJECT_ID:
+  vercel-project-id:
     required: true
-  VERCEL_ORG_ID:
+  vercel-org-id:
     required: true
   PINECONE_API_KEY:
     required: true
@@ -27,10 +27,14 @@ runs:
 
     - name: Setup Vercel
       uses: amondnet/vercel-action@master
+      with:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
       env:
-        vercel-token: ${{ inputs.VERCEL_TOKEN }}
-        vercel-project-id: ${{ inputs.VERCEL_PROJECT_ID }}
-        vercel-org-id: ${{ inputs.VERCEL_ORG_ID }}
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
 
     - name: Build pinecone-ts-client code
       run: npm run build
@@ -99,9 +103,17 @@ runs:
       shell: bash
 
     - name: Deploy to Vercel
+      with:
+        VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
+        vercel-token: ${{ inputs.vercel-token }}
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_REGION: us-west-2
+        PINECONE_INDEX: end-to-end-edge-test
+        PINECONE_CLOUD: aws
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       env:
         VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
-        vercel-token: ${{ inputs.VERCEL_TOKEN }}
+        vercel-token: ${{ inputs.vercel-token }}
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
         PINECONE_REGION: us-west-2
         PINECONE_INDEX: end-to-end-edge-test
