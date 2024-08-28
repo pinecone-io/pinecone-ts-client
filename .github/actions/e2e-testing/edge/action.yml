@@ -100,7 +100,7 @@ runs:
           "framework": "nextjs",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
-              "runtime": "edge",
+              "runtime": "edge-runtime@3.0.1",
             }
           }
         }' > vercel.json
