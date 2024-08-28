@@ -49,6 +49,7 @@ runs:
 
     - name: Move package to pinecone-rag-demo
       run: mv pinecone-database-pinecone-*.tgz .
+      shell: bash
 
     - name: Install Pinecone Vercel app dependencies
       run: npm install
@@ -57,14 +58,6 @@ runs:
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
       run: npm install pinecone-database-pinecone-*.tgz
       shell: bash
-
-    - name: Set up environment variables
-      env:
-        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-        PINECONE_REGION: us-west-2
-        PINECONE_INDEX: end-to-end-edge-test
-        PINECONE_CLOUD: aws
-        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
 
     - name: Install pnpm
       run: npm install -g pnpm
@@ -90,5 +83,10 @@ runs:
       env:
         VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
         VERCEL_TOKEN: ${{ inputs.VERCEL_TOKEN }}
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_REGION: us-west-2
+        PINECONE_INDEX: end-to-end-edge-test
+        PINECONE_CLOUD: aws
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       run: vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_TEAM_SCOPE
       shell: bash
