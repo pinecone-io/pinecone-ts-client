@@ -103,12 +103,11 @@ runs:
 
     - name: Deploy to Vercel
       env:
-        VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
         vercel-token: ${{ inputs.vercel-token }}
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
         PINECONE_REGION: us-west-2
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
+      run: cd pinecone-rag-demo && vercel --yes --logs --token=$vercel-token
       shell: bash
