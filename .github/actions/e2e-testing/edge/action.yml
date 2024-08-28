@@ -97,6 +97,7 @@ runs:
           },
           "buildCommand": "next build",
           "installCommand": "npm install"
+          "framework": "nextjs",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
               "runtime": "edge",
