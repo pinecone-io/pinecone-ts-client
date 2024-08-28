@@ -105,6 +105,7 @@ runs:
       shell: bash
 
     - name: Deploy to Vercel
+      working-directory: pinecone-rag-demo
       env:
         VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
         vercel-token: ${{ inputs.vercel-token }}
