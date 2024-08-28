@@ -94,10 +94,6 @@ runs:
           },
           "buildCommand": "next build",
           "installCommand": "npm install",
-          "framework": "nextjs",
-          "builds": [
-            { "src": "pinecone-rag-demo/src", "use": "@vercel/static" }
-          ],
           "functions": {
             "src/app/**/*.{ts,tsx}": {
               "runtime": "edge",
