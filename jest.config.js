@@ -4,7 +4,6 @@ module.exports = {
   reporters: [
     ['github-actions', { silent: false }],
     'jest-progress-bar-reporter',
-    'jest-skipped-reporter',
   ],
   setupFilesAfterEnv: ['./utils/globalUnitTestSetup.ts'],
   transform: {
