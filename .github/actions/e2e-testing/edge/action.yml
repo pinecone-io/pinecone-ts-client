@@ -92,6 +92,7 @@ runs:
             "enabled": false
           },
           "buildCommand": "next build",
+          "installCommand": "npm install"
           "framework": "nextjs",
           "functions": {
             "src/app/**/*.{ts,tsx}": {
