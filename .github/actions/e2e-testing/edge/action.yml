@@ -19,15 +19,11 @@ runs:
   steps:
     - name: Check out current repository (pinecone-ts-client)
       uses: actions/checkout@v4
-      run: echo "Step 1, Checking out current dir!"
-      shell: bash
 
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: '18.20.3'
-      run: echo "Step 2, Setting up Node!"
-      shell: bash
 
     - name: Build pinecone-ts-client code
       run: npm run build && echo "Step 3, building pinecone-ts-client!"
@@ -55,8 +51,6 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
-      run: echo "Step 7, Setting Vercel!"
-      shell: bash
       env:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
