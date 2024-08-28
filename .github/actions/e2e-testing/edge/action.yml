@@ -87,7 +87,7 @@ runs:
           "github": {
             "enabled": false
           },
-          "builds": [{ "src": "src/*", "use": "@vercel/static" }]
+          "builds": [{ "src": ".", "use": "@vercel/static" }]
         }' > vercel.json
       shell: bash
 
