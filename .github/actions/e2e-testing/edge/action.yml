@@ -3,20 +3,6 @@ name: Spin up Vercel App
 inputs:
   vercel-token:
     required: true
-#  vercel-project-id:
-#    required: true
-#  vercel-org-id:
-#    required: true
-#  PINECONE_API_KEY:
-#    required: true
-#  PINECONE_INDEX:
-#    required: true
-#  PINECONE_CLOUD:
-#    required: true
-#  PINECONE_REGION:
-#    required: true
-#  OPENAI_API_KEY:
-#    required: true
 
 runs:
   using: 'composite'
@@ -64,12 +50,4 @@ runs:
       run: |
         cd pinecone-rag-demo
         vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
-#      env:
-#        vercel-project-id: ${{ inputs.vercel-project-id }}
-#        vercel-org-id: ${{ inputs.vercel-org-id }}
-#        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-#        PINECONE_REGION: ${{ inputs.PINECONE_REGION }}
-#        PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
-#        PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
-#        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       shell: bash
