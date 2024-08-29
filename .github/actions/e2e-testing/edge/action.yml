@@ -76,32 +76,14 @@ runs:
 #      shell: bash
 
     - name: Install Vercel CLI
-      run: cd pinecone-rag-demo && pnpm add -g vercel
+      run: cd pinecone-rag-demo && pnpm add -g vercel@latest
       shell: bash
 
-    - name: Create vercel.json file
-      run: |
-        cd pinecone-rag-demo
-        echo '{
-          "version": 2,
-          "public": false,
-          "github": {
-            "enabled": false
-          },
-          "functions": {
-            "src/app/**/*.{ts,tsx}": {
-              "runtime": "edge-runtime@3.0.1",
-              "includeFiles": "src/app/**/*"
-            }
-          }
-        }' > vercel.json
+    - name: Pull Vercel Environment Information
+      run: cd pinecone-rag-demo && vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
       shell: bash
 
-#    - name: Test Vercel Auth
-#      run: cd pinecone-rag-demo && vercel build --yes --token=${{ inputs.vercel-token }}
-#      shell: bash
-
-    - name: Deploy to Vercel
+    - name: Build Project Artifacts
       env:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
@@ -111,5 +93,51 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel --yes --token=${{ inputs.vercel-token }}
-      shell: bash
+      run: cd pinecone-rag-demo && vercel build --prod --token=${{ inputs.vercel-token }}
+
+    - name: Deploy Project Artifacts to Vercel
+      env:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_REGION: us-west-2
+        PINECONE_INDEX: end-to-end-edge-test
+        PINECONE_CLOUD: aws
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+      run: cd pinecone-rag-demo && vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }}
+
+#    - name: Create vercel.json file
+#      run: |
+#        cd pinecone-rag-demo
+#        echo '{
+#          "version": 2,
+#          "public": false,
+#          "github": {
+#            "enabled": false
+#          },
+#          "functions": {
+#            "src/app/**/*.{ts,tsx}": {
+#              "runtime": "edge-runtime@3.0.1",
+#              "includeFiles": "src/app/**/*"
+#            }
+#          }
+#        }' > vercel.json
+#      shell: bash
+
+#    - name: Test Vercel Auth
+#      run: cd pinecone-rag-demo && vercel build --yes --token=${{ inputs.vercel-token }}
+#      shell: bash
+
+#    - name: Deploy to Vercel
+#      env:
+#        vercel-token: ${{ inputs.vercel-token }}
+#        vercel-project-id: ${{ inputs.vercel-project-id }}
+#        vercel-org-id: ${{ inputs.vercel-org-id }}
+#        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+#        PINECONE_REGION: us-west-2
+#        PINECONE_INDEX: end-to-end-edge-test
+#        PINECONE_CLOUD: aws
+#        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+#      run: cd pinecone-rag-demo && vercel --yes --token=${{ inputs.vercel-token }}
+#      shell: bash
