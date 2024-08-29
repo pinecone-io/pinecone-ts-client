@@ -65,8 +65,11 @@ runs:
       shell: bash
 
     - name: Add Global Bin dir needed for pnmp
-      run: cd pinecone-rag-demo && pnpm setup
-      shell: bash
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+#      run: cd pinecone-rag-demo && pnpm setup
+#      shell: bash
 
 #    - name: Build Pinecone Vercel app
 #      run: cd pinecone-rag-demo && pnpm run build
