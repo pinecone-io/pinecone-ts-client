@@ -26,7 +26,7 @@ runs:
         node-version: '18.20.3'
 
     - name: Build pinecone-ts-client code
-      run: npm run build
+      run: npm install && npm run build
       shell: bash
 
     - name: Package pinecone-ts-client code
