@@ -95,7 +95,7 @@ runs:
 #      run: cd pinecone-rag-demo && vercel switch pinecone-io  --scope=pinecone-io
 #      shell: bash
     - name: Try next-build instead of vercel-build
-      run: cd pinecone-rag-demo && next build
+      run: cd pinecone-rag-demo && pnpm run build
       env:
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
         PINECONE_REGION: us-west-2
