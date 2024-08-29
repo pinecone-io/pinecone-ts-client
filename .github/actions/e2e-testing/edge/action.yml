@@ -141,6 +141,6 @@ runs:
         PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
         PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel --token=${{ inputs.vercel-token }} --scope=pinecone-io
+      run: cd pinecone-rag-demo && vercel --debug --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
