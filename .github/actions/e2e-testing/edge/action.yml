@@ -20,7 +20,7 @@ runs:
       shell: bash
 
     - name: Package pinecone-ts-client code
-      run: npm pack
+      run: npm pack && echo "Step 4, running npm pack"
       shell: bash
 
     - name: Clone Vercel app
