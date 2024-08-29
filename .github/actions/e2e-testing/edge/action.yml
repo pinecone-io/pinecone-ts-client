@@ -94,9 +94,8 @@ runs:
     - name: Deploy Project Artifacts to Vercel
       run: |
         cd pinecone-rag-demo
-        vercel --build-env vercel-token=${{ inputs.vercel-token }} --build-env PINECONE_API_KEY=${{ inputs.PINECONE_API_KEY }} --build-env PINECONE_REGION=${{ inputs.PINECONE_REGION }} --build-env PINECONE_INDEX=${{inputs.PINECONE_INDEX }} --build-env PINECONE_CLOUD=${{ inputs.PINECONE_CLOUD }} --build-env OPENAI_API_KEY=${{ inputs.OPENAI_API_KEY }} --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
+        vercel --build-env PINECONE_API_KEY=${{ inputs.PINECONE_API_KEY }} --build-env PINECONE_REGION=${{ inputs.PINECONE_REGION }} --build-env PINECONE_INDEX=${{inputs.PINECONE_INDEX }} --build-env PINECONE_CLOUD=${{ inputs.PINECONE_CLOUD }} --build-env OPENAI_API_KEY=${{ inputs.OPENAI_API_KEY }} --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
       env:
-        vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
