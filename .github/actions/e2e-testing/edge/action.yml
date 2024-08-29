@@ -33,7 +33,7 @@ runs:
       run: npm pack
       shell: bash
 
-    - name: Clone Vercel app -- test
+    - name: Clone Vercel app
       uses: GuillaumeFalourd/clone-github-repo-action@main
       with:
         owner: 'pinecone-io'
@@ -82,8 +82,6 @@ runs:
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
       run: cd pinecone-rag-demo && pnpm add -P ./pinecone-database-pinecone-*.tgz
       shell: bash
-
-      # todo: maybe need pnpm add ts-client too?
 
     - name: Install Vercel CLI
       run: cd pinecone-rag-demo && pnpm add -g vercel@latest
@@ -142,37 +140,3 @@ runs:
       run: cd pinecone-rag-demo && vercel --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
-#    - name: Create vercel.json file
-#      run: |
-#        cd pinecone-rag-demo
-#        echo '{
-#          "version": 2,
-#          "public": false,
-#          "github": {
-#            "enabled": false
-#          },
-#          "functions": {
-#            "src/app/**/*.{ts,tsx}": {
-#              "runtime": "edge-runtime@3.0.1",
-#              "includeFiles": "src/app/**/*"
-#            }
-#          }
-#        }' > vercel.json
-#      shell: bash
-
-#    - name: Test Vercel Auth
-#      run: cd pinecone-rag-demo && vercel build --yes --token=${{ inputs.vercel-token }}
-#      shell: bash
-
-#    - name: Deploy to Vercel
-#      env:
-#        vercel-token: ${{ inputs.vercel-token }}
-#        vercel-project-id: ${{ inputs.vercel-project-id }}
-#        vercel-org-id: ${{ inputs.vercel-org-id }}
-#        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-#        PINECONE_REGION: us-west-2
-#        PINECONE_INDEX: end-to-end-edge-test
-#        PINECONE_CLOUD: aws
-#        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-#      run: cd pinecone-rag-demo && vercel --yes --token=${{ inputs.vercel-token }}
-#      shell: bash
