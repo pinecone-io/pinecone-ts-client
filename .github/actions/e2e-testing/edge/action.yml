@@ -94,6 +94,7 @@ runs:
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       run: cd pinecone-rag-demo && vercel build --prod --token=${{ inputs.vercel-token }}
+      shell: bash
 
     - name: Deploy Project Artifacts to Vercel
       env:
@@ -106,6 +107,7 @@ runs:
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       run: cd pinecone-rag-demo && vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }}
+      shell: bash
 
 #    - name: Create vercel.json file
 #      run: |
