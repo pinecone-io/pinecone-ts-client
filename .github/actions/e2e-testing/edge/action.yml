@@ -80,7 +80,7 @@ runs:
       shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd pinecone-rag-demo && pnpm add pinecone-database-pinecone-*.tgz
+      run: cd pinecone-rag-demo && pnpm add -P ./pinecone-database-pinecone-*.tgz
       shell: bash
 
       # todo: maybe need pnpm add ts-client too?
