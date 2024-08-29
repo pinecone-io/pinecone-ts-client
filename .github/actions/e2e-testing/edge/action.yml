@@ -94,19 +94,19 @@ runs:
 #        vercel-org-id: ${{ inputs.vercel-org-id }}
 #      run: cd pinecone-rag-demo && vercel switch pinecone-io  --scope=pinecone-io
 #      shell: bash
-    - name: Try next-build instead of vercel-build
-      run: cd pinecone-rag-demo && pnpm run build
-      env:
-        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-        PINECONE_REGION: us-west-2
-        PINECONE_INDEX: end-to-end-edge-test
-        PINECONE_CLOUD: aws
-        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      shell: bash
+#    - name: Try next-build instead of vercel-build
+#      run: cd pinecone-rag-demo && pnpm run build
+#      env:
+#        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+#        PINECONE_REGION: us-west-2
+#        PINECONE_INDEX: end-to-end-edge-test
+#        PINECONE_CLOUD: aws
+#        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+#      shell: bash
 
-    - name: Pull Vercel Environment Information
-      run: cd pinecone-rag-demo && vercel pull --yes --token=${{ inputs.vercel-token }} --scope=pinecone-io
-      shell: bash
+#    - name: Pull Vercel Environment Information
+#      run: cd pinecone-rag-demo && vercel pull --yes --token=${{ inputs.vercel-token }} --scope=pinecone-io
+#      shell: bash
 
 #    - name: Build Project Artifacts
 #      env:
@@ -129,7 +129,7 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel deploy --token=${{ inputs.vercel-token }} --scope=pinecone-io
+      run: cd pinecone-rag-demo && vercel --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
 #    - name: Create vercel.json file
