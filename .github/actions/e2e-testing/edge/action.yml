@@ -33,6 +33,13 @@ runs:
       run: npm pack
       shell: bash
 
+    - name: Clone Vercel app -- test
+      uses: GuillaumeFalourd/clone-github-repo-action@main
+      with:
+        owner: 'pinecone-io'
+        repository: 'pinecone-rag-demo'
+        branch: 'main'
+
     - name: Clone Pinecone Vercel app into pinecone-ts-client
       run: |
         git clone git@github.com:pinecone-io/pinecone-rag-demo.git
