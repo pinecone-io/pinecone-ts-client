@@ -120,7 +120,7 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }} --scope=pinecone-io
+      run: cd pinecone-rag-demo && vercel deploy --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
 #    - name: Create vercel.json file
