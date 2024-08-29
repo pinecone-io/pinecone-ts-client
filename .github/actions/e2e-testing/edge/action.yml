@@ -64,6 +64,10 @@ runs:
       run: cd pinecone-rag-demo && rm -rf .eslintrc.json
       shell: bash
 
+    - name: Add Global Bin dir needed for pnmp
+      run: cd pinecone-rag-demo && pnpm setup
+      shell: bash
+
 #    - name: Build Pinecone Vercel app
 #      run: cd pinecone-rag-demo && pnpm run build
 #      shell: bash
