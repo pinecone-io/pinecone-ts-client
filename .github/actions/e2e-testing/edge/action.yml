@@ -64,9 +64,9 @@ runs:
       run: cd pinecone-rag-demo && rm -rf .eslintrc.json
       shell: bash
 
-    - name: Build Pinecone Vercel app
-      run: cd pinecone-rag-demo && pnpm run build
-      shell: bash
+#    - name: Build Pinecone Vercel app
+#      run: cd pinecone-rag-demo && pnpm run build
+#      shell: bash
 
     - name: Install Vercel CLI
       run: cd pinecone-rag-demo && pnpm add -g vercel
