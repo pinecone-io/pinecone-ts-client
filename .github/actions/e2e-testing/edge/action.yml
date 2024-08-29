@@ -84,7 +84,7 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
-      run: cd pinecone-rag-demo && vercel switch pinecone-io  --token=${{ inputs.vercel-token }}
+      run: cd pinecone-rag-demo && vercel switch pinecone-io
       shell: bash
 
     - name: Pull Vercel Environment Information
