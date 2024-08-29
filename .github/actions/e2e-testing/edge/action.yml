@@ -80,7 +80,11 @@ runs:
       shell: bash
 
     - name: Ensure you are in the pinecone-io scope
-      run: cd pinecone-rag-demo && vercel switch pinecone-io
+      env:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+      run: cd pinecone-rag-demo && vercel switch pinecone-io  --token=${{ inputs.vercel-token }}
       shell: bash
 
     - name: Pull Vercel Environment Information
@@ -92,11 +96,6 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
-        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-        PINECONE_REGION: us-west-2
-        PINECONE_INDEX: end-to-end-edge-test
-        PINECONE_CLOUD: aws
-        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
       run: cd pinecone-rag-demo && vercel build --prod --token=${{ inputs.vercel-token }}
       shell: bash
 
