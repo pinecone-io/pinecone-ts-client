@@ -132,7 +132,7 @@ runs:
 #      shell: bash
 
     - name: Pull Vercel Environment Information
-      run: cd pinecone-rag-demo && vercel pull --yes --environment=preview --token=${{ inputs.vercel-token }}
+      run: cd pinecone-rag-demo && vercel pull --yes --environment=preview --token=${{ inputs.vercel-token }} --scope=pinecone-io
       env:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
