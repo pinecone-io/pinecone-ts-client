@@ -40,12 +40,6 @@ runs:
         repository: 'pinecone-rag-demo'
         branch: 'main'
 
-    - name: Clone Pinecone Vercel app into pinecone-ts-client
-      run: |
-        git clone git@github.com:pinecone-io/pinecone-rag-demo.git
-        cd pinecone-rag-demo
-      shell: bash
-
     - name: Move package to pinecone-rag-demo
       run: cd pinecone-rag-demo && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
