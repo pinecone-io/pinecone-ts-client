@@ -79,6 +79,10 @@ runs:
       run: cd pinecone-rag-demo && pnpm add -g vercel@latest
       shell: bash
 
+    - name: Ensure you are in the pinecone-io scope
+      run: cd pinecone-rag-demo && vercel switch pinecone-io
+      shell: bash
+
     - name: Pull Vercel Environment Information
       run: cd pinecone-rag-demo && vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
       shell: bash
