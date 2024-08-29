@@ -44,21 +44,21 @@ runs:
       run: cd pinecone-rag-demo && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Install Pinecone Vercel app dependencies
-      run: cd pinecone-rag-demo && npm install
-      shell: bash
+#    - name: Install Pinecone Vercel app dependencies
+#      run: cd pinecone-rag-demo && npm install
+#      shell: bash
 
-    - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
-      shell: bash
+#    - name: Install pinecone-ts-client "main" branch code into the Vercel app
+#      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
+#      shell: bash
 
     - name: Install pnpm
       run: cd pinecone-rag-demo && npm install -g pnpm
       shell: bash
 
-    - name: Install rag app dependencies with pnpm
-      run: cd pinecone-rag-demo && pnpm install
-      shell: bash
+#    - name: Install rag app dependencies with pnpm
+#      run: cd pinecone-rag-demo && pnpm install
+#      shell: bash
 
 #    - name: Remove linting temporarily
 #      run: cd pinecone-rag-demo && rm -rf .eslintrc.json
@@ -74,6 +74,16 @@ runs:
 #    - name: Build Pinecone Vercel app
 #      run: cd pinecone-rag-demo && pnpm run build
 #      shell: bash
+
+    - name: Install rag-demo deps
+      run: cd pinecone-rag-demo && pnpm i
+      shell: bash
+
+    - name: Install pinecone-ts-client "main" branch code into the Vercel app
+      run: cd pinecone-rag-demo && pnpm i pinecone-database-pinecone-*.tgz
+      shell: bash
+
+      # todo: maybe need pnpm add ts-client too?
 
     - name: Install Vercel CLI
       run: cd pinecone-rag-demo && pnpm add -g vercel@latest
