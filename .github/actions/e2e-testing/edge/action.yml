@@ -79,16 +79,24 @@ runs:
       run: cd pinecone-rag-demo && pnpm add -g vercel@latest
       shell: bash
 
-    - name: Ensure you are in the pinecone-io scope
-      env:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-      run: cd pinecone-rag-demo && vercel switch pinecone-io
-      shell: bash
+#    - name: Log into Vercel
+#      env:
+#        vercel-token: ${{ inputs.vercel-token }}
+#        vercel-project-id: ${{ inputs.vercel-project-id }}
+#        vercel-org-id: ${{ inputs.vercel-org-id }}
+#      run: vercel login --token=${{ inputs.vercel-token }}
+#      shell: bash
+
+#    - name: Ensure you are in the pinecone-io scope
+#      env:
+#        vercel-token: ${{ inputs.vercel-token }}
+#        vercel-project-id: ${{ inputs.vercel-project-id }}
+#        vercel-org-id: ${{ inputs.vercel-org-id }}
+#      run: cd pinecone-rag-demo && vercel switch pinecone-io  --scope=pinecone-io
+#      shell: bash
 
     - name: Pull Vercel Environment Information
-      run: cd pinecone-rag-demo && vercel pull --yes --environment=production --token=${{ inputs.vercel-token }}
+      run: cd pinecone-rag-demo && vercel pull --yes --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
     - name: Build Project Artifacts
@@ -96,7 +104,7 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
-      run: cd pinecone-rag-demo && vercel build --prod --token=${{ inputs.vercel-token }}
+      run: cd pinecone-rag-demo && vercel build --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
     - name: Deploy Project Artifacts to Vercel
@@ -109,7 +117,7 @@ runs:
         PINECONE_INDEX: end-to-end-edge-test
         PINECONE_CLOUD: aws
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }}
+      run: cd pinecone-rag-demo && vercel deploy --prebuilt --prod --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
 #    - name: Create vercel.json file
