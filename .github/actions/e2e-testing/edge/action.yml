@@ -137,7 +137,7 @@ runs:
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-        PINECONE_REGION: ${{ PINECONE_REGION }}
+        PINECONE_REGION: ${{ inputs.PINECONE_REGION }}
         PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
         PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
