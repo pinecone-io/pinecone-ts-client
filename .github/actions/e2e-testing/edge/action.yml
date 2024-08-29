@@ -37,7 +37,6 @@ runs:
       run: |
         git clone git@github.com:pinecone-io/pinecone-rag-demo.git
         cd pinecone-rag-demo
-        git pull origin main
       shell: bash
 
     - name: Move package to pinecone-rag-demo
