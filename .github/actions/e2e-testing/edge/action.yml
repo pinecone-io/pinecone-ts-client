@@ -51,10 +51,10 @@ runs:
 #    - name: Install pinecone-ts-client "main" branch code into the Vercel app
 #      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
 #      shell: bash
-
-    - name: Install pnpm
-      run: cd pinecone-rag-demo && npm install -g pnpm
-      shell: bash
+#
+#    - name: Install pnpm
+#      run: cd pinecone-rag-demo && npm install -g pnpm
+#      shell: bash
 
 #    - name: Install rag app dependencies with pnpm
 #      run: cd pinecone-rag-demo && pnpm install
@@ -64,10 +64,10 @@ runs:
 #      run: cd pinecone-rag-demo && rm -rf .eslintrc.json
 #      shell: bash
 
-    - name: Add Global Bin dir needed for pnmp
-      uses: pnpm/action-setup@v4
-      with:
-        version: 9
+#    - name: Add Global Bin dir needed for pnmp
+#      uses: pnpm/action-setup@v4
+#      with:
+#        version: 9
 #      run: cd pinecone-rag-demo && pnpm setup
 #      shell: bash
 
@@ -76,15 +76,15 @@ runs:
 #      shell: bash
 
     - name: Install rag-demo deps
-      run: cd pinecone-rag-demo && pnpm i
+      run: cd pinecone-rag-demo && npm install
       shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd pinecone-rag-demo && pnpm add -P ./pinecone-database-pinecone-*.tgz
+      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
     - name: Install Vercel CLI
-      run: cd pinecone-rag-demo && pnpm add -g vercel@latest
+      run: cd pinecone-rag-demo && npm install vercel
       shell: bash
 
 #    - name: Log into Vercel
