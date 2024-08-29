@@ -60,9 +60,9 @@ runs:
       run: cd pinecone-rag-demo && pnpm install
       shell: bash
 
-    - name: Remove linting temporarily
-      run: cd pinecone-rag-demo && rm -rf .eslintrc.json
-      shell: bash
+#    - name: Remove linting temporarily
+#      run: cd pinecone-rag-demo && rm -rf .eslintrc.json
+#      shell: bash
 
     - name: Add Global Bin dir needed for pnmp
       uses: pnpm/action-setup@v4
@@ -104,7 +104,10 @@ runs:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
         vercel-org-id: ${{ inputs.vercel-org-id }}
-      run: cd pinecone-rag-demo && vercel build --token=${{ inputs.vercel-token }} --scope=pinecone-io
+      run: |
+        cd pinecone-rag-demo
+        rm -f .eslintrc.json
+        vercel build --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
 
     - name: Deploy Project Artifacts to Vercel
