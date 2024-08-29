@@ -60,6 +60,7 @@ runs:
       run: cd pinecone-rag-demo && npm install vercel
       shell: bash
 
+# todo:  think i only want `pull` if env vars are in project settings...
     - name: Pull Vercel Environment Information
       run: |
         cd pinecone-rag-demo
@@ -93,14 +94,7 @@ runs:
     - name: Deploy Project Artifacts to Vercel
       run: |
         cd pinecone-rag-demo
-        vercel \
-        --build-env vercel-token=${{ inputs.vercel-token }} \
-        --build-env PINECONE_API_KEY=${{ inputs.PINECONE_API_KEY }} \
-        --build-env PINECONE_REGION=${{ inputs.PINECONE_REGION }} \ 
-        --build-env PINECONE_INDEX=${{ inputs.PINECONE_INDEX }} \
-        --build-env PINECONE_CLOUD=${{ inputs.PINECONE_CLOUD }} \
-        --build-env OPENAI_API_KEY=${{ inputs.OPENAI_API_KEY }} \
-        --scope=pinecone-io
+        vercel --build-env vercel-token=${{ inputs.vercel-token }} --build-env PINECONE_API_KEY=${{ inputs.PINECONE_API_KEY }} --build-env PINECONE_REGION=${{ inputs.PINECONE_REGION }} --build-env PINECONE_INDEX=${{ inputs.PINECONE_INDEX }} --build-env PINECONE_CLOUD=${{ inputs.PINECONE_CLOUD }} --build-env OPENAI_API_KEY=${{ inputs.OPENAI_API_KEY }} --scope=pinecone-io
 #        vercel deploy --prebuilt --token=${{ inputs.vercel-token }} --scope=pinecone-io
       env:
         vercel-token: ${{ inputs.vercel-token }}
