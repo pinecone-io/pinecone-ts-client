@@ -21,7 +21,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PINECONE_INDEX: end-to-end-edge-test
+          PINECONE_INDEX: end-to-end-edge-test-boo
           PINECONE_CLOUD: aws
           PINECONE_REGION: us-west-2
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
