@@ -131,7 +131,8 @@ runs:
 #        vercel build --token=${{ inputs.vercel-token }} --scope=pinecone-io
 #      shell: bash
 
-    - name: Deploy Project Artifacts to Vercel
+    - name: Pull Vercel Environment Information
+      run: cd pinecone-rag-demo && vercel pull --yes --environment=preview --token=${{ inputs.vercel-token }}
       env:
         vercel-token: ${{ inputs.vercel-token }}
         vercel-project-id: ${{ inputs.vercel-project-id }}
@@ -141,6 +142,44 @@ runs:
         PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
         PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: cd pinecone-rag-demo && vercel --debug --token=${{ inputs.vercel-token }} --scope=pinecone-io
       shell: bash
+
+    - name: Build Project Artifacts
+      run: cd pinecone-rag-demo && vercel build --token=${{ inputs.vercel-token }}
+      env:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_REGION: ${{ inputs.PINECONE_REGION }}
+        PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
+        PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+      shell: bash
+
+    - name: Deploy Project Artifacts to Vercel
+      run: cd pinecone-rag-demo && vercel deploy --prebuilt --token=${{ inputs.vercel-token }} --scope=pinecone-io
+      env:
+        vercel-token: ${{ inputs.vercel-token }}
+        vercel-project-id: ${{ inputs.vercel-project-id }}
+        vercel-org-id: ${{ inputs.vercel-org-id }}
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+        PINECONE_REGION: ${{ inputs.PINECONE_REGION }}
+        PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
+        PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+      shell: bash
+
+#    - name: Deploy Project Artifacts to Vercel
+#      env:
+#        vercel-token: ${{ inputs.vercel-token }}
+#        vercel-project-id: ${{ inputs.vercel-project-id }}
+#        vercel-org-id: ${{ inputs.vercel-org-id }}
+#        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
+#        PINECONE_REGION: ${{ inputs.PINECONE_REGION }}
+#        PINECONE_INDEX: ${{ inputs.PINECONE_INDEX }}
+#        PINECONE_CLOUD: ${{ inputs.PINECONE_CLOUD }}
+#        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+#      run: cd pinecone-rag-demo && vercel --debug --token=${{ inputs.vercel-token }} --scope=pinecone-io
+#      shell: bash
 
