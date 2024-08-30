@@ -91,7 +91,6 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: npm run test:integration:cleanup
-
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest

@@ -2,7 +2,7 @@
 // and import top level exports of the built version of the library so it can be easily used for
 // manual testing. It will typically be invoked via `npm run repl`.
 
-var dotenv = require('dotenv');
+const dotenv = require('dotenv');
 dotenv.config();
 
 const expectedVars = ['PINECONE_API_KEY'];
@@ -14,8 +14,8 @@ for (const envVar of expectedVars) {
   }
 }
 
-var myrepl = require('repl').start();
-var pinecone = require('../dist');
+const myrepl = require('repl').start();
+const pinecone = require('../dist');
 
 // Automatically import all top-level exports from the built version of the library.
 for (const [key, value] of Object.entries(pinecone)) {
