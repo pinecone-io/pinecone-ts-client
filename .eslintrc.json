@@ -7,7 +7,7 @@
   "ignorePatterns": [
     "dist",
     "src/pinecone-generated-ts-fetch",
-    "pinecone-rag-demo"
+    "environment-tests"
   ],
   "extends": [
     "eslint:recommended",
