@@ -3,16 +3,6 @@ name: Spin up Vercel App
 inputs:
   vercel-token:
     required: true
-  vercel-project-id:
-    required: true
-  vercel-org-id:
-    required: true
-  PINECONE_API_KEY:
-    required: true
-  OPENAI_API_KEY:
-    required: true
-  VERCEL_TEAM_SCOPE:
-    required: true
 
 runs:
   using: 'composite'
@@ -25,102 +15,39 @@ runs:
       with:
         node-version: '18.20.3'
 
-    - name: Install pinecone-ts-client deps
-      run: npm install
-      shell: bash
-
     - name: Build pinecone-ts-client code
-      run: npm run build && echo "Step 3, building pinecone-ts-client!"
+      run: npm install && npm run build
       shell: bash
 
     - name: Package pinecone-ts-client code
       run: npm pack && echo "Step 4, running npm pack"
       shell: bash
 
-    - name: Clone Pinecone Vercel app into pinecone-ts-client
-      run: |
-        git clone git@github.com:pinecone-io/pinecone-rag-demo.git
-        cd pinecone-rag-demo
-        git pull origin main
-        echo "Step 5, Cloning Vercel app into TS client"
-      shell: bash
+    - name: Clone Vercel app
+      uses: GuillaumeFalourd/clone-github-repo-action@main
+      with:
+        owner: 'pinecone-io'
+        repository: 'pinecone-rag-demo'
+        branch: 'main'
 
     - name: Move package to pinecone-rag-demo
-      run: mv pinecone-database-pinecone-*.tgz . && echo "Step 6, Moving client package to rag-demo"
+      run: cd pinecone-rag-demo && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Setup Vercel
-      uses: amondnet/vercel-action@master
-      with:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-      env:
-        vercel-token: ${{ inputs.vercel-token }}
-        vercel-project-id: ${{ inputs.vercel-project-id }}
-        vercel-org-id: ${{ inputs.vercel-org-id }}
-
-    - name: Install Pinecone Vercel app dependencies
-      run: npm install && echo "Step 8, Installing Vercel deps"
+    - name: Install rag-demo deps
+      run: cd pinecone-rag-demo && npm install
       shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: npm install pinecone-database-pinecone-*.tgz && echo "Step 9, Installing main branch code into rag-demo"
-      shell: bash
-
-    - name: Install NextJS explicitly
-      run: npm install -g next@latest && echo "Step 10, Installing NextJS"
-      shell: bash
-
-    - name: Install pnpm
-      run: npm install -g pnpm && echo "Step 11, Installing pnpm"
-      shell: bash
-
-    - name: Install rag app dependencies with pnpm
-      run: pnpm install && echo "Step 12, Installing rag-demo deps"
-      shell: bash
-
-    - name: Remove linting temporarily
-      run: rm -rf .eslintrc.json && echo "Step 13, remove linting"
-      shell: bash
-
-    - name: Build Pinecone Vercel app
-      run: pnpm run build && echo "Step 14, build Vercel app"
+      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
     - name: Install Vercel CLI
-      run: pnpm add -g vercel && echo "Step 15, Vercel CLI"
+      run: cd pinecone-rag-demo && npm install vercel
       shell: bash
 
-    - name: Create vercel.json file
+    - name: Deploy Project Artifacts to Vercel
       run: |
-        echo '{
-          "version": 2,
-          "public": false,
-          "github": {
-            "enabled": false
-          },
-          "buildCommand": "next build",
-          "installCommand": "npm install"
-          "framework": "nextjs",
-          "functions": {
-            "src/app/**/*.{ts,tsx}": {
-              "runtime": "edge-runtime@3.0.1",
-            }
-          }
-        }' > vercel.json && echo "Step 16, create vercel.json file"
-      shell: bash
-
-    - name: Deploy to Vercel
-      env:
-        VERCEL_TEAM_SCOPE: ${{ inputs.VERCEL_TEAM_SCOPE }}
-        vercel-token: ${{ inputs.vercel-token }}
-        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
-        PINECONE_REGION: us-west-2
-        PINECONE_INDEX: end-to-end-edge-test
-        PINECONE_CLOUD: aws
-        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
-      run: |
-        vercel --yes --logs --token=$vercel-token --scope=$VERCEL_TEAM_SCOPE
-        echo "!! Step 17, You are here = " + pwd
+        cd pinecone-rag-demo
+        vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
       shell: bash

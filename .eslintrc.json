@@ -4,7 +4,11 @@
     "es2021": true,
     "node": true
   },
-  "ignorePatterns": ["dist", "src/pinecone-generated-ts-fetch"],
+  "ignorePatterns": [
+    "dist",
+    "src/pinecone-generated-ts-fetch",
+    "pinecone-rag-demo"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
