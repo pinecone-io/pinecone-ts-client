@@ -25,13 +25,19 @@ for (const envVar of ['PINECONE_API_KEY']) {
   const response = await p.listIndexes();
   if (response.indexes) {
     for (const index of response.indexes) {
-      if (index.deletionProtection == 'enabled') {
-        p.configureIndex(index.name, { deletionProtection: 'disabled' });
+      if (index.deletionProtection === 'enabled') {
+        console.log(
+          'Changing deletionProtection status for index...',
+          index.name
+        );
+        await p.configureIndex(index.name, { deletionProtection: 'disabled' });
+        console.log(`Deleting index ${index.name}...`);
+        await p.deleteIndex(index.name);
+      } else {
+        console.log(`Deleting index ${index.name}`);
+        await p.deleteIndex(index.name);
       }
-      console.log(`Deleting index ${index.name}`);
-      await p.deleteIndex(index.name);
     }
-
     process.exit();
   }
 })();
