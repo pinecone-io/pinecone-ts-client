@@ -1,6 +1,6 @@
-var dotenv = require('dotenv');
+const dotenv = require('dotenv');
 
-var pinecone = require('../dist');
+const pinecone = require('../dist');
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ for (const envVar of ['PINECONE_API_KEY']) {
   if (response.indexes) {
     for (const index of response.indexes) {
       if (index.deletionProtection == 'enabled') {
-        index.deletionProtection = 'disabled';
+        p.configureIndex(index.name, { deletionProtection: 'disabled' });
       }
       console.log(`Deleting index ${index.name}`);
       await p.deleteIndex(index.name);

@@ -24,6 +24,7 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-inferrable-types": "off",
-    "import/no-cycle": "error"
+    "import/no-cycle": "error",
+    "@typescript-eslint/no-var-requires": "off" // Add this line
   }
 }
