@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
+var dotenv = require('dotenv');
 
-import pinecone from '../dist';
+var pinecone = require('../dist');
 
 dotenv.config();
 
