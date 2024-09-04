@@ -10,9 +10,6 @@ export const getFetch = (config: PineconeConfiguration) => {
     // scope, use that. This should prevent confusing failures in
     // nextjs projects where @vercel/fetch is mandated and
     // other implementations are stubbed out.
-    console.log(
-      'Failed to find any user-provided fetch implementation. Using global fetch implementation.'
-    );
     return global.fetch;
   } else {
     throw new PineconeConfigurationError(
