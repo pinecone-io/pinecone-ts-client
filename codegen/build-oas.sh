@@ -10,7 +10,7 @@ build_dir="build"
 
 update_apis_repo() {
 	echo "Updating apis repo"
-  git submodule update --init --recursive
+	git submodule update --init --recursive
   git submodule sync --recursive
 	pushd codegen/apis
 	  git checkout main
