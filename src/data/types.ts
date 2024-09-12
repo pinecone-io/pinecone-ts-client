@@ -18,7 +18,7 @@ export type PineconeConfiguration = {
   controllerHostUrl?: string;
 
   /**
-   * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope and if none is found it will fall back to a [cross-fetch](https://www.npmjs.com/package/cross-fetch) polyfill.
+   * Optional configuration field for specifying the fetch implementation. If not specified, the client will look for fetch in the global scope.
    */
   fetchApi?: FetchAPI;
 

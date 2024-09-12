@@ -15,3 +15,6 @@ ts-compilation-test/lib/
 .vscode
 .DS_Store
 scratch
+
+# Jetbrains
+.idea

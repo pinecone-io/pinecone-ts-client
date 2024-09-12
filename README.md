@@ -77,6 +77,65 @@ const pc = new Pinecone({
 });
 ```
 
+### Using a proxy server
+
+If your network setup requires you to interact with Pinecone via a proxy, you can pass a custom `ProxyAgent` from
+the [`undici` library](https://undici.nodejs.org/#/). Below is an example of how to
+construct an `undici` `ProxyAgent` that routes network traffic through a [`mitm` proxy server](https://mitmproxy.
+org/) while hitting Pinecone's `/indexes` endpoint.
+
+**Note:** The following strategy relies on Node's native `fetch` implementation, [released in Node v16 and
+stabilized in Node v21](https://nodejs.org/docs/latest/api/globals.html#fetch). If you are running Node versions
+18-21, you may experience issues stemming from the instability of the feature. There are currently no known issues
+related to proxying in Node v18+.
+
+```typescript
+import {
+  Pinecone,
+  type PineconeConfiguration,
+} from '@pinecone-database/pinecone';
+import { Dispatcher, ProxyAgent } from 'undici';
+import * as fs from 'fs';
+
+const cert = fs.readFileSync('path-to-your-mitm-proxy-cert-pem-file');
+
+const client = new ProxyAgent({
+  uri: '<your proxy server URI>',
+  requestTls: {
+    port: '<your proxy server port>',
+    ca: cert,
+    host: '<your proxy server host>',
+  },
+});
+
+const customFetch = (
+  input: string | URL | Request,
+  init: RequestInit | undefined
+) => {
+  return fetch(input, {
+    ...init,
+    dispatcher: client as Dispatcher,
+    keepalive: true,
+  });
+};
+
+const config: PineconeConfiguration = {
+  apiKey:
+    '<your Pinecone API key, available in your dashboard at app.pinecone.io>',
+  fetchApi: customFetch,
+};
+
+const pc = new Pinecone(config);
+
+const indexes = async () => {
+  return await pc.listIndexes();
+};
+
+indexes().then((response) => {
+  console.log('My indexes: ', response);
+});
+```
+
 ## Indexes
 
 ### Create Index
