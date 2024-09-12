@@ -81,8 +81,7 @@ const pc = new Pinecone({
 
 If your network setup requires you to interact with Pinecone via a proxy, you can pass a custom `ProxyAgent` from
 the [`undici` library](https://undici.nodejs.org/#/). Below is an example of how to
-construct an `undici` `ProxyAgent` that routes network traffic through a [`mitm` proxy server](https://mitmproxy.
-org/) while hitting Pinecone's `/indexes` endpoint.
+construct an `undici` `ProxyAgent` that routes network traffic through a [`mitm` proxy server](https://mitmproxy.org/) while hitting Pinecone's `/indexes` endpoint.
 
 **Note:** The following strategy relies on Node's native `fetch` implementation, [released in Node v16 and
 stabilized in Node v21](https://nodejs.org/docs/latest/api/globals.html#fetch). If you are running Node versions
