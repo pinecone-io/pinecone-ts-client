@@ -3,17 +3,19 @@
 set -eux -o pipefail
 
 version=$1 # e.g. 2024-07
-modules=("control" "data")
+modules=("db_control" "db_data" "inference")
 
 destination="src/pinecone-generated-ts-fetch"
 build_dir="build"
 
 update_apis_repo() {
 	echo "Updating apis repo"
+  git submodule update --init --recursive
+  git submodule sync --recursive
 	pushd codegen/apis
-		git fetch
-		git pull
-		just build
+	  git checkout main
+	  git pull origin main
+    just build
 	popd
 }
 
