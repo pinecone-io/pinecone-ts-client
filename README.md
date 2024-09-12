@@ -115,7 +115,7 @@ const customFetch = (
   return fetch(input, {
     ...init,
     dispatcher: client as Dispatcher,
-    keepalive: true,
+    keepalive: true,  # optional
   });
 };
 
