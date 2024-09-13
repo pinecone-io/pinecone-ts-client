@@ -17,7 +17,7 @@ import type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
   HTTPHeaders,
-} from './pinecone-generated-ts-fetch/control';
+} from './pinecone-generated-ts-fetch/db_control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,

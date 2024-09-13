@@ -1,7 +1,7 @@
 import {
   IndexModel,
   ManageIndexesApi,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import type { IndexName } from './types';
 import { PineconeArgumentError } from '../errors';
 

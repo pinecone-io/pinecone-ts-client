@@ -2,7 +2,7 @@ import {
   Embedding,
   EmbeddingsList as OpenAPIEmbeddingsList,
   EmbeddingsListUsage,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/inference';
 
 /* This class wraps the OpenAPI-generated EmbeddingsList interface so that an EmbeddingsList object acts like an Array.
 This class also customizes the output of an EmbeddingsList to improve UX.
@@ -24,14 +24,14 @@ export class EmbeddingsList
   extends Array<Embedding>
   implements OpenAPIEmbeddingsList
 {
-  model?: string;
+  model: string;
   data: Array<Embedding>;
-  usage?: EmbeddingsListUsage;
+  usage: EmbeddingsListUsage;
 
   constructor(
-    model?: string,
+    model: string,
     data: Array<Embedding> = [],
-    usage?: EmbeddingsListUsage
+    usage: EmbeddingsListUsage
   ) {
     super(...data);
     // Set the prototype explicitly to ensure the instance is of type EmbeddingsList

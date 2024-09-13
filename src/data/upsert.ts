@@ -1,5 +1,5 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import type { Vector } from '../pinecone-generated-ts-fetch/data';
+import type { Vector } from '../pinecone-generated-ts-fetch/db_data';
 import {
   PineconeRecord,
   PineconeRecordsProperties,

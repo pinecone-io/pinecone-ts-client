@@ -2,7 +2,7 @@ import { DataOperationsProvider } from './dataOperationsProvider';
 import type {
   ListRequest,
   ListResponse,
-} from '../pinecone-generated-ts-fetch/data';
+} from '../pinecone-generated-ts-fetch/db_data';
 import { ValidateProperties } from '../utils/validateProperties';
 
 /**

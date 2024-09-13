@@ -2,8 +2,8 @@ import { listPaginated } from '../list';
 import type {
   ListRequest,
   ListResponse,
-  DataPlaneApi,
-} from '../../pinecone-generated-ts-fetch/data';
+  VectorOperationsApi as DataPlaneApi,
+} from '../../pinecone-generated-ts-fetch/db_data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {
