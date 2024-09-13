@@ -18,3 +18,4 @@ scratch
 
 # Jetbrains
 .idea
+*.iml
