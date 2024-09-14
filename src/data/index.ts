@@ -14,12 +14,14 @@ import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
 import { listPaginated } from './list';
 import type { ListOptions } from './list';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
+import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
   RecordMetadata,
   PineconeRecord,
 } from './types';
+import { StartImportCommand, StartImportOptions } from './bulkImport';
+import { BulkOperationsProvider } from './bulkOperationsProvider';
 
 export type {
   PineconeConfiguration,
@@ -53,9 +55,10 @@ export type {
 } from './query';
 export type { ListOptions } from './list';
 
+
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
- * against Pinecone indexes. Typically it will be instantiated via a `Pinecone`
+ * against Pinecone indexes. Typically, it will be instantiated via a `Pinecone`
  * client instance that has already built the required configuration from a
  * combination of sources.
  *
@@ -316,6 +319,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _updateCommand: UpdateCommand<T>;
   /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
+  /** @hidden */
+  private _startImportCommand: StartImportCommand<T>;
 
   /**
    * Instantiation of Index is handled by {@link Pinecone}
@@ -366,6 +371,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
     this._updateCommand = new UpdateCommand<T>(apiProvider, namespace);
     this._upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
+
+    // The 2024-10 OAS introduced a new bulk-operations API to be used in data plane operations
+    const bulkApiProvider = new BulkOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl,
+      additionalHeaders
+    );
+    this._startImportCommand = new StartImportCommand<T>(bulkApiProvider, namespace);
   }
 
   /**
@@ -499,5 +513,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async update(options: UpdateOptions<T>) {
     return await this._updateCommand.run(options);
+  }
+
+  /** TODO */
+  async startImport(options: StartImportOptions<T>) {
+    return await this._startImportCommand.run(options);
   }
 }
