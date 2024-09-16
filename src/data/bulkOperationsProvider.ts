@@ -4,9 +4,14 @@ import {
   BulkOperationsApi,
   Configuration,
   ConfigurationParameters,
-  X_PINECONE_API_VERSION
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_data';
-import { buildUserAgent, getFetch, normalizeUrl, queryParamsStringify } from '../utils';
+import {
+  buildUserAgent,
+  getFetch,
+  normalizeUrl,
+  queryParamsStringify,
+} from '../utils';
 import { IndexHostSingleton } from './indexHostSingleton';
 import { middleware } from '../utils/middleware';
 
@@ -27,6 +32,8 @@ export class BulkOperationsProvider {
     this.indexName = indexName;
     this.indexHostUrl = normalizeUrl(indexHostUrl);
     this.additionalHeaders = additionalHeaders;
+
+    console.log('Index name: ', this.indexName);
   }
 
   async provide() {

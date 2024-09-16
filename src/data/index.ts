@@ -20,7 +20,7 @@ import type {
   RecordMetadata,
   PineconeRecord,
 } from './types';
-import { StartImportCommand, StartImportOptions } from './bulkImport';
+import { StartImportCommand } from './bulkImport';
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 
 export type {
@@ -54,7 +54,6 @@ export type {
   QueryShared,
 } from './query';
 export type { ListOptions } from './list';
-
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -320,7 +319,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
   /** @hidden */
-  private _startImportCommand: StartImportCommand<T>;
+  private _startImportCommand: StartImportCommand;
 
   /**
    * Instantiation of Index is handled by {@link Pinecone}
@@ -372,14 +371,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._updateCommand = new UpdateCommand<T>(apiProvider, namespace);
     this._upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
 
-    // The 2024-10 OAS introduced a new bulk-operations API to be used in data plane operations
+    // The 2024-10 OAS introduced a separate bulk-operations API to be used in data plane operations
     const bulkApiProvider = new BulkOperationsProvider(
       config,
       indexName,
       indexHostUrl,
       additionalHeaders
     );
-    this._startImportCommand = new StartImportCommand<T>(bulkApiProvider, namespace);
+    this._startImportCommand = new StartImportCommand(
+      bulkApiProvider,
+      namespace
+    );
   }
 
   /**
@@ -515,8 +517,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     return await this._updateCommand.run(options);
   }
 
-  /** TODO */
-  async startImport(options: StartImportOptions<T>) {
-    return await this._startImportCommand.run(options);
+  async startImport(uri: string, errorMode?: string) {
+    return await this._startImportCommand.run(uri, errorMode);
   }
 }
