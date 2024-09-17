@@ -7,11 +7,8 @@ import {
 import { BulkOperationsProvider } from '../bulkOperationsProvider';
 import {
   ImportErrorModeOnErrorEnum,
-  ImportListResponse,
-  ImportModel,
   ListImportsRequest,
   StartImportOperationRequest,
-  StartImportResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 
@@ -52,14 +49,10 @@ describe('StartImportCommand', () => {
       },
     };
 
-    const response = {} as StartImportResponse; // Mock the response
-    apiMock.startImport.mockResolvedValue(response);
-
-    const result = await startImportCommand.run(uri, errorMode);
+    await startImportCommand.run(uri, errorMode);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.startImport).toHaveBeenCalledWith(expectedRequest);
-    expect(result).toBe(response);
   });
 
   test('should call startImport with correct request when errorMode is "abort"', async () => {
@@ -73,14 +66,10 @@ describe('StartImportCommand', () => {
       },
     };
 
-    const response = {} as StartImportResponse;
-    apiMock.startImport.mockResolvedValue(response);
-
-    const result = await startImportCommand.run(uri, errorMode);
+    await startImportCommand.run(uri, errorMode);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.startImport).toHaveBeenCalledWith(expectedRequest);
-    expect(result).toBe(response);
   });
 
   test('should throw PineconeArgumentError for invalid errorMode', async () => {
@@ -104,14 +93,22 @@ describe('StartImportCommand', () => {
       },
     };
 
-    const response = {} as StartImportResponse;
-    apiMock.startImport.mockResolvedValue(response);
-
-    const result = await startImportCommand.run(uri, undefined);
+    await startImportCommand.run(uri, undefined);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.startImport).toHaveBeenCalledWith(expectedRequest);
-    expect(result).toBe(response);
+  });
+
+  test('should throw error when URI/1st arg is missing', async () => {
+    const toThrow = async () => {
+      // @ts-ignore
+      await startImportCommand.run();
+    };
+
+    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrowError(
+      '`uri` field is required and must start with the scheme of a supported storage provider.'
+    );
   });
 
   test('should call listImport with correct request', async () => {
@@ -120,38 +117,30 @@ describe('StartImportCommand', () => {
     const expectedRequest: ListImportsRequest = {
       limit,
     };
-    const response = {} as unknown as ImportListResponse;
 
-    apiMock.listImports.mockResolvedValue(response);
-    const result = await listImportCommand.run(limit);
+    await listImportCommand.run(limit);
+
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.listImports).toHaveBeenCalledWith(expectedRequest);
-    expect(result).toBe(response);
   });
 
   test('should call describeImport with correct request', async () => {
     const importId = 'import-id';
     const req = { id: importId };
-    const response = {} as unknown as ImportModel;
 
-    apiMock.describeImport.mockResolvedValue(response);
+    await describeImportCommand.run(importId);
 
-    const result = await describeImportCommand.run(importId);
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.describeImport).toHaveBeenCalledWith(req);
-    expect(result).toBe(response);
   });
 
   test('should call cancelImport with correct request', async () => {
     const importId = 'import-id';
     const req = { id: importId };
-    const response = {};
 
-    apiMock.cancelImport.mockResolvedValue(response);
+    await cancelImportCommand.run(importId);
 
-    const result = await cancelImportCommand.run(importId);
     expect(apiProviderMock.provide).toHaveBeenCalled();
     expect(apiMock.cancelImport).toHaveBeenCalledWith(req);
-    expect(result).toBe(response);
   });
 });

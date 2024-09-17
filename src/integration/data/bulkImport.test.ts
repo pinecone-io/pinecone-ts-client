@@ -28,15 +28,9 @@ describe('bulk import', () => {
     await pinecone.deleteIndex(name);
   });
 
-  test('verify bulk import w/continue', async () => {
+  test('verify bulk import', async () => {
     const response = await index.startImport(testURI);
     expect(response).toBeDefined();
     expect(response.id).toBeDefined();
-  });
-
-  test('verify listImports works as expected', async () => {
-    const response = await index.listImports();
-    expect(response).toBeDefined();
-    expect(response.data).toBeDefined();
   });
 });

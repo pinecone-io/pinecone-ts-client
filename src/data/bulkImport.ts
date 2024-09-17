@@ -23,6 +23,14 @@ export class StartImportCommand {
     errorMode?: string | undefined,
     integration?: string | undefined
   ): Promise<StartImportResponse> {
+    if (!uri) {
+      throw new PineconeArgumentError(
+        '`uri` field is required and must start with the scheme of a supported storage provider.'
+      );
+    }
+
+    let error: ImportErrorModeOnErrorEnum = ImportErrorModeOnErrorEnum.Continue;
+
     if (errorMode) {
       if (
         errorMode.toLowerCase() !== 'continue' &&
@@ -32,11 +40,9 @@ export class StartImportCommand {
           '`errorMode` must be one of "Continue" or "Abort"'
         );
       }
-    }
-
-    let error: ImportErrorModeOnErrorEnum = ImportErrorModeOnErrorEnum.Continue;
-    if (errorMode?.toLowerCase() == 'abort') {
-      error = ImportErrorModeOnErrorEnum.Abort;
+      if (errorMode?.toLowerCase() == 'abort') {
+        error = ImportErrorModeOnErrorEnum.Abort;
+      }
     }
 
     const req: StartImportOperationRequest = {
