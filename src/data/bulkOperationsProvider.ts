@@ -32,8 +32,6 @@ export class BulkOperationsProvider {
     this.indexName = indexName;
     this.indexHostUrl = normalizeUrl(indexHostUrl);
     this.additionalHeaders = additionalHeaders;
-
-    console.log('Index name: ', this.indexName);
   }
 
   async provide() {

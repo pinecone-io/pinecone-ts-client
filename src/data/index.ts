@@ -1,26 +1,31 @@
 import { UpsertCommand } from './upsert';
-import { FetchCommand } from './fetch';
 import type { FetchOptions } from './fetch';
-import { UpdateCommand } from './update';
+import { FetchCommand } from './fetch';
 import type { UpdateOptions } from './update';
-import { QueryCommand } from './query';
+import { UpdateCommand } from './update';
 import type { QueryOptions } from './query';
-import { deleteOne } from './deleteOne';
+import { QueryCommand } from './query';
 import type { DeleteOneOptions } from './deleteOne';
-import { deleteMany } from './deleteMany';
+import { deleteOne } from './deleteOne';
 import type { DeleteManyOptions } from './deleteMany';
+import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { listPaginated } from './list';
 import type { ListOptions } from './list';
+import { listPaginated } from './list';
 import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
-  RecordMetadata,
   PineconeRecord,
+  RecordMetadata,
 } from './types';
-import { StartImportCommand } from './bulkImport';
+import {
+  CancelImportCommand,
+  DescribeImportCommand,
+  ListImportCommand,
+  StartImportCommand,
+} from './bulkImport';
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 
 export type {
@@ -121,9 +126,16 @@ export type { ListOptions } from './list';
  * @typeParam T - The type of metadata associated with each record.
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
+  /** @hidden */
+  _deleteMany: ReturnType<typeof deleteMany>;
+  /** @hidden */
+  _deleteOne: ReturnType<typeof deleteOne>;
+  /** @hidden */
+  _describeIndexStats: ReturnType<typeof describeIndexStats>;
+  /** @hidden */
+  _listPaginated: ReturnType<typeof listPaginated>;
   /** @internal */
   private config: PineconeConfiguration;
-
   /** @internal */
   private target: {
     /** The name of the index that will receive data operations when this class instance is used to upsert, update, query, or delete. */
@@ -135,181 +147,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     /** An optional host address override for data operations. */
     indexHostUrl?: string;
   };
-
-  /**
-   * Delete all records from the targeted namespace. To delete all records from across all namespaces,
-   * delete the index using {@link Pinecone.deleteIndex} and create a new one using {@link Pinecone.createIndex}.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const index = pc.index('my-index');
-   *
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //    '': { recordCount: 10 },
-   * //   foo: { recordCount: 1 }
-   * //   },
-   * //   dimension: 8,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 11
-   * // }
-   *
-   * await index.deleteAll();
-   *
-   * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //   foo: { recordCount: 1 }
-   * //   },
-   * //   dimension: 8,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 1
-   * // }
-   *
-   * await index.deleteAll();
-   * // Since no namespace was specified, records in default namespace '' are now deleted.
-   *
-   * ```
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
-   */
-  deleteAll() {
-    return this._deleteAll();
-  }
   /** @hidden */
   private _deleteAll: ReturnType<typeof deleteAll>;
-
-  /**
-   * Delete records from the index by either an array of ids, or a filter object.
-   * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
-   * for more on deleting records with filters.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const index = pc.index('my-index');
-   *
-   * await index.deleteMany(['record-1', 'record-2']);
-   *
-   * // or
-   * await index.deleteMany({ genre: 'classical' });
-   * ```
-   * @param options - An array of record id values or a filter object.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
-   */
-  deleteMany(options: DeleteManyOptions) {
-    return this._deleteMany(options);
-  }
-  /** @hidden */
-  _deleteMany: ReturnType<typeof deleteMany>;
-
-  /**
-   * Delete a record from the index by id.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const index = pc.index('my-index');
-   *
-   * await index.deleteOne('record-1');
-   * ```
-   * @param id - The id of the record to delete.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
-   */
-  deleteOne(id: DeleteOneOptions) {
-    return this._deleteOne(id);
-  }
-  /** @hidden */
-  _deleteOne: ReturnType<typeof deleteOne>;
-
-  /**
-   * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const index = pc.index('my-index');
-   *
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //    '': { recordCount: 10 }
-   * //    foo: { recordCount: 2000 },
-   * //    bar: { recordCount: 2000 }
-   * //   },
-   * //   dimension: 1536,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 4010
-   * // }
-   * ```
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
-   */
-  describeIndexStats() {
-    return this._describeIndexStats();
-  }
-  /** @hidden */
-  _describeIndexStats: ReturnType<typeof describeIndexStats>;
-
-  /**
-   * The `listPaginated` operation finds vectors based on an id prefix within a single namespace.
-   * It returns matching ids in a paginated form, with a pagination token to fetch the next page of results.
-   * This id list can then be passed to fetch or delete options to perform operations on the matching records.
-   * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const index = pc.index('my-index').namespace('my-namespace');
-   *
-   * const results = await index.listPaginated({ prefix: 'doc1#' });
-   * console.log(results);
-   * // {
-   * //   vectors: [
-   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
-   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
-   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
-   * //     ...
-   * //   ],
-   * //   pagination: {
-   * //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
-   * //   },
-   * //   namespace: 'my-namespace',
-   * //   usage: { readUnits: 1 }
-   * // }
-   *
-   * // Fetch the next page of results
-   * await index.listPaginated({ prefix: 'doc1#', paginationToken: results.pagination.next});
-   * ```
-   *
-   * > ⚠️ **Note:**
-   * >
-   * > `listPaginated` is supported only for serverless indexes.
-   *
-   * @param options - The {@link ListOptions} for the operation.
-   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
-   */
-  listPaginated(options?: ListOptions) {
-    return this._listPaginated(options);
-  }
-  /** @hidden */
-  _listPaginated: ReturnType<typeof listPaginated>;
-
   /** @hidden */
   private _fetchCommand: FetchCommand<T>;
   /** @hidden */
@@ -320,6 +159,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _upsertCommand: UpsertCommand<T>;
   /** @hidden */
   private _startImportCommand: StartImportCommand;
+  /** @hidden */
+  private _listImportsCommand: ListImportCommand;
+
+  /** @hidden */
+  private _describeImportCommand: DescribeImportCommand;
+  /** @hidden */
+  private _cancelImportCommand: CancelImportCommand;
 
   /**
    * Instantiation of Index is handled by {@link Pinecone}
@@ -382,6 +228,182 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       bulkApiProvider,
       namespace
     );
+    this._listImportsCommand = new ListImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+    this._describeImportCommand = new DescribeImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+    this._cancelImportCommand = new CancelImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+  }
+
+  /**
+   * Delete all records from the targeted namespace. To delete all records from across all namespaces,
+   * delete the index using {@link Pinecone.deleteIndex} and create a new one using {@link Pinecone.createIndex}.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
+   *
+   * await index.describeIndexStats();
+   * // {
+   * //  namespaces: {
+   * //    '': { recordCount: 10 },
+   * //   foo: { recordCount: 1 }
+   * //   },
+   * //   dimension: 8,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 11
+   * // }
+   *
+   * await index.deleteAll();
+   *
+   * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
+   * await index.describeIndexStats();
+   * // {
+   * //  namespaces: {
+   * //   foo: { recordCount: 1 }
+   * //   },
+   * //   dimension: 8,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 1
+   * // }
+   *
+   * await index.deleteAll();
+   * // Since no namespace was specified, records in default namespace '' are now deleted.
+   *
+   * ```
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the delete is completed.
+   */
+  deleteAll() {
+    return this._deleteAll();
+  }
+
+  /**
+   * Delete records from the index by either an array of ids, or a filter object.
+   * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
+   * for more on deleting records with filters.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
+   *
+   * await index.deleteMany(['record-1', 'record-2']);
+   *
+   * // or
+   * await index.deleteMany({ genre: 'classical' });
+   * ```
+   * @param options - An array of record id values or a filter object.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the delete is completed.
+   */
+  deleteMany(options: DeleteManyOptions) {
+    return this._deleteMany(options);
+  }
+
+  /**
+   * Delete a record from the index by id.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
+   *
+   * await index.deleteOne('record-1');
+   * ```
+   * @param id - The id of the record to delete.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the delete is completed.
+   */
+  deleteOne(id: DeleteOneOptions) {
+    return this._deleteOne(id);
+  }
+
+  /**
+   * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-index');
+   *
+   * await index.describeIndexStats();
+   * // {
+   * //  namespaces: {
+   * //    '': { recordCount: 10 }
+   * //    foo: { recordCount: 2000 },
+   * //    bar: { recordCount: 2000 }
+   * //   },
+   * //   dimension: 1536,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 4010
+   * // }
+   * ```
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
+   */
+  describeIndexStats() {
+    return this._describeIndexStats();
+  }
+
+  /**
+   * The `listPaginated` operation finds vectors based on an id prefix within a single namespace.
+   * It returns matching ids in a paginated form, with a pagination token to fetch the next page of results.
+   * This id list can then be passed to fetch or delete options to perform operations on the matching records.
+   * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.index('my-index').namespace('my-namespace');
+   *
+   * const results = await index.listPaginated({ prefix: 'doc1#' });
+   * console.log(results);
+   * // {
+   * //   vectors: [
+   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
+   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
+   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+   * //     ...
+   * //   ],
+   * //   pagination: {
+   * //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
+   * //   },
+   * //   namespace: 'my-namespace',
+   * //   usage: { readUnits: 1 }
+   * // }
+   *
+   * // Fetch the next page of results
+   * await index.listPaginated({ prefix: 'doc1#', paginationToken: results.pagination.next});
+   * ```
+   *
+   * > ⚠️ **Note:**
+   * >
+   * > `listPaginated` is supported only for serverless indexes.
+   *
+   * @param options - The {@link ListOptions} for the operation.
+   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
+   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
+   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
+   */
+  listPaginated(options?: ListOptions) {
+    return this._listPaginated(options);
   }
 
   /**
@@ -517,7 +539,52 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     return await this._updateCommand.run(options);
   }
 
-  async startImport(uri: string, errorMode?: string) {
-    return await this._startImportCommand.run(uri, errorMode);
+  /**
+   * Start an asynchronous import of vectors from object storage into a Pinecone Serverless index.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * await index.startImport('s3://my-bucket/my-data');
+   * ```
+   *
+   * @param uri - (Required) The URI prefix under which the data to import is available. All data within this prefix
+   * will be listed then imported into the target index. Currently only `s3://` URIs are supported.
+   * @param integration - (Optional) The name of the storage integration that should be used to access the data.
+   * Defaults to None.
+   * @param errorMode - (Optional) Defaults to "Continue". If set to "Continue", the import operation will continue
+   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
+   * "Abort" to stop the import operation if any records fail to import.
+   */
+  async startImport(uri: string, errorMode?: string, integration?: string) {
+    return await this._startImportCommand.run(uri, errorMode, integration);
+  }
+
+  /**
+   * List all recent and ongoing import operations.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * await index.listImports();
+   * ```
+   *
+   * @param limit - (Optional) Max number of import operations to return per page.
+   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   */
+  async listImports(limit?: number, paginationToken?: string) {
+    return await this._listImportsCommand.run(limit, paginationToken);
+  }
+
+  async describeImport(id: string) {
+    return await this._describeImportCommand.run(id);
+  }
+
+  async cancelImport(id: string) {
+    return await this._cancelImportCommand.run(id);
   }
 }
