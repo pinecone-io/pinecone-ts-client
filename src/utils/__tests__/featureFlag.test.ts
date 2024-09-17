@@ -1,4 +1,4 @@
-import { featureFlag } from '../featureFlag';
+import { prerelease } from '../prerelease';
 
 test('confirm featureFlag prints correct message, given API Version', () => {
   const testApiVersion = '2.2.2';
@@ -12,7 +12,7 @@ test('confirm featureFlag prints correct message, given API Version', () => {
   };
 
   // Apply the decorator
-  const result = featureFlag(testApiVersion)(target, propertyKey, descriptor);
+  const result = prerelease(testApiVersion)(target, propertyKey, descriptor);
 
   // Spy on console.warn to confirm the warning message
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();

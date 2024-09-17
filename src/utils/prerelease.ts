@@ -1,4 +1,4 @@
-export function featureFlag(apiVersion: string) {
+export function prerelease(apiVersion: string) {
   return function (
     target: any,
     propertyKey: string,
@@ -9,7 +9,6 @@ export function featureFlag(apiVersion: string) {
     descriptor.value = function (...args: any[]) {
       const warnmsg = `This is a prerelease feature implemented against the ${apiVersion} version of our API.`;
       console.warn(warnmsg);
-
       return originalMethod.apply(this, args);
     };
 

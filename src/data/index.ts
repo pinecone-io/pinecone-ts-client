@@ -27,7 +27,7 @@ import {
   StartImportCommand,
 } from './bulkImport';
 import { BulkOperationsProvider } from './bulkOperationsProvider';
-import { featureFlag } from '../utils/featureFlag';
+import { prerelease } from '../utils/prerelease';
 
 export type {
   PineconeConfiguration,
@@ -561,7 +561,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
    * "Abort" to stop the import operation if any records fail to import.
    */
-  @featureFlag('2024-10')
+  @prerelease('2024-10')
   async startImport(uri: string, errorMode?: string, integration?: string) {
     return await this._startImportCommand.run(uri, errorMode, integration);
   }
@@ -596,7 +596,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param limit - (Optional) Max number of import operations to return per page.
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    */
-  @featureFlag('2024-10')
+  @prerelease('2024-10')
   async listImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
   }
@@ -625,7 +625,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param id - The id of the import operation to describe.
    */
-  @featureFlag('2024-10')
+  @prerelease('2024-10')
   async describeImport(id: string) {
     return await this._describeImportCommand.run(id);
   }
@@ -645,7 +645,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param id - The id of the import operation to cancel.
    */
-  @featureFlag('2024-10')
+  @prerelease('2024-10')
   async cancelImport(id: string) {
     return await this._cancelImportCommand.run(id);
   }
