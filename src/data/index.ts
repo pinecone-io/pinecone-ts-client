@@ -27,6 +27,7 @@ import {
   StartImportCommand,
 } from './bulkImport';
 import { BulkOperationsProvider } from './bulkOperationsProvider';
+import { featureFlag } from '../utils/featureFlag';
 
 export type {
   PineconeConfiguration,
@@ -547,7 +548,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index('my-serverless-index');
-   * await index.startImport('s3://my-bucket/my-data');
+   * console.log(await index.startImport('s3://my-bucket/my-data'));
+   *
+   * // {"id":"1"}
    * ```
    *
    * @param uri - (Required) The URI prefix under which the data to import is available. All data within this prefix
@@ -558,6 +561,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
    * "Abort" to stop the import operation if any records fail to import.
    */
+  @featureFlag('2024-10')
   async startImport(uri: string, errorMode?: string, integration?: string) {
     return await this._startImportCommand.run(uri, errorMode, integration);
   }
@@ -570,20 +574,78 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index('my-serverless-index');
-   * await index.listImports();
+   * console.log(await index.listImports());
+   *
+   * // {
+   * //  data: [
+   * //    {
+   * //      id: '1',
+   * //      uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
+   * //      status: 'Completed',
+   * //      createdAt: 2024-09-17T16:59:57.973Z,
+   * //      finishedAt: 2024-09-17T17:00:12.809Z,
+   * //      percentComplete: 100,
+   * //      recordsImported: 20,
+   * //      error: undefined
+   * //    }
+   * //  ],
+   * //  pagination: undefined  // Example is only 1 item, so no pag. token given.
+   * // }
    * ```
    *
    * @param limit - (Optional) Max number of import operations to return per page.
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    */
+  @featureFlag('2024-10')
   async listImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
   }
 
+  /**
+   * Return details of a specific import operation.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.describeImport('import-id'));
+   *
+   * // {
+   * //  id: '1',
+   * //  uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
+   * //  status: 'Completed',
+   * //  createdAt: 2024-09-17T16:59:57.973Z,
+   * //  finishedAt: 2024-09-17T17:00:12.809Z,
+   * //  percentComplete: 100,
+   * //  recordsImported: 20,
+   * //  error: undefined
+   * // }
+   * ```
+   *
+   * @param id - The id of the import operation to describe.
+   */
+  @featureFlag('2024-10')
   async describeImport(id: string) {
     return await this._describeImportCommand.run(id);
   }
 
+  /**
+   * Cancel a specific import operation.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.cancelImport('import-id'));
+   *
+   * // {}
+   * ```
+   *
+   * @param id - The id of the import operation to cancel.
+   */
+  @featureFlag('2024-10')
   async cancelImport(id: string) {
     return await this._cancelImportCommand.run(id);
   }
