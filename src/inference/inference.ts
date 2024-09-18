@@ -3,6 +3,7 @@ import {
   EmbedRequestInputsInner,
   EmbedRequestParameters,
   InferenceApi,
+  Rerank200Response as RerankResult
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 
@@ -41,10 +42,27 @@ export class Inference {
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
-        parameters: typedParams,
-      },
+        parameters: typedParams
+      }
     };
     const response = await this._inferenceApi.embed(typedRequest);
     return new EmbeddingsList(response.model, response.data, response.usage);
   }
+
+  // todo: docstring
+  async rerank(
+    model: string,
+    query: string,
+    documents: Array<{[key: string]: string}>,
+    topN?: number,
+    returnDocuments?: boolean,
+    rankFields?: Array<string>,
+    parameters?: { [key: string]: string; }
+  ): Promise<RerankResult> {
+    // todo: Add implementation here
+    return {} as RerankResult;
+  }
+
 }
+
+// todo: add feature flag from bulk import PR here when that PR's merged
