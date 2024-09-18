@@ -69,6 +69,12 @@ export interface IndexModel {
      */
     deletionProtection?: DeletionProtection;
     /**
+     * Custom user tags added to an index. Keys must be alphanumeric and 80 characters or less. Values must be 120 characters or less.
+     * @type {{ [key: string]: string; }}
+     * @memberof IndexModel
+     */
+    tags?: { [key: string]: string; };
+    /**
      * 
      * @type {IndexModelSpec}
      * @memberof IndexModel
@@ -124,6 +130,7 @@ export function IndexModelFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'metric': json['metric'],
         'host': json['host'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
+        'tags': !exists(json, 'tags') ? undefined : json['tags'],
         'spec': IndexModelSpecFromJSON(json['spec']),
         'status': IndexModelStatusFromJSON(json['status']),
     };
@@ -143,6 +150,7 @@ export function IndexModelToJSON(value?: IndexModel | null): any {
         'metric': value.metric,
         'host': value.host,
         'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
+        'tags': value.tags,
         'spec': IndexModelSpecToJSON(value.spec),
         'status': IndexModelStatusToJSON(value.status),
     };
