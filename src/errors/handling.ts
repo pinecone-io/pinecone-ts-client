@@ -1,7 +1,7 @@
 import { extractMessage } from './utils';
 import { mapHttpStatusError } from './http';
 import { PineconeConnectionError } from './request';
-import type { ResponseError } from '../pinecone-generated-ts-fetch/control';
+import type { ResponseError } from '../pinecone-generated-ts-fetch/db_control';
 
 /** @internal */
 export const handleApiError = async (

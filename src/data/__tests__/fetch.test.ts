@@ -1,10 +1,10 @@
 import { FetchCommand } from '../fetch';
-import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
+import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 import type {
   FetchRequest,
   FetchResponse,
-} from '../../pinecone-generated-ts-fetch/data';
+} from '../../pinecone-generated-ts-fetch/db_data';
 
 const setupResponse = (response, isSuccess) => {
   const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
