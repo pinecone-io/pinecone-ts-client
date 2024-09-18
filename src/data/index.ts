@@ -20,13 +20,11 @@ import type {
   PineconeRecord,
   RecordMetadata,
 } from './types';
-import {
-  CancelImportCommand,
-  DescribeImportCommand,
-  ListImportCommand,
-  StartImportCommand,
-} from './bulkImport';
-import { BulkOperationsProvider } from './bulkOperationsProvider';
+import { StartImportCommand } from './bulkImport/startImport';
+import { ListImportsCommand } from './bulkImport/listImports';
+import { DescribeImportCommand } from './bulkImport/describeImport';
+import { CancelImportCommand } from './bulkImport/cancelImport';
+import { BulkOperationsProvider } from './bulkImport/bulkOperationsProvider';
 import { prerelease } from '../utils/prerelease';
 
 export type {
@@ -161,7 +159,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
   private _startImportCommand: StartImportCommand;
   /** @hidden */
-  private _listImportsCommand: ListImportCommand;
+  private _listImportsCommand: ListImportsCommand;
   /** @hidden */
   private _describeImportCommand: DescribeImportCommand;
   /** @hidden */
@@ -234,7 +232,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       bulkApiProvider,
       namespace
     );
-    this._listImportsCommand = new ListImportCommand(
+    this._listImportsCommand = new ListImportsCommand(
       bulkApiProvider,
       namespace
     );

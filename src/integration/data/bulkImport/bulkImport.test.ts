@@ -1,4 +1,4 @@
-import { Pinecone, Index } from '../../index';
+import { Pinecone, Index } from '../../../index';
 
 describe('bulk import', () => {
   let pinecone: Pinecone, index: Index;

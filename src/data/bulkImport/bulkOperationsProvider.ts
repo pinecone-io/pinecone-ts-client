@@ -1,19 +1,19 @@
-import type { PineconeConfiguration } from './types';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
+import type { PineconeConfiguration } from '../types';
+import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   BulkOperationsApi,
   Configuration,
   ConfigurationParameters,
   X_PINECONE_API_VERSION,
-} from '../pinecone-generated-ts-fetch/db_data';
+} from '../../pinecone-generated-ts-fetch/db_data';
 import {
   buildUserAgent,
   getFetch,
   normalizeUrl,
   queryParamsStringify,
-} from '../utils';
-import { IndexHostSingleton } from './indexHostSingleton';
-import { middleware } from '../utils/middleware';
+} from '../../utils';
+import { IndexHostSingleton } from '../indexHostSingleton';
+import { middleware } from '../../utils/middleware';
 
 export class BulkOperationsProvider {
   private readonly config: PineconeConfiguration;

@@ -1,22 +1,20 @@
-import {
-  CancelImportCommand,
-  DescribeImportCommand,
-  ListImportCommand,
-  StartImportCommand,
-} from '../bulkImport';
-import { BulkOperationsProvider } from '../bulkOperationsProvider';
+import { StartImportCommand } from '../../bulkImport/startImport';
+import { ListImportsCommand } from '../../bulkImport/listImports';
+import { DescribeImportCommand } from '../../bulkImport/describeImport';
+import { CancelImportCommand } from '../../bulkImport/cancelImport';
+import { BulkOperationsProvider } from '../../bulkImport/bulkOperationsProvider';
 import {
   ImportErrorModeOnErrorEnum,
   ListImportsRequest,
   StartImportOperationRequest,
-} from '../../pinecone-generated-ts-fetch/db_data';
-import { PineconeArgumentError } from '../../errors';
+} from '../../../pinecone-generated-ts-fetch/db_data';
+import { PineconeArgumentError } from '../../../errors';
 
 describe('StartImportCommand', () => {
   let apiProviderMock: jest.Mocked<BulkOperationsProvider>;
   let apiMock: jest.Mocked<any>; // Mocking the API returned by `provide`
   let startImportCommand: StartImportCommand;
-  let listImportCommand: ListImportCommand;
+  let listImportCommand: ListImportsCommand;
   let describeImportCommand: DescribeImportCommand;
   let cancelImportCommand: CancelImportCommand;
 
@@ -33,7 +31,7 @@ describe('StartImportCommand', () => {
     } as unknown as jest.Mocked<BulkOperationsProvider>;
 
     startImportCommand = new StartImportCommand(apiProviderMock, '');
-    listImportCommand = new ListImportCommand(apiProviderMock, '');
+    listImportCommand = new ListImportsCommand(apiProviderMock, '');
     describeImportCommand = new DescribeImportCommand(apiProviderMock, '');
     cancelImportCommand = new CancelImportCommand(apiProviderMock, '');
   });
