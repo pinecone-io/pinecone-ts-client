@@ -2,7 +2,7 @@ import {
   CollectionModel,
   CreateCollectionRequest,
   ManageIndexesApi,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import { ValidateProperties } from '../utils/validateProperties';
 

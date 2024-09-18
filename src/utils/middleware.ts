@@ -1,7 +1,7 @@
 import {
   Middleware,
   ResponseError,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import { handleApiError } from '../errors';
 
 const debugMiddleware: Middleware[] = [];

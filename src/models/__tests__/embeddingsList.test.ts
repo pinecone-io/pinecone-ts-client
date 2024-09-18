@@ -2,7 +2,7 @@ import { EmbeddingsList } from '../embeddingsList';
 import {
   Embedding,
   EmbeddingsListUsage,
-} from '../../pinecone-generated-ts-fetch/control';
+} from '../../pinecone-generated-ts-fetch/inference';
 
 describe('EmbeddingsList', () => {
   let mockEmbeddings: Array<Embedding>;

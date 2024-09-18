@@ -1,10 +1,10 @@
 import { deleteCollection } from '../deleteCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type {
   DeleteCollectionRequest,
   CollectionList,
-} from '../../pinecone-generated-ts-fetch/control';
+} from '../../pinecone-generated-ts-fetch/db_control';
 
 const setupMocks = (
   deleteResponse,

@@ -1,5 +1,5 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import type { DeleteRequest } from '../pinecone-generated-ts-fetch/data';
+import type { DeleteRequest } from '../pinecone-generated-ts-fetch/db_data';
 import type { RecordId } from './types';
 import { PineconeArgumentError } from '../errors';
 
