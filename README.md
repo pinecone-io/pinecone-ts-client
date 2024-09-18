@@ -691,6 +691,57 @@ const records = [
 await index.upsert(records);
 ```
 
+### Bulk import vectors from object storage
+
+You can now [import vectors en masse](https://docs.pinecone.io/guides/data/understanding-imports) from object
+storage. Bulk Import is a long-running, asynchronous operation that imports large numbers of records into a Pinecone
+serverless index.
+
+In order to import vectors from object storage, they must be stored in Parquet files and adhere to the necessary
+[file format](https://docs.pinecone.io/guides/data/understanding-imports#parquet-file-format). Your object storage
+must also adhere to the necessary [directory structure](https://docs.pinecone.io/guides/data/understanding-imports#directory-structure).
+
+The following example imports 10 vectors from an Amazon S3 bucket into a Pinecone serverless index:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const indexName = 'sample-index';
+
+await pc.createIndex({
+  name: indexName,
+  dimension: 10,
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'eu-west-1',
+    },
+  },
+});
+
+const index = pc.Index(indexName);
+
+const storageURI = 's3://my-bucket/my-directory/';
+
+await index.startImport(storageURI, 'continue'); // "Continue" will avoid aborting the operation if errors are encountered.
+
+// {
+//   "id": "import-id"
+// }
+```
+
+You can [start, cancel, and check the status](https://docs.pinecone.io/guides/data/import-data) of all or one import operation(s).
+
+**Notes:**
+
+- Bulk Import only works with Serverless indexes
+- Bulk Import is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
+- The only object storage provider currently supported is [Amazon S3](https://docs.pinecone.io/guides/operations/integrations/integrate-with-amazon-s3)
+- Vectors will take _at least 10 minutes_ to appear in your index upon completion of the import operation, since
+  this operation is optimized for very large workloads
+- See [limits](https://docs.pinecone.io/guides/data/understanding-imports#limits) for further information
+
 ### Seeing index statistics
 
 When experimenting with data operations, it's sometimes helpful to know how many records are stored in each namespace. In that case,
