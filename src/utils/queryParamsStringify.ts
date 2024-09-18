@@ -1,4 +1,4 @@
-import type { HTTPQuery } from '../pinecone-generated-ts-fetch/control';
+import type { HTTPQuery } from '../pinecone-generated-ts-fetch/db_control';
 
 // Everything in this file is lifted from the generated openapi runtime.
 // I need to create a small modification of the generated queryParamStringify

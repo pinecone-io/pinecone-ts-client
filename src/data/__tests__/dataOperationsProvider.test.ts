@@ -1,9 +1,9 @@
 import { DataOperationsProvider } from '../dataOperationsProvider';
 import { IndexHostSingleton } from '../indexHostSingleton';
-import { Configuration } from '../../pinecone-generated-ts-fetch/data';
+import { Configuration } from '../../pinecone-generated-ts-fetch/db_data';
 
-jest.mock('../../pinecone-generated-ts-fetch/data', () => ({
-  ...jest.requireActual('../../pinecone-generated-ts-fetch/data'),
+jest.mock('../../pinecone-generated-ts-fetch/db_data', () => ({
+  ...jest.requireActual('../../pinecone-generated-ts-fetch/db_data'),
   Configuration: jest.fn(),
 }));
 

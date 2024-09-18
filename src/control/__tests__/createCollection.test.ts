@@ -1,11 +1,11 @@
 import { createCollection } from '../createCollection';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type {
   CollectionModel,
   CreateCollectionOperationRequest,
   IndexList,
-} from '../../pinecone-generated-ts-fetch/control';
+} from '../../pinecone-generated-ts-fetch/db_control';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const fakeCreateCollection: (

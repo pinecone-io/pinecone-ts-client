@@ -2,7 +2,7 @@ import {
   ManageIndexesApi,
   IndexModel,
   ConfigureIndexRequest,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
 import { ValidateProperties } from '../utils/validateProperties';

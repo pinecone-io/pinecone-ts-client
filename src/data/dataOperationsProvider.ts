@@ -2,10 +2,10 @@ import type { PineconeConfiguration } from './types';
 import {
   Configuration,
   ConfigurationParameters,
-  DataPlaneApi,
+  VectorOperationsApi as DataPlaneApi,
   X_PINECONE_API_VERSION,
-} from '../pinecone-generated-ts-fetch/data';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/data';
+} from '../pinecone-generated-ts-fetch/db_data';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import {
   queryParamsStringify,
   buildUserAgent,
