@@ -162,7 +162,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _startImportCommand: StartImportCommand;
   /** @hidden */
   private _listImportsCommand: ListImportCommand;
-
   /** @hidden */
   private _describeImportCommand: DescribeImportCommand;
   /** @hidden */
@@ -200,23 +199,29 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
-    const apiProvider = new DataOperationsProvider(
+    const dataOperationsProvider = new DataOperationsProvider(
       config,
       indexName,
       indexHostUrl,
       additionalHeaders
     );
 
-    this._deleteAll = deleteAll(apiProvider, namespace);
-    this._deleteMany = deleteMany(apiProvider, namespace);
-    this._deleteOne = deleteOne(apiProvider, namespace);
-    this._describeIndexStats = describeIndexStats(apiProvider);
-    this._listPaginated = listPaginated(apiProvider, namespace);
+    this._deleteAll = deleteAll(dataOperationsProvider, namespace);
+    this._deleteMany = deleteMany(dataOperationsProvider, namespace);
+    this._deleteOne = deleteOne(dataOperationsProvider, namespace);
+    this._describeIndexStats = describeIndexStats(dataOperationsProvider);
+    this._listPaginated = listPaginated(dataOperationsProvider, namespace);
 
-    this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
-    this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
-    this._updateCommand = new UpdateCommand<T>(apiProvider, namespace);
-    this._upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
+    this._fetchCommand = new FetchCommand<T>(dataOperationsProvider, namespace);
+    this._queryCommand = new QueryCommand<T>(dataOperationsProvider, namespace);
+    this._updateCommand = new UpdateCommand<T>(
+      dataOperationsProvider,
+      namespace
+    );
+    this._upsertCommand = new UpsertCommand<T>(
+      dataOperationsProvider,
+      namespace
+    );
 
     // The 2024-10 OAS introduced a separate bulk-operations API to be used in data plane operations
     const bulkApiProvider = new BulkOperationsProvider(

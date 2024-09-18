@@ -707,8 +707,10 @@ The following example imports 10 vectors from an Amazon S3 bucket into a Pinecon
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone();
-const index = pc.createIndex({
-  name: 'sample-index',
+const indexName = 'sample-index';
+
+await pc.createIndex({
+  name: indexName,
   dimension: 10,
   spec: {
     serverless: {
@@ -717,6 +719,8 @@ const index = pc.createIndex({
     },
   },
 });
+
+const index = pc.Index(indexName);
 
 const storageURI = 's3://my-bucket/my-directory/';
 
@@ -734,8 +738,8 @@ You can [start, cancel, and check the status](https://docs.pinecone.io/guides/da
 - Bulk Import only works with Serverless indexes
 - Bulk Import is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
 - The only object storage provider currently supported is [Amazon S3](https://docs.pinecone.io/guides/operations/integrations/integrate-with-amazon-s3)
-- Vectors will _not_ immediately appear in your index upon completion of the import operation, since this operation
-  is optimized for very large workloads
+- Vectors will take _at least 10 minutes_ to appear in your index upon completion of the import operation, since
+  this operation is optimized for very large workloads
 - See [limits](https://docs.pinecone.io/guides/data/understanding-imports#limits) for further information
 
 ### Seeing index statistics
