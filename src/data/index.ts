@@ -1,25 +1,31 @@
 import { UpsertCommand } from './upsert';
-import { FetchCommand } from './fetch';
 import type { FetchOptions } from './fetch';
-import { UpdateCommand } from './update';
+import { FetchCommand } from './fetch';
 import type { UpdateOptions } from './update';
-import { QueryCommand } from './query';
+import { UpdateCommand } from './update';
 import type { QueryOptions } from './query';
-import { deleteOne } from './deleteOne';
+import { QueryCommand } from './query';
 import type { DeleteOneOptions } from './deleteOne';
-import { deleteMany } from './deleteMany';
+import { deleteOne } from './deleteOne';
 import type { DeleteManyOptions } from './deleteMany';
+import { deleteMany } from './deleteMany';
 import { deleteAll } from './deleteAll';
 import { describeIndexStats } from './describeIndexStats';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { listPaginated } from './list';
 import type { ListOptions } from './list';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
+import { listPaginated } from './list';
+import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
-  RecordMetadata,
   PineconeRecord,
+  RecordMetadata,
 } from './types';
+import { StartImportCommand } from './bulkImport/startImport';
+import { ListImportsCommand } from './bulkImport/listImports';
+import { DescribeImportCommand } from './bulkImport/describeImport';
+import { CancelImportCommand } from './bulkImport/cancelImport';
+import { BulkOperationsProvider } from './bulkImport/bulkOperationsProvider';
+import { prerelease } from '../utils/prerelease';
 
 export type {
   PineconeConfiguration,
@@ -55,7 +61,7 @@ export type { ListOptions } from './list';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
- * against Pinecone indexes. Typically it will be instantiated via a `Pinecone`
+ * against Pinecone indexes. Typically, it will be instantiated via a `Pinecone`
  * client instance that has already built the required configuration from a
  * combination of sources.
  *
@@ -119,9 +125,16 @@ export type { ListOptions } from './list';
  * @typeParam T - The type of metadata associated with each record.
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
+  /** @hidden */
+  _deleteMany: ReturnType<typeof deleteMany>;
+  /** @hidden */
+  _deleteOne: ReturnType<typeof deleteOne>;
+  /** @hidden */
+  _describeIndexStats: ReturnType<typeof describeIndexStats>;
+  /** @hidden */
+  _listPaginated: ReturnType<typeof listPaginated>;
   /** @internal */
   private config: PineconeConfiguration;
-
   /** @internal */
   private target: {
     /** The name of the index that will receive data operations when this class instance is used to upsert, update, query, or delete. */
@@ -133,6 +146,105 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     /** An optional host address override for data operations. */
     indexHostUrl?: string;
   };
+  /** @hidden */
+  private _deleteAll: ReturnType<typeof deleteAll>;
+  /** @hidden */
+  private _fetchCommand: FetchCommand<T>;
+  /** @hidden */
+  private _queryCommand: QueryCommand<T>;
+  /** @hidden */
+  private _updateCommand: UpdateCommand<T>;
+  /** @hidden */
+  private _upsertCommand: UpsertCommand<T>;
+  /** @hidden */
+  private _startImportCommand: StartImportCommand;
+  /** @hidden */
+  private _listImportsCommand: ListImportsCommand;
+  /** @hidden */
+  private _describeImportCommand: DescribeImportCommand;
+  /** @hidden */
+  private _cancelImportCommand: CancelImportCommand;
+
+  /**
+   * Instantiation of Index is handled by {@link Pinecone}
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.index('my-index');
+   * ```
+   *
+   * @constructor
+   * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
+   * @param config - The configuration from the Pinecone client.
+   * @param namespace - The namespace for the index.
+   * @param indexHostUrl - An optional override for the host address used for data operations.
+   * @param additionalHeaders - An optional object of additional header to send with each request.
+   */
+  constructor(
+    indexName: string,
+    config: PineconeConfiguration,
+    namespace = '',
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ) {
+    this.config = config;
+    this.target = {
+      index: indexName,
+      namespace: namespace,
+      indexHostUrl: indexHostUrl,
+    };
+
+    const dataOperationsProvider = new DataOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl,
+      additionalHeaders
+    );
+
+    this._deleteAll = deleteAll(dataOperationsProvider, namespace);
+    this._deleteMany = deleteMany(dataOperationsProvider, namespace);
+    this._deleteOne = deleteOne(dataOperationsProvider, namespace);
+    this._describeIndexStats = describeIndexStats(dataOperationsProvider);
+    this._listPaginated = listPaginated(dataOperationsProvider, namespace);
+
+    this._fetchCommand = new FetchCommand<T>(dataOperationsProvider, namespace);
+    this._queryCommand = new QueryCommand<T>(dataOperationsProvider, namespace);
+    this._updateCommand = new UpdateCommand<T>(
+      dataOperationsProvider,
+      namespace
+    );
+    this._upsertCommand = new UpsertCommand<T>(
+      dataOperationsProvider,
+      namespace
+    );
+
+    // The 2024-10 OAS introduced a separate bulk-operations API to be used in data plane operations
+    const bulkApiProvider = new BulkOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl,
+      additionalHeaders
+    );
+    this._startImportCommand = new StartImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+    this._listImportsCommand = new ListImportsCommand(
+      bulkApiProvider,
+      namespace
+    );
+    this._describeImportCommand = new DescribeImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+    this._cancelImportCommand = new CancelImportCommand(
+      bulkApiProvider,
+      namespace
+    );
+  }
 
   /**
    * Delete all records from the targeted namespace. To delete all records from across all namespaces,
@@ -178,8 +290,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   deleteAll() {
     return this._deleteAll();
   }
-  /** @hidden */
-  private _deleteAll: ReturnType<typeof deleteAll>;
 
   /**
    * Delete records from the index by either an array of ids, or a filter object.
@@ -205,8 +315,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   deleteMany(options: DeleteManyOptions) {
     return this._deleteMany(options);
   }
-  /** @hidden */
-  _deleteMany: ReturnType<typeof deleteMany>;
 
   /**
    * Delete a record from the index by id.
@@ -227,8 +335,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   deleteOne(id: DeleteOneOptions) {
     return this._deleteOne(id);
   }
-  /** @hidden */
-  _deleteOne: ReturnType<typeof deleteOne>;
 
   /**
    * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
@@ -257,8 +363,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   describeIndexStats() {
     return this._describeIndexStats();
   }
-  /** @hidden */
-  _describeIndexStats: ReturnType<typeof describeIndexStats>;
 
   /**
    * The `listPaginated` operation finds vectors based on an id prefix within a single namespace.
@@ -304,68 +408,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   listPaginated(options?: ListOptions) {
     return this._listPaginated(options);
-  }
-  /** @hidden */
-  _listPaginated: ReturnType<typeof listPaginated>;
-
-  /** @hidden */
-  private _fetchCommand: FetchCommand<T>;
-  /** @hidden */
-  private _queryCommand: QueryCommand<T>;
-  /** @hidden */
-  private _updateCommand: UpdateCommand<T>;
-  /** @hidden */
-  private _upsertCommand: UpsertCommand<T>;
-
-  /**
-   * Instantiation of Index is handled by {@link Pinecone}
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const index = pc.index('my-index');
-   * ```
-   *
-   * @constructor
-   * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
-   * @param config - The configuration from the Pinecone client.
-   * @param namespace - The namespace for the index.
-   * @param indexHostUrl - An optional override for the host address used for data operations.
-   * @param additionalHeaders - An optional object of additional header to send with each request.
-   */
-  constructor(
-    indexName: string,
-    config: PineconeConfiguration,
-    namespace = '',
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
-  ) {
-    this.config = config;
-    this.target = {
-      index: indexName,
-      namespace: namespace,
-      indexHostUrl: indexHostUrl,
-    };
-
-    const apiProvider = new DataOperationsProvider(
-      config,
-      indexName,
-      indexHostUrl,
-      additionalHeaders
-    );
-
-    this._deleteAll = deleteAll(apiProvider, namespace);
-    this._deleteMany = deleteMany(apiProvider, namespace);
-    this._deleteOne = deleteOne(apiProvider, namespace);
-    this._describeIndexStats = describeIndexStats(apiProvider);
-    this._listPaginated = listPaginated(apiProvider, namespace);
-
-    this._fetchCommand = new FetchCommand<T>(apiProvider, namespace);
-    this._queryCommand = new QueryCommand<T>(apiProvider, namespace);
-    this._updateCommand = new UpdateCommand<T>(apiProvider, namespace);
-    this._upsertCommand = new UpsertCommand<T>(apiProvider, namespace);
   }
 
   /**
@@ -499,5 +541,115 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async update(options: UpdateOptions<T>) {
     return await this._updateCommand.run(options);
+  }
+
+  /**
+   * Start an asynchronous import of vectors from object storage into a Pinecone Serverless index.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.startImport('s3://my-bucket/my-data'));
+   *
+   * // {"id":"1"}
+   * ```
+   *
+   * @param uri - (Required) The URI prefix under which the data to import is available. All data within this prefix
+   * will be listed then imported into the target index. Currently only `s3://` URIs are supported.
+   * @param integration - (Optional) The name of the storage integration that should be used to access the data.
+   * Defaults to None.
+   * @param errorMode - (Optional) Defaults to "Continue". If set to "Continue", the import operation will continue
+   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
+   * "Abort" to stop the import operation if any records fail to import.
+   */
+  @prerelease('2024-10')
+  async startImport(uri: string, errorMode?: string, integration?: string) {
+    return await this._startImportCommand.run(uri, errorMode, integration);
+  }
+
+  /**
+   * List all recent and ongoing import operations.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.listImports());
+   *
+   * // {
+   * //  data: [
+   * //    {
+   * //      id: '1',
+   * //      uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
+   * //      status: 'Completed',
+   * //      createdAt: 2024-09-17T16:59:57.973Z,
+   * //      finishedAt: 2024-09-17T17:00:12.809Z,
+   * //      percentComplete: 100,
+   * //      recordsImported: 20,
+   * //      error: undefined
+   * //    }
+   * //  ],
+   * //  pagination: undefined  // Example is only 1 item, so no pag. token given.
+   * // }
+   * ```
+   *
+   * @param limit - (Optional) Max number of import operations to return per page.
+   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   */
+  @prerelease('2024-10')
+  async listImports(limit?: number, paginationToken?: string) {
+    return await this._listImportsCommand.run(limit, paginationToken);
+  }
+
+  /**
+   * Return details of a specific import operation.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.describeImport('import-id'));
+   *
+   * // {
+   * //  id: '1',
+   * //  uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
+   * //  status: 'Completed',
+   * //  createdAt: 2024-09-17T16:59:57.973Z,
+   * //  finishedAt: 2024-09-17T17:00:12.809Z,
+   * //  percentComplete: 100,
+   * //  recordsImported: 20,
+   * //  error: undefined
+   * // }
+   * ```
+   *
+   * @param id - The id of the import operation to describe.
+   */
+  @prerelease('2024-10')
+  async describeImport(id: string) {
+    return await this._describeImportCommand.run(id);
+  }
+
+  /**
+   * Cancel a specific import operation.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.cancelImport('import-id'));
+   *
+   * // {}
+   * ```
+   *
+   * @param id - The id of the import operation to cancel.
+   */
+  @prerelease('2024-10')
+  async cancelImport(id: string) {
+    return await this._cancelImportCommand.run(id);
   }
 }
