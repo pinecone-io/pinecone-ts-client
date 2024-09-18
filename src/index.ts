@@ -52,7 +52,6 @@ export type {
   DeletionProtection,
   DescribeCollectionRequest,
   DescribeIndexRequest,
-  Embedding,
   FetchAPI,
   IndexList,
   IndexModel,
@@ -60,5 +59,5 @@ export type {
   ServerlessSpecCloudEnum,
   PodSpec,
   PodSpecMetadataConfig,
-} from './pinecone-generated-ts-fetch/control';
-export type { ListResponse } from './pinecone-generated-ts-fetch/data';
+} from './pinecone-generated-ts-fetch/db_control';
+export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';

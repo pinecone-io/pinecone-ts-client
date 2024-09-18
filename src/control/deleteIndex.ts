@@ -1,4 +1,4 @@
-import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/control';
+import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/db_control';
 import { IndexName } from './types';
 import { PineconeArgumentError } from '../errors';
 

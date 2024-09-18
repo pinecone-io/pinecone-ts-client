@@ -1,7 +1,7 @@
 import { describeIndexStats } from '../describeIndexStats';
-import { DataPlaneApi } from '../../pinecone-generated-ts-fetch/data';
+import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
-import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch/data';
+import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 
 const setupResponse = (response, isSuccess) => {

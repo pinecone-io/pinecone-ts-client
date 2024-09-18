@@ -1,8 +1,8 @@
 import { deleteOne } from '../deleteOne';
 import type {
   DeleteOperationRequest,
-  DataPlaneApi,
-} from '../../pinecone-generated-ts-fetch/data';
+  VectorOperationsApi as DataPlaneApi,
+} from '../../pinecone-generated-ts-fetch/db_data';
 import { DataOperationsProvider } from '../dataOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 

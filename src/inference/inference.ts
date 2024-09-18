@@ -3,7 +3,7 @@ import {
   EmbedRequestInputsInner,
   EmbedRequestParameters,
   InferenceApi,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 
 /* This class is the class through which users interact with Pinecone's inference API.  */

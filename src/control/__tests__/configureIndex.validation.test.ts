@@ -1,6 +1,6 @@
 import { configureIndex } from '../configureIndex';
 import { PineconeArgumentError } from '../../errors';
-import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/control';
+import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 
 describe('configureIndex argument validations', () => {
   let MIA: jest.Mocked<ManageIndexesApi>;
