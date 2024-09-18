@@ -1,5 +1,5 @@
 import { BasePineconeError } from './base';
-import type { ErrorContext } from '../pinecone-generated-ts-fetch/control';
+import type { ErrorContext } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
  * This error is thrown when the client attempts to make a

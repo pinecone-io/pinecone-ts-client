@@ -1,10 +1,10 @@
 import type { PineconeConfiguration } from '../data';
 import {
+  InferenceApi,
   Configuration,
   type ConfigurationParameters as IndexOperationsApiConfigurationParameters,
-  InferenceApi,
   X_PINECONE_API_VERSION,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/inference';
 import {
   buildUserAgent,
   getFetch,

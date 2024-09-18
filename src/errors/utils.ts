@@ -1,4 +1,4 @@
-import type { ResponseError } from '../pinecone-generated-ts-fetch/control';
+import type { ResponseError } from '../pinecone-generated-ts-fetch/db_control';
 
 /** @internal */
 export const extractMessage = async (error: ResponseError): Promise<string> => {
