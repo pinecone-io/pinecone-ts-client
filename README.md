@@ -1007,7 +1007,7 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 ## Inference
 
 Interact with Pinecone's [Inference API](https://docs.pinecone.io/guides/inference/understanding-inference) (currently in [public preview](https://docs.pinecone.io/release-notes/feature-availability)). The Pinecone Inference API is a service that gives
-you access to embedding models hosted on Pinecone's infrastructure.
+you access to inference models hosted on Pinecone's infrastructure.
 
 **Notes:**
 
