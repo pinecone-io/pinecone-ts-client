@@ -130,6 +130,15 @@ export class Inference {
         'You must pass at least one document to rerank'
       );
     }
+    if (query.length == 0) {
+      throw new PineconeArgumentError('You must pass a query to rerank');
+    }
+    if (model.length == 0) {
+      throw new PineconeArgumentError(
+        'You must pass the name of a supported reranking model in order to rerank' +
+          ' documents. See https://docs.pinecone.io/models for supported models.'
+      );
+    }
     // Destructure `options` with defaults
     // Note: If the user passes in key:value pairs in `options` that are not the following, they are ignored
     const {
