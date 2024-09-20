@@ -67,6 +67,7 @@ export class Inference {
    *  @example
    *  ```typescript
    *  import { Pinecone } from '@pinecone-database/pinecone';
+   *
    *  const pc = new Pinecone();
    *  const rerankingModel = "bge-reranker-v2-m3";
    *  const myQuery = "What are some good Turkey dishes for Thanksgiving?";
@@ -112,7 +113,7 @@ export class Inference {
    *
    * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
    * @param query - (Required) The query to rerank documents against.
-   * @param documents - (Required) The documents to rerank. Each document must be either a string or a dictionary
+   * @param documents - (Required) The documents to rerank. Each document must be either a string or an object
    * with (at minimum) a `text` key.
    * @param options - (Optional) Additional options to send with the core reranking request. Options include: how many
    * results to return, whether to return the documents in the response, alternative fields by which the model
@@ -148,11 +149,12 @@ export class Inference {
       parameters = {},
     } = options;
 
-    // Allow documents to be passed a list of strings, or a list of dicts w/at least a `text` key:
+    // Allow documents to be passed a list of strings, or a list of objs w/at least a `text` key:
     let newDocuments: Array<{ [key: string]: string }> = [];
     if (typeof documents[0] === 'object' && !('text' in documents[0])) {
       throw new PineconeArgumentError(
-        '`documents` can only be a list of strings or a list of dictionaries with at least a `text` key, followed by a string value'
+        '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
+          ' string value'
       );
     } else if (typeof documents[0] === 'string') {
       newDocuments = documents.map((doc) => {

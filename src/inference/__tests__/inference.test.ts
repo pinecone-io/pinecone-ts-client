@@ -2,6 +2,7 @@ import { Inference } from '../inference';
 import type { PineconeConfiguration } from '../../data';
 import { inferenceOperationsBuilder } from '../inferenceOperationsBuilder';
 import { PineconeArgumentError } from '../../errors';
+import { Rerank200Response } from '../../pinecone-generated-ts-fetch/inference';
 
 describe('Inference Class: _formatInputs', () => {
   let inference: Inference;
@@ -89,12 +90,13 @@ describe('Inference Class: rerank', () => {
     }
   });
 
-  test('Throws error if list of dicts is passed for docs, but does not contain `text` key', async () => {
+  test('Throws error if list of objs is passed for docs, but does not contain `text` key', async () => {
     const rerankingModel = 'test-model';
     const myQuery = 'test-query';
     const myDocuments = [{ id: '1' }, { id: '2' }];
     const expectedError = new PineconeArgumentError(
-      '`documents` can only be a list of strings or a list of dictionaries with at least a `text` key, followed by a string value'
+      '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
+        ' string value'
     );
     try {
       await inference.rerank(rerankingModel, myQuery, myDocuments);
@@ -103,14 +105,17 @@ describe('Inference Class: rerank', () => {
     }
   });
 
-  test('Confirm list of strings as docs is converted to list of dicts with `text` key', async () => {
+  test('Confirm list of strings as docs is converted to list of objects with `text` key', async () => {
     const rerankingModel = 'test-model';
     const myQuery = 'test-query';
     const myDocuments = ['doc1', 'doc2'];
     const expectedDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
     const rerank = jest.spyOn(inference._inferenceApi, 'rerank');
-    // @ts-ignore
-    rerank.mockResolvedValue({ rerankResponse: {} });
+    rerank.mockResolvedValue({
+      model: 'some-model',
+      data: [{}],
+      usage: { rerankUnits: 1 },
+    } as Rerank200Response);
     await inference.rerank(rerankingModel, myQuery, myDocuments);
 
     const expectedReq = {
