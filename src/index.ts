@@ -1,9 +1,16 @@
+// Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
-
 export * as Errors from './errors';
-
 export { EmbeddingsList } from './models/embeddingsList';
+
+// Interface exports
+export { RerankOptions } from './inference/inference';
+export {
+  Rerank200Response,
+  Rerank200ResponseUsage,
+  RankResult,
+} from './pinecone-generated-ts-fetch/inference';
 
 // Type exports
 export type {
