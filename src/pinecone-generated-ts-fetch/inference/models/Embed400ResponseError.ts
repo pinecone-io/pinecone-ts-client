@@ -16,25 +16,25 @@ import { exists, mapValues } from '../runtime';
 /**
  * Detailed information about the error that occurred.
  * @export
- * @interface ErrorResponseError
+ * @interface Embed400ResponseError
  */
-export interface ErrorResponseError {
+export interface Embed400ResponseError {
     /**
      * 
      * @type {string}
-     * @memberof ErrorResponseError
+     * @memberof Embed400ResponseError
      */
-    code: ErrorResponseErrorCodeEnum;
+    code: Embed400ResponseErrorCodeEnum;
     /**
      * 
      * @type {string}
-     * @memberof ErrorResponseError
+     * @memberof Embed400ResponseError
      */
     message: string;
     /**
      * Additional information about the error. This field is not guaranteed to be present.
      * @type {object}
-     * @memberof ErrorResponseError
+     * @memberof Embed400ResponseError
      */
     details?: object;
 }
@@ -43,7 +43,7 @@ export interface ErrorResponseError {
 /**
  * @export
  */
-export const ErrorResponseErrorCodeEnum = {
+export const Embed400ResponseErrorCodeEnum = {
     Ok: 'OK',
     Unknown: 'UNKNOWN',
     InvalidArgument: 'INVALID_ARGUMENT',
@@ -63,13 +63,13 @@ export const ErrorResponseErrorCodeEnum = {
     DataLoss: 'DATA_LOSS',
     Forbidden: 'FORBIDDEN'
 } as const;
-export type ErrorResponseErrorCodeEnum = typeof ErrorResponseErrorCodeEnum[keyof typeof ErrorResponseErrorCodeEnum];
+export type Embed400ResponseErrorCodeEnum = typeof Embed400ResponseErrorCodeEnum[keyof typeof Embed400ResponseErrorCodeEnum];
 
 
 /**
- * Check if a given object implements the ErrorResponseError interface.
+ * Check if a given object implements the Embed400ResponseError interface.
  */
-export function instanceOfErrorResponseError(value: object): boolean {
+export function instanceOfEmbed400ResponseError(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "code" in value;
     isInstance = isInstance && "message" in value;
@@ -77,11 +77,11 @@ export function instanceOfErrorResponseError(value: object): boolean {
     return isInstance;
 }
 
-export function ErrorResponseErrorFromJSON(json: any): ErrorResponseError {
-    return ErrorResponseErrorFromJSONTyped(json, false);
+export function Embed400ResponseErrorFromJSON(json: any): Embed400ResponseError {
+    return Embed400ResponseErrorFromJSONTyped(json, false);
 }
 
-export function ErrorResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponseError {
+export function Embed400ResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Embed400ResponseError {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -93,7 +93,7 @@ export function ErrorResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: 
     };
 }
 
-export function ErrorResponseErrorToJSON(value?: ErrorResponseError | null): any {
+export function Embed400ResponseErrorToJSON(value?: Embed400ResponseError | null): any {
     if (value === undefined) {
         return undefined;
     }

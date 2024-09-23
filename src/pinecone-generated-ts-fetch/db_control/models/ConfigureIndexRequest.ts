@@ -44,12 +44,6 @@ export interface ConfigureIndexRequest {
      * @memberof ConfigureIndexRequest
      */
     deletionProtection?: DeletionProtection;
-    /**
-     * Custom user tags added to an index. Keys must be alphanumeric and 80 characters or less. Values must be 120 characters or less.
-     * @type {{ [key: string]: string; }}
-     * @memberof ConfigureIndexRequest
-     */
-    tags?: { [key: string]: string; };
 }
 
 /**
@@ -73,7 +67,6 @@ export function ConfigureIndexRequestFromJSONTyped(json: any, ignoreDiscriminato
         
         'spec': !exists(json, 'spec') ? undefined : ConfigureIndexRequestSpecFromJSON(json['spec']),
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
-        'tags': !exists(json, 'tags') ? undefined : json['tags'],
     };
 }
 
@@ -88,7 +81,6 @@ export function ConfigureIndexRequestToJSON(value?: ConfigureIndexRequest | null
         
         'spec': ConfigureIndexRequestSpecToJSON(value.spec),
         'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
-        'tags': value.tags,
     };
 }
 

@@ -13,37 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ErrorResponseError } from './ErrorResponseError';
+import type { Embed400ResponseError } from './Embed400ResponseError';
 import {
-    ErrorResponseErrorFromJSON,
-    ErrorResponseErrorFromJSONTyped,
-    ErrorResponseErrorToJSON,
-} from './ErrorResponseError';
+    Embed400ResponseErrorFromJSON,
+    Embed400ResponseErrorFromJSONTyped,
+    Embed400ResponseErrorToJSON,
+} from './Embed400ResponseError';
 
 /**
  * The response shape used for all error responses.
  * @export
- * @interface ErrorResponse
+ * @interface Embed400Response
  */
-export interface ErrorResponse {
+export interface Embed400Response {
     /**
      * The HTTP status code of the error.
      * @type {number}
-     * @memberof ErrorResponse
+     * @memberof Embed400Response
      */
     status: number;
     /**
      * 
-     * @type {ErrorResponseError}
-     * @memberof ErrorResponse
+     * @type {Embed400ResponseError}
+     * @memberof Embed400Response
      */
-    error: ErrorResponseError;
+    error: Embed400ResponseError;
 }
 
 /**
- * Check if a given object implements the ErrorResponse interface.
+ * Check if a given object implements the Embed400Response interface.
  */
-export function instanceOfErrorResponse(value: object): boolean {
+export function instanceOfEmbed400Response(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "error" in value;
@@ -51,22 +51,22 @@ export function instanceOfErrorResponse(value: object): boolean {
     return isInstance;
 }
 
-export function ErrorResponseFromJSON(json: any): ErrorResponse {
-    return ErrorResponseFromJSONTyped(json, false);
+export function Embed400ResponseFromJSON(json: any): Embed400Response {
+    return Embed400ResponseFromJSONTyped(json, false);
 }
 
-export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponse {
+export function Embed400ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Embed400Response {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'status': json['status'],
-        'error': ErrorResponseErrorFromJSON(json['error']),
+        'error': Embed400ResponseErrorFromJSON(json['error']),
     };
 }
 
-export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
+export function Embed400ResponseToJSON(value?: Embed400Response | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -76,7 +76,7 @@ export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
     return {
         
         'status': value.status,
-        'error': ErrorResponseErrorToJSON(value.error),
+        'error': Embed400ResponseErrorToJSON(value.error),
     };
 }
 

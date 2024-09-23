@@ -15,23 +15,23 @@
 
 import * as runtime from '../runtime';
 import type {
+  Embed400Response,
   EmbedRequest,
   EmbeddingsList,
-  ErrorResponse,
+  Rerank200Response,
   RerankRequest,
-  RerankResult,
 } from '../models/index';
 import {
+    Embed400ResponseFromJSON,
+    Embed400ResponseToJSON,
     EmbedRequestFromJSON,
     EmbedRequestToJSON,
     EmbeddingsListFromJSON,
     EmbeddingsListToJSON,
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
+    Rerank200ResponseFromJSON,
+    Rerank200ResponseToJSON,
     RerankRequestFromJSON,
     RerankRequestToJSON,
-    RerankResultFromJSON,
-    RerankResultToJSON,
 } from '../models/index';
 
 export interface EmbedOperationRequest {
@@ -86,7 +86,7 @@ export class InferenceApi extends runtime.BaseAPI {
      * Using a reranker to rerank a list of items for a query
      * Rerank items
      */
-    async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
+    async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Rerank200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -105,14 +105,14 @@ export class InferenceApi extends runtime.BaseAPI {
             body: RerankRequestToJSON(requestParameters.rerankRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RerankResultFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => Rerank200ResponseFromJSON(jsonValue));
     }
 
     /**
      * Using a reranker to rerank a list of items for a query
      * Rerank items
      */
-    async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {
+    async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Rerank200Response> {
         const response = await this.rerankRaw(requestParameters, initOverrides);
         return await response.value();
     }

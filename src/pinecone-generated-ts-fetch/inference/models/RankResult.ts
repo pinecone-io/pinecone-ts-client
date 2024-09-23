@@ -14,35 +14,35 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A ranked document with a relevance score and an index position.
+ * Reranking score of single input
  * @export
- * @interface RankedDocument
+ * @interface RankResult
  */
-export interface RankedDocument {
+export interface RankResult {
     /**
-     * The index of the document
+     * The index of the document in the input list
      * @type {number}
-     * @memberof RankedDocument
+     * @memberof RankResult
      */
     index: number;
     /**
      * The relevance score of the document normalized between 0 and 1. 
      * @type {number}
-     * @memberof RankedDocument
+     * @memberof RankResult
      */
     score: number;
     /**
      * Document for reranking
      * @type {{ [key: string]: string; }}
-     * @memberof RankedDocument
+     * @memberof RankResult
      */
     document?: { [key: string]: string; };
 }
 
 /**
- * Check if a given object implements the RankedDocument interface.
+ * Check if a given object implements the RankResult interface.
  */
-export function instanceOfRankedDocument(value: object): boolean {
+export function instanceOfRankResult(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "index" in value;
     isInstance = isInstance && "score" in value;
@@ -50,11 +50,11 @@ export function instanceOfRankedDocument(value: object): boolean {
     return isInstance;
 }
 
-export function RankedDocumentFromJSON(json: any): RankedDocument {
-    return RankedDocumentFromJSONTyped(json, false);
+export function RankResultFromJSON(json: any): RankResult {
+    return RankResultFromJSONTyped(json, false);
 }
 
-export function RankedDocumentFromJSONTyped(json: any, ignoreDiscriminator: boolean): RankedDocument {
+export function RankResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): RankResult {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -66,7 +66,7 @@ export function RankedDocumentFromJSONTyped(json: any, ignoreDiscriminator: bool
     };
 }
 
-export function RankedDocumentToJSON(value?: RankedDocument | null): any {
+export function RankResultToJSON(value?: RankResult | null): any {
     if (value === undefined) {
         return undefined;
     }

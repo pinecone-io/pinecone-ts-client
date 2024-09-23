@@ -78,7 +78,7 @@ export interface DescribeIndexRequest {
 export class ManageIndexesApi extends runtime.BaseAPI {
 
     /**
-     * This operation configures an existing index.   For serverless indexes, you can configure only index deletion protection and tags. For pod-based indexes, you can configure the pod size, number of replicas, tags, and index deletion protection.   It is not possible to change the pod type of a pod-based index. However, you can create a collection from a pod-based index and then [create a new pod-based index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection. For guidance and examples, see [Configure an index](http://docs.pinecone.io/guides/indexes/configure-an-index).
+     * This operation configures an existing index.   For serverless indexes, you can configure only index deletion protection. For pod-based indexes, you can configure the pod size, number of replicas, and index deletion protection.   It is not possible to change the pod type of a pod-based index. However, you can create a collection from a pod-based index and then [create a new pod-based index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection. For guidance and examples, see [Configure an index](http://docs.pinecone.io/guides/indexes/configure-an-index).
      * Configure an index
      */
     async configureIndexRaw(requestParameters: ConfigureIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
@@ -112,7 +112,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * This operation configures an existing index.   For serverless indexes, you can configure only index deletion protection and tags. For pod-based indexes, you can configure the pod size, number of replicas, tags, and index deletion protection.   It is not possible to change the pod type of a pod-based index. However, you can create a collection from a pod-based index and then [create a new pod-based index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection. For guidance and examples, see [Configure an index](http://docs.pinecone.io/guides/indexes/configure-an-index).
+     * This operation configures an existing index.   For serverless indexes, you can configure only index deletion protection. For pod-based indexes, you can configure the pod size, number of replicas, and index deletion protection.   It is not possible to change the pod type of a pod-based index. However, you can create a collection from a pod-based index and then [create a new pod-based index with a different pod type](http://docs.pinecone.io/guides/indexes/create-an-index#create-an-index-from-a-collection) from the collection. For guidance and examples, see [Configure an index](http://docs.pinecone.io/guides/indexes/configure-an-index).
      * Configure an index
      */
     async configureIndex(requestParameters: ConfigureIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
