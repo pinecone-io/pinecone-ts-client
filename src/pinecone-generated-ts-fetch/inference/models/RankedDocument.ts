@@ -14,35 +14,35 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Reranking score of single input
+ * A ranked document with a relevance score and an index position.
  * @export
- * @interface RankResult
+ * @interface RankedDocument
  */
-export interface RankResult {
+export interface RankedDocument {
     /**
-     * The index of the document in the input list
+     * The index of the document
      * @type {number}
-     * @memberof RankResult
+     * @memberof RankedDocument
      */
     index: number;
     /**
      * The relevance score of the document normalized between 0 and 1. 
      * @type {number}
-     * @memberof RankResult
+     * @memberof RankedDocument
      */
     score: number;
     /**
      * Document for reranking
      * @type {{ [key: string]: string; }}
-     * @memberof RankResult
+     * @memberof RankedDocument
      */
     document?: { [key: string]: string; };
 }
 
 /**
- * Check if a given object implements the RankResult interface.
+ * Check if a given object implements the RankedDocument interface.
  */
-export function instanceOfRankResult(value: object): boolean {
+export function instanceOfRankedDocument(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "index" in value;
     isInstance = isInstance && "score" in value;
@@ -50,11 +50,11 @@ export function instanceOfRankResult(value: object): boolean {
     return isInstance;
 }
 
-export function RankResultFromJSON(json: any): RankResult {
-    return RankResultFromJSONTyped(json, false);
+export function RankedDocumentFromJSON(json: any): RankedDocument {
+    return RankedDocumentFromJSONTyped(json, false);
 }
 
-export function RankResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): RankResult {
+export function RankedDocumentFromJSONTyped(json: any, ignoreDiscriminator: boolean): RankedDocument {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -66,7 +66,7 @@ export function RankResultFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function RankResultToJSON(value?: RankResult | null): any {
+export function RankedDocumentToJSON(value?: RankedDocument | null): any {
     if (value === undefined) {
         return undefined;
     }

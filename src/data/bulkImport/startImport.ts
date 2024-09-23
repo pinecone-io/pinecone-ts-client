@@ -18,7 +18,7 @@ export class StartImportCommand {
   async run(
     uri: string,
     errorMode?: string | undefined,
-    integration?: string | undefined
+    integrationId?: string | undefined
   ): Promise<StartImportResponse> {
     if (!uri) {
       throw new PineconeArgumentError(
@@ -46,7 +46,7 @@ export class StartImportCommand {
       startImportRequest: {
         uri: uri,
         errorMode: { onError: error },
-        integration: integration,
+        integrationId: integrationId,
       },
     };
 
