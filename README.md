@@ -1018,14 +1018,15 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 
 ## Inference
 
-Interact with Pinecone's Inference API (currently in public preview). The Pinecone Inference API is a service that gives
-you access to embedding models hosted on Pinecone's infrastructure. Read more at [Understanding Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).
+Interact with Pinecone's [Inference API](https://docs.pinecone.io/guides/inference/understanding-inference) (currently in [public preview](https://docs.pinecone.io/release-notes/feature-availability)). The Pinecone Inference API is a service that gives
+you access to inference models hosted on Pinecone's infrastructure.
 
 **Notes:**
 
-Models currently supported:
+Supported models:
 
-- [multilingual-e5-large](https://arxiv.org/pdf/2402.05672)
+- Embedding: [multilingual-e5-large](https://docs.pinecone.io/models/multilingual-e5-large)
+- Reranking: [bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)
 
 ## Create embeddings
 
@@ -1088,4 +1089,63 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 });
 
 // << Send query to Pinecone to retrieve similar documents >>
+```
+
+## Rerank documents
+
+Rerank documents in descending relevance-order against a query.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const rerankingModel = 'bge-reranker-v2-m3';
+const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
+const myDocuments = [
+  { text: 'I love turkey sandwiches with pastrami' },
+  {
+    text: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+  },
+  { text: 'My favorite Thanksgiving dish is pumpkin pie' },
+  { text: 'Turkey is a great source of protein' },
+];
+
+// >>> Sample without passing an `options` object:
+const response = await pc.inference.rerank(
+  rerankingModel,
+  myQuery,
+  myDocuments
+);
+console.log(response);
+// {
+// model: 'bge-reranker-v2-m3',
+// data: [
+//   { index: 1, score: 0.5633179, document: [Object] },
+//   { index: 2, score: 0.02013874, document: [Object] },
+//   { index: 3, score: 0.00035419367, document: [Object] },
+//   { index: 0, score: 0.00021485926, document: [Object] }
+// ],
+// usage: { rerankUnits: 1 }
+// }
+
+// >>> Sample with an `options` object:
+const rerankOptions = {
+  topN: 3,
+  returnDocuments: false,
+};
+const response = await pc.inference.rerank(
+  rerankingModel,
+  myQuery,
+  myDocuments,
+  rerankOptions
+);
+console.log(response);
+// {
+// model: 'bge-reranker-v2-m3',
+// data: [
+//   { index: 1, score: 0.5633179, document: undefined },
+//   { index: 2, score: 0.02013874, document: undefined },
+//   { index: 3, score: 0.00035419367, document: undefined },
+// ],
+// usage: { rerankUnits: 1 }
+//}
 ```
