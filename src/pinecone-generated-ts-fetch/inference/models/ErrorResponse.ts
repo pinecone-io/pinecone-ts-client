@@ -13,37 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Embed400ResponseError } from './Embed400ResponseError';
+import type { ErrorResponseError } from './ErrorResponseError';
 import {
-    Embed400ResponseErrorFromJSON,
-    Embed400ResponseErrorFromJSONTyped,
-    Embed400ResponseErrorToJSON,
-} from './Embed400ResponseError';
+    ErrorResponseErrorFromJSON,
+    ErrorResponseErrorFromJSONTyped,
+    ErrorResponseErrorToJSON,
+} from './ErrorResponseError';
 
 /**
  * The response shape used for all error responses.
  * @export
- * @interface Embed400Response
+ * @interface ErrorResponse
  */
-export interface Embed400Response {
+export interface ErrorResponse {
     /**
      * The HTTP status code of the error.
      * @type {number}
-     * @memberof Embed400Response
+     * @memberof ErrorResponse
      */
     status: number;
     /**
      * 
-     * @type {Embed400ResponseError}
-     * @memberof Embed400Response
+     * @type {ErrorResponseError}
+     * @memberof ErrorResponse
      */
-    error: Embed400ResponseError;
+    error: ErrorResponseError;
 }
 
 /**
- * Check if a given object implements the Embed400Response interface.
+ * Check if a given object implements the ErrorResponse interface.
  */
-export function instanceOfEmbed400Response(value: object): boolean {
+export function instanceOfErrorResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "error" in value;
@@ -51,22 +51,22 @@ export function instanceOfEmbed400Response(value: object): boolean {
     return isInstance;
 }
 
-export function Embed400ResponseFromJSON(json: any): Embed400Response {
-    return Embed400ResponseFromJSONTyped(json, false);
+export function ErrorResponseFromJSON(json: any): ErrorResponse {
+    return ErrorResponseFromJSONTyped(json, false);
 }
 
-export function Embed400ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Embed400Response {
+export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'status': json['status'],
-        'error': Embed400ResponseErrorFromJSON(json['error']),
+        'error': ErrorResponseErrorFromJSON(json['error']),
     };
 }
 
-export function Embed400ResponseToJSON(value?: Embed400Response | null): any {
+export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -76,7 +76,7 @@ export function Embed400ResponseToJSON(value?: Embed400Response | null): any {
     return {
         
         'status': value.status,
-        'error': Embed400ResponseErrorToJSON(value.error),
+        'error': ErrorResponseErrorToJSON(value.error),
     };
 }
 
