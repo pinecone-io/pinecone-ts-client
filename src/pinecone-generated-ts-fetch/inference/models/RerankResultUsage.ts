@@ -16,31 +16,31 @@ import { exists, mapValues } from '../runtime';
 /**
  * Usage statistics for the inference
  * @export
- * @interface Rerank200ResponseUsage
+ * @interface RerankResultUsage
  */
-export interface Rerank200ResponseUsage {
+export interface RerankResultUsage {
     /**
      * 
      * @type {number}
-     * @memberof Rerank200ResponseUsage
+     * @memberof RerankResultUsage
      */
     rerankUnits?: number;
 }
 
 /**
- * Check if a given object implements the Rerank200ResponseUsage interface.
+ * Check if a given object implements the RerankResultUsage interface.
  */
-export function instanceOfRerank200ResponseUsage(value: object): boolean {
+export function instanceOfRerankResultUsage(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function Rerank200ResponseUsageFromJSON(json: any): Rerank200ResponseUsage {
-    return Rerank200ResponseUsageFromJSONTyped(json, false);
+export function RerankResultUsageFromJSON(json: any): RerankResultUsage {
+    return RerankResultUsageFromJSONTyped(json, false);
 }
 
-export function Rerank200ResponseUsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rerank200ResponseUsage {
+export function RerankResultUsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): RerankResultUsage {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -50,7 +50,7 @@ export function Rerank200ResponseUsageFromJSONTyped(json: any, ignoreDiscriminat
     };
 }
 
-export function Rerank200ResponseUsageToJSON(value?: Rerank200ResponseUsage | null): any {
+export function RerankResultUsageToJSON(value?: RerankResultUsage | null): any {
     if (value === undefined) {
         return undefined;
     }
