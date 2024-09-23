@@ -12,7 +12,7 @@ import {
   normalizeUrl,
   queryParamsStringify,
 } from '../../utils';
-import { IndexHostSingleton } from '../vectors/indexHostSingleton';
+import { IndexHostSingleton } from '../indexHostSingleton';
 import { middleware } from '../../utils/middleware';
 
 export class BulkOperationsProvider {

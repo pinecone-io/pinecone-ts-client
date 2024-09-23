@@ -1,8 +1,8 @@
-import type { PineconeConfiguration } from './types';
-import type { IndexName } from '../../control';
-import { describeIndex, indexOperationsBuilder } from '../../control';
-import { PineconeUnableToResolveHostError } from '../../errors';
-import { normalizeUrl } from '../../utils';
+import type { PineconeConfiguration } from './vectors/types';
+import type { IndexName } from '../control';
+import { describeIndex, indexOperationsBuilder } from '../control';
+import { PineconeUnableToResolveHostError } from '../errors';
+import { normalizeUrl } from '../utils';
 
 // We use describeIndex to retrieve the data plane url (host) for a given API key
 // and index. We only ever want to call describeIndex a maximum of once per API key

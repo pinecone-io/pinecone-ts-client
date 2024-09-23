@@ -12,7 +12,7 @@ import {
   getFetch,
   normalizeUrl,
 } from '../../utils';
-import { IndexHostSingleton } from './indexHostSingleton';
+import { IndexHostSingleton } from '../indexHostSingleton';
 import { middleware } from '../../utils/middleware';
 
 export class DataOperationsProvider {

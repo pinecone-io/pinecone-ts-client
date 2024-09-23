@@ -1,4 +1,4 @@
-import { IndexHostSingleton } from '../vectors/indexHostSingleton';
+import { IndexHostSingleton } from '../indexHostSingleton';
 
 const mockDescribeIndex = jest.fn();
 const mockIndexOperationsBuilder = jest.fn();

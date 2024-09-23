@@ -1,10 +1,10 @@
-import { listPaginated } from '../vectors/list';
+import { listPaginated } from '../../vectors/list';
 import type {
   ListRequest,
   ListResponse,
   VectorOperationsApi as DataPlaneApi,
-} from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
+} from '../../../pinecone-generated-ts-fetch/db_data';
+import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListRequest) => Promise<ListResponse> = jest
