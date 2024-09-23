@@ -2,7 +2,7 @@ import { Inference } from '../inference';
 import type { PineconeConfiguration } from '../../data';
 import { inferenceOperationsBuilder } from '../inferenceOperationsBuilder';
 import { PineconeArgumentError } from '../../errors';
-import { Rerank200Response } from '../../pinecone-generated-ts-fetch/inference';
+import { RerankResult } from '../../pinecone-generated-ts-fetch/inference';
 
 describe('Inference Class: _formatInputs', () => {
   let inference: Inference;
@@ -115,7 +115,7 @@ describe('Inference Class: rerank', () => {
       model: 'some-model',
       data: [{}],
       usage: { rerankUnits: 1 },
-    } as Rerank200Response);
+    } as RerankResult);
     await inference.rerank(rerankingModel, myQuery, myDocuments);
 
     const expectedReq = {

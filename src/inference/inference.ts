@@ -3,7 +3,7 @@ import {
   EmbedRequestInputsInner,
   EmbedRequestParameters,
   InferenceApi,
-  Rerank200Response as RerankResponse,
+  RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
@@ -125,7 +125,7 @@ export class Inference {
     query: string,
     documents: Array<{ [key: string]: string } | string>,
     options: RerankOptions = {}
-  ): Promise<RerankResponse> {
+  ): Promise<RerankResult> {
     if (documents.length == 0) {
       throw new PineconeArgumentError(
         'You must pass at least one document to rerank'
