@@ -27,11 +27,11 @@ import {
  */
 export interface StartImportRequest {
     /**
-     * The name of the storage integration that should be used to access the data.
+     * The id of the storage integration that should be used to access the data.
      * @type {string}
      * @memberof StartImportRequest
      */
-    integration?: string;
+    integrationId?: string;
     /**
      * The URI prefix under which the data to import is available. All data within this prefix will be listed then imported into the target index. Currently only `s3://` URIs are supported.
      * @type {string}
@@ -65,7 +65,7 @@ export function StartImportRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'integration': !exists(json, 'integration') ? undefined : json['integration'],
+        'integrationId': !exists(json, 'integrationId') ? undefined : json['integrationId'],
         'uri': !exists(json, 'uri') ? undefined : json['uri'],
         'errorMode': !exists(json, 'errorMode') ? undefined : ImportErrorModeFromJSON(json['errorMode']),
     };
@@ -80,7 +80,7 @@ export function StartImportRequestToJSON(value?: StartImportRequest | null): any
     }
     return {
         
-        'integration': value.integration,
+        'integrationId': value.integrationId,
         'uri': value.uri,
         'errorMode': ImportErrorModeToJSON(value.errorMode),
     };
