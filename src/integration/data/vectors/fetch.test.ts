@@ -1,10 +1,10 @@
-import { Pinecone, Index } from '../../index';
+import { Pinecone, Index } from '../../../index';
 import {
   generateRecords,
   randomString,
   INDEX_NAME,
   waitUntilRecordsReady,
-} from '../test-helpers';
+} from '../../test-helpers';
 
 describe('fetch', () => {
   let pinecone: Pinecone,

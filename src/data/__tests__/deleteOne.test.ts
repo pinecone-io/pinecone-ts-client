@@ -1,9 +1,9 @@
-import { deleteOne } from '../deleteOne';
+import { deleteOne } from '../vectors/deleteOne';
 import type {
   DeleteOperationRequest,
   VectorOperationsApi as DataPlaneApi,
 } from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 
 const setupDeleteResponse = (response, isSuccess) => {

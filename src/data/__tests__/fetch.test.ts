@@ -1,6 +1,6 @@
-import { FetchCommand } from '../fetch';
+import { FetchCommand } from '../vectors/fetch';
 import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
 import type {
   FetchRequest,
   FetchResponse,

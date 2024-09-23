@@ -1,5 +1,5 @@
 import { Pinecone } from '../pinecone';
-import { IndexHostSingleton } from '../data/indexHostSingleton';
+import { IndexHostSingleton } from '../data/vectors/indexHostSingleton';
 import type { PineconeConfiguration } from '../data';
 import * as utils from '../utils';
 
@@ -14,9 +14,9 @@ jest.mock('../utils', () => {
     getFetch: () => fakeFetch,
   };
 });
-jest.mock('../data/fetch');
-jest.mock('../data/upsert');
-jest.mock('../data/indexHostSingleton');
+jest.mock('../data/vectors/fetch');
+jest.mock('../data/vectors/upsert');
+jest.mock('../data/vectors/indexHostSingleton');
 jest.mock('../control', () => {
   const realControl = jest.requireActual('../control');
   return {

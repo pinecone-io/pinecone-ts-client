@@ -18,7 +18,7 @@ import type {
   CreateCollectionRequest,
   HTTPHeaders,
 } from './pinecone-generated-ts-fetch/db_control';
-import { IndexHostSingleton } from './data/indexHostSingleton';
+import { IndexHostSingleton } from './data/vectors/indexHostSingleton';
 import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
@@ -29,7 +29,7 @@ import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
-import { PineconeConfigurationProperties } from './data/types';
+import { PineconeConfigurationProperties } from './data/vectors/types';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use

@@ -1,4 +1,4 @@
-import { deleteMany } from '../deleteMany';
+import { deleteMany } from '../vectors/deleteMany';
 import { setupDeleteSuccess } from './deleteOne.test';
 import { PineconeArgumentError } from '../../errors';
 

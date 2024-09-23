@@ -1,6 +1,6 @@
-import { UpdateCommand } from '../update';
+import { UpdateCommand } from '../vectors/update';
 import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
 import type { UpdateOperationRequest } from '../../pinecone-generated-ts-fetch/db_data';
 
 const setupResponse = (response, isSuccess) => {

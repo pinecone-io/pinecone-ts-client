@@ -1,5 +1,5 @@
-import { DataOperationsProvider } from '../dataOperationsProvider';
-import { IndexHostSingleton } from '../indexHostSingleton';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
+import { IndexHostSingleton } from '../vectors/indexHostSingleton';
 import { Configuration } from '../../pinecone-generated-ts-fetch/db_data';
 
 jest.mock('../../pinecone-generated-ts-fetch/db_data', () => ({

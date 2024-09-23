@@ -1,6 +1,6 @@
-import { describeIndexStats } from '../describeIndexStats';
+import { describeIndexStats } from '../vectors/describeIndexStats';
 import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 

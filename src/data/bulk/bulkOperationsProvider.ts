@@ -1,4 +1,4 @@
-import type { PineconeConfiguration } from '../types';
+import type { PineconeConfiguration } from '../vectors/types';
 import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   BulkOperationsApi,
@@ -12,7 +12,7 @@ import {
   normalizeUrl,
   queryParamsStringify,
 } from '../../utils';
-import { IndexHostSingleton } from '../indexHostSingleton';
+import { IndexHostSingleton } from '../vectors/indexHostSingleton';
 import { middleware } from '../../utils/middleware';
 
 export class BulkOperationsProvider {

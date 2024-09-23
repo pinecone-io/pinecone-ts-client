@@ -1,10 +1,10 @@
-import { QueryCommand } from '../query';
+import { QueryCommand } from '../vectors/query';
 import { PineconeArgumentError } from '../../errors';
-import { DataOperationsProvider } from '../dataOperationsProvider';
-import { PineconeConfiguration } from '../types';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
+import { PineconeConfiguration } from '../vectors/types';
 
-jest.mock('../dataOperationsProvider');
-jest.mock('../types');
+jest.mock('../vectors/dataOperationsProvider');
+jest.mock('../vectors/types');
 
 describe('Query command tests', () => {
   let apiProvider: DataOperationsProvider;
