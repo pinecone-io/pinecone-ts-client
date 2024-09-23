@@ -21,7 +21,7 @@ import {
 } from './ImportErrorMode';
 
 /**
- * The request for the `import` operation.
+ * The request for the `start_import` operation.
  * @export
  * @interface StartImportRequest
  */

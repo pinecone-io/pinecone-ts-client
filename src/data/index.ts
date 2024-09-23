@@ -1,30 +1,30 @@
-import { UpsertCommand } from './upsert';
-import type { FetchOptions } from './fetch';
-import { FetchCommand } from './fetch';
-import type { UpdateOptions } from './update';
-import { UpdateCommand } from './update';
-import type { QueryOptions } from './query';
-import { QueryCommand } from './query';
-import type { DeleteOneOptions } from './deleteOne';
-import { deleteOne } from './deleteOne';
-import type { DeleteManyOptions } from './deleteMany';
-import { deleteMany } from './deleteMany';
-import { deleteAll } from './deleteAll';
-import { describeIndexStats } from './describeIndexStats';
-import { DataOperationsProvider } from './dataOperationsProvider';
-import type { ListOptions } from './list';
-import { listPaginated } from './list';
+import { UpsertCommand } from './vectors/upsert';
+import type { FetchOptions } from './vectors/fetch';
+import { FetchCommand } from './vectors/fetch';
+import type { UpdateOptions } from './vectors/update';
+import { UpdateCommand } from './vectors/update';
+import type { QueryOptions } from './vectors/query';
+import { QueryCommand } from './vectors/query';
+import type { DeleteOneOptions } from './vectors/deleteOne';
+import { deleteOne } from './vectors/deleteOne';
+import type { DeleteManyOptions } from './vectors/deleteMany';
+import { deleteMany } from './vectors/deleteMany';
+import { deleteAll } from './vectors/deleteAll';
+import { describeIndexStats } from './vectors/describeIndexStats';
+import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
+import type { ListOptions } from './vectors/list';
+import { listPaginated } from './vectors/list';
 import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
   PineconeRecord,
   RecordMetadata,
-} from './types';
-import { StartImportCommand } from './bulkImport/startImport';
-import { ListImportsCommand } from './bulkImport/listImports';
-import { DescribeImportCommand } from './bulkImport/describeImport';
-import { CancelImportCommand } from './bulkImport/cancelImport';
-import { BulkOperationsProvider } from './bulkImport/bulkOperationsProvider';
+} from './vectors/types';
+import { StartImportCommand } from './bulk/startImport';
+import { ListImportsCommand } from './bulk/listImports';
+import { DescribeImportCommand } from './bulk/describeImport';
+import { CancelImportCommand } from './bulk/cancelImport';
+import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { prerelease } from '../utils/prerelease';
 
 export type {
@@ -35,20 +35,20 @@ export type {
   RecordValues,
   RecordMetadata,
   RecordMetadataValue,
-} from './types';
+} from './vectors/types';
 export type {
   DeleteManyOptions,
   DeleteManyByFilterOptions,
   DeleteManyByRecordIdOptions,
-} from './deleteMany';
-export type { DeleteOneOptions } from './deleteOne';
+} from './vectors/deleteMany';
+export type { DeleteOneOptions } from './vectors/deleteOne';
 export type {
   DescribeIndexStatsOptions,
   IndexStatsDescription,
   IndexStatsNamespaceSummary,
-} from './describeIndexStats';
-export type { FetchOptions, FetchResponse } from './fetch';
-export type { UpdateOptions } from './update';
+} from './vectors/describeIndexStats';
+export type { FetchOptions, FetchResponse } from './vectors/fetch';
+export type { UpdateOptions } from './vectors/update';
 export type {
   ScoredPineconeRecord,
   QueryByRecordId,
@@ -56,8 +56,8 @@ export type {
   QueryOptions,
   QueryResponse,
   QueryShared,
-} from './query';
-export type { ListOptions } from './list';
+} from './vectors/query';
+export type { ListOptions } from './vectors/list';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -197,7 +197,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
-    const dataOperationsProvider = new DataOperationsProvider(
+    const dataOperationsProvider = new VectorOperationsProvider(
       config,
       indexName,
       indexHostUrl,
