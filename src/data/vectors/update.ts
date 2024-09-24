@@ -5,8 +5,8 @@ import type {
   RecordSparseValues,
   RecordMetadata,
 } from './types';
-import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { PineconeArgumentError } from '../../errors';
+import { ValidateProperties } from '../../utils/validateProperties';
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the

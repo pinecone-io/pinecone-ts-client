@@ -1,6 +1,6 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { PineconeArgumentError } from '../../errors';
+import { ValidateProperties } from '../../utils/validateProperties';
 
 /**
  * A count of the number of records found inside a namespace

@@ -1,7 +1,7 @@
 import type {
   FetchAPI,
   HTTPHeaders,
-} from '../pinecone-generated-ts-fetch/db_data';
+} from '../../pinecone-generated-ts-fetch/db_data';
 
 /**
  * @see [Understanding projects](https://docs.pinecone.io/docs/projects)

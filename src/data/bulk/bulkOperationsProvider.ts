@@ -1,4 +1,4 @@
-import type { PineconeConfiguration } from '../types';
+import type { PineconeConfiguration } from '../vectors/types';
 import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   BulkOperationsApi,

@@ -5,7 +5,7 @@ import type {
   RecordId,
   RecordMetadata,
 } from './types';
-import { PineconeArgumentError } from '../errors';
+import { PineconeArgumentError } from '../../errors';
 
 /** The list of record ids you would like to fetch using { @link Index.fetch } */
 export type FetchOptions = Array<RecordId>;

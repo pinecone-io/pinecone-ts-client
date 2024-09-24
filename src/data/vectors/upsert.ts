@@ -1,12 +1,12 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
-import type { Vector } from '../pinecone-generated-ts-fetch/db_data';
+import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   PineconeRecord,
   PineconeRecordsProperties,
   RecordMetadata,
 } from './types';
-import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { PineconeArgumentError } from '../../errors';
+import { ValidateProperties } from '../../utils/validateProperties';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: DataOperationsProvider;

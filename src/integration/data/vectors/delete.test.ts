@@ -1,11 +1,11 @@
-import { Pinecone, Index } from '../../index';
+import { Pinecone, Index } from '../../../index';
 import {
   assertWithRetries,
   randomString,
   generateRecords,
   INDEX_NAME,
   waitUntilRecordsReady,
-} from '../test-helpers';
+} from '../../test-helpers';
 
 describe('delete', () => {
   let pinecone: Pinecone,
