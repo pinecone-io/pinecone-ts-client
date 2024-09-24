@@ -1,7 +1,7 @@
-import { UpsertCommand } from '../upsert';
-import { VectorOperationsApi as DataPlaneApi } from '../../pinecone-generated-ts-fetch/db_data';
-import type { UpsertOperationRequest } from '../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { UpsertCommand } from '../../vectors/upsert';
+import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated-ts-fetch/db_data';
+import type { UpsertOperationRequest } from '../../../pinecone-generated-ts-fetch/db_data';
+import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertOperationRequest) => Promise<object> = jest

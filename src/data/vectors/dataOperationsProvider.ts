@@ -4,16 +4,16 @@ import {
   ConfigurationParameters,
   VectorOperationsApi as DataPlaneApi,
   X_PINECONE_API_VERSION,
-} from '../pinecone-generated-ts-fetch/db_data';
-import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
+} from '../../pinecone-generated-ts-fetch/db_data';
+import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   queryParamsStringify,
   buildUserAgent,
   getFetch,
   normalizeUrl,
-} from '../utils';
-import { IndexHostSingleton } from './indexHostSingleton';
-import { middleware } from '../utils/middleware';
+} from '../../utils';
+import { IndexHostSingleton } from '../indexHostSingleton';
+import { middleware } from '../../utils/middleware';
 
 export class DataOperationsProvider {
   private config: PineconeConfiguration;

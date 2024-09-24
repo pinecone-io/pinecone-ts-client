@@ -1,5 +1,10 @@
-import { Pinecone, Index } from '../../index';
-import { globalNamespaceOne, prefix, diffPrefix } from '../test-helpers';
+import { Pinecone, Index } from '../../../index';
+import {
+  generateRecords,
+  randomString,
+  INDEX_NAME,
+  waitUntilRecordsReady,
+} from '../../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index;
 

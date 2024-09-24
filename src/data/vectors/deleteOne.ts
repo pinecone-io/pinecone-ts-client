@@ -1,6 +1,6 @@
 import { DataOperationsProvider } from './dataOperationsProvider';
 import { RecordId } from './types';
-import { PineconeArgumentError } from '../errors';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * The id of the record to delete from the index.

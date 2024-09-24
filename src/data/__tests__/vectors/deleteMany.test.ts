@@ -1,6 +1,6 @@
-import { deleteMany } from '../deleteMany';
+import { deleteMany } from '../../vectors/deleteMany';
 import { setupDeleteSuccess } from './deleteOne.test';
-import { PineconeArgumentError } from '../../errors';
+import { PineconeArgumentError } from '../../../errors';
 
 describe('deleteMany', () => {
   test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
