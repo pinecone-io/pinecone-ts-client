@@ -1,8 +1,8 @@
 import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { DataOperationsProvider } from './dataOperationsProvider';
-import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { PineconeArgumentError } from '../../errors';
+import { ValidateProperties } from '../../utils/validateProperties';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)

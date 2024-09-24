@@ -1,16 +1,16 @@
-import { FetchCommand } from '../fetch';
-import { QueryCommand } from '../query';
-import { UpdateCommand } from '../update';
-import { UpsertCommand } from '../upsert';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { FetchCommand } from '../vectors/fetch';
+import { QueryCommand } from '../vectors/query';
+import { UpdateCommand } from '../vectors/update';
+import { UpsertCommand } from '../vectors/upsert';
+import { DataOperationsProvider } from '../vectors/dataOperationsProvider';
 import { Index } from '../index';
-import type { ScoredPineconeRecord } from '../query';
+import type { ScoredPineconeRecord } from '../vectors/query';
 
-jest.mock('../fetch');
-jest.mock('../query');
-jest.mock('../update');
-jest.mock('../upsert');
-jest.mock('../dataOperationsProvider');
+jest.mock('../vectors/fetch');
+jest.mock('../vectors/query');
+jest.mock('../vectors/update');
+jest.mock('../vectors/upsert');
+jest.mock('../vectors/dataOperationsProvider');
 
 describe('Index', () => {
   let config;

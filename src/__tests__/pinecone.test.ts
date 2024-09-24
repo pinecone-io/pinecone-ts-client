@@ -14,8 +14,8 @@ jest.mock('../utils', () => {
     getFetch: () => fakeFetch,
   };
 });
-jest.mock('../data/fetch');
-jest.mock('../data/upsert');
+jest.mock('../data/vectors/fetch');
+jest.mock('../data/vectors/upsert');
 jest.mock('../data/indexHostSingleton');
 jest.mock('../control', () => {
   const realControl = jest.requireActual('../control');

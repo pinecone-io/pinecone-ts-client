@@ -1,4 +1,4 @@
-import type { PineconeConfiguration } from './types';
+import type { PineconeConfiguration } from './vectors/types';
 import type { IndexName } from '../control';
 import { describeIndex, indexOperationsBuilder } from '../control';
 import { PineconeUnableToResolveHostError } from '../errors';

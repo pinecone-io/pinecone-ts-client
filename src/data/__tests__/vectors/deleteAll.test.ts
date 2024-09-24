@@ -1,4 +1,4 @@
-import { deleteAll } from '../deleteAll';
+import { deleteAll } from '../../vectors/deleteAll';
 import { setupDeleteSuccess } from './deleteOne.test';
 
 describe('deleteAll', () => {

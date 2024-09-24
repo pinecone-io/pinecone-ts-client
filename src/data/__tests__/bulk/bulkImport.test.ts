@@ -1,8 +1,8 @@
-import { StartImportCommand } from '../../bulkImport/startImport';
-import { ListImportsCommand } from '../../bulkImport/listImports';
-import { DescribeImportCommand } from '../../bulkImport/describeImport';
-import { CancelImportCommand } from '../../bulkImport/cancelImport';
-import { BulkOperationsProvider } from '../../bulkImport/bulkOperationsProvider';
+import { StartImportCommand } from '../../bulk/startImport';
+import { ListImportsCommand } from '../../bulk/listImports';
+import { DescribeImportCommand } from '../../bulk/describeImport';
+import { CancelImportCommand } from '../../bulk/cancelImport';
+import { BulkOperationsProvider } from '../../bulk/bulkOperationsProvider';
 import {
   ImportErrorModeOnErrorEnum,
   ListImportsRequest,
