@@ -1,7 +1,7 @@
 import { Pinecone, Index } from '../../../index';
 import {
-  generateRecords,
-  waitUntilRecordsReady,
+  generateRecords, globalNamespaceOne, randomIndexName, waitUntilReady,
+  waitUntilRecordsReady
 } from '../../test-helpers';
 
 // todo: deleting non-existent records

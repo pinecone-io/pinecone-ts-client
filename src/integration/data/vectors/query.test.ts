@@ -1,4 +1,4 @@
-import { Pinecone, Index } from '../../../index';
+import { Pinecone, Index, QueryResponse } from '../../../index';
 import {
   globalNamespaceOne,
   getRecordIds,

@@ -2,8 +2,7 @@ import { Pinecone, Index } from '../../../index';
 import {
   generateRecords,
   randomString,
-  INDEX_NAME,
-  waitUntilRecordsReady,
+  waitUntilRecordsReady, globalNamespaceOne, getRecordIds
 } from '../../test-helpers';
 
 // todo: add pod tests

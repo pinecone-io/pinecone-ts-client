@@ -1,9 +1,7 @@
 import { Pinecone, Index } from '../../../index';
 import {
-  generateRecords,
-  randomString,
-  INDEX_NAME,
-  waitUntilRecordsReady,
+  diffPrefix,
+  globalNamespaceOne, prefix,
 } from '../../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index;
