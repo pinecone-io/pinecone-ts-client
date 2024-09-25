@@ -653,7 +653,7 @@ See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for
 
 ### Upsert vectors
 
-Pinecone expects vectors inserted into indexes to have the following form:
+Pinecone expects records inserted into indexes to have the following form:
 
 ```typescript
 type PineconeRecord = {
