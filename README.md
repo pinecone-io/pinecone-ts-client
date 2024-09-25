@@ -141,7 +141,9 @@ indexes().then((response) => {
 
 #### Create a serverless index with minimal configuration
 
-At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension` indicates the size of the records you intend to store in the index. For example, if your intention was to store and query embeddings generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
+At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension`
+indicates the size of the vectors you intend to store in the index. For example, if your intention was to store and
+query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
 
 The `spec` configures how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
 
@@ -649,9 +651,9 @@ await index.fetch(['1']);
 
 See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for more information.
 
-### Upsert records
+### Upsert vectors
 
-Pinecone expects records inserted into indexes to have the following form:
+Pinecone expects vectors inserted into indexes to have the following form:
 
 ```typescript
 type PineconeRecord = {
@@ -662,7 +664,7 @@ type PineconeRecord = {
 };
 ```
 
-To upsert some records, you can use the client like so:
+To upsert some vectors, you can use the client like so:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -674,7 +676,7 @@ const index = pc.index('sample-index');
 // Prepare your data. The length of each array
 // of vector values must match the dimension of
 // the index where you plan to store them.
-const records = [
+const vectors = [
   {
     id: '1',
     values: [0.236, 0.971, 0.559],
@@ -688,13 +690,13 @@ const records = [
 ];
 
 // Upsert the data into your index
-await index.upsert(records);
+await index.upsert(vectors);
 ```
 
 ### Seeing index statistics
 
-When experimenting with data operations, it's sometimes helpful to know how many records are stored in each namespace. In that case,
-target the index and use the `describeIndexStats()` command.
+When experimenting with data operations, it's sometimes helpful to know how many records/vectors are stored in each
+namespace. In that case, target the index and use the `describeIndexStats()` command.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -800,7 +802,7 @@ const index = pc.index('my-index');
 const results = await index.query({ topK: 10, id: '1' });
 ```
 
-#### Hybrid search with sparseVector
+#### Hybrid search with sparse vectors
 
 If you are working with [sparse-dense vectors](https://docs.pinecone.io/guides/data/understanding-hybrid-search#sparse-dense-workflow), you can add sparse vector values to perform a hybrid search.
 
@@ -809,38 +811,47 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 await pc.createIndex({
-    name: 'hyrbid-image-search',
-    metric: 'dotproduct',
-    dimension: 512,
-    spec: {
-        pod: {
-            environment: 'us-west4-gcp',
-            pods: 1,
-            podType: 's1.x1',
-        }
+  name: 'hybrid-search-index',
+  metric: 'dotproduct', // Note: dot product is the only distance metric supported for hybrid search
+  dimension: 2,
+  spec: {
+    pod: {
+      environment: 'us-west4-gcp',
+      podType: 'p2.x1',
     },
-    waitUntilReady: true
+  },
+  waitUntilReady: true,
 });
-const index = pc.index('hybrid-image-search');
 
-// Create some vector embeddings using your model of choice.
-const records = [...]
+const index = pc.index('hybrid-search-index');
 
-// Upsert data
-await index.upsert(records)
+const hybridRecords = [
+  {
+    id: '1',
+    values: [0.236, 0.971], // dense vectors
+    sparseValues: { indices: [0, 1], values: [0.236, 0.34] }, // sparse vectors
+  },
+  {
+    id: '2',
+    values: [0.685, 0.111],
+    sparseValues: { indices: [0, 1], values: [0.887, 0.243] },
+  },
+];
 
-// Prepare query values. In a more realistic example, these would both come out of a model.
-const vector = [
-    // The dimension of this index needs to match the index dimension.
-    // Pretend this is a 512 dimension vector.
-]
-const sparseVector = {
-    indices: [23, 399, 251, 17],
-    values: [ 0.221, 0.967, 0.016, 0.572]
-}
+await index.upsert(hybridRecords);
 
-// Execute the query
-const results = await index.query({ topK: 10, vector, sparseVector, includeMetadata: true })
+const query = 'What is the most popular red dress?';
+// ... send query to dense vector embedding model and save those values in `denseQueryVector`
+// ... send query to sparse vector embedding model and save those values in `sparseQueryVector`
+const denseQueryVector = [0.236, 0.971];
+const sparseQueryVector = { indices: [0, 1], values: [0.0, 0.34] };
+
+// Execute a hybrid search
+await index.query({
+  topK: 3,
+  vector: denseQueryVector,
+  sparseVector: sparseQueryVector,
+});
 ```
 
 ### Update a record
@@ -889,7 +900,7 @@ await index.listPaginated({
 });
 ```
 
-### Fetch records by their IDs
+### Fetch records by ID(s)
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -913,7 +924,7 @@ const index = pc.index('my-index');
 await index.deleteOne('id-to-delete');
 ```
 
-#### Delete many by id
+#### Delete many by ID
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
