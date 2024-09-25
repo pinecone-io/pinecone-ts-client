@@ -23,9 +23,9 @@ runs:
         git config --global user.name "${{ inputs.git_username }}"
     - name: 'Bump version'
       shell: bash
-      run: npm version prerelease --preid=rc."${{ inputs.nameRc }}" --no-git-tag-version
+      run: npm version prerelease --preid=rc."${{ inputs.rc_name }}" --no-git-tag-version
     - name: 'Publish to npm'
-      run: npm publish
+      run: npm publish --tag=RC
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
