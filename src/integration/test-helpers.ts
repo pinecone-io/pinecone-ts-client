@@ -12,7 +12,7 @@ const metadataMap = {
 };
 const metadataKeys = Object.keys(metadataMap);
 
-export const INDEX_NAME = 'ts-integration';
+export const INDEX_NAME = 'ts-integration'; // todo: get rid of this
 
 export const randomString = (length) => {
   const characters =
