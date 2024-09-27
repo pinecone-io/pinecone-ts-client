@@ -13,6 +13,11 @@ const metadataMap = {
 const metadataKeys = Object.keys(metadataMap);
 
 export const INDEX_NAME = 'ts-integration'; // todo: get rid of this
+export const recordIDs = process.env.RECORD_IDS!; // todo: split this; won't currently split b/c originally undefined
+export const globalNamespaceOne = process.env.GLOBAL_NS_ONE!;
+export const globalNamespaceTwo = process.env.GLOBAL_NS_TWO!;
+export const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME!;
+export const podIndexName = process.env.POD_INDEX_NAME!;
 
 export const randomString = (length) => {
   const characters =

@@ -1,60 +1,25 @@
 import { Pinecone, Index } from '../../index';
 import {
-  generateRecords,
-  randomString,
-  INDEX_NAME,
-  waitUntilRecordsReady,
+  serverlessIndexName,
+  globalNamespaceOne,
+  recordIDs,
 } from '../test-helpers';
 
-describe('fetch', () => {
-  let pinecone: Pinecone,
-    index: Index,
-    ns: Index,
-    namespace: string,
-    recordIds: string[];
+let pinecone: Pinecone, serverlessIndex: Index;
 
-  beforeEach(async () => {
-    pinecone = new Pinecone();
+beforeAll(async () => {
+  pinecone = new Pinecone();
+  serverlessIndex = pinecone.index(serverlessIndexName);
+});
 
-    await pinecone.createIndex({
-      name: INDEX_NAME,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          region: 'us-west-2',
-          cloud: 'aws',
-        },
-      },
-      waitUntilReady: true,
-      suppressConflicts: true,
-    });
-
-    namespace = randomString(16);
-    index = pinecone.index(INDEX_NAME);
-    ns = index.namespace(namespace);
-    recordIds = [];
-  });
-
-  afterEach(async () => {
-    await ns.deleteMany(recordIds);
-  });
-
+describe('fetch; serverless index, global namespace one', () => {
   test('fetch by id', async () => {
-    const recordsToUpsert = generateRecords({ dimension: 5, quantity: 3 });
-    recordIds = recordsToUpsert.map((r) => r.id);
-    expect(recordsToUpsert).toHaveLength(3);
-    expect(recordsToUpsert[0].id).toEqual('0');
-    expect(recordsToUpsert[1].id).toEqual('1');
-    expect(recordsToUpsert[2].id).toEqual('2');
-
-    await ns.upsert(recordsToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
-
-    const results = await ns.fetch(['0', '1', '2']);
-    expect(results.records['0']).toBeDefined();
-    expect(results.records['1']).toBeDefined();
-    expect(results.records['2']).toBeDefined();
+    const results = await serverlessIndex
+      .namespace(globalNamespaceOne)
+      .fetch(recordIDs.split(','));
+    expect(results.records[0]).toBeDefined();
+    expect(results.records[1]).toBeDefined();
+    expect(results.records[2]).toBeDefined();
     expect(results.usage?.readUnits).toBeDefined();
   });
 });

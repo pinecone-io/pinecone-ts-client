@@ -3,46 +3,36 @@ import {
   assertWithRetries,
   randomString,
   generateRecords,
-  INDEX_NAME,
+  serverlessIndexName,
   waitUntilRecordsReady,
 } from '../test-helpers';
 
-describe('upsert and update', () => {
-  let pinecone: Pinecone,
-    index: Index,
-    ns: Index,
-    namespace: string,
-    recordIds: string[];
+// todo: split this out into upsert and update; can upsert once in global index
 
-  beforeEach(async () => {
-    pinecone = new Pinecone();
+let pinecone: Pinecone,
+  // todo: add pods
+  serverlessIndex: Index,
+  serverlessNamespace: Index,
+  serverlessNamespaceName: string,
+  recordIds: string[];
 
-    await pinecone.createIndex({
-      name: INDEX_NAME,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          region: 'us-west-2',
-          cloud: 'aws',
-        },
-      },
-      waitUntilReady: true,
-      suppressConflicts: true,
-    });
+beforeAll(async () => {
+  // todo: add pods
+  pinecone = new Pinecone();
+  serverlessNamespaceName = randomString(16);
+  serverlessIndex = pinecone.index(serverlessIndexName);
+  serverlessNamespace = serverlessIndex.namespace(serverlessNamespaceName);
+});
 
-    namespace = randomString(16);
-    index = pinecone.index(INDEX_NAME);
-    ns = index.namespace(namespace);
-  });
+afterAll(async () => {
+  await serverlessNamespace.deleteMany(recordIds);
+  // todo: add pods
+});
 
-  afterEach(async () => {
-    await ns.deleteMany(recordIds);
-  });
-
+describe('upsert and update to serverless index', () => {
   test('verify upsert and update', async () => {
     const recordToUpsert = generateRecords({
-      dimension: 5,
+      dimension: 2,
       quantity: 1,
       withSparseValues: false,
       withMetadata: true,
@@ -52,8 +42,12 @@ describe('upsert and update', () => {
     expect(recordToUpsert).toHaveLength(1);
     expect(recordToUpsert[0].id).toEqual('0');
 
-    await ns.upsert(recordToUpsert);
-    await waitUntilRecordsReady(ns, namespace, recordIds);
+    await serverlessNamespace.upsert(recordToUpsert);
+    await waitUntilRecordsReady(
+      serverlessNamespace,
+      serverlessNamespaceName,
+      recordIds
+    );
 
     // Fetch and inspect records to validate upsert
     const preUpdateAssertions = (response) => {
@@ -64,12 +58,15 @@ describe('upsert and update', () => {
       );
     };
 
-    await assertWithRetries(() => ns.fetch(recordIds), preUpdateAssertions);
+    await assertWithRetries(
+      () => serverlessNamespace.fetch(recordIds),
+      preUpdateAssertions
+    );
 
     // Update record values
-    const newValues = [0.5, 0.4, 0.3, 0.2, 0.1];
+    const newValues = [0.5, 0.4];
     const newMetadata = { flavor: 'chocolate' };
-    await ns.update({
+    await serverlessNamespace.update({
       id: '0',
       values: newValues,
       metadata: newMetadata,
@@ -83,6 +80,9 @@ describe('upsert and update', () => {
       });
     };
 
-    await assertWithRetries(() => ns.fetch(['0']), postUpdateAssertions);
+    await assertWithRetries(
+      () => serverlessNamespace.fetch(['0']),
+      postUpdateAssertions
+    );
   });
 });

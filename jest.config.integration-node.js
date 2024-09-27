@@ -3,6 +3,7 @@ const config = require('./jest.config');
 module.exports = {
   ...config,
   globalSetup: './src/integration/callSetup.js',
+  globalTeardown: './src/integration/callTeardown.js',
   reporters: [['github-actions', { silent: false }], 'default'],
   setupFilesAfterEnv: ['./utils/globalIntegrationTestSetup.ts'],
   testPathIgnorePatterns: [],

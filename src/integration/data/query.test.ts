@@ -4,34 +4,30 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   assertWithRetries,
+  serverlessIndexName,
+  podIndexName,
 } from '../test-helpers';
 
 let pinecone: Pinecone,
   serverlessIndex: Index,
-  serverlessIndexName: string,
   serverlessNamespace: Index,
   serverlessNamespaceName: string,
-
   podIndex: Index,
-  podIndexName: string,
   podNamespace: Index,
   podNamespaceName: string,
-
   recordIds: string[],
   numberOfRecords: number;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
 
-  serverlessIndexName = process.env.SERVERLESS_INDEX_NAME!;
   serverlessIndex = pinecone.index(serverlessIndexName);
   serverlessNamespaceName = randomString(16);
   serverlessNamespace = serverlessIndex.namespace(serverlessNamespaceName);
 
-  podIndexName = process.env.POD_INDEX_NAME!;
   podIndex = pinecone.index(podIndexName);
   podNamespaceName = randomString(16);
-  podNamespace = podNamespace.namespace(podNamespaceName);
+  podNamespace = podIndex.namespace(podNamespaceName);
 
   numberOfRecords = 3;
 
