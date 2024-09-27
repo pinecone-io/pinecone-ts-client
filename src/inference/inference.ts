@@ -8,11 +8,14 @@ import {
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
 import { prerelease } from '../utils/prerelease';
+import * as assert from 'assert';
 
 export interface RerankOptions {
   topN?: number;
   returnDocuments?: boolean;
   rankFields?: Array<string>;
+  decay?: boolean;
+  decayFunction?: string;
   parameters?: { [key: string]: string };
 }
 
@@ -189,6 +192,54 @@ export class Inference {
       },
     };
 
-    return await this._inferenceApi.rerank(req);
+    const response = await this._inferenceApi.rerank(req);
+
+    console.log('Unsorted response: ', response.data);
+
+    if (options.decay) {
+      if (options.decayFunction == 'additive') {
+        // todo: make 'additive' the default (options: multiplicative, log)
+
+        // assert that "timestamp" is in the rankFields
+        assert.ok(
+          rankFields.includes('timestamp'),
+          'When using decay, `rankFields` must be set to `timestamp`' +
+            ' field that points to string representing a Unix timestamp in seconds'
+        );
+
+        // extract dates from documents and add to RankedDocument array
+        for (const doc of response.data) {
+          if (doc.document && doc.document['timestamp']) {
+            console.log('Document: ', doc.document['text']);
+            // transform string timestamp into Date object
+            const timestamp = parseInt(doc.document['timestamp'], 10) * 1000; // Convert to milliseconds
+            console.log('Timestamp: ', timestamp);
+
+            const now = new Date().getTime(); // Current time in milliseconds
+            console.log('Now: ', now);
+
+            // Time decay in seconds to make manageable
+            const decay = (now - timestamp) / 1000;
+            console.log('Decay: ', decay);
+            console.log('Original doc score: ', doc.score);
+
+            // Normalize decay by a certain threshold, let's say 30 days (in seconds)
+            const THRESHOLD_SECONDS = 30 * 24 * 60 * 60; // 30 days in seconds
+            const normalizedDecay = Math.min(decay / THRESHOLD_SECONDS, 1); // Cap at 1 for documents older than 30 days
+
+            // Apply decay to the original score, scaling it to a manageable range
+            const DECAY_WEIGHT = 0.5; // todo: make this a param
+            doc.score = doc.score - normalizedDecay * DECAY_WEIGHT;
+            console.log('Decayed doc score: ', doc.score);
+          }
+        }
+        // Reorder according to response.data according to new scores
+        response.data.sort((a, b) => b.score - a.score);
+
+        return response;
+      }
+    }
+
+    return response;
   }
 }
