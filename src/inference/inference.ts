@@ -196,6 +196,7 @@ export class Inference {
 
     console.log('Unsorted response: ', response.data);
 
+    // todo: move this to a separate function
     if (options.decay) {
       if (options.decayFunction == 'additive') {
         // todo: make 'additive' the default (options: multiplicative, log)
@@ -224,10 +225,12 @@ export class Inference {
             console.log('Original doc score: ', doc.score);
 
             // Normalize decay by a certain threshold, let's say 30 days (in seconds)
-            const THRESHOLD_SECONDS = 30 * 24 * 60 * 60; // 30 days in seconds
+            // Normalizes -- all docs after threshold have same decay so ancient docs don't get penalized more
+            const THRESHOLD_SECONDS = 30 * 24 * 60 * 60; // todo: make this a param
             const normalizedDecay = Math.min(decay / THRESHOLD_SECONDS, 1); // Cap at 1 for documents older than 30 days
 
             // Apply decay to the original score, scaling it to a manageable range
+            // Scales -- higher decay_weight, stronger impact decay has on ranking
             const DECAY_WEIGHT = 0.5; // todo: make this a param
             doc.score = doc.score - normalizedDecay * DECAY_WEIGHT;
             console.log('Decayed doc score: ', doc.score);
