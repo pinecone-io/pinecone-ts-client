@@ -8,14 +8,14 @@ import {
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
 import { prerelease } from '../utils/prerelease';
-import * as assert from 'assert';
 
 export interface RerankOptions {
   topN?: number;
   returnDocuments?: boolean;
   rankFields?: Array<string>;
   decay?: boolean;
-  decayFunction?: string;
+  decayThreshold?: number;
+  decayWeight?: number;
   parameters?: { [key: string]: string };
 }
 
@@ -59,6 +59,86 @@ export class Inference {
     };
     const response = await this._inferenceApi.embed(typedRequest);
     return new EmbeddingsList(response.model, response.data, response.usage);
+  }
+
+  /* Add an additive recency decay to a ranked results list from the /embed endpoint.
+   *
+   * Additive decay means we *add* a decay factor to the original score (vs multiplying it, or taking the log of it,
+   *  etc.).
+   *
+   * The factors that contribute to the final score are:
+   * - Document timestamp: The timestamp of the document, provided in string form, including ms (e.g. "2013-09-05
+   *  15:34:00").
+   * - Today's date: Today's timestamp.
+   * - decayThreshold (default 30 days): Time period (in days) after which the decay starts significantly affecting.
+   *  If a document is within the threshold, the decay will scale based on how old the document is. If it is older
+   *  than the threshold, the document is treated as fully decayed (normalized decay of 1).
+   *   - Increasing this value:
+   *     - Effect: Recency decay is more gradual; documents remain relevant for a longer time.
+   *     - Use case: When freshness/recency is _less_ important (e.g. product reviews)
+   *   - Decreasing this value:
+   *     - Effect: Recency decay is more abrupt; documents lose relevance faster.
+   *     - Use case: When freshness/recency is _more_ important (e.g. news articles).
+   * - decayWeight (default 0.5): The magnitude of the decay's impact on document scores.
+   *   - Increasing this value:
+   *     - Effect: Decay has a stronger impact on document scores; older docs are heavily penalized.
+   *     - Use case: You want to more strongly prioritize recency.
+   *   - Decreasing this value:
+   *     - Effect: Decay has a weaker impact on document scores; older documents have a better chance at
+   *  retaining their original score/ranking.
+   *     - Use case: You want to prioritize recency less.
+   *
+   * @param response - The original response object from the /embed endpoint.
+   * @param options - The original options object passed to the /embed endpoint.
+   * */
+  addAdditiveDecay(
+    response: RerankResult,
+    options: RerankOptions
+  ): RerankResult {
+    if (options.rankFields) {
+      options.rankFields = ['timestamp'];
+    }
+
+    const convertDaysToSeconds = (decayThreshold: number) => {
+      return decayThreshold * 24 * 60 * 60;
+    };
+
+    const {
+      decayThreshold = convertDaysToSeconds(30),
+      decayWeight = 0.5,
+      ...previousOptions
+    } = options;
+
+    for (const doc of response.data) {
+      if (doc.document && doc.document['timestamp']) {
+        // Convert timestamp (e.g. "2013-09-05 15:34:00") to milliseconds
+        const timestamp = new Date(doc.document['timestamp']).getTime();
+        console.log('timestamp', timestamp);
+        if (isNaN(timestamp)) {
+          throw new Error(`Invalid date format: ${doc.document['timestamp']}`);
+        }
+
+        const now = new Date().getTime(); // Calculate current time (ms)
+
+        // Calculate time decay in seconds (more manageable than ms)
+        const decay = (now - timestamp) / 1000;
+
+        // Normalize decay by n-days (s); docs > threshold have same decay so ancient docs don't get penalized more
+        const normalizedDecay = Math.min(decay / decayThreshold, 1); // Cap at 1 for documents > decayThreshold
+
+        // Apply decay to the original score, scaling new score to a manageable range; ^ decayWeight, ^ impact decay
+        // has on ranking
+        doc.score = doc.score - normalizedDecay * decayWeight; // Additive part is here
+      } else {
+        throw new Error(
+          `Document ${doc.index} does not have a \`timestamp\` field`
+        );
+      }
+    }
+    // Reorder response.data according to new scores
+    response.data.sort((a, b) => b.score - a.score);
+
+    return response;
   }
 
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order
@@ -194,53 +274,8 @@ export class Inference {
 
     const response = await this._inferenceApi.rerank(req);
 
-    console.log('Unsorted response: ', response.data);
-
-    // todo: move this to a separate function
     if (options.decay) {
-      if (options.decayFunction == 'additive') {
-        // todo: make 'additive' the default (options: multiplicative, log)
-
-        // assert that "timestamp" is in the rankFields
-        assert.ok(
-          rankFields.includes('timestamp'),
-          'When using decay, `rankFields` must be set to `timestamp`' +
-            ' field that points to string representing a Unix timestamp in seconds'
-        );
-
-        // extract dates from documents and add to RankedDocument array
-        for (const doc of response.data) {
-          if (doc.document && doc.document['timestamp']) {
-            console.log('Document: ', doc.document['text']);
-            // transform string timestamp into Date object
-            const timestamp = parseInt(doc.document['timestamp'], 10) * 1000; // Convert to milliseconds
-            console.log('Timestamp: ', timestamp);
-
-            const now = new Date().getTime(); // Current time in milliseconds
-            console.log('Now: ', now);
-
-            // Time decay in seconds to make manageable
-            const decay = (now - timestamp) / 1000;
-            console.log('Decay: ', decay);
-            console.log('Original doc score: ', doc.score);
-
-            // Normalize decay by a certain threshold, let's say 30 days (in seconds)
-            // Normalizes -- all docs after threshold have same decay so ancient docs don't get penalized more
-            const THRESHOLD_SECONDS = 30 * 24 * 60 * 60; // todo: make this a param
-            const normalizedDecay = Math.min(decay / THRESHOLD_SECONDS, 1); // Cap at 1 for documents older than 30 days
-
-            // Apply decay to the original score, scaling it to a manageable range
-            // Scales -- higher decay_weight, stronger impact decay has on ranking
-            const DECAY_WEIGHT = 0.5; // todo: make this a param
-            doc.score = doc.score - normalizedDecay * DECAY_WEIGHT;
-            console.log('Decayed doc score: ', doc.score);
-          }
-        }
-        // Reorder according to response.data according to new scores
-        response.data.sort((a, b) => b.score - a.score);
-
-        return response;
-      }
+      return this.addAdditiveDecay(response, options);
     }
 
     return response;
