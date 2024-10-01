@@ -12,6 +12,7 @@ const metadataMap = {
 };
 const metadataKeys = Object.keys(metadataMap);
 
+// todo: get rid of 'forbidden non-null' assertions
 export const INDEX_NAME = 'ts-integration'; // todo: get rid of this
 export const recordIDs = process.env.RECORD_IDS!; // todo: split this; won't currently split b/c originally undefined
 export const globalNamespaceOne = process.env.GLOBAL_NS_ONE!;

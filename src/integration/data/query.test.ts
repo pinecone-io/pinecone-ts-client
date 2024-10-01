@@ -1,131 +1,91 @@
-import { Pinecone, Index } from '../../index';
+import { Index, Pinecone, QueryResponse } from '../../index';
 import {
-  randomString,
-  generateRecords,
-  waitUntilRecordsReady,
-  assertWithRetries,
+  globalNamespaceOne,
   serverlessIndexName,
-  podIndexName,
+  recordIDs,
 } from '../test-helpers';
 
+// todo: add pod tests
 let pinecone: Pinecone,
   serverlessIndex: Index,
   serverlessNamespace: Index,
-  serverlessNamespaceName: string,
-  podIndex: Index,
-  podNamespace: Index,
-  podNamespaceName: string,
-  recordIds: string[],
-  numberOfRecords: number;
+  recordIds: Array<string>;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-
   serverlessIndex = pinecone.index(serverlessIndexName);
-  serverlessNamespaceName = randomString(16);
-  serverlessNamespace = serverlessIndex.namespace(serverlessNamespaceName);
-
-  podIndex = pinecone.index(podIndexName);
-  podNamespaceName = randomString(16);
-  podNamespace = podIndex.namespace(podNamespaceName);
-
-  numberOfRecords = 3;
-
-  // Seed with records for testing
-  const recordsToUpsert = generateRecords({
-    dimension: 2, // Must match dims of global integration test indexes defined in setup.ts
-    quantity: numberOfRecords,
-    withSparseValues: true,
-  });
-  expect(recordsToUpsert).toHaveLength(3);
-  expect(recordsToUpsert[0].id).toEqual('0');
-  expect(recordsToUpsert[1].id).toEqual('1');
-  expect(recordsToUpsert[2].id).toEqual('2');
-
-  await serverlessNamespace.upsert(recordsToUpsert);
-  await podNamespace.upsert(recordsToUpsert);
-
-  recordIds = recordsToUpsert.map((r) => r.id);
-  await waitUntilRecordsReady(
-    serverlessNamespace,
-    serverlessNamespaceName,
-    recordIds
-  );
-  await waitUntilRecordsReady(podNamespace, podNamespaceName, recordIds);
-});
-
-afterAll(async () => {
-  await serverlessNamespace.deleteMany(recordIds);
-  await podNamespace.deleteMany(recordIds);
+  serverlessNamespace = serverlessIndex.namespace(globalNamespaceOne);
+  recordIds = recordIDs.split(',');
 });
 
 // todo: add tests for pod index
 describe('query tests on serverless index', () => {
   test('query by id', async () => {
-    const topK = 1;
-    const queryId = recordIds[0];
-    const assertions = (results) => {
+    const topK = 4;
+    const idForQuerying = recordIds[0];
+
+    const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(topK);
-      expect(results.usage.readUnits).toBeDefined();
+      // Necessary to avoid could-be-undefined error for `usage` field:
+      if (results.usage) {
+        expect(results.usage.readUnits).toBeDefined();
+      }
       expect(results.matches).toEqual(
-        expect.arrayContaining([expect.objectContaining({ id: queryId })])
+        expect.arrayContaining([expect.objectContaining({ id: idForQuerying })])
       );
     };
 
-    await assertWithRetries(
-      () => serverlessNamespace.query({ id: queryId, topK }),
-      assertions
-    );
+    assertions(await serverlessNamespace.query({ id: idForQuerying, topK: 4 }));
   });
 
   test('query when topK is greater than number of records', async () => {
-    const topK = numberOfRecords + 2;
-    const queryId = recordIds[1];
-    const assertions = (results) => {
+    const topK = 21; // in setup.ts, we seed the serverless index w/2 namespaces, each w/10 records
+    const idForQuerying = recordIds[1];
+    const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
-      expect(results.matches?.length).toEqual(numberOfRecords);
-      expect(results.usage.readUnits).toBeDefined();
+      expect(results.matches?.length).toEqual(10); // expect 10 records to be returned, since querying 1 namespace
+      // Necessary to avoid could-be-undefined error for `usage` field:
+      if (results.usage) {
+        expect(results.usage.readUnits).toBeDefined();
+      }
     };
 
-    await assertWithRetries(
-      () => serverlessNamespace.query({ id: queryId, topK }),
-      assertions
+    assertions(
+      await serverlessNamespace.query({ id: idForQuerying, topK: topK })
     );
   });
 
   test('with invalid id, returns empty results', async () => {
     const topK = 2;
-    const assertions = (results) => {
+    const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(0);
     };
 
-    await assertWithRetries(
-      () => serverlessNamespace.query({ id: '12354523423', topK }),
-      assertions
-    );
+    assertions(await serverlessNamespace.query({ id: '12354523423', topK }));
   });
 
   test('query with vector and sparseVector values', async () => {
     const topK = 1;
-    const assertions = (results) => {
+    const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(topK);
-      expect(results.usage.readUnits).toBeDefined();
+      // Necessary to avoid could-be-undefined error for `usage` field:
+      if (results.usage) {
+        expect(results.usage.readUnits).toBeDefined();
+      }
     };
 
-    await assertWithRetries(
-      () =>
-        serverlessNamespace.query({
-          vector: [0.11, 0.22],
-          sparseVector: {
-            indices: [32, 5],
-            values: [0.11, 0.22],
-          },
-          topK,
-        }),
-      assertions
+    assertions(
+      await serverlessNamespace.query({
+        vector: [0.11, 0.22],
+        sparseVector: {
+          indices: [32, 5],
+          values: [0.11, 0.22],
+        },
+        topK,
+      })
     );
   });
 
@@ -136,22 +96,23 @@ describe('query tests on serverless index', () => {
       values: Array.from({ length: 2 }, () => Math.random()),
     };
 
-    const assertions = (results) => {
+    const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(2);
-      expect(results.usage.readUnits).toBeDefined();
+      // Necessary to avoid could-be-undefined error for `usage` field:
+      if (results.usage) {
+        expect(results.usage.readUnits).toBeDefined();
+      }
     };
 
-    await assertWithRetries(
-      () =>
-        serverlessNamespace.query({
-          vector: queryVec,
-          sparseVector: sparseVec,
-          topK: 2,
-          includeValues: true,
-          includeMetadata: true,
-        }),
-      assertions
+    assertions(
+      await serverlessNamespace.query({
+        vector: queryVec,
+        sparseVector: sparseVec,
+        topK: 2,
+        includeValues: true,
+        includeMetadata: true,
+      })
     );
   });
 });
