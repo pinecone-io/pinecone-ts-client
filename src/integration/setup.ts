@@ -10,6 +10,7 @@ export const setup = async () => {
   await pc.createIndex({
     name: serverlessIndexName,
     dimension: 2,
+    metric: 'dotproduct',
     spec: {
       serverless: {
         cloud: 'aws',
@@ -22,7 +23,7 @@ export const setup = async () => {
   await pc.createIndex({
     name: podIndexName,
     dimension: 2,
-    metric: 'cosine',
+    metric: 'dotproduct',
     spec: {
       pod: {
         podType: 'p1.x2',
