@@ -5,7 +5,6 @@ import {
   recordIDs,
 } from '../test-helpers';
 
-// todo: add pod tests
 let pinecone: Pinecone,
   serverlessIndex: Index,
   serverlessNamespace: Index,
@@ -18,7 +17,7 @@ beforeAll(async () => {
   recordIds = recordIDs.split(',');
 });
 
-// todo: add tests for pod index
+// todo: add pod tests
 describe('query tests on serverless index', () => {
   test('query by id', async () => {
     const topK = 4;
