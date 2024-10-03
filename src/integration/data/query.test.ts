@@ -1,7 +1,15 @@
 import { Index, Pinecone, QueryResponse } from '../../index';
-import { globalNamespaceOne, serverlessIndexName, waitUntilReady } from '../test-helpers';
+import {
+  globalNamespaceOne,
+  serverlessIndexName,
+  waitUntilReady,
+} from '../test-helpers';
 
-let pinecone: Pinecone, serverlessIndex: Index, recordIds: Array<string> | undefined;
+let pinecone: Pinecone,
+  serverlessIndex: Index,
+  recordIds: Array<string> | undefined;
+
+// todo: figure out why no record IDs are being found in the serverless index
 
 // todo: add this to test-helpers
 const getRecordIds = async () => {
@@ -17,7 +25,6 @@ const getRecordIds = async () => {
         console.log('No record ID found for vector:', vector);
       }
     }
-
   }
   if (ids.length > 0) {
     console.log('!! Record IDs are: ', ids);
@@ -75,7 +82,9 @@ describe('query tests on serverless index', () => {
         }
       };
 
-      assertions(await serverlessIndex.query({ id: idForQuerying, topK: topK }));
+      assertions(
+        await serverlessIndex.query({ id: idForQuerying, topK: topK })
+      );
     }
   });
 

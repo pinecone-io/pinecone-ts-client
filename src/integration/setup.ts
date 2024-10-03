@@ -29,60 +29,61 @@ const setup = async () => {
   const indexes = await pc.listIndexes();
   if (
     indexes &&
-    indexes.indexes?.some((index) => index.name === serverlessIndexName)
+    indexes.indexes?.some((index) => index.name != serverlessIndexName)
   ) {
-    console.log('Index already exists, not recreating');
-    return;
-  }
-
-  // Create serverless index
-  await pc.createIndex({
-    name: serverlessIndexName,
-    dimension: 2,
-    metric: 'dotproduct',
-    spec: {
-      serverless: {
-        cloud: 'aws',
-        region: 'us-west-2',
+    // Create serverless index
+    await pc.createIndex({
+      name: serverlessIndexName,
+      dimension: 2,
+      metric: 'dotproduct',
+      spec: {
+        serverless: {
+          cloud: 'aws',
+          region: 'us-west-2',
+        },
       },
-    },
-    waitUntilReady: true,
-  });
+      waitUntilReady: true,
+    });
+  } else {
+    console.log('Index already exists, not recreating');
+    console.log('Seeding....');
+    // todo: check if index is already seeded, so can skip that part too.
 
-  // Seed index with data
-  const recordsToUpsert = generateRecords({
-    prefix: prefix,
-    dimension: 2,
-    quantity: 10,
-    withSparseValues: true,
-    withMetadata: true,
-  });
+    // Seed index with data
+    const recordsToUpsert = generateRecords({
+      prefix: prefix,
+      dimension: 2,
+      quantity: 10,
+      withSparseValues: true,
+      withMetadata: true,
+    });
 
-  // (Upsert 1 record with a different prefix, so can test prefix filtering)
-  const oneRecordWithDiffPrefix = generateRecords({
-    prefix: diffPrefix,
-    dimension: 2,
-    quantity: 1,
-    withSparseValues: true,
-    withMetadata: true,
-  });
+    // (Upsert 1 record with a different prefix, so can test prefix filtering)
+    const oneRecordWithDiffPrefix = generateRecords({
+      prefix: diffPrefix,
+      dimension: 2,
+      quantity: 1,
+      withSparseValues: true,
+      withMetadata: true,
+    });
 
-  const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-  // const recordIds = allRecords.map((r) => r.id);
+    const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
+    // const recordIds = allRecords.map((r) => r.id);
 
-  // Export record IDs to env vars for global access
-  // process.env.RECORD_IDS = recordIds.toString();
-  // const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
-  // fs.appendFileSync(path!, envVariable);
+    // Export record IDs to env vars for global access
+    // process.env.RECORD_IDS = recordIds.toString();
+    // const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
+    // fs.appendFileSync(path!, envVariable);
 
-  // upsert records into namespace
-  await pc
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne)
-    .upsert(allRecords);
+    // upsert records into namespace
+    await pc
+      .index(serverlessIndexName)
+      .namespace(globalNamespaceOne)
+      .upsert(allRecords);
 
-  // Wait (10s) for indexes to be ready for querying after upsert
-  await sleep(10000);
+    // Wait (10s) for indexes to be ready for querying after upsert
+    await sleep(10000);
+  }
 };
 
 setup();
