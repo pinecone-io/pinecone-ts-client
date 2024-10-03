@@ -46,9 +46,12 @@ jobs:
       - name: List files in the current directory
         run: ls -R
 
+      - name: Install ts-node and ts
+        run: npm install ts-node typescript --save-dev
+
       - name: Global Setup
         if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
-        run: node $GITHUB_WORKSPACE/src/integration/callSetup.js # Run global setup once
+        run: npx ts-node ./src/integration/callSetup.js # Run global setup once
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -81,7 +84,7 @@ jobs:
 
       - name: Global Teardown
         if: always() # This ensures teardown runs even if tests fail
-        run: node $GITHUB_WORKSPACE/src/integration/callTeardown.js # Run global teardown once
+        run: npx ts-node ./src/integration/callTeardown.js # Run global teardown once
 
   integration-test-cleanup:
     name: Clean up integration tests
