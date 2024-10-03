@@ -1,21 +1,32 @@
 import { Index, Pinecone, QueryResponse } from '../../index';
-import { globalNamespaceOne, serverlessIndexName } from '../test-helpers';
+import { globalNamespaceOne, serverlessIndexName, waitUntilReady } from '../test-helpers';
 
-let pinecone: Pinecone, serverlessIndex: Index, recordIds: Array<string>;
+let pinecone: Pinecone, serverlessIndex: Index, recordIds: Array<string> | undefined;
 
 // todo: add this to test-helpers
 const getRecordIds = async () => {
+  await waitUntilReady(serverlessIndexName); // for || runs, make sure index has been seeded
   const pag = await serverlessIndex.listPaginated();
   const ids: Array<string> = [];
-  for (const vector of pag.vectors || []) {
-    if (vector.id) {
-      ids.push(vector.id);
-    } else {
-      console.log('No record ID found for vector:', vector);
+
+  if (pag.vectors) {
+    for (const vector of pag.vectors) {
+      if (vector.id) {
+        ids.push(vector.id);
+      } else {
+        console.log('No record ID found for vector:', vector);
+      }
     }
+
   }
-  console.log('!! Record IDs are: ', ids);
-  return ids;
+  if (ids.length > 0) {
+    console.log('!! Record IDs are: ', ids);
+    return ids;
+  } else {
+    console.log('No record IDs found in the serverless index');
+  }
+  // console.log('!! Record IDs are: ', ids);
+  // return ids;
 };
 
 beforeAll(async () => {
@@ -33,35 +44,39 @@ describe('query tests on serverless index', () => {
       console.log('!! No records found in the environment variable RECORD_IDS');
     }
     const topK = 4;
-    if (recordIds.length > 0) {
-      const idForQuerying = recordIds[0];
+    if (recordIds) {
+      if (recordIds.length > 0) {
+        const idForQuerying = recordIds[0];
 
+        const assertions = (results: QueryResponse) => {
+          expect(results.matches).toBeDefined();
+          expect(results.matches?.length).toEqual(topK);
+          // Necessary to avoid could-be-undefined error for `usage` field:
+          if (results.usage) {
+            expect(results.usage.readUnits).toBeDefined();
+          }
+        };
+
+        assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
+      }
+    }
+  });
+
+  test('query when topK is greater than number of records', async () => {
+    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
+    if (recordIds) {
+      const idForQuerying = recordIds[1];
       const assertions = (results: QueryResponse) => {
         expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(topK);
+        expect(results.matches?.length).toEqual(11); // expect 11 records to be returned
         // Necessary to avoid could-be-undefined error for `usage` field:
         if (results.usage) {
           expect(results.usage.readUnits).toBeDefined();
         }
       };
 
-      assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
+      assertions(await serverlessIndex.query({ id: idForQuerying, topK: topK }));
     }
-  });
-
-  test('query when topK is greater than number of records', async () => {
-    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
-    const idForQuerying = recordIds[1];
-    const assertions = (results: QueryResponse) => {
-      expect(results.matches).toBeDefined();
-      expect(results.matches?.length).toEqual(11); // expect 11 records to be returned
-      // Necessary to avoid could-be-undefined error for `usage` field:
-      if (results.usage) {
-        expect(results.usage.readUnits).toBeDefined();
-      }
-    };
-
-    assertions(await serverlessIndex.query({ id: idForQuerying, topK: topK }));
   });
 
   test('with invalid id, returns empty results', async () => {
