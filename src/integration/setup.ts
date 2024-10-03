@@ -7,6 +7,12 @@ import {
   serverlessIndexName,
   sleep,
 } from './test-helpers';
+// import dotenv from 'dotenv';
+
+module.exports = async function () {
+  await setup();
+  return null;
+};
 
 export const setup = async () => {
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
