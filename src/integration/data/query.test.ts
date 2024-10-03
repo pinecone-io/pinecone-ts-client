@@ -18,6 +18,16 @@ beforeAll(async () => {
 // todo: add pod tests
 describe('query tests on serverless index', () => {
   test('query by id', async () => {
+    if (process.env.RECORD_IDS === undefined) {
+      console.log('!! No records found in the environment variable RECORD_IDS');
+      return;
+    }
+    if (recordIds.length === 0) {
+      console.log(
+        '!! No records found in the environment variable RECORD_IDS, as imported from test-helpers'
+      );
+      return;
+    }
     const topK = 4;
     const idForQuerying = recordIds[0];
 
