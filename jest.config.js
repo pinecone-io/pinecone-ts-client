@@ -5,6 +5,8 @@ module.exports = {
     ['github-actions', { silent: false }],
     'jest-progress-bar-reporter',
   ],
+  globalSetup: './src/integration/callSetup.js',
+  globalTeardown: './src/integration/callTeardown.js',
   setupFilesAfterEnv: ['./utils/globalUnitTestSetup.ts'],
   transform: {
     '^.+\\.ts?$': 'ts-jest',
