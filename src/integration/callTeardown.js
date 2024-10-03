@@ -8,6 +8,7 @@ module.exports = async function () {
     if (!process.env[envVar]) {
       throw new Error(`Missing required environment variable: ${envVar}`);
     }
-  }  await teardown();
+  }
+  await teardown();
   return null;
 };
