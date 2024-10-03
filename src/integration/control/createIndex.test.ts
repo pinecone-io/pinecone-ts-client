@@ -1,4 +1,4 @@
-import { PineconeNotFoundError } from '../../errors';
+import { BasePineconeError, PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { sleep } from '../test-helpers';
 
@@ -8,11 +8,6 @@ let pinecone: Pinecone;
 beforeAll(async () => {
   serverlessIndexName = 'integration-test-serverless-create';
   pinecone = new Pinecone();
-});
-
-afterEach(async () => {
-  await pinecone.deleteIndex(serverlessIndexName);
-  await sleep(5000);
 });
 
 describe('create index', () => {
@@ -34,6 +29,9 @@ describe('create index', () => {
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('cosine');
       expect(description.host).toBeDefined();
+
+      await pinecone.deleteIndex(serverlessIndexName);
+      await sleep(3000);
     });
 
     test('create with metric', async () => {
@@ -55,6 +53,9 @@ describe('create index', () => {
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('euclidean');
       expect(description.host).toBeDefined();
+
+      await pinecone.deleteIndex(serverlessIndexName);
+      await sleep(3000);
     });
 
     // todo: add polling to this to ensure it's actually testing the waitUntilReady feature
@@ -103,31 +104,29 @@ describe('create index', () => {
   });
 
   describe('error cases', () => {
+    // todo: fix error where test suite is trying to delete this index, but it was never created
     // todo: re-enable when you figure out why this is failing
-    test.skip('Skip until can figure out weird thing w/errors', async () => {
-      test('create index with invalid index name', async () => {
-        process.env.PINECONE_DEBUG = 'true';
-        try {
-          await pinecone.createIndex({
-            name: serverlessIndexName + '-',
-            dimension: 5,
-            metric: 'cosine',
-            spec: {
-              serverless: {
-                cloud: 'aws',
-                region: 'us-west-2',
-              },
+    test('create index with invalid index name', async () => {
+      try {
+        await pinecone.createIndex({
+          name: serverlessIndexName + '-',
+          dimension: 5,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-west-2',
             },
-          });
-        } catch (e) {
-          const err = e as PineconeNotFoundError;
-          expect(err.name).toEqual('PineconeBadRequestError');
-          expect(err.message).toContain('alphanumeric character');
-        }
-      });
+          },
+        });
+      } catch (e) {
+        const err = e as PineconeNotFoundError;
+        expect(err.name).toEqual('PineconeBadRequestError');
+        expect(err.message).toContain('alphanumeric character');
+      }
     });
 
-    // todo: FIX!
+    // todo: trigger an insufficient quota scenario
     test.skip('This literally tests nothing and passes no matter what you do', async () => {
       test('insufficient quota', async () => {
         try {
@@ -152,7 +151,7 @@ describe('create index', () => {
       });
     });
 
-    test.skip('create from non-existent collection', async () => {
+    test('create from non-existent collection', async () => {
       try {
         await pinecone.createIndex({
           name: serverlessIndexName,
@@ -169,9 +168,9 @@ describe('create index', () => {
         });
       } catch (e) {
         const err = e as PineconeNotFoundError;
-        expect(err.name).toEqual('PineconeNotFoundError');
+        expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'A call to https://api.pinecone.io/indexes returned HTTP status 404.'
+          'Resource non-existent-collection not found'
         );
       }
     });

@@ -3,7 +3,7 @@ import type {
   PineconeRecord,
   RecordSparseValues,
   RecordMetadata,
-} from '../index';
+} from '../data';
 import { Pinecone, Index } from '../index';
 
 const metadataMap = {
@@ -80,8 +80,7 @@ export const generateSparseValues = (dimension: number): RecordSparseValues => {
     values.push(Math.random());
     indices.push(j);
   }
-  const sparseValues: RecordSparseValues = { indices, values };
-  return sparseValues;
+  return { indices, values };
 };
 
 export const generateMetadata = (): RecordMetadata => {

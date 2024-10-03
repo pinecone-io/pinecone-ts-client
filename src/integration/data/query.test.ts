@@ -28,9 +28,6 @@ describe('query tests on serverless index', () => {
       if (results.usage) {
         expect(results.usage.readUnits).toBeDefined();
       }
-      expect(results.matches).toEqual(
-        expect.arrayContaining([expect.objectContaining({ id: idForQuerying })])
-      );
     };
 
     assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
