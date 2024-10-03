@@ -4,27 +4,20 @@ on:
   workflow_call: {}
 
 jobs:
-  Run setup script:
-    name: Run setup script
+  setup:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Install npm packages
-        run: |
-          npm install --ignore-scripts
-        shell: bash
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run setup script
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: npx ts-node ./src/integration/setup.ts
+        run: |
+          npx ts-node ./src/integration/setup.ts
 
   unit-tests:
     name: Run unit tests
@@ -74,12 +67,6 @@ jobs:
         with:
           bun-version: ${{ matrix.config.bun_version }}
 
-      #      - name: Global Setup
-      #        if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
-      #        env:
-      #          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-      #        run: npx ts-node ./src/integration/setup.ts # Run global setup once
-
       - name: Run integration tests (Prod)
         if: matrix.pinecone_env == 'prod'
         env:
@@ -96,28 +83,22 @@ jobs:
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
-  #      - name: Global Teardown
-  #        if: always() # This ensures teardown runs even if tests fail
-  #        env:
-  #          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-  #        run:   # Run global teardown on
-
-  Run teardown script:
-    name: Run teardown script
+  teardown:
+    needs: integration-tests # Ensure teardown only runs after test jobs
+    runs-on: ubuntu-latest
+    if: always() # Run teardown even if the tests fail
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run teardown script
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: npx ts-node ./src/integration/teardown.ts
+        run: |
+          npx ts-node ./src/integration/teardown.ts
 
   integration-test-cleanup:
     name: Clean up integration tests
