@@ -1,12 +1,13 @@
 import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { sleep } from '../test-helpers';
+import { randomIndexName, sleep } from '../test-helpers';
 
 let serverlessIndexName: string;
 let pinecone: Pinecone;
 
 beforeAll(async () => {
-  serverlessIndexName = 'integration-test-serverless-create';
+  // serverlessIndexName = 'integration-test-serverless-create';
+  serverlessIndexName = randomIndexName('serverless-create');
   pinecone = new Pinecone();
 });
 
