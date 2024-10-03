@@ -40,18 +40,12 @@ jobs:
           ]
 
     steps:
-      - name: Log current directory
-        run: pwd
-
-      - name: List files in the current directory
-        run: ls -R
-
-      - name: Install ts-node and ts
-        run: npm install ts-node typescript --save-dev
-
       - name: Global Setup
         if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
-        run: npx ts-node ./src/integration/callSetup.js # Run global setup once
+        run: npx ts-node ./src/integration/setup.js # Run global setup once
+        with:
+            env:
+                PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,7 +78,10 @@ jobs:
 
       - name: Global Teardown
         if: always() # This ensures teardown runs even if tests fail
-        run: npx ts-node ./src/integration/callTeardown.js # Run global teardown once
+        run: npx ts-node ./src/integration/teardown.ts # Run global teardown once
+        with:
+          env:
+            PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
 
   integration-test-cleanup:
     name: Clean up integration tests
