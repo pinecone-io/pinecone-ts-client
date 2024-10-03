@@ -1,55 +1,54 @@
 import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, waitUntilReady } from '../test-helpers';
+import { waitUntilReady } from '../test-helpers';
+
+let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
+
+beforeAll(async () => {
+  pinecone = new Pinecone();
+  podIndexName = 'integration-test-pod-configure';
+  serverlessIndexName = 'integration-test-serverless-configure';
+
+  // create pod index
+  await pinecone.createIndex({
+    name: podIndexName,
+    dimension: 5,
+    metric: 'cosine',
+    spec: {
+      pod: {
+        environment: 'us-east1-gcp',
+        podType: 'p1.x1',
+        pods: 1,
+      },
+    },
+    waitUntilReady: true,
+  });
+
+  // create serverless index
+  await pinecone.createIndex({
+    name: serverlessIndexName,
+    dimension: 5,
+    metric: 'cosine',
+    spec: {
+      serverless: {
+        cloud: 'aws',
+        region: 'us-east-1',
+      },
+    },
+    waitUntilReady: true,
+  });
+});
+
+afterAll(async () => {
+  // wait until indexes are done upgrading before deleting
+  await waitUntilReady(podIndexName);
+  await waitUntilReady(serverlessIndexName);
+
+  await pinecone.deleteIndex(podIndexName);
+  await pinecone.deleteIndex(serverlessIndexName);
+});
 
 describe('configure index', () => {
-  let podIndexName, serverlessIndexName;
-  let pinecone: Pinecone;
-
-  beforeAll(async () => {
-    pinecone = new Pinecone();
-    podIndexName = randomIndexName('configureIndex');
-    serverlessIndexName = randomIndexName('configureIndex');
-
-    // create pod index
-    await pinecone.createIndex({
-      name: podIndexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        pod: {
-          environment: 'us-east1-gcp',
-          podType: 'p1.x1',
-          pods: 1,
-        },
-      },
-      waitUntilReady: true,
-    });
-
-    // create serverless index
-    await pinecone.createIndex({
-      name: serverlessIndexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          cloud: 'aws',
-          region: 'us-east-1',
-        },
-      },
-      waitUntilReady: true,
-    });
-  });
-
-  afterAll(async () => {
-    // wait until indexes are done upgrading before deleting
-    await waitUntilReady(podIndexName);
-    await waitUntilReady(serverlessIndexName);
-
-    await pinecone.deleteIndex(podIndexName);
-    await pinecone.deleteIndex(serverlessIndexName);
-  });
-
   describe('pod index', () => {
     test('scale replicas up', async () => {
       const description = await pinecone.describeIndex(podIndexName);
@@ -63,13 +62,16 @@ describe('configure index', () => {
     });
 
     test('scale podType up', async () => {
-      // Verify the starting state
+      // Verify starting state of podType is same as originally created
+      await waitUntilReady(podIndexName);
       const description = await pinecone.describeIndex(podIndexName);
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
+      // Scale up podType to x2
       await pinecone.configureIndex(podIndexName, {
         spec: { pod: { podType: 'p1.x2' } },
       });
+      await waitUntilReady(podIndexName);
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
