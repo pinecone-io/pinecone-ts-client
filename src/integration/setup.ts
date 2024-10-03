@@ -1,4 +1,4 @@
-import { Pinecone } from '../index';
+import { IndexList, Pinecone } from '../index';
 import {
   diffPrefix,
   generateRecords,
@@ -8,29 +8,12 @@ import {
   sleep,
 } from './test-helpers';
 
-// import fs from 'fs';
-
-// module.exports = async function () {
-//   console.log("Jest global setup is running...");
-//
-//   await setup();
-//   return null; // todo: remove?
-// };
-
-// export default async function () {
-//   console.log("Jest global setup is running...");
-// }
-
 const setup = async () => {
-  // const path = process.env.GITHUB_ENV;
-
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
 
-  const indexes = await pc.listIndexes();
-  if (
-    indexes &&
-    indexes.indexes?.some((index) => index.name != serverlessIndexName)
-  ) {
+  const indexes: IndexList = await pc.listIndexes();
+  console.log("Present indexes", indexes);
+  if (indexes.indexes?.length! > 0 && indexes.indexes?.some((index) => index.name !== serverlessIndexName)) {
     // Create serverless index
     await pc.createIndex({
       name: serverlessIndexName,
@@ -63,12 +46,6 @@ const setup = async () => {
     });
 
     const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-    // const recordIds = allRecords.map((r) => r.id);
-
-    // Export record IDs to env vars for global access
-    // process.env.RECORD_IDS = recordIds.toString();
-    // const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
-    // fs.appendFileSync(path!, envVariable);
 
     // upsert records into namespace
     await pc
@@ -102,12 +79,6 @@ const setup = async () => {
     });
 
     const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-    // const recordIds = allRecords.map((r) => r.id);
-
-    // Export record IDs to env vars for global access
-    // process.env.RECORD_IDS = recordIds.toString();
-    // const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
-    // fs.appendFileSync(path!, envVariable);
 
     // upsert records into namespace
     await pc
