@@ -9,7 +9,11 @@ import {
 } from './test-helpers';
 
 export const setup = async () => {
-  const pc = new Pinecone();
+  const apiKey = process.env.PINECONE_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing required environment variables: PINECONE_API_KEY or PINECONE_ENVIRONMENT');
+  }
+  const pc = new Pinecone({ apiKey: apiKey });
 
   // Create serverless index
   await pc.createIndex({
