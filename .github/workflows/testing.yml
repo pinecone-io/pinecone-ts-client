@@ -21,6 +21,7 @@ jobs:
           npx ts-node ./src/integration/setup.ts
 
   unit-tests:
+    needs: setup
     name: Run unit tests
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +37,7 @@ jobs:
         run: npm run test:unit -- --coverage
 
   integration-tests:
+    needs: setup
     name: Run integration tests
     runs-on: ubuntu-latest
     strategy:
