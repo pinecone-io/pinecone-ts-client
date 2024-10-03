@@ -42,10 +42,9 @@ jobs:
     steps:
       - name: Global Setup
         if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: npx ts-node ./src/integration/setup.js # Run global setup once
-        with:
-            env:
-                PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,10 +77,9 @@ jobs:
 
       - name: Global Teardown
         if: always() # This ensures teardown runs even if tests fail
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: npx ts-node ./src/integration/teardown.ts # Run global teardown once
-        with:
-          env:
-            PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
 
   integration-test-cleanup:
     name: Clean up integration tests
