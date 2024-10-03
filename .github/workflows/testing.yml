@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         pinecone_env:
           - prod
@@ -40,6 +40,10 @@ jobs:
           ]
 
     steps:
+      - name: Global Setup
+      - if: ${{ github.event_name != 'workflow_dispatch' }}  # Conditional if needed
+      - run: node ./src/integration/callSetup.js  # Run global setup once
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -68,6 +72,11 @@ jobs:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+
+      - name: Global Teardown
+        if: always()  # This ensures teardown runs even if tests fail
+        run: node ./src/integration/callTeardown.js  # Run global teardown once
+
 
   integration-test-cleanup:
     name: Clean up integration tests
