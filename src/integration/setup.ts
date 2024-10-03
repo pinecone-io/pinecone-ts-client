@@ -8,8 +8,8 @@ import {
   sleep,
 } from './test-helpers';
 
-export const setup = async (apiKey: string) => {
-  const pc = new Pinecone({ apiKey: apiKey });
+export const setup = async () => {
+  const pc = new Pinecone({ apiKey: process.env["PINECONE_API_KEY"]! });
 
   // Create serverless index
   await pc.createIndex({
