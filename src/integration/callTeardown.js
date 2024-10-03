@@ -1,6 +1,7 @@
 const { teardown } = require('./teardown.ts');
 
 module.exports = async function () {
-  await teardown();
+  const apiKey = process.env.PINECONE_API_KEY;
+  await teardown(apiKey);
   return null;
 };
