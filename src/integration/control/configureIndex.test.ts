@@ -1,13 +1,13 @@
 import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import { waitUntilReady } from '../test-helpers';
+import { randomIndexName, waitUntilReady } from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  podIndexName = 'integration-test-pod-configure';
-  serverlessIndexName = 'integration-test-serverless-configure';
+  podIndexName = randomIndexName('pod-configure');
+  serverlessIndexName = randomIndexName('-serverless-configure');
 
   // create pod index
   await pinecone.createIndex({
