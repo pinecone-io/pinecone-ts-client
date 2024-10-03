@@ -10,12 +10,18 @@ import {
 
 // import fs from 'fs';
 
-module.exports = async function () {
-  await setup();
-  return null; // todo: remove?
-};
+// module.exports = async function () {
+//   console.log("Jest global setup is running...");
+//
+//   await setup();
+//   return null; // todo: remove?
+// };
 
-export const setup = async () => {
+// export default async function () {
+//   console.log("Jest global setup is running...");
+// }
+
+ const setup = async () => {
   // const path = process.env.GITHUB_ENV;
 
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
@@ -69,3 +75,5 @@ export const setup = async () => {
   // Wait (10s) for indexes to be ready for querying after upsert
   await sleep(10000);
 };
+
+setup();
