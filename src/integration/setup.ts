@@ -8,7 +8,7 @@ import {
   sleep,
 } from './test-helpers';
 
-import fs from 'fs';
+// import fs from 'fs';
 
 module.exports = async function () {
   await setup();
@@ -16,7 +16,7 @@ module.exports = async function () {
 };
 
 export const setup = async () => {
-  const path = process.env.GITHUB_ENV;
+  // const path = process.env.GITHUB_ENV;
 
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
 
@@ -53,12 +53,12 @@ export const setup = async () => {
   });
 
   const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-  const recordIds = allRecords.map((r) => r.id);
+  // const recordIds = allRecords.map((r) => r.id);
 
   // Export record IDs to env vars for global access
   // process.env.RECORD_IDS = recordIds.toString();
-  const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
-  fs.appendFileSync(path!, envVariable);
+  // const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
+  // fs.appendFileSync(path!, envVariable);
 
   // upsert records into namespace
   await pc

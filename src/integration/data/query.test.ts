@@ -1,18 +1,29 @@
 import { Index, Pinecone, QueryResponse } from '../../index';
-import {
-  globalNamespaceOne,
-  serverlessIndexName,
-  recordIDs,
-} from '../test-helpers';
+import { globalNamespaceOne, serverlessIndexName } from '../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index, recordIds: Array<string>;
+
+// todo: add this to test-helpers
+const getRecordIds = async () => {
+  const pag = await serverlessIndex.listPaginated();
+  const ids: Array<string> = [];
+  for (const vector of pag.vectors || []) {
+    if (vector.id) {
+      ids.push(vector.id);
+    } else {
+      console.log('No record ID found for vector:', vector);
+    }
+  }
+  console.log('!! Record IDs are: ', ids);
+  return ids;
+};
 
 beforeAll(async () => {
   pinecone = new Pinecone();
   serverlessIndex = pinecone
     .index(serverlessIndexName)
     .namespace(globalNamespaceOne);
-  recordIds = recordIDs ? recordIDs.split(',') : [];
+  recordIds = await getRecordIds();
 });
 
 // todo: add pod tests
@@ -20,16 +31,9 @@ describe('query tests on serverless index', () => {
   test('query by id', async () => {
     if (process.env.RECORD_IDS === undefined) {
       console.log('!! No records found in the environment variable RECORD_IDS');
-      return;
-    }
-    if (recordIds.length === 0) {
-      console.log(
-        '!! No records found in the environment variable RECORD_IDS, as imported from test-helpers'
-      );
-      return;
     }
     const topK = 4;
-    const idForQuerying = recordIds[0];
+    const idForQuerying = getRecordIds[0];
 
     const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
