@@ -7,14 +7,17 @@ import {
   serverlessIndexName,
   sleep,
 } from './test-helpers';
-// import dotenv from 'dotenv';
+
+import fs from 'fs';
 
 module.exports = async function () {
   await setup();
-  return null;
+  return null; // todo: remove?
 };
 
 export const setup = async () => {
+  const path = process.env.GITHUB_ENV;
+
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
 
   // Create serverless index
@@ -53,7 +56,9 @@ export const setup = async () => {
   const recordIds = allRecords.map((r) => r.id);
 
   // Export record IDs to env vars for global access
-  process.env.RECORD_IDS = recordIds.toString();
+  // process.env.RECORD_IDS = recordIds.toString();
+  const envVariable = `RECORD_IDS=${recordIds.toString()}\n`;
+  fs.appendFileSync(path!, envVariable);
 
   // upsert records into namespace
   await pc
