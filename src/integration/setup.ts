@@ -9,7 +9,7 @@ import {
 } from './test-helpers';
 
 export const setup = async () => {
-  const pc = new Pinecone({ apiKey: process.env["PINECONE_API_KEY"]! });
+  const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
 
   // Create serverless index
   await pc.createIndex({

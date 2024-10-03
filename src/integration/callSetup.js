@@ -2,7 +2,6 @@ const { setup } = require('./setup.ts');
 const dotenv = require('dotenv');
 
 module.exports = async function () {
-
   dotenv.config();
 
   const requiredEnvVars = ['PINECONE_API_KEY'];

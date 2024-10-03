@@ -1,4 +1,4 @@
-import { BasePineconeError, PineconeNotFoundError } from '../../errors';
+import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { sleep } from '../test-helpers';
 
