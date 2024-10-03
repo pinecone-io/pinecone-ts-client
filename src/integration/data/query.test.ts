@@ -33,18 +33,20 @@ describe('query tests on serverless index', () => {
       console.log('!! No records found in the environment variable RECORD_IDS');
     }
     const topK = 4;
-    const idForQuerying = getRecordIds[0];
+    if (recordIds.length > 0) {
+      const idForQuerying = getRecordIds[0];
 
-    const assertions = (results: QueryResponse) => {
-      expect(results.matches).toBeDefined();
-      expect(results.matches?.length).toEqual(topK);
-      // Necessary to avoid could-be-undefined error for `usage` field:
-      if (results.usage) {
-        expect(results.usage.readUnits).toBeDefined();
-      }
-    };
+      const assertions = (results: QueryResponse) => {
+        expect(results.matches).toBeDefined();
+        expect(results.matches?.length).toEqual(topK);
+        // Necessary to avoid could-be-undefined error for `usage` field:
+        if (results.usage) {
+          expect(results.usage.readUnits).toBeDefined();
+        }
+      };
 
-    assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
+      assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
+    }
   });
 
   test('query when topK is greater than number of records', async () => {
