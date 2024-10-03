@@ -104,9 +104,20 @@ jobs:
 
   Run teardown script:
     name: Run teardown script
-    env:
-      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-    run: npx ts-node ./src/integration/teardown.ts
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Run teardown script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        run: npx ts-node ./src/integration/teardown.ts
 
   integration-test-cleanup:
     name: Clean up integration tests
