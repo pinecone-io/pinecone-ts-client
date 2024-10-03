@@ -4,6 +4,12 @@ on:
   workflow_call: {}
 
 jobs:
+  Run setup script:
+    name: Run setup script
+    env:
+      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+    run: npx ts-node ./src/integration/setup.ts
+
   unit-tests:
     name: Run unit tests
     runs-on: ubuntu-latest
@@ -64,9 +70,7 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          npx ts-node ./src/integration/setup.ts 
           ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
-          npx ts-node ./src/integration/teardown.ts
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -80,7 +84,13 @@ jobs:
   #        if: always() # This ensures teardown runs even if tests fail
   #        env:
   #          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-  #        run:   # Run global teardown once
+  #        run:   # Run global teardown on
+
+  Run teardown script:
+    name: Run teardown script
+    env:
+      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+    run: npx ts-node ./src/integration/teardown.ts
 
   integration-test-cleanup:
     name: Clean up integration tests
