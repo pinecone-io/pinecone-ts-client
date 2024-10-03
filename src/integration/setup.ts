@@ -26,6 +26,15 @@ const setup = async () => {
 
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
 
+  const indexes = await pc.listIndexes();
+  if (
+    indexes &&
+    indexes.indexes?.some((index) => index.name === serverlessIndexName)
+  ) {
+    console.log('Index already exists, not recreating');
+    return;
+  }
+
   // Create serverless index
   await pc.createIndex({
     name: serverlessIndexName,
