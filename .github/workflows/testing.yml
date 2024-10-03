@@ -41,8 +41,8 @@ jobs:
 
     steps:
       - name: Global Setup
-      - if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
-      - run: node ./src/integration/callSetup.js # Run global setup once
+        if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
+        run: node ./src/integration/callSetup.js # Run global setup once
 
       - name: Checkout
         uses: actions/checkout@v4
