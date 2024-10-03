@@ -34,7 +34,7 @@ describe('query tests on serverless index', () => {
     }
     const topK = 4;
     if (recordIds.length > 0) {
-      const idForQuerying = getRecordIds[0];
+      const idForQuerying = recordIds[0];
 
       const assertions = (results: QueryResponse) => {
         expect(results.matches).toBeDefined();
