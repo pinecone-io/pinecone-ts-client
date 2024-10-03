@@ -12,13 +12,11 @@ const metadataMap = {
 };
 const metadataKeys = Object.keys(metadataMap);
 
-// todo: get rid of 'forbidden non-null' assertions
-export const INDEX_NAME = 'ts-integration'; // todo: get rid of this
-export const recordIDs = process.env.RECORD_IDS!; // todo: split this; won't currently split b/c originally undefined
-export const globalNamespaceOne = process.env.GLOBAL_NS_ONE!;
-export const globalNamespaceTwo = process.env.GLOBAL_NS_TWO!;
-export const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME!;
-export const podIndexName = process.env.POD_INDEX_NAME!;
+export const prefix = 'preTest';
+export const diffPrefix = 'diff-prefix';
+export const recordIDs = process.env.RECORD_IDS;
+export const globalNamespaceOne = 'global-ns-one';
+export const serverlessIndexName = 'integration-test-serverless';
 
 export const randomString = (length) => {
   const characters =

@@ -77,7 +77,7 @@ describe('delete', () => {
     // Try deleting 2 of 5 records (note: ID '0' was deleted in previous test)
     await serverlessIndex.deleteMany(['1', '2']);
 
-    await sleep(19000); // this is way too long to wait; so flakey
+    await sleep(16000);
 
     const deleteAssertions = (stats) => {
       if (stats.namespaces) {

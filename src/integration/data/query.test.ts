@@ -5,16 +5,14 @@ import {
   recordIDs,
 } from '../test-helpers';
 
-let pinecone: Pinecone,
-  serverlessIndex: Index,
-  serverlessNamespace: Index,
-  recordIds: Array<string>;
+let pinecone: Pinecone, serverlessIndex: Index, recordIds: Array<string>;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  serverlessIndex = pinecone.index(serverlessIndexName);
-  serverlessNamespace = serverlessIndex.namespace(globalNamespaceOne);
-  recordIds = recordIDs.split(',');
+  serverlessIndex = pinecone
+    .index(serverlessIndexName)
+    .namespace(globalNamespaceOne);
+  recordIds = recordIDs ? recordIDs.split(',') : [];
 });
 
 // todo: add pod tests
@@ -35,24 +33,22 @@ describe('query tests on serverless index', () => {
       );
     };
 
-    assertions(await serverlessNamespace.query({ id: idForQuerying, topK: 4 }));
+    assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
   });
 
   test('query when topK is greater than number of records', async () => {
-    const topK = 21; // in setup.ts, we seed the serverless index w/2 namespaces, each w/10 records
+    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
     const idForQuerying = recordIds[1];
     const assertions = (results: QueryResponse) => {
       expect(results.matches).toBeDefined();
-      expect(results.matches?.length).toEqual(10); // expect 10 records to be returned, since querying 1 namespace
+      expect(results.matches?.length).toEqual(11); // expect 11 records to be returned
       // Necessary to avoid could-be-undefined error for `usage` field:
       if (results.usage) {
         expect(results.usage.readUnits).toBeDefined();
       }
     };
 
-    assertions(
-      await serverlessNamespace.query({ id: idForQuerying, topK: topK })
-    );
+    assertions(await serverlessIndex.query({ id: idForQuerying, topK: topK }));
   });
 
   test('with invalid id, returns empty results', async () => {
@@ -62,7 +58,7 @@ describe('query tests on serverless index', () => {
       expect(results.matches?.length).toEqual(0);
     };
 
-    assertions(await serverlessNamespace.query({ id: '12354523423', topK }));
+    assertions(await serverlessIndex.query({ id: '12354523423', topK }));
   });
 
   test('query with vector and sparseVector values', async () => {
@@ -77,7 +73,7 @@ describe('query tests on serverless index', () => {
     };
 
     assertions(
-      await serverlessNamespace.query({
+      await serverlessIndex.query({
         vector: [0.11, 0.22],
         sparseVector: {
           indices: [32, 5],
@@ -105,7 +101,7 @@ describe('query tests on serverless index', () => {
     };
 
     assertions(
-      await serverlessNamespace.query({
+      await serverlessIndex.query({
         vector: queryVec,
         sparseVector: sparseVec,
         topK: 2,

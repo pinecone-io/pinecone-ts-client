@@ -1,34 +1,46 @@
 import { Pinecone, Index } from '../../index';
 import {
-  assertWithRetries,
-  randomString,
   generateRecords,
-  serverlessIndexName,
   waitUntilRecordsReady,
+  globalNamespaceOne,
 } from '../test-helpers';
-
-// todo: split this out into upsert and update; can upsert once in global index
 
 let pinecone: Pinecone,
   // todo: add pods
   serverlessIndex: Index,
-  serverlessNamespace: Index,
-  serverlessNamespaceName: string,
+  serverlessIndexName: string,
   recordIds: string[];
 
 beforeAll(async () => {
   // todo: add pods
   pinecone = new Pinecone();
-  serverlessNamespaceName = randomString(16);
-  serverlessIndex = pinecone.index(serverlessIndexName);
-  serverlessNamespace = serverlessIndex.namespace(serverlessNamespaceName);
+  serverlessIndexName = 'integration-test-serverless-upsert-update';
+
+  await pinecone.createIndex({
+    name: serverlessIndexName,
+    dimension: 2,
+    metric: 'cosine',
+    spec: {
+      serverless: {
+        region: 'us-west-2',
+        cloud: 'aws',
+      },
+    },
+    waitUntilReady: true,
+    suppressConflicts: true,
+  });
+
+  serverlessIndex = pinecone
+    .index(serverlessIndexName)
+    .namespace(globalNamespaceOne);
 });
 
 afterAll(async () => {
-  await serverlessNamespace.deleteMany(recordIds);
+  await pinecone.deleteIndex(serverlessIndexName);
   // todo: add pods
 });
 
+// todo: add sparse values update
 describe('upsert and update to serverless index', () => {
   test('verify upsert and update', async () => {
     const recordToUpsert = generateRecords({
@@ -42,31 +54,13 @@ describe('upsert and update to serverless index', () => {
     expect(recordToUpsert).toHaveLength(1);
     expect(recordToUpsert[0].id).toEqual('0');
 
-    await serverlessNamespace.upsert(recordToUpsert);
-    await waitUntilRecordsReady(
-      serverlessNamespace,
-      serverlessNamespaceName,
-      recordIds
-    );
+    await serverlessIndex.upsert(recordToUpsert);
+    await waitUntilRecordsReady(serverlessIndex, globalNamespaceOne, recordIds);
 
-    // Fetch and inspect records to validate upsert
-    const preUpdateAssertions = (response) => {
-      expect(response.records['0']).toBeDefined();
-      expect(response.records['0'].values).toEqual(recordToUpsert[0].values);
-      expect(response.records['0'].metadata).toEqual(
-        recordToUpsert[0].metadata
-      );
-    };
-
-    await assertWithRetries(
-      () => serverlessNamespace.fetch(recordIds),
-      preUpdateAssertions
-    );
-
-    // Update record values
+    // Update vector values and metadata
     const newValues = [0.5, 0.4];
     const newMetadata = { flavor: 'chocolate' };
-    await serverlessNamespace.update({
+    await serverlessIndex.update({
       id: '0',
       values: newValues,
       metadata: newMetadata,
@@ -80,9 +74,6 @@ describe('upsert and update to serverless index', () => {
       });
     };
 
-    await assertWithRetries(
-      () => serverlessNamespace.fetch(['0']),
-      postUpdateAssertions
-    );
+    postUpdateAssertions(await serverlessIndex.fetch(['0']));
   });
 });

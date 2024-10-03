@@ -1,37 +1,18 @@
 import { Pinecone } from '../../index';
-import { randomIndexName } from '../test-helpers';
+import { serverlessIndexName } from '../test-helpers';
+import { describe } from 'node:test';
 
-describe('list indexes', () => {
-  let indexName;
-  let pinecone: Pinecone;
+let pinecone: Pinecone;
 
-  beforeEach(async () => {
-    indexName = randomIndexName('listIndexes');
-    pinecone = new Pinecone();
+beforeAll(async () => {
+  pinecone = new Pinecone();
+});
 
-    await pinecone.createIndex({
-      name: indexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          region: 'us-west-2',
-          cloud: 'aws',
-        },
-      },
-      waitUntilReady: true,
-    });
-  });
-
-  afterEach(async () => {
-    await pinecone.deleteIndex(indexName);
-  });
-
+describe('list indexes; serverless', () => {
   test('list indexes', async () => {
     const response = await pinecone.listIndexes();
     expect(response.indexes).toBeDefined();
     expect(response.indexes?.length).toBeGreaterThan(0);
-
-    expect(response.indexes?.map((i) => i.name)).toContain(indexName);
+    expect(response.indexes?.map((i) => i.name)).toContain(serverlessIndexName);
   });
 });
