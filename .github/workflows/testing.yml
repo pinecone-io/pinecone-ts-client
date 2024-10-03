@@ -40,12 +40,6 @@ jobs:
           ]
 
     steps:
-      - name: Global Setup
-        if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
-        env:
-          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: npx ts-node ../src/integration/setup.ts # Run global setup once
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -60,12 +54,21 @@ jobs:
         with:
           bun-version: ${{ matrix.config.bun_version }}
 
+      #      - name: Global Setup
+      #        if: ${{ github.event_name != 'workflow_dispatch' }} # Conditional if needed
+      #        env:
+      #          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+      #        run: npx ts-node ./src/integration/setup.ts # Run global setup once
+
       - name: Run integration tests (Prod)
         if: matrix.pinecone_env == 'prod'
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+        run: |
+          npx ts-node ./src/integration/setup.ts 
+          ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+          npx ts-node ./src/integration/teardown.ts
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -75,11 +78,11 @@ jobs:
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
-      - name: Global Teardown
-        if: always() # This ensures teardown runs even if tests fail
-        env:
-          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: npx ts-node ../src/integration/teardown.ts # Run global teardown once
+  #      - name: Global Teardown
+  #        if: always() # This ensures teardown runs even if tests fail
+  #        env:
+  #          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+  #        run:   # Run global teardown once
 
   integration-test-cleanup:
     name: Clean up integration tests
