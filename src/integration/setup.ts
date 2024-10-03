@@ -21,7 +21,7 @@ import {
 //   console.log("Jest global setup is running...");
 // }
 
- const setup = async () => {
+const setup = async () => {
   // const path = process.env.GITHUB_ENV;
 
   const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
