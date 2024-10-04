@@ -60,16 +60,17 @@ describe('upsert and update to serverless index', () => {
 
     await serverlessIndex.upsert(recordToUpsert);
     await waitUntilRecordsReady(serverlessIndex, globalNamespaceOne, recordIds);
+    await sleep(7000);
 
     // Update vector values and metadata
     const newValues = [0.5, 0.4];
     const newMetadata = { flavor: 'chocolate' };
+
     await serverlessIndex.update({
       id: '0',
       values: newValues,
       metadata: newMetadata,
     });
-
     await sleep(7000);
 
     const postUpdateAssertions = (response) => {
