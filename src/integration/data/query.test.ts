@@ -2,42 +2,19 @@ import { Index, Pinecone, QueryResponse } from '../../index';
 import {
   globalNamespaceOne,
   serverlessIndexName,
-  waitUntilReady,
+  getRecordIds,
 } from '../test-helpers';
 
 let pinecone: Pinecone,
   serverlessIndex: Index,
   recordIds: Array<string> | undefined;
 
-// todo: add this to test-helpers
-const getRecordIds = async () => {
-  await waitUntilReady(serverlessIndexName); // for || runs, make sure index has been seeded
-  const pag = await serverlessIndex.listPaginated();
-  const ids: Array<string> = [];
-
-  if (pag.vectors) {
-    for (const vector of pag.vectors) {
-      if (vector.id) {
-        ids.push(vector.id);
-      } else {
-        console.log('No record ID found for vector:', vector);
-      }
-    }
-  }
-  if (ids.length > 0) {
-    console.log('!! Record IDs are: ', ids);
-    return ids;
-  } else {
-    console.log('No record IDs found in the serverless index');
-  }
-};
-
 beforeAll(async () => {
   pinecone = new Pinecone();
   serverlessIndex = pinecone
     .index(serverlessIndexName)
     .namespace(globalNamespaceOne);
-  recordIds = await getRecordIds();
+  recordIds = await getRecordIds(serverlessIndex);
 });
 
 // todo: add pod tests

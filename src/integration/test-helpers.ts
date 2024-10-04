@@ -163,3 +163,23 @@ export const assertWithRetries = async (
     }
   }
 };
+
+export const getRecordIds = async (index) => {
+  const pag = await index.listPaginated();
+  const ids: Array<string> = [];
+
+  if (pag.vectors) {
+    for (const vector of pag.vectors) {
+      if (vector.id) {
+        ids.push(vector.id);
+      } else {
+        console.log('No record ID found for vector:', vector);
+      }
+    }
+  }
+  if (ids.length > 0) {
+    return ids;
+  } else {
+    console.log('No record IDs found in the serverless index');
+  }
+};

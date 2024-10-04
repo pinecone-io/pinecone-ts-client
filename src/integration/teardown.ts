@@ -2,7 +2,15 @@ import { Pinecone } from '../pinecone';
 import { serverlessIndexName } from './test-helpers';
 
 export const teardown = async () => {
-  const pc = new Pinecone({ apiKey: process.env['PINECONE_API_KEY']! });
+  let apiKey: string;
+
+  if (process.env['PINECONE_API_KEY'] === undefined) {
+    throw new Error('PINECONE_API_KEY environment variable not set');
+  } else {
+    apiKey = process.env['PINECONE_API_KEY'];
+  }
+
+  const pc = new Pinecone({ apiKey: apiKey });
 
   const indexes = await pc.listIndexes();
   if (
