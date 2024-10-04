@@ -2,19 +2,18 @@ import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomIndexName, sleep } from '../test-helpers';
 
-let serverlessIndexName: string;
 let pinecone: Pinecone;
 
 beforeAll(async () => {
-  serverlessIndexName = randomIndexName('serverless-create');
   pinecone = new Pinecone();
 });
 
 describe('create index', () => {
   describe('happy path', () => {
     test('simple create', async () => {
+      const indexName = randomIndexName('serverless-create');
       await pinecone.createIndex({
-        name: serverlessIndexName,
+        name: indexName,
         dimension: 5,
         spec: {
           serverless: {
@@ -24,19 +23,20 @@ describe('create index', () => {
         },
         waitUntilReady: true,
       });
-      const description = await pinecone.describeIndex(serverlessIndexName);
-      expect(description.name).toEqual(serverlessIndexName);
+      const description = await pinecone.describeIndex(indexName);
+      expect(description.name).toEqual(indexName);
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('cosine');
       expect(description.host).toBeDefined();
 
-      await pinecone.deleteIndex(serverlessIndexName);
-      await sleep(3000);
+      await pinecone.deleteIndex(indexName);
     });
 
     test('create with metric', async () => {
+      const indexName = randomIndexName('serverless-create');
+
       await pinecone.createIndex({
-        name: serverlessIndexName,
+        name: indexName,
         dimension: 5,
         metric: 'euclidean',
         spec: {
@@ -48,21 +48,23 @@ describe('create index', () => {
         waitUntilReady: true,
       });
 
-      const description = await pinecone.describeIndex(serverlessIndexName);
-      expect(description.name).toEqual(serverlessIndexName);
+      const description = await pinecone.describeIndex(indexName);
+      expect(description.name).toEqual(indexName);
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('euclidean');
       expect(description.host).toBeDefined();
 
-      await pinecone.deleteIndex(serverlessIndexName);
+      await pinecone.deleteIndex(indexName);
       await sleep(3000);
     });
 
     // todo: add polling to this to ensure it's actually testing the waitUntilReady feature
     test.skip('Skip until can add polling to actually test this feature', async () => {
+      const indexName = randomIndexName('serverless-create');
+
       test('create with utility prop: waitUntilReady', async () => {
         await pinecone.createIndex({
-          name: serverlessIndexName,
+          name: indexName,
           dimension: 5,
           metric: 'cosine',
           spec: {
@@ -74,8 +76,8 @@ describe('create index', () => {
           waitUntilReady: true,
         });
 
-        const description = await pinecone.describeIndex(serverlessIndexName);
-        expect(description.name).toEqual(serverlessIndexName);
+        const description = await pinecone.describeIndex(indexName);
+        expect(description.name).toEqual(indexName);
         expect(description.status?.state).toEqual('Ready');
       });
     });
@@ -83,8 +85,10 @@ describe('create index', () => {
     // todo: add a conflict to actually test the suppressConflicts feature
     test.skip('Skip until can build in a conflict that should arise that is subsequently suppressed', async () => {
       test('create with utility prop: suppressConflicts', async () => {
+        const indexName = randomIndexName('serverless-create');
+
         await pinecone.createIndex({
-          name: serverlessIndexName,
+          name: indexName,
           dimension: 5,
           metric: 'cosine',
           spec: {
@@ -97,8 +101,8 @@ describe('create index', () => {
           waitUntilReady: true,
         });
 
-        const description = await pinecone.describeIndex(serverlessIndexName);
-        expect(description.name).toEqual(serverlessIndexName);
+        const description = await pinecone.describeIndex(indexName);
+        expect(description.name).toEqual(indexName);
       });
     });
   });
@@ -106,8 +110,10 @@ describe('create index', () => {
   describe('error cases', () => {
     test('create index with invalid index name', async () => {
       try {
+        const indexName = randomIndexName('serverless-create');
+
         await pinecone.createIndex({
-          name: serverlessIndexName + '-',
+          name: indexName + '-',
           dimension: 5,
           metric: 'cosine',
           spec: {
@@ -127,9 +133,11 @@ describe('create index', () => {
     // todo: trigger an insufficient quota scenario
     test.skip('This literally tests nothing and passes no matter what you do', async () => {
       test('insufficient quota', async () => {
+        const indexName = randomIndexName('serverless-create');
+
         try {
           await pinecone.createIndex({
-            name: serverlessIndexName,
+            name: indexName,
             dimension: 5,
             metric: 'cosine',
             spec: {
@@ -150,9 +158,11 @@ describe('create index', () => {
     });
 
     test('create from non-existent collection', async () => {
+      const indexName = randomIndexName('serverless-create');
+
       try {
         await pinecone.createIndex({
-          name: serverlessIndexName,
+          name: indexName,
           dimension: 5,
           metric: 'cosine',
           spec: {

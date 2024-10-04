@@ -1,6 +1,6 @@
 import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, sleep, waitUntilReady } from '../test-helpers';
+import { randomIndexName, sleep } from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
@@ -61,7 +61,7 @@ describe('configure index', () => {
 
     test('scale podType up', async () => {
       // Verify starting state of podType is same as originally created
-      await waitUntilReady(podIndexName);
+      await sleep(2000);
       const description = await pinecone.describeIndex(podIndexName);
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
@@ -69,7 +69,7 @@ describe('configure index', () => {
       await pinecone.configureIndex(podIndexName, {
         spec: { pod: { podType: 'p1.x2' } },
       });
-      await waitUntilReady(podIndexName);
+      await sleep(2000);
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
@@ -81,7 +81,7 @@ describe('configure index', () => {
         deletionProtection: 'enabled',
       });
 
-      await waitUntilReady(serverlessIndexName);
+      await sleep(2000);
 
       // verify we cannot delete the index
       await pinecone.deleteIndex(serverlessIndexName).catch((e) => {
