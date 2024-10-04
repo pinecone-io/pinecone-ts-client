@@ -9,8 +9,6 @@ let pinecone: Pinecone,
   serverlessIndex: Index,
   recordIds: Array<string> | undefined;
 
-// todo: figure out why no record IDs are being found in the serverless index
-
 // todo: add this to test-helpers
 const getRecordIds = async () => {
   await waitUntilReady(serverlessIndexName); // for || runs, make sure index has been seeded
@@ -32,8 +30,6 @@ const getRecordIds = async () => {
   } else {
     console.log('No record IDs found in the serverless index');
   }
-  // console.log('!! Record IDs are: ', ids);
-  // return ids;
 };
 
 beforeAll(async () => {

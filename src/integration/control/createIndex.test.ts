@@ -6,7 +6,6 @@ let serverlessIndexName: string;
 let pinecone: Pinecone;
 
 beforeAll(async () => {
-  // serverlessIndexName = 'integration-test-serverless-create';
   serverlessIndexName = randomIndexName('serverless-create');
   pinecone = new Pinecone();
 });
@@ -105,8 +104,6 @@ describe('create index', () => {
   });
 
   describe('error cases', () => {
-    // todo: fix error where test suite is trying to delete this index, but it was never created
-    // todo: re-enable when you figure out why this is failing
     test('create index with invalid index name', async () => {
       try {
         await pinecone.createIndex({
