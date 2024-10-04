@@ -51,7 +51,7 @@ afterAll(async () => {
 describe('delete', () => {
   test('verify delete with an id', async () => {
     // Await record freshness, and check record upserted
-    const stats = await waitUntilRecordsReady(
+    await waitUntilRecordsReady(
       serverlessIndex,
       globalNamespaceOne,
       recordIds
@@ -72,7 +72,7 @@ describe('delete', () => {
     // Try deleting 2 of 4 records (note: ID '0' was deleted in previous test)
     await serverlessIndex.deleteMany(recordIds.slice(1, 3));
 
-    await sleep(16000);
+    await sleep(19000);
 
     const deleteAssertions = (stats) => {
       if (stats.namespaces) {
