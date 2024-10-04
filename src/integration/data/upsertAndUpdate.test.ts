@@ -3,6 +3,7 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
+  randomIndexName,
 } from '../test-helpers';
 
 let pinecone: Pinecone,
@@ -14,7 +15,9 @@ let pinecone: Pinecone,
 beforeAll(async () => {
   // todo: add pods
   pinecone = new Pinecone();
-  serverlessIndexName = 'integration-test-serverless-upsert-update';
+  serverlessIndexName = randomIndexName(
+    'integration-test-serverless-upsert-update'
+  );
 
   await pinecone.createIndex({
     name: serverlessIndexName,

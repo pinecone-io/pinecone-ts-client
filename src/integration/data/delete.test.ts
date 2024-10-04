@@ -3,7 +3,8 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
-  sleep, randomIndexName
+  sleep,
+  randomIndexName,
 } from '../test-helpers';
 
 let pinecone: Pinecone,
