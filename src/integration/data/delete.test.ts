@@ -69,7 +69,7 @@ describe('delete', () => {
     // Try deleting 2 of 4 records (note: ID '0' was deleted in previous test)
     await serverlessIndex.deleteMany(recordIds.slice(1, 3));
 
-    await sleep(20000);
+    await sleep(21500);
 
     const deleteAssertions = (stats) => {
       if (stats.namespaces) {

@@ -70,7 +70,7 @@ describe('upsert and update to serverless index', () => {
       metadata: newMetadata,
     });
 
-    await sleep(5000);
+    await sleep(7000);
 
     const postUpdateAssertions = (response) => {
       expect(response.records['0'].values).toEqual(newValues);
