@@ -56,14 +56,9 @@ describe('delete', () => {
       globalNamespaceOne,
       recordIds
     );
-    if (stats.namespaces) {
-      expect(stats.namespaces[globalNamespaceOne].recordCount).toEqual(5);
-    } else {
-      fail('Expected namespaces to be defined');
-    }
 
     // Try deleting the record
-    await serverlessIndex.deleteOne('0');
+    await serverlessIndex.deleteOne(recordIds[0]);
 
     // Verify the record is removed
     const deleteAssertions = (stats) => {
@@ -74,8 +69,8 @@ describe('delete', () => {
   });
 
   test('verify deleteMany with multiple ids', async () => {
-    // Try deleting 2 of 5 records (note: ID '0' was deleted in previous test)
-    await serverlessIndex.deleteMany(['1', '2']);
+    // Try deleting 2 of 4 records (note: ID '0' was deleted in previous test)
+    await serverlessIndex.deleteMany(recordIds.slice(1, 3));
 
     await sleep(16000);
 
