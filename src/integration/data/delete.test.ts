@@ -51,11 +51,7 @@ afterAll(async () => {
 describe('delete', () => {
   test('verify delete with an id', async () => {
     // Await record freshness, and check record upserted
-    await waitUntilRecordsReady(
-      serverlessIndex,
-      globalNamespaceOne,
-      recordIds
-    );
+    await waitUntilRecordsReady(serverlessIndex, globalNamespaceOne, recordIds);
 
     // Try deleting the record
     await serverlessIndex.deleteOne(recordIds[0]);
