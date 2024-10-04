@@ -42,7 +42,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 2
       matrix:
         pinecone_env:
           - prod
@@ -53,7 +52,6 @@ jobs:
             { runner: 'npm', jest_env: 'node' },
             { runner: 'npm', jest_env: 'edge' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.0.0' },
-            { runner: 'bun', jest_env: 'node', bun_version: '1.0.36' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.1.11' },
           ]
 
