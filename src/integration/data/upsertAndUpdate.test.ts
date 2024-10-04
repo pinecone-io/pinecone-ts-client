@@ -3,7 +3,7 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
-  randomIndexName,
+  randomIndexName, sleep
 } from '../test-helpers';
 
 let pinecone: Pinecone,
@@ -68,6 +68,8 @@ describe('upsert and update to serverless index', () => {
       values: newValues,
       metadata: newMetadata,
     });
+
+    await sleep(5000);
 
     const postUpdateAssertions = (response) => {
       expect(response.records['0'].values).toEqual(newValues);

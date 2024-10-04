@@ -8,6 +8,8 @@ import {
   sleep,
 } from './test-helpers';
 
+// todo: refactor to make conditions & loops more efficient
+
 const setup = async () => {
   let apiKey: string;
 
@@ -20,7 +22,6 @@ const setup = async () => {
   const pc = new Pinecone({ apiKey: apiKey });
 
   const indexes: IndexList = await pc.listIndexes();
-  console.log('Present indexes', indexes);
 
   if (indexes.indexes) {
     if (indexes.indexes.some((index) => index.name === serverlessIndexName)) {
