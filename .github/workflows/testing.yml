@@ -86,23 +86,23 @@ jobs:
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
-    teardown:
-      name: Teardown
-      needs: integration-tests # Ensure teardown only runs after test jobs
-      runs-on: ubuntu-latest
-      if: always() # Run teardown even if the tests fail
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+  teardown:
+    name: Teardown
+    needs: integration-tests # Ensure teardown only runs after test jobs
+    runs-on: ubuntu-latest
+    if: always() # Run teardown even if the tests fail
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-        - name: Run teardown script
-          env:
-            PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          run: |
-            npx ts-node ./src/integration/teardown.ts
+      - name: Run teardown script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        run: |
+          npx ts-node ./src/integration/teardown.ts
 
   #  integration-test-cleanup:
   #    name: Clean up integration tests
