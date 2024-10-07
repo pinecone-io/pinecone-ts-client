@@ -1,6 +1,6 @@
 import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, waitUntilReady } from '../test-helpers';
+import { randomIndexName, waitUntilReady } from '../testHelpers';
 
 describe('configure index', () => {
   let podIndexName, serverlessIndexName;

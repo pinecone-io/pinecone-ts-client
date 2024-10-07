@@ -1,6 +1,6 @@
 import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName } from '../test-helpers';
+import { randomIndexName } from '../testHelpers';
 
 describe('create index', () => {
   let indexName;

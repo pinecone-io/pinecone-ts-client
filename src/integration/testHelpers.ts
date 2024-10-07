@@ -132,31 +132,3 @@ export const waitUntilRecordsReady = async (
 
   return indexStats;
 };
-
-type Assertions = (result: any) => void;
-
-export const assertWithRetries = async (
-  asyncFn: () => Promise<any>,
-  assertionsFn: Assertions,
-  maxRetries: number = 5,
-  delay: number = 3000
-) => {
-  let attempts = 0;
-
-  while (attempts < maxRetries) {
-    try {
-      const result = await asyncFn();
-      assertionsFn(result);
-      return;
-    } catch (error) {
-      attempts++;
-      if (attempts <= maxRetries) {
-        await sleep(delay);
-        // Double the delay for exponential backoff
-        delay *= 2;
-      } else {
-        throw error;
-      }
-    }
-  }
-};

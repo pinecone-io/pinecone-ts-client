@@ -4,7 +4,7 @@ import {
   randomString,
   INDEX_NAME,
   waitUntilRecordsReady,
-} from '../test-helpers';
+} from '../testHelpers';
 
 describe('list', () => {
   let pinecone: Pinecone,
