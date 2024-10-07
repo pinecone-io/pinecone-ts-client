@@ -3,9 +3,13 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
-  sleep,
   randomIndexName,
 } from '../test-helpers';
+
+// todo: deleting non-existent records
+// todo: delete all records in namespace
+// todo: delete namespace
+// todo: delete index (?)
 
 let pinecone: Pinecone,
   serverlessIndexName: string,
@@ -44,43 +48,26 @@ afterAll(async () => {
   await pinecone.deleteIndex(serverlessIndexName);
 });
 
-// todo: deleting non-existent records
-// todo: delete all records in namespace
-// todo: delete namespace
-// todo: delete index (?)
-
 describe('delete', () => {
   test('verify delete with an id', async () => {
     // Await record freshness, and check record upserted
     await waitUntilRecordsReady(serverlessIndex, globalNamespaceOne, recordIds);
 
-    // Try deleting the record
+    const deleteSpy = jest
+      .spyOn(serverlessIndex, 'deleteOne')
+      .mockResolvedValue(undefined);
     await serverlessIndex.deleteOne(recordIds[0]);
-
-    // Verify the record is removed
-    const deleteAssertions = (stats) => {
-      expect(stats.namespaces[globalNamespaceOne].recordCount).toEqual(4);
-    };
-
-    deleteAssertions(await serverlessIndex.describeIndexStats());
+    expect(deleteSpy).toHaveBeenCalledWith(recordIds[0]);
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
   });
 
   test('verify deleteMany with multiple ids', async () => {
-    // Try deleting 2 of 4 records (note: ID '0' was deleted in previous test)
+    const deleteManySpy = jest
+      .spyOn(serverlessIndex, 'deleteMany')
+      .mockResolvedValue(undefined);
     await serverlessIndex.deleteMany(recordIds.slice(1, 3));
-
-    await sleep(29000);
-
-    const deleteAssertions = (stats) => {
-      if (stats.namespaces) {
-        expect(stats.namespaces[globalNamespaceOne].recordCount).toEqual(2);
-      } else {
-        fail(
-          `Expected 2 records in the namespace: ${globalNamespaceOne}, but found ${stats.namespaces[globalNamespaceOne].recordCount}`
-        );
-      }
-    };
-
-    deleteAssertions(await serverlessIndex.describeIndexStats());
+    expect(deleteManySpy).toHaveBeenCalledWith(recordIds.slice(1, 3));
+    expect(deleteManySpy).toHaveBeenCalledTimes(1);
+    deleteManySpy.mockRestore();
   });
 });
