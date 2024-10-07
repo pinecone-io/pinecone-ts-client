@@ -61,7 +61,6 @@ describe('configure index', () => {
 
     test('scale podType up', async () => {
       // Verify starting state of podType is same as originally created
-      await sleep(2000);
       const description = await pinecone.describeIndex(podIndexName);
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
@@ -81,7 +80,7 @@ describe('configure index', () => {
         deletionProtection: 'enabled',
       });
 
-      await sleep(2000);
+      await sleep(1000);
 
       // verify we cannot delete the index
       await pinecone.deleteIndex(serverlessIndexName).catch((e) => {
