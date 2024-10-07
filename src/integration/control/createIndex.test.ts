@@ -1,6 +1,6 @@
 import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, sleep } from '../test-helpers';
+import { randomIndexName } from '../test-helpers';
 
 let pinecone: Pinecone;
 
@@ -55,7 +55,6 @@ describe('create index', () => {
       expect(description.host).toBeDefined();
 
       await pinecone.deleteIndex(indexName);
-      await sleep(3000);
     });
 
     // todo: add polling to this to ensure it's actually testing the waitUntilReady feature

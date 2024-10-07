@@ -7,10 +7,7 @@ import {
 
 // todo: add pods
 
-let pinecone: Pinecone,
-  serverlessIndex: Index,
-  serverlessIndexName: string,
-  recordIds: string[];
+let pinecone: Pinecone, serverlessIndex: Index, serverlessIndexName: string;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
