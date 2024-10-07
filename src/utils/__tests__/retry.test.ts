@@ -2,8 +2,8 @@ import { sleep } from '../../integration/testHelpers';
 import { retry } from '../retry';
 
 // Mock only `sleep`, keep other functions in testHelpers.ts as-is
-jest.mock('../testHelpers', () => ({
-  ...jest.requireActual('../testHelpers'),
+jest.mock('../../integration/testHelpers', () => ({
+  ...jest.requireActual('../../integration/testHelpers'),
   sleep: jest.fn().mockResolvedValue(undefined), // Directly mock sleep here
 }));
 
