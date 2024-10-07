@@ -1083,6 +1083,10 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 Rerank documents in descending relevance-order against a query.
 
+**Note:** The relevance `score` returned by the `/rerank` endpoint is _absolute_. This means that it is possible to
+compare `scores` across different calls to the `/rerank` endpoint. Each `score` is deterministic and represents how
+closely matched each specific item is to the query string.
+
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
