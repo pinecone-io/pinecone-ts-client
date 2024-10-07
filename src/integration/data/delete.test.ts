@@ -66,7 +66,7 @@ describe('delete', () => {
       } else {
         throw new Error(
           'Did not find expected records. Fetch result was ' +
-          JSON.stringify(results)
+            JSON.stringify(results)
         );
       }
     });
