@@ -792,7 +792,8 @@ const results = await index.query({ topK: 3, vector: [0.22, 0.66] });
 
 #### Querying by record id
 
-You can query using the vector values of an existing record in the index by passing a record id.
+You can query using the vector values of an existing record in the index by passing a record ID. Please note that
+the record with the specified ID [may be in this operation's response](https://docs.pinecone.io/troubleshooting/limitations-of-querying-by-id).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
