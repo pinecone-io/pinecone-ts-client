@@ -4,6 +4,7 @@ import {
   waitUntilRecordsReady,
   globalNamespaceOne,
   randomIndexName,
+  waitUntilReady,
 } from '../test-helpers';
 
 // todo: deleting non-existent records
@@ -45,6 +46,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  waitUntilReady(serverlessIndexName);
   await pinecone.deleteIndex(serverlessIndexName);
 });
 

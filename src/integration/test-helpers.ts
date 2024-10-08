@@ -1,10 +1,10 @@
 import type {
   IndexStatsDescription,
   PineconeRecord,
-  RecordSparseValues,
   RecordMetadata,
+  RecordSparseValues,
 } from '../data';
-import { Pinecone, Index } from '../index';
+import { Index, Pinecone } from '../index';
 
 const metadataMap = {
   genre: ['action', 'comedy', 'drama', 'horror', 'romance', 'thriller'],
@@ -105,11 +105,25 @@ export const sleep = async (ms) => {
 export const waitUntilReady = async (indexName: string) => {
   const p = new Pinecone();
   const sleepIntervalMs = 1000;
+  let isReady = false;
 
-  let description = await p.describeIndex(indexName);
-  while (description.status?.state !== 'Ready') {
-    await sleep(sleepIntervalMs);
-    description = await p.describeIndex(indexName);
+  while (!isReady) {
+    try {
+      const description = await p.describeIndex(indexName);
+      if (
+        description.status?.ready === true &&
+        description.status?.state === 'Ready'
+      ) {
+        isReady = true;
+      } else if (description.status?.state === 'Upgrading') {
+        console.log('Index is upgrading, waiting...');
+        await sleep(sleepIntervalMs);
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      console.log('Caught unexpected error:', error);
+    }
   }
 };
 

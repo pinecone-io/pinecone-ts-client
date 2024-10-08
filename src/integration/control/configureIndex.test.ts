@@ -1,6 +1,10 @@
-import { BasePineconeError, PineconeBadRequestError } from '../../errors';
+import {
+  BasePineconeError,
+  PineconeBadRequestError,
+  PineconeInternalServerError,
+} from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, sleep } from '../test-helpers';
+import { randomIndexName, sleep, waitUntilReady } from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
@@ -42,7 +46,8 @@ describe('configure index', () => {
 
   afterAll(async () => {
     // wait until indexes are done upgrading before deleting
-    await sleep(30000);
+    await waitUntilReady(podIndexName);
+    await waitUntilReady(serverlessIndexName);
     await pinecone.deleteIndex(podIndexName);
     await pinecone.deleteIndex(serverlessIndexName);
   });
@@ -65,10 +70,26 @@ describe('configure index', () => {
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
       // Scale up podType to x2
-      await pinecone.configureIndex(podIndexName, {
-        spec: { pod: { podType: 'p1.x2' } },
-      });
-      await sleep(2000);
+      let state = true;
+      let retryCount = 0;
+      const maxRetries = 10;
+      while (state && retryCount < maxRetries) {
+        try {
+          await pinecone.configureIndex(podIndexName, {
+            spec: { pod: { podType: 'p1.x2' } },
+          });
+          state = false;
+        } catch (e) {
+          if (e instanceof PineconeInternalServerError) {
+            retryCount++;
+            await sleep(2000);
+          } else {
+            console.log('Unexpected error:', e);
+            throw e;
+          }
+        }
+      }
+      await waitUntilReady(podIndexName);
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
@@ -79,8 +100,7 @@ describe('configure index', () => {
       await pinecone.configureIndex(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
-
-      await sleep(1000);
+      await waitUntilReady(serverlessIndexName);
 
       // verify we cannot delete the index
       await pinecone.deleteIndex(serverlessIndexName).catch((e) => {

@@ -3,6 +3,7 @@ import {
   globalNamespaceOne,
   serverlessIndexName,
   getRecordIds,
+  assertWithRetries,
 } from '../test-helpers';
 
 let pinecone: Pinecone,
@@ -37,7 +38,10 @@ describe('query tests on serverless index', () => {
           }
         };
 
-        assertions(await serverlessIndex.query({ id: idForQuerying, topK: 4 }));
+        await assertWithRetries(
+          () => serverlessIndex.query({ id: idForQuerying, topK: 4 }),
+          assertions
+        );
       }
     }
   });
@@ -55,8 +59,9 @@ describe('query tests on serverless index', () => {
         }
       };
 
-      assertions(
-        await serverlessIndex.query({ id: idForQuerying, topK: topK })
+      await assertWithRetries(
+        () => serverlessIndex.query({ id: idForQuerying, topK: topK }),
+        assertions
       );
     }
   });
@@ -67,8 +72,10 @@ describe('query tests on serverless index', () => {
       expect(results.matches).toBeDefined();
       expect(results.matches?.length).toEqual(0);
     };
-
-    assertions(await serverlessIndex.query({ id: '12354523423', topK }));
+    await assertWithRetries(
+      () => serverlessIndex.query({ id: '12354523423', topK }),
+      assertions
+    );
   });
 
   test('query with vector and sparseVector values', async () => {
@@ -82,15 +89,17 @@ describe('query tests on serverless index', () => {
       }
     };
 
-    assertions(
-      await serverlessIndex.query({
-        vector: [0.11, 0.22],
-        sparseVector: {
-          indices: [32, 5],
-          values: [0.11, 0.22],
-        },
-        topK,
-      })
+    await assertWithRetries(
+      () =>
+        serverlessIndex.query({
+          vector: [0.11, 0.22],
+          sparseVector: {
+            indices: [32, 5],
+            values: [0.11, 0.22],
+          },
+          topK,
+        }),
+      assertions
     );
   });
 
@@ -110,14 +119,16 @@ describe('query tests on serverless index', () => {
       }
     };
 
-    assertions(
-      await serverlessIndex.query({
-        vector: queryVec,
-        sparseVector: sparseVec,
-        topK: 2,
-        includeValues: true,
-        includeMetadata: true,
-      })
+    await assertWithRetries(
+      () =>
+        serverlessIndex.query({
+          vector: queryVec,
+          sparseVector: sparseVec,
+          topK: 2,
+          includeValues: true,
+          includeMetadata: true,
+        }),
+      assertions
     );
   });
 });

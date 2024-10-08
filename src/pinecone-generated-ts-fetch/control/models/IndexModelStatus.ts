@@ -45,6 +45,7 @@ export const IndexModelStatusStateEnum = {
   ScalingDownPodSize: 'ScalingDownPodSize',
   Terminating: 'Terminating',
   Ready: 'Ready',
+  Upgrading: 'Upgrading',
 } as const;
 export type IndexModelStatusStateEnum =
   (typeof IndexModelStatusStateEnum)[keyof typeof IndexModelStatusStateEnum];
