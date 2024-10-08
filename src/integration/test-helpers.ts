@@ -1,10 +1,10 @@
 import type {
   IndexStatsDescription,
   PineconeRecord,
-  RecordSparseValues,
   RecordMetadata,
+  RecordSparseValues,
 } from '../index';
-import { Pinecone, Index } from '../index';
+import { Index, Pinecone } from '../index';
 
 const metadataMap = {
   genre: ['action', 'comedy', 'drama', 'horror', 'romance', 'thriller'],
@@ -153,7 +153,7 @@ export const assertWithRetries = async (
       if (attempts <= maxRetries) {
         await sleep(delay);
         // Exponential backoff
-        delay *= Math.pow(2, attempts - 1);
+        delay = delay * Math.pow(2, attempts - 1);
       } else {
         throw error;
       }
