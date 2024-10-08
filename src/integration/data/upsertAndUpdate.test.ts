@@ -3,6 +3,7 @@ import {
   generateRecords,
   globalNamespaceOne,
   randomIndexName,
+  waitUntilReady,
 } from '../test-helpers';
 
 // todo: add pods
@@ -35,6 +36,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await waitUntilReady(serverlessIndexName);
   await pinecone.deleteIndex(serverlessIndexName);
 });
 
