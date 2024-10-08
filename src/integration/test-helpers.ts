@@ -3,7 +3,7 @@ import type {
   PineconeRecord,
   RecordMetadata,
   RecordSparseValues,
-} from '../index';
+} from '../data';
 import { Index, Pinecone } from '../index';
 
 const metadataMap = {
@@ -12,7 +12,11 @@ const metadataMap = {
 };
 const metadataKeys = Object.keys(metadataMap);
 
-export const INDEX_NAME = 'ts-integration';
+export const prefix = 'preTest';
+export const diffPrefix = 'diff-prefix';
+export const recordIDs = process.env.RECORD_IDS;
+export const globalNamespaceOne = 'global-ns-one';
+export const serverlessIndexName = 'integration-test-serverless';
 
 export const randomString = (length) => {
   const characters =
@@ -76,8 +80,7 @@ export const generateSparseValues = (dimension: number): RecordSparseValues => {
     values.push(Math.random());
     indices.push(j);
   }
-  const sparseValues: RecordSparseValues = { indices, values };
-  return sparseValues;
+  return { indices, values };
 };
 
 export const generateMetadata = (): RecordMetadata => {
@@ -102,11 +105,25 @@ export const sleep = async (ms) => {
 export const waitUntilReady = async (indexName: string) => {
   const p = new Pinecone();
   const sleepIntervalMs = 1000;
+  let isReady = false;
 
-  let description = await p.describeIndex(indexName);
-  while (description.status?.state !== 'Ready') {
-    await sleep(sleepIntervalMs);
-    description = await p.describeIndex(indexName);
+  while (!isReady) {
+    try {
+      const description = await p.describeIndex(indexName);
+      if (
+        description.status?.ready === true &&
+        description.status?.state === 'Ready'
+      ) {
+        isReady = true;
+      } else if (description.status?.state === 'Upgrading') {
+        console.log('Index is upgrading, waiting...');
+        await sleep(sleepIntervalMs);
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      console.log('Caught unexpected error:', error);
+    }
   }
 };
 
@@ -152,11 +169,31 @@ export const assertWithRetries = async (
       attempts++;
       if (attempts <= maxRetries) {
         await sleep(delay);
-        // Exponential backoff
-        delay = delay * Math.pow(2, attempts - 1);
+        // Double the delay
+        delay *= 2;
       } else {
         throw error;
       }
     }
+  }
+};
+
+export const getRecordIds = async (index) => {
+  const pag = await index.listPaginated();
+  const ids: Array<string> = [];
+
+  if (pag.vectors) {
+    for (const vector of pag.vectors) {
+      if (vector.id) {
+        ids.push(vector.id);
+      } else {
+        console.log('No record ID found for vector:', vector);
+      }
+    }
+  }
+  if (ids.length > 0) {
+    return ids;
+  } else {
+    console.log('No record IDs found in the serverless index');
   }
 };
