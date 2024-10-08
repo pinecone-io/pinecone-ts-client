@@ -153,7 +153,7 @@ export const assertWithRetries = async (
       if (attempts <= maxRetries) {
         await sleep(delay);
         // Exponential backoff
-        delay = delay * Math.pow(2, attempts - 1);
+        delay *= 2;
       } else {
         throw error;
       }
