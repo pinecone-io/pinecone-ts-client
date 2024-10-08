@@ -1095,6 +1095,10 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 Rerank documents in descending relevance-order against a query.
 
+**Note:** The `score` represents the absolute measure of relevance of a given query and passage pair. Normalized
+between [0, 1], the `score` represents how closely relevant a specific item and query are, with scores closer to 1
+indicating higher relevance.
+
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
