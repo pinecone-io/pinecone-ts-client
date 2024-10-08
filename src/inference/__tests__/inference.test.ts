@@ -214,3 +214,67 @@ describe('Inference Class: rerank', () => {
     }
   });
 });
+
+describe('Inference Class: rerank, additive recency decay', () => {
+  let inference: Inference;
+
+  beforeEach(() => {
+    const config: PineconeConfiguration = { apiKey: 'test-api-key' };
+    const infApi = inferenceOperationsBuilder(config);
+    inference = new Inference(infApi);
+  });
+
+  test('Additive recency decay, confirm error is thrown if timestamp is invalid', async () => {
+    const invalidTimestamp = 'invalid-timestamp';
+    const rerankOriginalResponse = {
+      model: 'bge-reranker-v2-m3',
+      data: [
+        {
+          index: 0,
+          score: 0.09586197932098765,
+          document: {
+            text: "This is today's document",
+            timestamp: invalidTimestamp, // Should throw error
+          },
+        },
+      ],
+      usage: { rerankUnits: 1 },
+    };
+
+    try {
+      inference.addAdditiveDecay(rerankOriginalResponse, { decay: true });
+    } catch (error) {
+      expect(error).toEqual(
+        new Error(
+          `Invalid date format: ${rerankOriginalResponse.data[0].document['timestamp']}`
+        )
+      );
+    }
+  });
+
+  test('Additive recency decay, confirm error is thrown if doc does not have `timestamp` filed', async () => {
+    const rerankOriginalResponse = {
+      model: 'bge-reranker-v2-m3',
+      data: [
+        {
+          index: 0,
+          score: 0.09586197932098765,
+          document: {
+            text: "This is today's document",
+          },
+        },
+      ],
+      usage: { rerankUnits: 1 },
+    };
+
+    try {
+      inference.addAdditiveDecay(rerankOriginalResponse, { decay: true });
+    } catch (error) {
+      expect(error).toEqual(
+        new Error(
+          `Document ${rerankOriginalResponse.data[0].index} does not have a \`timestamp\` field`
+        )
+      );
+    }
+  });
+});
