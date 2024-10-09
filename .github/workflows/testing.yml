@@ -85,7 +85,7 @@ jobs:
           SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.output1}}
         run: |
           ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
-          echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.output1}}" >> $GITHUB_ENV
+          echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.output1}}" >> $GITHUB_OUTPUT
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
