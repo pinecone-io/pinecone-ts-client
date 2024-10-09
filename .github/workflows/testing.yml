@@ -18,7 +18,7 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "INDEX_NAME=" | cut -d'=' -f2)
+          SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
           echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_ENV
 
   unit-tests:
