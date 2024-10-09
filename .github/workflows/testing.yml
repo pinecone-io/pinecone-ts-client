@@ -1,5 +1,8 @@
 name: Testing
 
+env: # Define environment variables
+  SERVERLESS_INDEX_NAME: ''
+
 on:
   workflow_call: {}
 
@@ -18,14 +21,10 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
+          echo "SERVERLESS_INDEX_NAME before being set: $SERVERLESS_INDEX_NAME"
           SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
-          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_OUTPUT
-
-      - name: Check SERVERLESS_INDEX_NAME value
-        run: echo "SERVERLESS_INDEX_NAME is $SERVERLESS_INDEX_NAME"
-
-      - name: Check SERVERLESS_INDEX_NAME value FROM .env!
-        run: echo "SERVERLESS_INDEX_NAME is ${{ env.SERVERLESS_INDEX_NAME }}"
+          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_ENV
+          echo "SERVERLESS_INDEX_NAME after being set: ${{ env.SERVERLESS_INDEX_NAME }}"
 
   unit-tests:
     needs: setup
@@ -45,6 +44,8 @@ jobs:
 
   integration-tests:
     needs: setup
+    env:
+      SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
     name: Run integration tests
     runs-on: ubuntu-latest
     strategy:
@@ -77,9 +78,9 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.SERVERLESS_INDEX_NAME }}
+          SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
         run: |
-          echo "SERVERLESS_INDEX_NAME from outputs =${{ needs.setup.outputs.SERVERLESS_INDEX_NAME }}"
+          echo "SERVERLESS_INDEX_NAME = ${{ env.SERVERLESS_INDEX_NAME }}"
           SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME  ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
       - name: Run integration tests (Staging)
