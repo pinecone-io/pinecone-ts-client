@@ -24,6 +24,9 @@ jobs:
       - name: Check SERVERLESS_INDEX_NAME value
         run: echo "SERVERLESS_INDEX_NAME is $SERVERLESS_INDEX_NAME"
 
+      - name: Check SERVERLESS_INDEX_NAME value FROM .env!
+        run: echo "SERVERLESS_INDEX_NAME is ${{ env.SERVERLESS_INDEX_NAME }}"
+
   unit-tests:
     needs: setup
     name: Run unit tests
