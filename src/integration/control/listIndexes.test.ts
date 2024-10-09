@@ -1,5 +1,4 @@
 import { Pinecone } from '../../index';
-import { describe } from 'node:test';
 
 let pinecone: Pinecone, serverlessIndexName: string;
 
