@@ -2,6 +2,7 @@ import { Pinecone, Index } from '../../index';
 import {
   generateRecords,
   globalNamespaceOne,
+  randomIndexName,
   waitUntilReady,
 } from '../test-helpers';
 
@@ -11,12 +12,7 @@ let pinecone: Pinecone, serverlessIndex: Index, serverlessIndexName: string;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-
-  if (!process.env.SERVERLESS_INDEX_NAME) {
-    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  }
-
-  serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+  serverlessIndexName = randomIndexName('int-test-serverless-upsert-update');
 
   await pinecone.createIndex({
     name: serverlessIndexName,
