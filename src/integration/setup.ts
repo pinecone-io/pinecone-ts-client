@@ -4,7 +4,7 @@ import {
   generateRecords,
   globalNamespaceOne,
   prefix,
-  serverlessIndexName,
+  // serverlessIndexName,
   sleep,
 } from './test-helpers';
 
@@ -21,10 +21,14 @@ const setup = async () => {
 
   const pc = new Pinecone({ apiKey: apiKey });
 
+  const randomIndexName = `serverless-integration-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+
   const indexes: IndexList = await pc.listIndexes();
 
   if (indexes.indexes) {
-    if (indexes.indexes.some((index) => index.name === serverlessIndexName)) {
+    if (indexes.indexes.some((index) => index.name === randomIndexName)) {
       console.log('Index already exists, not recreating');
       console.log('Seeding....');
 
@@ -50,7 +54,7 @@ const setup = async () => {
 
       //   upsert records into namespace
       await pc
-        .index(serverlessIndexName)
+        .index(randomIndexName)
         .namespace(globalNamespaceOne)
         .upsert(allRecords);
 
@@ -62,7 +66,7 @@ const setup = async () => {
 
       // Create serverless index for data plane tests
       await pc.createIndex({
-        name: serverlessIndexName,
+        name: randomIndexName,
         dimension: 2,
         metric: 'dotproduct',
         spec: {
@@ -96,13 +100,14 @@ const setup = async () => {
 
       //   upsert records into namespace
       await pc
-        .index(serverlessIndexName)
+        .index(randomIndexName)
         .namespace(globalNamespaceOne)
         .upsert(allRecords);
 
       await sleep(10000);
     }
   }
+  console.log(`SERVERLESS_INDEX_NAME=${randomIndexName}`);
 };
 
 setup();

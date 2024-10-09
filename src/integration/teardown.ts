@@ -1,5 +1,5 @@
 import { Pinecone } from '../pinecone';
-import { serverlessIndexName } from './test-helpers';
+// import { serverlessIndexName } from './test-helpers';
 
 export const teardown = async () => {
   let apiKey: string;
@@ -10,18 +10,24 @@ export const teardown = async () => {
     apiKey = process.env['PINECONE_API_KEY'];
   }
 
-  const pc = new Pinecone({ apiKey: apiKey });
+  if (!process.env.SERVERLESS_INDEX_NAME) {
+    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
+  } else {
+    const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
 
-  const indexes = await pc.listIndexes();
-  if (
-    indexes &&
-    indexes.indexes?.some((index) => index.name != serverlessIndexName)
-  ) {
-    console.log('Index already exists, not recreating');
-    return;
+    const pc = new Pinecone({ apiKey: apiKey });
+
+    const indexes = await pc.listIndexes();
+    if (
+      indexes &&
+      indexes.indexes?.some((index) => index.name != serverlessIndexName)
+    ) {
+      console.log('Index already exists, not recreating');
+      return;
+    }
+
+    await pc.deleteIndex(serverlessIndexName);
   }
-
-  await pc.deleteIndex(serverlessIndexName);
 };
 
 teardown();
