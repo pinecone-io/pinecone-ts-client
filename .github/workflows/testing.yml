@@ -45,7 +45,7 @@ jobs:
   integration-tests:
     needs: setup
     env:
-      SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
+      SERVERLESS_INDEX_NAME: $SERVERLESS_INDEX_NAME
     name: Run integration tests
     runs-on: ubuntu-latest
     strategy:
