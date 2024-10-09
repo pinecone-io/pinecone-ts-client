@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const requiredEnvVars = ['PINECONE_API_KEY'];
