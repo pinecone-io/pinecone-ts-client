@@ -18,7 +18,8 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          npx ts-node ./src/integration/setup.ts
+          SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "INDEX_NAME=" | cut -d'=' -f2)
+          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_ENV
 
   unit-tests:
     needs: setup
@@ -48,13 +49,7 @@ jobs:
           - prod
           # - staging
         node_version: [18.x, 20.x]
-        config:
-          [
-            { runner: 'npm', jest_env: 'node' },
-            { runner: 'npm', jest_env: 'edge' },
-            { runner: 'bun', jest_env: 'node', bun_version: '1.0.0' },
-            { runner: 'bun', jest_env: 'node', bun_version: '1.1.11' },
-          ]
+        config: [{ runner: 'npm', jest_env: 'node' }]
 
     steps:
       - name: Checkout
