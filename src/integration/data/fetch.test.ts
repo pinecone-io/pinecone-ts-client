@@ -1,9 +1,5 @@
 import { Pinecone, Index } from '../../index';
-import {
-  serverlessIndexName,
-  globalNamespaceOne,
-  getRecordIds,
-} from '../test-helpers';
+import { globalNamespaceOne, getRecordIds } from '../test-helpers';
 
 // todo: add pod tests
 
@@ -13,6 +9,11 @@ let pinecone: Pinecone,
 
 beforeAll(async () => {
   pinecone = new Pinecone();
+  if (!process.env.SERVERLESS_INDEX_NAME) {
+    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
+  }
+
+  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
   serverlessIndex = pinecone
     .index(serverlessIndexName)
     .namespace(globalNamespaceOne);

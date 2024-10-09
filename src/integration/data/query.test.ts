@@ -11,11 +11,6 @@ let pinecone: Pinecone,
   recordIds: Array<string> | undefined;
 
 beforeAll(async () => {
-  console.log(
-    'SERVERLESS_INDEX_NAME FROM QUERY.TEST.TS:',
-    process.env.SERVERLESS_INDEX_NAME
-  );
-
   pinecone = new Pinecone();
 
   if (!process.env.SERVERLESS_INDEX_NAME) {

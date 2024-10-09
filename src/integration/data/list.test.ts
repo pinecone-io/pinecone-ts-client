@@ -1,15 +1,17 @@
 import { Pinecone, Index } from '../../index';
-import {
-  globalNamespaceOne,
-  serverlessIndexName,
-  prefix,
-  diffPrefix,
-} from '../test-helpers';
+import { globalNamespaceOne, prefix, diffPrefix } from '../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
+
+  if (!process.env.SERVERLESS_INDEX_NAME) {
+    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
+  }
+
+  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+
   serverlessIndex = pinecone
     .index(serverlessIndexName)
     .namespace(globalNamespaceOne);
