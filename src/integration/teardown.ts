@@ -21,7 +21,6 @@ export const teardown = async () => {
       indexes &&
       indexes.indexes?.some((index) => index.name != serverlessIndexName)
     ) {
-      console.log('Index already exists, not recreating');
       return;
     }
 

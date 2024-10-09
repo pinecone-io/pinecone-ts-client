@@ -4,7 +4,12 @@ import {
   PineconeInternalServerError,
 } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, sleep, waitUntilReady } from '../test-helpers';
+import {
+  randomIndexName,
+  retryDeletes,
+  sleep,
+  waitUntilReady,
+} from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
@@ -45,11 +50,10 @@ describe('configure index', () => {
   });
 
   afterAll(async () => {
-    // wait until indexes are done upgrading before deleting
-    await waitUntilReady(podIndexName);
-    await waitUntilReady(serverlessIndexName);
-    await pinecone.deleteIndex(podIndexName);
-    await pinecone.deleteIndex(serverlessIndexName);
+    // Note: using retryDeletes instead of waitUntilReady due to backend bug where index status is ready, but index
+    // is actually still upgrading
+    await retryDeletes(pinecone, podIndexName);
+    await retryDeletes(pinecone, serverlessIndexName);
   });
 
   describe('pod index', () => {

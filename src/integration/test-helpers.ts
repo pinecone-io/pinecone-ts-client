@@ -113,11 +113,6 @@ export const waitUntilReady = async (indexName: string) => {
         description.status?.state === 'Ready'
       ) {
         isReady = true;
-      } else if (
-        description.status?.state.toString().toLowerCase() === 'upgrading'
-      ) {
-        console.log('Index is upgrading, waiting...');
-        await sleep(sleepIntervalMs);
       } else {
         await sleep(sleepIntervalMs);
       }
@@ -195,5 +190,18 @@ export const getRecordIds = async (index) => {
     return ids;
   } else {
     console.log('No record IDs found in the serverless index');
+  }
+};
+
+export const retryDeletes = async (pc: Pinecone, indexName: string) => {
+  try {
+    await pc.deleteIndex(indexName);
+  } catch (e) {
+    console.log(
+      `Encountered error when trying to delete index: ${e}`,
+      '\n\nSleeping for 1s and retrying...\n\n'
+    );
+    await sleep(1000);
+    await retryDeletes(pc, indexName);
   }
 };
