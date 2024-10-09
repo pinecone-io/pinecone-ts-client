@@ -113,7 +113,7 @@ export const waitUntilReady = async (indexName: string) => {
         description.status?.state === 'Ready'
       ) {
         isReady = true;
-      } else if (description.status?.state === 'Upgrading') {
+      } else if (description.status?.state.toString().toLowerCase() === 'upgrading') {
         console.log('Index is upgrading, waiting...');
         await sleep(sleepIntervalMs);
       } else {
