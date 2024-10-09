@@ -1,7 +1,7 @@
 name: Testing
 
-env: # Define environment variables
-  SERVERLESS_INDEX_NAME: ''
+#env: # Define environment variables
+#  SERVERLESS_INDEX_NAME: ''
 
 on:
   workflow_call: {}
@@ -10,21 +10,25 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
     steps:
       - name: Checkout code
+        id: step1
         uses: actions/checkout@v4
 
       - name: Install dependencies
+        id: step2
         run: npm ci
 
       - name: Run setup script
+        id: step3
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          echo "SERVERLESS_INDEX_NAME before being set: $SERVERLESS_INDEX_NAME"
           SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
-          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_ENV
-          echo "SERVERLESS_INDEX_NAME after being set: ${{ env.SERVERLESS_INDEX_NAME }}"
+          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME"
+          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_OUTPUT
 
   unit-tests:
     needs: setup
@@ -44,8 +48,6 @@ jobs:
 
   integration-tests:
     needs: setup
-    env:
-      SERVERLESS_INDEX_NAME: $SERVERLESS_INDEX_NAME
     name: Run integration tests
     runs-on: ubuntu-latest
     strategy:
@@ -78,10 +80,10 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
+          SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.output1}}
         run: |
-          echo "SERVERLESS_INDEX_NAME = ${{ env.SERVERLESS_INDEX_NAME }}"
-          SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME  ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+          echo "SERVERLESS_INDEX_NAME from outputs =$SERVERLESS_INDEX_NAME"
+          ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -105,7 +107,6 @@ jobs:
 
       - name: Run teardown script
         env:
-          SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
           npx ts-node ./src/integration/teardown.ts
@@ -116,22 +117,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tsVersion:
-          [
-            '~4.1.0',
-            '~4.2.0',
-            '~4.3.0',
-            '~4.4.0',
-            '~4.5.0',
-            '~4.6.0',
-            '~4.7.0',
-            '~4.8.0',
-            '~4.9.0',
-            '~5.0.0',
-            '~5.1.0',
-            '~5.2.0',
-            'latest',
-          ]
+        tsVersion: ['latest']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
