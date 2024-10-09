@@ -1,5 +1,4 @@
 import { Pinecone } from '../pinecone';
-// import { serverlessIndexName } from './test-helpers';
 
 export const teardown = async () => {
   let apiKey: string;

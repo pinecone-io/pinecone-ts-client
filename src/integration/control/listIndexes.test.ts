@@ -1,11 +1,14 @@
 import { Pinecone } from '../../index';
-import { serverlessIndexName } from '../test-helpers';
 import { describe } from 'node:test';
 
-let pinecone: Pinecone;
+let pinecone: Pinecone, serverlessIndexName: string;
 
 beforeAll(async () => {
   pinecone = new Pinecone();
+  if (!process.env.SERVERLESS_INDEX_NAME) {
+    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
+  }
+  serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
 });
 
 describe('list indexes; serverless', () => {

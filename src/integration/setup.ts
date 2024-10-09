@@ -4,7 +4,6 @@ import {
   generateRecords,
   globalNamespaceOne,
   prefix,
-  // serverlessIndexName,
   sleep,
 } from './test-helpers';
 
@@ -29,9 +28,6 @@ const setup = async () => {
 
   if (indexes.indexes) {
     if (indexes.indexes.some((index) => index.name === randomIndexName)) {
-      console.log('Index already exists, not recreating');
-      console.log('Seeding....');
-
       // Seed index with data
       const recordsToUpsert = generateRecords({
         prefix: prefix,
@@ -60,10 +56,6 @@ const setup = async () => {
 
       await sleep(10000);
     } else {
-      console.log(
-        'Serverless index does not exist, creating and seeding index'
-      );
-
       // Create serverless index for data plane tests
       await pc.createIndex({
         name: randomIndexName,

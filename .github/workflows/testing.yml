@@ -1,8 +1,5 @@
 name: Testing
 
-#env: # Define environment variables
-#  SERVERLESS_INDEX_NAME: ''
-
 on:
   workflow_call: {}
 

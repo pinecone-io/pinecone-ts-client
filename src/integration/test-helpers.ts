@@ -14,9 +14,7 @@ const metadataKeys = Object.keys(metadataMap);
 
 export const prefix = 'preTest';
 export const diffPrefix = 'diff-prefix';
-export const recordIDs = process.env.RECORD_IDS;
 export const globalNamespaceOne = 'global-ns-one';
-export const serverlessIndexName = 'integration-test-serverless';
 
 export const randomString = (length) => {
   const characters =
