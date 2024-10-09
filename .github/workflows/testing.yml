@@ -47,8 +47,6 @@ jobs:
     needs: setup
     name: Run integration tests
     runs-on: ubuntu-latest
-    env:
-      SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -81,7 +79,7 @@ jobs:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
         run: |
-          ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+          SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME  ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -105,6 +103,7 @@ jobs:
 
       - name: Run teardown script
         env:
+          SERVERLESS_INDEX_NAME: ${{ env.SERVERLESS_INDEX_NAME }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
           npx ts-node ./src/integration/teardown.ts
