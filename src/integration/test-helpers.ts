@@ -122,7 +122,7 @@ export const waitUntilReady = async (indexName: string) => {
         await sleep(sleepIntervalMs);
       }
     } catch (error) {
-      console.log('Caught unexpected error:', error);
+      throw new Error(`Error while waiting for index to be ready: ${error}`);
     }
   }
 };

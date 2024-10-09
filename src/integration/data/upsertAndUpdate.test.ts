@@ -16,7 +16,7 @@ beforeAll(async () => {
     throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
   }
 
-  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+  serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
 
   await pinecone.createIndex({
     name: serverlessIndexName,

@@ -1,7 +1,6 @@
 import { Index, Pinecone, QueryResponse } from '../../index';
 import {
   globalNamespaceOne,
-  // serverlessIndexName,
   getRecordIds,
   assertWithRetries,
 } from '../test-helpers';
