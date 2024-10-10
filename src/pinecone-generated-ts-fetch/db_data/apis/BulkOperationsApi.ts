@@ -19,7 +19,6 @@ import type {
   ImportModel,
   RpcStatus,
   StartImportRequest,
-  StartImportResponse,
 } from '../models/index';
 import {
     ImportListResponseFromJSON,
@@ -30,11 +29,9 @@ import {
     RpcStatusToJSON,
     StartImportRequestFromJSON,
     StartImportRequestToJSON,
-    StartImportResponseFromJSON,
-    StartImportResponseToJSON,
 } from '../models/index';
 
-export interface CancelImportRequest {
+export interface CancelBulkImportRequest {
     id: string;
 }
 
@@ -42,12 +39,12 @@ export interface DescribeImportRequest {
     id: string;
 }
 
-export interface ListImportsRequest {
+export interface ListBulkImportsRequest {
     limit?: number;
     paginationToken?: string;
 }
 
-export interface StartImportOperationRequest {
+export interface StartBulkImportRequest {
     startImportRequest: StartImportRequest;
 }
 
@@ -57,12 +54,12 @@ export interface StartImportOperationRequest {
 export class BulkOperationsApi extends runtime.BaseAPI {
 
     /**
-     * The `cancel_import` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `cancelBulkImport` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Cancel an import
      */
-    async cancelImportRaw(requestParameters: CancelImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async cancelBulkImportRaw(requestParameters: CancelBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling cancelImport.');
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling cancelBulkImport.');
         }
 
         const queryParameters: any = {};
@@ -84,16 +81,16 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `cancel_import` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `cancelBulkImport` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Cancel an import
      */
-    async cancelImport(requestParameters: CancelImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this.cancelImportRaw(requestParameters, initOverrides);
+    async cancelBulkImport(requestParameters: CancelBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.cancelBulkImportRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * The `describe_import` operation returns details of a specific import operation. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `describeImport` operation returns details of a specific import operation. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Describe an import
      */
     async describeImportRaw(requestParameters: DescribeImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportModel>> {
@@ -120,7 +117,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describe_import` operation returns details of a specific import operation. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `describeImport` operation returns details of a specific import operation. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Describe an import
      */
     async describeImport(requestParameters: DescribeImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ImportModel> {
@@ -129,10 +126,10 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list_imports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `listBulkImports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * List imports
      */
-    async listImportsRaw(requestParameters: ListImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportListResponse>> {
+    async listBulkImportsRaw(requestParameters: ListBulkImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportListResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters.limit !== undefined) {
@@ -160,21 +157,21 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list_imports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `listBulkImports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * List imports
      */
-    async listImports(requestParameters: ListImportsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ImportListResponse> {
-        const response = await this.listImportsRaw(requestParameters, initOverrides);
+    async listBulkImports(requestParameters: ListBulkImportsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ImportListResponse> {
+        const response = await this.listBulkImportsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * The `start_import` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `startBulkImport` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Start import
      */
-    async startImportRaw(requestParameters: StartImportOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StartImportResponse>> {
+    async startBulkImportRaw(requestParameters: StartBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.startImportRequest === null || requestParameters.startImportRequest === undefined) {
-            throw new runtime.RequiredError('startImportRequest','Required parameter requestParameters.startImportRequest was null or undefined when calling startImport.');
+            throw new runtime.RequiredError('startImportRequest','Required parameter requestParameters.startImportRequest was null or undefined when calling startBulkImport.');
         }
 
         const queryParameters: any = {};
@@ -195,16 +192,15 @@ export class BulkOperationsApi extends runtime.BaseAPI {
             body: StartImportRequestToJSON(requestParameters.startImportRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StartImportResponseFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
-     * The `start_import` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `startBulkImport` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Start import
      */
-    async startImport(requestParameters: StartImportOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StartImportResponse> {
-        const response = await this.startImportRaw(requestParameters, initOverrides);
-        return await response.value();
+    async startBulkImport(requestParameters: StartBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.startBulkImportRaw(requestParameters, initOverrides);
     }
 
 }

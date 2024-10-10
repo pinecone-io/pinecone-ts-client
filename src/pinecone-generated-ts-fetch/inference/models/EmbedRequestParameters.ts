@@ -26,7 +26,7 @@ export interface EmbedRequestParameters {
      */
     inputType?: string;
     /**
-     * How to handle inputs longer than those supported by the model. If NONE, when the input exceeds the maximum input token length an error will be returned.
+     * How to handle inputs longer than those supported by the model. If `"END"`, truncate the input sequence at the token limit. If `"NONE"`, return an error when the input exceeds the token limit. 
      * @type {string}
      * @memberof EmbedRequestParameters
      */

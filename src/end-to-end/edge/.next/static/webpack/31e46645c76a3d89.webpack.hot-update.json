@@ -1,0 +1,8 @@
+{
+  "c": ["pages/index", "webpack"],
+  "r": [],
+  "m": [
+    "./node_modules/react/cjs/react-jsx-dev-runtime.development.js",
+    "./node_modules/react/jsx-dev-runtime.js"
+  ]
+}

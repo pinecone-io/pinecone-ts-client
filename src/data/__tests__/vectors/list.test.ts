@@ -1,20 +1,20 @@
 import { listPaginated } from '../../vectors/list';
 import type {
-  ListRequest,
+  ListVectorsRequest,
   ListResponse,
-  VectorOperationsApi as DataPlaneApi,
+  VectorOperationsApi,
 } from '../../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {
-  const fakeList: (req: ListRequest) => Promise<ListResponse> = jest
+  const fakeList: (req: ListVectorsRequest) => Promise<ListResponse> = jest
     .fn()
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const DPA = { list: fakeList } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  return { DPA, VoaProvider };
+  const VOA = { listVectors: fakeList } as VectorOperationsApi;
+  const VoaProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  return { VOA: VOA, VoaProvider };
 };
 
 describe('list', () => {
@@ -29,13 +29,13 @@ describe('list', () => {
       namespace: 'list-namespace',
       usage: { readUnits: 1 },
     };
-    const { VoaProvider, DPA } = setupListResponse(listResponse);
+    const { VoaProvider, VOA } = setupListResponse(listResponse);
 
     const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
     const returned = await listPaginatedFn({ prefix: 'prefix-' });
 
     expect(returned).toBe(listResponse);
-    expect(DPA.list).toHaveBeenCalledWith({
+    expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
     });

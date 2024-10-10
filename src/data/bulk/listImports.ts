@@ -1,7 +1,7 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 import {
   ImportListResponse,
-  ListImportsRequest,
+  ListBulkImportsRequest,
 } from '../../pinecone-generated-ts-fetch/db_data';
 
 export class ListImportsCommand {
@@ -20,8 +20,8 @@ export class ListImportsCommand {
     const req = {
       limit: limit,
       paginationToken: paginationToken,
-    } as ListImportsRequest;
+    } as ListBulkImportsRequest;
     const api = await this.apiProvider.provide();
-    return await api.listImports(req);
+    return await api.listBulkImports(req);
   }
 }

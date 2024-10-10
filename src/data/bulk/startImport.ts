@@ -1,8 +1,7 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 import {
   ImportErrorModeOnErrorEnum,
-  StartImportOperationRequest,
-  StartImportResponse,
+  StartBulkImportRequest,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 
@@ -19,7 +18,7 @@ export class StartImportCommand {
     uri: string,
     errorMode?: string | undefined,
     integrationId?: string | undefined
-  ): Promise<StartImportResponse> {
+  ): Promise<void> {
     if (!uri) {
       throw new PineconeArgumentError(
         '`uri` field is required and must start with the scheme of a supported storage provider.'
@@ -42,7 +41,7 @@ export class StartImportCommand {
       }
     }
 
-    const req: StartImportOperationRequest = {
+    const req: StartBulkImportRequest = {
       startImportRequest: {
         uri: uri,
         errorMode: { onError: error },
@@ -51,6 +50,6 @@ export class StartImportCommand {
     };
 
     const api = await this.apiProvider.provide();
-    return await api.startImport(req);
+    return await api.startBulkImport(req);
   }
 }

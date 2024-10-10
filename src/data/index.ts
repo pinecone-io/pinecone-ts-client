@@ -11,7 +11,7 @@ import type { DeleteManyOptions } from './vectors/deleteMany';
 import { deleteMany } from './vectors/deleteMany';
 import { deleteAll } from './vectors/deleteAll';
 import { describeIndexStats } from './vectors/describeIndexStats';
-import { DataOperationsProvider } from './vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
 import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
@@ -197,7 +197,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
-    const dataOperationsProvider = new DataOperationsProvider(
+    const dataOperationsProvider = new VectorOperationsProvider(
       config,
       indexName,
       indexHostUrl,
@@ -551,7 +551,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index('my-serverless-index');
-   * console.log(await index.startImport('s3://my-bucket/my-data'));
+   * console.log(await index.startBulkImport('s3://my-bucket/my-data'));
    *
    * // {"id":"1"}
    * ```
@@ -561,11 +561,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param integration - (Optional) The name of the storage integration that should be used to access the data.
    * Defaults to None.
    * @param errorMode - (Optional) Defaults to "Continue". If set to "Continue", the import operation will continue
-   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
+   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listBulkImports}. Pass
    * "Abort" to stop the import operation if any records fail to import.
    */
   @prerelease('2024-10')
-  async startImport(uri: string, errorMode?: string, integration?: string) {
+  async startBulkImport(uri: string, errorMode?: string, integration?: string) {
     return await this._startImportCommand.run(uri, errorMode, integration);
   }
 
@@ -577,7 +577,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index('my-serverless-index');
-   * console.log(await index.listImports());
+   * console.log(await index.listBulkImports());
    *
    * // {
    * //  data: [
@@ -600,7 +600,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    */
   @prerelease('2024-10')
-  async listImports(limit?: number, paginationToken?: string) {
+  async listBulkImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
   }
 
@@ -641,7 +641,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index('my-serverless-index');
-   * console.log(await index.cancelImport('import-id'));
+   * console.log(await index.cancelBulkImport('import-id'));
    *
    * // {}
    * ```
@@ -649,7 +649,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param id - The id of the import operation to cancel.
    */
   @prerelease('2024-10')
-  async cancelImport(id: string) {
+  async cancelBulkImport(id: string) {
     return await this._cancelImportCommand.run(id);
   }
 }

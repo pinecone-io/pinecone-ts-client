@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
 
@@ -52,7 +52,7 @@ export type DescribeIndexStatsOptions = {
   filter: object;
 };
 
-export const describeIndexStats = (apiProvider: DataOperationsProvider) => {
+export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
   const validator = (options: DescribeIndexStatsOptions) => {
     if (options) {
       ValidateProperties(options, ['filter']);

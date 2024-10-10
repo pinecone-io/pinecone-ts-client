@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import { IndexHostSingleton } from '../../indexHostSingleton';
 import { Configuration } from '../../../pinecone-generated-ts-fetch/db_data';
 
@@ -30,7 +30,7 @@ describe('DataOperationsProvider', () => {
     const config = {
       apiKey: 'test-api-key',
     };
-    new DataOperationsProvider(config, 'index-name');
+    new VectorOperationsProvider(config, 'index-name');
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
   });
 
@@ -38,7 +38,7 @@ describe('DataOperationsProvider', () => {
     const config = {
       apiKey: 'test-api-key',
     };
-    const provider = new DataOperationsProvider(config, 'index-name');
+    const provider = new VectorOperationsProvider(config, 'index-name');
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
 
     const api = await provider.provide();
@@ -51,23 +51,23 @@ describe('DataOperationsProvider', () => {
 
   test('passing indexHostUrl skips hostUrl resolution', async () => {
     const indexHostUrl = 'http://index-host-url';
-    const provider = new DataOperationsProvider(
+    const provider = new VectorOperationsProvider(
       config,
       'index-name',
       indexHostUrl
     );
 
-    jest.spyOn(provider, 'buildDataOperationsConfig');
+    jest.spyOn(provider, 'buildVectorOperationsConfig');
 
     await provider.provide();
 
     expect(IndexHostSingleton.getHostUrl).not.toHaveBeenCalled();
-    expect(provider.buildDataOperationsConfig).toHaveBeenCalled();
+    expect(provider.buildVectorOperationsConfig).toHaveBeenCalled();
   });
 
   test('passing additionalHeaders applies them to the API Configuration', async () => {
     const additionalHeaders = { 'x-custom-header': 'custom-value' };
-    const provider = new DataOperationsProvider(
+    const provider = new VectorOperationsProvider(
       config,
       'index-name',
       undefined,
