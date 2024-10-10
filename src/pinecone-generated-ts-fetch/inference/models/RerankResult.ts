@@ -27,19 +27,19 @@ import {
 } from './RerankResultUsage';
 
 /**
- * Result of a reranking request
+ * The result of a reranking request.
  * @export
  * @interface RerankResult
  */
 export interface RerankResult {
     /**
-     * The model used to rerank documents
+     * The model used to rerank documents.
      * @type {string}
      * @memberof RerankResult
      */
     model: string;
     /**
-     * The reranked documents
+     * The reranked documents.
      * @type {Array<RankedDocument>}
      * @memberof RerankResult
      */

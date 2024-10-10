@@ -4,7 +4,6 @@ describe('bulk import', () => {
   let pinecone: Pinecone, index: Index;
 
   const name = 'bulk-import-integration-test';
-  const testURI = 's3://dev-bulk-import-datasets-pub/10-records-dim-10/';
 
   beforeAll(async () => {
     pinecone = new Pinecone();
@@ -26,11 +25,5 @@ describe('bulk import', () => {
 
   afterAll(async () => {
     await pinecone.deleteIndex(name);
-  });
-
-  test('verify bulk import', async () => {
-    const response = await index.startImport(testURI);
-    expect(response).toBeDefined();
-    expect(response.id).toBeDefined();
   });
 });

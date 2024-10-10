@@ -724,11 +724,7 @@ const index = pc.Index(indexName);
 
 const storageURI = 's3://my-bucket/my-directory/';
 
-await index.startImport(storageURI, 'continue'); // "Continue" will avoid aborting the operation if errors are encountered.
-
-// {
-//   "id": "import-id"
-// }
+await index.startBulkImport(storageURI, 'continue'); // "Continue" will avoid aborting the operation if errors are encountered.
 ```
 
 You can [start, cancel, and check the status](https://docs.pinecone.io/guides/data/import-data) of all or one import operation(s).

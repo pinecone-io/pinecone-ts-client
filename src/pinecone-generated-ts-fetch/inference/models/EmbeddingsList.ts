@@ -39,7 +39,7 @@ export interface EmbeddingsList {
      */
     model: string;
     /**
-     * The embeddings generated for the inputs
+     * The embeddings generated for the inputs.
      * @type {Array<Embedding>}
      * @memberof EmbeddingsList
      */

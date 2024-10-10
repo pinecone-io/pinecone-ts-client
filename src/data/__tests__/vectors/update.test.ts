@@ -1,18 +1,20 @@
 import { UpdateCommand } from '../../vectors/update';
-import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
-import type { UpdateOperationRequest } from '../../../pinecone-generated-ts-fetch/db_data';
+import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import type { UpdateVectorsRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 
 const setupResponse = (response, isSuccess) => {
-  const fakeUpdate: (req: UpdateOperationRequest) => Promise<object> = jest
+  const fakeUpdate: (req: UpdateVectorsRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const DPA = { update: fakeUpdate } as DataPlaneApi;
-  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
-  const cmd = new UpdateCommand(DataProvider, 'namespace');
-  return { fakeUpdate, DPA, DataProvider, cmd };
+  const VOA = { updateVectors: fakeUpdate } as VectorOperationsApi;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
+  const cmd = new UpdateCommand(VectorProvider, 'namespace');
+  return { fakeUpdate, VOA: VOA, VectorProvider: VectorProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);

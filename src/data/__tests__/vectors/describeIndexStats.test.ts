@@ -1,6 +1,6 @@
 import { describeIndexStats } from '../../vectors/describeIndexStats';
 import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../../errors';
 
@@ -15,7 +15,7 @@ const setupResponse = (response, isSuccess) => {
   const DPA = {
     describeIndexStats: fakeDescribeIndexStats,
   } as DataPlaneApi;
-  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
+  const DataProvider = { provide: async () => DPA } as VectorOperationsProvider;
   return { DPA, DataProvider };
 };
 const setupSuccess = (response) => {

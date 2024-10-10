@@ -14,13 +14,13 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Usage statistics for model inference including any instruction prefixes
+ * Usage statistics for the model inference.
  * @export
  * @interface EmbeddingsListUsage
  */
 export interface EmbeddingsListUsage {
     /**
-     * Total number tokens consumed across all inputs
+     * Total number of tokens consumed across all inputs.
      * @type {number}
      * @memberof EmbeddingsListUsage
      */

@@ -1,21 +1,23 @@
 import { FetchCommand } from '../../vectors/fetch';
-import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type {
-  FetchRequest,
+  FetchVectorsRequest,
   FetchResponse,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 
 const setupResponse = (response, isSuccess) => {
-  const fakeFetch: (req: FetchRequest) => Promise<FetchResponse> = jest
+  const fakeFetch: (req: FetchVectorsRequest) => Promise<FetchResponse> = jest
     .fn()
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const DPA = { fetch: fakeFetch } as DataPlaneApi;
-  const DataProvider = { provide: async () => DPA } as DataOperationsProvider;
-  const cmd = new FetchCommand(DataProvider, 'namespace');
-  return { DPA, DataProvider, cmd };
+  const VOA = { fetchVectors: fakeFetch } as VectorOperationsApi;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
+  const cmd = new FetchCommand(VectorProvider, 'namespace');
+  return { VOA: VOA, VectorProvider: VectorProvider, cmd };
 };
 const setupSuccess = (response) => {
   return setupResponse(response, true);
@@ -23,11 +25,11 @@ const setupSuccess = (response) => {
 
 describe('fetch', () => {
   test('calls the openapi fetch endpoint, passing target namespace', async () => {
-    const { DPA, cmd } = setupSuccess({ vectors: [] });
+    const { VOA, cmd } = setupSuccess({ vectors: [] });
     const returned = await cmd.run(['1', '2']);
 
     expect(returned).toEqual({ records: [], namespace: '' });
-    expect(DPA.fetch).toHaveBeenCalledWith({
+    expect(VOA.fetchVectors).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',
     });

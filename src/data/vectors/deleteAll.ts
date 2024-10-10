@@ -1,12 +1,12 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 
 export const deleteAll = (
-  apiProvider: DataOperationsProvider,
+  apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
   return async (): Promise<void> => {
     const api = await apiProvider.provide();
-    await api._delete({ deleteRequest: { deleteAll: true, namespace } });
+    await api.deleteVectors({ deleteRequest: { deleteAll: true, namespace } });
     return;
   };
 };

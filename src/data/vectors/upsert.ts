@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   PineconeRecord,
@@ -9,7 +9,7 @@ import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: DataOperationsProvider;
+  apiProvider: VectorOperationsProvider;
   namespace: string;
 
   constructor(apiProvider, namespace) {
@@ -44,7 +44,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
-    await api.upsert({
+    await api.upsertVectors({
       upsertRequest: {
         vectors: records as Array<Vector>,
         namespace: this.namespace,

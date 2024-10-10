@@ -48,7 +48,7 @@ export interface RerankOperationRequest {
 export class InferenceApi extends runtime.BaseAPI {
 
     /**
-     * Generate embeddings for input data
+     * Generate embeddings for input data.  For guidance and examples, see [Generate embeddings](https://docs.pinecone.io/guides/inference/generate-embeddings).
      * Embed data
      */
     async embedRaw(requestParameters: EmbedOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EmbeddingsList>> {
@@ -74,7 +74,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generate embeddings for input data
+     * Generate embeddings for input data.  For guidance and examples, see [Generate embeddings](https://docs.pinecone.io/guides/inference/generate-embeddings).
      * Embed data
      */
     async embed(requestParameters: EmbedOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EmbeddingsList> {
@@ -83,7 +83,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Using a reranker to rerank a list of items for a query
+     * Rerank items according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
      * Rerank items
      */
     async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
@@ -109,7 +109,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Using a reranker to rerank a list of items for a query
+     * Rerank items according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
      * Rerank items
      */
     async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {
