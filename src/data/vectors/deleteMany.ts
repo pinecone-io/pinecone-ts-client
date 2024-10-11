@@ -56,6 +56,8 @@ export const deleteMany = (
     }
 
     const api = await apiProvider.provide();
-    await api.deleteVectors({ deleteRequest: { ...requestOptions, namespace } });
+    await api.deleteVectors({
+      deleteRequest: { ...requestOptions, namespace },
+    });
   };
 };

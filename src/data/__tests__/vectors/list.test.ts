@@ -13,7 +13,9 @@ const setupListResponse = (response, isSuccess = true) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const VOA = { listVectors: fakeList } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   return { VOA: VOA, VectorProvider: VectorProvider };
 };
 

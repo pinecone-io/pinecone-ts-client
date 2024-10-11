@@ -1,6 +1,6 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 import {
-  ImportListResponse,
+  ListImportsResponse,
   ListBulkImportsRequest,
 } from '../../pinecone-generated-ts-fetch/db_data';
 
@@ -16,7 +16,7 @@ export class ListImportsCommand {
   async run(
     limit?: number,
     paginationToken?: string
-  ): Promise<ImportListResponse> {
+  ): Promise<ListImportsResponse> {
     const req = {
       limit: limit,
       paginationToken: paginationToken,

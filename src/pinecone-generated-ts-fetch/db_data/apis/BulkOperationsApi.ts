@@ -15,17 +15,17 @@
 
 import * as runtime from '../runtime';
 import type {
-  ImportListResponse,
   ImportModel,
+  ListImportsResponse,
   RpcStatus,
   StartImportRequest,
   StartImportResponse,
 } from '../models/index';
 import {
-    ImportListResponseFromJSON,
-    ImportListResponseToJSON,
     ImportModelFromJSON,
     ImportModelToJSON,
+    ListImportsResponseFromJSON,
+    ListImportsResponseToJSON,
     RpcStatusFromJSON,
     RpcStatusToJSON,
     StartImportRequestFromJSON,
@@ -57,7 +57,7 @@ export interface StartBulkImportRequest {
 export class BulkOperationsApi extends runtime.BaseAPI {
 
     /**
-     * The `cancelBulkImport` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `cancel_import` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Cancel an import
      */
     async cancelBulkImportRaw(requestParameters: CancelBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -84,7 +84,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `cancelBulkImport` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `cancel_import` operation cancels an import operation if it is not yet finished. It has no effect if the operation is already finished. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Cancel an import
      */
     async cancelBulkImport(requestParameters: CancelBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
@@ -93,7 +93,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describeBulkImport` operation returns details of a specific import operation. For guidance and examples,  see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `describe_import` operation returns details of a specific import operation. For guidance and examples,  see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Describe an import
      */
     async describeBulkImportRaw(requestParameters: DescribeBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportModel>> {
@@ -120,7 +120,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describeBulkImport` operation returns details of a specific import operation. For guidance and examples,  see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `describe_import` operation returns details of a specific import operation. For guidance and examples,  see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Describe an import
      */
     async describeBulkImport(requestParameters: DescribeBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ImportModel> {
@@ -129,10 +129,10 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `listBulkImports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `list_imports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * List imports
      */
-    async listBulkImportsRaw(requestParameters: ListBulkImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ImportListResponse>> {
+    async listBulkImportsRaw(requestParameters: ListBulkImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListImportsResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters.limit !== undefined) {
@@ -156,20 +156,20 @@ export class BulkOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ImportListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListImportsResponseFromJSON(jsonValue));
     }
 
     /**
-     * The `listBulkImports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `list_imports` operation lists all recent and ongoing import operations. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * List imports
      */
-    async listBulkImports(requestParameters: ListBulkImportsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ImportListResponse> {
+    async listBulkImports(requestParameters: ListBulkImportsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListImportsResponse> {
         const response = await this.listBulkImportsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * The `startBulkImport` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `start_import` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Start import
      */
     async startBulkImportRaw(requestParameters: StartBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StartImportResponse>> {
@@ -199,7 +199,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `startBulkImport` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
+     * The `start_import` operation starts an asynchronous import of vectors from object storage into an index. For guidance and examples, see [Import data](https://docs.pinecone.io/guides/data/import-data). 
      * Start import
      */
     async startBulkImport(requestParameters: StartBulkImportRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StartImportResponse> {

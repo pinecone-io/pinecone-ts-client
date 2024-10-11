@@ -10,7 +10,9 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const VOA = { upsertVectors: fakeUpsert } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   const cmd = new UpsertCommand(VectorProvider, 'namespace');
 
   return { fakeUpsert, VOA, VectorProvider, cmd };

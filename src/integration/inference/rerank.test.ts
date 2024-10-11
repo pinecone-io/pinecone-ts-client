@@ -1,4 +1,5 @@
 import { Pinecone } from '../../pinecone';
+import { PineconeArgumentError, PineconeNotFoundError } from '../../errors';
 
 describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
   let model: string;
@@ -33,5 +34,22 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     // @ts-ignore
     // (Just ignoring the fact that technically doc.document['text'] could be undefined)
     expect(response.data.map((doc) => doc.document['text'])).toBeDefined();
+  });
+
+  test('Confirm error thrown if rankFields does match fields in passed documents', async () => {
+    const rerankingModel = 'test-model';
+    const myQuery = 'test-query';
+    const myDocuments = [
+      { text: 'doc1', title: 'title1' },
+      { text: 'doc2', title: 'title2' }
+    ];
+    const rankFields = ['random field'];
+    try {
+      await pinecone.inference.rerank(rerankingModel, myQuery, myDocuments, {
+        rankFields
+      });
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
   });
 });

@@ -1083,9 +1083,11 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 Rerank documents in descending relevance-order against a query.
 
-**Note:** The `score` represents the absolute measure of relevance of a given query and passage pair. Normalized
+**Notes:** 
+- The `score` represents the absolute measure of relevance of a given query and passage pair. Normalized
 between [0, 1], the `score` represents how closely relevant a specific item and query are, with scores closer to 1
 indicating higher relevance.
+- Some models only allow 1 reranking field; others allow 2+. The current model ('[BGE](https://docs.pinecone.io/models/bge-reranker-v2-m3)') **only allows 1**.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';

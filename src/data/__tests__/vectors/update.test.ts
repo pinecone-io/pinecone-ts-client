@@ -1,16 +1,18 @@
 import { UpdateCommand } from '../../vectors/update';
 import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
-import type { UpdateVectorsRequest } from '../../../pinecone-generated-ts-fetch/db_data';
+import type { UpdateVectorRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 
 const setupResponse = (response, isSuccess) => {
-  const fakeUpdate: (req: UpdateVectorsRequest) => Promise<object> = jest
+  const fakeUpdate: (req: UpdateVectorRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const VOA = { updateVectors: fakeUpdate } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VOA = { updateVector: fakeUpdate } as VectorOperationsApi;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   const cmd = new UpdateCommand(VectorProvider, 'namespace');
   return { fakeUpdate, VOA, VectorProvider, cmd };
 };

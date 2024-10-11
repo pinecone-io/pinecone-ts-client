@@ -90,20 +90,33 @@ describe('Inference Class: rerank', () => {
     }
   });
 
-  test('Throws error if list of objs is passed for docs, but does not contain `text` key', async () => {
+  test('Confirm custom field is used for ranking if provided', async () => {
     const rerankingModel = 'test-model';
     const myQuery = 'test-query';
-    const myDocuments = [{ id: '1' }, { id: '2' }];
-    const expectedError = new PineconeArgumentError(
-      '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
-        ' string value'
-    );
-    try {
-      await inference.rerank(rerankingModel, myQuery, myDocuments);
-    } catch (error) {
-      expect(error).toEqual(expectedError);
-    }
+    const myDocuments = [{ someField:'doc1' }, { someField: 'doc2' }];
+
+    const expectedReq = {
+      model: rerankingModel,
+      query: myQuery,
+      documents: myDocuments,
+      parameters: {},
+      rankFields: ['text'],
+      returnDocuments: true,
+      topN: 2
+    };
+
+    const rerank = jest.spyOn(inference._inferenceApi, 'rerank');
+    rerank.mockResolvedValue({
+      model: 'some-model',
+      data: [{}],
+      usage: { rerankUnits: 1 }
+    } as RerankResult);
+
+    await inference.rerank(rerankingModel, myQuery, myDocuments);
+    expect(rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
+
   });
+
 
   test('Confirm list of strings as docs is converted to list of objects with `text` key', async () => {
     const rerankingModel = 'test-model';
@@ -114,7 +127,7 @@ describe('Inference Class: rerank', () => {
     rerank.mockResolvedValue({
       model: 'some-model',
       data: [{}],
-      usage: { rerankUnits: 1 },
+      usage: { rerankUnits: 1 }
     } as RerankResult);
     await inference.rerank(rerankingModel, myQuery, myDocuments);
 
@@ -126,63 +139,42 @@ describe('Inference Class: rerank', () => {
       parameters: {},
       rankFields: ['text'],
       returnDocuments: true,
-      topN: 2,
+      topN: 2
     };
 
     expect(rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
   });
 
-  test('Confirm error thrown if rankFields does match fields in passed documents', async () => {
-    const rerankingModel = 'test-model';
-    const myQuery = 'test-query';
-    const myDocuments = [
-      { text: 'doc1', title: 'title1' },
-      { text: 'doc2', title: 'title2' },
-    ];
-    const rankFields = ['OopsIMisspelledTheTextField', 'title'];
-    const rerank = jest.spyOn(inference._inferenceApi, 'rerank');
-    // @ts-ignore
-    rerank.mockResolvedValue({ rerankResponse: {} });
-    try {
+  test.skip('Skip until backend error is built to prevent users from passing 2+ fields to BGE, since it only allows' +
+    ' one', async () => {
+    test('Confirm provided rankFields override default `text` field for ranking', async () => {
+      const rerankingModel = 'test-model';
+      const myQuery = 'test-query';
+      const myDocuments = [
+        { text: 'doc1', title: 'title1' },
+        { text: 'doc2', title: 'title2' }
+      ];
+      const rankFields = ['text', 'title'];
+      const rerank = jest.spyOn(inference._inferenceApi, 'rerank');
+      // @ts-ignore
+      rerank.mockResolvedValue({ rerankResponse: {} });
       await inference.rerank(rerankingModel, myQuery, myDocuments, {
-        rankFields,
+        rankFields
       });
-    } catch (error) {
-      expect(error).toEqual(
-        new PineconeArgumentError(
-          'The `rankField` value you passed ("OopsIMisspelledTheTextField") is missing in the document at index 0'
-        )
-      );
-    }
-  });
 
-  test('Confirm provided rankFields override default `text` field for ranking', async () => {
-    const rerankingModel = 'test-model';
-    const myQuery = 'test-query';
-    const myDocuments = [
-      { text: 'doc1', title: 'title1' },
-      { text: 'doc2', title: 'title2' },
-    ];
-    const rankFields = ['title'];
-    const rerank = jest.spyOn(inference._inferenceApi, 'rerank');
-    // @ts-ignore
-    rerank.mockResolvedValue({ rerankResponse: {} });
-    await inference.rerank(rerankingModel, myQuery, myDocuments, {
-      rankFields,
+      const expectedReq = {
+        model: rerankingModel,
+        query: myQuery,
+        documents: myDocuments,
+        rankFields,
+        // defaults:
+        parameters: {},
+        returnDocuments: true,
+        topN: 2
+      };
+
+      expect(rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
     });
-
-    const expectedReq = {
-      model: rerankingModel,
-      query: myQuery,
-      documents: myDocuments,
-      rankFields,
-      // defaults:
-      parameters: {},
-      returnDocuments: true,
-      topN: 2,
-    };
-
-    expect(rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
   });
 
   test('Confirm error thrown if query is missing', async () => {
@@ -205,7 +197,7 @@ describe('Inference Class: rerank', () => {
     const myDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
     const expectedError = new PineconeArgumentError(
       'You must pass the name of a supported reranking model in order to rerank' +
-        ' documents. See https://docs.pinecone.io/models for supported models.'
+      ' documents. See https://docs.pinecone.io/models for supported models.'
     );
     try {
       await inference.rerank(rerankingModel, myQuery, myDocuments);

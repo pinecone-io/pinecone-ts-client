@@ -3,7 +3,7 @@ import {
   EmbedRequestInputsInner,
   EmbedRequestParameters,
   InferenceApi,
-  RerankResult,
+  RerankResult
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
@@ -51,8 +51,8 @@ export class Inference {
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
-        parameters: typedParams,
-      },
+        parameters: typedParams
+      }
     };
     const response = await this._inferenceApi.embed(typedRequest);
     return new EmbeddingsList(response.model, response.data, response.usage);
@@ -61,8 +61,7 @@ export class Inference {
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order
    *  against the query provided.
    *
-   *  Note: by default, the ['text'] field of each document is used for ranking; you can overwrite this default
-   *  behavior by passing an {@link RerankOptions} `options` object specifying 1+ other fields.
+   *  Documents can either be an Array of strings, or an Array of objects.
    *
    *  @example
    *  ```typescript
@@ -72,10 +71,10 @@ export class Inference {
    *  const rerankingModel = "bge-reranker-v2-m3";
    *  const myQuery = "What are some good Turkey dishes for Thanksgiving?";
    *  const myDocuments = [
-   *  { text: "I love turkey sandwiches with pastrami" },
-   *  { text: "A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main" },
-   *  { text: "My favorite Thanksgiving dish is pumpkin pie" },
-   *  { text: "Turkey is a great source of protein" },
+   *  { myField: "I love turkey sandwiches with pastrami" },
+   *  { myField: "A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main" },
+   *  { myField: "My favorite Thanksgiving dish is pumpkin pie" },
+   *  { myField: "Turkey is a great source of protein" },
    *  ];
    *
    *  // >>> Sample without passing an `options` object:
@@ -113,8 +112,7 @@ export class Inference {
    *
    * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
    * @param query - (Required) The query to rerank documents against.
-   * @param documents - (Required) The documents to rerank. Each document must be either a string or an object
-   * with (at minimum) a `text` key.
+   * @param documents - (Required) The documents to rerank. Each document must be either a string or an object.
    * @param options - (Optional) Additional options to send with the core reranking request. Options include: how many
    * results to return, whether to return the documents in the response, alternative fields by which the model
    * should to rank the documents, and additional model-specific parameters. See {@link RerankOptions} for more details.
@@ -137,45 +135,57 @@ export class Inference {
     if (model.length == 0) {
       throw new PineconeArgumentError(
         'You must pass the name of a supported reranking model in order to rerank' +
-          ' documents. See https://docs.pinecone.io/models for supported models.'
+        ' documents. See https://docs.pinecone.io/models for supported models.'
       );
     }
-    // Destructure `options` with defaults
-    // Note: If the user passes in key:value pairs in `options` that are not the following, they are ignored
+
     const {
       topN = documents.length,
       returnDocuments = true,
-      rankFields = ['text'],
       parameters = {},
+      rankFields = undefined
     } = options;
 
-    // Allow documents to be passed a list of strings, or a list of objs w/at least a `text` key:
-    let newDocuments: Array<{ [key: string]: string }> = [];
-    if (typeof documents[0] === 'object' && !('text' in documents[0])) {
-      throw new PineconeArgumentError(
-        '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
-          ' string value'
-      );
-    } else if (typeof documents[0] === 'string') {
-      newDocuments = documents.map((doc) => {
-        return { text: doc as string };
-      });
+    let computedRankFields: string[];
+
+    // If user does not pass in rankFields:
+    if (!rankFields) {
+      // If `documents` is an array of strings:
+      if (documents.every((doc) => typeof doc === 'string')) {
+        // Set rankFields to default value of 'text'
+        computedRankFields = ['text'];
+      } else if (documents.every((doc) => typeof doc === 'object' && doc !== null)) {
+        // If `documents` is an array of objects:
+        const documentKeys = Object.keys(documents[0] as { [key: string]: string });
+        // Set rankFields to the first key in the first document
+        computedRankFields = documentKeys.length > 0 ? [documentKeys[0]] : [];
+      } else {
+        throw new PineconeArgumentError(
+          'Documents must be a list of strings or a list of objects'
+        );
+      }
     } else {
-      newDocuments = documents as Array<{ [key: string]: string }>;
+      // If user does pass in custom rankFields &&
+      // If documents are objects, check that all documents have the specified rank field:
+      computedRankFields = Array.isArray(rankFields) ? rankFields : [rankFields];
+      if (documents.every((doc) => typeof doc === 'object' && doc !== null)) {
+        const missingFields = documents.some(
+          (doc) => !(doc as { [key: string]: string })[computedRankFields[0]]
+        );
+        if (missingFields) {
+          throw new PineconeArgumentError(
+            `One or more documents are missing the specified rank field: ${computedRankFields}`
+          );
+        }
+      }
     }
 
-    // Ensure all rankFields, if passed, are present in each document
-    if (rankFields.length > 0) {
-      newDocuments.forEach((doc, index) => {
-        rankFields.forEach((field) => {
-          if (!(field in doc)) {
-            throw new PineconeArgumentError(
-              `The \`rankField\` value you passed ("${field}") is missing in the document at index ${index}`
-            );
-          }
-        });
-      });
-    }
+    // Standardize documents to ensure they are in object format
+    const newDocuments = documents.map((doc) =>
+      typeof doc === 'string' ? { text: doc } : doc
+    );
+
+    console.log('Final rankFields = ', computedRankFields);
 
     const req = {
       rerankRequest: {
@@ -184,11 +194,12 @@ export class Inference {
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: rankFields,
-        parameters: parameters,
-      },
+        rankFields: computedRankFields,
+        parameters: parameters
+      }
     };
 
     return await this._inferenceApi.rerank(req);
+
   }
 }
