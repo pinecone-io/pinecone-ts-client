@@ -73,7 +73,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     const api = await this.apiProvider.provide();
-    await api.updateVectors({
+    await api.updateVector({
       updateRequest: { ...requestOptions, namespace: this.namespace },
     });
     return;

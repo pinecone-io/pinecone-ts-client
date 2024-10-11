@@ -76,7 +76,7 @@ export interface QueryVectorsRequest {
     queryRequest: QueryRequest;
 }
 
-export interface UpdateVectorsRequest {
+export interface UpdateVectorRequest {
     updateRequest: UpdateRequest;
 }
 
@@ -90,7 +90,7 @@ export interface UpsertVectorsRequest {
 export class VectorOperationsApi extends runtime.BaseAPI {
 
     /**
-     * The `deleteVectors` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+     * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
      * Delete vectors
      */
     async deleteVectorsRaw(requestParameters: DeleteVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -120,7 +120,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `deleteVectors` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+     * The `delete` operation deletes vectors, by id, from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
      * Delete vectors
      */
     async deleteVectors(requestParameters: DeleteVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
@@ -129,7 +129,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describeIndexStats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
      * Get index stats
      */
     async describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexDescription>> {
@@ -159,7 +159,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describeIndexStats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
      * Get index stats
      */
     async describeIndexStats(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexDescription> {
@@ -168,7 +168,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `fetchVectors` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
      * Fetch vectors
      */
     async fetchVectorsRaw(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
@@ -203,7 +203,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `fetchVectors` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+     * The `fetch` operation looks up and returns vectors, by ID, from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
      * Fetch vectors
      */
     async fetchVectors(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {
@@ -212,7 +212,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `listVectors` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `listVectors` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `listVectors` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
+     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectorsRaw(requestParameters: ListVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResponse>> {
@@ -251,7 +251,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `listVectors` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `listVectors` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `listVectors` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
+     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectors(requestParameters: ListVectorsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResponse> {
@@ -260,7 +260,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `queryVectors` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
      * Query vectors
      */
     async queryVectorsRaw(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
@@ -290,7 +290,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `queryVectors` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * The `query` operation searches a namespace, using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
      * Query vectors
      */
     async queryVectors(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QueryResponse> {
@@ -299,12 +299,12 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `updateVectors` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
      * Update a vector
      */
-    async updateVectorsRaw(requestParameters: UpdateVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async updateVectorRaw(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters.updateRequest === null || requestParameters.updateRequest === undefined) {
-            throw new runtime.RequiredError('updateRequest','Required parameter requestParameters.updateRequest was null or undefined when calling updateVectors.');
+            throw new runtime.RequiredError('updateRequest','Required parameter requestParameters.updateRequest was null or undefined when calling updateVector.');
         }
 
         const queryParameters: any = {};
@@ -329,16 +329,16 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `updateVectors` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+     * The `update` operation updates a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
      * Update a vector
      */
-    async updateVectors(requestParameters: UpdateVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
-        const response = await this.updateVectorsRaw(requestParameters, initOverrides);
+    async updateVector(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.updateVectorRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * The `upsertVectors` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
+     * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
      * Upsert vectors
      */
     async upsertVectorsRaw(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
@@ -368,7 +368,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `upsertVectors` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
+     * The `upsert` operation writes vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data).
      * Upsert vectors
      */
     async upsertVectors(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertResponse> {
