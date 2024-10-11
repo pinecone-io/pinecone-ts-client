@@ -15,6 +15,6 @@ export class DescribeImportCommand {
       id: id,
     };
     const api = await this.apiProvider.provide();
-    return await api.describeImport(req);
+    return await api.describeBulkImport(req);
   }
 }

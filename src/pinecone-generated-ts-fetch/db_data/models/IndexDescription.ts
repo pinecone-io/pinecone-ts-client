@@ -23,19 +23,19 @@ import {
 /**
  * The response for the `describe_index_stats` operation.
  * @export
- * @interface DescribeIndexStatsResponse
+ * @interface IndexDescription
  */
-export interface DescribeIndexStatsResponse {
+export interface IndexDescription {
     /**
      * A mapping for each namespace in the index from the namespace name to a summary of its contents. If a metadata filter expression is present, the summary will reflect only vectors matching that expression.
      * @type {{ [key: string]: NamespaceSummary; }}
-     * @memberof DescribeIndexStatsResponse
+     * @memberof IndexDescription
      */
     namespaces?: { [key: string]: NamespaceSummary; };
     /**
      * The dimension of the indexed vectors.
      * @type {number}
-     * @memberof DescribeIndexStatsResponse
+     * @memberof IndexDescription
      */
     dimension?: number;
     /**
@@ -45,31 +45,31 @@ export interface DescribeIndexStatsResponse {
      * 
      * The index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
      * @type {number}
-     * @memberof DescribeIndexStatsResponse
+     * @memberof IndexDescription
      */
     indexFullness?: number;
     /**
      * The total number of vectors in the index, regardless of whether a metadata filter expression was passed
      * @type {number}
-     * @memberof DescribeIndexStatsResponse
+     * @memberof IndexDescription
      */
     totalVectorCount?: number;
 }
 
 /**
- * Check if a given object implements the DescribeIndexStatsResponse interface.
+ * Check if a given object implements the IndexDescription interface.
  */
-export function instanceOfDescribeIndexStatsResponse(value: object): boolean {
+export function instanceOfIndexDescription(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function DescribeIndexStatsResponseFromJSON(json: any): DescribeIndexStatsResponse {
-    return DescribeIndexStatsResponseFromJSONTyped(json, false);
+export function IndexDescriptionFromJSON(json: any): IndexDescription {
+    return IndexDescriptionFromJSONTyped(json, false);
 }
 
-export function DescribeIndexStatsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): DescribeIndexStatsResponse {
+export function IndexDescriptionFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexDescription {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -82,7 +82,7 @@ export function DescribeIndexStatsResponseFromJSONTyped(json: any, ignoreDiscrim
     };
 }
 
-export function DescribeIndexStatsResponseToJSON(value?: DescribeIndexStatsResponse | null): any {
+export function IndexDescriptionToJSON(value?: IndexDescription | null): any {
     if (value === undefined) {
         return undefined;
     }

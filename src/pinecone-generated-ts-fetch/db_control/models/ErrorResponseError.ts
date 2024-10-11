@@ -62,7 +62,8 @@ export const ErrorResponseErrorCodeEnum = {
     Unavailable: 'UNAVAILABLE',
     DataLoss: 'DATA_LOSS',
     Forbidden: 'FORBIDDEN',
-    UnprocessableEntity: 'UNPROCESSABLE_ENTITY'
+    UnprocessableEntity: 'UNPROCESSABLE_ENTITY',
+    PaymentRequired: 'PAYMENT_REQUIRED'
 } as const;
 export type ErrorResponseErrorCodeEnum = typeof ErrorResponseErrorCodeEnum[keyof typeof ErrorResponseErrorCodeEnum];
 

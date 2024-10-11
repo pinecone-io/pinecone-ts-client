@@ -70,7 +70,7 @@ export interface QueryRequest {
      */
     queries?: Array<QueryVector>;
     /**
-     * The query vector. This should be the same length as the dimension of the index being queried. Each `query()` request can contain only one of the parameters `id` or `vector`.
+     * The query vector. This should be the same length as the dimension of the index being queried. Each `query` request can contain only one of the parameters `id` or `vector`.
      * @type {Array<number>}
      * @memberof QueryRequest
      */
@@ -82,7 +82,7 @@ export interface QueryRequest {
      */
     sparseVector?: SparseValues;
     /**
-     * The unique ID of the vector to be used as a query vector. Each `query()` request can contain only one of the parameters `queries`, `vector`, or  `id`.
+     * The unique ID of the vector to be used as a query vector. Each `query` request can contain only one of the parameters `queries`, `vector`, or  `id`.
      * @type {string}
      * @memberof QueryRequest
      */

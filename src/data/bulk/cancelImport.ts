@@ -14,6 +14,6 @@ export class CancelImportCommand {
       id: id,
     };
     const api = await this.apiProvider.provide();
-    return await api.cancelImport(req);
+    return await api.cancelBulkImport(req);
   }
 }

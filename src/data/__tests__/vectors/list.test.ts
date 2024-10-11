@@ -1,20 +1,22 @@
 import { listPaginated } from '../../vectors/list';
 import type {
-  ListRequest,
+  ListVectorsRequest,
   ListResponse,
-  VectorOperationsApi as DataPlaneApi,
+  VectorOperationsApi,
 } from '../../../pinecone-generated-ts-fetch/db_data';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 
 const setupListResponse = (response, isSuccess = true) => {
-  const fakeList: (req: ListRequest) => Promise<ListResponse> = jest
+  const fakeList: (req: ListVectorsRequest) => Promise<ListResponse> = jest
     .fn()
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const DPA = { list: fakeList } as DataPlaneApi;
-  const VoaProvider = { provide: async () => DPA } as DataOperationsProvider;
-  return { DPA, VoaProvider };
+  const VOA = { listVectors: fakeList } as VectorOperationsApi;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
+  return { VOA: VOA, VectorProvider: VectorProvider };
 };
 
 describe('list', () => {
@@ -29,21 +31,21 @@ describe('list', () => {
       namespace: 'list-namespace',
       usage: { readUnits: 1 },
     };
-    const { VoaProvider, DPA } = setupListResponse(listResponse);
+    const { VectorProvider, VOA } = setupListResponse(listResponse);
 
-    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
     const returned = await listPaginatedFn({ prefix: 'prefix-' });
 
     expect(returned).toBe(listResponse);
-    expect(DPA.list).toHaveBeenCalledWith({
+    expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
     });
   });
 
   test('Throw error if pass in empty prefix', async () => {
-    const { VoaProvider } = setupListResponse({});
-    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const { VectorProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
     const toThrow = async () => {
       await listPaginatedFn({ limit: -3 });
     };
@@ -53,8 +55,8 @@ describe('list', () => {
   });
 
   test('Throw error if misspell property', async () => {
-    const { VoaProvider } = setupListResponse({});
-    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const { VectorProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
     const toThrow = async () => {
       // @ts-ignore
       await listPaginatedFn({ limitgadsf: -3 });
@@ -65,8 +67,8 @@ describe('list', () => {
   });
 
   test('Throw error if add unknown property', async () => {
-    const { VoaProvider } = setupListResponse({});
-    const listPaginatedFn = listPaginated(VoaProvider, 'list-namespace');
+    const { VectorProvider } = setupListResponse({});
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
     const toThrow = async () => {
       // @ts-ignore
       await listPaginatedFn({ limit: 3, testy: 'test' });

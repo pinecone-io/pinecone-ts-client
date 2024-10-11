@@ -2,11 +2,11 @@
 /* eslint-disable */
 export * from './DeleteRequest';
 export * from './DescribeIndexStatsRequest';
-export * from './DescribeIndexStatsResponse';
 export * from './FetchResponse';
 export * from './ImportErrorMode';
-export * from './ImportListResponse';
 export * from './ImportModel';
+export * from './IndexDescription';
+export * from './ListImportsResponse';
 export * from './ListItem';
 export * from './ListResponse';
 export * from './NamespaceSummary';
