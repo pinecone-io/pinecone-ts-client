@@ -29,37 +29,37 @@ import {
 /**
  * The response for the `list_imports` operation.
  * @export
- * @interface ImportListResponse
+ * @interface ListImportsResponse
  */
-export interface ImportListResponse {
+export interface ListImportsResponse {
     /**
      * 
      * @type {Array<ImportModel>}
-     * @memberof ImportListResponse
+     * @memberof ListImportsResponse
      */
     data?: Array<ImportModel>;
     /**
      * 
      * @type {Pagination}
-     * @memberof ImportListResponse
+     * @memberof ListImportsResponse
      */
     pagination?: Pagination;
 }
 
 /**
- * Check if a given object implements the ImportListResponse interface.
+ * Check if a given object implements the ListImportsResponse interface.
  */
-export function instanceOfImportListResponse(value: object): boolean {
+export function instanceOfListImportsResponse(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function ImportListResponseFromJSON(json: any): ImportListResponse {
-    return ImportListResponseFromJSONTyped(json, false);
+export function ListImportsResponseFromJSON(json: any): ListImportsResponse {
+    return ListImportsResponseFromJSONTyped(json, false);
 }
 
-export function ImportListResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ImportListResponse {
+export function ListImportsResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListImportsResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -70,7 +70,7 @@ export function ImportListResponseFromJSONTyped(json: any, ignoreDiscriminator: 
     };
 }
 
-export function ImportListResponseToJSON(value?: ImportListResponse | null): any {
+export function ListImportsResponseToJSON(value?: ListImportsResponse | null): any {
     if (value === undefined) {
         return undefined;
     }

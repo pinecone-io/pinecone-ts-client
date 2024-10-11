@@ -1,7 +1,7 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 import {
   ImportErrorModeOnErrorEnum,
-  StartImportOperationRequest,
+  StartBulkImportRequest,
   StartImportResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
@@ -42,7 +42,7 @@ export class StartImportCommand {
       }
     }
 
-    const req: StartImportOperationRequest = {
+    const req: StartBulkImportRequest = {
       startImportRequest: {
         uri: uri,
         errorMode: { onError: error },
@@ -51,6 +51,6 @@ export class StartImportCommand {
     };
 
     const api = await this.apiProvider.provide();
-    return await api.startImport(req);
+    return await api.startBulkImport(req);
   }
 }

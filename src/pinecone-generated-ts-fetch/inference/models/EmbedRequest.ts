@@ -33,7 +33,7 @@ import {
  */
 export interface EmbedRequest {
     /**
-     * Model name to use for embedding generation.
+     * The [model](https://docs.pinecone.io/guides/inference/understanding-inference#models) to use for embedding generation.
      * @type {string}
      * @memberof EmbedRequest
      */
@@ -45,7 +45,7 @@ export interface EmbedRequest {
      */
     parameters?: EmbedRequestParameters;
     /**
-     * List of inputs to generate embeddings for that varies by model
+     * List of inputs to generate embeddings for.
      * @type {Array<EmbedRequestInputsInner>}
      * @memberof EmbedRequest
      */
