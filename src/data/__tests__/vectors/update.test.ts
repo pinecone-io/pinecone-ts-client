@@ -10,7 +10,9 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const VOA = { updateVectors: fakeUpdate } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   const cmd = new UpdateCommand(VectorProvider, 'namespace');
   return { fakeUpdate, VOA, VectorProvider, cmd };
 };

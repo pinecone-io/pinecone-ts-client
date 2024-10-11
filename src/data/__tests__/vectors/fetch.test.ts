@@ -13,7 +13,9 @@ const setupResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const VOA = { fetchVectors: fakeFetch } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   const cmd = new FetchCommand(VectorProvider, 'namespace');
   return { VOA, VectorProvider, cmd };
 };

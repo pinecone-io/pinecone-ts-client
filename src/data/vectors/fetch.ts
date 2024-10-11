@@ -45,7 +45,10 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   async run(ids: FetchOptions): Promise<FetchResponse<T>> {
     this.validator(ids);
     const api = await this.apiProvider.provide();
-    const response = await api.fetchVectors({ ids: ids, namespace: this.namespace });
+    const response = await api.fetchVectors({
+      ids: ids,
+      namespace: this.namespace,
+    });
 
     // My testing shows that in reality vectors and namespace are
     // never undefined even when there are no records returned. So these

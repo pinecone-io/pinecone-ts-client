@@ -13,7 +13,9 @@ const setupDeleteResponse = (response, isSuccess) => {
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
   const VOA = { deleteVectors: fakeDelete } as VectorOperationsApi;
-  const VectorProvider = { provide: async () => VOA } as VectorOperationsProvider;
+  const VectorProvider = {
+    provide: async () => VOA,
+  } as VectorOperationsProvider;
   return { VOA, VectorProvider };
 };
 export const setupDeleteSuccess = (response) => {
