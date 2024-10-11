@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type { DeleteRequest } from '../../pinecone-generated-ts-fetch/db_data';
 import type { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
@@ -21,7 +21,7 @@ export type DeleteManyOptions =
   | DeleteManyByFilterOptions;
 
 export const deleteMany = (
-  apiProvider: DataOperationsProvider,
+  apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
   const FilterValidator = (options: DeleteManyByFilterOptions) => {
@@ -56,6 +56,6 @@ export const deleteMany = (
     }
 
     const api = await apiProvider.provide();
-    await api._delete({ deleteRequest: { ...requestOptions, namespace } });
+    await api.deleteVectors({ deleteRequest: { ...requestOptions, namespace } });
   };
 };

@@ -1,17 +1,17 @@
 import { QueryCommand } from '../../vectors/query';
 import { PineconeArgumentError } from '../../../errors';
-import { DataOperationsProvider } from '../../vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import { PineconeConfiguration } from '../../vectors/types';
 
-jest.mock('../../vectors/dataOperationsProvider');
+jest.mock('../../vectors/vectorOperationsProvider');
 jest.mock('../../vectors/types');
 
 describe('Query command tests', () => {
-  let apiProvider: DataOperationsProvider;
+  let apiProvider: VectorOperationsProvider;
   let pineconeConfig: PineconeConfiguration;
 
   beforeEach(() => {
-    apiProvider = new DataOperationsProvider(pineconeConfig, 'index-name');
+    apiProvider = new VectorOperationsProvider(pineconeConfig, 'index-name');
     (apiProvider.provide as jest.Mock).mockResolvedValue({
       query: jest.fn().mockResolvedValue({ matches: [] }),
     });

@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
 
@@ -10,7 +10,7 @@ import { PineconeArgumentError } from '../../errors';
 export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (
-  apiProvider: DataOperationsProvider,
+  apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
   const validator = (options: DeleteOneOptions) => {
@@ -23,7 +23,7 @@ export const deleteOne = (
   return async (options: DeleteOneOptions): Promise<void> => {
     validator(options);
     const api = await apiProvider.provide();
-    await api._delete({ deleteRequest: { ids: [options], namespace } });
+    await api.deleteVectors({ deleteRequest: { ids: [options], namespace } });
     return;
   };
 };

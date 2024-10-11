@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type {
   OperationUsage,
   PineconeRecord,
@@ -28,7 +28,7 @@ export type FetchResponse<T extends RecordMetadata = RecordMetadata> = {
 };
 
 export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: DataOperationsProvider;
+  apiProvider: VectorOperationsProvider;
   namespace: string;
 
   constructor(apiProvider, namespace) {
@@ -45,7 +45,7 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   async run(ids: FetchOptions): Promise<FetchResponse<T>> {
     this.validator(ids);
     const api = await this.apiProvider.provide();
-    const response = await api.fetch({ ids: ids, namespace: this.namespace });
+    const response = await api.fetchVectors({ ids: ids, namespace: this.namespace });
 
     // My testing shows that in reality vectors and namespace are
     // never undefined even when there are no records returned. So these
