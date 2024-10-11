@@ -4,32 +4,32 @@ import { PineconeArgumentError } from '../../../errors';
 
 describe('deleteMany', () => {
   test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
-    const { DataProvider, DPA } = setupDeleteSuccess(undefined);
+    const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
 
-    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const deleteManyFn = deleteMany(VectorProvider, 'namespace');
     const returned = await deleteManyFn(['123', '456', '789']);
 
     expect(returned).toBe(void 0);
-    expect(DPA._delete).toHaveBeenCalledWith({
+    expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123', '456', '789'], namespace: 'namespace' },
     });
   });
 
   test('calls the openapi delete endpoint, passing filter with target namespace', async () => {
-    const { DPA, DataProvider } = setupDeleteSuccess(undefined);
+    const { VOA, VectorProvider } = setupDeleteSuccess(undefined);
 
-    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const deleteManyFn = deleteMany(VectorProvider, 'namespace');
     const returned = await deleteManyFn({ genre: 'ambient' });
 
     expect(returned).toBe(void 0);
-    expect(DPA._delete).toHaveBeenCalledWith({
+    expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { filter: { genre: 'ambient' }, namespace: 'namespace' },
     });
   });
 
   test('throws if pass in empty filter obj', async () => {
-    const { DataProvider } = setupDeleteSuccess(undefined);
-    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const { VectorProvider } = setupDeleteSuccess(undefined);
+    const deleteManyFn = deleteMany(VectorProvider, 'namespace');
     const toThrow = async () => {
       await deleteManyFn({ some: '' });
     };
@@ -40,8 +40,8 @@ describe('deleteMany', () => {
   });
 
   test('throws if pass no record IDs', async () => {
-    const { DataProvider } = setupDeleteSuccess(undefined);
-    const deleteManyFn = deleteMany(DataProvider, 'namespace');
+    const { VectorProvider } = setupDeleteSuccess(undefined);
+    const deleteManyFn = deleteMany(VectorProvider, 'namespace');
     const toThrow = async () => {
       await deleteManyFn([]);
     };

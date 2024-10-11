@@ -11,7 +11,7 @@ import type { DeleteManyOptions } from './vectors/deleteMany';
 import { deleteMany } from './vectors/deleteMany';
 import { deleteAll } from './vectors/deleteAll';
 import { describeIndexStats } from './vectors/describeIndexStats';
-import { DataOperationsProvider } from './vectors/dataOperationsProvider';
+import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
 import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
@@ -197,7 +197,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
-    const dataOperationsProvider = new DataOperationsProvider(
+    const dataOperationsProvider = new VectorOperationsProvider(
       config,
       indexName,
       indexHostUrl,

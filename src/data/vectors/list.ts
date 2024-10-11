@@ -1,6 +1,6 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type {
-  ListRequest,
+  ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { ValidateProperties } from '../../utils/validateProperties';
@@ -26,7 +26,7 @@ const ListOptionsProperties: ListOptionsType[] = [
 ];
 
 export const listPaginated = (
-  apiProvider: DataOperationsProvider,
+  apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
   const validator = (options: ListOptions) => {
@@ -44,12 +44,12 @@ export const listPaginated = (
       validator(options);
     }
 
-    const listRequest: ListRequest = {
+    const listRequest: ListVectorsRequest = {
       ...options,
       namespace,
     };
 
     const api = await apiProvider.provide();
-    return await api.list(listRequest);
+    return await api.listVectors(listRequest);
   };
 };

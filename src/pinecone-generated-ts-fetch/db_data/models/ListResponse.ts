@@ -33,7 +33,7 @@ import {
 } from './Usage';
 
 /**
- * The response for the `List` operation.
+ * The response for the `list` operation.
  * @export
  * @interface ListResponse
  */

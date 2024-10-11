@@ -1,6 +1,6 @@
 import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
 
@@ -114,7 +114,7 @@ export type QueryResponse<T extends RecordMetadata = RecordMetadata> = {
 };
 
 export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: DataOperationsProvider;
+  apiProvider: VectorOperationsProvider;
   namespace: string;
 
   constructor(apiProvider, namespace) {
@@ -179,7 +179,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     this.validator(query);
     const api = await this.apiProvider.provide();
-    const results = await api.query({
+    const results = await api.queryVectors({
       queryRequest: { ...query, namespace: this.namespace },
     });
     const matches = results.matches ? results.matches : [];
