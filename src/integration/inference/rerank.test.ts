@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { PineconeArgumentError, PineconeNotFoundError } from '../../errors';
+import { PineconeArgumentError } from '../../errors';
 
 describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
   let model: string;
@@ -36,20 +36,21 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     expect(response.data.map((doc) => doc.document['text'])).toBeDefined();
   });
 
-  test('Confirm error thrown if rankFields does match fields in passed documents', async () => {
+  test('Confirm error thrown if custom rankField is not in docs', async () => {
     const rerankingModel = 'test-model';
     const myQuery = 'test-query';
-    const myDocuments = [
-      { text: 'doc1', title: 'title1' },
-      { text: 'doc2', title: 'title2' }
-    ];
-    const rankFields = ['random field'];
+    const myDocuments = [{ someField: 'doc1' }, { someField: 'doc2' }];
+    const rerankFields = ['customField'];
+
+    const expectedError = new PineconeArgumentError(
+      'One or more documents are missing the specified rank field: customField'
+    );
     try {
       await pinecone.inference.rerank(rerankingModel, myQuery, myDocuments, {
-        rankFields
+        rankFields: rerankFields,
       });
     } catch (error) {
-      expect(error).toBeDefined();
+      expect(error).toEqual(expectedError);
     }
   });
 });

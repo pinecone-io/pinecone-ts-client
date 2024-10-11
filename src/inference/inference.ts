@@ -3,7 +3,7 @@ import {
   EmbedRequestInputsInner,
   EmbedRequestParameters,
   InferenceApi,
-  RerankResult
+  RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
@@ -51,8 +51,8 @@ export class Inference {
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
-        parameters: typedParams
-      }
+        parameters: typedParams,
+      },
     };
     const response = await this._inferenceApi.embed(typedRequest);
     return new EmbeddingsList(response.model, response.data, response.usage);
@@ -135,7 +135,7 @@ export class Inference {
     if (model.length == 0) {
       throw new PineconeArgumentError(
         'You must pass the name of a supported reranking model in order to rerank' +
-        ' documents. See https://docs.pinecone.io/models for supported models.'
+          ' documents. See https://docs.pinecone.io/models for supported models.'
       );
     }
 
@@ -143,7 +143,7 @@ export class Inference {
       topN = documents.length,
       returnDocuments = true,
       parameters = {},
-      rankFields = undefined
+      rankFields = undefined,
     } = options;
 
     let computedRankFields: string[];
@@ -154,9 +154,13 @@ export class Inference {
       if (documents.every((doc) => typeof doc === 'string')) {
         // Set rankFields to default value of 'text'
         computedRankFields = ['text'];
-      } else if (documents.every((doc) => typeof doc === 'object' && doc !== null)) {
+      } else if (
+        documents.every((doc) => typeof doc === 'object' && doc !== null)
+      ) {
         // If `documents` is an array of objects:
-        const documentKeys = Object.keys(documents[0] as { [key: string]: string });
+        const documentKeys = Object.keys(
+          documents[0] as { [key: string]: string }
+        );
         // Set rankFields to the first key in the first document
         computedRankFields = documentKeys.length > 0 ? [documentKeys[0]] : [];
       } else {
@@ -167,7 +171,9 @@ export class Inference {
     } else {
       // If user does pass in custom rankFields &&
       // If documents are objects, check that all documents have the specified rank field:
-      computedRankFields = Array.isArray(rankFields) ? rankFields : [rankFields];
+      computedRankFields = Array.isArray(rankFields)
+        ? rankFields
+        : [rankFields];
       if (documents.every((doc) => typeof doc === 'object' && doc !== null)) {
         const missingFields = documents.some(
           (doc) => !(doc as { [key: string]: string })[computedRankFields[0]]
@@ -195,11 +201,10 @@ export class Inference {
         topN: topN,
         returnDocuments: returnDocuments,
         rankFields: computedRankFields,
-        parameters: parameters
-      }
+        parameters: parameters,
+      },
     };
 
     return await this._inferenceApi.rerank(req);
-
   }
 }
