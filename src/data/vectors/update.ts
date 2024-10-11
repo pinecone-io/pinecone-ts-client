@@ -1,4 +1,4 @@
-import { DataOperationsProvider } from './dataOperationsProvider';
+import { VectorOperationsProvider } from './vectorOperationsProvider';
 import type {
   RecordId,
   RecordValues,
@@ -43,7 +43,7 @@ const UpdateOptionsProperties: UpdateOptionsType[] = [
 ];
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
-  apiProvider: DataOperationsProvider;
+  apiProvider: VectorOperationsProvider;
   namespace: string;
 
   constructor(apiProvider, namespace) {
@@ -73,7 +73,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     const api = await this.apiProvider.provide();
-    await api.update({
+    await api.updateVector({
       updateRequest: { ...requestOptions, namespace: this.namespace },
     });
     return;

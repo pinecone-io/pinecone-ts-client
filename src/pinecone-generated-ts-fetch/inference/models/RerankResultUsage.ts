@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Usage statistics for the inference
+ * Usage statistics for the model inference.
  * @export
  * @interface RerankResultUsage
  */

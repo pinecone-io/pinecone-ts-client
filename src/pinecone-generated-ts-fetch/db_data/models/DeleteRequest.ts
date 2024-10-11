@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * The request for the `Delete` operation.
+ * The request for the `delete` operation.
  * @export
  * @interface DeleteRequest
  */
