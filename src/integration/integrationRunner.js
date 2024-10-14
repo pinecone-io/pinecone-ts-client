@@ -1,4 +1,4 @@
-// File used by "test:integration-local:node" script in package.json
+// File used by "test:integration-local:$TEST_ENV" commands in package.json
 
 const { execSync } = require('child_process');
 
