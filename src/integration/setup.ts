@@ -99,6 +99,7 @@ const setup = async () => {
       await sleep(10000);
     }
   }
+  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`SERVERLESS_INDEX_NAME=${randomIndexName}`);
 };
 

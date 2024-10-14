@@ -8,7 +8,7 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
+      serverlessIndexName: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
     steps:
       - name: Checkout code
         id: step1
@@ -47,7 +47,7 @@ jobs:
     name: Run integration tests
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.runTests1.outputs.SERVERLESS_INDEX_NAME }}
+      serverlessIndexName: ${{ steps.runTests1.outputs.SERVERLESS_INDEX_NAME }}
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -86,10 +86,10 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.output1}}
+          SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.serverlessIndexName}}
         run: |
           ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
-          echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.output1}}" >> $GITHUB_OUTPUT
+          echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.serverlessIndexName}}" >> $GITHUB_OUTPUT
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -114,7 +114,7 @@ jobs:
       - name: Run teardown script
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ needs.integration-tests.outputs.output1}}
+          SERVERLESS_INDEX_NAME: ${{ needs.integration-tests.outputs.serverlessIndexName}}
         run: |
           npx ts-node ./src/integration/teardown.ts
 
