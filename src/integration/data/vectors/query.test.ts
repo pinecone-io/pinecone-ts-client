@@ -1,70 +1,87 @@
-
-import { Pinecone, Index, QueryResponse } from '../../../index';
+import { Pinecone, Index } from '../../../index';
 import {
-  globalNamespaceOne,
-  getRecordIds,
+  randomString,
+  generateRecords,
+  INDEX_NAME,
+  waitUntilRecordsReady,
   assertWithRetries,
 } from '../../test-helpers';
 
-let pinecone: Pinecone,
-  serverlessIndex: Index,
-  recordIds: Array<string> | undefined;
+describe('query', () => {
+  let pinecone: Pinecone,
+    index: Index,
+    ns: Index,
+    namespace: string,
+    recordIds: string[],
+    numberOfRecords: number;
 
-beforeAll(async () => {
-  pinecone = new Pinecone();
-  if (!process.env.SERVERLESS_INDEX_NAME) {
-    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  }
-  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
-  serverlessIndex = pinecone
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne);
-  recordIds = await getRecordIds(serverlessIndex);
-});
+  beforeAll(async () => {
+    pinecone = new Pinecone();
 
-// todo: add pod tests
-describe('query tests on serverless index', () => {
+    await pinecone.createIndex({
+      name: INDEX_NAME,
+      dimension: 5,
+      metric: 'cosine',
+      spec: {
+        serverless: {
+          region: 'us-west-2',
+          cloud: 'aws',
+        },
+      },
+      waitUntilReady: true,
+      suppressConflicts: true,
+    });
+
+    namespace = randomString(16);
+    index = pinecone.index(INDEX_NAME);
+    ns = index.namespace(namespace);
+    numberOfRecords = 3;
+
+    // Seed with records for testing
+    const recordsToUpsert = generateRecords({
+      dimension: 5,
+      quantity: numberOfRecords,
+      withSparseValues: true,
+    });
+    expect(recordsToUpsert).toHaveLength(3);
+    expect(recordsToUpsert[0].id).toEqual('0');
+    expect(recordsToUpsert[1].id).toEqual('1');
+    expect(recordsToUpsert[2].id).toEqual('2');
+
+    await ns.upsert(recordsToUpsert);
+    recordIds = recordsToUpsert.map((r) => r.id);
+    await waitUntilRecordsReady(ns, namespace, recordIds);
+  });
+
+  afterAll(async () => {
+    await ns.deleteMany(recordIds);
+  });
+
   test('query by id', async () => {
-    const topK = 4;
-    if (recordIds) {
-      if (recordIds.length > 0) {
-        const idForQuerying = recordIds[0];
+    const topK = 2;
+    const queryId = recordIds[0];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(topK);
+      expect(results.usage.readUnits).toBeDefined();
+      expect(results.matches).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: queryId })])
+      );
+    };
 
-        const assertions = (results: QueryResponse) => {
-          expect(results.matches).toBeDefined();
-          expect(results.matches?.length).toEqual(topK);
-          // Necessary to avoid could-be-undefined error for `usage` field:
-          if (results.usage) {
-            expect(results.usage.readUnits).toBeDefined();
-          }
-        };
-
-        await assertWithRetries(
-          () => serverlessIndex.query({ id: idForQuerying, topK: 4 }),
-          assertions
-        );
-      }
-    }
+    await assertWithRetries(() => ns.query({ id: queryId, topK }), assertions);
   });
 
   test('query when topK is greater than number of records', async () => {
-    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
-    if (recordIds) {
-      const idForQuerying = recordIds[1];
-      const assertions = (results: QueryResponse) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches?.length).toEqual(11); // expect 11 records to be returned
-        // Necessary to avoid could-be-undefined error for `usage` field:
-        if (results.usage) {
-          expect(results.usage.readUnits).toBeDefined();
-        }
-      };
+    const topK = numberOfRecords + 2;
+    const queryId = recordIds[1];
+    const assertions = (results) => {
+      expect(results.matches).toBeDefined();
+      expect(results.matches?.length).toEqual(numberOfRecords);
+      expect(results.usage.readUnits).toBeDefined();
+    };
 
-      await assertWithRetries(
-        () => serverlessIndex.query({ id: idForQuerying, topK: topK }),
-        assertions
-      );
-    }
+    await assertWithRetries(() => ns.query({ id: queryId, topK }), assertions);
   });
 
   test('with invalid id, returns empty results', async () => {

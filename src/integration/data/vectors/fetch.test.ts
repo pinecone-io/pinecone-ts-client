@@ -1,35 +1,60 @@
-
 import { Pinecone, Index } from '../../../index';
 import {
-  globalNamespaceOne, getRecordIds
+  generateRecords,
+  randomString,
+  INDEX_NAME,
+  waitUntilRecordsReady,
 } from '../../test-helpers';
 
-// todo: add pod tests
+describe('fetch', () => {
+  let pinecone: Pinecone,
+    index: Index,
+    ns: Index,
+    namespace: string,
+    recordIds: string[];
 
-let pinecone: Pinecone,
-  serverlessIndex: Index,
-  recordIds: Array<string> | undefined;
+  beforeEach(async () => {
+    pinecone = new Pinecone();
 
-beforeAll(async () => {
-  pinecone = new Pinecone();
-  if (!process.env.SERVERLESS_INDEX_NAME) {
-    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  }
-  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
-  serverlessIndex = pinecone
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne);
-  recordIds = await getRecordIds(serverlessIndex);
-});
+    await pinecone.createIndex({
+      name: INDEX_NAME,
+      dimension: 5,
+      metric: 'cosine',
+      spec: {
+        serverless: {
+          region: 'us-west-2',
+          cloud: 'aws',
+        },
+      },
+      waitUntilReady: true,
+      suppressConflicts: true,
+    });
 
-describe('fetch; serverless index, global namespace one', () => {
+    namespace = randomString(16);
+    index = pinecone.index(INDEX_NAME);
+    ns = index.namespace(namespace);
+    recordIds = [];
+  });
+
+  afterEach(async () => {
+    await ns.deleteMany(recordIds);
+  });
+
   test('fetch by id', async () => {
-    if (recordIds) {
-      const results = await serverlessIndex.fetch(recordIds.slice(0, 3));
-      expect(results.records[recordIds[0]].id).toBeDefined();
-      expect(results.records[recordIds[1]].id).toBeDefined();
-      expect(results.records[recordIds[2]].id).toBeDefined();
-      expect(results.usage?.readUnits).toBeDefined();
-    }
+    const recordsToUpsert = generateRecords({ dimension: 5, quantity: 3 });
+    recordIds = recordsToUpsert.map((r) => r.id);
+    expect(recordsToUpsert).toHaveLength(3);
+    expect(recordsToUpsert[0].id).toEqual('0');
+    expect(recordsToUpsert[1].id).toEqual('1');
+    expect(recordsToUpsert[2].id).toEqual('2');
+
+    await ns.upsert(recordsToUpsert);
+    await waitUntilRecordsReady(ns, namespace, recordIds);
+
+    const results = await ns.fetch(['0', '1', '2']);
+    expect(results.records['0']).toBeDefined();
+    expect(results.records['1']).toBeDefined();
+    expect(results.records['2']).toBeDefined();
+    expect(results.usage?.readUnits).toBeDefined();
   });
 });

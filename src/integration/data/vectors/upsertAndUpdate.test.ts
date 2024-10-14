@@ -1,46 +1,48 @@
 import { Pinecone, Index } from '../../../index';
 import {
-  generateRecords, globalNamespaceOne, randomIndexName, waitUntilReady,
-  waitUntilRecordsReady
+  assertWithRetries,
+  randomString,
+  generateRecords,
+  INDEX_NAME,
+  waitUntilRecordsReady,
 } from '../../test-helpers';
 
-// todo: add pods
+describe('upsert and update', () => {
+  let pinecone: Pinecone,
+    index: Index,
+    ns: Index,
+    namespace: string,
+    recordIds: string[];
 
-let pinecone: Pinecone, serverlessIndex: Index, serverlessIndexName: string;
+  beforeEach(async () => {
+    pinecone = new Pinecone();
 
-beforeAll(async () => {
-  pinecone = new Pinecone();
-  serverlessIndexName = randomIndexName('int-test-serverless-upsert-update');
-
-  await pinecone.createIndex({
-    name: serverlessIndexName,
-    dimension: 2,
-    metric: 'cosine',
-    spec: {
-      serverless: {
-        region: 'us-west-2',
-        cloud: 'aws',
+    await pinecone.createIndex({
+      name: INDEX_NAME,
+      dimension: 5,
+      metric: 'cosine',
+      spec: {
+        serverless: {
+          region: 'us-west-2',
+          cloud: 'aws',
+        },
       },
-    },
-    waitUntilReady: true,
-    suppressConflicts: true,
+      waitUntilReady: true,
+      suppressConflicts: true,
+    });
+
+    namespace = randomString(16);
+    index = pinecone.index(INDEX_NAME);
+    ns = index.namespace(namespace);
   });
 
-  serverlessIndex = pinecone
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne);
-});
+  afterEach(async () => {
+    await ns.deleteMany(recordIds);
+  });
 
-afterAll(async () => {
-  await waitUntilReady(serverlessIndexName);
-  await pinecone.deleteIndex(serverlessIndexName);
-});
-
-// todo: add sparse values update
-describe('upsert and update to serverless index', () => {
   test('verify upsert and update', async () => {
     const recordToUpsert = generateRecords({
-      dimension: 2,
+      dimension: 5,
       quantity: 1,
       withSparseValues: false,
       withMetadata: true,
