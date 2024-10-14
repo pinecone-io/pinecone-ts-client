@@ -12,10 +12,12 @@ try {
   });
   SERVERLESS_INDEX_NAME = setupOutput.match(/SERVERLESS_INDEX_NAME=(\S+)/)[1];
 
+  const TEST_ENV = process.env.TEST_ENV || 'node';
+
   // Step 2: Run Jest tests
-  console.log('Executing integration tests');
+  console.log(`Executing integration tests in Jest environment: "${TEST_ENV}"`);
   execSync(
-    `SERVERLESS_INDEX_NAME=${SERVERLESS_INDEX_NAME} TEST_ENV=node jest src/integration -c jest.config.integration-node.js --runInBand --bail`,
+    `SERVERLESS_INDEX_NAME=${SERVERLESS_INDEX_NAME} TEST_ENV=${TEST_ENV} jest src/integration -c jest.config.integration-node.js --runInBand --bail`,
     { stdio: 'inherit' }
   );
 } finally {
