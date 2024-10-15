@@ -185,8 +185,6 @@ export class Inference {
       typeof doc === 'string' ? { text: doc } : doc
     );
 
-    console.log('Final rankFields = ', computedRankFields);
-
     const req = {
       rerankRequest: {
         model: model,
