@@ -140,42 +140,52 @@ export class Inference {
           ' documents. See https://docs.pinecone.io/models for supported models.'
       );
     }
-    // Destructure `options` with defaults
-    // Note: If the user passes in key:value pairs in `options` that are not the following, they are ignored
+
     const {
       topN = documents.length,
       returnDocuments = true,
-      rankFields = ['text'],
       parameters = {},
+      rankFields = undefined,
     } = options;
 
-    // Allow documents to be passed a list of strings, or a list of objs w/at least a `text` key:
-    let newDocuments: Array<{ [key: string]: string }> = [];
-    if (typeof documents[0] === 'object' && !('text' in documents[0])) {
-      throw new PineconeArgumentError(
-        '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
-          ' string value'
-      );
-    } else if (typeof documents[0] === 'string') {
-      newDocuments = documents.map((doc) => {
-        return { text: doc as string };
-      });
+    let computedRankFields: string[];
+
+    // If user does not pass in rankFields:
+    if (!rankFields) {
+      // If `documents` is an array of strings:
+      if (documents.every((doc) => typeof doc === 'string')) {
+        // Set rankFields to default value of 'text'
+        computedRankFields = ['text'];
+      } else if (
+        // If`documents` is an array of objects:
+        documents.every((doc) => typeof doc === 'object' && doc !== null)
+      ) {
+        // If there is a `text` key (other keys can be present too):
+        if (
+          documents.every((doc) => (doc as { [key: string]: string })['text'])
+        ) {
+          computedRankFields = ['text'];
+        } else {
+          // If there is no `text` key:
+          throw new PineconeArgumentError(
+            'One or more documents are missing the specified rank field: `text`'
+          );
+        }
+      } else {
+        throw new PineconeArgumentError(
+          'Documents must be a list of strings or a list of objects'
+        );
+      }
     } else {
-      newDocuments = documents as Array<{ [key: string]: string }>;
+      computedRankFields = rankFields;
     }
 
-    // Ensure all rankFields, if passed, are present in each document
-    if (rankFields.length > 0) {
-      newDocuments.forEach((doc, index) => {
-        rankFields.forEach((field) => {
-          if (!(field in doc)) {
-            throw new PineconeArgumentError(
-              `The \`rankField\` value you passed ("${field}") is missing in the document at index ${index}`
-            );
-          }
-        });
-      });
-    }
+    // Standardize documents to ensure they are in object format
+    const newDocuments = documents.map((doc) =>
+      typeof doc === 'string' ? { text: doc } : doc
+    );
+
+    console.log('Final rankFields = ', computedRankFields);
 
     const req = {
       rerankRequest: {
@@ -184,7 +194,7 @@ export class Inference {
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: rankFields,
+        rankFields: computedRankFields,
         parameters: parameters,
       },
     };
