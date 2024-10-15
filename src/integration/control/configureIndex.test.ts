@@ -1,15 +1,23 @@
-import { BasePineconeError, PineconeBadRequestError } from '../../errors';
+import {
+  BasePineconeError,
+  PineconeBadRequestError,
+  PineconeInternalServerError,
+} from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, waitUntilReady } from '../test-helpers';
+import {
+  randomIndexName,
+  retryDeletes,
+  sleep,
+  waitUntilReady,
+} from '../test-helpers';
+
+let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
 describe('configure index', () => {
-  let podIndexName, serverlessIndexName;
-  let pinecone: Pinecone;
-
   beforeAll(async () => {
     pinecone = new Pinecone();
-    podIndexName = randomIndexName('configureIndex');
-    serverlessIndexName = randomIndexName('configureIndex');
+    podIndexName = randomIndexName('pod-configure');
+    serverlessIndexName = randomIndexName('serverless-configure');
 
     // create pod index
     await pinecone.createIndex({
@@ -42,12 +50,10 @@ describe('configure index', () => {
   });
 
   afterAll(async () => {
-    // wait until indexes are done upgrading before deleting
-    await waitUntilReady(podIndexName);
-    await waitUntilReady(serverlessIndexName);
-
-    await pinecone.deleteIndex(podIndexName);
-    await pinecone.deleteIndex(serverlessIndexName);
+    // Note: using retryDeletes instead of waitUntilReady due to backend bug where index status is ready, but index
+    // is actually still upgrading
+    await retryDeletes(pinecone, podIndexName);
+    await retryDeletes(pinecone, serverlessIndexName);
   });
 
   describe('pod index', () => {
@@ -63,13 +69,31 @@ describe('configure index', () => {
     });
 
     test('scale podType up', async () => {
-      // Verify the starting state
+      // Verify starting state of podType is same as originally created
       const description = await pinecone.describeIndex(podIndexName);
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
-      await pinecone.configureIndex(podIndexName, {
-        spec: { pod: { podType: 'p1.x2' } },
-      });
+      // Scale up podType to x2
+      let state = true;
+      let retryCount = 0;
+      const maxRetries = 10;
+      while (state && retryCount < maxRetries) {
+        try {
+          await pinecone.configureIndex(podIndexName, {
+            spec: { pod: { podType: 'p1.x2' } },
+          });
+          state = false;
+        } catch (e) {
+          if (e instanceof PineconeInternalServerError) {
+            retryCount++;
+            await sleep(2000);
+          } else {
+            console.log('Unexpected error:', e);
+            throw e;
+          }
+        }
+      }
+      await waitUntilReady(podIndexName);
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
@@ -80,7 +104,6 @@ describe('configure index', () => {
       await pinecone.configureIndex(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
-
       await waitUntilReady(serverlessIndexName);
 
       // verify we cannot delete the index
