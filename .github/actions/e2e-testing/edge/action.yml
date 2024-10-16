@@ -50,12 +50,6 @@ runs:
       run: cd ts-client-e2e-tests && npm install vercel
       shell: bash
 
-    #    - name: Deploy app to Vercel
-    #      run: |
-    #        cd ts-client-e2e-tests
-    #        vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
-    #      shell: bash
-
     - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
       run: |
         API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
@@ -73,5 +67,32 @@ runs:
            exit 1
         else
           echo "Success: Found $match_count result(s) in queryResult.matches."
+        fi
+      shell: bash
+
+    - name: Clean up e2e indexes
+      run: |
+        PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
+
+        indexes=(curl -i -X GET "https://api.pinecone.io/indexes" \
+        -H "Api-Key: $PINECONE_API_KEY")   
+
+        matching_indexes=$(echo "$indexes" | jq -r '.indexes[] | select(.name | startswith("edge-test")) | .name')
+
+        if [ -z "$matching_index" ]; then
+          echo "No indexes found that start with 'edge-test'."
+          exit 1
+        else
+          echo "Found index to delete: $matching_index"
+        fi
+
+        delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/$matching_index" \
+        -H "Api-Key: $PINECONE_API_KEY")
+
+        if [ "$delete_response" -eq 204 ]; then
+          echo "Successfully deleted index: $matching_index"
+        else
+          echo "Failed to delete index: $matching_index. HTTP status code: $delete_response"
+          exit 1
         fi
       shell: bash
