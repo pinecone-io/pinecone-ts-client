@@ -35,7 +35,7 @@ runs:
         branch: 'Audrey/add-app'
 
     - name: Move package to ts-client-e2e-tests
-      run: mkdir ts-client-e2e-tests && cd ts-client-e2e-tests && mv ../pinecone-database-pinecone-*.tgz .
+      run: cd ts-client-e2e-tests && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
     - name: Install e2e tests dependencies
