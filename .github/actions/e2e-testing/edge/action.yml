@@ -89,7 +89,7 @@ runs:
         delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/$matching_index" \
         -H "Api-Key: $PINECONE_API_KEY")
 
-        if [ "$delete_response" -eq 204 ]; then
+        if [ "$delete_response" -eq 202 ]; then
           echo "Successfully deleted index: $matching_index"
         else
           echo "Failed to delete index: $matching_index. HTTP status code: $delete_response"
