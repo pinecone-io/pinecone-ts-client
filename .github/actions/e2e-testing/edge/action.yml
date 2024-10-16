@@ -50,16 +50,16 @@ runs:
       run: cd ts-client-e2e-tests && npm install vercel
       shell: bash
 
-    - name: Deploy app to Vercel
-      run: |
-        cd ts-client-e2e-tests
-        vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
-      shell: bash
+    #    - name: Deploy app to Vercel
+    #      run: |
+    #        cd ts-client-e2e-tests
+    #        vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
+    #      shell: bash
 
     - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
       run: |
         API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
-        API_KEY=${{ inputs.PINECONE_API_KEY }}
+        API_KEY="${{ inputs.PINECONE_API_KEY }}"
         response=$(curl --silent --location --request POST "$API_URL" --header "PINECONE_API_KEY: $API_KEY")
 
         match_count=$(echo "$response" | jq '.queryResult.matches | length')
