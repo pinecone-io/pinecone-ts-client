@@ -54,7 +54,7 @@ runs:
       run: |
         API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
         API_KEY="${{ inputs.PINECONE_API_KEY }}"
-        
+
         response=$(curl --silent --location --request POST "$API_URL" --header "PINECONE_API_KEY: $API_KEY")
 
         indexName=$(echo "$response" | jq -r '.indexName')
