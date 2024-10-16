@@ -3,10 +3,6 @@ name: Spin up Vercel App
 inputs:
   vercel-token:
     required: true
-    description: 'Vercel token to deploy the app'
-  PINECONE_API_KEY:
-    required: true
-    description: 'Pinecone API key to send requests to the Vercel app'
 
 runs:
   using: 'composite'
@@ -31,47 +27,27 @@ runs:
       uses: GuillaumeFalourd/clone-github-repo-action@main
       with:
         owner: 'pinecone-io'
-        repository: 'ts-client-e2e-tests'
-        branch: 'Audrey/add-app'
+        repository: 'pinecone-rag-demo'
+        branch: 'main'
 
-    - name: Move package to ts-client-e2e-tests
-      run: mkdir ts-client-e2e-tests && cd ts-client-e2e-tests && mv ../pinecone-database-pinecone-*.tgz .
+    - name: Move package to pinecone-rag-demo
+      run: cd pinecone-rag-demo && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Install e2e tests dependencies
-      run: cd ts-client-e2e-tests && npm install
+    - name: Install rag-demo deps
+      run: cd pinecone-rag-demo && npm install
       shell: bash
 
     - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd ts-client-e2e-tests && npm install pinecone-database-pinecone-*.tgz
+      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
     - name: Install Vercel CLI
-      run: cd ts-client-e2e-tests && npm install vercel
+      run: cd pinecone-rag-demo && npm install vercel
       shell: bash
 
-    - name: Deploy app to Vercel
+    - name: Deploy Project Artifacts to Vercel
       run: |
-        cd ts-client-e2e-tests
+        cd pinecone-rag-demo
         vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
-      shell: bash
-
-    - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
-      run: |
-        API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
-        API_KEY=${{ inputs.PINECONE_API_KEY }}
-        response=$(curl --silent --location --request POST "$API_URL" --header "PINECONE_API_KEY: $API_KEY")
-
-        match_count=$(echo "$response" | jq '.queryResult.matches | length')
-        if [ $? -ne 0 ]; then
-          echo "Error: Request failed."
-          exit 1
-        fi
-
-        if [ "$match_count" -lt 1 ]; then
-          echo "Error: Expected at least one result in queryResult.matches, but found none."
-           exit 1
-        else
-          echo "Success: Found $match_count result(s) in queryResult.matches."
-        fi
       shell: bash
