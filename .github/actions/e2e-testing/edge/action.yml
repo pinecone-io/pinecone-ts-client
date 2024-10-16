@@ -32,7 +32,7 @@ runs:
       with:
         owner: 'pinecone-io'
         repository: 'ts-client-e2e-tests'
-        branch: 'Audrey/add-app'
+        branch: 'main'
 
     - name: Move package to ts-client-e2e-tests
       run: cd ts-client-e2e-tests && mv ../pinecone-database-pinecone-*.tgz .
