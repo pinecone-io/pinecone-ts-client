@@ -54,7 +54,11 @@ runs:
       run: |
         API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
         API_KEY="${{ inputs.PINECONE_API_KEY }}"
+        
         response=$(curl --silent --location --request POST "$API_URL" --header "PINECONE_API_KEY: $API_KEY")
+
+        indexName=$(echo "$response" | jq -r '.indexName')
+        echo "indexName=$indexName" >> $GITHUB_ENV
 
         match_count=$(echo "$response" | jq '.queryResult.matches | length')
         if [ $? -ne 0 ]; then
@@ -73,11 +77,7 @@ runs:
     - name: Clean up e2e indexes
       run: |
         PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
-
-        indexes=(curl -i -X GET "https://api.pinecone.io/indexes" \
-        -H "Api-Key: $PINECONE_API_KEY")   
-
-        matching_indexes=$(echo "$indexes" | jq -r '.indexes[] | select(.name | startswith("edge-test")) | .name')
+        matching_index="${{ env.indexName }}"
 
         if [ -z "$matching_index" ]; then
           echo "No indexes found that start with 'edge-test'."
