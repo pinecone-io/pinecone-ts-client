@@ -52,7 +52,8 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
 
   test('Confirm docs as list of objects + no rankFields succeeds, if docs contain `text` key, succeeds', async () => {
     const myDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
-    expect(pinecone.inference.rerank(model, query, myDocuments)).toBeDefined();
+    const resp = await pinecone.inference.rerank(model, query, myDocuments);
+    expect(resp.usage.rerankUnits).toBeGreaterThanOrEqual(1);
   });
 
   test('Confirm docs as list of objects with additional customField + no rankfields, succeeds', async () => {
@@ -60,7 +61,8 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
       { text: 'hi', customField: 'doc1' },
       { text: 'bye', customField: 'doc2' },
     ];
-    expect(pinecone.inference.rerank(model, query, myDocuments)).toBeDefined();
+    const resp = await pinecone.inference.rerank(model, query, myDocuments);
+    expect(resp.usage.rerankUnits).toBeGreaterThanOrEqual(1);
   });
 
   test('Confirm docs as list of objects with only custom fields + custom rankFields, succeeds', async () => {
@@ -69,11 +71,10 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
       { customField2: 'bye', customField: 'doc2' },
     ];
     const rankFields = ['customField2'];
-    expect(
-      pinecone.inference.rerank(model, query, myDocuments, {
-        rankFields: rankFields,
-      })
-    ).toBeDefined();
+    const resp = await pinecone.inference.rerank(model, query, myDocuments, {
+      rankFields: rankFields,
+    });
+    expect(resp.usage.rerankUnits).toBeGreaterThanOrEqual(1);
   });
 
   test('Confirm error thrown if docs as list of objects only has custom fields + no custom rankFields obj is passed', async () => {

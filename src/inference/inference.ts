@@ -9,6 +9,15 @@ import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
 import { prerelease } from '../utils/prerelease';
 
+/** Options one can send with a request to {@link rerank} *
+ *
+ * @param topN - The number of documents to return in the response. Default is the number of documents passed in the
+ * request.
+ * @param returnDocuments - Whether to return the documents in the response. Default is `true`.
+ * @param rankFields - The fields by which to rank the documents. If no field is passed, default is `['text']`.
+ * Note: some models only support 1 reranking field. See the [model documentation](https://docs.pinecone.io/guides/inference/understanding-inference#rerank) for more information.
+ * @param parameters - Additional model-specific parameters to send with the request, e.g. {truncate: "END"}.
+ * */
 export interface RerankOptions {
   topN?: number;
   returnDocuments?: boolean;
@@ -31,13 +40,6 @@ export class Inference {
     });
   }
 
-  /* Format the parameters object into the correct format for the Inference API request. */
-  public _formatParams(
-    parameters: Record<string, string>
-  ): EmbedRequestParameters {
-    return parameters;
-  }
-
   /* Generate embeddings for a list of input strings using a specified embedding model. */
   async embed(
     model: string,
@@ -46,12 +48,11 @@ export class Inference {
   ): Promise<EmbeddingsList> {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
       this._formatInputs(inputs);
-    const typedParams: EmbedRequestParameters = this._formatParams(params);
     const typedRequest: EmbedOperationRequest = {
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
-        parameters: typedParams,
+        parameters: params,
       },
     };
     const response = await this._inferenceApi.embed(typedRequest);
@@ -60,9 +61,6 @@ export class Inference {
 
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order
    *  against the query provided.
-   *
-   *  Note: by default, the ['text'] field of each document is used for ranking; you can overwrite this default
-   *  behavior by passing an {@link RerankOptions} `options` object specifying 1+ other fields.
    *
    *  @example
    *  ```typescript
@@ -113,11 +111,9 @@ export class Inference {
    *
    * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
    * @param query - (Required) The query to rerank documents against.
-   * @param documents - (Required) The documents to rerank. Each document must be either a string or an object
-   * with (at minimum) a `text` key.
-   * @param options - (Optional) Additional options to send with the core reranking request. Options include: how many
-   * results to return, whether to return the documents in the response, alternative fields by which the model
-   * should to rank the documents, and additional model-specific parameters. See {@link RerankOptions} for more details.
+   * @param documents - (Required) An array of documents to rerank. The array can either be an array of strings or
+   * an array of objects.
+   * @param options - (Optional) Additional options to send with the reranking request. See {@link RerankOptions} for more details.
    * */
   @prerelease('2024-10')
   async rerank(
@@ -153,7 +149,7 @@ export class Inference {
     // If user does not pass in rankFields:
     if (!rankFields) {
       // If `documents` is an array of strings:
-      if (documents.every((doc) => typeof doc === 'string')) {
+      if (documents.every((doc) => typeof doc === 'string' && doc !== null)) {
         // Set rankFields to default value of 'text'
         computedRankFields = ['text'];
       } else if (

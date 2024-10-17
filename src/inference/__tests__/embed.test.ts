@@ -19,15 +19,6 @@ describe('Inference Class: _formatInputs', () => {
   });
 });
 
-describe('Inference Class: _formatParams', () => {
-  test('Should format params correctly', () => {
-    const params = { inputType: 'text', truncate: 'END' };
-    const expected = { inputType: 'text', truncate: 'END' };
-    const result = inference._formatParams(params);
-    expect(result).toEqual(expected);
-  });
-});
-
 describe('Inference Class: embed', () => {
   test('Should throw error if response is missing required fields', async () => {
     const model = 'test-model';

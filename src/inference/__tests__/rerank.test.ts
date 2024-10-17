@@ -15,25 +15,25 @@ beforeAll(() => {
 });
 
 test('Confirm throws error if no documents are passed', async () => {
-  const expectedError = new PineconeArgumentError(
-    'You must pass at least one document to rerank'
-  );
   try {
     await inference.rerank(rerankModel, myQuery, []);
   } catch (error) {
-    expect(error).toEqual(expectedError);
+    expect(error).toEqual(
+      new PineconeArgumentError('You must pass at least one document to rerank')
+    );
   }
 });
 
 test('Confirm throws error if docs is a list of objs, but does not contain `text` key', async () => {
   const myDocuments = [{ id: '1' }, { id: '2' }];
-  const expectedError = new PineconeArgumentError(
-    'One or more documents are missing the specified rank field: `text`'
-  );
   try {
     await inference.rerank(rerankModel, myQuery, myDocuments);
   } catch (error) {
-    expect(error).toEqual(expectedError);
+    expect(error).toEqual(
+      new PineconeArgumentError(
+        'One or more documents are missing the specified rank field: `text`'
+      )
+    );
   }
 });
 
@@ -90,26 +90,26 @@ test('Confirm provided rankFields override default `text` field for reranking', 
 test('Confirm error thrown if query is missing', async () => {
   const myQuery = '';
   const myDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
-  const expectedError = new PineconeArgumentError(
-    'You must pass a query to rerank'
-  );
   try {
     await inference.rerank(rerankModel, myQuery, myDocuments);
   } catch (error) {
-    expect(error).toEqual(expectedError);
+    expect(error).toEqual(
+      new PineconeArgumentError('You must pass a query to rerank')
+    );
   }
 });
 
 test('Confirm error thrown if model is missing', async () => {
   const rerankModel = '';
   const myDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
-  const expectedError = new PineconeArgumentError(
-    'You must pass the name of a supported reranking model in order to rerank' +
-      ' documents. See https://docs.pinecone.io/models for supported models.'
-  );
   try {
     await inference.rerank(rerankModel, myQuery, myDocuments);
   } catch (error) {
-    expect(error).toEqual(expectedError);
+    expect(error).toEqual(
+      new PineconeArgumentError(
+        'You must pass the name of a supported reranking model in order to rerank' +
+          ' documents. See https://docs.pinecone.io/models for supported models.'
+      )
+    );
   }
 });
