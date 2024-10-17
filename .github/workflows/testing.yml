@@ -216,6 +216,9 @@ jobs:
     runs-on: ubuntu-latest
     if: always() # Run teardown even if the tests fail
     steps:
+      - name: Checkout code
+      - uses: actions/checkout@v4
+
       - name: Run e2e tests for edge runtime
         uses: ./.github/actions/e2e-testing/edge
         with:
