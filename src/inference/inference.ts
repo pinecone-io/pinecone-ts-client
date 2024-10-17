@@ -143,42 +143,24 @@ export class Inference {
       rankFields = undefined,
     } = options;
 
-    let computedRankFields: string[];
+    // Initialize computedRankFields with rankFields or default to 'text'
+    const computedRankFields = rankFields ?? ['text'];
 
-    // If user does not pass in rankFields:
-    if (!rankFields) {
-      // If `documents` is an array of strings:
-      if (documents.every((doc) => typeof doc === 'string' && doc !== null)) {
-        // Set rankFields to default value of 'text'
-        computedRankFields = ['text'];
-      } else if (
-        // If`documents` is an array of objects:
-        documents.every((doc) => typeof doc === 'object' && doc !== null)
-      ) {
-        // If there is a `text` key (other keys can be present too):
-        if (
-          documents.every((doc) => (doc as { [key: string]: string })['text'])
-        ) {
-          computedRankFields = ['text'];
-        } else {
-          // If there is no `text` key:
-          throw new PineconeArgumentError(
-            'One or more documents are missing the specified rank field: `text`'
-          );
-        }
-      } else {
-        throw new PineconeArgumentError(
-          'Documents must be a list of strings or a list of objects'
-        );
-      }
-    } else {
-      computedRankFields = rankFields;
-    }
-
-    // Standardize documents to ensure they are in object format
+    // Validate and standardize documents to ensure they are in object format
     const newDocuments = documents.map((doc) =>
       typeof doc === 'string' ? { text: doc } : doc
     );
+
+    if (!options.rankFields) {
+      // If each obj in newDocs does not have a 'text' field, throw an error
+      if (
+        !newDocuments.every((doc) => typeof doc === 'object' && 'text' in doc)
+      ) {
+        throw new PineconeArgumentError(
+          'Documents must be a list of strings or objects containing the "text" field'
+        );
+      }
+    }
 
     const req = {
       rerankRequest: {

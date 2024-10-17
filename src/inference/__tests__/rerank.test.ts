@@ -31,7 +31,7 @@ test('Confirm throws error if docs is a list of objs, but does not contain `text
   } catch (error) {
     expect(error).toEqual(
       new PineconeArgumentError(
-        'One or more documents are missing the specified rank field: `text`'
+        'Documents must be a list of strings or objects containing the "text" field'
       )
     );
   }
