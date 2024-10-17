@@ -1145,7 +1145,10 @@ const myDocsObjs = [
     title: 'Thanksgiving',
     body: 'My favorite Thanksgiving dish is pumpkin pie',
   },
-  { title: 'Protein Sources', body: 'Turkey is a great source of protein' },
+  { 
+      title: 'Protein Sources', 
+      body: 'Turkey is a great source of protein' 
+  },
 ];
 
 // Option 2: Options object declaring which custom key to rerank on
