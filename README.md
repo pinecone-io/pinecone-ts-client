@@ -1104,20 +1104,20 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const rerankingModel = 'bge-reranker-v2-m3';
 const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
-const myDocuments = [
-  { text: 'I love turkey sandwiches with pastrami' },
-  {
-    text: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
-  },
-  { text: 'My favorite Thanksgiving dish is pumpkin pie' },
-  { text: 'Turkey is a great source of protein' },
+
+// Option 1: Documents as an array of strings
+const myDocsStrings = [
+  'I love turkey sandwiches with pastrami',
+  'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+  'My favorite Thanksgiving dish is pumpkin pie',
+  'Turkey is a great source of protein',
 ];
 
-// >>> Sample without passing an `options` object:
+// Option 1 response
 const response = await pc.inference.rerank(
   rerankingModel,
   myQuery,
-  myDocuments
+  myDocsStrings
 );
 console.log(response);
 // {
@@ -1131,15 +1131,40 @@ console.log(response);
 // usage: { rerankUnits: 1 }
 // }
 
-// >>> Sample with an `options` object:
+// Option 2: Documents as an array of objects
+const myDocsObjs = [
+  {
+    title: 'Turkey Sandwiches',
+    body: 'I love turkey sandwiches with pastrami',
+  },
+  {
+    title: 'Lemon Turkey',
+    body: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+  },
+  {
+    title: 'Thanksgiving',
+    body: 'My favorite Thanksgiving dish is pumpkin pie',
+  },
+  { title: 'Protein Sources', body: 'Turkey is a great source of protein' },
+];
+
+// Option 2: Options object declaring which custom key to rerank on
+// Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as the default)
 const rerankOptions = {
   topN: 3,
   returnDocuments: false,
+  rankFields: ['body'],
+  parameters: {
+    inputType: 'passage',
+    truncate: 'END',
+  },
 };
+
+// Option 2 response
 const response = await pc.inference.rerank(
   rerankingModel,
   myQuery,
-  myDocuments,
+  myDocsObjs,
   rerankOptions
 );
 console.log(response);

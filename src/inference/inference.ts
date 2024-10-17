@@ -1,7 +1,6 @@
 import {
   EmbedOperationRequest,
   EmbedRequestInputsInner,
-  EmbedRequestParameters,
   InferenceApi,
   RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
