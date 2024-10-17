@@ -62,21 +62,26 @@ export class Inference {
    *  against the query provided.
    *
    *  @example
-   *  ```typescript
+   *  ````typescript
    *  import { Pinecone } from '@pinecone-database/pinecone';
-   *
    *  const pc = new Pinecone();
-   *  const rerankingModel = "bge-reranker-v2-m3";
-   *  const myQuery = "What are some good Turkey dishes for Thanksgiving?";
-   *  const myDocuments = [
-   *  { text: "I love turkey sandwiches with pastrami" },
-   *  { text: "A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main" },
-   *  { text: "My favorite Thanksgiving dish is pumpkin pie" },
-   *  { text: "Turkey is a great source of protein" },
+   *  const rerankingModel = 'bge-reranker-v2-m3';
+   *  const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
+   *
+   *  // Option 1: Documents as an array of strings
+   *  const myDocsStrings = [
+   *    'I love turkey sandwiches with pastrami',
+   *    'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+   *    'My favorite Thanksgiving dish is pumpkin pie',
+   *    'Turkey is a great source of protein',
    *  ];
    *
-   *  // >>> Sample without passing an `options` object:
-   *  const response = await pc.inference.rerank(rerankingModel, myQuery, myDocuments);
+   *  // Option 1 response
+   *  const response = await pc.inference.rerank(
+   *    rerankingModel,
+   *    myQuery,
+   *    myDocsStrings
+   *  );
    *  console.log(response);
    *  // {
    *  // model: 'bge-reranker-v2-m3',
@@ -89,13 +94,43 @@ export class Inference {
    *  // usage: { rerankUnits: 1 }
    *  // }
    *
+   *  // Option 2: Documents as an array of objects
+   *  const myDocsObjs = [
+   *    {
+   *      title: 'Turkey Sandwiches',
+   *      body: 'I love turkey sandwiches with pastrami',
+   *    },
+   *    {
+   *      title: 'Lemon Turkey',
+   *      body: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+   *    },
+   *    {
+   *      title: 'Thanksgiving',
+   *      body: 'My favorite Thanksgiving dish is pumpkin pie',
+   *    },
+   *    { title: 'Protein Sources', body: 'Turkey is a great source of protein' },
+   *  ];
    *
-   *  // >>> Sample with an `options` object:
+   *  // Option 2: Options object declaring which custom key to rerank on
+   *  // Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as
+   *   the default)
    *  const rerankOptions = {
-   *     topN: 3,
-   *     returnDocuments: false
-   * }
-   *  const response = await pc.inference.rerank(rerankingModel, myQuery, myDocuments, rerankOptions);
+   *    topN: 3,
+   *    returnDocuments: false,
+   *    rankFields: ['body'],
+   *    parameters: {
+   *      inputType: 'passage',
+   *      truncate: 'END',
+   *    },
+   *  };
+   *
+   *  // Option 2 response
+   *  const response = await pc.inference.rerank(
+   *    rerankingModel,
+   *    myQuery,
+   *    myDocsObjs,
+   *    rerankOptions
+   *  );
    *  console.log(response);
    *  // {
    *  // model: 'bge-reranker-v2-m3',
@@ -106,7 +141,7 @@ export class Inference {
    *  // ],
    *  // usage: { rerankUnits: 1 }
    *  //}
-   *  ```
+   * ```
    *
    * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
    * @param query - (Required) The query to rerank documents against.
