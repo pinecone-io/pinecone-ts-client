@@ -6,7 +6,6 @@ import {
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
-import { prerelease } from '../utils/prerelease';
 
 /** Options one can send with a request to {@link rerank} *
  *
@@ -149,7 +148,6 @@ export class Inference {
    * an array of objects.
    * @param options - (Optional) Additional options to send with the reranking request. See {@link RerankOptions} for more details.
    * */
-  @prerelease('2024-10')
   async rerank(
     model: string,
     query: string,
@@ -175,11 +173,7 @@ export class Inference {
       topN = documents.length,
       returnDocuments = true,
       parameters = {},
-      rankFields = undefined,
     } = options;
-
-    // Initialize computedRankFields with rankFields or default to 'text'
-    const computedRankFields = rankFields ?? ['text'];
 
     // Validate and standardize documents to ensure they are in object format
     const newDocuments = documents.map((doc) =>
@@ -187,10 +181,7 @@ export class Inference {
     );
 
     if (!options.rankFields) {
-      // If each obj in newDocs does not have a 'text' field, throw an error
-      if (
-        !newDocuments.every((doc) => typeof doc === 'object' && 'text' in doc)
-      ) {
+      if (!newDocuments.every((doc) => typeof doc === 'object')) {
         throw new PineconeArgumentError(
           'Documents must be a list of strings or objects containing the "text" field'
         );
@@ -204,7 +195,7 @@ export class Inference {
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: computedRankFields,
+        rankFields: options.rankFields,
         parameters: parameters,
       },
     };

@@ -44,7 +44,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "Field 'customField' not found in document at index 0"
+          "field 'customField' not found in document at index 0"
         ),
       })
     );
@@ -87,7 +87,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          'Documents must be a list of strings or objects containing the "text" field'
+          "Rank field 'text' not found in document"
         ),
       })
     );
@@ -106,7 +106,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "Field 'NonExistentRankField' not found in document at index"
+          "field 'NonExistentRankField' not found in document at index"
         ),
       })
     );

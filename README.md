@@ -1145,9 +1145,9 @@ const myDocsObjs = [
     title: 'Thanksgiving',
     body: 'My favorite Thanksgiving dish is pumpkin pie',
   },
-  { 
-      title: 'Protein Sources', 
-      body: 'Turkey is a great source of protein' 
+  {
+    title: 'Protein Sources',
+    body: 'Turkey is a great source of protein',
   },
 ];
 

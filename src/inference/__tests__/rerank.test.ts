@@ -24,19 +24,6 @@ test('Confirm throws error if no documents are passed', async () => {
   }
 });
 
-test('Confirm throws error if docs is a list of objs, but does not contain `text` key', async () => {
-  const myDocuments = [{ id: '1' }, { id: '2' }];
-  try {
-    await inference.rerank(rerankModel, myQuery, myDocuments);
-  } catch (error) {
-    expect(error).toEqual(
-      new PineconeArgumentError(
-        'Documents must be a list of strings or objects containing the "text" field'
-      )
-    );
-  }
-});
-
 test('Confirm docs as list of strings is converted to list of objects with `text` key', async () => {
   const myDocuments = ['doc1', 'doc2'];
   const expectedDocuments = [{ text: 'doc1' }, { text: 'doc2' }];
@@ -52,9 +39,8 @@ test('Confirm docs as list of strings is converted to list of objects with `text
     model: rerankModel,
     query: myQuery,
     documents: expectedDocuments,
-    // defaults:
     parameters: {},
-    rankFields: ['text'],
+    rankFields: undefined, // This is undefined at the client-level when req. is sent b/c set to ['text'] on backend, if no rankFields are passed
     returnDocuments: true,
     topN: 2,
   };
@@ -79,7 +65,6 @@ test('Confirm provided rankFields override default `text` field for reranking', 
     query: myQuery,
     documents: myDocuments,
     rankFields,
-    // defaults:
     parameters: {},
     returnDocuments: true,
     topN: 2,
