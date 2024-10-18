@@ -1038,3 +1038,10 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 // << Send query to Pinecone to retrieve similar documents >>
 ```
+
+## Testing
+
+All unit, integration, and end-to-end testing takes place automatically in CI and is configured using Github actions
+and workflows, located in the `.github` directory of this repo.
+
+To run tests locally, see [CONTRIBUTING.md](CONTRIBUTING.md) for instructions.
