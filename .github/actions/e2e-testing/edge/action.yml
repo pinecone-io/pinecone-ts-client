@@ -86,5 +86,6 @@ runs:
           echo "Successfully deleted index: $matching_index"
         else
           echo "Failed to delete index: $matching_index. HTTP status code: $delete_response"
+          exit 1
         fi
       shell: bash
