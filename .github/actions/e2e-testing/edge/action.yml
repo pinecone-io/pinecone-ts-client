@@ -79,13 +79,6 @@ runs:
         PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
         matching_index="${{ env.indexName }}"
 
-        if [ -z "$matching_index" ]; then
-          echo "No indexes found that start with 'edge-test'."
-          exit 1
-        else
-          echo "Found index to delete: $matching_index"
-        fi
-
         delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/$matching_index" \
         -H "Api-Key: $PINECONE_API_KEY")
 
@@ -93,6 +86,5 @@ runs:
           echo "Successfully deleted index: $matching_index"
         else
           echo "Failed to delete index: $matching_index. HTTP status code: $delete_response"
-          exit 1
         fi
       shell: bash
