@@ -29,7 +29,11 @@ either `node` or `edge` as you see fit.
 
 Simply run `npm run test:end-to-end -- <clone y/n> <path>` to run all end-to-end tests, passing in `y` or `n` for
 whether you want to clone the repo that contains the external app used for testing, and the `path` the repo should be
-cloned in, or is already cloned in.
+cloned in, or is already cloned in, e.g.:
+
+```bash
+npm run test:end-to-end -- y ~/Desktop/tmp-dr
+```
 
 The `npm` command runs the bash file located in the `src/end-to-end` directory.
 
