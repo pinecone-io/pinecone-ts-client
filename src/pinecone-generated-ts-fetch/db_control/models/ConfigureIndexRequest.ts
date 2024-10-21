@@ -49,7 +49,7 @@ export interface ConfigureIndexRequest {
      * @type {{ [key: string]: string; }}
      * @memberof ConfigureIndexRequest
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
 }
 
 /**

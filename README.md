@@ -693,17 +693,17 @@ const vectors = [
 await index.upsert(vectors);
 ```
 
-### Bulk import vectors from object storage
+### Import vectors from object storage
 
 You can now [import vectors en masse](https://docs.pinecone.io/guides/data/understanding-imports) from object
-storage. Bulk Import is a long-running, asynchronous operation that imports large numbers of records into a Pinecone
+storage. `Import` is a long-running, asynchronous operation that imports large numbers of records into a Pinecone
 serverless index.
 
 In order to import vectors from object storage, they must be stored in Parquet files and adhere to the necessary
 [file format](https://docs.pinecone.io/guides/data/understanding-imports#parquet-file-format). Your object storage
 must also adhere to the necessary [directory structure](https://docs.pinecone.io/guides/data/understanding-imports#directory-structure).
 
-The following example imports 10 vectors from an Amazon S3 bucket into a Pinecone serverless index:
+The following example imports vectors from an Amazon S3 bucket into a Pinecone serverless index:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -737,8 +737,8 @@ You can [start, cancel, and check the status](https://docs.pinecone.io/guides/da
 
 **Notes:**
 
-- Bulk Import only works with Serverless indexes
-- Bulk Import is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
+- `Import` only works with Serverless indexes
+- `Import` is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
 - The only object storage provider currently supported is [Amazon S3](https://docs.pinecone.io/guides/operations/integrations/integrate-with-amazon-s3)
 - Vectors will take _at least 10 minutes_ to appear in your index upon completion of the import operation, since
   this operation is optimized for very large workloads
