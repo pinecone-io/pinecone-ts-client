@@ -87,7 +87,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "Rank field 'text' not found in document"
+          "Documents must be a list of strings or objects containing the \"text\" field"
         ),
       })
     );

@@ -40,7 +40,7 @@ test('Confirm docs as list of strings is converted to list of objects with `text
     query: myQuery,
     documents: expectedDocuments,
     parameters: {},
-    rankFields: undefined, // This is undefined at the client-level when req. is sent b/c set to ['text'] on backend, if no rankFields are passed
+    rankFields: ['text'],
     returnDocuments: true,
     topN: 2,
   };

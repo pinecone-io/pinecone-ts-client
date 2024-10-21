@@ -175,17 +175,23 @@ export class Inference {
       parameters = {},
     } = options;
 
+    let { rankFields = ['text'] } = options;
+
     // Validate and standardize documents to ensure they are in object format
     const newDocuments = documents.map((doc) =>
       typeof doc === 'string' ? { text: doc } : doc
     );
 
     if (!options.rankFields) {
-      if (!newDocuments.every((doc) => typeof doc === 'object')) {
+      if (!newDocuments.every((doc) => typeof doc === 'object' && doc.text)) {
         throw new PineconeArgumentError(
           'Documents must be a list of strings or objects containing the "text" field'
         );
       }
+    }
+
+    if (options.rankFields) {
+      rankFields = options.rankFields;
     }
 
     const req = {
@@ -195,7 +201,7 @@ export class Inference {
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: options.rankFields,
+        rankFields: rankFields,
         parameters: parameters,
       },
     };
