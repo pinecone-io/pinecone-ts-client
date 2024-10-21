@@ -73,7 +73,7 @@ export interface IndexModel {
      * @type {{ [key: string]: string; }}
      * @memberof IndexModel
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
     /**
      * 
      * @type {IndexModelSpec}

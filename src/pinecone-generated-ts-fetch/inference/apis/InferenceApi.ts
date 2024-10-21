@@ -83,8 +83,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank items according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
-     * Rerank items
+     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank documents
      */
     async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
         const queryParameters: any = {};
@@ -109,8 +109,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank items according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
-     * Rerank items
+     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank documents
      */
     async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {
         const response = await this.rerankRaw(requestParameters, initOverrides);
