@@ -1,9 +1,9 @@
-import { Index, Pinecone, QueryResponse } from '../../index';
+import { Index, Pinecone, QueryResponse } from '../../../index';
 import {
   globalNamespaceOne,
   getRecordIds,
   assertWithRetries,
-} from '../test-helpers';
+} from '../../test-helpers';
 
 let pinecone: Pinecone,
   serverlessIndex: Index,

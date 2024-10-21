@@ -2,8 +2,8 @@ import { DataOperationsProvider } from './dataOperationsProvider';
 import type {
   ListRequest,
   ListResponse,
-} from '../pinecone-generated-ts-fetch/db_data';
-import { ValidateProperties } from '../utils/validateProperties';
+} from '../../pinecone-generated-ts-fetch/db_data';
+import { ValidateProperties } from '../../utils/validateProperties';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)

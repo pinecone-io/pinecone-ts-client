@@ -1,11 +1,11 @@
-import { Pinecone, Index } from '../../index';
+import { Pinecone, Index } from '../../../index';
 import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
   randomIndexName,
   waitUntilReady,
-} from '../test-helpers';
+} from '../../test-helpers';
 
 // todo: deleting non-existent records
 // todo: delete all records in namespace

@@ -1,5 +1,5 @@
-import { Pinecone, Index } from '../../index';
-import { globalNamespaceOne, prefix, diffPrefix } from '../test-helpers';
+import { Pinecone, Index } from '../../../index';
+import { globalNamespaceOne, prefix, diffPrefix } from '../../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index;
 
