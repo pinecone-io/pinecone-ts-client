@@ -1,14 +1,21 @@
 import {
   EmbedOperationRequest,
   EmbedRequestInputsInner,
-  EmbedRequestParameters,
   InferenceApi,
   RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
 import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
-import { prerelease } from '../utils/prerelease';
 
+/** Options one can send with a request to {@link rerank} *
+ *
+ * @param topN - The number of documents to return in the response. Default is the number of documents passed in the
+ * request.
+ * @param returnDocuments - Whether to return the documents in the response. Default is `true`.
+ * @param rankFields - The fields by which to rank the documents. If no field is passed, default is `['text']`.
+ * Note: some models only support 1 reranking field. See the [model documentation](https://docs.pinecone.io/guides/inference/understanding-inference#rerank) for more information.
+ * @param parameters - Additional model-specific parameters to send with the request, e.g. {truncate: "END"}.
+ * */
 export interface RerankOptions {
   topN?: number;
   returnDocuments?: boolean;
@@ -31,13 +38,6 @@ export class Inference {
     });
   }
 
-  /* Format the parameters object into the correct format for the Inference API request. */
-  public _formatParams(
-    parameters: Record<string, string>
-  ): EmbedRequestParameters {
-    return parameters;
-  }
-
   /* Generate embeddings for a list of input strings using a specified embedding model. */
   async embed(
     model: string,
@@ -46,12 +46,11 @@ export class Inference {
   ): Promise<EmbeddingsList> {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
       this._formatInputs(inputs);
-    const typedParams: EmbedRequestParameters = this._formatParams(params);
     const typedRequest: EmbedOperationRequest = {
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
-        parameters: typedParams,
+        parameters: params,
       },
     };
     const response = await this._inferenceApi.embed(typedRequest);
@@ -61,25 +60,27 @@ export class Inference {
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order
    *  against the query provided.
    *
-   *  Note: by default, the ['text'] field of each document is used for ranking; you can overwrite this default
-   *  behavior by passing an {@link RerankOptions} `options` object specifying 1+ other fields.
-   *
    *  @example
-   *  ```typescript
+   *  ````typescript
    *  import { Pinecone } from '@pinecone-database/pinecone';
-   *
    *  const pc = new Pinecone();
-   *  const rerankingModel = "bge-reranker-v2-m3";
-   *  const myQuery = "What are some good Turkey dishes for Thanksgiving?";
-   *  const myDocuments = [
-   *  { text: "I love turkey sandwiches with pastrami" },
-   *  { text: "A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main" },
-   *  { text: "My favorite Thanksgiving dish is pumpkin pie" },
-   *  { text: "Turkey is a great source of protein" },
+   *  const rerankingModel = 'bge-reranker-v2-m3';
+   *  const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
+   *
+   *  // Option 1: Documents as an array of strings
+   *  const myDocsStrings = [
+   *    'I love turkey sandwiches with pastrami',
+   *    'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+   *    'My favorite Thanksgiving dish is pumpkin pie',
+   *    'Turkey is a great source of protein',
    *  ];
    *
-   *  // >>> Sample without passing an `options` object:
-   *  const response = await pc.inference.rerank(rerankingModel, myQuery, myDocuments);
+   *  // Option 1 response
+   *  const response = await pc.inference.rerank(
+   *    rerankingModel,
+   *    myQuery,
+   *    myDocsStrings
+   *  );
    *  console.log(response);
    *  // {
    *  // model: 'bge-reranker-v2-m3',
@@ -92,13 +93,43 @@ export class Inference {
    *  // usage: { rerankUnits: 1 }
    *  // }
    *
+   *  // Option 2: Documents as an array of objects
+   *  const myDocsObjs = [
+   *    {
+   *      title: 'Turkey Sandwiches',
+   *      body: 'I love turkey sandwiches with pastrami',
+   *    },
+   *    {
+   *      title: 'Lemon Turkey',
+   *      body: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+   *    },
+   *    {
+   *      title: 'Thanksgiving',
+   *      body: 'My favorite Thanksgiving dish is pumpkin pie',
+   *    },
+   *    { title: 'Protein Sources', body: 'Turkey is a great source of protein' },
+   *  ];
    *
-   *  // >>> Sample with an `options` object:
+   *  // Option 2: Options object declaring which custom key to rerank on
+   *  // Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as
+   *   the default)
    *  const rerankOptions = {
-   *     topN: 3,
-   *     returnDocuments: false
-   * }
-   *  const response = await pc.inference.rerank(rerankingModel, myQuery, myDocuments, rerankOptions);
+   *    topN: 3,
+   *    returnDocuments: false,
+   *    rankFields: ['body'],
+   *    parameters: {
+   *      inputType: 'passage',
+   *      truncate: 'END',
+   *    },
+   *  };
+   *
+   *  // Option 2 response
+   *  const response = await pc.inference.rerank(
+   *    rerankingModel,
+   *    myQuery,
+   *    myDocsObjs,
+   *    rerankOptions
+   *  );
    *  console.log(response);
    *  // {
    *  // model: 'bge-reranker-v2-m3',
@@ -109,17 +140,14 @@ export class Inference {
    *  // ],
    *  // usage: { rerankUnits: 1 }
    *  //}
-   *  ```
+   * ```
    *
    * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
    * @param query - (Required) The query to rerank documents against.
-   * @param documents - (Required) The documents to rerank. Each document must be either a string or an object
-   * with (at minimum) a `text` key.
-   * @param options - (Optional) Additional options to send with the core reranking request. Options include: how many
-   * results to return, whether to return the documents in the response, alternative fields by which the model
-   * should to rank the documents, and additional model-specific parameters. See {@link RerankOptions} for more details.
+   * @param documents - (Required) An array of documents to rerank. The array can either be an array of strings or
+   * an array of objects.
+   * @param options - (Optional) Additional options to send with the reranking request. See {@link RerankOptions} for more details.
    * */
-  @prerelease('2024-10')
   async rerank(
     model: string,
     query: string,
@@ -140,41 +168,30 @@ export class Inference {
           ' documents. See https://docs.pinecone.io/models for supported models.'
       );
     }
-    // Destructure `options` with defaults
-    // Note: If the user passes in key:value pairs in `options` that are not the following, they are ignored
+
     const {
       topN = documents.length,
       returnDocuments = true,
-      rankFields = ['text'],
       parameters = {},
     } = options;
 
-    // Allow documents to be passed a list of strings, or a list of objs w/at least a `text` key:
-    let newDocuments: Array<{ [key: string]: string }> = [];
-    if (typeof documents[0] === 'object' && !('text' in documents[0])) {
-      throw new PineconeArgumentError(
-        '`documents` can only be a list of strings or a list of objects with at least a `text` key, followed by a' +
-          ' string value'
-      );
-    } else if (typeof documents[0] === 'string') {
-      newDocuments = documents.map((doc) => {
-        return { text: doc as string };
-      });
-    } else {
-      newDocuments = documents as Array<{ [key: string]: string }>;
+    let { rankFields = ['text'] } = options;
+
+    // Validate and standardize documents to ensure they are in object format
+    const newDocuments = documents.map((doc) =>
+      typeof doc === 'string' ? { text: doc } : doc
+    );
+
+    if (!options.rankFields) {
+      if (!newDocuments.every((doc) => typeof doc === 'object' && doc.text)) {
+        throw new PineconeArgumentError(
+          'Documents must be a list of strings or objects containing the "text" field'
+        );
+      }
     }
 
-    // Ensure all rankFields, if passed, are present in each document
-    if (rankFields.length > 0) {
-      newDocuments.forEach((doc, index) => {
-        rankFields.forEach((field) => {
-          if (!(field in doc)) {
-            throw new PineconeArgumentError(
-              `The \`rankField\` value you passed ("${field}") is missing in the document at index ${index}`
-            );
-          }
-        });
-      });
+    if (options.rankFields) {
+      rankFields = options.rankFields;
     }
 
     const req = {
