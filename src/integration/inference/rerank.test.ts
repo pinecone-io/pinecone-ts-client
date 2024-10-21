@@ -87,7 +87,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "Documents must be a list of strings or objects containing the \"text\" field"
+          'Documents must be a list of strings or objects containing the "text" field'
         ),
       })
     );
