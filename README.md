@@ -703,7 +703,7 @@ In order to import vectors from object storage, they must be stored in Parquet f
 [file format](https://docs.pinecone.io/guides/data/understanding-imports#parquet-file-format). Your object storage
 must also adhere to the necessary [directory structure](https://docs.pinecone.io/guides/data/understanding-imports#directory-structure).
 
-The following example imports 10 vectors from an Amazon S3 bucket into a Pinecone serverless index:
+The following example imports vectors from an Amazon S3 bucket into a Pinecone serverless index:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
