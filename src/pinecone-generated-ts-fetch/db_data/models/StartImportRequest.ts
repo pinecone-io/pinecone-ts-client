@@ -37,7 +37,7 @@ export interface StartImportRequest {
      * @type {string}
      * @memberof StartImportRequest
      */
-    uri?: string;
+    uri: string;
     /**
      * 
      * @type {ImportErrorMode}
@@ -51,6 +51,7 @@ export interface StartImportRequest {
  */
 export function instanceOfStartImportRequest(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "uri" in value;
 
     return isInstance;
 }
@@ -66,7 +67,7 @@ export function StartImportRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'integrationId': !exists(json, 'integrationId') ? undefined : json['integrationId'],
-        'uri': !exists(json, 'uri') ? undefined : json['uri'],
+        'uri': json['uri'],
         'errorMode': !exists(json, 'errorMode') ? undefined : ImportErrorModeFromJSON(json['errorMode']),
     };
 }

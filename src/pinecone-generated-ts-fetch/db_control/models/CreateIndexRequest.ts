@@ -61,7 +61,7 @@ export interface CreateIndexRequest {
      * @type {{ [key: string]: string; }}
      * @memberof CreateIndexRequest
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
     /**
      * 
      * @type {IndexSpec}
