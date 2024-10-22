@@ -2,6 +2,11 @@
 
 We welcome contributions to this project.
 
+## Repl
+
+For quick troubleshooting, there is a repl available by running `npm run repl`. This will start a Node.js repl with the
+`@pinecone-io/client` package preloaded. The `npm` command runs the file `utils/replInit.ts`.
+
 ## Local testing
 
 To run all tests locally, excluding the unit tests, you will need to set your Pinecone API key to an environment
