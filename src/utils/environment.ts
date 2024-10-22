@@ -8,3 +8,8 @@ export const isEdge = () => {
 export const isBrowser = () => {
   return typeof window !== 'undefined';
 };
+
+export function isNextJs(): boolean {
+  // Check if the SDK is running in a Next.js environment by detecting NEXT_RUNTIME
+  return Boolean(process.env.NEXT_RUNTIME);
+}
