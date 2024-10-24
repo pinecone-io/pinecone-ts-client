@@ -25,6 +25,7 @@ import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
+import { RetryOptions } from '../utils/retries';
 
 export type {
   PineconeConfiguration,
@@ -468,8 +469,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
    */
-  async upsert(data: Array<PineconeRecord<T>>) {
-    return await this._upsertCommand.run(data);
+  async upsert(data: Array<PineconeRecord<T>>, retryOptions?: RetryOptions) {
+    return await this._upsertCommand.run(data, retryOptions);
   }
 
   /**

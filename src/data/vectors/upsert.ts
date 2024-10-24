@@ -7,6 +7,7 @@ import {
 } from './types';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
+import { RetryOnServerFailure, RetryOptions } from '../../utils/retries';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
@@ -40,16 +41,34 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     });
   };
 
-  async run(records: Array<PineconeRecord<T>>): Promise<void> {
+  async run(
+    records: Array<PineconeRecord<T>>,
+    retryOptions?: RetryOptions
+  ): Promise<void> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
-    await api.upsertVectors({
-      upsertRequest: {
-        vectors: records as Array<Vector>,
-        namespace: this.namespace,
-      },
-    });
-    return;
+
+    if (retryOptions) {
+      const retryWrapper = new RetryOnServerFailure(
+        api.upsertVectors.bind(api),
+        retryOptions
+      );
+      await retryWrapper.execute({
+        upsertRequest: {
+          vectors: records as Array<Vector>,
+          namespace: this.namespace,
+        },
+      });
+      return;
+    } else {
+      await api.upsertVectors({
+        upsertRequest: {
+          vectors: records as Array<Vector>,
+          namespace: this.namespace,
+        },
+      });
+      return;
+    }
   }
 }

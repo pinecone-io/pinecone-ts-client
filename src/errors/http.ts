@@ -94,12 +94,35 @@ export class PineconeInternalServerError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
     const { url, body } = failedRequest;
     const intro = url
-      ? `An internal server error occured while calling the ${url} endpoint.`
+      ? `An internal server error occurred while calling the ${url} endpoint.`
       : '';
     const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
     const bodyMessage = body ? `Body: ${body}` : '';
     super([intro, help, bodyMessage].join(' ').trim());
     this.name = 'PineconeInternalServerError';
+  }
+}
+
+/**
+ * This error indicates API responses are returning with status 503 and
+ * Pinecone itself is down. Check the [status page](https://status.pinecone.io/)
+ * for information about current or recent outages.
+ *
+ * The difference between this error (503) and a PineconeInternalServerError (500) is that this error does NOT indicate
+ * that the server is _unable_ to process the request, just that the server will not process the request.
+ *
+ * @see [Pinecone's status page](https://status.pinecone.io/)
+ */
+export class PineconeUnavailableError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, body } = failedRequest;
+    const intro = url
+      ? `The Pinecone service (${url}) is temporarily unavailable.`
+      : '';
+    const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
+    const bodyMessage = body ? `Body: ${body}` : '';
+    super([intro, help, bodyMessage].join(' ').trim());
+    this.name = 'PineconeUnavailableError';
   }
 }
 
