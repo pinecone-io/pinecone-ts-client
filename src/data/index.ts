@@ -465,12 +465,20 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    *
    * @param data - An array of {@link PineconeRecord} objects to upsert.
+   * @param retry - Whether to retry the operation. Defaults to true.
+   * @param retryOptions - (Optional). The {@link RetryOptions} configuration object for customizing retries.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
    */
-  async upsert(data: Array<PineconeRecord<T>>, retryOptions?: RetryOptions) {
-    return await this._upsertCommand.run(data, retryOptions);
+  async upsert(
+    data: Array<PineconeRecord<T>>,
+    retry: true | false | undefined = true,
+    retryOptions?: RetryOptions
+  ) {
+    console.log("UPSERT: I'M HIT!")
+
+    return await this._upsertCommand.run(data, retry, retryOptions);
   }
 
   /**

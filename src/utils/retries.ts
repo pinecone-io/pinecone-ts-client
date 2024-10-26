@@ -35,30 +35,50 @@ embed
 // 500 (Internal Server Error) --> PineconeInternalServerError
 // 503 (Service Unavailable) --> PineconeUnavailableError
 
-/** The options for retrying an async operation. */
+/** Configuration options for retry logic */
 export interface RetryOptions {
   maxRetries: number;
-  delayStrategy?: 'jitter' | 'fixed'; // if not "jitter", fixed delay of 1 second
+  delayStrategy?: string;
 }
 
+/* Retry asynchronous operations.
+ *
+ * @param asyncFn - The asynchronous function to retry.
+ * @param options - The configuration options for retry logic.
+ * */
 export class RetryOnServerFailure {
   maxRetries: number;
   delayStrategy: string;
   asyncFn: (...args: any[]) => Promise<any>;
+  retryCount: number = 0
 
   constructor(
     asyncFn: (...args: any[]) => Promise<any>,
-    options: RetryOptions
+    options?: RetryOptions
   ) {
-    this.maxRetries = options.maxRetries;
-    this.delayStrategy = options.delayStrategy === 'fixed' ? 'fixed' : 'jitter';
+    if (options) {
+      this.maxRetries = options.maxRetries;
+      if (options.delayStrategy) {
+        this.delayStrategy = options.delayStrategy
+      } else {
+        this.delayStrategy = 'jitter';
+      }
+      if (options.maxRetries > 10) {
+        throw new Error('Max retries cannot exceed 10'); // Avoid overwhelming the server
+      }
+    } else {
+      this.maxRetries = 3;
+      this.delayStrategy = 'jitter';
+    }
+
     this.asyncFn = asyncFn;
+    this.retryCount = 0;
   }
 
   // Main retry logic
   async execute(...args: any[]): Promise<any> {
     let attempt = 0;
-    while (attempt < this.maxRetries) {
+    while (attempt <= this.maxRetries) {
       const response = await this.asyncFn(...args);
       // Check if the response is server-side error (500, 503)
       if (
@@ -69,6 +89,7 @@ export class RetryOnServerFailure {
         )
       ) {
         attempt += 1;
+        this.retryCount += 1;
         // If retries are exhausted, return the response as-is
         if (attempt >= this.maxRetries) {
           return 'Max retries exceeded: ' + response;
@@ -82,23 +103,20 @@ export class RetryOnServerFailure {
     }
   }
 
-  private async delay(attempt: number): Promise<void> {
+  async delay(attempt: number): Promise<void> {
     let delayTime = 0;
-
     if (this.delayStrategy && this.delayStrategy === 'jitter') {
       delayTime = this.jitter(attempt);
     } else {
-      // Default to a fixed delay of 1 second if no strategy is provided
       delayTime = 1000;
     }
     // Wait for the specified delay time
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
 
-  private jitter(attempt: number): number {
-    // Generate a random delay between 0.5 and 1.5 seconds, adjusted per attempt
+  jitter(attempt: number): number {
     const baseDelay = 1000; // 1s
-    const jitter = Math.random() * 0.5 * baseDelay; // Random jitter (0-0.5s)
+    const jitter = Math.random() * 0.5 * baseDelay; // produces value between 0 and 0.5
     return baseDelay + jitter * attempt;
   }
 }

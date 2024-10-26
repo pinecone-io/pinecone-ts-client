@@ -43,25 +43,40 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
 
   async run(
     records: Array<PineconeRecord<T>>,
+    retry: true | false | undefined = true,
     retryOptions?: RetryOptions
   ): Promise<void> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
 
-    if (retryOptions) {
-      const retryWrapper = new RetryOnServerFailure(
-        api.upsertVectors.bind(api),
-        retryOptions
-      );
-      await retryWrapper.execute({
-        upsertRequest: {
-          vectors: records as Array<Vector>,
-          namespace: this.namespace,
-        },
-      });
-      return;
+    // todo simplify
+    if (retry) {
+      if (retryOptions) {
+        const retryWrapper = new RetryOnServerFailure(
+          api.upsertVectors.bind(api),
+          retryOptions
+        );
+        await retryWrapper.execute({
+          upsertRequest: {
+            vectors: records as Array<Vector>,
+            namespace: this.namespace,
+          },
+        })
+      } else {
+        const retryWrapper = new RetryOnServerFailure(
+          api.upsertVectors.bind(api)
+        );
+        console.log("UPSERT WITH RETRY: I'M HIT!")
+        await retryWrapper.execute({
+          upsertRequest: {
+            vectors: records as Array<Vector>,
+            namespace: this.namespace,
+          },
+        });
+      }
     } else {
+      console.log("UPSERT WITHOUT RETRY: I'M HIT!")
       await api.upsertVectors({
         upsertRequest: {
           vectors: records as Array<Vector>,
