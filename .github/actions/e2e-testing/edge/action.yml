@@ -52,10 +52,8 @@ runs:
 
     - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
       run: |
-        npm install typescript
-        npm install ts-node
-
-        cd ts-client-e2e-tests
+        npm install -g typescript
+        npm install -g ts-node
 
         API_KEY="${{ inputs.PINECONE_API_KEY }}"
              
