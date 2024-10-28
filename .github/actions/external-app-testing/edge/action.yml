@@ -31,45 +31,44 @@ runs:
       uses: GuillaumeFalourd/clone-github-repo-action@main
       with:
         owner: 'pinecone-io'
-        repository: 'ts-client-e2e-tests'
+        repository: 'ts-client-test-external-app'
         branch: 'main'
 
-    - name: Move package to ts-client-e2e-tests
-      run: cd ts-client-e2e-tests && mv ../pinecone-database-pinecone-*.tgz .
+    - name: Install external app dependencies
+      run: cd ts-client-test-external-app && npm install
       shell: bash
 
-    - name: Install e2e tests dependencies
-      run: cd ts-client-e2e-tests && npm install
+    - name: Move package to pinecone-ts-client packed code into the Vercel app dir
+      run: cd ts-client-test-external-app && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd ts-client-e2e-tests && npm install pinecone-database-pinecone-*.tgz
+    - name: Install pinecone-ts-client "main" branch code into the Vercel app's package.json file
+      run: |
+        cd ts-client-test-external-app
+        npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
-    - name: Install Vercel CLI
-      run: cd ts-client-e2e-tests && npm install vercel
+    - name: Install Vercel CLI and (re)deploy the app
+      run: |
+        cd ts-client-test-external-app
+        npm install vercel
+        vercel build
       shell: bash
 
-    - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
+    - name: Hit Vercel app endpoint(s) via localRuns.ts file
       run: |
         npm install -g typescript
         npm install -g ts-node
 
-        API_KEY="${{ inputs.PINECONE_API_KEY }}"
+        export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
              
-        indexName=$(ts-node src/end-to-end/localRuns.ts $API_KEY)
-             
-        if [[ "$indexName" != *"edge-test"* ]]; then
-          echo "Error encountered: $indexName"
-          exit 1
-        else
-          echo "Test succeeded! Index created: $indexName"
-        fi
+        indexName=$(ts-node src/end-to-end/localRuns.ts | grep -v "Test passed!")
 
         echo "indexName=$indexName" >> $GITHUB_ENV
+
       shell: bash
 
-    - name: Clean up e2e indexes
+    - name: Clean up test index(es)
       run: |
         PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
         matching_index="${{ env.indexName }}"

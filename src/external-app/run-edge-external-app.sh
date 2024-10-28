@@ -7,15 +7,15 @@ if [ -z "$PINECONE_API_KEY" ]; then
   exit 1
 fi
 
-if [ -d "ts-client-e2e-tests" ]; then
-  echo "Removing existing ts-client-e2e-tests directory..."
-  rm -rf ts-client-e2e-tests
+if [ -d "ts-client-test-external-app" ]; then
+  echo "Removing existing ts-client-test-external-app directory..."
+  rm -rf ts-client-test-external-app
 fi
 
-echo "Cloning ts-client-e2e-tests repo..."
+echo "Cloning ts-client-test-external-app repo..."
 pushd .
-  git clone git@github.com:pinecone-io/ts-client-e2e-tests.git
-  cd ts-client-e2e-tests
+  git clone git@github.com:pinecone-io/tts-client-test-external-app.git
+  cd ts-client-test-external-app
   git pull origin main
 popd
 

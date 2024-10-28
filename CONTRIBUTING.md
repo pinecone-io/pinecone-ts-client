@@ -30,18 +30,13 @@ Simply run `npm run test:unit` to run all unit tests.
 Simply run `npm run test:integration-local:<runtime>` to run all integration tests, substituting `<runtime>` with
 either `node` or `edge` as you see fit.
 
-### End-to-end tests
+### External app tests
 
-Simply run `npm run test:end-to-end -- <path-for-cloned-repo>` to run all end-to-end tests, passing the `path` the repo should be
-cloned in as a command line argument, e.g.:
+Simply run `npm run test:end-to-end` to run all tests that integrate with the `ts-client-test-external-app` repo:
 
-```bash
-npm run test:end-to-end -- ~/Desktop/tmp-dr
-```
+The `npm` command runs the bash file located in the `src/external-app` directory.
 
-The `npm` command runs the bash file located in the `src/end-to-end` directory.
-
-#### About the end-to-end tests
+#### About the External app tests
 
 The 'end-to-end' tests hit an API endpoint that you will spin up on your local machine at `localhost:3000`. The API
 builds a Pinecone (serverless) index, seeds it with data, and then queries that index. The end-to-end test ensures
@@ -53,7 +48,7 @@ The current app only tests _one_ configuration:
 - The `NextJS` framework (`@latest`)
 - Written in Typescript (`5.3.3`)
 
-- External app: [pinecone-io/pinecone-end-to-end-test](https://github.com/pinecone-io/ts-client-e2e-tests)
+- External app: [pinecone-io/ts-client-test-external-app](https://github.com/pinecone-io/ts-client-test-external-app)
 - Endpoint the test sends a POST request to:
   - Local runs: localhost:3000/api/createSeedQuery
 

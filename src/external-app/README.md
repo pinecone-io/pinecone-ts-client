@@ -27,7 +27,7 @@ The `Action` in Github is called `End to end testing`.
 
 Notes:
 
-- The test app is located in the public [`ts-client-e2e-tests` repo](https://github.com/pinecone-io/ts-client-e2e-tests)
+- The test app is located in the public [`ts-client-test-external-app` repo](https://github.com/pinecone-io/ts-client-test-external-app)
 - The test app's API is already deployed to Production in Pinecone's Enterprise Vercel account; the action will fail if
   this app is rolled back, so please do not do that :)
-- The test app's endpoint that the `ts-client` tests hit is: `ts-client-e2e-tests.vercel.app/api/createSeedQuery`
+- The test app's endpoint that the `ts-client` tests hit is: `ts-client-test-external-app.vercel.app/api/createSeedQuery`
