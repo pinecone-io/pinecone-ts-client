@@ -52,6 +52,8 @@ runs:
       run: |
         cd ts-client-test-external-app
         npm install vercel
+        vercel --token ${{ inputs.vercel-token }}
+        vercel pull --yes
         vercel build
       shell: bash
 
