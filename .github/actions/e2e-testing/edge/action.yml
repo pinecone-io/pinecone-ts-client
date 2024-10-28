@@ -52,26 +52,24 @@ runs:
 
     - name: Send POST request to endpoint Vercel app endpoint api/createSeedQuery
       run: |
-        API_URL="https://ts-client-e2e-tests.vercel.app/api/createSeedQuery"
+        npm install typescript
+        npm install ts-node
+
+        cd ts-client-e2e-tests
+
         API_KEY="${{ inputs.PINECONE_API_KEY }}"
+             
+        indexName=$(ts-node src/end-to-end/localRuns.ts $API_KEY)
+             
+        if [[ "$indexName" != *"edge-test"* ]]; then
+          echo "Error encountered: $indexName."
+          exit 1
+        else
+          echo "Test succeeded! Index created: $indexName"
+        fi
 
-        response=$(curl --silent --location --request POST "$API_URL" --header "PINECONE_API_KEY: $API_KEY")
-
-        indexName=$(echo "$response" | jq -r '.indexName')
         echo "indexName=$indexName" >> $GITHUB_ENV
 
-        match_count=$(echo "$response" | jq '.queryResult.matches | length')
-        if [ $? -ne 0 ]; then
-          echo "Error: Request failed."
-          exit 1
-        fi
-
-        if [ "$match_count" -lt 1 ]; then
-          echo "Error: Expected at least one result in queryResult.matches, but found none."
-           exit 1
-        else
-          echo "Success: Found $match_count result(s) in queryResult.matches."
-        fi
       shell: bash
 
     - name: Clean up e2e indexes
