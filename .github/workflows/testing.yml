@@ -219,7 +219,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run e2e tests for edge runtime
+      - name: Run external app tests
         uses: ./.github/actions/external-app-testing/edge
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
