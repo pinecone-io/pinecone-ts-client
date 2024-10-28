@@ -2,43 +2,57 @@
 
 set -eu -o pipefail
 
-# !! Recommendation: Do not clone the ts-client-e2e-tests repo in local ts-client repo; it'll just cause npm deps issues
-
-# inputs
-dir=$1 # required -- directory where you want to clone the ts-client-e2e-tests repo, or where it is already cloned
-
-if [ -z "$dir" ]; then
-  echo "Error: Directory path must be provided (either where the ts-client-e2e-tests repo is cloned, or where you
-  want to clone it."
+if [ -z "$PINECONE_API_KEY" ]; then
+  echo "Please set the PINECONE_API_KEY environment variable."
   exit 1
 fi
 
-  echo "Cloning ts-client-e2e-tests repo"
-  if [ -z "$dir" ]; then
-      echo "Error: Must provide path to clone the repo"
-      exit 1
-    # If `dir` is also provided, pushd into that location, clone the repo, popd back out to local ts-client repo
-    elif [ -d "$dir" ]; then
-      pushd "$dir"
-      git clone git@github.com:pinecone-io/ts-client-e2e-tests.git
-      popd
-    else
-      echo "Error: Directory does not exist: $dir"
-      exit 1
-    fi
+if [ -d "ts-client-e2e-tests" ]; then
+  echo "Removing existing ts-client-e2e-tests directory..."
+  rm -rf ts-client-e2e-tests
+fi
 
-# Compile and make a local link to the ts-client repo
+echo "Cloning ts-client-e2e-tests repo..."
+pushd .
+  git clone git@github.com:pinecone-io/ts-client-e2e-tests.git
+  cd ts-client-e2e-tests
+  git pull origin main
+popd
+
+# Compile ts-client and make a local link
 npm run build
 npm link
 
 # Hop into ts-client-e2e-tests repo, install deps, link local ts-client repo, and start the Next.js server
-pushd "$dir/ts-client-e2e-tests"
+pushd "ts-client-e2e-tests"
+  git pull origin main
   npm install
   npm link @pinecone-database/pinecone
-  npm install -g next@latest
-  next dev
+  npm install -D next@latest
+  next dev & # `&` runs the command in the background
 popd
 
-#npm uninstall -g next # Can comment out if do not want to uninstall the global Next.js package
+# Run tests
+echo "Running tests..."
+indexName=$(ts-node src/end-to-end/localRuns.ts | grep -v "Test passed!")
 
-# Run this script with the following command: `npm run test:end-to-end -- <path-for-cloned-repo>`
+# Delete index test created
+echo "Deleting index '$indexName'..."
+delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/${indexName}" -H \
+  "Api-Key: $PINECONE_API_KEY")
+
+if [ "$delete_response" -eq 202 ]; then
+  echo "Successfully deleted index: $indexName"
+else
+  echo "Failed to delete index: $indexName. HTTP status code: $delete_response"
+  exit 1
+fi
+
+# Kill the Next.js server
+echo "Killing Next.js server..."
+if lsof -i:3000 > /dev/null; then
+  kill "$(lsof -t -i:3000)"
+  echo "Next.js server killed."
+else
+  echo "Next.js server is not running."
+fi

@@ -1,9 +1,9 @@
 class EndToEndEdgeTest {
-  constructor(public readonly apiKey: string) {
+  url: string;
+  constructor(public readonly apiKey: string, url: string) {
     this.apiKey = apiKey;
+    this.url = url;
   }
-  url = 'https://ts-client-e2e-tests.vercel.app/api/createSeedQuery';
-
   hitEndpoint = async (url: string) => {
     const response = await fetch(url, {
       method: 'POST',
@@ -32,17 +32,20 @@ class EndToEndEdgeTest {
   };
 }
 
-const apiKey = process.argv[2];
+const apiKey = process.env['PINECONE_API_KEY'];
 
 if (!apiKey) {
   throw new Error('PINECONE_API_KEY key is required');
 }
 
-const edgeTest = new EndToEndEdgeTest(apiKey);
+const localUrl = 'http://localhost:3000/api/createSeedQuery';
+const CIUrl = 'https://ts-client-e2e-tests.vercel.app/api/createSeedQuery';
+const edgeTest = new EndToEndEdgeTest(apiKey, localUrl);
 
 edgeTest
   .assertOnResponse()
   .then((indexName) => {
+    console.log('Test passed!');
     console.log(indexName);
   })
   .catch((error) => {
