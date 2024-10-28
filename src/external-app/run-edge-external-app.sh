@@ -34,9 +34,10 @@ popd
 
 # Run tests
 echo "Running tests..."
-indexName=$(ts-node src/end-to-end/localRuns.ts | grep -v "Test passed!")
+localUrl='http://localhost:3000/api/createSeedQuery'  # TODO: parameterize later for different endpoints
+indexName=$(ts-node src/end-to-end/localRuns.ts "$localUrl")
 
-# Delete index test created
+# Delete test index test
 echo "Deleting index '$indexName'..."
 delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/${indexName}" -H \
   "Api-Key: $PINECONE_API_KEY")
@@ -50,9 +51,4 @@ fi
 
 # Kill the Next.js server
 echo "Killing Next.js server..."
-if lsof -i:3000 > /dev/null; then
-  kill "$(lsof -t -i:3000)"
-  echo "Next.js server killed."
-else
-  echo "Next.js server is not running."
-fi
+kill $(lsof -t -i:3000)
