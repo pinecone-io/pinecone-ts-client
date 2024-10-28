@@ -40,6 +40,11 @@ if (!apiKey) {
 
 const edgeTest = new EndToEndEdgeTest(apiKey);
 
-edgeTest.assertOnResponse().catch((error) => {
-  console.error('Test failed:', error);
-});
+edgeTest
+  .assertOnResponse()
+  .then((indexName) => {
+    console.log(indexName);
+  })
+  .catch((error) => {
+    console.error('Test failed:', error);
+  });

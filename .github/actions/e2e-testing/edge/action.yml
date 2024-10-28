@@ -60,14 +60,13 @@ runs:
         indexName=$(ts-node src/end-to-end/localRuns.ts $API_KEY)
              
         if [[ "$indexName" != *"edge-test"* ]]; then
-          echo "Error encountered: $indexName."
+          echo "Error encountered: $indexName"
           exit 1
         else
           echo "Test succeeded! Index created: $indexName"
         fi
 
         echo "indexName=$indexName" >> $GITHUB_ENV
-
       shell: bash
 
     - name: Clean up e2e indexes
