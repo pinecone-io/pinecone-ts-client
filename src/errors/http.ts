@@ -103,6 +103,16 @@ export class PineconeInternalServerError extends BasePineconeError {
   }
 }
 
+export class PineconeMaxRetriesExceededError extends BasePineconeError {
+  constructor(retries: number) {
+    const intro = `You have exceeded the max configured retries (${retries}). `;
+    const help = 'Increase the maxRetries field in the RetryOptions object to retry more times. If you believe the' +
+      ' error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client';
+    super([intro, help].join(' ').trim());
+    this.name = 'PineconeMaxRetriesExceededError';
+  }
+}
+
 /**
  * This error indicates API responses are returning with status 503 and
  * Pinecone itself is down. Check the [status page](https://status.pinecone.io/)

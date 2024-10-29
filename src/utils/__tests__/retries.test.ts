@@ -1,5 +1,5 @@
 import { RetryOnServerFailure, RetryOptions } from '../retries';
-import { PineconeInternalServerError, PineconeUnavailableError } from '../../errors';
+import { PineconeInternalServerError, PineconeMaxRetriesExceededError, PineconeUnavailableError } from '../../errors';
 
 describe('RetryOnServerFailure', () => {
   test('If no options are provided, maxRetries and delay=jitter should be auto-set', async () => {
@@ -8,11 +8,16 @@ describe('RetryOnServerFailure', () => {
       .mockImplementation(() => Promise.resolve(PineconeInternalServerError)
       );
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn);
+
     jest.spyOn(retryWrapper, 'delay');
     jest.spyOn(retryWrapper, 'jitter');
-    await retryWrapper.execute();
-    expect(retryWrapper.delay).toHaveBeenCalledTimes(2); // w/o options obj, default maxRetries = 3
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(2); // w/o options obj, default delayStrategy = 'jitter'
+
+    const errorResult = async () => {
+      await retryWrapper.execute();
+    };
+    await expect(errorResult).rejects.toThrowError(PineconeMaxRetriesExceededError);
+    expect(retryWrapper.delay).toHaveBeenCalledTimes(2); // w/default maxRetries of 3, delay should be called 2x, since 1st attempt is not a retry
+    expect(retryWrapper.jitter).toHaveBeenCalledTimes(2); // ^ same as above
   });
 
   test('Should print \'Max retries\' error stmt when response fails to succeed after maxRetries is reached', async () => {
@@ -21,8 +26,8 @@ describe('RetryOnServerFailure', () => {
       .mockImplementation(() => Promise.resolve(PineconeInternalServerError)
       );
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, { maxRetries: 2 });
-    const result: PineconeInternalServerError = await retryWrapper.execute();
-    expect(result).toBe('Max retries exceeded: ' + PineconeInternalServerError);
+    const errorResult = async() => { await retryWrapper.execute(); };
+    await expect(errorResult).rejects.toThrowError(PineconeMaxRetriesExceededError);
   });
 
   test('Should act the same as above with PineconeUnavailableError', async () => {
@@ -30,8 +35,8 @@ describe('RetryOnServerFailure', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeUnavailableError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, { maxRetries: 2 });
-    const result = await retryWrapper.execute();
-    expect(result).toBe('Max retries exceeded: ' + PineconeUnavailableError);
+    const errorResult = async() => { await retryWrapper.execute(); };
+    await expect(errorResult).rejects.toThrowError(PineconeMaxRetriesExceededError);
   });
 
   test('Should return response if successful and status code is not 5xx', async () => {
@@ -65,15 +70,15 @@ describe('RetryOnServerFailure', () => {
 });
 
 describe('delayStrategy', () => {
-  test('Set delay even if not provided in options', async () => {
+  test('Set delay to jitter even if not provided in options', async () => {
     const retryOptions = { maxRetries: 5 } as RetryOptions;
     const retryWrapper = new RetryOnServerFailure(() => Promise.resolve(PineconeInternalServerError), retryOptions);
     jest.spyOn(retryWrapper, 'delay');
     jest.spyOn(retryWrapper, 'jitter');
-    await retryWrapper.execute();
+    const errorResponse = async () => { await retryWrapper.execute(); };
+    await expect(errorResponse).rejects.toThrowError(PineconeMaxRetriesExceededError);
     expect(retryWrapper.delay).toHaveBeenCalledTimes(4);
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(4); // Should default to jitter w/o delayStrategy needing to
-    // be set
+    expect(retryWrapper.jitter).toHaveBeenCalledTimes(4);
   });
 
   test('When delayStrategy is set to \'fixed\', \'jitter\' should not be called', async () => {
@@ -81,7 +86,8 @@ describe('delayStrategy', () => {
     const retryWrapper = new RetryOnServerFailure(() => Promise.resolve(PineconeInternalServerError), retryOptions);
     jest.spyOn(retryWrapper, 'delay');
     jest.spyOn(retryWrapper, 'jitter');
-    await retryWrapper.execute();
+    const errorResponse = async () => { await retryWrapper.execute(); };
+    await expect(errorResponse).rejects.toThrowError(PineconeMaxRetriesExceededError);
     expect(retryWrapper.delay).toHaveBeenCalledTimes(4);
     expect(retryWrapper.jitter).toHaveBeenCalledTimes(0);
   });
