@@ -1181,3 +1181,10 @@ console.log(response);
 // usage: { rerankUnits: 1 }
 //}
 ```
+
+## Testing
+
+All testing takes place automatically in CI and is configured using Github actions
+and workflows, located in the `.github` directory of this repo.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

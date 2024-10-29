@@ -3,6 +3,10 @@ name: Spin up Vercel App
 inputs:
   vercel-token:
     required: true
+    description: 'Vercel token to deploy the app'
+  PINECONE_API_KEY:
+    required: true
+    description: 'Pinecone API key to send requests to the Vercel app'
 
 runs:
   using: 'composite'
@@ -27,27 +31,55 @@ runs:
       uses: GuillaumeFalourd/clone-github-repo-action@main
       with:
         owner: 'pinecone-io'
-        repository: 'pinecone-rag-demo'
+        repository: 'ts-client-test-external-app'
         branch: 'main'
 
-    - name: Move package to pinecone-rag-demo
-      run: cd pinecone-rag-demo && mv ../pinecone-database-pinecone-*.tgz .
+    - name: Install Vercel app dependencies
+      run: cd ts-client-test-external-app && npm install
       shell: bash
 
-    - name: Install rag-demo deps
-      run: cd pinecone-rag-demo && npm install
+    - name: Move packed ts-client code into the Vercel app dir
+      run: cd ts-client-test-external-app && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Install pinecone-ts-client "main" branch code into the Vercel app
-      run: cd pinecone-rag-demo && npm install pinecone-database-pinecone-*.tgz
-      shell: bash
-
-    - name: Install Vercel CLI
-      run: cd pinecone-rag-demo && npm install vercel
-      shell: bash
-
-    - name: Deploy Project Artifacts to Vercel
+    - name: Install ts-client code into the Vercel app's package.json file
       run: |
-        cd pinecone-rag-demo
-        vercel --scope=pinecone-io --token=${{ inputs.vercel-token }} --yes
+        cd ts-client-test-external-app
+        npm install pinecone-database-pinecone-*.tgz
+      shell: bash
+
+    - name: Install Vercel CLI and (re)deploy the app
+      run: |
+        cd ts-client-test-external-app
+        npm install vercel
+        vercel --token ${{ inputs.vercel-token }}
+        vercel pull --yes --token ${{ inputs.vercel-token }}
+        vercel build --token ${{ inputs.vercel-token }}
+        vercel --token ${{ inputs.vercel-token }} --prod
+      shell: bash
+
+    - name: Hit Vercel app endpoint(s) via assertResponse.ts file
+      run: |
+        npm install -g typescript
+        npm install -g ts-node
+        export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
+        ciUrl='http://ts-client-test-external-app.vercel.app/api/createSeedQuery'
+        indexName=$(ts-node src/external-app/assertResponse.ts "$ciUrl"| grep -v "Test passed!")
+        echo "indexName=$indexName" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Clean up test index(es)
+      run: |
+        PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
+        matching_index="${{ env.indexName }}"
+
+        delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/$matching_index" \
+        -H "Api-Key: $PINECONE_API_KEY")
+
+        if [ "$delete_response" -eq 202 ]; then
+          echo "Successfully deleted index: $matching_index"
+        else
+          echo "Failed to delete index: $matching_index. HTTP status code: $delete_response"
+          exit 1
+        fi
       shell: bash
