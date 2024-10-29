@@ -59,15 +59,13 @@ runs:
 
     - name: Hit Vercel app endpoint(s) via localRuns.ts file
       run: |
-        npm install -g typescript
-        npm install -g ts-node
-
+        echo "Trying to hit Vercel endpoint now!"
+        echo "PWD = $pwd"
+        npm install -D typescript
+        npm install -D ts-node
         export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
-             
         indexName=$(ts-node src/end-to-end/localRuns.ts | grep -v "Test passed!")
-
         echo "indexName=$indexName" >> $GITHUB_ENV
-
       shell: bash
 
     - name: Clean up test index(es)
