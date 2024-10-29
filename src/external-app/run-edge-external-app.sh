@@ -17,7 +17,7 @@ fi
 # Clone ts-client-test-external-app repo
 echo "Cloning ts-client-test-external-app repo..."
 pushd .
-  git clone git@github.com:pinecone-io/tts-client-test-external-app.git
+  git clone git@github.com:pinecone-io/ts-client-test-external-app.git
   cd ts-client-test-external-app
   git pull origin main
 popd
@@ -28,7 +28,7 @@ npm link
 
 # Temporarily cd into ts-client-e2e-tests repo; install deps; link and overwrite its ts-client dep w/local version of
 # ts-client; start the Next.js server
-pushd "ts-client-e2e-tests"
+pushd "ts-client-test-external-app"
   git pull origin main
   npm install
   npm link @pinecone-database/pinecone
