@@ -1,3 +1,5 @@
+/* Send requests to an external application and assert the response matches expectations. */
+
 class EdgeExternalAppTest {
   url: string;
   constructor(public readonly apiKey: string, url: string) {
@@ -36,8 +38,7 @@ if (!apiKey) {
   throw new Error('PINECONE_API_KEY key is required');
 }
 
-// const url = process.argv[2]; // Get local URL from the command line arg
-const url = 'http://ts-client-test-external-app.vercel.app/api/createSeedQuery'
+const url = process.argv[2]; // Get local URL from the command line arg
 
 const { assertOnResponse } = new EdgeExternalAppTest(apiKey, url);
 

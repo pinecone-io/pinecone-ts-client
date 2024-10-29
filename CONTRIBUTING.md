@@ -32,29 +32,6 @@ either `node` or `edge` as you see fit.
 
 ### External app tests
 
-Simply run `npm run test:end-to-end` to run all tests that integrate with the `ts-client-test-external-app` repo:
+Simply run `npm run test:external-app-local` to run all tests that integrate with the `ts-client-test-external-app` repo:
 
 The `npm` command runs the bash file located in the `src/external-app` directory.
-
-#### About the External app tests
-
-The 'end-to-end' tests hit an API endpoint that you will spin up on your local machine at `localhost:3000`. The API
-builds a Pinecone (serverless) index, seeds it with data, and then queries that index. The end-to-end test ensures
-that these basic operations are executable with the given changes in the Typescript client codebase.
-
-The current app only tests _one_ configuration:
-
-- The `Edge` runtime (`^3.0.3`)
-- The `NextJS` framework (`@latest`)
-- Written in Typescript (`5.3.3`)
-
-- External app: [pinecone-io/ts-client-test-external-app](https://github.com/pinecone-io/ts-client-test-external-app)
-- Endpoint the test sends a POST request to:
-  - Local runs: localhost:3000/api/createSeedQuery
-
-Once the endpoint is up and running on your `localhost`, use cURL or Postman to send requests, e.g.:
-
-```bash
-curl --location --request POST 'http://localhost:3000/api/createSeedQuery' \
---header 'PINECONE_API_KEY: <your api key>'
-```

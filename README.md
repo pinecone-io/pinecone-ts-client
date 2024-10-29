@@ -1041,7 +1041,7 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 
 ## Testing
 
-All unit, integration, and end-to-end testing takes place automatically in CI and is configured using Github actions
+All testing takes place automatically in CI and is configured using Github actions
 and workflows, located in the `.github` directory of this repo.
 
-To run tests locally, see [CONTRIBUTING.md](CONTRIBUTING.md) for instructions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

@@ -34,15 +34,15 @@ runs:
         repository: 'ts-client-test-external-app'
         branch: 'main'
 
-    - name: Install external app dependencies
+    - name: Install Vercel app dependencies
       run: cd ts-client-test-external-app && npm install
       shell: bash
 
-    - name: Move package to pinecone-ts-client packed code into the Vercel app dir
+    - name: Move packed ts-client code into the Vercel app dir
       run: cd ts-client-test-external-app && mv ../pinecone-database-pinecone-*.tgz .
       shell: bash
 
-    - name: Install pinecone-ts-client "main" branch code into the Vercel app's package.json file
+    - name: Install ts-client code into the Vercel app's package.json file
       run: |
         cd ts-client-test-external-app
         npm install pinecone-database-pinecone-*.tgz
@@ -60,7 +60,6 @@ runs:
 
     - name: Hit Vercel app endpoint(s) via assertResponse.ts file
       run: |
-        echo "Trying to hit Vercel endpoint now!"
         npm install -g typescript
         npm install -g ts-node
         export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"

@@ -1,33 +1,15 @@
-# End-to-end tests
+# External app tests
+
+The test(s) in this directory test the initialization and some basic functionality of our client, as used in an
+external app. The goal of this type of testing is to ensure that the Typescript client can be used in real-world
+scenarios that have been incompatible with our client in the past, such as Vercel apps running on Edge.
+
+These tests differ from integration tests in that they are aimed at testing the client's interaction with various
+runtimes and frameworks, rather than the client's interaction with Pinecone's APIs directly.
 
 ## Local runs
 
-See CONTRIBUTING.md for instructions. **TLDR:** the `npm` command outlined in `package.json > scripts` runs the bash file located in this directory.
+To run the external app tests locally, execute `npm run test:external-app-local` from the root of this repository.
 
-## CI runs
-
-The CI runs for the end-to-end tests are defined in the `.github` directory.
-
-The `Action` in Github is called `End to end testing`.
-
-- Workflow
-  - The workflow run by CI is called `workflows/e2d-testing.yml`
-  - It requires a Pinecone API key and a Vercel token.
-    - The Pinecone API key it uses the associated with the `ops@` account and is stored in a Github secret
-    - The Vercel token is from the Pinecone Enterprise account and is stored in a Github secret
-- Action
-  - The action run by the workflow is called `actions/e2e-testing/edge/action.yml`
-  - This action packages the `ts-client` code on the current branch into the external app's repo
-  - It then installs the Vercel CLI and sends a POST request to the test app's `/api/createSeedQuery` endpoint,
-    which is up and running on Vercel
-  - If the response from the endpoint does not include a match (a match to a query composed by
-    the test app), the action fails
-  - The action then deletes the index that the test app spun up (note: it will attempt to delete the index even if
-    the assertions fail)
-
-Notes:
-
-- The test app is located in the public [`ts-client-test-external-app` repo](https://github.com/pinecone-io/ts-client-test-external-app)
-- The test app's API is already deployed to Production in Pinecone's Enterprise Vercel account; the action will fail if
-  this app is rolled back, so please do not do that :)
-- The test app's endpoint that the `ts-client` tests hit is: `ts-client-test-external-app.vercel.app/api/createSeedQuery`
+You will need set a `PINECONE_API_KEY` environment variable for the tests to succeed. Additionally, ensure your local
+port `3000` is available, as that is the port the external app will run on.
