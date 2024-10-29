@@ -26,7 +26,7 @@
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --runInBand --bail",
     "test:integration-local:edge": "TEST_ENV=edge node src/integration/integrationRunner.js",
     "test:integration:cleanup": "npm run build && node utils/cleanupResources.ts",
-    "test:external-app-local": "chmod +x src/external-app/local-run-edge-external-app.sh && src/external-app/local-run-edge-external-app.sh",
+    "test:external-app-local": "chmod +x src/external-app/local-external-app.sh && src/external-app/local-external-app.sh",
     "test:unit": "jest src/"
   },
   "engines": {
