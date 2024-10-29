@@ -693,6 +693,57 @@ const vectors = [
 await index.upsert(vectors);
 ```
 
+### Import vectors from object storage
+
+You can now [import vectors en masse](https://docs.pinecone.io/guides/data/understanding-imports) from object
+storage. `Import` is a long-running, asynchronous operation that imports large numbers of records into a Pinecone
+serverless index.
+
+In order to import vectors from object storage, they must be stored in Parquet files and adhere to the necessary
+[file format](https://docs.pinecone.io/guides/data/understanding-imports#parquet-file-format). Your object storage
+must also adhere to the necessary [directory structure](https://docs.pinecone.io/guides/data/understanding-imports#directory-structure).
+
+The following example imports vectors from an Amazon S3 bucket into a Pinecone serverless index:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const indexName = 'sample-index';
+
+await pc.createIndex({
+  name: indexName,
+  dimension: 10,
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'eu-west-1',
+    },
+  },
+});
+
+const index = pc.Index(indexName);
+
+const storageURI = 's3://my-bucket/my-directory/';
+
+await index.startImport(storageURI, 'continue'); // "Continue" will avoid aborting the operation if errors are encountered.
+
+// {
+//   "id": "import-id"
+// }
+```
+
+You can [start, cancel, and check the status](https://docs.pinecone.io/guides/data/import-data) of all or one import operation(s).
+
+**Notes:**
+
+- `Import` only works with Serverless indexes
+- `Import` is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
+- The only object storage provider currently supported is [Amazon S3](https://docs.pinecone.io/guides/operations/integrations/integrate-with-amazon-s3)
+- Vectors will take _at least 10 minutes_ to appear in your index upon completion of the import operation, since
+  this operation is optimized for very large workloads
+- See [limits](https://docs.pinecone.io/guides/data/understanding-imports#limits) for further information
+
 ### Seeing index statistics
 
 When experimenting with data operations, it's sometimes helpful to know how many records/vectors are stored in each
@@ -967,14 +1018,15 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 
 ## Inference
 
-Interact with Pinecone's Inference API (currently in public preview). The Pinecone Inference API is a service that gives
-you access to embedding models hosted on Pinecone's infrastructure. Read more at [Understanding Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).
+Interact with Pinecone's [Inference API](https://docs.pinecone.io/guides/inference/understanding-inference) (currently in [public preview](https://docs.pinecone.io/release-notes/feature-availability)). The Pinecone Inference API is a service that gives
+you access to inference models hosted on Pinecone's infrastructure.
 
 **Notes:**
 
-Models currently supported:
+Supported models:
 
-- [multilingual-e5-large](https://arxiv.org/pdf/2402.05672)
+- Embedding: [multilingual-e5-large](https://docs.pinecone.io/models/multilingual-e5-large)
+- Reranking: [bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)
 
 ## Create embeddings
 
@@ -1037,6 +1089,97 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 });
 
 // << Send query to Pinecone to retrieve similar documents >>
+```
+
+## Rerank documents
+
+Rerank documents in descending relevance-order against a query.
+
+**Note:** The `score` represents the absolute measure of relevance of a given query and passage pair. Normalized
+between [0, 1], the `score` represents how closely relevant a specific item and query are, with scores closer to 1
+indicating higher relevance.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const rerankingModel = 'bge-reranker-v2-m3';
+const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
+
+// Option 1: Documents as an array of strings
+const myDocsStrings = [
+  'I love turkey sandwiches with pastrami',
+  'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+  'My favorite Thanksgiving dish is pumpkin pie',
+  'Turkey is a great source of protein',
+];
+
+// Option 1 response
+const response = await pc.inference.rerank(
+  rerankingModel,
+  myQuery,
+  myDocsStrings
+);
+console.log(response);
+// {
+// model: 'bge-reranker-v2-m3',
+// data: [
+//   { index: 1, score: 0.5633179, document: [Object] },
+//   { index: 2, score: 0.02013874, document: [Object] },
+//   { index: 3, score: 0.00035419367, document: [Object] },
+//   { index: 0, score: 0.00021485926, document: [Object] }
+// ],
+// usage: { rerankUnits: 1 }
+// }
+
+// Option 2: Documents as an array of objects
+const myDocsObjs = [
+  {
+    title: 'Turkey Sandwiches',
+    body: 'I love turkey sandwiches with pastrami',
+  },
+  {
+    title: 'Lemon Turkey',
+    body: 'A lemon brined Turkey with apple sausage stuffing is a classic Thanksgiving main',
+  },
+  {
+    title: 'Thanksgiving',
+    body: 'My favorite Thanksgiving dish is pumpkin pie',
+  },
+  {
+    title: 'Protein Sources',
+    body: 'Turkey is a great source of protein',
+  },
+];
+
+// Option 2: Options object declaring which custom key to rerank on
+// Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as the default)
+const rerankOptions = {
+  topN: 3,
+  returnDocuments: false,
+  rankFields: ['body'],
+  parameters: {
+    inputType: 'passage',
+    truncate: 'END',
+  },
+};
+
+// Option 2 response
+const response = await pc.inference.rerank(
+  rerankingModel,
+  myQuery,
+  myDocsObjs,
+  rerankOptions
+);
+console.log(response);
+// {
+// model: 'bge-reranker-v2-m3',
+// data: [
+//   { index: 1, score: 0.5633179, document: undefined },
+//   { index: 2, score: 0.02013874, document: undefined },
+//   { index: 3, score: 0.00035419367, document: undefined },
+// ],
+// usage: { rerankUnits: 1 }
+//}
 ```
 
 ## Testing

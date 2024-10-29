@@ -5,7 +5,7 @@ import {
   ServerlessSpecCloudEnum,
   PodSpecMetadataConfig,
   IndexModelMetricEnum,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';

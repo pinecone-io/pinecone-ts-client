@@ -1,16 +1,16 @@
-import { FetchCommand } from '../fetch';
-import { QueryCommand } from '../query';
-import { UpdateCommand } from '../update';
-import { UpsertCommand } from '../upsert';
-import { DataOperationsProvider } from '../dataOperationsProvider';
+import { FetchCommand } from '../vectors/fetch';
+import { QueryCommand } from '../vectors/query';
+import { UpdateCommand } from '../vectors/update';
+import { UpsertCommand } from '../vectors/upsert';
+import { VectorOperationsProvider } from '../vectors/vectorOperationsProvider';
 import { Index } from '../index';
-import type { ScoredPineconeRecord } from '../query';
+import type { ScoredPineconeRecord } from '../vectors/query';
 
-jest.mock('../fetch');
-jest.mock('../query');
-jest.mock('../update');
-jest.mock('../upsert');
-jest.mock('../dataOperationsProvider');
+jest.mock('../vectors/fetch');
+jest.mock('../vectors/query');
+jest.mock('../vectors/update');
+jest.mock('../vectors/upsert');
+jest.mock('../vectors/vectorOperationsProvider');
 
 describe('Index', () => {
   let config;
@@ -27,7 +27,7 @@ describe('Index', () => {
   });
 
   describe('index initialization', () => {
-    test('passes config, indexName, indexHostUrl, and additionalHeaders to DataOperationsProvider', () => {
+    test('passes config, indexName, indexHostUrl, and additionalHeaders to VectorOperationsProvider', () => {
       const indexHostUrl = 'https://test-api-pinecone.io';
       const additionalHeaders = { 'x-custom-header': 'custom-value' };
       new Index(
@@ -37,8 +37,8 @@ describe('Index', () => {
         indexHostUrl,
         additionalHeaders
       );
-      expect(DataOperationsProvider).toHaveBeenCalledTimes(1);
-      expect(DataOperationsProvider).toHaveBeenCalledWith(
+      expect(VectorOperationsProvider).toHaveBeenCalledTimes(1);
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
         config,
         'index-name',
         indexHostUrl,

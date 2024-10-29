@@ -2,7 +2,7 @@ import {
   ManageIndexesApi,
   Configuration,
   X_PINECONE_API_VERSION,
-} from '../pinecone-generated-ts-fetch/control';
+} from '../pinecone-generated-ts-fetch/db_control';
 import {
   queryParamsStringify,
   buildUserAgent,
@@ -10,8 +10,8 @@ import {
   normalizeUrl,
 } from '../utils';
 import { middleware } from '../utils/middleware';
-import type { PineconeConfiguration } from '../data/types';
-import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch/control';
+import type { PineconeConfiguration } from '../data/vectors/types';
+import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch/db_control';
 
 export const indexOperationsBuilder = (
   config: PineconeConfiguration

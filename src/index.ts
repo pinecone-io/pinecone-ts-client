@@ -1,9 +1,16 @@
+// Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
-
 export * as Errors from './errors';
-
 export { EmbeddingsList } from './models/embeddingsList';
+
+// Interface exports
+export { RerankOptions } from './inference/inference';
+export {
+  RerankResult,
+  RerankResultUsage,
+  RankedDocument,
+} from './pinecone-generated-ts-fetch/inference';
 
 // Type exports
 export type {
@@ -52,7 +59,6 @@ export type {
   DeletionProtection,
   DescribeCollectionRequest,
   DescribeIndexRequest,
-  Embedding,
   FetchAPI,
   IndexList,
   IndexModel,
@@ -60,5 +66,5 @@ export type {
   ServerlessSpecCloudEnum,
   PodSpec,
   PodSpecMetadataConfig,
-} from './pinecone-generated-ts-fetch/control';
-export type { ListResponse } from './pinecone-generated-ts-fetch/data';
+} from './pinecone-generated-ts-fetch/db_control';
+export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';

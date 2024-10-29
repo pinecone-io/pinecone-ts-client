@@ -1,8 +1,8 @@
 import { indexOperationsBuilder } from '../indexOperationsBuilder';
-import { Configuration } from '../../pinecone-generated-ts-fetch/control';
+import { Configuration } from '../../pinecone-generated-ts-fetch/db_control';
 
-jest.mock('../../pinecone-generated-ts-fetch/control', () => ({
-  ...jest.requireActual('../../pinecone-generated-ts-fetch/control'),
+jest.mock('../../pinecone-generated-ts-fetch/db_control', () => ({
+  ...jest.requireActual('../../pinecone-generated-ts-fetch/db_control'),
   Configuration: jest.fn(),
 }));
 
