@@ -64,7 +64,8 @@ runs:
         npm install -g typescript
         npm install -g ts-node
         export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
-        indexName=$(ts-node src/external-app/assertResponse.ts | grep -v "Test passed!")
+        ciUrl='http://ts-client-test-external-app.vercel.app/api/createSeedQuery'
+        indexName=$(ts-node src/external-app/assertResponse.ts "$ciUrl"| grep -v "Test passed!")
         echo "indexName=$indexName" >> $GITHUB_ENV
       shell: bash
 

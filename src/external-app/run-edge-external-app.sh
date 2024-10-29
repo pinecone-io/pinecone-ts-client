@@ -35,7 +35,7 @@ popd
 # Run tests
 echo "Running tests..."
 localUrl='http://localhost:3000/api/createSeedQuery'  # TODO: parameterize later for different endpoints
-indexName=$(ts-node src/end-to-end/localRuns.ts "$localUrl")
+indexName=$(ts-node src/external-app/assertResponse.ts "$localUrl")
 
 # Delete test index test
 echo "Deleting index '$indexName'..."
