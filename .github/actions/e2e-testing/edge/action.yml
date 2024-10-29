@@ -55,14 +55,17 @@ runs:
         vercel --token ${{ inputs.vercel-token }}
         vercel pull --yes --token ${{ inputs.vercel-token }}
         vercel build --token ${{ inputs.vercel-token }}
+        vercel
       shell: bash
+
+    - name: Check out current repository again (??) (pinecone-ts-client)
+      uses: actions/checkout@v4
 
     - name: Hit Vercel app endpoint(s) via localRuns.ts file
       run: |
         echo "Trying to hit Vercel endpoint now!"
-        echo "PWD = $pwd"
-        npm install -D typescript
-        npm install -D ts-node
+        npm install typescript
+        npm install ts-node
         export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
         indexName=$(ts-node src/end-to-end/localRuns.ts | grep -v "Test passed!")
         echo "indexName=$indexName" >> $GITHUB_ENV
