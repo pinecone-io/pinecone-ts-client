@@ -210,3 +210,17 @@ jobs:
         run: |
           cd semantic-search-example
           npm run test
+
+  external-app:
+    name: external-app
+    runs-on: ubuntu-latest
+    if: always() # Run teardown even if the tests fail
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run external app tests
+        uses: ./.github/actions/e2e-testing/edge
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
