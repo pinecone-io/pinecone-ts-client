@@ -101,10 +101,6 @@ describe('upsert and update to serverless index', () => {
 
 // Retry logic tests
 describe('Mocked upsert with retry logic', () => {
-  // Spy on the retry-related methods
-  const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
-  const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
-
   const recordsToUpsert = generateRecords({
     dimension: 2,
     quantity: 1,
@@ -123,6 +119,10 @@ describe('Mocked upsert with retry logic', () => {
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    // Spy on the retry-related methods
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
     app.post('/vectors/upsert', (req, res) => {
       callCount++;
       if (callCount === 1) {
@@ -142,6 +142,10 @@ describe('Mocked upsert with retry logic', () => {
   });
 
   test('Max retries exceeded w/o resolve', async () => {
+    // Spy on the retry-related methods
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
     app.post('/vectors/upsert', (req, res) => {
       callCount++;
       // Return a 503 errors on all calls
