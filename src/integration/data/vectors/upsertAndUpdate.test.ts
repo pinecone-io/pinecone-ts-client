@@ -17,18 +17,8 @@ import http from 'http';
 
 let pinecone: Pinecone, serverlessIndex: Index, serverlessIndexName: string;
 
-// Mock server setup for testing retries
-let mockServerlessIndex: Index;
-let callCount = 0;
-const app = express();
-app.use(express.json());
-const server: http.Server = app.listen(4000, () => {
-  console.log('Mock Pinecone server running on http://localhost:4000');
-});
-
 beforeAll(async () => {
   pinecone = new Pinecone();
-
   serverlessIndexName = randomIndexName('int-test-serverless-upsert-update');
 
   await pinecone.createIndex({
@@ -48,16 +38,11 @@ beforeAll(async () => {
   serverlessIndex = pinecone
     .index(serverlessIndexName)
     .namespace(globalNamespaceOne);
-
-  mockServerlessIndex = pinecone
-    .Index(serverlessIndexName, 'http://localhost:4000')
-    .namespace(globalNamespaceOne);
 });
 
 afterAll(async () => {
   await waitUntilReady(serverlessIndexName);
   await pinecone.deleteIndex(serverlessIndexName);
-  server.close();
 });
 
 // todo: add sparse values update
@@ -108,7 +93,24 @@ describe('Mocked upsert with retry logic', () => {
     withMetadata: true,
   });
 
+  let server: http.Server;
+  let mockServerlessIndex: Index;
+  let callCount = 0;
+  let app: express.Express;
+
   beforeEach(() => {
+    // Mock server setup for testing retries
+    app = express();
+    app.use(express.json());
+    server = app.listen(4000, () => {
+      console.log('Mock Pinecone server running on http://localhost:4000');
+    });
+
+    // Point Pinecone client to mock server
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
     // Clear previous route setup before each test to avoid state collisions
     app._router.stack = app._router.stack.filter(
       (layer) => layer.route?.path !== '/vectors/upsert'
@@ -116,6 +118,10 @@ describe('Mocked upsert with retry logic', () => {
     // Reset call count and clear mocks
     callCount = 0;
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    server.close();
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
