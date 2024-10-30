@@ -8,10 +8,8 @@ describe('RetryOnServerFailure', () => {
       .mockImplementation(() => Promise.resolve(PineconeInternalServerError)
       );
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn);
-
     jest.spyOn(retryWrapper, 'delay');
     jest.spyOn(retryWrapper, 'jitter');
-
     const errorResult = async () => {
       await retryWrapper.execute();
     };

@@ -3,13 +3,21 @@ import { generateRecords, globalNamespaceOne, randomIndexName, waitUntilReady } 
 import { UpsertCommand } from '../../../data/vectors/upsert';
 import nock from 'nock';
 import { RetryOnServerFailure, RetryOptions } from '../../../utils/retries';
+import { PineconeInternalServerError } from '../../../errors';
+import express from 'express';
+import http from 'http';
+
 
 // todo: add pods
 
 let pinecone: Pinecone, serverlessIndex: Index, serverlessIndexName: string;
+let server: http.Server;
+let callCount = 0; // Track the number of requests made to this endpoint
+
 
 beforeAll(async () => {
   pinecone = new Pinecone();
+
   serverlessIndexName = randomIndexName('int-test-serverless-upsert-update');
 
   await pinecone.createIndex({
@@ -26,14 +34,32 @@ beforeAll(async () => {
     suppressConflicts: true
   });
 
+  // Spin up an in-memory Express server to mock Pinecone API behavior
+  const app = express();
+  app.use(express.json());
+  app.post('/vectors/upsert', (req, res) => {
+    callCount++;
+    if (callCount === 1) {
+      res.status(503).json({ name: 'PineconeUnavailableError' });
+    } else {
+      res.status(200).json({ status: 200, data: 'Success' });
+    }
+  });
+
+  server = app.listen(4000, () => {
+    console.log('Mock Pinecone server running on http://localhost:4000');
+  });
+
+
   serverlessIndex = pinecone
-    .index(serverlessIndexName)
+    .index(serverlessIndexName, "http://localhost:4000")
     .namespace(globalNamespaceOne);
 });
 
 afterAll(async () => {
   await waitUntilReady(serverlessIndexName);
   await pinecone.deleteIndex(serverlessIndexName);
+  server.close();
 });
 
 // todo: add sparse values update
@@ -78,64 +104,25 @@ afterAll(async () => {
 // New test with mocked HTTP using nock
 describe('Mocked upsert with retry logic', () => {
   test('should retry once on server error and succeed', async () => {
-    const desc = await pinecone.describeIndex(serverlessIndexName);
-    const host = desc.host;
-
-    nock.recorder.rec({dont_print: false });
-
-    // const upsertScope = nock("https://" + host + "/vectors")
-    //   .post('/upsert', body => true)
-    //   .reply(503, { name: 'PineconeUnavailableError' })
-    //   .post('/upsert', body => true)
-    //   .reply(200, { status: 200, data: 'Success' });
-
-    // call upsert once
-    // automatically go into retry loop b/c default
-
-
-    const upsertScope = nock(`https://${host}`)
-      .post('/vectors/upsert/', body => {
-        console.log('First attempt - Body:', JSON.stringify(body)); // Log the first request body
-        return true;
-      })
-      .reply(503, { name: 'PineconeUnavailableError' }) // First request returns 503
-      .post('/vectors/upsert/', body => {
-        console.log('Second attempt - Body:', JSON.stringify(body)); // Log the second request body
-        return true;
-      })
-      .reply(200, { status: 200, data: 'Success' }); // Second request returns 200
-
-
-    const recordToUpsert = generateRecords({
+    const recordsToUpsert = generateRecords({
       dimension: 2,
       quantity: 1,
       withSparseValues: false,
-      withMetadata: true
+      withMetadata: true,
     });
 
+    // Spy on the retry-related methods
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
-    const upsertSpy = jest.spyOn(serverlessIndex, 'upsert');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
 
-    await serverlessIndex.upsert(recordToUpsert);
-    // nock.recorder.play();
+    // Run the upsert method, which should retry once
+    await serverlessIndex.upsert(recordsToUpsert);
 
+    // Verify that the retry mechanism was triggered
+    expect(retrySpy).toHaveBeenCalledTimes(1); // `execute` is only called once
+    expect(delaySpy).toHaveBeenCalledTimes(1); // One delay for one retry
 
-    expect(retrySpy).toHaveBeenCalledTimes(1);
-    expect(upsertScope.isDone()).toBe(true); // All `nock` expectations should be met
-
-    // expect(upsertSpy).toHaveBeenCalledTimes(1);
-
-    // nock.recorder.play();
-
-    // Cleanup spies after the test
-    // retrySpy.mockRestore();
-    // upsertSpy.mockRestore();
-
-    // Check if all `nock` expectations were met
-    // if (!nock.isDone()) {
-    //   console.log('Pending mocks:', nock.pendingMocks());
-    // }
-    // expect(nock.isDone()).toBe(true);
-
+    // Verify the mock server behavior
+    expect(callCount).toBe(2);
   });
 });
