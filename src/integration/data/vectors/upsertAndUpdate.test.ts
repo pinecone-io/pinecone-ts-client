@@ -10,8 +10,9 @@ import {
 } from '../../test-helpers';
 import { RetryOnServerFailure } from '../../../utils';
 import { PineconeMaxRetriesExceededError } from '../../../errors';
-import express from 'express';
+// import express from 'express';
 import http from 'http';
+import { parse } from 'url';
 
 // todo: add pods
 
@@ -85,7 +86,7 @@ describe('upsert and update to serverless index', () => {
 });
 
 // Retry logic tests
-describe('Mocked upsert with retry logic', () => {
+describe('Testing retry logic on Upsert operation, as run on a mock, in-memory http server', () => {
   const recordsToUpsert = generateRecords({
     dimension: 2,
     quantity: 1,
@@ -93,72 +94,74 @@ describe('Mocked upsert with retry logic', () => {
     withMetadata: true,
   });
 
-  let server: http.Server;
+  let server: http.Server; // Note: server cannot be something like an express server due to conflicts w/edge runtime
   let mockServerlessIndex: Index;
   let callCount: number;
-  let app: express.Express;
+
+  // Helper function to start the server with a specific response pattern
+  const startMockServer = (shouldSucceedOnSecondCall: boolean) => {
+    // Create http server
+    server = http.createServer((req, res) => {
+      const { pathname } = parse(req.url || '', true);
+
+      if (req.method === 'POST' && pathname === '/vectors/upsert') {
+        callCount++;
+        if (shouldSucceedOnSecondCall && callCount === 1) {
+          res.writeHead(503, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ name: 'PineconeUnavailableError' }));
+        } else if (shouldSucceedOnSecondCall && callCount === 2) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 200, data: 'Success' }));
+        } else {
+          res.writeHead(503, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ name: 'PineconeUnavailableError' }));
+        }
+      } else {
+        res.writeHead(404); // Not found
+        res.end();
+      }
+    });
+    server.listen(4000); // Host server on local port 4000
+  };
 
   beforeEach(() => {
+    // Reset callCount
     callCount = 0;
-
-    // Mock server setup for testing retries
-    app = express();
-    app.use(express.json());
-    server = app.listen(4000, () => {
-      console.log('Mock Pinecone server running on http://localhost:4000');
-    });
-
-    // Point Pinecone client to mock server
+    // Define index that points to the mock server on port 4000
     mockServerlessIndex = pinecone
       .Index(serverlessIndexName, 'http://localhost:4000')
       .namespace(globalNamespaceOne);
   });
 
   afterEach(async () => {
+    // Close server and reset mocks
     await new Promise<void>((resolve) => server.close(() => resolve()));
     jest.clearAllMocks();
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
-    // Spy on the retry-related methods
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
 
-    app.post('/vectors/upsert', (req, res) => {
-      callCount++;
-      if (callCount === 1) {
-        // Return a 503 error on the 1st call
-        res.status(503).json({ name: 'PineconeUnavailableError' });
-      } else {
-        res.status(200).json({ status: 200, data: 'Success' });
-      }
-    });
+    // Start server with a successful response on the second call
+    startMockServer(true);
 
-    // Run the upsert method, which should retry once
+    // Call Upsert operation
     await mockServerlessIndex.upsert(recordsToUpsert);
 
-    expect(retrySpy).toHaveBeenCalledTimes(1); // `execute` is only called once
-    expect(delaySpy).toHaveBeenCalledTimes(1); // 1 retry, then success
+    expect(retrySpy).toHaveBeenCalledTimes(1);
+    expect(delaySpy).toHaveBeenCalledTimes(1);
     expect(callCount).toBe(2);
   });
 
   test('Max retries exceeded w/o resolve', async () => {
-    // Spy on the retry-related methods
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
 
-    app.post('/vectors/upsert', (req, res) => {
-      callCount++;
-      // Return a 503 errors on all calls
-      if (callCount === 1) {
-        res.status(503).json({ name: 'PineconeUnavailableError' });
-      } else if (callCount === 2) {
-        res.status(503).json({ name: 'PineconeUnavailableError' });
-      } else {
-        res.status(503).json({ name: 'PineconeUnavailableError' }); // Never reached; Max retries exceeded here
-      }
-    });
+    // Start server with persistent 503 errors on every call
+    startMockServer(false);
 
+    // Catch expected error from Upsert operation
     const errorResult = async () => {
       await mockServerlessIndex.upsert(recordsToUpsert, { maxRetries: 1 });
     };
@@ -166,10 +169,8 @@ describe('Mocked upsert with retry logic', () => {
     await expect(errorResult).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
-
     expect(retrySpy).toHaveBeenCalledTimes(1);
     expect(delaySpy).toHaveBeenCalledTimes(1);
-    // 1st call is not a retry, so expect 2 calls to the mock server for maxRetries === 1
     expect(callCount).toBe(2);
   });
 });
