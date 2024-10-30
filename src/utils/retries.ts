@@ -39,23 +39,19 @@ export class RetryOnServerFailure {
   }
 
   async execute(...args: any[]): Promise<any> {
-    console.log("In retry execution!");
     let attempt = 0;
-    while (attempt < this.maxRetries) {
+    while (attempt <= this.maxRetries) {
       try {
         const response = await this.asyncFn(...args);
         // Check if the response is one we want to retry (500 or 503)
         if (this.isRetryError(response)) {
-          console.log("Caught a retry response")
           // If it is, throw it, and catch it in the catch-loop
           throw response;
         }
-        console.log("No retry error found!")
         return response;
       } catch (error) {
-        if (attempt < this.maxRetries - 1) {
+        if (attempt <= this.maxRetries - 1) {
           attempt += 1;
-          console.log("Delaying and retrying")
           await this.delay(attempt); // Delay before resuming while-loop
         } else {
           // If it's not a retryable error or if retries are exhausted, throw
@@ -66,23 +62,20 @@ export class RetryOnServerFailure {
   }
 
   isRetryError(response: any): boolean {
-    console.log("Response = ", response)
     return (
-      response &&
-      (
+      (response &&
         response.name &&
-      ['PineconeUnavailableError', 'PineconeInternalServerError'].includes(response.name)
-      ) ||
-      (
-        response.status === 500 || response.status === 503
-      )
+        ['PineconeUnavailableError', 'PineconeInternalServerError'].includes(
+          response.name
+        )) ||
+      response.status === 500 ||
+      response.status === 503
     );
   }
 
   async delay(attempt: number): Promise<void> {
-    const delayTime = this.delayStrategy === 'jitter'
-      ? this.jitter(attempt)
-      : 1000; // 1s delay if not using 'jitter'
+    const delayTime =
+      this.delayStrategy === 'jitter' ? this.jitter(attempt) : 1000; // 1s delay if not using 'jitter'
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
 

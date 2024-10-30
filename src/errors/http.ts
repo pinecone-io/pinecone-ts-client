@@ -92,21 +92,24 @@ export class PineconeConflictError extends BasePineconeError {
  */
 export class PineconeInternalServerError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
-    const { url, body } = failedRequest;
+    const { url, body, status } = failedRequest;
     const intro = url
       ? `An internal server error occurred while calling the ${url} endpoint.`
       : '';
     const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
+    const statusMessage = status ? `Status Code: ${status}.` : '';
     const bodyMessage = body ? `Body: ${body}` : '';
-    super([intro, help, bodyMessage].join(' ').trim());
+    super([intro, statusMessage, help, bodyMessage].join(' ').trim());
     this.name = 'PineconeInternalServerError';
   }
 }
 
+// todo: docstring
 export class PineconeMaxRetriesExceededError extends BasePineconeError {
   constructor(retries: number) {
     const intro = `You have exceeded the max configured retries (${retries}). `;
-    const help = 'Increase the maxRetries field in the RetryOptions object to retry more times. If you believe the' +
+    const help =
+      'Increase the maxRetries field in the RetryOptions object to retry more times. If you believe the' +
       ' error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client';
     super([intro, help].join(' ').trim());
     this.name = 'PineconeMaxRetriesExceededError';
@@ -125,13 +128,14 @@ export class PineconeMaxRetriesExceededError extends BasePineconeError {
  */
 export class PineconeUnavailableError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
-    const { url, body } = failedRequest;
+    const { url, body, status } = failedRequest;
     const intro = url
       ? `The Pinecone service (${url}) is temporarily unavailable.`
       : '';
+    const statusMessage = status ? `Status Code: ${status}.` : '';
     const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
     const bodyMessage = body ? `Body: ${body}` : '';
-    super([intro, help, bodyMessage].join(' ').trim());
+    super([intro, statusMessage, help, bodyMessage].join(' ').trim());
     this.name = 'PineconeUnavailableError';
   }
 }

@@ -471,14 +471,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
    */
-  async upsert(
-    data: Array<PineconeRecord<T>>,
-    retry: true | false | undefined = true,
-    retryOptions?: RetryOptions
-  ) {
-    console.log("UPSERT: I'M HIT!")
-
-    return await this._upsertCommand.run(data, retry, retryOptions);
+  async upsert(data: Array<PineconeRecord<T>>, retryOptions?: RetryOptions) {
+    return await this._upsertCommand.run(data, retryOptions);
   }
 
   /**
