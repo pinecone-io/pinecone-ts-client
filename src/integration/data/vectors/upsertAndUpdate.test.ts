@@ -119,6 +119,10 @@ describe('Mocked upsert with retry logic', () => {
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    // Spy on the retry-related methods
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
     app.post('/vectors/upsert', (req, res) => {
       callCount++;
       if (callCount === 1) {
@@ -129,32 +133,19 @@ describe('Mocked upsert with retry logic', () => {
       }
     });
 
-    // Grab original methods to restore later
-    const originalExecute = RetryOnServerFailure.prototype.execute;
-    const originalDelay = RetryOnServerFailure.prototype.delay;
-
-    // Temporarily override with Jest and a cast
-    RetryOnServerFailure.prototype.delay = jest.fn(
-      originalDelay
-    ) as typeof RetryOnServerFailure.prototype.delay;
-    RetryOnServerFailure.prototype.execute = jest.fn(
-      originalExecute
-    ) as typeof RetryOnServerFailure.prototype.execute;
-
     // Run the upsert method, which should retry once
     await mockServerlessIndex.upsert(recordsToUpsert);
 
-    // Run assertions
-    expect(RetryOnServerFailure.prototype.execute).toHaveBeenCalledTimes(1); // `execute` is only called once
-    expect(RetryOnServerFailure.prototype.delay).toHaveBeenCalledTimes(1); // 1 retry, then success
-    expect(callCount).toBe(2); // Expect on server as a whole
-
-    // Restore original methods
-    RetryOnServerFailure.prototype.execute = originalExecute;
-    RetryOnServerFailure.prototype.delay = originalDelay;
+    expect(retrySpy).toHaveBeenCalledTimes(1); // `execute` is only called once
+    expect(delaySpy).toHaveBeenCalledTimes(1); // 1 retry, then success
+    expect(callCount).toBe(2);
   });
 
   test('Max retries exceeded w/o resolve', async () => {
+    // Spy on the retry-related methods
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
     app.post('/vectors/upsert', (req, res) => {
       callCount++;
       // Return a 503 errors on all calls
@@ -167,33 +158,17 @@ describe('Mocked upsert with retry logic', () => {
       }
     });
 
-    // Grab original methods to restore later
-    const originalExecute = RetryOnServerFailure.prototype.execute;
-    const originalDelay = RetryOnServerFailure.prototype.delay;
-
-    // Temporarily override with Jest and a cast
-    RetryOnServerFailure.prototype.delay = jest.fn(
-      originalDelay
-    ) as typeof RetryOnServerFailure.prototype.delay;
-    RetryOnServerFailure.prototype.execute = jest.fn(
-      originalExecute
-    ) as typeof RetryOnServerFailure.prototype.execute;
-
     const errorResult = async () => {
       await mockServerlessIndex.upsert(recordsToUpsert, { maxRetries: 1 });
     };
 
-    // Run assertions
     await expect(errorResult).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
-    expect(RetryOnServerFailure.prototype.execute).toHaveBeenCalledTimes(1); // `execute` is only called once
-    expect(RetryOnServerFailure.prototype.delay).toHaveBeenCalledTimes(1); // 1 retry, then success
+
+    expect(retrySpy).toHaveBeenCalledTimes(1);
+    expect(delaySpy).toHaveBeenCalledTimes(1);
     // 1st call is not a retry, so expect 2 calls to the mock server for maxRetries === 1
     expect(callCount).toBe(2);
-
-    // Restore original methods
-    RetryOnServerFailure.prototype.execute = originalExecute;
-    RetryOnServerFailure.prototype.delay = originalDelay;
   });
 });
