@@ -8,7 +8,7 @@ import {
   randomIndexName,
   waitUntilReady,
 } from '../../test-helpers';
-import { RetryOnServerFailure } from '../../../utils/retries';
+import { RetryOnServerFailure } from '../../../utils';
 import { PineconeMaxRetriesExceededError } from '../../../errors';
 import express from 'express';
 import http from 'http';
@@ -95,10 +95,12 @@ describe('Mocked upsert with retry logic', () => {
 
   let server: http.Server;
   let mockServerlessIndex: Index;
-  let callCount = 0;
+  let callCount: number;
   let app: express.Express;
 
   beforeEach(() => {
+    callCount = 0;
+
     // Mock server setup for testing retries
     app = express();
     app.use(express.json());
@@ -110,18 +112,11 @@ describe('Mocked upsert with retry logic', () => {
     mockServerlessIndex = pinecone
       .Index(serverlessIndexName, 'http://localhost:4000')
       .namespace(globalNamespaceOne);
-
-    // Clear previous route setup before each test to avoid state collisions
-    app._router.stack = app._router.stack.filter(
-      (layer) => layer.route?.path !== '/vectors/upsert'
-    );
-    // Reset call count and clear mocks
-    callCount = 0;
-    jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    server.close();
+  afterEach(async () => {
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    jest.clearAllMocks();
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
