@@ -104,7 +104,8 @@ export class PineconeInternalServerError extends BasePineconeError {
   }
 }
 
-// todo: docstring
+/* We can choose to throw this error when we want to limit requests to the server. When instantiated, pass the
+ number of retries the user has made already. */
 export class PineconeMaxRetriesExceededError extends BasePineconeError {
   constructor(retries: number) {
     const intro = `You have exceeded the max configured retries (${retries}). `;

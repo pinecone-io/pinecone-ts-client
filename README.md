@@ -666,6 +666,10 @@ type PineconeRecord = {
 
 To upsert some vectors, you can use the client like so:
 
+Note: by default, the `upsert` operation will retry up to 3 times if it encounters a 5xx error. You can change this
+behavior by passing a `retryOptions` object containing a `maxRetries` field and, optionally, a `delayStrategy` field
+to the `upsert` method. Maximum retries allowed is `10`.
+
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
@@ -690,7 +694,7 @@ const vectors = [
 ];
 
 // Upsert the data into your index
-await index.upsert(vectors);
+await index.upsert(vectors, { maxRetries: 5 });
 ```
 
 ### Import vectors from object storage

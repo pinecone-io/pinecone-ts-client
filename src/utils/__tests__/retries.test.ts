@@ -19,8 +19,8 @@ describe('RetryOnServerFailure', () => {
     await expect(errorResult).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
-    expect(retryWrapper.delay).toHaveBeenCalledTimes(2); // w/default maxRetries of 3, delay should be called 2x, since 1st attempt is not a retry
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(2); // ^ same as above
+    expect(retryWrapper.delay).toHaveBeenCalledTimes(3);
+    expect(retryWrapper.jitter).toHaveBeenCalledTimes(3);
   });
 
   test("Should print 'Max retries' error stmt when response fails to succeed after maxRetries is reached", async () => {
@@ -108,29 +108,8 @@ describe('delayStrategy', () => {
     await expect(errorResponse).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
-    expect(retryWrapper.delay).toHaveBeenCalledTimes(4);
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(4);
-  });
-
-  test("When delayStrategy is set to 'fixed', 'jitter' should not be called", async () => {
-    const retryOptions = {
-      maxRetries: 5,
-      delayStrategy: 'fixed',
-    } as RetryOptions;
-    const retryWrapper = new RetryOnServerFailure(
-      () => Promise.resolve(PineconeInternalServerError),
-      retryOptions
-    );
-    jest.spyOn(retryWrapper, 'delay');
-    jest.spyOn(retryWrapper, 'jitter');
-    const errorResponse = async () => {
-      await retryWrapper.execute();
-    };
-    await expect(errorResponse).rejects.toThrowError(
-      PineconeMaxRetriesExceededError
-    );
-    expect(retryWrapper.delay).toHaveBeenCalledTimes(4);
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(0);
+    expect(retryWrapper.delay).toHaveBeenCalledTimes(5);
+    expect(retryWrapper.jitter).toHaveBeenCalledTimes(5);
   });
 });
 

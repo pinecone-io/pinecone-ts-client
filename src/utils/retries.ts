@@ -28,7 +28,7 @@ export class RetryOnServerFailure {
         this.delayStrategy = 'jitter';
       }
       if (options.maxRetries > 10) {
-        throw new Error('Max retries cannot exceed 10'); // Avoid overwhelming the server
+        throw new Error('Max retries cannot exceed 10');
       }
     } else {
       this.maxRetries = 3;
