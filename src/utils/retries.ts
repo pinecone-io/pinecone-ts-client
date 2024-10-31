@@ -20,43 +20,34 @@ export class RetryOnServerFailure {
     asyncFn: (...args: any[]) => Promise<any>,
     options?: RetryOptions
   ) {
+    this.maxRetries = 3;
+    this.delayStrategy = 'jitter';
+
     if (options) {
-      this.maxRetries = options.maxRetries;
-      if (options.delayStrategy) {
-        this.delayStrategy = options.delayStrategy;
-      } else {
-        this.delayStrategy = 'jitter';
-      }
-      if (options.maxRetries > 10) {
+      this.maxRetries = options.maxRetries ?? this.maxRetries;
+      this.delayStrategy = options.delayStrategy ?? this.delayStrategy;
+
+      if (this.maxRetries > 10) {
         throw new Error('Max retries cannot exceed 10');
       }
-    } else {
-      this.maxRetries = 3;
-      this.delayStrategy = 'jitter';
     }
 
     this.asyncFn = asyncFn;
   }
 
   async execute(...args: any[]): Promise<any> {
-    let attempt = 0;
-    while (attempt <= this.maxRetries) {
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
         const response = await this.asyncFn(...args);
-        // Check if the response is one we want to retry (500 or 503)
-        if (this.isRetryError(response)) {
-          // If it is, throw it, and catch it in the catch-loop
-          throw response;
+        if (!this.isRetryError(response)) {
+          return response; // Return if there's no retryable error
         }
-        return response;
+        throw response; // Throw if response is retryable, caught below
       } catch (error) {
-        if (attempt <= this.maxRetries - 1) {
-          attempt += 1;
-          await this.delay(attempt); // Delay before resuming while-loop
-        } else {
-          // If it's not a retryable error or if retries are exhausted, throw
+        if (attempt >= this.maxRetries) {
           throw new PineconeMaxRetriesExceededError(this.maxRetries);
         }
+        await this.delay(attempt + 1); // Increment before passing to `delay`
       }
     }
   }
