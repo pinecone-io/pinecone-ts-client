@@ -923,19 +923,33 @@ await index.update({
 
 ### List records
 
-The `listPaginated` method can be used to list record ids matching a particular id prefix in a paginated format. With clever assignment
-of record ids, this can be used to help model hierarchical relationships between different records such as when there are embeddings for multiple chunks or fragments related to the same document.
+The `listPaginated` method can be used to list record IDs matching a particular ID prefix in a paginated format. With
+[clever assignment
+of record ids](https://docs.pinecone.io/guides/data/manage-rag-documents#use-id-prefixes), this can be used to help model hierarchical relationships between different records such as when there are embeddings for multiple chunks or fragments related to the same document.
+
+Notes:
+
+- When you do not specify a `prefix`, the default prefix is an empty string, which returns all vector IDs
+  in your index
+- There is a hard limit of `300` vector IDs if no `limit` is specified. Consequently, if there are fewer than `300`
+  vector IDs that match a given `prefix` in your index, and you do not specify a `limit`, your `paginationToken`
+  will be `undefined`
+
+The following example shows how to grab both pages of vector IDs for vectors whose IDs contain the prefix `doc1#`,
+assuming a `limit` of `3` and `doc1` document being [chunked](https://www.pinecone.io/learn/chunking-strategies/) into `4` vectors.
 
 ```typescript
 const pc = new Pinecone();
 const index = pc.index('my-index').namespace('my-namespace');
-const results = await index.listPaginated({ prefix: 'doc1#' });
+
+// Grab the 1st 3 vector IDs matching prefix 'doc1#'
+const results = await index.listPaginated({ limit: 3, prefix: 'doc1#' });
 console.log(results);
 // {
 //   vectors: [
-//     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
-//     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
-//     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+//     { id: 'doc1#01' }
+//     { id: 'doc1#02' }
+//     { id: 'doc1#03' }
 //     ...
 //   ],
 //   pagination: {
@@ -945,11 +959,20 @@ console.log(results);
 //   usage: { readUnits: 1 }
 // }
 
-// Fetch the next page of results
-await index.listPaginated({
+// Grab the final vector ID matching prefix 'doc1#' using the paginationToken returned by the previous call
+const nextResults = await index.listPaginated({
   prefix: 'doc1#',
   paginationToken: results.pagination?.next,
 });
+console.log(nextResults);
+// {
+//   vectors: [
+//     { id: 'doc1#04' }
+//   ],
+//   pagination: undefined,
+//   namespace: 'my-namespace',
+//   usage: { readUnits: 1 }
+// }
 ```
 
 ### Fetch records by ID(s)

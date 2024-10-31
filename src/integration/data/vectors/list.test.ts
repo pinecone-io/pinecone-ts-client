@@ -18,7 +18,8 @@ describe('listPaginated, serverless index', () => {
   test('test listPaginated with no arguments', async () => {
     const listResults = await serverlessIndex.listPaginated();
     expect(listResults).toBeDefined();
-    // expect(listResults.pagination).toBeDefined(); todo: re-enable this once pagination bug is fixed (https://app.asana.com/0/1204819992273155/1207992392793971/f)
+    expect(listResults.pagination).toBeUndefined(); // Only 11 records in the index, so no pag token returned; 300
+    // is when a pag token is automatically returned b/c that's the hard limit of vector to return on the server side
     expect(listResults.vectors?.length).toBe(11);
     expect(listResults.namespace).toBe(globalNamespaceOne);
   });
@@ -29,7 +30,7 @@ describe('listPaginated, serverless index', () => {
     });
     expect(listResults.namespace).toBe(globalNamespaceOne);
     expect(listResults.vectors?.length).toBe(1);
-    // expect(listResults.pagination).toBeDefined(); todo: re-enable this once pagination bug is fixed (https://app.asana.com/0/1204819992273155/1207992392793971/f)
+    expect(listResults.pagination).toBeUndefined();
   });
 
   test('test listPaginated with limit and pagination', async () => {
@@ -39,7 +40,7 @@ describe('listPaginated, serverless index', () => {
     });
     expect(listResults.namespace).toBe(globalNamespaceOne);
     expect(listResults.vectors?.length).toBe(3);
-    // expect(listResults.pagination).toBeDefined(); todo: re-enable this once pagination bug is fixed (https://app.asana.com/0/1204819992273155/1207992392793971/f)
+    expect(listResults.pagination).toBeDefined();
 
     const listResultsPg2 = await serverlessIndex.listPaginated({
       prefix,
