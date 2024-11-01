@@ -1,42 +1,30 @@
 import { PineconeMaxRetriesExceededError } from '../errors';
 
-/** Configuration options for retry logic */
-export interface RetryOptions {
-  maxRetries: number;
-  delayStrategy?: string;
-}
-
 /* Retry asynchronous operations.
  *
  * @param asyncFn - The asynchronous function to retry.
- * @param options - The configuration options for retry logic.
+ * @param maxRetries - The maximum number of retries to attempt.
  * */
 export class RetryOnServerFailure {
   maxRetries: number;
-  delayStrategy: string;
   asyncFn: (...args: any[]) => Promise<any>;
 
-  constructor(
-    asyncFn: (...args: any[]) => Promise<any>,
-    options?: RetryOptions
-  ) {
-    this.maxRetries = 3;
-    this.delayStrategy = 'jitter';
+  constructor(asyncFn: (...args: any[]) => Promise<any>, maxRetries?: number) {
+    if (maxRetries) {
+      this.maxRetries = maxRetries;
+    } else {
+      this.maxRetries = 3;
+    }
 
-    if (options) {
-      this.maxRetries = options.maxRetries ?? this.maxRetries;
-      this.delayStrategy = options.delayStrategy ?? this.delayStrategy;
-
-      if (this.maxRetries > 10) {
-        throw new Error('Max retries cannot exceed 10');
-      }
+    if (this.maxRetries > 10) {
+      throw new Error('Max retries cannot exceed 10');
     }
 
     this.asyncFn = asyncFn;
   }
 
   async execute(...args: any[]): Promise<any> {
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+    for (let attempt = 0; attempt < this.maxRetries; attempt++) {
       try {
         const response = await this.asyncFn(...args);
         if (!this.isRetryError(response)) {
@@ -44,7 +32,7 @@ export class RetryOnServerFailure {
         }
         throw response; // Throw if response is retryable, caught below
       } catch (error) {
-        if (attempt >= this.maxRetries) {
+        if (attempt === this.maxRetries - 1) {
           throw new PineconeMaxRetriesExceededError(this.maxRetries);
         }
         await this.delay(attempt + 1); // Increment before passing to `delay`
@@ -59,14 +47,12 @@ export class RetryOnServerFailure {
         ['PineconeUnavailableError', 'PineconeInternalServerError'].includes(
           response.name
         )) ||
-      response.status === 500 ||
-      response.status === 503
+      response.status >= 500
     );
   }
 
   async delay(attempt: number): Promise<void> {
-    const delayTime =
-      this.delayStrategy === 'jitter' ? this.jitter(attempt) : 1000; // 1s delay if not using 'jitter'
+    const delayTime = this.jitter(attempt);
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
 

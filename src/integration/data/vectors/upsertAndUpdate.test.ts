@@ -10,7 +10,6 @@ import {
 } from '../../test-helpers';
 import { RetryOnServerFailure } from '../../../utils';
 import { PineconeMaxRetriesExceededError } from '../../../errors';
-// import express from 'express';
 import http from 'http';
 import { parse } from 'url';
 
@@ -103,18 +102,21 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
     // Create http server
     server = http.createServer((req, res) => {
       const { pathname } = parse(req.url || '', true);
-
       if (req.method === 'POST' && pathname === '/vectors/upsert') {
         callCount++;
         if (shouldSucceedOnSecondCall && callCount === 1) {
           res.writeHead(503, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ name: 'PineconeUnavailableError' }));
+          res.end(
+            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 })
+          );
         } else if (shouldSucceedOnSecondCall && callCount === 2) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 200, data: 'Success' }));
         } else {
           res.writeHead(503, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ name: 'PineconeUnavailableError' }));
+          res.end(
+            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 })
+          );
         }
       } else {
         res.writeHead(404); // Not found
@@ -125,12 +127,7 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
   };
 
   beforeEach(() => {
-    // Reset callCount
     callCount = 0;
-    // Define index that points to the mock server on port 4000
-    mockServerlessIndex = pinecone
-      .Index(serverlessIndexName, 'http://localhost:4000')
-      .namespace(globalNamespaceOne);
   });
 
   afterEach(async () => {
@@ -140,6 +137,15 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    pinecone = new Pinecone({
+      apiKey: process.env['PINECONE_API_KEY'] || '',
+      maxRetries: 2,
+    });
+
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
 
@@ -149,12 +155,22 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
     // Call Upsert operation
     await mockServerlessIndex.upsert(recordsToUpsert);
 
+    // 2 total tries: 1 initial call, 1 retry
     expect(retrySpy).toHaveBeenCalledTimes(1);
     expect(delaySpy).toHaveBeenCalledTimes(1);
     expect(callCount).toBe(2);
   });
 
   test('Max retries exceeded w/o resolve', async () => {
+    pinecone = new Pinecone({
+      apiKey: process.env['PINECONE_API_KEY'] || '',
+      maxRetries: 3,
+    });
+
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
 
@@ -163,14 +179,16 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
 
     // Catch expected error from Upsert operation
     const errorResult = async () => {
-      await mockServerlessIndex.upsert(recordsToUpsert, { maxRetries: 1 });
+      await mockServerlessIndex.upsert(recordsToUpsert);
     };
 
     await expect(errorResult).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
+
+    // Out of 3 total tries, 2 are retries (i.e. delays), and 1 is the initial call:
     expect(retrySpy).toHaveBeenCalledTimes(1);
-    expect(delaySpy).toHaveBeenCalledTimes(1);
-    expect(callCount).toBe(2);
+    expect(delaySpy).toHaveBeenCalledTimes(2);
+    expect(callCount).toBe(3);
   });
 });

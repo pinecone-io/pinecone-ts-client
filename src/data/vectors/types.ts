@@ -31,6 +31,11 @@ export type PineconeConfiguration = {
    * Optional sourceTag that is applied to the User-Agent header with all requests.
    */
   sourceTag?: string;
+
+  /**
+   * Optional configuration field for specifying the maximum number of retries for a request. Defaults to 3.
+   */
+  maxRetries?: number;
 };
 
 // Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
@@ -41,6 +46,7 @@ export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'fetchApi',
   'additionalHeaders',
   'sourceTag',
+  'maxRetries',
 ];
 
 /** The id of the record */

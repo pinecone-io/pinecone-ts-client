@@ -25,7 +25,6 @@ import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
-import { RetryOptions } from '../utils/retries';
 
 export type {
   PineconeConfiguration,
@@ -465,13 +464,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```
    *
    * @param data - An array of {@link PineconeRecord} objects to upsert.
-   * @param retryOptions - (Optional). The {@link RetryOptions} configuration object for customizing retries.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
    */
-  async upsert(data: Array<PineconeRecord<T>>, retryOptions?: RetryOptions) {
-    return await this._upsertCommand.run(data, retryOptions);
+  async upsert(data: Array<PineconeRecord<T>>) {
+    if (this.config.maxRetries) {
+      return await this._upsertCommand.run(data, this.config.maxRetries);
+    }
+    return await this._upsertCommand.run(data);
   }
 
   /**

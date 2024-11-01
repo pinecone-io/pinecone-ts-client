@@ -3,7 +3,7 @@ import { normalizeUrl } from './normalizeUrl';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
 import { getFetch } from './fetch';
-import { RetryOnServerFailure, RetryOptions } from './retries';
+import { RetryOnServerFailure } from './retries';
 
 export {
   debugLog,
@@ -12,5 +12,4 @@ export {
   buildUserAgent,
   getFetch,
   RetryOnServerFailure,
-  RetryOptions,
 };

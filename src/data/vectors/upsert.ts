@@ -7,7 +7,7 @@ import {
 } from './types';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
-import { RetryOnServerFailure, RetryOptions } from '../../utils/retries';
+import { RetryOnServerFailure } from '../../utils';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
@@ -43,22 +43,31 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
 
   async run(
     records: Array<PineconeRecord<T>>,
-    retryOptions?: RetryOptions
+    maxRetries?: number
   ): Promise<void> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
 
-    const retryWrapper = new RetryOnServerFailure(
-      api.upsertVectors.bind(api),
-      retryOptions || { maxRetries: 3, delayStrategy: 'jitter' } // Default retry options if none provided
-    );
+    if (maxRetries) {
+      const retryWrapper = new RetryOnServerFailure(
+        api.upsertVectors.bind(api),
+        maxRetries
+      );
 
-    await retryWrapper.execute({
-      upsertRequest: {
-        vectors: records as Array<Vector>,
-        namespace: this.namespace,
-      },
-    });
+      await retryWrapper.execute({
+        upsertRequest: {
+          vectors: records as Array<Vector>,
+          namespace: this.namespace,
+        },
+      });
+    } else {
+      await api.upsertVectors({
+        upsertRequest: {
+          vectors: records as Array<Vector>,
+          namespace: this.namespace,
+        },
+      });
+    }
   }
 }
