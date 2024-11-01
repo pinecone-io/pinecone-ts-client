@@ -27,7 +27,6 @@ describe('bulk import', () => {
 
   afterAll(async () => {
     await retryDeletes(pinecone, indexName);
-    await pinecone.deleteIndex(indexName);
   });
 
   test('verify bulk import', async () => {
