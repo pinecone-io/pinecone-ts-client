@@ -931,7 +931,7 @@ Notes:
 
 - When you do not specify a `prefix`, the default prefix is an empty string, which returns all vector IDs
   in your index
-- There is a hard limit of `300` vector IDs if no `limit` is specified. Consequently, if there are fewer than `300`
+- There is a hard limit of `100` vector IDs if no `limit` is specified. Consequently, if there are fewer than `100`
   vector IDs that match a given `prefix` in your index, and you do not specify a `limit`, your `paginationToken`
   will be `undefined`
 
