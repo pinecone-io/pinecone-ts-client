@@ -18,8 +18,7 @@ describe('listPaginated, serverless index', () => {
   test('test listPaginated with no arguments', async () => {
     const listResults = await serverlessIndex.listPaginated();
     expect(listResults).toBeDefined();
-    expect(listResults.pagination).toBeUndefined(); // Only 11 records in the index, so no pag token returned; 300
-    // is when a pag token is automatically returned b/c that's the hard limit of vector to return on the server side
+    expect(listResults.pagination).toBeUndefined(); // Only 11 records in the index, so no pag token returned
     expect(listResults.vectors?.length).toBe(11);
     expect(listResults.namespace).toBe(globalNamespaceOne);
   });
