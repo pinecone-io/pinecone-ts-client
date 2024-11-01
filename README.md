@@ -935,14 +935,14 @@ Notes:
   vector IDs that match a given `prefix` in your index, and you do not specify a `limit`, your `paginationToken`
   will be `undefined`
 
-The following example shows how to grab both pages of vector IDs for vectors whose IDs contain the prefix `doc1#`,
+The following example shows how to fetch both pages of vector IDs for vectors whose IDs contain the prefix `doc1#`,
 assuming a `limit` of `3` and `doc1` document being [chunked](https://www.pinecone.io/learn/chunking-strategies/) into `4` vectors.
 
 ```typescript
 const pc = new Pinecone();
 const index = pc.index('my-index').namespace('my-namespace');
 
-// Grab the 1st 3 vector IDs matching prefix 'doc1#'
+// Fetch the 1st 3 vector IDs matching prefix 'doc1#'
 const results = await index.listPaginated({ limit: 3, prefix: 'doc1#' });
 console.log(results);
 // {
@@ -959,7 +959,7 @@ console.log(results);
 //   usage: { readUnits: 1 }
 // }
 
-// Grab the final vector ID matching prefix 'doc1#' using the paginationToken returned by the previous call
+// Fetch the final vector ID matching prefix 'doc1#' using the paginationToken returned by the previous call
 const nextResults = await index.listPaginated({
   prefix: 'doc1#',
   paginationToken: results.pagination?.next,
