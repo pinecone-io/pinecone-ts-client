@@ -85,3 +85,31 @@ describe('calculateRetryDelay', () => {
     expect(result).toBeGreaterThan(0);
   });
 });
+
+describe('isRetryError', () => {
+  test('Should return true if response is PineconeUnavailableError', () => {
+    const retryWrapper = new RetryOnServerFailure(() =>
+      Promise.resolve({ name: 'PineconeUnavailableError' })
+    );
+    const result = retryWrapper.isRetryError({
+      name: 'PineconeUnavailableError',
+    });
+    expect(result).toBe(true);
+  });
+
+  test('Should return false if response is not PineconeUnavailableError or PineconeInternalServerError', () => {
+    const retryWrapper = new RetryOnServerFailure(() =>
+      Promise.resolve({ name: 'MadeUpName' })
+    );
+    const result = retryWrapper.isRetryError({ name: 'MadeUpName' });
+    expect(result).toBe(false);
+  });
+
+  test('Should return true if response.status >= 500', () => {
+    const retryWrapper = new RetryOnServerFailure(() =>
+      Promise.resolve({ status: 500 })
+    );
+    const result = retryWrapper.isRetryError({ status: 500 });
+    expect(result).toBe(true);
+  });
+});
