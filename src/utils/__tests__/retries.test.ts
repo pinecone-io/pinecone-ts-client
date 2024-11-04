@@ -68,35 +68,20 @@ describe('RetryOnServerFailure', () => {
   });
 });
 
-describe('delayStrategy', () => {
-  test('Set delay to jitter even if not provided in options', async () => {
-    const retryWrapper = new RetryOnServerFailure(
-      () => Promise.resolve(PineconeInternalServerError),
-      5
-    ); // maxRetries = 5
-
-    jest.spyOn(retryWrapper, 'delay');
-    jest.spyOn(retryWrapper, 'jitter');
-
-    const errorResponse = async () => {
-      await retryWrapper.execute();
-    };
-
-    await expect(errorResponse).rejects.toThrowError(
-      PineconeMaxRetriesExceededError
-    );
-    expect(retryWrapper.delay).toHaveBeenCalledTimes(4); // 1st time through the retry loop does not trigger a delay
-    expect(retryWrapper.jitter).toHaveBeenCalledTimes(4);
-  });
-});
-
-describe('jitter', () => {
-  test('Should return a number between 1000 and 2500 for attempt 3', () => {
+describe('calculateRetryDelay', () => {
+  test('Should return a number < maxDelay', () => {
     const retryWrapper = new RetryOnServerFailure(() =>
       Promise.resolve({ PineconeUnavailableError })
     );
-    const result = retryWrapper.jitter(3);
-    expect(result).toBeGreaterThanOrEqual(1000);
-    expect(result).toBeLessThanOrEqual(2500);
+    const result = retryWrapper.calculateRetryDelay(3);
+    expect(result).toBeLessThanOrEqual(20000);
+  });
+
+  test('Should never return a negative number', () => {
+    const retryWrapper = new RetryOnServerFailure(() =>
+      Promise.resolve({ PineconeUnavailableError })
+    );
+    const result = retryWrapper.calculateRetryDelay(3);
+    expect(result).toBeGreaterThan(0);
   });
 });

@@ -52,13 +52,28 @@ export class RetryOnServerFailure {
   }
 
   async delay(attempt: number): Promise<void> {
-    const delayTime = this.jitter(attempt);
+    const delayTime = this.calculateRetryDelay(attempt);
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
 
-  jitter(attempt: number): number {
-    const baseDelay = 1000; // 1s
-    const jitter = Math.random() * 0.5 * baseDelay; // Produces value btwn 0-0.5
-    return baseDelay + jitter * attempt;
-  }
+  /*
+  * Calculate the delay time for retrying an operation.
+  *
+  * @param attempt: The # of times the operation has been attempted.
+  * @param baseDelay: The base delay time in milliseconds (default 200ms).
+  * @param maxDelay: The maximum delay time in milliseconds (default 20s).
+  * @param jitterFactor: Controls how large the jitter can be relative to the delay.
+  */
+  calculateRetryDelay = (attempt: number, baseDelay = 200, maxDelay = 20000, jitterFactor = 0.25) => {
+    let delay = baseDelay * (2 ** attempt); // Delay = exponential backoff (baseDelay * 2^attempt)
+
+    // Apply jitter as a random percentage of the original delay; e.g.: if `jitterFactor` = 0.25 and `baseDelay` = 1000,
+    // then `jitter` is 25% of `baseDelay`)
+    const jitter = delay * jitterFactor * (Math.random() - 0.5);
+    delay += jitter;
+
+    // Ensure delay is not negative or greater than maxDelay
+    return Math.min(maxDelay, Math.max(0, delay));
+  };
+
 }
