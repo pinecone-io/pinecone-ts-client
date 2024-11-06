@@ -49,25 +49,16 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
 
     const api = await this.apiProvider.provide();
 
-    if (maxRetries) {
-      const retryWrapper = new RetryOnServerFailure(
-        api.upsertVectors.bind(api),
-        maxRetries
-      );
+    const retryWrapper = new RetryOnServerFailure(
+      api.upsertVectors.bind(api),
+      maxRetries
+    );
 
-      await retryWrapper.execute({
-        upsertRequest: {
-          vectors: records as Array<Vector>,
-          namespace: this.namespace,
-        },
-      });
-    } else {
-      await api.upsertVectors({
-        upsertRequest: {
-          vectors: records as Array<Vector>,
-          namespace: this.namespace,
-        },
-      });
-    }
+    await retryWrapper.execute({
+      upsertRequest: {
+        vectors: records as Array<Vector>,
+        namespace: this.namespace,
+      },
+    });
   }
 }

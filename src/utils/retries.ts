@@ -3,13 +3,13 @@ import { PineconeMaxRetriesExceededError } from '../errors';
 /* Retry asynchronous operations.
  *
  * @param maxRetries - The maximum number of retries to attempt.
- *  * @param asyncFn - The asynchronous function to retry.
+ * @param asyncFn - The asynchronous function to retry.
  */
-export class RetryOnServerFailure {
+export class RetryOnServerFailure<T, A extends any[]> {
   maxRetries: number;
-  asyncFn: (...args: any[]) => Promise<any>;
+  asyncFn: (...args: A) => Promise<T>;
 
-  constructor(asyncFn: (...args: any[]) => Promise<any>, maxRetries?: number) {
+  constructor(asyncFn: (...args: A) => Promise<T>, maxRetries?: number) {
     if (maxRetries) {
       this.maxRetries = maxRetries;
     } else {
@@ -23,7 +23,7 @@ export class RetryOnServerFailure {
     this.asyncFn = asyncFn;
   }
 
-  async execute(...args: any[]): Promise<any> {
+  async execute(...args: A): Promise<T> {
     for (let attempt = 0; attempt < this.maxRetries; attempt++) {
       try {
         const response = await this.asyncFn(...args);
@@ -38,9 +38,11 @@ export class RetryOnServerFailure {
         await this.delay(attempt + 1); // Increment before passing to `delay`
       }
     }
+    // Fallback throw in case no value is successfully returned in order to comply w/return type Promise<T>
+    throw new PineconeMaxRetriesExceededError(this.maxRetries);
   }
 
-  isRetryError(response: any): boolean {
+  isRetryError(response): boolean {
     if (response) {
       if (
         response.name &&
@@ -50,7 +52,7 @@ export class RetryOnServerFailure {
       ) {
         return true;
       }
-      if (response.status >= 500) {
+      if (response.status && response.status >= 500) {
         return true;
       }
     }

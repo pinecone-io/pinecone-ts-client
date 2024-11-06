@@ -469,10 +469,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the upsert is completed.
    */
   async upsert(data: Array<PineconeRecord<T>>) {
-    if (this.config.maxRetries) {
-      return await this._upsertCommand.run(data, this.config.maxRetries);
-    }
-    return await this._upsertCommand.run(data);
+    return await this._upsertCommand.run(data, this.config.maxRetries);
   }
 
   /**

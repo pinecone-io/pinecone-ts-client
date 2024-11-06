@@ -54,14 +54,13 @@ describe('RetryOnServerFailure', () => {
   });
 
   test('Should retry when first encounter error, then succeed when eventually get good response back', async () => {
-    const fakeAsyncFn: () => Promise<object> = jest
+    // Mock the async function to fail once, then succeed
+    const fakeAsyncFn: () => Promise<{ name?: string; status: number }> = jest
       .fn()
       .mockImplementationOnce(() =>
-        Promise.resolve({ name: 'PineconeInternalServerError' })
-      ) // 1x failure
-      .mockImplementationOnce(() =>
-        Promise.resolve({ status: 200, data: 'Success' })
-      ); // 1x success
+        Promise.resolve({ name: 'PineconeInternalServerError', status: 500 })
+      ) // 1x failure to trigger a retry
+      .mockImplementationOnce(() => Promise.resolve({ status: 200 })); // 1x success
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
     const result = await retryWrapper.execute();
     expect(result.status).toBe(200);

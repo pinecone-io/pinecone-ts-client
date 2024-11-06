@@ -68,12 +68,15 @@ const pc = new Pinecone();
 #### Using a configuration object
 
 If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` value.
+This is the object in which you would pass properties like `maxRetries` (defaults to `3`) for retryable operations
+(e.g. `upsert`).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({
   apiKey: 'your_api_key',
+  maxRetries: 5,
 });
 ```
 
@@ -665,11 +668,6 @@ type PineconeRecord = {
 ```
 
 To upsert some vectors, you can use the client like so:
-
-Note: by default, the `upsert` operation will retry up to `3` times if it encounters a `500` error
-(`PineconeInternalServerError`) or a `503` error (`PineconeUnavailableError`). You can
-change this behavior by passing a `retryOptions` object containing a `maxRetries` field and, optionally, a `delayStrategy` field
-to the `upsert` method. Maximum retries allowed is `10`.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
