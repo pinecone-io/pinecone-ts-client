@@ -693,7 +693,7 @@ const vectors = [
 ];
 
 // Upsert the data into your index
-await index.upsert(vectors, { maxRetries: 5 });
+await index.upsert(vectors);
 ```
 
 ### Import vectors from object storage
