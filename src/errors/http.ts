@@ -92,14 +92,52 @@ export class PineconeConflictError extends BasePineconeError {
  */
 export class PineconeInternalServerError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
-    const { url, body } = failedRequest;
+    const { url, body, status } = failedRequest;
     const intro = url
-      ? `An internal server error occured while calling the ${url} endpoint.`
+      ? `An internal server error occurred while calling the ${url} endpoint.`
       : '';
     const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
+    const statusMessage = status ? `Status Code: ${status}.` : '';
     const bodyMessage = body ? `Body: ${body}` : '';
-    super([intro, help, bodyMessage].join(' ').trim());
+    super([intro, statusMessage, help, bodyMessage].join(' ').trim());
     this.name = 'PineconeInternalServerError';
+  }
+}
+
+/* We can choose to throw this error when we want to limit requests to the server. When instantiated, pass the
+ number of retries the user has made already. */
+export class PineconeMaxRetriesExceededError extends BasePineconeError {
+  constructor(retries: number) {
+    const intro = `You have exceeded the max configured retries (${retries}). `;
+    const help =
+      'Increase the maxRetries field in the RetryOptions object to retry more times. If you believe the' +
+      ' error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client';
+    super([intro, help].join(' ').trim());
+    this.name = 'PineconeMaxRetriesExceededError';
+  }
+}
+
+/**
+ * This error indicates API responses are returning with status 503 and
+ * Pinecone itself is down. Check the [status page](https://status.pinecone.io/)
+ * for information about current or recent outages.
+ *
+ * The difference between this error (503) and a PineconeInternalServerError (500) is that this error does NOT indicate
+ * that the server is _unable_ to process the request, just that the server will not process the request.
+ *
+ * @see [Pinecone's status page](https://status.pinecone.io/)
+ */
+export class PineconeUnavailableError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, body, status } = failedRequest;
+    const intro = url
+      ? `The Pinecone service (${url}) is temporarily unavailable.`
+      : '';
+    const statusMessage = status ? `Status Code: ${status}.` : '';
+    const help = `To see overall service health and learn whether this seems like a large-scale problem or one specific to your request, please go to https://status.pinecone.io/ to view our status page. If you believe the error reflects a problem with this client, please file a bug report in the github issue tracker at https://github.com/pinecone-io/pinecone-ts-client`;
+    const bodyMessage = body ? `Body: ${body}` : '';
+    super([intro, statusMessage, help, bodyMessage].join(' ').trim());
+    this.name = 'PineconeUnavailableError';
   }
 }
 
