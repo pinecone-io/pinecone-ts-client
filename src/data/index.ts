@@ -268,7 +268,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * await index.deleteAll();
    *
-   * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
+   * // Records from the default namespace '' are now deleted. Records in other namespaces are not modified.
    * await index.describeIndexStats();
    * // {
    * //  namespaces: {
