@@ -130,4 +130,3 @@ export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any
         'spec': IndexSpecToJSON(value.spec),
     };
 }
-
