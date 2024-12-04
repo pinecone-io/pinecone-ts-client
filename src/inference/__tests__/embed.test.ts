@@ -36,6 +36,7 @@ describe('Inference Class: embed', () => {
     try {
       await inference.embed(model, inputs, params);
     } catch (error) {
+      console.log('Error = ', error);
       expect(error).toEqual(expectedError);
     }
   });
