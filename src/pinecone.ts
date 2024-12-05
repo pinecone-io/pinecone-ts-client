@@ -13,6 +13,13 @@ import {
   indexOperationsBuilder,
   CollectionName,
 } from './control';
+import {
+  createAssistant,
+  deleteAssistant,
+  getAssistant,
+  listAssistants,
+  updateAssistant,
+} from './assistant/control';
 import type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
@@ -30,6 +37,13 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
+import { Assistant } from './assistant/data/assistant';
+import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilder';
+import {
+  CreateAssistantRequest,
+  UpdateAssistantOperationRequest,
+  UpdateAssistantRequest,
+} from './pinecone-generated-ts-fetch/assistant_control';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -95,6 +109,18 @@ export class Pinecone {
 
   public inference: Inference;
 
+  // todo
+  /** @hidden */
+  private _createAssistant: ReturnType<typeof createAssistant>;
+  /** @hidden */
+  private _deleteAssistant: ReturnType<typeof deleteAssistant>;
+  /** @hidden */
+  private _getAssistant: ReturnType<typeof getAssistant>;
+  /** @hidden */
+  private _listAssistants: ReturnType<typeof listAssistants>;
+  /** @hidden */
+  private _updateAssistant: ReturnType<typeof updateAssistant>;
+
   /**
    * @example
    * ```
@@ -127,6 +153,7 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
+    const assistantApi = assistantControlOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -137,7 +164,15 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
+
     this.inference = new Inference(infApi);
+
+    // todo
+    this._createAssistant = createAssistant(assistantApi);
+    this._deleteAssistant = deleteAssistant(assistantApi);
+    this._getAssistant = getAssistant(assistantApi);
+    this._listAssistants = listAssistants(assistantApi);
+    this._updateAssistant = updateAssistant(assistantApi);
   }
 
   /**
@@ -667,4 +702,36 @@ export class Pinecone {
   ) {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }
+
+  // todo: for control plane
+  createAssistant(options: CreateAssistantRequest) {
+    return this._createAssistant(options);
+  }
+
+  async deleteAssistant(assistantName: string) {
+    return await this._deleteAssistant(assistantName);
+  }
+
+  getAssistant(assistantName: string) {
+    return this._getAssistant(assistantName);
+  }
+
+  async listAssistants() {
+    return await this._listAssistants();
+  }
+
+  async updateAssistant(
+    options: UpdateAssistantOperationRequest & UpdateAssistantRequest
+  ) {
+    return await this._updateAssistant(options);
+  }
+
+  // todo: for data plane
+  // assistant(){
+  //   return new Assistant();
+  // }
+  //
+  // Assistant(){
+  //   return this.assistant();
+  // }
 }
