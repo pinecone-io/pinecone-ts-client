@@ -57,6 +57,7 @@ export type {
   QueryShared,
 } from './vectors/query';
 export type { ListOptions } from './vectors/list';
+export { IndexHostSingleton } from './indexHostSingleton';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)

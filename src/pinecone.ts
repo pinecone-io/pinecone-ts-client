@@ -13,13 +13,6 @@ import {
   indexOperationsBuilder,
   CollectionName,
 } from './control';
-import {
-  createAssistant,
-  deleteAssistant,
-  getAssistant,
-  listAssistants,
-  updateAssistant,
-} from './assistant/control';
 import type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
@@ -37,13 +30,11 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
-import { Assistant } from './assistant/data/assistant';
-import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilder';
-import {
-  CreateAssistantRequest,
-  UpdateAssistantOperationRequest,
-  UpdateAssistantRequest,
-} from './pinecone-generated-ts-fetch/assistant_control';
+import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
+import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
+import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
+import { ManageAssistantsApi } from './pinecone-generated-ts-fetch/assistant_data';
+import { assistantDataOperationsBuilder } from './assistant/data/assistantOperationsProviderData';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -108,18 +99,7 @@ export class Pinecone {
   private _listIndexes: ReturnType<typeof listIndexes>;
 
   public inference: Inference;
-
-  // todo
-  /** @hidden */
-  private _createAssistant: ReturnType<typeof createAssistant>;
-  /** @hidden */
-  private _deleteAssistant: ReturnType<typeof deleteAssistant>;
-  /** @hidden */
-  private _getAssistant: ReturnType<typeof getAssistant>;
-  /** @hidden */
-  private _listAssistants: ReturnType<typeof listAssistants>;
-  /** @hidden */
-  private _updateAssistant: ReturnType<typeof updateAssistant>;
+  public assistant: AssistantCtrlPlane;
 
   /**
    * @example
@@ -153,7 +133,7 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
-    const assistantApi = assistantControlOperationsBuilder(this.config);
+    const assistantApiCtrl = assistantControlOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -166,13 +146,8 @@ export class Pinecone {
     this._listIndexes = listIndexes(api);
 
     this.inference = new Inference(infApi);
+    this.assistant = new AssistantCtrlPlane(assistantApiCtrl);
 
-    // todo
-    this._createAssistant = createAssistant(assistantApi);
-    this._deleteAssistant = deleteAssistant(assistantApi);
-    this._getAssistant = getAssistant(assistantApi);
-    this._listAssistants = listAssistants(assistantApi);
-    this._updateAssistant = updateAssistant(assistantApi);
   }
 
   /**
@@ -189,7 +164,7 @@ export class Pinecone {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a' +
-          ' configuration object is required when calling new Pinecone().'
+        ' configuration object is required when calling new Pinecone().'
       );
     }
 
@@ -708,35 +683,11 @@ export class Pinecone {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }
 
-  // todo: for control plane
-  createAssistant(options: CreateAssistantRequest) {
-    return this._createAssistant(options);
+  Assistant(assistantName: string) {
+    const assistantApiData = assistantDataOperationsBuilder(this.config);
+    return new AssistantDataPlane(assistantApiData);
   }
 
-  async deleteAssistant(assistantName: string) {
-    return await this._deleteAssistant(assistantName);
-  }
-
-  getAssistant(assistantName: string) {
-    return this._getAssistant(assistantName);
-  }
-
-  async listAssistants() {
-    return await this._listAssistants();
-  }
-
-  async updateAssistant(
-    options: UpdateAssistantOperationRequest & UpdateAssistantRequest
-  ) {
-    return await this._updateAssistant(options);
-  }
-
-  // todo: for data plane
-  // assistant(){
-  //   return new Assistant();
-  // }
-  //
-  // Assistant(){
-  //   return this.assistant();
-  // }
+  // Uppercase AssistantCtrlPlane == dataplane
+  // Lowercase == control plane
 }
