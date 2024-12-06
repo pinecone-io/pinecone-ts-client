@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Assistant Engine API
- * Pinecone Assistant Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants. 
+ * Pinecone AssistantCtrlPlane Engine API
+ * Pinecone AssistantCtrlPlane Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants.
  *
  * The version of the OpenAPI document: v1alpha
  * Contact: support@pinecone.io
