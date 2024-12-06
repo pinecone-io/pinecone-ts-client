@@ -5,7 +5,7 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
 // todo: validations
-export const createAssistant = (api: ManageAssistantsControlApi) => {
+export const createAssistantClosed = (api: ManageAssistantsControlApi) => {
   return async (options: CreateAssistantRequest): Promise<Assistant> => {
     return await api.createAssistant({
       createAssistantRequest: {

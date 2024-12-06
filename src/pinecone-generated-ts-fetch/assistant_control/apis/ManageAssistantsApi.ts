@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Assistant Engine API
- * Pinecone Assistant Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants. 
+ * Pinecone AssistantCtrlPlane Engine API
+ * Pinecone AssistantCtrlPlane Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants.
  *
  * The version of the OpenAPI document: v1alpha
  * Contact: support@pinecone.io
@@ -60,7 +60,7 @@ export interface UpdateAssistantOperationRequest {
 export class ManageAssistantsApi extends runtime.BaseAPI {
 
     /**
-     * The `create_assistant` endpoint [creates a Pinecone Assistant](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
+     * The `create_assistant` endpoint [creates a Pinecone AssistantCtrlPlane](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
      * Create an assistant
      */
     async createAssistantRaw(requestParameters: CreateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Assistant>> {
@@ -90,7 +90,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `create_assistant` endpoint [creates a Pinecone Assistant](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
+     * The `create_assistant` endpoint [creates a Pinecone AssistantCtrlPlane](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
      * Create an assistant
      */
     async createAssistant(requestParameters: CreateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Assistant> {

@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Assistant Engine API
- * Pinecone Assistant Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants. 
+ * Pinecone AssistantCtrlPlane Engine API
+ * Pinecone AssistantCtrlPlane Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants.
  *
  * The version of the OpenAPI document: v1alpha
  * Contact: support@pinecone.io
@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * The AssistantModel describes the configuration and status of a Pinecone Assistant.
+ * The AssistantModel describes the configuration and status of a Pinecone AssistantCtrlPlane.
  * @export
  * @interface Assistant
  */
@@ -71,7 +71,7 @@ export type AssistantStatusEnum = typeof AssistantStatusEnum[keyof typeof Assist
 
 
 /**
- * Check if a given object implements the Assistant interface.
+ * Check if a given object implements the AssistantCtrlPlane interface.
  */
 export function instanceOfAssistant(value: object): boolean {
     let isInstance = true;
