@@ -1,8 +1,48 @@
-import { ManageAssistantsApi as ManageAssistantsApiData } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  ManageAssistantsApi as ManageAssistantsApiData, UploadFileRequest
+} from '../../pinecone-generated-ts-fetch/assistant_data';
+// import { chatClosed, ChatRequest } from './chat';
+import { PineconeNotImplementedError } from '../../errors';
+import { uploadFileClosed, UploadRequest } from './uploadFile';
 
 export class AssistantDataPlane {
+  api: ManageAssistantsApiData;  // todo: should this be private?
+  assistantName: string;
 
-  constructor(api: ManageAssistantsApiData) {
+  // private _chat: ReturnType<typeof chatClosed>;
+  private _uploadFile: ReturnType<typeof uploadFileClosed>;
+
+  constructor(api: ManageAssistantsApiData, assistantName: string) {
+    this.api = api;
+    this.assistantName = assistantName;
+    // this._chat = chatClosed(api);
+    this._uploadFile = uploadFileClosed(api);
+  }
+
+  // --------- Chat methods ---------
+  // chat(options: ChatRequest) {
+  //   return this._chat(this.assistantName, options);
+  // }
+
+  chatCompletions() {
+    return PineconeNotImplementedError;
+  }
+
+  // --------- File methods ---------
+  listFiles() {
+    return PineconeNotImplementedError;
+  }
+
+  describeFile(){
+    return PineconeNotImplementedError;
+  }
+
+  deleteFile(){
+    return PineconeNotImplementedError;
+  }
+
+  uploadFile(options: UploadRequest){
+    return this._uploadFile(options);
   }
 
 }

@@ -680,7 +680,7 @@ export class Pinecone {
 
   Assistant(assistantName: string) {
     const assistantApiData = assistantDataOperationsBuilder(this.config);
-    return new AssistantDataPlane(assistantApiData);
+    return new AssistantDataPlane(assistantApiData, assistantName);
   }
 
   // Uppercase AssistantCtrlPlane == dataplane
