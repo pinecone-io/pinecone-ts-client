@@ -25,7 +25,7 @@ export class AssistantCtrlPlane {
 
   createAssistant(options: CreateAssistantRequest) {
       return this._createAssistant(options);
-    }
+    } // todo: should this be async?
 
   async deleteAssistant(assistantName: string) {
     return await this._deleteAssistant(assistantName);
