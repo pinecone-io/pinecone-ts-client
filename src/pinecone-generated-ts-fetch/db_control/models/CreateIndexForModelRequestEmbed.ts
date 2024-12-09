@@ -14,11 +14,15 @@
 
 import { exists, mapValues } from '../runtime';
 /**
+<<<<<<< HEAD
  * Specify the integrated inference embedding configuration for the index.
  * 
  * Once set the model cannot be changed, but you can later update the embedding configuration for an integrated inference index including field map, read parameters, or write parameters.
  * 
  * Refer to the [model guide](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models) for available models and model details.
+=======
+ * The embedding model and document fields to map to embedding inputs.
+>>>>>>> add-assistant
  * @export
  * @interface CreateIndexForModelRequestEmbed
  */

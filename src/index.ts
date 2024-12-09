@@ -11,6 +11,12 @@ export {
   RerankResultUsage,
   RankedDocument,
 } from './pinecone-generated-ts-fetch/inference';
+export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
+export {
+  CreateAssistantRequest,
+  UpdateAssistantOperationRequest,
+  UpdateAssistantRequest,
+} from './pinecone-generated-ts-fetch/assistant_control';
 
 // Type exports
 export type {
@@ -48,7 +54,6 @@ export type {
   RecordValues,
   ScoredPineconeRecord,
 } from './data';
-
 export type {
   CollectionList,
   CollectionModel,
@@ -67,4 +72,3 @@ export type {
   PodSpec,
   PodSpecMetadataConfig,
 } from './pinecone-generated-ts-fetch/db_control';
-export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';

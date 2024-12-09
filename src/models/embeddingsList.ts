@@ -4,6 +4,8 @@ import {
   EmbeddingsListUsage,
 } from '../pinecone-generated-ts-fetch/inference';
 
+// Todo: Enable functionality to truncate vectorType for both dense and sparse vectors
+
 /* This class wraps the OpenAPI-generated EmbeddingsList interface so that an EmbeddingsList object acts like an Array.
 This class also customizes the output of an EmbeddingsList to improve UX.
 
@@ -12,6 +14,7 @@ const embeddingsList = new EmbeddingsList('someEmbeddingModel', [embedding1, emb
 console.log(embeddingsList);
 >>> EmbeddingsList({
   "model": "someEmbeddingModel",
+  "vectorType": "dense",
   "data": [
     "values": [0.1, 0.2, ..., 0.5, 0.6],
     "values": [0.6, 0.7, ..., 1.0, 1.1]
@@ -20,16 +23,19 @@ console.log(embeddingsList);
 })
 ```
 */
+
 export class EmbeddingsList
   extends Array<Embedding>
   implements OpenAPIEmbeddingsList
 {
   model: string;
+  vectorType: string;
   data: Array<Embedding>;
   usage: EmbeddingsListUsage;
 
   constructor(
     model: string,
+    vectorType: string,
     data: Array<Embedding> = [],
     usage: EmbeddingsListUsage
   ) {
@@ -37,6 +43,7 @@ export class EmbeddingsList
     // Set the prototype explicitly to ensure the instance is of type EmbeddingsList
     Object.setPrototypeOf(this, EmbeddingsList.prototype);
     this.model = model;
+    this.vectorType = vectorType;
     this.data = data;
     this.usage = usage;
   }
@@ -111,25 +118,36 @@ export class EmbeddingsList
   /* Truncate the number of embedding objects in the output when there are more >6 embeddings. */
   truncateDataForDisplay(): Array<any> {
     if (!this.data) return [];
+
+    const mapEmbedding = (embedding: Embedding) => {
+      if (embedding.vectorType === 'dense') {
+        // Handle dense embeddings
+        return {
+          values: this.truncateValuesForDisplay(embedding.values),
+        };
+      } else if (embedding.vectorType === 'sparse') {
+        // Handle sparse embeddings
+        return {
+          values: this.truncateValuesForDisplay(embedding.sparseValues),
+        };
+      }
+      return { values: [] }; // Fallback for unexpected cases
+    };
+
     if (this.data.length <= 5) {
-      return this.data.map((embedding) => ({
-        values: embedding.values
-          ? this.truncateValuesForDisplay(embedding.values)
-          : [],
-      }));
+      // If there are 5 or fewer embeddings, map all of them
+      return this.data.map(mapEmbedding);
     }
+
+    // For more than 5 embeddings, truncate the display:
+    // - Show the first 2 embeddings
+    // - Add a "more embeddings" indicator
+    // - Show the last 2 embeddings
+    const numRemaining = this.data.length - 4; // Embeddings not shown
     return [
-      ...this.data.slice(0, 2).map((embedding) => ({
-        values: embedding.values
-          ? this.truncateValuesForDisplay(embedding.values)
-          : [],
-      })),
-      `   ... (${this.data.length - 4} more embeddings) ...`,
-      ...this.data.slice(-2).map((embedding) => ({
-        values: embedding.values
-          ? this.truncateValuesForDisplay(embedding.values)
-          : [],
-      })),
+      ...this.data.slice(0, 2).map(mapEmbedding), // First 2 embeddings
+      `... (${numRemaining} more embeddings) ...`, // Indicator for hidden embeddings
+      ...this.data.slice(-2).map(mapEmbedding), // Last 2 embeddings
     ];
   }
 }

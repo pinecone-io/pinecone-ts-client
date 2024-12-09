@@ -30,6 +30,10 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
+import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
+import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
+import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
+import { assistantDataOperationsBuilder } from './assistant/data/assistantOperationsProviderData';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -94,6 +98,7 @@ export class Pinecone {
   private _listIndexes: ReturnType<typeof listIndexes>;
 
   public inference: Inference;
+  public assistant: AssistantCtrlPlane;
 
   /**
    * @example
@@ -127,6 +132,7 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
+    const assistantApiCtrl = assistantControlOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -137,7 +143,10 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
+
     this.inference = new Inference(infApi);
+    this.assistant = new AssistantCtrlPlane(assistantApiCtrl);
+
   }
 
   /**
@@ -154,7 +163,7 @@ export class Pinecone {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a' +
-          ' configuration object is required when calling new Pinecone().'
+        ' configuration object is required when calling new Pinecone().'
       );
     }
 
@@ -667,4 +676,12 @@ export class Pinecone {
   ) {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }
+
+  Assistant(assistantName: string) {
+    const assistantApiData = assistantDataOperationsBuilder(this.config);
+    return new AssistantDataPlane(assistantApiData, assistantName);
+  }
+
+  // Uppercase AssistantCtrlPlane == dataplane
+  // Lowercase == control plane
 }
