@@ -1,7 +1,7 @@
 import {
   ManageAssistantsApi as ManageAssistantsApiData, UploadFileRequest
 } from '../../pinecone-generated-ts-fetch/assistant_data';
-// import { chatClosed, ChatRequest } from './chat';
+import { chatClosed, ChatRequest } from './chat';
 import { PineconeNotImplementedError } from '../../errors';
 import { uploadFileClosed, UploadRequest } from './uploadFile';
 
@@ -11,18 +11,19 @@ export class AssistantDataPlane {
 
   // private _chat: ReturnType<typeof chatClosed>;
   private _uploadFile: ReturnType<typeof uploadFileClosed>;
+  private _chat: ReturnType<typeof chatClosed>;
 
   constructor(api: ManageAssistantsApiData, assistantName: string) {
     this.api = api;
     this.assistantName = assistantName;
-    // this._chat = chatClosed(api);
+    this._chat = chatClosed(this.assistantName, api);
     this._uploadFile = uploadFileClosed(api);
   }
 
   // --------- Chat methods ---------
-  // chat(options: ChatRequest) {
-  //   return this._chat(this.assistantName, options);
-  // }
+  chat(options: ChatRequest) {
+    return this._chat(options);
+  }
 
   chatCompletions() {
     return PineconeNotImplementedError;
@@ -42,7 +43,7 @@ export class AssistantDataPlane {
   }
 
   uploadFile(options: UploadRequest){
-    return this._uploadFile(options);
+    // return this._uploadFile(options);
   }
 
 }
