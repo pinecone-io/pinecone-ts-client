@@ -18,6 +18,7 @@ export * from './IndexModel';
 export * from './IndexModelSpec';
 export * from './IndexModelStatus';
 export * from './IndexSpec';
+export * from './ModelIndexEmbed';
 export * from './PodSpec';
 export * from './PodSpecMetadataConfig';
 export * from './ServerlessSpec';

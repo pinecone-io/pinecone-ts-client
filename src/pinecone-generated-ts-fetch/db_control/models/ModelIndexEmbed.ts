@@ -14,43 +14,51 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Specify the integrated inference embedding configuration for the index.
- * 
- * Once set the model cannot be changed, but you can later update the embedding configuration for an integrated inference index including field map, read parameters, or write parameters.
- * 
- * Refer to the [model guide](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models) for available models and model details.
+ * The embedding model and document fields mapped to embedding inputs.
  * @export
- * @interface CreateIndexForModelRequestEmbed
+ * @interface ModelIndexEmbed
  */
-export interface CreateIndexForModelRequestEmbed {
+export interface ModelIndexEmbed {
     /**
-     * The name of the embedding model to use for the index.
+     * The name of the embedding model used to create the index.
      * @type {string}
-     * @memberof CreateIndexForModelRequestEmbed
+     * @memberof ModelIndexEmbed
      */
     model: string;
     /**
      * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If not specified, the metric will be defaulted according to the model. Cannot be updated once set.
      * @type {string}
-     * @memberof CreateIndexForModelRequestEmbed
+     * @memberof ModelIndexEmbed
      */
-    metric?: CreateIndexForModelRequestEmbedMetricEnum;
+    metric?: ModelIndexEmbedMetricEnum;
     /**
-     * Identifies the name of the text field from your document model that will be embedded.
-     * @type {object}
-     * @memberof CreateIndexForModelRequestEmbed
+     * The dimensions of the vectors to be inserted in the index.
+     * @type {number}
+     * @memberof ModelIndexEmbed
      */
-    fieldMap: object;
+    dimension?: number;
+    /**
+     * The index vector type. You can use 'dense' or 'sparse'. If 'dense', the vector dimension must be specified.  If 'sparse', the vector dimension should not be specified.
+     * @type {string}
+     * @memberof ModelIndexEmbed
+     */
+    vectorType?: string;
+    /**
+     * Identifies the name of the text field from your document model that is embedded.
+     * @type {object}
+     * @memberof ModelIndexEmbed
+     */
+    fieldMap?: object;
     /**
      * The read parameters for the embedding model.
      * @type {object}
-     * @memberof CreateIndexForModelRequestEmbed
+     * @memberof ModelIndexEmbed
      */
     readParameters?: object;
     /**
      * The write parameters for the embedding model.
      * @type {object}
-     * @memberof CreateIndexForModelRequestEmbed
+     * @memberof ModelIndexEmbed
      */
     writeParameters?: object;
 }
@@ -59,30 +67,29 @@ export interface CreateIndexForModelRequestEmbed {
 /**
  * @export
  */
-export const CreateIndexForModelRequestEmbedMetricEnum = {
+export const ModelIndexEmbedMetricEnum = {
     Cosine: 'cosine',
     Euclidean: 'euclidean',
     Dotproduct: 'dotproduct'
 } as const;
-export type CreateIndexForModelRequestEmbedMetricEnum = typeof CreateIndexForModelRequestEmbedMetricEnum[keyof typeof CreateIndexForModelRequestEmbedMetricEnum];
+export type ModelIndexEmbedMetricEnum = typeof ModelIndexEmbedMetricEnum[keyof typeof ModelIndexEmbedMetricEnum];
 
 
 /**
- * Check if a given object implements the CreateIndexForModelRequestEmbed interface.
+ * Check if a given object implements the ModelIndexEmbed interface.
  */
-export function instanceOfCreateIndexForModelRequestEmbed(value: object): boolean {
+export function instanceOfModelIndexEmbed(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "model" in value;
-    isInstance = isInstance && "fieldMap" in value;
 
     return isInstance;
 }
 
-export function CreateIndexForModelRequestEmbedFromJSON(json: any): CreateIndexForModelRequestEmbed {
-    return CreateIndexForModelRequestEmbedFromJSONTyped(json, false);
+export function ModelIndexEmbedFromJSON(json: any): ModelIndexEmbed {
+    return ModelIndexEmbedFromJSONTyped(json, false);
 }
 
-export function CreateIndexForModelRequestEmbedFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateIndexForModelRequestEmbed {
+export function ModelIndexEmbedFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModelIndexEmbed {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -90,13 +97,15 @@ export function CreateIndexForModelRequestEmbedFromJSONTyped(json: any, ignoreDi
         
         'model': json['model'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
-        'fieldMap': json['field_map'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'vectorType': !exists(json, 'vector_type') ? undefined : json['vector_type'],
+        'fieldMap': !exists(json, 'field_map') ? undefined : json['field_map'],
         'readParameters': !exists(json, 'read_parameters') ? undefined : json['read_parameters'],
         'writeParameters': !exists(json, 'write_parameters') ? undefined : json['write_parameters'],
     };
 }
 
-export function CreateIndexForModelRequestEmbedToJSON(value?: CreateIndexForModelRequestEmbed | null): any {
+export function ModelIndexEmbedToJSON(value?: ModelIndexEmbed | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -107,6 +116,8 @@ export function CreateIndexForModelRequestEmbedToJSON(value?: CreateIndexForMode
         
         'model': value.model,
         'metric': value.metric,
+        'dimension': value.dimension,
+        'vector_type': value.vectorType,
         'field_map': value.fieldMap,
         'read_parameters': value.readParameters,
         'write_parameters': value.writeParameters,

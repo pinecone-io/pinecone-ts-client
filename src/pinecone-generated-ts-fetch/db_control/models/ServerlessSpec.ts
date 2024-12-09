@@ -26,7 +26,7 @@ export interface ServerlessSpec {
      */
     cloud: ServerlessSpecCloudEnum;
     /**
-     * The region where you would like your index to be created. 
+     * The region where you would like your index to be created.
      * @type {string}
      * @memberof ServerlessSpec
      */

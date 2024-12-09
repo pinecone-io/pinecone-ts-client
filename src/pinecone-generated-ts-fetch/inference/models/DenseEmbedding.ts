@@ -14,17 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ * A dense embedding of a single input
  * @export
  * @interface DenseEmbedding
  */
 export interface DenseEmbedding {
-    /**
-     * Indicates that this is a 'dense' embedding.
-     * @type {string}
-     * @memberof DenseEmbedding
-     */
-    vectorType: string;
     /**
      * The dense embedding values.
      * @type {Array<number>}
@@ -38,7 +32,6 @@ export interface DenseEmbedding {
  */
 export function instanceOfDenseEmbedding(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "vectorType" in value;
     isInstance = isInstance && "values" in value;
 
     return isInstance;
@@ -54,7 +47,6 @@ export function DenseEmbeddingFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'vectorType': json['vector_type'],
         'values': json['values'],
     };
 }
@@ -68,7 +60,6 @@ export function DenseEmbeddingToJSON(value?: DenseEmbedding | null): any {
     }
     return {
         
-        'vector_type': value.vectorType,
         'values': value.values,
     };
 }
