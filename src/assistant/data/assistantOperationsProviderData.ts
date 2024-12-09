@@ -19,7 +19,7 @@ export const assistantDataOperationsBuilder = (
 ): ManageAssistantsDataApi => {
   const { apiKey } = config;
   const controllerPath =
-    normalizeUrl(config.controllerHostUrl) || 'https://prod-1-data.ke.pinecone.io';
+    normalizeUrl(config.controllerHostUrl) || 'https://prod-1-data.ke.pinecone.io/assistant';
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,
