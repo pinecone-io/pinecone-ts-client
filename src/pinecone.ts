@@ -33,7 +33,6 @@ import { PineconeConfigurationProperties } from './data/vectors/types';
 import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
 import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
-import { ManageAssistantsApi } from './pinecone-generated-ts-fetch/assistant_data';
 import { assistantDataOperationsBuilder } from './assistant/data/assistantOperationsProviderData';
 
 /**
