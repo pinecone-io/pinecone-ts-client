@@ -24,9 +24,6 @@ import type {
   ErrorResponse,
   IndexList,
   IndexModel,
-  OperationModel,
-  PodUpgradeRequest,
-  UpgradeStarterRequest,
 } from '../models/index';
 import {
     CollectionListFromJSON,
@@ -47,12 +44,6 @@ import {
     IndexListToJSON,
     IndexModelFromJSON,
     IndexModelToJSON,
-    OperationModelFromJSON,
-    OperationModelToJSON,
-    PodUpgradeRequestFromJSON,
-    PodUpgradeRequestToJSON,
-    UpgradeStarterRequestFromJSON,
-    UpgradeStarterRequestToJSON,
 } from '../models/index';
 
 export interface ConfigureIndexOperationRequest {
@@ -86,18 +77,6 @@ export interface DescribeCollectionRequest {
 
 export interface DescribeIndexRequest {
     indexName: string;
-}
-
-export interface DescribeUpgradeOperationRequest {
-    operationId: string;
-}
-
-export interface UpgradePodRequest {
-    podUpgradeRequest: PodUpgradeRequest;
-}
-
-export interface UpgradeStarterOperationRequest {
-    upgradeStarterRequest: UpgradeStarterRequest;
 }
 
 /**
@@ -266,7 +245,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * This operation deletes an existing collection. Serverless indexes do not support collections.
+     * This operation deletes an existing collection. Serverless indexes do not support collections. 
      * Delete a collection
      */
     async deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -408,42 +387,6 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * This route will return a description for an operation 
-     * Describe an upgrade operation
-     */
-    async describeUpgradeOperationRaw(requestParameters: DescribeUpgradeOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OperationModel>> {
-        if (requestParameters.operationId === null || requestParameters.operationId === undefined) {
-            throw new runtime.RequiredError('operationId','Required parameter requestParameters.operationId was null or undefined when calling describeUpgradeOperation.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/upgrade/{operation_id}`.replace(`{${"operation_id"}}`, encodeURIComponent(String(requestParameters.operationId))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OperationModelFromJSON(jsonValue));
-    }
-
-    /**
-     * This route will return a description for an operation 
-     * Describe an upgrade operation
-     */
-    async describeUpgradeOperation(requestParameters: DescribeUpgradeOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OperationModel> {
-        const response = await this.describeUpgradeOperationRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * This operation returns a list of all collections in a project. Serverless indexes do not support collections. 
      * List collections
      */
@@ -504,115 +447,6 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      */
     async listIndexes(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexList> {
         const response = await this.listIndexesRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * This operation will return a list of in progress upgrade operations in a project 
-     * List pending upgrade operations
-     */
-    async listPendingUpgradeOperationsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/upgrade/pending`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * This operation will return a list of in progress upgrade operations in a project 
-     * List pending upgrade operations
-     */
-    async listPendingUpgradeOperations(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.listPendingUpgradeOperationsRaw(initOverrides);
-    }
-
-    /**
-     * This action creates an upgrade operation to convert a pod index to a serverless index. The index must be a pod-based index. It takes in parameters controlling where to create the serverless index.  This is a private endpoint currently used only by the console. 
-     * Trigger an upgrade job on a pod index
-     */
-    async upgradePodRaw(requestParameters: UpgradePodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OperationModel>> {
-        if (requestParameters.podUpgradeRequest === null || requestParameters.podUpgradeRequest === undefined) {
-            throw new runtime.RequiredError('podUpgradeRequest','Required parameter requestParameters.podUpgradeRequest was null or undefined when calling upgradePod.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/upgrade/pods`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PodUpgradeRequestToJSON(requestParameters.podUpgradeRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OperationModelFromJSON(jsonValue));
-    }
-
-    /**
-     * This action creates an upgrade operation to convert a pod index to a serverless index. The index must be a pod-based index. It takes in parameters controlling where to create the serverless index.  This is a private endpoint currently used only by the console. 
-     * Trigger an upgrade job on a pod index
-     */
-    async upgradePod(requestParameters: UpgradePodRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OperationModel> {
-        const response = await this.upgradePodRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * This action creates an upgrade operation to convert a starter index to a serverless index. The index must be a gcp-starter index. It takes in parameters controlling where to create the serverless index.  This is a private endpoint currently used only by the console. 
-     * Trigger an upgrade job on a starter index
-     */
-    async upgradeStarterRaw(requestParameters: UpgradeStarterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OperationModel>> {
-        if (requestParameters.upgradeStarterRequest === null || requestParameters.upgradeStarterRequest === undefined) {
-            throw new runtime.RequiredError('upgradeStarterRequest','Required parameter requestParameters.upgradeStarterRequest was null or undefined when calling upgradeStarter.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
-        }
-
-        const response = await this.request({
-            path: `/upgrade/starter`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: UpgradeStarterRequestToJSON(requestParameters.upgradeStarterRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => OperationModelFromJSON(jsonValue));
-    }
-
-    /**
-     * This action creates an upgrade operation to convert a starter index to a serverless index. The index must be a gcp-starter index. It takes in parameters controlling where to create the serverless index.  This is a private endpoint currently used only by the console. 
-     * Trigger an upgrade job on a starter index
-     */
-    async upgradeStarter(requestParameters: UpgradeStarterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OperationModel> {
-        const response = await this.upgradeStarterRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
