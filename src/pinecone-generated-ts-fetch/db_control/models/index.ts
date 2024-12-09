@@ -9,8 +9,6 @@ export * from './ConfigureIndexRequestSpecPod';
 export * from './CreateCollectionRequest';
 export * from './CreateIndexForModelRequest';
 export * from './CreateIndexForModelRequestEmbed';
-export * from './CreateIndexFromDatasetRequest';
-export * from './CreateIndexFromDatasetRequestSpec';
 export * from './CreateIndexRequest';
 export * from './DeletionProtection';
 export * from './ErrorResponse';
