@@ -14,17 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ * A sparse embedding of a single input
  * @export
  * @interface SparseEmbedding
  */
 export interface SparseEmbedding {
-    /**
-     * Indicates that this is a 'sparse' embedding.
-     * @type {string}
-     * @memberof SparseEmbedding
-     */
-    vectorType: string;
     /**
      * The sparse embedding values.
      * @type {Array<number>}
@@ -50,7 +44,6 @@ export interface SparseEmbedding {
  */
 export function instanceOfSparseEmbedding(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "vectorType" in value;
     isInstance = isInstance && "sparseValues" in value;
     isInstance = isInstance && "sparseIndices" in value;
 
@@ -67,7 +60,6 @@ export function SparseEmbeddingFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
-        'vectorType': json['vector_type'],
         'sparseValues': json['sparse_values'],
         'sparseIndices': json['sparse_indices'],
         'sparseTokens': !exists(json, 'sparse_tokens') ? undefined : json['sparse_tokens'],
@@ -83,7 +75,6 @@ export function SparseEmbeddingToJSON(value?: SparseEmbedding | null): any {
     }
     return {
         
-        'vector_type': value.vectorType,
         'sparse_values': value.sparseValues,
         'sparse_indices': value.sparseIndices,
         'sparse_tokens': value.sparseTokens,

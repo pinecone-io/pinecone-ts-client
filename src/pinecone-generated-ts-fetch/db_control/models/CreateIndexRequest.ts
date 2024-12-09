@@ -43,9 +43,9 @@ export interface CreateIndexRequest {
      * @type {number}
      * @memberof CreateIndexRequest
      */
-    dimension: number;
+    dimension?: number;
     /**
-     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
+     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If the 'vector_type' is 'sparse', the metric must be 'dotproduct'. If the `vector_type` is `dense`, the metric defaults to 'cosine'.
      * @type {string}
      * @memberof CreateIndexRequest
      */
@@ -68,6 +68,12 @@ export interface CreateIndexRequest {
      * @memberof CreateIndexRequest
      */
     spec: IndexSpec | null;
+    /**
+     * The index vector type. You can use 'dense' or 'sparse'. If 'dense', the vector dimension must be specified.  If 'sparse', the vector dimension should not be specified.
+     * @type {string}
+     * @memberof CreateIndexRequest
+     */
+    vectorType?: string;
 }
 
 
@@ -88,7 +94,6 @@ export type CreateIndexRequestMetricEnum = typeof CreateIndexRequestMetricEnum[k
 export function instanceOfCreateIndexRequest(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "dimension" in value;
     isInstance = isInstance && "spec" in value;
 
     return isInstance;
@@ -105,11 +110,12 @@ export function CreateIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'name': json['name'],
-        'dimension': json['dimension'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
         'spec': IndexSpecFromJSON(json['spec']),
+        'vectorType': !exists(json, 'vector_type') ? undefined : json['vector_type'],
     };
 }
 
@@ -128,5 +134,6 @@ export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any
         'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
         'tags': value.tags,
         'spec': IndexSpecToJSON(value.spec),
+        'vector_type': value.vectorType,
     };
 }
