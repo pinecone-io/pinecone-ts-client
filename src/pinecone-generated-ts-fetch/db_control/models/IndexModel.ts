@@ -18,7 +18,21 @@ import { DeletionProtectionFromJSON, DeletionProtectionToJSON } from './Deletion
 import type { IndexModelSpec } from './IndexModelSpec';
 import { IndexModelSpecFromJSON, IndexModelSpecToJSON } from './IndexModelSpec';
 import type { IndexModelStatus } from './IndexModelStatus';
+<<<<<<< HEAD
 import { IndexModelStatusFromJSON, IndexModelStatusToJSON } from './IndexModelStatus';
+=======
+import {
+    IndexModelStatusFromJSON,
+    IndexModelStatusFromJSONTyped,
+    IndexModelStatusToJSON,
+} from './IndexModelStatus';
+import type { ModelIndexEmbed } from './ModelIndexEmbed';
+import {
+    ModelIndexEmbedFromJSON,
+    ModelIndexEmbedFromJSONTyped,
+    ModelIndexEmbedToJSON,
+} from './ModelIndexEmbed';
+>>>>>>> 0928cf8 (Incorporate newest code from stable)
 
 /**
  * The IndexModel describes the configuration and status of a Pinecone index.
@@ -26,54 +40,66 @@ import { IndexModelStatusFromJSON, IndexModelStatusToJSON } from './IndexModelSt
  * @interface IndexModel
  */
 export interface IndexModel {
-  /**
-   * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
-   * @type {string}
-   * @memberof IndexModel
-   */
-  name: string;
-  /**
-   * The dimensions of the vectors to be inserted in the index.
-   * @type {number}
-   * @memberof IndexModel
-   */
-  dimension: number;
-  /**
-   * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'.
-   * @type {string}
-   * @memberof IndexModel
-   */
-  metric: IndexModelMetricEnum;
-  /**
-   * The URL address where the index is hosted.
-   * @type {string}
-   * @memberof IndexModel
-   */
-  host: string;
-  /**
-   *
-   * @type {DeletionProtection}
-   * @memberof IndexModel
-   */
-  deletionProtection?: DeletionProtection;
-  /**
-   * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
-   * @type {{ [key: string]: string; }}
-   * @memberof IndexModel
-   */
-  tags?: { [key: string]: string; };
-  /**
-   *
-   * @type {IndexModelSpec}
-   * @memberof IndexModel
-   */
-  spec: IndexModelSpec;
-  /**
-   *
-   * @type {IndexModelStatus}
-   * @memberof IndexModel
-   */
-  status: IndexModelStatus;
+    /**
+     * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
+     * @type {string}
+     * @memberof IndexModel
+     */
+    name: string;
+    /**
+     * The dimensions of the vectors to be inserted in the index.
+     * @type {number}
+     * @memberof IndexModel
+     */
+    dimension?: number;
+    /**
+     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If the 'vector_type' is 'sparse', the metric must be 'dotproduct'. If the `vector_type` is `dense`, the metric defaults to 'cosine'.
+     * @type {string}
+     * @memberof IndexModel
+     */
+    metric: IndexModelMetricEnum;
+    /**
+     * The URL address where the index is hosted.
+     * @type {string}
+     * @memberof IndexModel
+     */
+    host: string;
+    /**
+     * 
+     * @type {DeletionProtection}
+     * @memberof IndexModel
+     */
+    deletionProtection?: DeletionProtection;
+    /**
+     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
+     * @type {{ [key: string]: string; }}
+     * @memberof IndexModel
+     */
+    tags?: { [key: string]: string; };
+    /**
+     * 
+     * @type {ModelIndexEmbed}
+     * @memberof IndexModel
+     */
+    embed?: ModelIndexEmbed;
+    /**
+     * 
+     * @type {IndexModelSpec}
+     * @memberof IndexModel
+     */
+    spec: IndexModelSpec;
+    /**
+     * 
+     * @type {IndexModelStatus}
+     * @memberof IndexModel
+     */
+    status: IndexModelStatus;
+    /**
+     * The index vector type. You can use 'dense' or 'sparse'. If 'dense', the vector dimension must be specified.  If 'sparse', the vector dimension should not be specified.
+     * @type {string}
+     * @memberof IndexModel
+     */
+    vectorType: string;
 }
 
 
@@ -92,13 +118,13 @@ export type IndexModelMetricEnum = typeof IndexModelMetricEnum[keyof typeof Inde
  * Check if a given object implements the IndexModel interface.
  */
 export function instanceOfIndexModel(value: object): boolean {
-  let isInstance = true;
-  isInstance = isInstance && 'name' in value;
-  isInstance = isInstance && 'dimension' in value;
-  isInstance = isInstance && 'metric' in value;
-  isInstance = isInstance && 'host' in value;
-  isInstance = isInstance && 'spec' in value;
-  isInstance = isInstance && 'status' in value;
+    let isInstance = true;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "metric" in value;
+    isInstance = isInstance && "host" in value;
+    isInstance = isInstance && "spec" in value;
+    isInstance = isInstance && "status" in value;
+    isInstance = isInstance && "vectorType" in value;
 
   return isInstance;
 }
@@ -108,39 +134,43 @@ export function IndexModelFromJSON(json: any): IndexModel {
 }
 
 export function IndexModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexModel {
-  if ((json === undefined) || (json === null)) {
-    return json;
-  }
-  return {
-
-    'name': json['name'],
-    'dimension': json['dimension'],
-    'metric': json['metric'],
-    'host': json['host'],
-    'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
-    'tags': !exists(json, 'tags') ? undefined : json['tags'],
-    'spec': IndexModelSpecFromJSON(json['spec']),
-    'status': IndexModelStatusFromJSON(json['status'])
-  };
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    return {
+        
+        'name': json['name'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'metric': json['metric'],
+        'host': json['host'],
+        'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
+        'tags': !exists(json, 'tags') ? undefined : json['tags'],
+        'embed': !exists(json, 'embed') ? undefined : ModelIndexEmbedFromJSON(json['embed']),
+        'spec': IndexModelSpecFromJSON(json['spec']),
+        'status': IndexModelStatusFromJSON(json['status']),
+        'vectorType': json['vector_type'],
+    };
 }
 
 export function IndexModelToJSON(value?: IndexModel | null): any {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (value === null) {
-    return null;
-  }
-  return {
-
-    'name': value.name,
-    'dimension': value.dimension,
-    'metric': value.metric,
-    'host': value.host,
-    'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
-    'tags': value.tags,
-    'spec': IndexModelSpecToJSON(value.spec),
-    'status': IndexModelStatusToJSON(value.status)
-  };
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    return {
+        
+        'name': value.name,
+        'dimension': value.dimension,
+        'metric': value.metric,
+        'host': value.host,
+        'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
+        'tags': value.tags,
+        'embed': ModelIndexEmbedToJSON(value.embed),
+        'spec': IndexModelSpecToJSON(value.spec),
+        'status': IndexModelStatusToJSON(value.status),
+        'vector_type': value.vectorType,
+    };
 }
 

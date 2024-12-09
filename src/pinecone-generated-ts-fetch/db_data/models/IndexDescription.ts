@@ -33,7 +33,7 @@ export interface IndexDescription {
      */
     namespaces?: { [key: string]: NamespaceSummary; };
     /**
-     * The dimension of the indexed vectors.
+     * The dimension of the indexed vectors. Not specified if `sparse` index.
      * @type {number}
      * @memberof IndexDescription
      */
@@ -54,6 +54,18 @@ export interface IndexDescription {
      * @memberof IndexDescription
      */
     totalVectorCount?: number;
+    /**
+     * The metric used to measure similarity.
+     * @type {string}
+     * @memberof IndexDescription
+     */
+    metric?: string;
+    /**
+     * The type of vectors stored in the index.
+     * @type {string}
+     * @memberof IndexDescription
+     */
+    vectorType?: string;
 }
 
 /**
@@ -79,6 +91,8 @@ export function IndexDescriptionFromJSONTyped(json: any, ignoreDiscriminator: bo
         'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'indexFullness': !exists(json, 'indexFullness') ? undefined : json['indexFullness'],
         'totalVectorCount': !exists(json, 'totalVectorCount') ? undefined : json['totalVectorCount'],
+        'metric': !exists(json, 'metric') ? undefined : json['metric'],
+        'vectorType': !exists(json, 'vectorType') ? undefined : json['vectorType'],
     };
 }
 
@@ -95,6 +109,8 @@ export function IndexDescriptionToJSON(value?: IndexDescription | null): any {
         'dimension': value.dimension,
         'indexFullness': value.indexFullness,
         'totalVectorCount': value.totalVectorCount,
+        'metric': value.metric,
+        'vectorType': value.vectorType,
     };
 }
 

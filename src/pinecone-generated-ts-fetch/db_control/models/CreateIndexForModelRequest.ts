@@ -45,7 +45,7 @@ export interface CreateIndexForModelRequest {
      */
     cloud: CreateIndexForModelRequestCloudEnum;
     /**
-     * The region where you would like your index to be created. 
+     * The region where you would like your index to be created.
      * @type {string}
      * @memberof CreateIndexForModelRequest
      */
