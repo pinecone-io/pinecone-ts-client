@@ -12,10 +12,6 @@ export interface ChatRequest {
 }
 
 export const chatClosed = (assistantName: string, api: ManageAssistantsApiData) => {
-  if (!assistantName) {
-    throw new Error('No assistant name provided');
-  }
-
   return async (options: ChatRequest): Promise<ChatModel> => {
     if (!options.messages) {
       throw new Error('No messages passed to Assistant');
