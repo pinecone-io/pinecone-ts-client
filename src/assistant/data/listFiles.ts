@@ -11,5 +11,5 @@ export const listFilesClosed = (assistantName: string, api: ManageAssistantsApiD
   return async (options: ListFiles) => {
     const request = {assistantName: assistantName, filter: options.filter} as ListFilesRequest;
     return api.listFiles(request);
-  }
-}
+  };
+};
