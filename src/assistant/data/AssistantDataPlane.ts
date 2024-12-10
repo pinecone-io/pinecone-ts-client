@@ -1,5 +1,5 @@
 import {
-  ManageAssistantsApi as ManageAssistantsApiData,
+  ManageAssistantsApi as ManageAssistantsApiData, UploadFileRequest
   // UploadFileRequest
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { chatClosed, ChatRequest } from './chat';
@@ -7,6 +7,8 @@ import { PineconeNotImplementedError } from '../../errors';
 // import { uploadFileClosed, UploadRequest } from './uploadFile';
 import { ListFiles, listFilesClosed } from './listFiles';
 import { DescribeFile, describeFileClosed } from './describeFile';
+import { UploadFile, uploadFileClosed } from './uploadFile';
+import { DeleteFile, deleteFileClosed } from './deleteFile';
 
 export class AssistantDataPlane {
   api: ManageAssistantsApiData;  // todo: should this be private?
@@ -15,8 +17,9 @@ export class AssistantDataPlane {
   private _chat: ReturnType<typeof chatClosed>;
   private _listFiles: ReturnType<typeof listFilesClosed>;
   private _describeFile: ReturnType<typeof describeFileClosed>;
+  private _uploadFile: ReturnType<typeof uploadFileClosed>;
+  private _deleteFile: ReturnType<typeof deleteFileClosed>;
 
-  // private _uploadFile: ReturnType<typeof uploadFileClosed>;
 
   constructor(api: ManageAssistantsApiData, assistantName: string) {
     if (!assistantName) {
@@ -28,9 +31,9 @@ export class AssistantDataPlane {
     this._chat = chatClosed(this.assistantName, api);
     this._listFiles = listFilesClosed(this.assistantName, api);
     this._describeFile = describeFileClosed(this.assistantName, api);
+    this._uploadFile = uploadFileClosed(this.assistantName, api);
+    this._deleteFile = deleteFileClosed(this.assistantName, api);
 
-
-    // this._uploadFile = uploadFileClosed(api);
   }
 
   // --------- Chat methods ---------
@@ -54,12 +57,12 @@ export class AssistantDataPlane {
     return this._describeFile(options);
   }
 
-  deleteFile(){
-    return PineconeNotImplementedError;
+  deleteFile(options: DeleteFile){
+    return this._deleteFile(options);
   }
 
-  // uploadFile(options: UploadRequest){
-    // return this._uploadFile(options);
-  // }
+  uploadFile(options: UploadFileRequest){
+    return this._uploadFile(options);
+  }
 
 }
