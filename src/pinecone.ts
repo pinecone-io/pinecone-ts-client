@@ -34,6 +34,7 @@ import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
 import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
 import { assistantDataOperationsBuilder } from './assistant/data/assistantOperationsProviderData';
+import { assistantEvalOperationsBuilder } from './assistant/data/assistantOperationsProviderEval';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -684,9 +685,10 @@ export class Pinecone {
 
   Assistant(assistantName: string) {
     const assistantApiData = assistantDataOperationsBuilder(this.config);
-    return new AssistantDataPlane(assistantApiData, assistantName);
+    const assistantApiEval = assistantEvalOperationsBuilder(this.config);
+    return new AssistantDataPlane(assistantApiData, assistantApiEval, assistantName);
   }
 
-  // Uppercase AssistantCtrlPlane == dataplane
-  // Lowercase == control plane
+  // Uppercase Assistant == data plane (includes eval)
+  // Lowercase assistant == control plane
 }

@@ -1,40 +1,41 @@
 import {
-  ManageAssistantsApi as ManageAssistantsApiData, UploadFileRequest
-  // UploadFileRequest
+  ManageAssistantsApi as ManageAssistantsApiData,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { chatClosed, ChatRequest } from './chat';
 import { PineconeNotImplementedError } from '../../errors';
-// import { uploadFileClosed, UploadRequest } from './uploadFile';
 import { ListFiles, listFilesClosed } from './listFiles';
 import { DescribeFile, describeFileClosed } from './describeFile';
-import { UploadFile, uploadFileClosed } from './uploadFile';
 import { DeleteFile, deleteFileClosed } from './deleteFile';
+import { Configuration, MetricsApi } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
+import { Eval, evaluateClosed } from './evaluate';
 
 export class AssistantDataPlane {
-  api: ManageAssistantsApiData;  // todo: should this be private?
+  dataApi: ManageAssistantsApiData;  // todo: should this be private?
+  evalApi: MetricsApi;  // todo: should this be private?
   assistantName: string;
 
   private _chat: ReturnType<typeof chatClosed>;
   private _listFiles: ReturnType<typeof listFilesClosed>;
   private _describeFile: ReturnType<typeof describeFileClosed>;
-  private _uploadFile: ReturnType<typeof uploadFileClosed>;
+  // private _uploadFile: ReturnType<typeof uploadFileClosed>;
   private _deleteFile: ReturnType<typeof deleteFileClosed>;
+  private _evaluate: ReturnType<typeof evaluateClosed>;
 
-
-  constructor(api: ManageAssistantsApiData, assistantName: string) {
+  constructor(dataApi: ManageAssistantsApiData, evalApi: MetricsApi, assistantName: string
+  ) {
     if (!assistantName) {
       throw new Error('No assistant name provided');
     }
-
-    this.api = api;
+    this.dataApi = dataApi;
+    this.evalApi = evalApi;
     this.assistantName = assistantName;
-    this._chat = chatClosed(this.assistantName, api);
-    this._listFiles = listFilesClosed(this.assistantName, api);
-    this._describeFile = describeFileClosed(this.assistantName, api);
-    this._uploadFile = uploadFileClosed(this.assistantName, api);
-    this._deleteFile = deleteFileClosed(this.assistantName, api);
-
-  }
+    this._chat = chatClosed(this.assistantName, dataApi);
+    this._listFiles = listFilesClosed(this.assistantName, dataApi);
+    this._describeFile = describeFileClosed(this.assistantName, dataApi);
+    // this._uploadFile = uploadFileClosed(this.assistantName, api, this.config);
+    this._deleteFile = deleteFileClosed(this.assistantName, dataApi);
+    this._evaluate = evaluateClosed(this.assistantName, evalApi);
+    }
 
   // --------- Chat methods ---------
   chat(options: ChatRequest) {
@@ -61,8 +62,12 @@ export class AssistantDataPlane {
     return this._deleteFile(options);
   }
 
-  uploadFile(options: UploadFileRequest){
-    return this._uploadFile(options);
+  evaluate(options: Eval) {
+    return this._evaluate(options);
   }
+
+  // uploadFile(options: UploadFile){
+    // return this._uploadFile(options);
+  // }
 
 }
