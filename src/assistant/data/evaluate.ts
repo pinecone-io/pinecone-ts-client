@@ -1,6 +1,6 @@
 import {
   MetricsApi,
-  MetricsAlignmentRequest, AlignmentRequest
+  MetricsAlignmentRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 
 export interface Eval {
@@ -11,7 +11,13 @@ export interface Eval {
 
 export const evaluateClosed = (assistantName: string, api: MetricsApi) => {
   return async (options: Eval) => {
-    const request = {alignmentRequest: {question: options.question, answer: options.answer, groundTruthAnswer: options.groundTruth}} as MetricsAlignmentRequest;
+    const request = {
+      alignmentRequest: {
+        question: options.question,
+        answer: options.answer,
+        groundTruthAnswer: options.groundTruth,
+      },
+    } as MetricsAlignmentRequest;
     return api.metricsAlignment(request);
   };
 };

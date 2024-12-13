@@ -4,8 +4,6 @@ export { Index } from './data';
 export * as Errors from './errors';
 export { EmbeddingsList } from './models/embeddingsList';
 
-export {Blob, File } from 'blob-polyfill';
-
 // Interface exports
 export { RerankOptions } from './inference/inference';
 export {

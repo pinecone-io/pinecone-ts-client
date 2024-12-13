@@ -1,12 +1,16 @@
 import {
   CreateAssistantRequest,
-  ManageAssistantsApi as ManageAssistantsApiCtrl, UpdateAssistantOperationRequest, UpdateAssistantRequest
+  ManageAssistantsApi as ManageAssistantsApiCtrl,
+  UpdateAssistantOperationRequest,
+  UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
-import { createAssistantClosed } from './index';
-import { deleteAssistantClosed } from './index';
-import { getAssistantClosed } from './index';
-import { listAssistantsClosed } from './index';
-import { updateAssistantClosed } from './index';
+import {
+  createAssistantClosed,
+  deleteAssistantClosed,
+  getAssistantClosed,
+  listAssistantsClosed,
+  updateAssistantClosed,
+} from './index';
 
 export class AssistantCtrlPlane {
   _createAssistant: ReturnType<typeof createAssistantClosed>;
@@ -16,16 +20,16 @@ export class AssistantCtrlPlane {
   _updateAssistant: ReturnType<typeof updateAssistantClosed>;
 
   constructor(api: ManageAssistantsApiCtrl) {
-    this._createAssistant = createAssistantClosed(api)
-    this._deleteAssistant = deleteAssistantClosed(api)
-    this._getAssistant = getAssistantClosed(api)
-    this._listAssistants = listAssistantsClosed(api)
-    this._updateAssistant = updateAssistantClosed(api)
+    this._createAssistant = createAssistantClosed(api);
+    this._deleteAssistant = deleteAssistantClosed(api);
+    this._getAssistant = getAssistantClosed(api);
+    this._listAssistants = listAssistantsClosed(api);
+    this._updateAssistant = updateAssistantClosed(api);
   }
 
   createAssistant(options: CreateAssistantRequest) {
-      return this._createAssistant(options);
-    } // todo: should this be async?
+    return this._createAssistant(options);
+  } // todo: should this be async?
 
   async deleteAssistant(assistantName: string) {
     return await this._deleteAssistant(assistantName);
@@ -44,5 +48,4 @@ export class AssistantCtrlPlane {
   ) {
     return await this._updateAssistant(options);
   }
-
 }

@@ -18,7 +18,8 @@ export const assistantControlOperationsBuilder = (
 ): ManageAssistantsControlApi => {
   const { apiKey } = config;
   const controllerPath =
-    normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io/assistant';
+    normalizeUrl(config.controllerHostUrl) ||
+    'https://api.pinecone.io/assistant';
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,
@@ -32,7 +33,7 @@ export const assistantControlOperationsBuilder = (
     fetchApi: getFetch(config),
     middleware,
   };
-  process.env.PINECONE_DEBUG = "true";
-  console.log("controller path = ", controllerPath);
+  process.env.PINECONE_DEBUG = 'true';
+  console.log('controller path = ', controllerPath);
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };

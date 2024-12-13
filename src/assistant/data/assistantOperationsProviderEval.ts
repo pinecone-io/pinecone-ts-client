@@ -1,6 +1,10 @@
 import type { PineconeConfiguration } from '../../data';
-import { Configuration,   type ConfigurationParameters as AssistantOperationsApiConfigurationParameters,
-  X_PINECONE_API_VERSION, MetricsApi} from '../../pinecone-generated-ts-fetch/assistant_evaluation';
+import {
+  Configuration,
+  type ConfigurationParameters as AssistantOperationsApiConfigurationParameters,
+  X_PINECONE_API_VERSION,
+  MetricsApi,
+} from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 import {
   buildUserAgent,
   getFetch,
@@ -9,17 +13,17 @@ import {
 } from '../../utils';
 import { middleware } from '../../utils/middleware';
 
-
 // Notes:
-  // - `ConfigurationParameters` and `Configuration` are the same in runtime.ts across both data plane and control plane
-  // APIs for Assistant
+// - `ConfigurationParameters` and `Configuration` are the same in runtime.ts across both data plane and control plane
+// APIs for Assistant
 
 export const assistantEvalOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {
   const { apiKey } = config;
   const controllerPath =
-    normalizeUrl(config.controllerHostUrl) || 'https://prod-1-data.ke.pinecone.io/assistant';
+    normalizeUrl(config.controllerHostUrl) ||
+    'https://prod-1-data.ke.pinecone.io/assistant';
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,

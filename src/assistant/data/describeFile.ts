@@ -1,6 +1,6 @@
 import {
   DescribeFileRequest,
-  ManageAssistantsApi as ManageAssistantsApiData
+  ManageAssistantsApi as ManageAssistantsApiData,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 export interface DescribeFile {
@@ -8,9 +8,16 @@ export interface DescribeFile {
   includeUrl?: boolean;
 }
 
-export const describeFileClosed = (assistantName: string, api: ManageAssistantsApiData) => {
+export const describeFileClosed = (
+  assistantName: string,
+  api: ManageAssistantsApiData
+) => {
   return async (options: DescribeFile) => {
-    const request = {assistantName: assistantName, assistantFileId: options.fileId, includeUrl: options.includeUrl} as DescribeFileRequest;
+    const request = {
+      assistantName: assistantName,
+      assistantFileId: options.fileId,
+      includeUrl: options.includeUrl,
+    } as DescribeFileRequest;
     return api.describeFile(request);
   };
 };
