@@ -33,8 +33,6 @@ import { PineconeConfigurationProperties } from './data/vectors/types';
 import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
 import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
-import { assistantDataOperationsBuilder } from './assistant/data/assistantOperationsProviderData';
-import { assistantEvalOperationsBuilder } from './assistant/data/assistantOperationsProviderEval';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -147,7 +145,6 @@ export class Pinecone {
 
     this.inference = new Inference(infApi);
     this.assistant = new AssistantCtrlPlane(assistantApiCtrl);
-
   }
 
   /**
@@ -164,7 +161,7 @@ export class Pinecone {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a' +
-        ' configuration object is required when calling new Pinecone().'
+          ' configuration object is required when calling new Pinecone().'
       );
     }
 
@@ -684,9 +681,7 @@ export class Pinecone {
   }
 
   Assistant(assistantName: string) {
-    const assistantApiData = assistantDataOperationsBuilder(this.config);
-    const assistantApiEval = assistantEvalOperationsBuilder(this.config);
-    return new AssistantDataPlane(assistantApiData, assistantApiEval, assistantName);
+    return new AssistantDataPlane(assistantName, this.config);
   }
 
   // Uppercase Assistant == data plane (includes eval)
