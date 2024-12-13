@@ -34,6 +34,5 @@ export const assistantControlOperationsBuilder = (
     middleware,
   };
   process.env.PINECONE_DEBUG = 'true';
-  console.log('controller path = ', controllerPath);
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };
