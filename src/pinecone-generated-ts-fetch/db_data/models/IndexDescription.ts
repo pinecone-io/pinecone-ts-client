@@ -43,7 +43,7 @@ export interface IndexDescription {
      * 
      * Serverless indexes scale automatically as needed, so index fullness  is relevant only for pod-based indexes.
      * 
-     * The index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+     * The index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/2024-10/control-plane/describe_index).
      * @type {number}
      * @memberof IndexDescription
      */
