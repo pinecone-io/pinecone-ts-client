@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { VectorType } from './VectorType';
+import {
+    VectorTypeFromJSON,
+    VectorTypeFromJSONTyped,
+    VectorTypeToJSON,
+} from './VectorType';
+
 /**
  * A sparse embedding of a single input
  * @export
@@ -37,6 +44,12 @@ export interface SparseEmbedding {
      * @memberof SparseEmbedding
      */
     sparseTokens?: Array<string>;
+    /**
+     * 
+     * @type {VectorType}
+     * @memberof SparseEmbedding
+     */
+    vectorType: VectorType;
 }
 
 /**
@@ -46,6 +59,7 @@ export function instanceOfSparseEmbedding(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "sparseValues" in value;
     isInstance = isInstance && "sparseIndices" in value;
+    isInstance = isInstance && "vectorType" in value;
 
     return isInstance;
 }
@@ -63,6 +77,7 @@ export function SparseEmbeddingFromJSONTyped(json: any, ignoreDiscriminator: boo
         'sparseValues': json['sparse_values'],
         'sparseIndices': json['sparse_indices'],
         'sparseTokens': !exists(json, 'sparse_tokens') ? undefined : json['sparse_tokens'],
+        'vectorType': VectorTypeFromJSON(json['vector_type']),
     };
 }
 
@@ -78,6 +93,7 @@ export function SparseEmbeddingToJSON(value?: SparseEmbedding | null): any {
         'sparse_values': value.sparseValues,
         'sparse_indices': value.sparseIndices,
         'sparse_tokens': value.sparseTokens,
+        'vector_type': VectorTypeToJSON(value.vectorType),
     };
 }
 

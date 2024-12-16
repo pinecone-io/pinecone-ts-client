@@ -32,7 +32,6 @@ export * from './StartImportRequest';
 export * from './StartImportResponse';
 export * from './UpdateRequest';
 export * from './UpsertRecord';
-export * from './UpsertRecordEmbed';
 export * from './UpsertRequest';
 export * from './UpsertResponse';
 export * from './Usage';

@@ -13,3 +13,4 @@ export * from './RerankRequest';
 export * from './RerankResult';
 export * from './RerankResultUsage';
 export * from './SparseEmbedding';
+export * from './VectorType';
