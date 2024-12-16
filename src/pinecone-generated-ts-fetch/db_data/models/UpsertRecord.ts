@@ -13,19 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { UpsertRecordEmbed } from './UpsertRecordEmbed';
-import {
-    UpsertRecordEmbedFromJSON,
-    UpsertRecordEmbedFromJSONTyped,
-    UpsertRecordEmbedToJSON,
-} from './UpsertRecordEmbed';
-import type { Vector } from './Vector';
-import {
-    VectorFromJSON,
-    VectorFromJSONTyped,
-    VectorToJSON,
-} from './Vector';
-
 /**
  * The request for the `upsert` operation.
  * @export
@@ -38,18 +25,6 @@ export interface UpsertRecord {
      * @memberof UpsertRecord
      */
     id: string;
-    /**
-     * 
-     * @type {Vector}
-     * @memberof UpsertRecord
-     */
-    vector?: Vector;
-    /**
-     * 
-     * @type {UpsertRecordEmbed}
-     * @memberof UpsertRecord
-     */
-    embed?: UpsertRecordEmbed;
 }
 
 /**
@@ -73,8 +48,6 @@ export function UpsertRecordFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'id': json['_id'],
-        'vector': !exists(json, '_vector') ? undefined : VectorFromJSON(json['_vector']),
-        'embed': !exists(json, '_embed') ? undefined : UpsertRecordEmbedFromJSON(json['_embed']),
     };
 }
 
@@ -88,8 +61,6 @@ export function UpsertRecordToJSON(value?: UpsertRecord | null): any {
     return {
         
         '_id': value.id,
-        '_vector': VectorToJSON(value.vector),
-        '_embed': UpsertRecordEmbedToJSON(value.embed),
     };
 }
 
