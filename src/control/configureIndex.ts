@@ -12,6 +12,7 @@ type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
 export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
   'deletionProtection',
   'spec',
+  'tags',
 ];
 
 export const configureIndex = (api: ManageIndexesApi) => {
