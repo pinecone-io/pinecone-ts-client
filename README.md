@@ -163,6 +163,7 @@ await pc.createIndex({
       region: 'us-west-2',
     },
   },
+  tags: { team: 'data-science' },
 });
 ```
 
@@ -187,6 +188,7 @@ await pc.createIndex({
         indexed: ['product_type'],
       },
     },
+    tags: { team: 'data-science' },
   },
 
   // This option tells the client not to throw if the index already exists.
@@ -341,6 +343,31 @@ const pc = new Pinecone();
 
 await pc.configureIndex('deletion-protected-index', {
   deletionProtection: 'disabled',
+});
+```
+
+#### Create or configure an index with index tags
+
+You can configure both serverless and pod indexes with [tags](https://docs.pinecone.io/guides/indexes/tag-an-index).
+Indexes can hold an arbitrary number of tags outlining metadata
+you would like attached to the index object itself, such as team ownership, project, or any other relevant information.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
+  name: 'deletion-protected-index',
+  dimension: 1536,
+  metric: 'cosine',
+  deletionProtection: 'enabled',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+  tags: { team: 'data-science' }, // index tag
 });
 ```
 
