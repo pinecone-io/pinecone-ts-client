@@ -51,7 +51,7 @@ runs:
     - name: Install Vercel CLI and (re)deploy the app
       run: |
         cd ts-client-test-external-app
-        npm install vercel
+        npm install --global vercel@latest
         echo "installed vercel with npm"
         vercel --token ${{ inputs.vercel-token }}
         echo "called vercel with token"
