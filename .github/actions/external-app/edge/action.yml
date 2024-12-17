@@ -52,10 +52,15 @@ runs:
       run: |
         cd ts-client-test-external-app
         npm install vercel
+        echo "installed vercel with npm"
         vercel --token ${{ inputs.vercel-token }}
+        echo "called vercel with token"
         vercel pull --yes --token ${{ inputs.vercel-token }}
+        echo "called vercel pull"
         vercel build --token ${{ inputs.vercel-token }}
+        echo "called vercel build"
         vercel --token ${{ inputs.vercel-token }} --prod
+        echo "called vercel --prod"
       shell: bash
 
     - name: Hit Vercel app endpoint(s) via assertResponse.ts file
