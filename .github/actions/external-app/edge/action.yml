@@ -53,7 +53,7 @@ runs:
         cd ts-client-test-external-app
         npm install --global vercel@latest
         echo "installed vercel with npm"
-        vercel --token ${{ inputs.vercel-token }}
+        vercel --token ${{ inputs.vercel-token }} --yes
         echo "called vercel with token"
         vercel pull --yes --token ${{ inputs.vercel-token }}
         echo "called vercel pull"
