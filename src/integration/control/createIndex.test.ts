@@ -22,12 +22,16 @@ describe('create index', () => {
           },
         },
         waitUntilReady: true,
+        tags: { project: 'pinecone-integration-tests' },
       });
       const description = await pinecone.describeIndex(indexName);
       expect(description.name).toEqual(indexName);
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('cosine');
       expect(description.host).toBeDefined();
+      expect(description.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
 
       await pinecone.deleteIndex(indexName);
     });
@@ -108,6 +112,28 @@ describe('create index', () => {
 
   describe('error cases', () => {
     test('create index with invalid index name', async () => {
+      try {
+        const indexName = randomIndexName('serverless-create');
+
+        await pinecone.createIndex({
+          name: indexName + '-',
+          dimension: 5,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-west-2',
+            },
+          },
+        });
+      } catch (e) {
+        const err = e as PineconeNotFoundError;
+        expect(err.name).toEqual('PineconeBadRequestError');
+        expect(err.message).toContain('alphanumeric character');
+      }
+    });
+
+    test('create index with invalid tags', async () => {
       try {
         const indexName = randomIndexName('serverless-create');
 
