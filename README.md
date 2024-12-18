@@ -356,12 +356,11 @@ you would like attached to the index object itself, such as team ownership, proj
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-// Create index
+// Create index with tag
 await pc.createIndex({
-  name: 'deletion-protected-index',
+  name: 'tag-index',
   dimension: 1536,
   metric: 'cosine',
-  deletionProtection: 'enabled',
   spec: {
     serverless: {
       cloud: 'aws',
@@ -372,12 +371,12 @@ await pc.createIndex({
 });
 
 // Configure index with a new tag
-await pc.configureIndex('deletion-protected-index', {
+await pc.configureIndex('tag-index', {
   tags: { project: 'recommendation' }, // new index tag
 });
 
 // Delete an existing tag
-await pc.configureIndex('deletion-protected-index', {
+await pc.configureIndex('tag-index', {
   tags: { project: '' }, // Pass an empty string to an existing key to delete a tag; this will delete the `project` tag
 });
 ```
