@@ -348,7 +348,7 @@ await pc.configureIndex('deletion-protected-index', {
 
 #### Create or configure an index with index tags
 
-You can configure both serverless and pod indexes with [tags](https://docs.pinecone.io/guides/indexes/tag-an-index).
+You can create or configure serverless and pod indexes with [tags](https://docs.pinecone.io/guides/indexes/tag-an-index).
 Indexes can hold an arbitrary number of tags outlining metadata
 you would like attached to the index object itself, such as team ownership, project, or any other relevant information.
 
@@ -356,6 +356,7 @@ you would like attached to the index object itself, such as team ownership, proj
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
+// Create index
 await pc.createIndex({
   name: 'deletion-protected-index',
   dimension: 1536,
@@ -368,6 +369,16 @@ await pc.createIndex({
     },
   },
   tags: { team: 'data-science' }, // index tag
+});
+
+// Configure index with a new tag
+await pc.configureIndex('deletion-protected-index', {
+  tags: { project: 'recommendation' }, // new index tag
+});
+
+// Delete an existing tag
+await pc.configureIndex('deletion-protected-index', {
+  tags: { project: '' }, // Pass an empty string to an existing key to delete a tag; this will delete the `project` tag
 });
 ```
 
