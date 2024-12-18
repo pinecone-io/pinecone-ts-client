@@ -472,7 +472,7 @@ export class Pinecone {
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
   configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
-    return this._configureIndex(indexName, options);
+    return this._configureIndex(indexName, options, this.config.maxRetries);
   }
 
   /**

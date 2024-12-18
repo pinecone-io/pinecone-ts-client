@@ -7,6 +7,7 @@ import type {
 } from './types';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateProperties } from '../../utils/validateProperties';
+import { RetryOnServerFailure } from '../../utils';
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the
@@ -62,7 +63,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(options: UpdateOptions<T>): Promise<void> {
+  async run(options: UpdateOptions<T>, maxRetries?: number): Promise<void> {
     this.validator(options);
 
     const requestOptions = {
@@ -73,7 +74,12 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     const api = await this.apiProvider.provide();
-    await api.updateVector({
+    const retryWrapper = new RetryOnServerFailure(
+      api.updateVector.bind(api),
+      maxRetries
+    );
+
+    await retryWrapper.execute({
       updateRequest: { ...requestOptions, namespace: this.namespace },
     });
     return;
