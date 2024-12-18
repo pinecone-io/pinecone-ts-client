@@ -7,7 +7,7 @@ import type {
 
 describe('configureIndex', () => {
   test('calls the openapi configure endpoint', async () => {
-    const indexModel = {
+    const indexModel: IndexModel = {
       name: 'index-name',
       dimension: 5,
       metric: 'cosine',
@@ -25,6 +25,10 @@ describe('configureIndex', () => {
         ready: true,
         state: 'Ready',
       },
+      tags: {
+        example: 'tag',
+      },
+      deletionProtection: 'disabled', // Redundant, but for example purposes
     };
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest
@@ -32,7 +36,13 @@ describe('configureIndex', () => {
     const IOA = { configureIndex: fakeConfigure } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
-      spec: { pod: { replicas: 4, podType: 'p2.x2' } },
+      spec: {
+        pod: { replicas: 4, podType: 'p2.x2' },
+      },
+      deletionProtection: 'disabled',
+      tags: {
+        example: 'tag',
+      },
     });
 
     expect(returned).toBe(indexModel);
@@ -40,6 +50,10 @@ describe('configureIndex', () => {
       indexName: 'index-name',
       configureIndexRequest: {
         spec: { pod: { replicas: 4, podType: 'p2.x2' } },
+        deletionProtection: 'disabled',
+        tags: {
+          example: 'tag',
+        },
       },
     });
   });

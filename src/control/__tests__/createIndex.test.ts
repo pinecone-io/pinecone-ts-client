@@ -63,6 +63,9 @@ describe('createIndex', () => {
           podType: 'p1.x1',
         },
       },
+      tags: {
+        example: 'tag',
+      },
     });
 
     expect(returned).toEqual(void 0);
@@ -77,6 +80,9 @@ describe('createIndex', () => {
             pods: 1,
             podType: 'p1.x1',
           },
+        },
+        tags: {
+          example: 'tag',
         },
       },
     });
@@ -187,7 +193,8 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension, metric, deletionProtection, waitUntilReady, suppressConflicts.'
+      'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension,' +
+        ' metric, deletionProtection, waitUntilReady, suppressConflicts, tags.'
     );
   });
 

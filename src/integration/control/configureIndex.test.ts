@@ -31,6 +31,7 @@ describe('configure index', () => {
           pods: 1,
         },
       },
+      tags: { project: 'pinecone-integration-tests' },
       waitUntilReady: true,
     });
 
@@ -46,6 +47,7 @@ describe('configure index', () => {
         },
       },
       waitUntilReady: true,
+      tags: { project: 'pinecone-integration-tests' },
     });
   });
 
@@ -97,6 +99,19 @@ describe('configure index', () => {
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');
     });
+
+    test('Remove index tag from pod index', async () => {
+      const description = await pinecone.describeIndex(podIndexName);
+      expect(description.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
+
+      await pinecone.configureIndex(podIndexName, {
+        tags: { project: '' },
+      });
+      const description2 = await pinecone.describeIndex(podIndexName);
+      expect(description2.tags).toBeUndefined();
+    });
   });
 
   describe('serverless index', () => {
@@ -119,6 +134,19 @@ describe('configure index', () => {
       await pinecone.configureIndex(serverlessIndexName, {
         deletionProtection: 'disabled',
       });
+    });
+
+    test('Remove index tag from serverless index', async () => {
+      const description = await pinecone.describeIndex(serverlessIndexName);
+      expect(description.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
+
+      await pinecone.configureIndex(serverlessIndexName, {
+        tags: { project: '' },
+      });
+      const description2 = await pinecone.describeIndex(serverlessIndexName);
+      expect(description2.tags).toBeUndefined();
     });
   });
 

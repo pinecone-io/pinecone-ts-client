@@ -37,7 +37,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, spec.'
+        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, spec, tags.'
       );
     });
 
@@ -47,7 +47,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrowSpec).rejects.toThrowError(
-        'You must pass either a `spec`, `deletionProtection` or both to configureIndex in order to update.'
+        'You must pass either `spec`, `deletionProtection` or `tags` to configureIndex in order to update.'
       );
     });
 

@@ -339,7 +339,8 @@ export class Pinecone {
    *      pods: 1,
    *      podType: 'p1.x1'
    *    }
-   *   }
+   *   },
+   *  tags: { 'team': 'data-science' }
    * })
    * ```
    *
@@ -358,7 +359,8 @@ export class Pinecone {
    *       region: 'us-west-2'
    *     }
    *   },
-   *   suppressConflicts: true
+   *   suppressConflicts: true,
+   *   tags: { 'team': 'data-science' }
    * })
    * ```
    *
@@ -376,7 +378,8 @@ export class Pinecone {
    *       region: 'us-west-2'
    *     }
    *   },
-   *  waitUntilReady: true
+   *  waitUntilReady: true,
+   *  tags: { 'team': 'data-science' }
    * });
    *
    * const records = [
@@ -401,6 +404,7 @@ export class Pinecone {
    *       metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
    *     }
    *   },
+   *  tags: { 'team': 'data-science' }
    * })
    * ```
    *
@@ -447,7 +451,8 @@ export class Pinecone {
    * Configure an index
    *
    * Use this method to update configuration on an existing index. For both pod-based and serverless indexes you can update
-   * the deletionProtection status of an index. For pod-based index you can also configure the number of replicas and pod type.
+   * the deletionProtection status of an index and/or change any index tags. For pod-based index you can also
+   * configure the number of replicas and pod type.
    *
    * @example
    * ```js

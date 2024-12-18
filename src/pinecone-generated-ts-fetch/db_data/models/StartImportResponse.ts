@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface StartImportResponse {
     /**
-     * Unique identifier for the import operations.
+     * Unique identifier for the import operation.
      * @type {string}
      * @memberof StartImportResponse
      */

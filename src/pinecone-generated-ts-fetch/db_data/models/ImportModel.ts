@@ -50,7 +50,7 @@ export interface ImportModel {
      */
     finishedAt?: Date;
     /**
-     * The progress made by the operation out of 100
+     * The progress made by the operation, as a percentage.
      * @type {number}
      * @memberof ImportModel
      */

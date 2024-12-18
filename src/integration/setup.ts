@@ -68,6 +68,7 @@ const setup = async () => {
           },
         },
         waitUntilReady: true,
+        tags: { project: 'pinecone-integration-tests-serverless' },
       });
 
       // Seed index with data
