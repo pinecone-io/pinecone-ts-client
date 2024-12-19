@@ -114,7 +114,6 @@ export class RetryOnServerFailure<T, A extends any[]> {
     return error; // Return original error if no mapping is needed
   }
 
-  // todo: write unit test for this
   private shouldStopRetrying(error: any): boolean {
     if (error.status) {
       return error.status < 500;
