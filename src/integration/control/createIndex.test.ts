@@ -22,12 +22,16 @@ describe('create index', () => {
           },
         },
         waitUntilReady: true,
+        tags: { project: 'pinecone-integration-tests' },
       });
       const description = await pinecone.describeIndex(indexName);
       expect(description.name).toEqual(indexName);
       expect(description.dimension).toEqual(5);
       expect(description.metric).toEqual('cosine');
       expect(description.host).toBeDefined();
+      expect(description.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
 
       await pinecone.deleteIndex(indexName);
     });

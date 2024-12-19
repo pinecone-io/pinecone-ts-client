@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface RerankRequest {
     /**
-     * The [model](https://docs.pinecone.io/guides/inference/understanding-inference#models) to use for reranking.
+     * The [model](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) to use for reranking.
      * @type {string}
      * @memberof RerankRequest
      */

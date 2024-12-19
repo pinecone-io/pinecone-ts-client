@@ -26,7 +26,7 @@ export interface RankedDocument {
      */
     index: number;
     /**
-     * The relevance score of the document normalized between 0 and 1. 
+     * The relevance of the document to the query, normalized between 0 and 1, with scores closer to 1 indicating higher relevance.
      * @type {number}
      * @memberof RankedDocument
      */

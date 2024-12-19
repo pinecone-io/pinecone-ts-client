@@ -35,6 +35,7 @@ const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
   'deletionProtection',
   'waitUntilReady',
   'suppressConflicts',
+  'tags',
 ];
 
 /**

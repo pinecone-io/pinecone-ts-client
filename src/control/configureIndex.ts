@@ -12,6 +12,7 @@ type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
 export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
   'deletionProtection',
   'spec',
+  'tags',
 ];
 
 export const configureIndex = (api: ManageIndexesApi) => {
@@ -27,9 +28,9 @@ export const configureIndex = (api: ManageIndexesApi) => {
     }
     // !options.deletionProtection evaluates to false if options.deletionProtection is undefined, empty string, or
     // not provided
-    if (!options.spec && !options.deletionProtection) {
+    if (!options.spec && !options.deletionProtection && !options.tags) {
       throw new PineconeArgumentError(
-        'You must pass either a `spec`, `deletionProtection` or both to configureIndex in order to update.'
+        'You must pass either `spec`, `deletionProtection` or `tags` to configureIndex in order to update.'
       );
     }
     if (options.spec) {

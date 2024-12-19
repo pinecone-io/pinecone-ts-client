@@ -129,7 +129,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.
      * Get index stats
      */
     async describeIndexStatsRaw(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexDescription>> {
@@ -159,7 +159,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.  For pod-based indexes, the index fullness result may be inaccurate during pod resizing; to get the status of a pod resizing process, use [`describe_index`](https://docs.pinecone.io/reference/api/control-plane/describe_index).
+     * The `describe_index_stats` operation returns statistics about the contents of an index, including the vector count per namespace, the number of dimensions, and the index fullness.  Serverless indexes scale automatically as needed, so index fullness is relevant only for pod-based indexes.
      * Get index stats
      */
     async describeIndexStats(requestParameters: DescribeIndexStatsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexDescription> {
@@ -212,7 +212,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
+     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  By default, `list` returns up to 100 IDs per page in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectorsRaw(requestParameters: ListVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResponse>> {
@@ -251,7 +251,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  `list` returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
+     * The `list` operation lists the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  By default, `list` returns up to 100 IDs per page in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list_vectors` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectors(requestParameters: ListVectorsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResponse> {

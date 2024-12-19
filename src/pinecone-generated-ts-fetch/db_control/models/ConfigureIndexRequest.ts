@@ -45,11 +45,11 @@ export interface ConfigureIndexRequest {
      */
     deletionProtection?: DeletionProtection;
     /**
-     * Custom user tags added to an index. Keys must be alphanumeric and 80 characters or less. Values must be 120 characters or less.
+     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'. Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '.  To unset a key, set the value to be an empty string.
      * @type {{ [key: string]: string; }}
      * @memberof ConfigureIndexRequest
      */
-    tags?: { [key: string]: string; } | null;
+    tags?: { [key: string]: string; };
 }
 
 /**
