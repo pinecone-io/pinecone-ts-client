@@ -1,4 +1,4 @@
-import { PineconeMaxRetriesExceededError } from '../errors';
+import { mapHttpStatusError, PineconeMaxRetriesExceededError } from '../errors';
 
 /* Retry asynchronous operations.
  *
@@ -24,21 +24,39 @@ export class RetryOnServerFailure<T, A extends any[]> {
   }
 
   async execute(...args: A): Promise<T> {
+    if (this.maxRetries < 1) {
+      return this.asyncFn(...args);
+    }
+
     for (let attempt = 0; attempt < this.maxRetries; attempt++) {
       try {
         const response = await this.asyncFn(...args);
+
+        // Return immediately if the response is not a retryable error
         if (!this.isRetryError(response)) {
-          return response; // Return if there's no retryable error
+          return response;
         }
-        throw response; // Throw if response is retryable, and catch below
+
+        throw response; // Will catch this in next line
       } catch (error) {
+        const mappedError = this.mapErrorIfNeeded(error);
+
+        // If the error is not retryable, throw it immediately
+        if (this.shouldStopRetrying(mappedError)) {
+          throw mappedError;
+        }
+
+        // On the last retry, throw a MaxRetriesExceededError
         if (attempt === this.maxRetries - 1) {
           throw new PineconeMaxRetriesExceededError(this.maxRetries);
         }
-        await this.delay(attempt + 1); // Increment before passing to `delay`
+
+        // Wait before retrying
+        await this.delay(attempt + 1);
       }
     }
-    // Fallback throw in case no value is successfully returned in order to comply w/return type Promise<T>
+
+    // This fallback is unnecessary, but included for type safety
     throw new PineconeMaxRetriesExceededError(this.maxRetries);
   }
 
@@ -88,4 +106,24 @@ export class RetryOnServerFailure<T, A extends any[]> {
     // Ensure delay is not negative or greater than maxDelay
     return Math.min(maxDelay, Math.max(0, delay));
   };
+
+  private mapErrorIfNeeded(error: any): any {
+    if (error?.status) {
+      return mapHttpStatusError(error);
+    }
+    return error; // Return original error if no mapping is needed
+  }
+
+  private shouldStopRetrying(error: any): boolean {
+    if (error.status) {
+      return error.status < 500;
+    }
+    if (error.name) {
+      return (
+        error.name !== 'PineconeUnavailableError' &&
+        error.name !== 'PineconeInternalServerError'
+      );
+    }
+    return true;
+  }
 }
