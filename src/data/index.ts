@@ -268,7 +268,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * await index.deleteAll();
    *
-   * // Records from namespace 'foo' are now deleted. Records in other namespaces are not modified.
+   * // Records from the default namespace '' are now deleted. Records in other namespaces are not modified.
+   *
    * await index.describeIndexStats();
    * // {
    * //  namespaces: {
@@ -278,10 +279,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   indexFullness: 0,
    * //   totalRecordCount: 1
    * // }
-   *
-   * await index.deleteAll();
-   * // Since no namespace was specified, records in default namespace '' are now deleted.
-   *
    * ```
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
