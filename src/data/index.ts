@@ -539,7 +539,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the update is completed.
    */
   async update(options: UpdateOptions<T>) {
-    return await this._updateCommand.run(options);
+    return await this._updateCommand.run(options, this.config.maxRetries);
   }
 
   /**

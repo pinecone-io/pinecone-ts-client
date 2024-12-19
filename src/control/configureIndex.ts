@@ -6,6 +6,7 @@ import {
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
 import { ValidateProperties } from '../utils/validateProperties';
+import { RetryOnServerFailure } from '../utils';
 
 // Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
 type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
@@ -49,11 +50,17 @@ export const configureIndex = (api: ManageIndexesApi) => {
 
   return async (
     indexName: IndexName,
-    options: ConfigureIndexRequest
+    options: ConfigureIndexRequest,
+    maxRetries?: number
   ): Promise<IndexModel> => {
     validator(indexName, options);
 
-    return await api.configureIndex({
+    const retryWrapper = new RetryOnServerFailure(
+      api.configureIndex.bind(api),
+      maxRetries
+    );
+
+    return await retryWrapper.execute({
       indexName,
       configureIndexRequest: options,
     });
