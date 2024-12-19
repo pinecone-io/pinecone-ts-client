@@ -9,7 +9,7 @@ import {
   waitUntilReady,
 } from '../../test-helpers';
 import { RetryOnServerFailure } from '../../../utils';
-import { PineconeMaxRetriesExceededError, PineconeUnavailableError } from '../../../errors';
+import { PineconeMaxRetriesExceededError } from '../../../errors';
 import http from 'http';
 import { parse } from 'url';
 
@@ -155,18 +155,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
     startMockServer(true);
 
     // Call Upsert operation
-    // const toThrow = async() => {await mockServerlessIndex.upsert(recordsToUpsert)};
-    await mockServerlessIndex.upsert(recordsToUpsert)
-    // await expect(toThrow).rejects.toThrowError(PineconeUnavailableError);
-
-    // const toThrow = async () => {
-    //       await deleteOneFn('');
-    //     };
-    //     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    //     await expect(toThrow).rejects.toThrowError(
-    //       'You must pass a non-empty string for `options` in order to delete a record.'
-    //     );
-    //   });
+    await mockServerlessIndex.upsert(recordsToUpsert);
 
     // 2 total tries: 1 initial call, 1 retry
     expect(retrySpy).toHaveBeenCalledTimes(1); // passes
@@ -174,63 +163,68 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
     expect(callCount).toBe(2);
   });
 
-  // test('Update operation should retry 1x if server responds 1x with error and 1x with success', async () => {
-  //   op = 'update';
-  //
-  //   pinecone = new Pinecone({
-  //     apiKey: process.env['PINECONE_API_KEY'] || '',
-  //     maxRetries: 2,
-  //   });
-  //
-  //   mockServerlessIndex = pinecone.Index(serverlessIndexName, 'http://localhost:4000')
-  //
-  //   const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
-  //   const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
-  //
-  //   // Start server with a successful response on the second call
-  //   startMockServer(true);
-  //
-  //   const recordIdToUpdate = recordsToUpsert[0].id;
-  //   const newMetadata = { flavor: 'chocolate' };
-  //
-  //   // Call Update operation
-  //   await mockServerlessIndex.update({id: recordIdToUpdate, metadata: newMetadata});
-  //
-  //   // 2 total tries: 1 initial call, 1 retry
-  //   expect(retrySpy).toHaveBeenCalledTimes(1);
-  //   expect(delaySpy).toHaveBeenCalledTimes(1);
-  //   expect(callCount).toBe(2);
-  // });
+  test('Update operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    op = 'update';
 
-  // test('Max retries exceeded w/o resolve', async () => {
-  //   op = 'upsert';
-  //   pinecone = new Pinecone({
-  //     apiKey: process.env['PINECONE_API_KEY'] || '',
-  //     maxRetries: 3,
-  //   });
-  //
-  //   mockServerlessIndex = pinecone
-  //     .Index(serverlessIndexName, 'http://localhost:4000')
-  //     .namespace(globalNamespaceOne);
-  //
-  //   const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
-  //   const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
-  //
-  //   // Start server with persistent 503 errors on every call
-  //   startMockServer(false);
-  //
-  //   // Catch expected error from Upsert operation
-  //   const errorResult = async () => {
-  //     await mockServerlessIndex.upsert(recordsToUpsert);
-  //   };
-  //
-  //   await expect(errorResult).rejects.toThrowError(
-  //     PineconeMaxRetriesExceededError
-  //   );
-  //
-  //   // Out of 3 total tries, 2 are retries (i.e. delays), and 1 is the initial call:
-  //   expect(retrySpy).toHaveBeenCalledTimes(1);
-  //   expect(delaySpy).toHaveBeenCalledTimes(2);
-  //   expect(callCount).toBe(3);
-  // });
+    pinecone = new Pinecone({
+      apiKey: process.env['PINECONE_API_KEY'] || '',
+      maxRetries: 2,
+    });
+
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
+    // Start server with a successful response on the second call
+    startMockServer(true);
+
+    const recordIdToUpdate = recordsToUpsert[0].id;
+    const newMetadata = { flavor: 'chocolate' };
+
+    // Call Update operation
+    await mockServerlessIndex.update({
+      id: recordIdToUpdate,
+      metadata: newMetadata,
+    });
+
+    // 2 total tries: 1 initial call, 1 retry
+    expect(retrySpy).toHaveBeenCalledTimes(1);
+    expect(delaySpy).toHaveBeenCalledTimes(1);
+    expect(callCount).toBe(2);
+  });
+
+  test('Max retries exceeded w/o resolve', async () => {
+    op = 'upsert';
+    pinecone = new Pinecone({
+      apiKey: process.env['PINECONE_API_KEY'] || '',
+      maxRetries: 3,
+    });
+
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
+    // Start server with persistent 503 errors on every call
+    startMockServer(false);
+
+    // Catch expected error from Upsert operation
+    const errorResult = async () => {
+      await mockServerlessIndex.upsert(recordsToUpsert);
+    };
+
+    await expect(errorResult).rejects.toThrowError(
+      PineconeMaxRetriesExceededError
+    );
+
+    // Out of 3 total tries, 2 are retries (i.e. delays), and 1 is the initial call:
+    expect(retrySpy).toHaveBeenCalledTimes(1);
+    expect(delaySpy).toHaveBeenCalledTimes(2);
+    expect(callCount).toBe(3);
+  });
 });

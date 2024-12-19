@@ -1,4 +1,4 @@
-import { BasePineconeError, mapHttpStatusError, PineconeMaxRetriesExceededError } from '../errors';
+import { mapHttpStatusError, PineconeMaxRetriesExceededError } from '../errors';
 
 /* Retry asynchronous operations.
  *
@@ -24,63 +24,41 @@ export class RetryOnServerFailure<T, A extends any[]> {
   }
 
   async execute(...args: A): Promise<T> {
-    console.log("Retrying!")
-    console.log("maxRetries =" ,this.maxRetries)
     if (this.maxRetries < 1) {
       return this.asyncFn(...args);
     }
 
     for (let attempt = 0; attempt < this.maxRetries; attempt++) {
-      console.log("Attempt = ", attempt)
       try {
         const response = await this.asyncFn(...args);
 
         // Return immediately if the response is not a retryable error
         if (!this.isRetryError(response)) {
-          console.log("Response is not retryable")
           return response;
         }
 
-        // Retryable response, throw it to trigger retry logic
-        console.log("Response is retryable, retrying...")
-        throw response;
-
+        throw response; // Will catch this in next line
       } catch (error) {
-        console.log("Caught retryable error")
-
         const mappedError = this.mapErrorIfNeeded(error);
-
 
         // If the error is not retryable, throw it immediately
         if (this.shouldStopRetrying(mappedError)) {
-          console.log("Should stop retrying retryable error")
           throw mappedError;
         }
 
         // On the last retry, throw a MaxRetriesExceededError
         if (attempt === this.maxRetries - 1) {
-          console.log("Max retries exceeded")
           throw new PineconeMaxRetriesExceededError(this.maxRetries);
         }
 
         // Wait before retrying
-        console.log("Waiting before retrying")
         await this.delay(attempt + 1);
       }
     }
 
-    console.log("Fell through to max retries exceeded")
     // This fallback is unnecessary, but included for type safety
     throw new PineconeMaxRetriesExceededError(this.maxRetries);
   }
-
-  private mapErrorIfNeeded(error: any): any {
-    if (error?.status) {
-      return mapHttpStatusError(error);
-    }
-    return error; // Return original error if no mapping is needed
-  }
-
 
   isRetryError(response): boolean {
     if (response) {
@@ -99,13 +77,7 @@ export class RetryOnServerFailure<T, A extends any[]> {
     return false;
   }
 
-  // todo: write unit test for this
-  private shouldStopRetrying(error: any): boolean {
-    return (error.status && error.status < 500) || (error.name !== 'PineconeUnavailableError' && error.name !== 'PineconeInternalServerError');
-  }
-
   async delay(attempt: number): Promise<void> {
-    console.log("Delaying!")
     const delayTime = this.calculateRetryDelay(attempt);
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
@@ -134,4 +106,25 @@ export class RetryOnServerFailure<T, A extends any[]> {
     // Ensure delay is not negative or greater than maxDelay
     return Math.min(maxDelay, Math.max(0, delay));
   };
+
+  private mapErrorIfNeeded(error: any): any {
+    if (error?.status) {
+      return mapHttpStatusError(error);
+    }
+    return error; // Return original error if no mapping is needed
+  }
+
+  // todo: write unit test for this
+  private shouldStopRetrying(error: any): boolean {
+    if (error.status) {
+      return error.status < 500;
+    }
+    if (error.name) {
+      return (
+        error.name !== 'PineconeUnavailableError' &&
+        error.name !== 'PineconeInternalServerError'
+      );
+    }
+    return true;
+  }
 }
