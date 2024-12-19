@@ -125,12 +125,6 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       }
     });
     server.listen(4000); // Host server on local port 4000
-    server.unref(); // Allow the server to close even if there are open connections
-
-    // Error handler
-    server.on('error', (error) => {
-      console.error('Server error:', error);
-    });
   };
 
   beforeEach(() => {
@@ -139,14 +133,8 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
 
   afterEach(async () => {
     // Close server and reset mocks
-    // await new Promise<void>((resolve) => server.close(() => resolve()));
-    return new Promise<void>((resolve) => {
-      server.close(() => {
-        jest.clearAllMocks();
-        server.unref();
-        resolve();
-      });
-    });
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    jest.clearAllMocks();
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
