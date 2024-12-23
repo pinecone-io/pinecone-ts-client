@@ -69,7 +69,7 @@ const pc = new Pinecone();
 
 If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` value.
 This is the object in which you would pass properties like `maxRetries` (defaults to `3`) for retryable operations
-(e.g. `upsert`).
+(`upsert`, `update`, and `configureIndex`).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';

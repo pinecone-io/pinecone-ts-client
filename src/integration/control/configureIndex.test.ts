@@ -1,15 +1,6 @@
-import {
-  BasePineconeError,
-  PineconeBadRequestError,
-  PineconeInternalServerError,
-} from '../../errors';
+import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import {
-  randomIndexName,
-  retryDeletes,
-  sleep,
-  waitUntilReady,
-} from '../test-helpers';
+import { randomIndexName, retryDeletes, waitUntilReady } from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
@@ -75,26 +66,10 @@ describe('configure index', () => {
       const description = await pinecone.describeIndex(podIndexName);
       expect(description.spec.pod?.podType).toEqual('p1.x1');
 
-      // Scale up podType to x2
-      let state = true;
-      let retryCount = 0;
-      const maxRetries = 10;
-      while (state && retryCount < maxRetries) {
-        try {
-          await pinecone.configureIndex(podIndexName, {
-            spec: { pod: { podType: 'p1.x2' } },
-          });
-          state = false;
-        } catch (e) {
-          if (e instanceof PineconeInternalServerError) {
-            retryCount++;
-            await sleep(2000);
-          } else {
-            console.log('Unexpected error:', e);
-            throw e;
-          }
-        }
-      }
+      await pinecone.configureIndex(podIndexName, {
+        spec: { pod: { podType: 'p1.x2' } },
+      });
+
       await waitUntilReady(podIndexName);
       const description2 = await pinecone.describeIndex(podIndexName);
       expect(description2.spec.pod?.podType).toEqual('p1.x2');

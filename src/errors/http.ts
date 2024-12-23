@@ -198,6 +198,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeInternalServerError(failedRequestInfo);
     case 501:
       return new PineconeNotImplementedError(failedRequestInfo);
+    case 503:
+      return new PineconeUnavailableError(failedRequestInfo);
     default:
       throw new PineconeUnmappedHttpError(failedRequestInfo);
   }

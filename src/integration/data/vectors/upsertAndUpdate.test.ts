@@ -6,6 +6,7 @@ import {
   generateRecords,
   globalNamespaceOne,
   randomIndexName,
+  sleep,
   waitUntilReady,
 } from '../../test-helpers';
 import { RetryOnServerFailure } from '../../../utils';
@@ -85,7 +86,7 @@ describe('upsert and update to serverless index', () => {
 });
 
 // Retry logic tests
-describe('Testing retry logic on Upsert operation, as run on a mock, in-memory http server', () => {
+describe('Testing retry logic via a mock, in-memory http server', () => {
   const recordsToUpsert = generateRecords({
     dimension: 2,
     quantity: 1,
@@ -96,13 +97,14 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
   let server: http.Server; // Note: server cannot be something like an express server due to conflicts w/edge runtime
   let mockServerlessIndex: Index;
   let callCount: number;
+  let op: string;
 
   // Helper function to start the server with a specific response pattern
   const startMockServer = (shouldSucceedOnSecondCall: boolean) => {
     // Create http server
     server = http.createServer((req, res) => {
       const { pathname } = parse(req.url || '', true);
-      if (req.method === 'POST' && pathname === '/vectors/upsert') {
+      if (req.method === 'POST' && pathname === `/vectors/${op}`) {
         callCount++;
         if (shouldSucceedOnSecondCall && callCount === 1) {
           res.writeHead(503, { 'Content-Type': 'application/json' });
@@ -137,6 +139,7 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
   });
 
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    op = 'upsert';
     pinecone = new Pinecone({
       apiKey: process.env['PINECONE_API_KEY'] || '',
       maxRetries: 2,
@@ -156,12 +159,49 @@ describe('Testing retry logic on Upsert operation, as run on a mock, in-memory h
     await mockServerlessIndex.upsert(recordsToUpsert);
 
     // 2 total tries: 1 initial call, 1 retry
+    expect(retrySpy).toHaveBeenCalledTimes(1); // passes
+    expect(delaySpy).toHaveBeenCalledTimes(1); // fails
+    expect(callCount).toBe(2);
+  });
+
+  test('Update operation should retry 1x if server responds 1x with error and 1x with success', async () => {
+    op = 'update';
+
+    pinecone = new Pinecone({
+      apiKey: process.env['PINECONE_API_KEY'] || '',
+      maxRetries: 2,
+    });
+
+    mockServerlessIndex = pinecone
+      .Index(serverlessIndexName, 'http://localhost:4000')
+      .namespace(globalNamespaceOne);
+
+    const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
+    const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
+
+    // Start server with a successful response on the second call
+    startMockServer(true);
+
+    const recordIdToUpdate = recordsToUpsert[0].id;
+    const newMetadata = { flavor: 'chocolate' };
+
+    // Call Update operation
+    await mockServerlessIndex.update({
+      id: recordIdToUpdate,
+      metadata: newMetadata,
+    });
+
+    // 2 total tries: 1 initial call, 1 retry
     expect(retrySpy).toHaveBeenCalledTimes(1);
     expect(delaySpy).toHaveBeenCalledTimes(1);
     expect(callCount).toBe(2);
   });
 
   test('Max retries exceeded w/o resolve', async () => {
+    op = 'upsert';
+
+    await sleep(500); // In Node20+, tcp connections changed: https://github.com/pinecone-io/pinecone-ts-client/pull/318#issuecomment-2560180936
+
     pinecone = new Pinecone({
       apiKey: process.env['PINECONE_API_KEY'] || '',
       maxRetries: 3,

@@ -112,3 +112,41 @@ describe('isRetryError', () => {
     expect(result).toBe(true);
   });
 });
+
+describe('shouldStopRetrying', () => {
+  test('Should return true for non-retryable status code', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({ status: 400 });
+    expect(result).toBe(true);
+  });
+
+  test('Should return true for non-retryable error name', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({
+      name: 'SomeOtherError',
+    });
+    expect(result).toBe(true);
+  });
+
+  test('Should return false for retryable error name PineconeUnavailableError', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({
+      name: 'PineconeUnavailableError',
+    });
+    expect(result).toBe(false);
+  });
+
+  test('Should return false for retryable error name PineconeInternalServerError', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({
+      name: 'PineconeInternalServerError',
+    });
+    expect(result).toBe(false);
+  });
+
+  test('Should return false for retryable status code', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({ status: 500 });
+    expect(result).toBe(false);
+  });
+});
