@@ -47,43 +47,43 @@ afterAll(async () => {
 });
 
 // todo: add sparse values update
-// describe('upsert and update to serverless index', () => {
-//   test('verify upsert and update', async () => {
-//     const recordToUpsert = generateRecords({
-//       dimension: 2,
-//       quantity: 1,
-//       withSparseValues: false,
-//       withMetadata: true,
-//     });
-//
-//     // Upsert record
-//     await serverlessIndex.upsert(recordToUpsert);
-//
-//     // Build new values
-//     const newValues = [0.5, 0.4];
-//     const newMetadata = { flavor: 'chocolate' };
-//
-//     const updateSpy = jest
-//       .spyOn(serverlessIndex, 'update')
-//       .mockResolvedValue(undefined);
-//
-//     // Update values w/new values
-//     await serverlessIndex.update({
-//       id: '0',
-//       values: newValues,
-//       metadata: newMetadata,
-//     });
-//
-//     expect(updateSpy).toHaveBeenCalledWith({
-//       id: '0',
-//       values: newValues,
-//       metadata: newMetadata,
-//     });
-//
-//     // Clean up spy after the test
-//     updateSpy.mockRestore();
-//   });
-// });
+describe('upsert and update to serverless index', () => {
+  test('verify upsert and update', async () => {
+    const recordToUpsert = generateRecords({
+      dimension: 2,
+      quantity: 1,
+      withSparseValues: false,
+      withMetadata: true,
+    });
+
+    // Upsert record
+    await serverlessIndex.upsert(recordToUpsert);
+
+    // Build new values
+    const newValues = [0.5, 0.4];
+    const newMetadata = { flavor: 'chocolate' };
+
+    const updateSpy = jest
+      .spyOn(serverlessIndex, 'update')
+      .mockResolvedValue(undefined);
+
+    // Update values w/new values
+    await serverlessIndex.update({
+      id: '0',
+      values: newValues,
+      metadata: newMetadata,
+    });
+
+    expect(updateSpy).toHaveBeenCalledWith({
+      id: '0',
+      values: newValues,
+      metadata: newMetadata,
+    });
+
+    // Clean up spy after the test
+    updateSpy.mockRestore();
+  });
+});
 
 // Retry logic tests
 describe('Testing retry logic via a mock, in-memory http server', () => {
@@ -200,7 +200,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
   test('Max retries exceeded w/o resolve', async () => {
     op = 'upsert';
 
-    await sleep(500); // In Node20+, tcp connection closures and resources cleanup takes longer
+    await sleep(500); // In Node20+, tcp connections changed: https://github.com/pinecone-io/pinecone-ts-client/pull/318#issuecomment-2560180936
 
     pinecone = new Pinecone({
       apiKey: process.env['PINECONE_API_KEY'] || '',
