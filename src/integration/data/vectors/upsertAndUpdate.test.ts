@@ -102,7 +102,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
   // Helper function to start the server with a specific response pattern
   const startMockServer = (shouldSucceedOnSecondCall: boolean) => {
     // Create http server
-    server = http.createServer({ keepAlive: false }, (req, res) => {
+    server = http.createServer((req, res) => {
       const { pathname } = parse(req.url || '', true);
       if (req.method === 'POST' && pathname === `/vectors/${op}`) {
         callCount++;
