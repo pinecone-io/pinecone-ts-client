@@ -1,1 +1,1 @@
-export const X_PINECONE_API_VERSION = '2024-10';
+export const X_PINECONE_API_VERSION = '2025-01';
