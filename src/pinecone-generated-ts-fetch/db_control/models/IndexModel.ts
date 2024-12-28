@@ -12,11 +12,19 @@
  * Do not edit the class manually.
  */
 
-import { exists } from '../runtime';
+import { exists, mapValues } from '../runtime';
 import type { DeletionProtection } from './DeletionProtection';
-import { DeletionProtectionFromJSON, DeletionProtectionToJSON } from './DeletionProtection';
+import {
+    DeletionProtectionFromJSON,
+    DeletionProtectionFromJSONTyped,
+    DeletionProtectionToJSON,
+} from './DeletionProtection';
 import type { IndexModelSpec } from './IndexModelSpec';
-import { IndexModelSpecFromJSON, IndexModelSpecToJSON } from './IndexModelSpec';
+import {
+    IndexModelSpecFromJSON,
+    IndexModelSpecFromJSONTyped,
+    IndexModelSpecToJSON,
+} from './IndexModelSpec';
 import type { IndexModelStatus } from './IndexModelStatus';
 import {
     IndexModelStatusFromJSON,
@@ -103,9 +111,9 @@ export interface IndexModel {
  * @export
  */
 export const IndexModelMetricEnum = {
-  Cosine: 'cosine',
-  Euclidean: 'euclidean',
-  Dotproduct: 'dotproduct'
+    Cosine: 'cosine',
+    Euclidean: 'euclidean',
+    Dotproduct: 'dotproduct'
 } as const;
 export type IndexModelMetricEnum = typeof IndexModelMetricEnum[keyof typeof IndexModelMetricEnum];
 
@@ -122,11 +130,11 @@ export function instanceOfIndexModel(value: object): boolean {
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "vectorType" in value;
 
-  return isInstance;
+    return isInstance;
 }
 
 export function IndexModelFromJSON(json: any): IndexModel {
-  return IndexModelFromJSONTyped(json, false);
+    return IndexModelFromJSONTyped(json, false);
 }
 
 export function IndexModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexModel {

@@ -137,3 +137,4 @@ export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any
         'vector_type': value.vectorType,
     };
 }
+
