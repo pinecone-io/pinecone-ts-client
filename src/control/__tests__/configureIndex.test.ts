@@ -12,6 +12,7 @@ describe('configureIndex', () => {
       dimension: 5,
       metric: 'cosine',
       host: 'https://index-host.com',
+      vectorType: "dense",
       spec: {
         pod: {
           environment: 'us-east1-gcp',
