@@ -39,16 +39,16 @@ export interface AssistantFileModel {
     metadata?: object | null;
     /**
      * 
-     * @type {string}
+     * @type {Date}
      * @memberof AssistantFileModel
      */
-    createdOn?: string;
+    createdOn?: Date;
     /**
      * 
-     * @type {string}
+     * @type {Date}
      * @memberof AssistantFileModel
      */
-    updatedOn?: string;
+    updatedOn?: Date;
     /**
      * 
      * @type {string}
@@ -112,8 +112,8 @@ export function AssistantFileModelFromJSONTyped(json: any, ignoreDiscriminator: 
         'name': json['name'],
         'id': json['id'],
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
-        'createdOn': !exists(json, 'created_on') ? undefined : json['created_on'],
-        'updatedOn': !exists(json, 'updated_on') ? undefined : json['updated_on'],
+        'createdOn': !exists(json, 'created_on') ? undefined : (new Date(json['created_on'])),
+        'updatedOn': !exists(json, 'updated_on') ? undefined : (new Date(json['updated_on'])),
         'status': !exists(json, 'status') ? undefined : json['status'],
         'percentDone': !exists(json, 'percent_done') ? undefined : json['percent_done'],
         'signedUrl': !exists(json, 'signed_url') ? undefined : json['signed_url'],
@@ -133,8 +133,8 @@ export function AssistantFileModelToJSON(value?: AssistantFileModel | null): any
         'name': value.name,
         'id': value.id,
         'metadata': value.metadata,
-        'created_on': value.createdOn,
-        'updated_on': value.updatedOn,
+        'created_on': value.createdOn === undefined ? undefined : (value.createdOn.toISOString()),
+        'updated_on': value.updatedOn === undefined ? undefined : (value.updatedOn.toISOString()),
         'status': value.status,
         'percent_done': value.percentDone,
         'signed_url': value.signedUrl,

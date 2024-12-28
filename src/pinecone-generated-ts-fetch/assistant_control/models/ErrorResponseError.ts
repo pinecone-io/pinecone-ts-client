@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Assistant Data Plane API
- * Pinecone Assistant Engine is a context engine to store and retrieve relevant knowledge from millions of documents at scale. This API supports interactions with assistants.
+ * Pinecone Assistant Control Plane API
+ * Pinecone Assistant Engine is a context engine to store and retrieve relevant knowledge  from millions of documents at scale. This API supports creating and managing assistants. 
  *
  * The version of the OpenAPI document: 2025-01
  * Contact: support@pinecone.io
@@ -16,25 +16,25 @@ import { exists, mapValues } from '../runtime';
 /**
  * Detailed information about the error that occurred.
  * @export
- * @interface ListFiles401ResponseError
+ * @interface ErrorResponseError
  */
-export interface ListFiles401ResponseError {
+export interface ErrorResponseError {
     /**
      * 
      * @type {string}
-     * @memberof ListFiles401ResponseError
+     * @memberof ErrorResponseError
      */
-    code: ListFiles401ResponseErrorCodeEnum;
+    code: ErrorResponseErrorCodeEnum;
     /**
      * 
      * @type {string}
-     * @memberof ListFiles401ResponseError
+     * @memberof ErrorResponseError
      */
     message: string;
     /**
      * Additional information about the error. This field is not guaranteed to be present.
      * @type {object}
-     * @memberof ListFiles401ResponseError
+     * @memberof ErrorResponseError
      */
     details?: object;
 }
@@ -43,7 +43,7 @@ export interface ListFiles401ResponseError {
 /**
  * @export
  */
-export const ListFiles401ResponseErrorCodeEnum = {
+export const ErrorResponseErrorCodeEnum = {
     Ok: 'OK',
     Unknown: 'UNKNOWN',
     InvalidArgument: 'INVALID_ARGUMENT',
@@ -63,13 +63,13 @@ export const ListFiles401ResponseErrorCodeEnum = {
     DataLoss: 'DATA_LOSS',
     Forbidden: 'FORBIDDEN'
 } as const;
-export type ListFiles401ResponseErrorCodeEnum = typeof ListFiles401ResponseErrorCodeEnum[keyof typeof ListFiles401ResponseErrorCodeEnum];
+export type ErrorResponseErrorCodeEnum = typeof ErrorResponseErrorCodeEnum[keyof typeof ErrorResponseErrorCodeEnum];
 
 
 /**
- * Check if a given object implements the ListFiles401ResponseError interface.
+ * Check if a given object implements the ErrorResponseError interface.
  */
-export function instanceOfListFiles401ResponseError(value: object): boolean {
+export function instanceOfErrorResponseError(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "code" in value;
     isInstance = isInstance && "message" in value;
@@ -77,11 +77,11 @@ export function instanceOfListFiles401ResponseError(value: object): boolean {
     return isInstance;
 }
 
-export function ListFiles401ResponseErrorFromJSON(json: any): ListFiles401ResponseError {
-    return ListFiles401ResponseErrorFromJSONTyped(json, false);
+export function ErrorResponseErrorFromJSON(json: any): ErrorResponseError {
+    return ErrorResponseErrorFromJSONTyped(json, false);
 }
 
-export function ListFiles401ResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListFiles401ResponseError {
+export function ErrorResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponseError {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -93,7 +93,7 @@ export function ListFiles401ResponseErrorFromJSONTyped(json: any, ignoreDiscrimi
     };
 }
 
-export function ListFiles401ResponseErrorToJSON(value?: ListFiles401ResponseError | null): any {
+export function ErrorResponseErrorToJSON(value?: ErrorResponseError | null): any {
     if (value === undefined) {
         return undefined;
     }

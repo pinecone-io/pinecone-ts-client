@@ -17,8 +17,8 @@ import * as runtime from '../runtime';
 import type {
   Assistant,
   CreateAssistantRequest,
+  ErrorResponse,
   ListAssistants200Response,
-  ListAssistants401Response,
   UpdateAssistant200Response,
   UpdateAssistantRequest,
 } from '../models/index';
@@ -27,10 +27,10 @@ import {
     AssistantToJSON,
     CreateAssistantRequestFromJSON,
     CreateAssistantRequestToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
     ListAssistants200ResponseFromJSON,
     ListAssistants200ResponseToJSON,
-    ListAssistants401ResponseFromJSON,
-    ListAssistants401ResponseToJSON,
     UpdateAssistant200ResponseFromJSON,
     UpdateAssistant200ResponseToJSON,
     UpdateAssistantRequestFromJSON,

@@ -44,17 +44,23 @@ export interface Assistant {
      */
     status: AssistantStatusEnum;
     /**
-     * 
+     * The host where the assistant is deployed.
      * @type {string}
      * @memberof Assistant
      */
-    createdAt?: string;
+    host?: string;
     /**
      * 
-     * @type {string}
+     * @type {Date}
      * @memberof Assistant
      */
-    updatedAt?: string;
+    createdAt?: Date;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Assistant
+     */
+    updatedAt?: Date;
 }
 
 
@@ -95,8 +101,9 @@ export function AssistantFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'instructions': !exists(json, 'instructions') ? undefined : json['instructions'],
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
         'status': json['status'],
-        'createdAt': !exists(json, 'created_at') ? undefined : json['created_at'],
-        'updatedAt': !exists(json, 'updated_at') ? undefined : json['updated_at'],
+        'host': !exists(json, 'host') ? undefined : json['host'],
+        'createdAt': !exists(json, 'created_at') ? undefined : (new Date(json['created_at'])),
+        'updatedAt': !exists(json, 'updated_at') ? undefined : (new Date(json['updated_at'])),
     };
 }
 
@@ -113,8 +120,9 @@ export function AssistantToJSON(value?: Assistant | null): any {
         'instructions': value.instructions,
         'metadata': value.metadata,
         'status': value.status,
-        'created_at': value.createdAt,
-        'updated_at': value.updatedAt,
+        'host': value.host,
+        'created_at': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
+        'updated_at': value.updatedAt === undefined ? undefined : (value.updatedAt.toISOString()),
     };
 }
 

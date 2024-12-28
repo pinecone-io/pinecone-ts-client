@@ -37,7 +37,24 @@ export interface CreateAssistantRequest {
      * @memberof CreateAssistantRequest
      */
     metadata?: object;
+    /**
+     * The region to deploy the assistant in. Our current options are either us or eu. Defaults to us.
+     * @type {string}
+     * @memberof CreateAssistantRequest
+     */
+    region?: CreateAssistantRequestRegionEnum;
 }
+
+
+/**
+ * @export
+ */
+export const CreateAssistantRequestRegionEnum = {
+    Us: 'us',
+    Eu: 'eu'
+} as const;
+export type CreateAssistantRequestRegionEnum = typeof CreateAssistantRequestRegionEnum[keyof typeof CreateAssistantRequestRegionEnum];
+
 
 /**
  * Check if a given object implements the CreateAssistantRequest interface.
@@ -62,6 +79,7 @@ export function CreateAssistantRequestFromJSONTyped(json: any, ignoreDiscriminat
         'name': json['name'],
         'instructions': !exists(json, 'instructions') ? undefined : json['instructions'],
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
+        'region': !exists(json, 'region') ? undefined : json['region'],
     };
 }
 
@@ -77,6 +95,7 @@ export function CreateAssistantRequestToJSON(value?: CreateAssistantRequest | nu
         'name': value.name,
         'instructions': value.instructions,
         'metadata': value.metadata,
+        'region': value.region,
     };
 }
 

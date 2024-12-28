@@ -50,6 +50,12 @@ export interface Chat {
      * @memberof Chat
      */
     filter?: object;
+    /**
+     * If true, the assistant will be instructed to return a JSON response. Cannot be used with streaming.
+     * @type {boolean}
+     * @memberof Chat
+     */
+    jsonResponse?: boolean;
 }
 
 
@@ -87,6 +93,7 @@ export function ChatFromJSONTyped(json: any, ignoreDiscriminator: boolean): Chat
         'stream': !exists(json, 'stream') ? undefined : json['stream'],
         'model': !exists(json, 'model') ? undefined : json['model'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
+        'jsonResponse': !exists(json, 'json_response') ? undefined : json['json_response'],
     };
 }
 
@@ -103,6 +110,7 @@ export function ChatToJSON(value?: Chat | null): any {
         'stream': value.stream,
         'model': value.model,
         'filter': value.filter,
+        'json_response': value.jsonResponse,
     };
 }
 

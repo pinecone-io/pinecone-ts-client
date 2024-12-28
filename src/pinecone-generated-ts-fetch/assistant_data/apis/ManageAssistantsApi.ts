@@ -22,8 +22,8 @@ import type {
   ChatModel,
   ContextModel,
   ContextRequest,
+  ErrorResponse,
   ListFiles200Response,
-  ListFiles401Response,
   SearchCompletions,
 } from '../models/index';
 import {
@@ -41,10 +41,10 @@ import {
     ContextModelToJSON,
     ContextRequestFromJSON,
     ContextRequestToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
     ListFiles200ResponseFromJSON,
     ListFiles200ResponseToJSON,
-    ListFiles401ResponseFromJSON,
-    ListFiles401ResponseToJSON,
     SearchCompletionsFromJSON,
     SearchCompletionsToJSON,
 } from '../models/index';

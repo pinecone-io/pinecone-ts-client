@@ -13,37 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ListFiles401ResponseError } from './ListFiles401ResponseError';
+import type { ErrorResponseError } from './ErrorResponseError';
 import {
-    ListFiles401ResponseErrorFromJSON,
-    ListFiles401ResponseErrorFromJSONTyped,
-    ListFiles401ResponseErrorToJSON,
-} from './ListFiles401ResponseError';
+    ErrorResponseErrorFromJSON,
+    ErrorResponseErrorFromJSONTyped,
+    ErrorResponseErrorToJSON,
+} from './ErrorResponseError';
 
 /**
  * The response shape used for all error responses.
  * @export
- * @interface ListFiles401Response
+ * @interface ErrorResponse
  */
-export interface ListFiles401Response {
+export interface ErrorResponse {
     /**
      * The HTTP status code of the error.
      * @type {number}
-     * @memberof ListFiles401Response
+     * @memberof ErrorResponse
      */
     status: number;
     /**
      * 
-     * @type {ListFiles401ResponseError}
-     * @memberof ListFiles401Response
+     * @type {ErrorResponseError}
+     * @memberof ErrorResponse
      */
-    error: ListFiles401ResponseError;
+    error: ErrorResponseError;
 }
 
 /**
- * Check if a given object implements the ListFiles401Response interface.
+ * Check if a given object implements the ErrorResponse interface.
  */
-export function instanceOfListFiles401Response(value: object): boolean {
+export function instanceOfErrorResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "error" in value;
@@ -51,22 +51,22 @@ export function instanceOfListFiles401Response(value: object): boolean {
     return isInstance;
 }
 
-export function ListFiles401ResponseFromJSON(json: any): ListFiles401Response {
-    return ListFiles401ResponseFromJSONTyped(json, false);
+export function ErrorResponseFromJSON(json: any): ErrorResponse {
+    return ErrorResponseFromJSONTyped(json, false);
 }
 
-export function ListFiles401ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListFiles401Response {
+export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'status': json['status'],
-        'error': ListFiles401ResponseErrorFromJSON(json['error']),
+        'error': ErrorResponseErrorFromJSON(json['error']),
     };
 }
 
-export function ListFiles401ResponseToJSON(value?: ListFiles401Response | null): any {
+export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -76,7 +76,7 @@ export function ListFiles401ResponseToJSON(value?: ListFiles401Response | null):
     return {
         
         'status': value.status,
-        'error': ListFiles401ResponseErrorToJSON(value.error),
+        'error': ErrorResponseErrorToJSON(value.error),
     };
 }
 

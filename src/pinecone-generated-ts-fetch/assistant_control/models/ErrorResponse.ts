@@ -13,37 +13,37 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ListAssistants401ResponseError } from './ListAssistants401ResponseError';
+import type { ErrorResponseError } from './ErrorResponseError';
 import {
-    ListAssistants401ResponseErrorFromJSON,
-    ListAssistants401ResponseErrorFromJSONTyped,
-    ListAssistants401ResponseErrorToJSON,
-} from './ListAssistants401ResponseError';
+    ErrorResponseErrorFromJSON,
+    ErrorResponseErrorFromJSONTyped,
+    ErrorResponseErrorToJSON,
+} from './ErrorResponseError';
 
 /**
  * The response shape used for all error responses.
  * @export
- * @interface ListAssistants401Response
+ * @interface ErrorResponse
  */
-export interface ListAssistants401Response {
+export interface ErrorResponse {
     /**
      * The HTTP status code of the error.
      * @type {number}
-     * @memberof ListAssistants401Response
+     * @memberof ErrorResponse
      */
     status: number;
     /**
      * 
-     * @type {ListAssistants401ResponseError}
-     * @memberof ListAssistants401Response
+     * @type {ErrorResponseError}
+     * @memberof ErrorResponse
      */
-    error: ListAssistants401ResponseError;
+    error: ErrorResponseError;
 }
 
 /**
- * Check if a given object implements the ListAssistants401Response interface.
+ * Check if a given object implements the ErrorResponse interface.
  */
-export function instanceOfListAssistants401Response(value: object): boolean {
+export function instanceOfErrorResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "error" in value;
@@ -51,22 +51,22 @@ export function instanceOfListAssistants401Response(value: object): boolean {
     return isInstance;
 }
 
-export function ListAssistants401ResponseFromJSON(json: any): ListAssistants401Response {
-    return ListAssistants401ResponseFromJSONTyped(json, false);
+export function ErrorResponseFromJSON(json: any): ErrorResponse {
+    return ErrorResponseFromJSONTyped(json, false);
 }
 
-export function ListAssistants401ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListAssistants401Response {
+export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'status': json['status'],
-        'error': ListAssistants401ResponseErrorFromJSON(json['error']),
+        'error': ErrorResponseErrorFromJSON(json['error']),
     };
 }
 
-export function ListAssistants401ResponseToJSON(value?: ListAssistants401Response | null): any {
+export function ErrorResponseToJSON(value?: ErrorResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -76,7 +76,7 @@ export function ListAssistants401ResponseToJSON(value?: ListAssistants401Respons
     return {
         
         'status': value.status,
-        'error': ListAssistants401ResponseErrorToJSON(value.error),
+        'error': ErrorResponseErrorToJSON(value.error),
     };
 }
 

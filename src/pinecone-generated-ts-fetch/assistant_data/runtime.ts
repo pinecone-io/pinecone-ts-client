@@ -13,7 +13,7 @@
  */
 
 
-export const BASE_PATH = "https://prod-1-data.ke.pinecone.io/assistant".replace(/\/+$/, "");
+export const BASE_PATH = "https://unknown".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path
