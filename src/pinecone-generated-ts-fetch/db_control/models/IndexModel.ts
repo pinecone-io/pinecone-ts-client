@@ -18,9 +18,6 @@ import { DeletionProtectionFromJSON, DeletionProtectionToJSON } from './Deletion
 import type { IndexModelSpec } from './IndexModelSpec';
 import { IndexModelSpecFromJSON, IndexModelSpecToJSON } from './IndexModelSpec';
 import type { IndexModelStatus } from './IndexModelStatus';
-<<<<<<< HEAD
-import { IndexModelStatusFromJSON, IndexModelStatusToJSON } from './IndexModelStatus';
-=======
 import {
     IndexModelStatusFromJSON,
     IndexModelStatusFromJSONTyped,
@@ -32,7 +29,6 @@ import {
     ModelIndexEmbedFromJSONTyped,
     ModelIndexEmbedToJSON,
 } from './ModelIndexEmbed';
->>>>>>> 0928cf8 (Incorporate newest code from stable)
 
 /**
  * The IndexModel describes the configuration and status of a Pinecone index.
