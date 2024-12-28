@@ -24,6 +24,7 @@ export * from './SearchRecordsRequestQuery';
 export * from './SearchRecordsRequestRerank';
 export * from './SearchRecordsResponse';
 export * from './SearchRecordsResponseResult';
+export * from './SearchRecordsVector';
 export * from './SearchUsage';
 export * from './SearchVector';
 export * from './SingleQueryResults';

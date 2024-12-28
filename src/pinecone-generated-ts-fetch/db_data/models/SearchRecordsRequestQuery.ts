@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { SearchRecordsVector } from './SearchRecordsVector';
+import {
+    SearchRecordsVectorFromJSON,
+    SearchRecordsVectorFromJSONTyped,
+    SearchRecordsVectorToJSON,
+} from './SearchRecordsVector';
+
 /**
  * The query inputs to search with.
  * @export
@@ -38,11 +45,17 @@ export interface SearchRecordsRequestQuery {
      */
     inputs?: object;
     /**
-     * This is the vector data included in the request.
-     * @type {Array<number>}
+     * 
+     * @type {SearchRecordsVector}
      * @memberof SearchRecordsRequestQuery
      */
-    vector?: Array<number>;
+    vector?: SearchRecordsVector;
+    /**
+     * The unique ID of the vector to be used as a query vector.
+     * @type {string}
+     * @memberof SearchRecordsRequestQuery
+     */
+    id?: string;
 }
 
 /**
@@ -68,7 +81,8 @@ export function SearchRecordsRequestQueryFromJSONTyped(json: any, ignoreDiscrimi
         'topK': json['top_k'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
         'inputs': !exists(json, 'inputs') ? undefined : json['inputs'],
-        'vector': !exists(json, 'vector') ? undefined : json['vector'],
+        'vector': !exists(json, 'vector') ? undefined : SearchRecordsVectorFromJSON(json['vector']),
+        'id': !exists(json, 'id') ? undefined : json['id'],
     };
 }
 
@@ -84,7 +98,8 @@ export function SearchRecordsRequestQueryToJSON(value?: SearchRecordsRequestQuer
         'top_k': value.topK,
         'filter': value.filter,
         'inputs': value.inputs,
-        'vector': value.vector,
+        'vector': SearchRecordsVectorToJSON(value.vector),
+        'id': value.id,
     };
 }
 

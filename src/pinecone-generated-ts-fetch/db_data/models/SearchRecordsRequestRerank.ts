@@ -43,6 +43,12 @@ export interface SearchRecordsRequestRerank {
      * @memberof SearchRecordsRequestRerank
      */
     parameters?: { [key: string]: any; };
+    /**
+     * The query to rerank documents against. If a specific rerank query is specified,  it overwrites the query input that was provided at the top level.
+     * @type {string}
+     * @memberof SearchRecordsRequestRerank
+     */
+    query?: string;
 }
 
 /**
@@ -70,6 +76,7 @@ export function SearchRecordsRequestRerankFromJSONTyped(json: any, ignoreDiscrim
         'rankFields': json['rank_fields'],
         'topN': !exists(json, 'top_n') ? undefined : json['top_n'],
         'parameters': !exists(json, 'parameters') ? undefined : json['parameters'],
+        'query': !exists(json, 'query') ? undefined : json['query'],
     };
 }
 
@@ -86,6 +93,7 @@ export function SearchRecordsRequestRerankToJSON(value?: SearchRecordsRequestRer
         'rank_fields': value.rankFields,
         'top_n': value.topN,
         'parameters': value.parameters,
+        'query': value.query,
     };
 }
 
