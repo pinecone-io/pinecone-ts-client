@@ -79,4 +79,5 @@ mkdir -p "${destination}"
 
 for module in "${modules[@]}"; do
 	generate_client $module
+	sleep 1
 done
