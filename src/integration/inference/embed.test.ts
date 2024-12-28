@@ -10,7 +10,7 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
   beforeAll(() => {
     inputs = ['hello', 'world'];
     params = {
-      inputType: 'passage',
+      input_type: 'passage',
       truncate: 'END',
     };
     model = 'multilingual-e5-large';
@@ -18,7 +18,7 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
     pinecone = new Pinecone({ apiKey });
   });
 
-  it('Confirm output types', async () => {
+  test('Confirm output types', async () => {
     const response = await pinecone.inference.embed(model, inputs, params);
     const responseAsArray = response as EmbeddingsList;
     expect(responseAsArray.length).toBe(inputs.length);
