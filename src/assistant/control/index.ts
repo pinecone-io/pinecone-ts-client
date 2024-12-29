@@ -1,4 +1,7 @@
-export { createAssistantClosed } from './createAssistant';
+export {
+  createAssistantClosed,
+  createAssistantRequest,
+} from './createAssistant';
 export { deleteAssistantClosed } from './deleteAssistant';
 export { getAssistantClosed } from './getAssistant';
 export { listAssistantsClosed } from './listAssistants';

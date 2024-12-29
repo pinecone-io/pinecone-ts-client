@@ -1,5 +1,5 @@
 import {
-  CreateAssistantRequest,
+  CreateAssistantRequestRegionEnum,
   ManageAssistantsApi as ManageAssistantsApiCtrl,
   UpdateAssistantOperationRequest,
   UpdateAssistantRequest,
@@ -13,6 +13,7 @@ import {
 } from './index';
 import { AssistantHostSingleton } from './assistantHostSingleton';
 import { PineconeConfiguration } from '../../data';
+import { createAssistantRequest } from './createAssistant';
 
 export class AssistantCtrlPlane {
   _createAssistant: ReturnType<typeof createAssistantClosed>;
@@ -31,12 +32,29 @@ export class AssistantCtrlPlane {
     this._updateAssistant = updateAssistantClosed(api);
   }
 
-  async createAssistant(options: CreateAssistantRequest) {
-    const response = await this._createAssistant(options);
+  async createAssistant(options: createAssistantRequest) {
     if (options.region) {
-      AssistantHostSingleton._set(this.config, options.name, options.region);
+      let region: CreateAssistantRequestRegionEnum =
+        CreateAssistantRequestRegionEnum.Us;
+      if (
+        !Object.values(CreateAssistantRequestRegionEnum)
+          .toString()
+          .includes(options.region.toLowerCase())
+      ) {
+        throw new Error(
+          'Invalid region specified. Must be one of "us" or "eu"'
+        );
+      } else {
+        region =
+          options.region.toLowerCase() as CreateAssistantRequestRegionEnum;
+      }
+
+      AssistantHostSingleton._set(this.config, options.name, region);
+
+      options.region = region;
     }
-    return response;
+
+    return await this._createAssistant(options);
   }
 
   async deleteAssistant(assistantName: string) {
