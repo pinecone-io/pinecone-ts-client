@@ -31,7 +31,7 @@ import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
-import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtlr';
+import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtrl';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
 
 /**

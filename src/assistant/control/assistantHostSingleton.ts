@@ -1,4 +1,4 @@
-import type { PineconeConfiguration } from '../../data/vectors/types';
+import type { PineconeConfiguration } from '../../data';
 import { normalizeUrl } from '../../utils';
 
 export const AssistantHostSingleton = (function () {
@@ -9,7 +9,6 @@ export const AssistantHostSingleton = (function () {
       us: 'https://prod-1-data.ke.pinecone.io/assistant',
       eu: 'https://prod-eu-data.ke.pinecone.io/assistant',
     };
-    console.log('Host = ', regionHosts[region]);
     return regionHosts[region] || 'https://api.pinecone.io/assistant';
   };
 
