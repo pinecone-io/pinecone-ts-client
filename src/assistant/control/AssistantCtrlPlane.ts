@@ -20,7 +20,7 @@ export class AssistantCtrlPlane {
   _getAssistant: ReturnType<typeof getAssistantClosed>;
   _listAssistants: ReturnType<typeof listAssistantsClosed>;
   _updateAssistant: ReturnType<typeof updateAssistantClosed>;
-  private config: PineconeConfiguration;
+  readonly config: PineconeConfiguration;
 
   constructor(api: ManageAssistantsApiCtrl, config: PineconeConfiguration) {
     this.config = config;
