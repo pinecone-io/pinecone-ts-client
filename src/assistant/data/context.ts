@@ -1,6 +1,6 @@
 import {
   ContextAssistantRequest,
-  ManageAssistantsApi as ManageAssistantsApiData
+  ManageAssistantsApi as ManageAssistantsApiData,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 export interface Context {
@@ -20,8 +20,8 @@ export const contextClosed = (
       assistantName: assistantName,
       contextRequest: {
         query: options.query,
-        filter: options.filter
-      }
+        filter: options.filter,
+      },
     } as ContextAssistantRequest;
     return api.contextAssistant(request);
   };

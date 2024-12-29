@@ -12,18 +12,23 @@ import {
   queryParamsStringify,
 } from '../../utils';
 import { middleware } from '../../utils/middleware';
+import { AssistantHostSingleton } from '../control/assistantHostSingleton';
 
 // Notes:
 // - `ConfigurationParameters` and `Configuration` are the same in runtime.ts across both data plane and control plane
 // APIs for Assistant
 
 export const assistantDataOperationsBuilder = (
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
+  assistantName?: string
 ): ManageAssistantsDataApi => {
   const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) ||
-    'https://prod-1-data.ke.pinecone.io/assistant';
+    (assistantName
+      ? AssistantHostSingleton.getHostUrl(config, assistantName)
+      : 'https://api.pinecone.io/assistant');
+
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,

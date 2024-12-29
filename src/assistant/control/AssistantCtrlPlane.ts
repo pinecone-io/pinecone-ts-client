@@ -11,6 +11,8 @@ import {
   listAssistantsClosed,
   updateAssistantClosed,
 } from './index';
+import { AssistantHostSingleton } from './assistantHostSingleton';
+import { PineconeConfiguration } from '../../data';
 
 export class AssistantCtrlPlane {
   _createAssistant: ReturnType<typeof createAssistantClosed>;
@@ -18,8 +20,10 @@ export class AssistantCtrlPlane {
   _getAssistant: ReturnType<typeof getAssistantClosed>;
   _listAssistants: ReturnType<typeof listAssistantsClosed>;
   _updateAssistant: ReturnType<typeof updateAssistantClosed>;
+  private config: PineconeConfiguration;
 
-  constructor(api: ManageAssistantsApiCtrl) {
+  constructor(api: ManageAssistantsApiCtrl, config: PineconeConfiguration) {
+    this.config = config;
     this._createAssistant = createAssistantClosed(api);
     this._deleteAssistant = deleteAssistantClosed(api);
     this._getAssistant = getAssistantClosed(api);
@@ -27,9 +31,13 @@ export class AssistantCtrlPlane {
     this._updateAssistant = updateAssistantClosed(api);
   }
 
-  createAssistant(options: CreateAssistantRequest) {
-    return this._createAssistant(options);
-  } // todo: should this be async?
+  async createAssistant(options: CreateAssistantRequest) {
+    const response = await this._createAssistant(options);
+    if (options.region) {
+      AssistantHostSingleton._set(this.config, options.name, options.region);
+    }
+    return response;
+  }
 
   async deleteAssistant(assistantName: string) {
     return await this._deleteAssistant(assistantName);

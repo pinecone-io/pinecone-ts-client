@@ -1,6 +1,4 @@
-import {
-  ManageAssistantsApi as ManageAssistantsApiData
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { ManageAssistantsApi as ManageAssistantsApiData } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { chatClosed, ChatRequest } from './chat';
 import { ListFiles, listFilesClosed } from './listFiles';
 import { DescribeFile, describeFileClosed } from './describeFile';
@@ -34,12 +32,15 @@ export class AssistantDataPlane {
       throw new Error('No assistant name provided');
     }
     this.config = config;
-    this.dataApi = assistantDataOperationsBuilder(this.config);
+    this.dataApi = assistantDataOperationsBuilder(this.config, assistantName);
     this.evalApi = assistantEvalOperationsBuilder(this.config);
     this.assistantName = assistantName;
 
     this._chat = chatClosed(this.assistantName, this.dataApi);
-    this._chatCompletions = chatCompletionClosed(this.assistantName, this.dataApi);
+    this._chatCompletions = chatCompletionClosed(
+      this.assistantName,
+      this.dataApi
+    );
     this._listFiles = listFilesClosed(this.assistantName, this.dataApi);
     this._describeFile = describeFileClosed(this.assistantName, this.dataApi);
     this._uploadFile = uploadFileClosed(this.assistantName, this.config);
@@ -85,5 +86,4 @@ export class AssistantDataPlane {
   evaluate(options: Eval) {
     return this._evaluate(options);
   }
-
 }

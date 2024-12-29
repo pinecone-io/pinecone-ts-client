@@ -144,7 +144,7 @@ export class Pinecone {
     this._listIndexes = listIndexes(api);
 
     this.inference = new Inference(infApi);
-    this.assistant = new AssistantCtrlPlane(assistantApiCtrl);
+    this.assistant = new AssistantCtrlPlane(assistantApiCtrl, this.config);
   }
 
   /**
