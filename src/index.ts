@@ -17,6 +17,15 @@ export {
   UpdateAssistantOperationRequest,
   UpdateAssistantRequest,
 } from './pinecone-generated-ts-fetch/assistant_control';
+export { createAssistantRequest } from './assistant/control/createAssistant';
+export { ChatRequest } from './assistant/data/chat';
+export { ChatCompletionRequest } from './assistant/data/chatCompletion';
+export { DeleteFile } from './assistant/data/deleteFile';
+export { DescribeFile } from './assistant/data/describeFile';
+export { ListFiles } from './assistant/data/listFiles';
+export { UploadFile } from './assistant/data/uploadFile';
+export { Context } from './assistant/data/context';
+export { Eval } from './assistant/data/evaluate';
 
 // Type exports
 export type {
