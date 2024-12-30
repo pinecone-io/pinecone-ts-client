@@ -14,10 +14,6 @@ import {
 import { middleware } from '../../utils/middleware';
 import { AssistantHostSingleton } from '../control/assistantHostSingleton';
 
-// Notes:
-// - `ConfigurationParameters` and `Configuration` are the same in runtime.ts across both data plane and control plane
-// APIs for Assistant
-
 export const assistantDataOperationsBuilder = (
   config: PineconeConfiguration,
   assistantName?: string
@@ -28,7 +24,6 @@ export const assistantDataOperationsBuilder = (
     (assistantName
       ? AssistantHostSingleton.getHostUrl(config, assistantName)
       : 'https://api.pinecone.io/assistant');
-
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,

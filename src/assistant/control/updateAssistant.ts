@@ -5,7 +5,6 @@ import {
   UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
-// todo: validations
 export const updateAssistantClosed = (api: ManageAssistantsControlApi) => {
   return async (
     options: UpdateAssistantOperationRequest & UpdateAssistantRequest

@@ -4,16 +4,16 @@ import {
   UpdateAssistantOperationRequest,
   UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
-import {
-  createAssistantClosed,
-  deleteAssistantClosed,
-  getAssistantClosed,
-  listAssistantsClosed,
-  updateAssistantClosed,
-} from './index';
 import { AssistantHostSingleton } from './assistantHostSingleton';
 import { PineconeConfiguration } from '../../data';
-import { createAssistantRequest } from './createAssistant';
+import {
+  createAssistantClosed,
+  createAssistantRequest,
+} from './createAssistant';
+import { deleteAssistantClosed } from './deleteAssistant';
+import { getAssistantClosed } from './getAssistant';
+import { listAssistantsClosed } from './listAssistants';
+import { updateAssistantClosed } from './updateAssistant';
 
 export class AssistantCtrlPlane {
   _createAssistant: ReturnType<typeof createAssistantClosed>;
@@ -21,7 +21,7 @@ export class AssistantCtrlPlane {
   _getAssistant: ReturnType<typeof getAssistantClosed>;
   _listAssistants: ReturnType<typeof listAssistantsClosed>;
   _updateAssistant: ReturnType<typeof updateAssistantClosed>;
-  readonly config: PineconeConfiguration;
+  private config: PineconeConfiguration;
 
   constructor(api: ManageAssistantsApiCtrl, config: PineconeConfiguration) {
     this.config = config;

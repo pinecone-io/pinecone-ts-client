@@ -13,10 +13,6 @@ import {
 } from '../../utils';
 import { middleware } from '../../utils/middleware';
 
-// Notes:
-// - `ConfigurationParameters` and `Configuration` are the same in runtime.ts across both data plane and control plane
-// APIs for Assistant
-
 export const assistantEvalOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {

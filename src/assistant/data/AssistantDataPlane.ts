@@ -13,19 +13,20 @@ import { Context, contextClosed } from './context';
 import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
 
 export class AssistantDataPlane {
-  dataApi: ManageAssistantsApiData; // todo: should this be private?
-  evalApi: MetricsApi; // todo: should this be private?
-  assistantName: string;
-  config: PineconeConfiguration;
+  private config: PineconeConfiguration;
 
-  private _chat: ReturnType<typeof chatClosed>;
-  private _chatCompletions: ReturnType<typeof chatCompletionClosed>;
-  private _listFiles: ReturnType<typeof listFilesClosed>;
-  private _describeFile: ReturnType<typeof describeFileClosed>;
-  private _uploadFile: ReturnType<typeof uploadFileClosed>;
-  private _deleteFile: ReturnType<typeof deleteFileClosed>;
-  private _context: ReturnType<typeof contextClosed>;
-  private _evaluate: ReturnType<typeof evaluateClosed>;
+  readonly dataApi: ManageAssistantsApiData;
+  readonly evalApi: MetricsApi;
+  readonly _chat: ReturnType<typeof chatClosed>;
+  readonly _chatCompletions: ReturnType<typeof chatCompletionClosed>;
+  readonly _listFiles: ReturnType<typeof listFilesClosed>;
+  readonly _describeFile: ReturnType<typeof describeFileClosed>;
+  readonly _uploadFile: ReturnType<typeof uploadFileClosed>;
+  readonly _deleteFile: ReturnType<typeof deleteFileClosed>;
+  readonly _context: ReturnType<typeof contextClosed>;
+  readonly _evaluate: ReturnType<typeof evaluateClosed>;
+
+  assistantName: string;
 
   constructor(assistantName: string, config: PineconeConfiguration) {
     if (!assistantName) {
