@@ -49,8 +49,6 @@ describe('updateAssistant inplace updates, happy path', () => {
 
     const description = await pinecone.assistant.getAssistant(assistantName);
     expect(description.metadata).toEqual({ keyThree: 'valueThree' });
-
-    // await pinecone.assistant.deleteAssistant(assistantName);
   });
 });
 
