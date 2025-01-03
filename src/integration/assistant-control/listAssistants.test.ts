@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, sleep } from '../test-helpers';
+import { randomString } from '../test-helpers';
 
 let pinecone: Pinecone;
 let assistantNameOne: string;
