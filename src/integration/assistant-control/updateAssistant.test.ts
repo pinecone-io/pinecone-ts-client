@@ -1,5 +1,6 @@
 import { Pinecone } from '../../pinecone';
 import { randomString } from '../test-helpers';
+import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
 
@@ -60,6 +61,6 @@ describe('updateAssistant error paths', () => {
         assistantName: 'non-existent-assistant',
       });
     };
-    await expect(throwError()).rejects.toThrow();
+    await expect(throwError()).rejects.toThrow(PineconeNotFoundError);
   });
 });

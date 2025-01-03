@@ -1,8 +1,6 @@
 import {
   ManageAssistantsApi as ManageAssistantsControlApi,
   type UpdateAssistant200Response,
-  UpdateAssistantOperationRequest,
-  UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
 export interface updateAssistant {

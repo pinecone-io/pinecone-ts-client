@@ -1,8 +1,6 @@
 import {
   CreateAssistantRequestRegionEnum,
   ManageAssistantsApi as ManageAssistantsApiCtrl,
-  UpdateAssistantOperationRequest,
-  UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import { AssistantHostSingleton } from './assistantHostSingleton';
 import { PineconeConfiguration } from '../../data';
