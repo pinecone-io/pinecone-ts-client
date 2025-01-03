@@ -5,9 +5,15 @@ import {
   UpdateAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
+export interface updateAssistant {
+  assistantName: string;
+  instructions?: string;
+  metadata?: Record<string, string>;
+}
+
 export const updateAssistantClosed = (api: ManageAssistantsControlApi) => {
   return async (
-    options: UpdateAssistantOperationRequest & UpdateAssistantRequest
+    options: updateAssistant
   ): Promise<UpdateAssistant200Response> => {
     return await api.updateAssistant({
       assistantName: options.assistantName,

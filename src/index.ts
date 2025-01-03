@@ -18,6 +18,7 @@ export {
   UpdateAssistantRequest,
 } from './pinecone-generated-ts-fetch/assistant_control';
 export { createAssistantRequest } from './assistant/control/createAssistant';
+export { updateAssistant } from './assistant/control/updateAssistant';
 export { ChatRequest } from './assistant/data/chat';
 export { ChatCompletionRequest } from './assistant/data/chatCompletion';
 export { DeleteFile } from './assistant/data/deleteFile';

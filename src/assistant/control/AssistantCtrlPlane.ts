@@ -13,7 +13,7 @@ import {
 import { deleteAssistantClosed } from './deleteAssistant';
 import { getAssistantClosed } from './getAssistant';
 import { listAssistantsClosed } from './listAssistants';
-import { updateAssistantClosed } from './updateAssistant';
+import { updateAssistant, updateAssistantClosed } from './updateAssistant';
 
 export class AssistantCtrlPlane {
   _createAssistant: ReturnType<typeof createAssistantClosed>;
@@ -69,9 +69,7 @@ export class AssistantCtrlPlane {
     return await this._listAssistants();
   }
 
-  async updateAssistant(
-    options: UpdateAssistantOperationRequest & UpdateAssistantRequest
-  ) {
+  async updateAssistant(options: updateAssistant) {
     return await this._updateAssistant(options);
   }
 }
