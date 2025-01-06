@@ -5,28 +5,20 @@ import {
   type ConfigurationParameters as AssistantOperationsApiConfigurationParameters,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
-import {
-  buildUserAgent,
-  getFetch,
-  normalizeUrl,
-  queryParamsStringify,
-} from '../../utils';
+import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
 import { middleware } from '../../utils/middleware';
-import { AssistantHostSingleton } from '../control/assistantHostSingleton';
+import { AssistantHostSingleton } from '../assistantHostSingleton';
 
 export const assistantDataOperationsBuilder = (
   config: PineconeConfiguration,
-  assistantName?: string
+  assistantName: string
 ): ManageAssistantsDataApi => {
   const { apiKey } = config;
-  const controllerPath =
-    normalizeUrl(config.controllerHostUrl) ||
-    (assistantName
-      ? AssistantHostSingleton.getHostUrl(config, assistantName)
-      : 'https://api.pinecone.io/assistant');
+  // Get the host URL from the singleton
+  const hostUrl = AssistantHostSingleton.getHostUrl(config, assistantName);
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
-    basePath: controllerPath,
+    basePath: hostUrl,
     apiKey,
     queryParamsStringify,
     headers: {

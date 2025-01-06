@@ -8,7 +8,7 @@ let assistantName: string;
 beforeAll(async () => {
   pinecone = new Pinecone();
   assistantName = randomString(5);
-  await pinecone.assistant.createAssistant({name: assistantName});
+  await pinecone.assistant.createAssistant({ name: assistantName });
   await sleep(2000);
 });
 

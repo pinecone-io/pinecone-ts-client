@@ -1,5 +1,5 @@
-import type { PineconeConfiguration } from '../../data';
-import { normalizeUrl } from '../../utils';
+import type { PineconeConfiguration } from '../data';
+import { normalizeUrl } from '../utils';
 
 export const AssistantHostSingleton = (function () {
   const hostUrls = {}; // map of apiKey-assistantName to hostUrl
@@ -9,7 +9,7 @@ export const AssistantHostSingleton = (function () {
       us: 'https://prod-1-data.ke.pinecone.io/assistant',
       eu: 'https://prod-eu-data.ke.pinecone.io/assistant',
     };
-    return regionHosts[region] || 'https://api.pinecone.io/assistant';
+    return regionHosts[region];
   };
 
   const _key = (config: PineconeConfiguration, assistantName: string) =>
@@ -19,7 +19,12 @@ export const AssistantHostSingleton = (function () {
   return {
     getHostUrl: (config: PineconeConfiguration, assistantName: string) => {
       const cacheKey = _key(config, assistantName);
-      return hostUrls[cacheKey] || 'https://api.pinecone.io/assistant';
+      if (!hostUrls[cacheKey]) {
+        const region = 'us'; // Default to region 'us' if not specified
+        const hostUrl = getAssistantHostUrl(region);
+        hostUrls[cacheKey] = normalizeUrl(hostUrl);
+      }
+      return hostUrls[cacheKey];
     },
 
     _reset: () => {

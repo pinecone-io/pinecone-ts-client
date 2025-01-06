@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString } from '../test-helpers';
+import { randomString, sleep } from '../test-helpers';
 
 let pinecone: Pinecone;
 
@@ -16,6 +16,7 @@ describe('createAssistant happy path', () => {
       metadata: { key: 'value', keyTwo: 'valueTwo' },
       region: 'us',
     });
+    await sleep(2000);
     const description = await pinecone.assistant.getAssistant(assistantName);
     expect(description.name).toEqual(assistantName);
     expect(description.instructions).toEqual('test-instructions');

@@ -1,4 +1,4 @@
-import { AssistantHostSingleton } from '../assistantHostSingleton';
+import { AssistantHostSingleton } from '../../assistantHostSingleton';
 
 describe('AssistantHostSingleton', () => {
   afterEach(() => {
