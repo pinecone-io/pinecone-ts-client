@@ -119,7 +119,6 @@ const setup = async () => {
   await sleep(2000);
 
   try {
-    console.log()
     await pc.assistant.getAssistant(assistantName);
   } catch (e) {
     console.log('Error getting assistant:', e);
@@ -131,6 +130,10 @@ const setup = async () => {
   console.log(`ASSISTANT_NAME=${assistantName}`);
 
   const tempFileName = `tempfile-${Date.now()}.txt`;
+
+  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
+  console.log(`TEST_FILE=${tempFileName}`);
+
   const data = 'This is some temporary data';
   fs.writeFileSync(tempFileName, data);
 

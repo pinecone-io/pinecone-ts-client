@@ -1,4 +1,5 @@
 import { Pinecone } from '../pinecone';
+import * as fs from 'fs';
 
 export const teardown = async () => {
   let apiKey: string;
@@ -26,10 +27,19 @@ export const teardown = async () => {
   //   await pc.deleteIndex(serverlessIndexName);
   // }
 
-  if (!process.env.ASSISTANT_NAME) {
-    throw new Error('ASSISTANT_NAME environment variable is not set');
+  if (!process.env.ASSISTANT_NAME || !process.env.TEST_FILE) {
+    throw new Error(
+      'ASSISTANT_NAME or TEST_FILE environment variables are not set'
+    );
   } else {
     const assistantName = process.env.ASSISTANT_NAME;
+    const testFile = process.env.TEST;
+
+    // Delete file from system
+    if (testFile) {
+      fs.unlinkSync(testFile);
+    }
+
     await pc.assistant.deleteAssistant(assistantName);
   }
 };

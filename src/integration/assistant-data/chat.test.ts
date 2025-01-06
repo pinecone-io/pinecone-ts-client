@@ -8,7 +8,7 @@ if (!process.env.ASSISTANT_NAME) {
   throw new Error('ASSISTANT_NAME environment variable is not set');
 }
 const assistantName = process.env.ASSISTANT_NAME;
-console.log("assistant name = ", assistantName);
+console.log('assistant name = ', assistantName);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
