@@ -5,6 +5,7 @@ import {
   ManageAssistantsApi as ManageAssistantsApiData,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { RetryOnServerFailure } from '../../utils';
 
 export const messagesValidation = (options: ChatRequest): MessageModel[] => {
   let messages: MessageModel[] = [];
@@ -21,10 +22,15 @@ export const messagesValidation = (options: ChatRequest): MessageModel[] => {
     Array.isArray(options.messages) &&
     typeof options.messages[0] === 'object'
   ) {
-    if (!options.messages[0]['role']) {
-      throw new Error(
-        'No role specified in message object. Must be one of "user" or "assistant"'
-      );
+    if (options.messages[0]['role']) {
+      if (
+        options.messages[0]['role'].toLowerCase() !== 'user' &&
+        options.messages[0]['role'].toLowerCase() !== 'assistant'
+      ) {
+        throw new Error(
+          'No role specified in message object. Must be one of "user" or "assistant"'
+        );
+      }
     }
 
     // Extract unique keys from all messages
@@ -86,6 +92,11 @@ export const chatClosed = (
         filter: options.filter,
       },
     };
-    return api.chatAssistant(request);
+
+    const retryWrapper = new RetryOnServerFailure(() =>
+      api.chatAssistant(request)
+    );
+
+    return retryWrapper.execute();
   };
 };

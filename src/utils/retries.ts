@@ -1,5 +1,8 @@
 import { mapHttpStatusError, PineconeMaxRetriesExceededError } from '../errors';
 
+// TODO: Parameterize this class to allow for custom error handling (e.g. only retry 400 errors on Chat endpoint,
+//  but not globally
+
 /* Retry asynchronous operations.
  *
  * @param maxRetries - The maximum number of retries to attempt.
@@ -61,6 +64,10 @@ export class RetryOnServerFailure<T, A extends any[]> {
   }
 
   isRetryError(response): boolean {
+    if (!response) {
+      console.log('Undefined response: ', response);
+      return false;
+    }
     if (response) {
       if (
         response.name &&
