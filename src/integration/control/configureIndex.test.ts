@@ -136,12 +136,13 @@ describe('configure index', () => {
       });
     });
 
-    test('Add index tag to a serverless index', async () => {
+    test('Add/remove/update index tag(s) on serverless index', async () => {
       const description = await pinecone.describeIndex(serverlessIndexName);
       expect(description.tags).toEqual({
         project: 'pinecone-integration-tests',
       });
 
+      // Add a tag
       await pinecone.configureIndex(serverlessIndexName, {
         tags: { testTag: 'testValue' },
       });
@@ -150,22 +151,15 @@ describe('configure index', () => {
         project: 'pinecone-integration-tests',
         testTag: 'testValue',
       });
-    });
 
-    test('Remove index tag from serverless index', async () => {
-      const description = await pinecone.describeIndex(serverlessIndexName);
-      expect(description.tags).toEqual({
-        project: 'pinecone-integration-tests',
-        testTag: 'testValue',
-      });
-
+      // Remove that tag
       await pinecone.configureIndex(serverlessIndexName, {
-        tags: { testTag: '' },
+        tags: { testTag: '' }, // Passing null/undefined here is not allowed due to type safety (must eval to string)
       });
-      const description2 = await pinecone.describeIndex(serverlessIndexName);
-      if (description2.tags != null) {
-        expect(description2.tags['testTag']).toBeUndefined();
-        expect(description2.tags['project']).toEqual(
+      const description3 = await pinecone.describeIndex(serverlessIndexName);
+      if (description3.tags != null) {
+        expect(description3.tags['testTag']).toBeUndefined();
+        expect(description3.tags['project']).toEqual(
           'pinecone-integration-tests'
         );
       }
@@ -174,10 +168,10 @@ describe('configure index', () => {
       await pinecone.configureIndex(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
-      const description3 = await pinecone.describeIndex(serverlessIndexName);
-      if (description3.tags != null) {
-        expect(description3.tags['testTag']).toBeUndefined();
-        expect(description3.tags['project']).toEqual(
+      const description4 = await pinecone.describeIndex(serverlessIndexName);
+      if (description4.tags != null) {
+        expect(description4.tags['testTag']).toBeUndefined();
+        expect(description4.tags['project']).toEqual(
           'pinecone-integration-tests'
         );
       }
