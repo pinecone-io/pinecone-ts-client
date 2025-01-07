@@ -136,7 +136,7 @@ describe('configure index', () => {
       });
     });
 
-    test('Add/remove/update index tag(s) on serverless index', async () => {
+    test('Add/remove index tag(s) on serverless index', async () => {
       const description = await pinecone.describeIndex(serverlessIndexName);
       expect(description.tags).toEqual({
         project: 'pinecone-integration-tests',
