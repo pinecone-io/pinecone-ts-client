@@ -37,7 +37,7 @@ afterAll(() => {
 describe('Upload file happy path', () => {
   test('Upload file without metadata', async () => {
     const response = await assistant.uploadFile({
-      path: tempFileName
+      path: tempFileName,
     });
     expect(response).toBeDefined();
     expect(response.status).toEqual(200);
@@ -48,8 +48,8 @@ describe('Upload file happy path', () => {
       path: tempFileName,
       metadata: {
         description: 'Test file',
-        category: 'integration-test'
-      }
+        category: 'integration-test',
+      },
     });
     expect(response).toBeDefined();
     expect(response.status).toEqual(200);
@@ -60,7 +60,7 @@ describe('Upload file error paths', () => {
   test('Upload with nonexistent file path', async () => {
     const throwError = async () => {
       await assistant.uploadFile({
-        path: 'nonexistent-file.txt'
+        path: 'nonexistent-file.txt',
       });
     };
     await expect(throwError()).rejects.toThrow();
@@ -69,7 +69,7 @@ describe('Upload file error paths', () => {
   test('Upload to nonexistent assistant', async () => {
     const throwError = async () => {
       await pinecone.Assistant('nonexistent').uploadFile({
-        path: tempFileName
+        path: tempFileName,
       });
     };
     await expect(throwError()).rejects.toThrow(/404/);
@@ -78,7 +78,7 @@ describe('Upload file error paths', () => {
   test('Upload with empty file path', async () => {
     const throwError = async () => {
       await assistant.uploadFile({
-        path: ''
+        path: '',
       });
     };
     await expect(throwError()).rejects.toThrow('File path is required');

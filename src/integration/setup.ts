@@ -11,7 +11,6 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
-
 // todo: refactor to make conditions & loops more efficient
 
 const setup = async () => {
@@ -143,7 +142,10 @@ const setup = async () => {
   await sleep(1000);
 
   // Upload file to assistant so chat works
-  await assistant.uploadFile({ path: tempFileName });
+  await assistant.uploadFile({
+    path: tempFileName,
+    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
+  });
 
   // Another sleep b/c it currently takes a *long* time for a file to be available
   await sleep(25000);
