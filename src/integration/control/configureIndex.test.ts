@@ -160,27 +160,46 @@ describe('configure index', () => {
       });
 
       await pinecone.configureIndex(serverlessIndexName, {
-        tags: { project: '' },
+        tags: { testTag: '' },
       });
       const description2 = await pinecone.describeIndex(serverlessIndexName);
       if (description2.tags != null) {
-        expect(description2.tags['project']).toBeUndefined();
-        expect(description2.tags['testTag']).toEqual('testValue');
+        expect(description2.tags['testTag']).toBeUndefined();
+        expect(description2.tags['project']).toEqual(
+          'pinecone-integration-tests'
+        );
       }
+
+      // Confirm when config'ing other things about the index, tags are not changed
+      await pinecone.configureIndex(serverlessIndexName, {
+        deletionProtection: 'enabled',
+      });
+      const description3 = await pinecone.describeIndex(serverlessIndexName);
+      if (description3.tags != null) {
+        expect(description3.tags['testTag']).toBeUndefined();
+        expect(description3.tags['project']).toEqual(
+          'pinecone-integration-tests'
+        );
+      }
+
+      // (Cleanup) Disable deletion protection
+      await pinecone.configureIndex(serverlessIndexName, {
+        deletionProtection: 'disabled',
+      });
     });
 
     test('Update a tag value in a serverless index', async () => {
       const description = await pinecone.describeIndex(serverlessIndexName);
       expect(description.tags).toEqual({
-        testTag: 'testValue',
+        project: 'pinecone-integration-tests',
       });
 
       await pinecone.configureIndex(serverlessIndexName, {
-        tags: { testTag: 'newValue' },
+        tags: { project: 'updated-project' },
       });
       const description2 = await pinecone.describeIndex(serverlessIndexName);
       if (description2.tags != null) {
-        expect(description2.tags['testTag']).toEqual('newValue');
+        expect(description2.tags['project']).toEqual('updated-project');
       }
     });
   });
