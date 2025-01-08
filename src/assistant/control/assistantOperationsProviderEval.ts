@@ -5,24 +5,19 @@ import {
   X_PINECONE_API_VERSION,
   MetricsApi,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
-import {
-  buildUserAgent,
-  getFetch,
-  normalizeUrl,
-  queryParamsStringify,
-} from '../../utils';
+import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
 import { middleware } from '../../utils/middleware';
+import { AssistantHostSingleton } from '../assistantHostSingleton';
 
 export const assistantEvalOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {
   const { apiKey } = config;
-  const controllerPath =
-    normalizeUrl(config.controllerHostUrl) ||
-    'https://prod-1-data.ke.pinecone.io/assistant';
+  // All calls to eval will have 'eval' as assistantName
+  const hostUrl = AssistantHostSingleton.getHostUrl(config, 'eval');
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
-    basePath: controllerPath,
+    basePath: hostUrl,
     apiKey,
     queryParamsStringify,
     headers: {

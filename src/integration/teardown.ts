@@ -1,5 +1,4 @@
 import { Pinecone } from '../pinecone';
-import * as fs from 'fs';
 
 export const teardown = async () => {
   let apiKey: string;
@@ -11,21 +10,21 @@ export const teardown = async () => {
   }
   const pc = new Pinecone({ apiKey: apiKey });
 
-  // if (!process.env.SERVERLESS_INDEX_NAME) {
-  //   throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  // } else {
-  //   const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
-  //
-  //   const indexes = await pc.listIndexes();
-  //   if (
-  //     indexes &&
-  //     indexes.indexes?.some((index) => index.name != serverlessIndexName)
-  //   ) {
-  //     return;
-  //   }
-  //
-  //   await pc.deleteIndex(serverlessIndexName);
-  // }
+  if (!process.env.SERVERLESS_INDEX_NAME) {
+    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
+  } else {
+    const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+
+    const indexes = await pc.listIndexes();
+    if (
+      indexes &&
+      indexes.indexes?.some((index) => index.name != serverlessIndexName)
+    ) {
+      return;
+    }
+
+    await pc.deleteIndex(serverlessIndexName);
+  }
 
   if (!process.env.ASSISTANT_NAME) {
     throw new Error('ASSISTANT_NAME environment variable is not set');

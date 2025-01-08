@@ -26,7 +26,7 @@ export { DescribeFile } from './assistant/data/describeFile';
 export { ListFiles } from './assistant/data/listFiles';
 export { UploadFile } from './assistant/data/uploadFile';
 export { Context } from './assistant/data/context';
-export { Eval } from './assistant/data/evaluate';
+export { Eval } from './assistant/control/evaluate';
 
 // Type exports
 export type {

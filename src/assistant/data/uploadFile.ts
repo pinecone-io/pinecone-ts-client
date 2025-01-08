@@ -7,6 +7,7 @@ import FormData from 'form-data';
 import fs from 'fs';
 import { PineconeConfiguration } from '../../data';
 import { buildUserAgent } from '../../utils';
+import { AssistantHostSingleton } from '../assistantHostSingleton';
 
 export interface UploadFile {
   path: string;
@@ -36,7 +37,8 @@ export const uploadFileClosed = (
       },
     };
 
-    let url = `https://prod-1-data.ke.pinecone.io/assistant/files/${assistantName}`;
+    const hostUrl = AssistantHostSingleton.getHostUrl(config, assistantName);
+    let url = `${hostUrl}/files/${assistantName}`;
 
     if (options.metadata) {
       const encodedMetadata = encodeURIComponent(
@@ -44,6 +46,18 @@ export const uploadFileClosed = (
       );
       url += `?metadata=${encodedMetadata}`;
     }
-    return axios.post(url, form, reqHeaders);
+    const resp = await axios.post(url, form, reqHeaders);
+
+    return {
+      name: resp.data.name,
+      id: resp.data.id,
+      metadata: resp.data.metadata || null,
+      createdOn: new Date(resp.data.createdOn),
+      updatedOn: new Date(resp.data.updatedOn),
+      status: resp.data.status,
+      percentDone: resp.data.percentDone || null,
+      signedUrl: resp.data.signedUrl || null,
+      errorMessage: resp.data.errorMessage || null,
+    } as AssistantFileModel;
   };
 };

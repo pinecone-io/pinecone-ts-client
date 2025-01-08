@@ -33,6 +33,7 @@ import { PineconeConfigurationProperties } from './data/vectors/types';
 import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
 import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtrl';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
+import { assistantEvalOperationsBuilder } from './assistant/control/assistantOperationsProviderEval';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -132,6 +133,7 @@ export class Pinecone {
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
     const assistantApiCtrl = assistantControlOperationsBuilder(this.config);
+    const assistantApiEval = assistantEvalOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -144,7 +146,10 @@ export class Pinecone {
     this._listIndexes = listIndexes(api);
 
     this.inference = new Inference(infApi);
-    this.assistant = new AssistantCtrlPlane(assistantApiCtrl, this.config);
+    this.assistant = new AssistantCtrlPlane(this.config, {
+      assistantApi: assistantApiCtrl,
+      evalApi: assistantApiEval,
+    });
   }
 
   /**
@@ -683,7 +688,4 @@ export class Pinecone {
   Assistant(assistantName: string) {
     return new AssistantDataPlane(assistantName, this.config);
   }
-
-  // Uppercase Assistant == data plane (includes eval)
-  // Lowercase assistant == control plane
 }

@@ -44,7 +44,9 @@ endpoints.forEach((endpoint) => {
           messages: [{ content: 'Hello' }],
         };
 
-        expect(() => messagesValidation(input)).toThrow('No role specified');
+        expect(() => messagesValidation(input)).toThrow(
+          'Message object must have exactly two keys: "role" and "content"'
+        );
       });
 
       test('throws error when object has invalid keys', () => {

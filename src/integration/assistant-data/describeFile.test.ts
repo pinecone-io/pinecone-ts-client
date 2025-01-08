@@ -4,7 +4,6 @@ import { AssistantDataPlane } from '../../assistant/data';
 let pinecone: Pinecone;
 let assistant: AssistantDataPlane;
 let assistantName: string;
-let file: string;
 let fileId: string;
 
 if (!process.env.ASSISTANT_NAME) {
@@ -13,18 +12,15 @@ if (!process.env.ASSISTANT_NAME) {
   assistantName = process.env.ASSISTANT_NAME;
 }
 
-if (!process.env.TEST_FILE) {
-  throw new Error('TEST_FILE environment variable is not set');
-} else {
-  file = process.env.TEST_FILE;
-}
-
 beforeAll(async () => {
   pinecone = new Pinecone();
   assistant = pinecone.Assistant(assistantName);
   const files = await assistant.listFiles();
   if (files.files) {
     fileId = files.files.map((f) => f.id)[0];
+    console.log('fileID in describeFile.test.ts = ', fileId);
+  } else {
+    throw new Error('No files found');
   }
 });
 
@@ -46,31 +42,31 @@ describe('Describe file happy path', () => {
   });
 });
 
-// describe('Describe file error paths', () => {
-//   test('Describe with nonexistent fileId', async () => {
-//     const throwError = async () => {
-//       await assistant.describeFile({
-//         fileId: 'nonexistent-file-id'
-//       });
-//     };
-//     await expect(throwError()).rejects.toThrow(/404/);
-//   });
-//
-//   test('Describe with empty fileId', async () => {
-//     const throwError = async () => {
-//       await assistant.describeFile({
-//         fileId: ''
-//       });
-//     };
-//     await expect(throwError()).rejects.toThrow();
-//   });
-//
-//   test('Describe file with nonexistent assistant', async () => {
-//     const throwError = async () => {
-//       await pinecone.Assistant('nonexistent').describeFile({
-//         fileId: fileId
-//       });
-//     };
-//     await expect(throwError()).rejects.toThrow(/404/);
-//   });
-// });
+describe('Describe file error paths', () => {
+  test('Describe with nonexistent fileId', async () => {
+    const throwError = async () => {
+      await assistant.describeFile({
+        fileId: 'nonexistent-file-id',
+      });
+    };
+    await expect(throwError()).rejects.toThrow(/404/);
+  });
+
+  test('Describe with empty fileId', async () => {
+    const throwError = async () => {
+      await assistant.describeFile({
+        fileId: '',
+      });
+    };
+    await expect(throwError()).rejects.toThrow();
+  });
+
+  test('Describe file with nonexistent assistant', async () => {
+    const throwError = async () => {
+      await pinecone.Assistant('nonexistent').describeFile({
+        fileId: fileId,
+      });
+    };
+    await expect(throwError()).rejects.toThrow(/404/);
+  });
+});

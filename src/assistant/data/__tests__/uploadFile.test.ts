@@ -7,6 +7,16 @@ jest.mock('fs');
 jest.mock('form-data');
 jest.mock('axios');
 
+const mockResponse = {
+  data: {
+    name: 'test.txt',
+    id: 'test-id',
+    createdOn: new Date().toISOString(),
+    updatedOn: new Date().toISOString(),
+    status: 'ready',
+  },
+};
+
 describe('uploadFileClosed', () => {
   const mockConfig = {
     apiKey: 'test-api-key',
@@ -19,6 +29,7 @@ describe('uploadFileClosed', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (axios.post as jest.Mock).mockResolvedValue(mockResponse);
   });
 
   test('throws error when file path is not provided', async () => {

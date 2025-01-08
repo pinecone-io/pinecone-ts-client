@@ -9,7 +9,9 @@ describe('AssistantCtrlPlane', () => {
   const mockConfig = { apiKey: 'test-api-key' };
 
   beforeEach(() => {
-    assistantCtrlPlane = new AssistantCtrlPlane(mockApi, mockConfig);
+    assistantCtrlPlane = new AssistantCtrlPlane(mockConfig, {
+      assistantApi: mockApi,
+    });
   });
 
   describe('createAssistant', () => {

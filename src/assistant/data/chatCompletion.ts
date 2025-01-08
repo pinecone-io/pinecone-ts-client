@@ -5,6 +5,7 @@ import {
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { messagesValidation, modelValidation } from './chat';
+import { RetryOnServerFailure } from '../../utils';
 
 export interface ChatCompletionRequest {
   messages: string[] | Array<{ [key: string]: string }>;
@@ -34,6 +35,10 @@ export const chatCompletionClosed = (
         filter: options.filter,
       },
     };
-    return api.chatCompletionAssistant(request);
+    const retryWrapper = new RetryOnServerFailure(() =>
+      api.chatCompletionAssistant(request)
+    );
+
+    return retryWrapper.execute();
   };
 };

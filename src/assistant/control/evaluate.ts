@@ -9,8 +9,18 @@ export interface Eval {
   groundTruth: string;
 }
 
-export const evaluateClosed = (assistantName: string, api: MetricsApi) => {
+export const evaluateClosed = (api: MetricsApi) => {
   return async (options: Eval) => {
+    if (
+      options.question == '' ||
+      options.answer == '' ||
+      options.groundTruth == ''
+    ) {
+      throw new Error(
+        'Invalid input. Question, answer, and groundTruth must be non-empty strings.'
+      );
+    }
+
     const request = {
       alignmentRequest: {
         question: options.question,

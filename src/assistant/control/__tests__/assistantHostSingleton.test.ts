@@ -11,7 +11,7 @@ describe('AssistantHostSingleton', () => {
       pineconeConfig,
       'assistant-1'
     );
-    expect(hostUrl).toEqual('https://api.pinecone.io/assistant');
+    expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
 
   test('returns correct host URL for US region', () => {
@@ -66,7 +66,7 @@ describe('AssistantHostSingleton', () => {
 
     AssistantHostSingleton._delete(pineconeConfig, 'assistant-1');
     hostUrl = AssistantHostSingleton.getHostUrl(pineconeConfig, 'assistant-1');
-    expect(hostUrl).toEqual('https://api.pinecone.io/assistant');
+    expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
 
   test('_reset clears all cached host URLs', () => {
@@ -85,8 +85,8 @@ describe('AssistantHostSingleton', () => {
       'assistant-2'
     );
 
-    expect(hostUrl1).toEqual('https://api.pinecone.io/assistant');
-    expect(hostUrl2).toEqual('https://api.pinecone.io/assistant');
+    expect(hostUrl1).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
+    expect(hostUrl2).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
 
   test('_set does not cache empty hostUrl values', () => {
@@ -97,7 +97,7 @@ describe('AssistantHostSingleton', () => {
       pineconeConfig,
       'assistant-1'
     );
-    expect(hostUrl).toEqual('https://api.pinecone.io/assistant');
+    expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
 
   test('returns same host URL instance for same apiKey and assistantName combination', () => {

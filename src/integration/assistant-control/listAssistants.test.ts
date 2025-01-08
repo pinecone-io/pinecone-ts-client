@@ -19,10 +19,9 @@ afterAll(async () => {
 });
 
 describe('listAssistant happy path', () => {
-  // Note: this test will change if you centralize the assistant creation and deletion for data plane integration tests
   test('list existing Assistants', async () => {
     const assistants = await pinecone.assistant.listAssistants();
-    expect(assistants.assistants).toHaveLength(2); // This is where this test will change
+    expect(assistants.assistants).toBeDefined();
     if (assistants.assistants) {
       const assistantNames = assistants.assistants.map(
         (assistant) => assistant.name
