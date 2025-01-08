@@ -33,6 +33,5 @@ export const assistantControlOperationsBuilder = (
     fetchApi: getFetch(config),
     middleware,
   };
-  process.env.PINECONE_DEBUG = 'true';
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };

@@ -65,7 +65,6 @@ export class RetryOnServerFailure<T, A extends any[]> {
 
   isRetryError(response): boolean {
     if (!response) {
-      console.log('Undefined response: ', response);
       return false;
     }
     if (response) {
