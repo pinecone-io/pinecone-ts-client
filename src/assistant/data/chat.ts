@@ -7,6 +7,14 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { RetryOnServerFailure } from '../../utils';
 
+/**
+ * Validates the messages passed to the Assistant.
+ *
+ * @param options - A {@link ChatRequest} object containing the messages to send to the Assistant.
+ * @throws An Error `role` key is not one of `user` or `assistant`.
+ * @throws An Error if the message object does not have exactly two keys: `role` and `content`.
+ * @returns An array of {@link MessageModel} objects containing the messages to send to the Assistant.
+ */
 export const messagesValidation = (options: ChatRequest): MessageModel[] => {
   let messages: MessageModel[] = [];
 
@@ -51,6 +59,12 @@ export const messagesValidation = (options: ChatRequest): MessageModel[] => {
   return messages;
 };
 
+/**
+ * Validates the model passed to the Assistant.
+ *
+ * @param options - A {@link ChatRequest} object containing the model to use for the Assistant.
+ * @throws An Error if the model is not one of the available models as outlined in {@link ChatModelEnum}.
+ */
 export const modelValidation = (options: ChatRequest) => {
   // Make sure passed string for 'model' matches one of the Enum values; default to Gpt4o
   let model: ChatModelEnum = ChatModelEnum.Gpt4o;
@@ -66,13 +80,59 @@ export const modelValidation = (options: ChatRequest) => {
   return model;
 };
 
+/**
+ * The `ChatRequest` interface describes the request format for sending a message to an Assistant.
+ */
 export interface ChatRequest {
+  /**
+   * The messages to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
+   * objects, must have exactly two keys: `role` and `content`. The `role` key can only be one of `user` or `assistant`.
+   */
   messages: string[] | Array<{ [key: string]: string }>;
+  /**
+   * If false, the Assistant will return a single JSON response. If true, the Assistant will return a stream of responses.
+   */
   stream?: boolean;
+  /**
+   * The large language model to use for answer generation. Must be one outlined in {@link ChatModelEnum}.
+   */
   model?: string;
+  /**
+   * A filter against which documents can be retrieved.
+   */
   filter?: object;
 }
 
+/**
+ * Sends a message to the Assistant and receives a response. Retries the request if the server fails.
+ *
+ * @example
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const pc = new Pinecone();
+ * const assistantName = 'test1';
+ * const assistant = pc.Assistant(assistantName);
+ * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
+ * // {
+ * //  id: '000000000000000023e7fb015be9d0ad',
+ * //  finishReason: 'stop',
+ * //  message: {
+ * //    role: 'assistant',
+ * //    content: 'The capital of France is Paris.'
+ * //  },
+ * //  model: 'gpt-4o-2024-05-13',
+ * //  citations: [ { position: 209, references: [Array] } ],
+ * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+ * }
+ * ```
+ *
+ * @param assistantName - The name of the Assistant to send the message to.
+ * @param api - The API object to use to send the request.
+ * @throws An Error if no messages are provided.
+ * @throws an Error if the message object is not formatted correctly.
+ * @throws an Error if the model is not one of the available models.
+ * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
+ */
 export const chatClosed = (
   assistantName: string,
   api: ManageAssistantsApiData
