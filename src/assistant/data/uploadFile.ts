@@ -39,8 +39,8 @@ export interface UploadFile {
  * //  name: 'test-file.txt',
  * //  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
  * //  metadata: { 'test-key': 'test-value' },
- * //  createdOn: Invalid Date,  // Note: these dates resolve in seconds
- * //  updatedOn: Invalid Date,
+ * //  createdOn: 2025-01-06T19:14:21.969Z,
+ * //  updatedOn: 2025-01-06T19:14:21.969Z,
  * //  status: 'Processing',
  * //  percentDone: null,
  * //  signedUrl: null,

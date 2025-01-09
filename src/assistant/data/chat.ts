@@ -113,6 +113,7 @@ export interface ChatRequest {
  * const assistantName = 'test1';
  * const assistant = pc.Assistant(assistantName);
  * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
+ * console.log(chatResp);
  * // {
  * //  id: '000000000000000023e7fb015be9d0ad',
  * //  finishReason: 'stop',
@@ -123,7 +124,7 @@ export interface ChatRequest {
  * //  model: 'gpt-4o-2024-05-13',
  * //  citations: [ { position: 209, references: [Array] } ],
  * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
- * }
+ * // }
  * ```
  *
  * @param assistantName - The name of the Assistant to send the message to.

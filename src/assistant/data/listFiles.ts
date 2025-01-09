@@ -27,9 +27,9 @@ export interface ListFiles {
  * // {
  * //  files: [
  * //    {
- * //      name: 'temp-file.txt',
+ * //      name: 'test-file.txt',
  * //      id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
- * //      metadata: undefined,
+ * //      metadata: [Object],
  * //      createdOn: 2025-01-06T19:14:21.969Z,
  * //      updatedOn: 2025-01-06T19:14:36.925Z,
  * //      status: 'Available',
