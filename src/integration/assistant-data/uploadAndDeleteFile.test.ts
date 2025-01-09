@@ -48,7 +48,7 @@ describe('Upload file happy path', () => {
     const response = await assistant.uploadFile({
       path: tempFile,
     });
-    await sleep(25000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
+    await sleep(27000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
     // b/c of setup.ts
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFile);
