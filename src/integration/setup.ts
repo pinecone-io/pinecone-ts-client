@@ -146,7 +146,7 @@ const setup = async () => {
   });
 
   // Another sleep b/c it currently takes a *long* time for a file to be available
-  await sleep(25000);
+  await sleep(30000);
 
   // Delete file from local file system
   fs.unlinkSync(path.resolve(process.cwd(), tempFileName));
