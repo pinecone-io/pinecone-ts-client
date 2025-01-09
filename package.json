@@ -21,7 +21,7 @@
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
-    "test:integration:node": "TEST_ENV=node jest src/integration -c jest.config.integration-node.js --runInBand --bail",
+    "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --runInBand --bail",
     "test:integration-local:node": "TEST_ENV=node node src/integration/integrationRunner.js",
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --runInBand --bail",
     "test:integration-local:edge": "TEST_ENV=edge node src/integration/integrationRunner.js",
