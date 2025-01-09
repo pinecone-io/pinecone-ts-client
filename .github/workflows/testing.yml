@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       serverlessIndexName: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
+      assistantName: ${{ steps.step3.outputs.ASSISTANT_NAME }}
+      testFile: ${{ steps.step3.outputs.TEST_FILE }}
     steps:
       - name: Checkout code
         id: step1
@@ -23,8 +25,13 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          SERVERLESS_INDEX_NAME=$(npx ts-node ./src/integration/setup.ts | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
+          SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts)
+          SERVERLESS_INDEX_NAME=$(echo "$SETUP_OUTPUT" | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
+          ASSISTANT_NAME=$(echo "$SETUP_OUTPUT" | grep "ASSISTANT_NAME=" | cut -d'=' -f2)
+          TEST_FILE=$(echo "$SETUP_OUTPUT" | grep "TEST_FILE=" | cut -d'=' -f2)
           echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_OUTPUT
+          echo "ASSISTANT_NAME=$ASSISTANT_NAME" >> $GITHUB_OUTPUT
+          echo "TEST_FILE=$TEST_FILE" >> $GITHUB_OUTPUT
 
   unit-tests:
     needs: setup
@@ -48,6 +55,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       serverlessIndexName: ${{ steps.runTests1.outputs.SERVERLESS_INDEX_NAME }}
+      assistantName: ${{ steps.runTests1.outputs.ASSISTANT_NAME }}
+      testFile: ${{ steps.runTests1.outputs.TEST_FILE }}
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -87,9 +96,13 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.serverlessIndexName}}
+          ASSISTANT_NAME: ${{ needs.setup.outputs.assistantName}}
+          TEST_FILE: ${{ needs.setup.outputs.testFile}}
         run: |
           ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
           echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.serverlessIndexName}}" >> $GITHUB_OUTPUT
+          echo "ASSISTANT_NAME=${{ needs.setup.outputs.assistantName}}" >> $GITHUB_OUTPUT
+            echo "TEST_FILE=${{ needs.setup.outputs.testFile}}" >> $GITHUB_OUTPUT
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -115,6 +128,8 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           SERVERLESS_INDEX_NAME: ${{ needs.integration-tests.outputs.serverlessIndexName}}
+          ASSISTANT_NAME: ${{ needs.integration-tests.outputs.assistantName}}
+          TEST_FILE: ${{ needs.integration-tests.outputs.testFile}}
         run: |
           npx ts-node ./src/integration/teardown.ts
 
@@ -126,10 +141,6 @@ jobs:
       matrix:
         tsVersion:
           [
-            '~4.1.0',
-            '~4.2.0',
-            '~4.3.0',
-            '~4.4.0',
             '~4.5.0',
             '~4.6.0',
             '~4.7.0',
@@ -138,6 +149,10 @@ jobs:
             '~5.0.0',
             '~5.1.0',
             '~5.2.0',
+            '~5.3.0',
+            '~5.4.0',
+            '~5.5.0',
+            '~5.6.0',
             'latest',
           ]
     steps:

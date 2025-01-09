@@ -30,6 +30,10 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
+import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
+import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtrl';
+import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
+import { assistantEvalOperationsBuilder } from './assistant/control/assistantOperationsProviderEval';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -94,6 +98,7 @@ export class Pinecone {
   private _listIndexes: ReturnType<typeof listIndexes>;
 
   public inference: Inference;
+  public assistant: AssistantCtrlPlane;
 
   /**
    * @example
@@ -127,6 +132,8 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
+    const assistantApiCtrl = assistantControlOperationsBuilder(this.config);
+    const assistantApiEval = assistantEvalOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -137,7 +144,12 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
+
     this.inference = new Inference(infApi);
+    this.assistant = new AssistantCtrlPlane(this.config, {
+      assistantApi: assistantApiCtrl,
+      evalApi: assistantApiEval,
+    });
   }
 
   /**
@@ -671,5 +683,9 @@ export class Pinecone {
     additionalHeaders?: HTTPHeaders
   ) {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
+  }
+
+  Assistant(assistantName: string) {
+    return new AssistantDataPlane(assistantName, this.config);
   }
 }

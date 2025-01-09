@@ -4,7 +4,6 @@ import type { PineconeConfiguration } from '../../data';
 
 describe('getFetch', () => {
   afterEach(() => {
-    console.log('resetting global.fetch');
     // Reset global.fetch after each test to avoid affecting other tests
     delete (global as any).fetch;
   });

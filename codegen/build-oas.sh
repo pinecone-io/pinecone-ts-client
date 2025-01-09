@@ -3,7 +3,7 @@
 set -eux -o pipefail
 
 version=$1 # e.g. 2024-07
-modules=("db_control" "db_data" "inference")
+modules=("db_control" "db_data" "inference" "assistant_control" "assistant_data" "assistant_evaluation")
 
 destination="src/pinecone-generated-ts-fetch"
 build_dir="build"
