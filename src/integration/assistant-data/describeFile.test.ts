@@ -18,7 +18,6 @@ beforeAll(async () => {
   const files = await assistant.listFiles();
   if (files.files) {
     fileId = files.files.map((f) => f.id)[0];
-    console.log('fileID in describeFile.test.ts = ', fileId);
   } else {
     throw new Error('No files found');
   }

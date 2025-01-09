@@ -189,15 +189,89 @@ export class AssistantDataPlane {
     return this._describeFile(options);
   }
 
-
+  /**
+   * Uploads a file to an Assistant.
+   *
+   * Note: This method does *not* use the generated code from the OpenAPI spec.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.Assistant(assistantName);
+   * await assistant.uploadFile({path: "test-file.txt", metadata: {"test-key": "test-value"}})
+   * // {
+   * //  name: 'test-file.txt',
+   * //  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+   * //  metadata: { 'test-key': 'test-value' },
+   * //  createdOn: Invalid Date,  // Note: these dates resolve in seconds
+   * //  updatedOn: Invalid Date,
+   * //  status: 'Processing',
+   * //  percentDone: null,
+   * //  signedUrl: null,
+   * //  errorMessage: null
+   * // }
+   * ```
+   *
+   * @param options - A {@link UploadFile} object containing the file path and optional metadata.
+   * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+   */
   uploadFile(options: UploadFile) {
     return this._uploadFile(options);
   }
 
+  /**
+   * Deletes a file uploaded to an Assistant by ID.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.Assistant(assistantName);
+   * const files = await assistant.listFiles();
+   * let fileId: string;
+   * if (files.files) {
+   *    fileId = files.files[0].id;
+   *    await assistant.deleteFile({fileId: fileId});
+   *  }
+   * ```
+   *
+   * @param options - A {@link DeleteFile} object containing the file ID to delete.
+   */
   deleteFile(options: DeleteFile) {
     return this._deleteFile(options);
   }
 
+  /**
+   * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
+   * by an Assistant during the retrieval process.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.Assistant(assistantName);
+   * const response = await assistant.context({query: "What is the capital of France?"});
+   * console.log(response);
+   * // {
+   * //  snippets: [
+   * //    {
+   * //      type: 'text',
+   * //      content: 'The capital of France is Paris.',
+   * //      score: 0.9978925,
+   * //      reference: [Object]
+   * //    },
+   * //  ],
+   * //  usage: { promptTokens: 527, completionTokens: 0, totalTokens: 527 }
+   * // }
+   * ```
+   *
+   * @param options
+   * @returns A promise that resolves to a {@link Context} object containing the context snippets.
+   */
   context(options: Context) {
     return this._context(options);
   }

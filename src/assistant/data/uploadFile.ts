@@ -9,11 +9,50 @@ import { PineconeConfiguration } from '../../data';
 import { buildUserAgent } from '../../utils';
 import { AssistantHostSingleton } from '../assistantHostSingleton';
 
+/**
+ * The `UploadFile` interface describes the file path for uploading a file to an Assistant and optional metadata.
+ */
 export interface UploadFile {
+  /**
+   * The (local) path to the file to upload.
+   */
   path: string;
+  /**
+   * Optional metadata to attach to the file.
+   */
   metadata?: Record<string, string>;
 }
 
+/**
+ * Uploads a file to an Assistant.
+ *
+ * Note: This method does *not* use the generated code from the OpenAPI spec.
+ *
+ * @example
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const pc = new Pinecone();
+ * const assistantName = 'test1';
+ * const assistant = pc.Assistant(assistantName);
+ * await assistant.uploadFile({path: "test-file.txt", metadata: {"test-key": "test-value"}})
+ * // {
+ * //  name: 'test-file.txt',
+ * //  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+ * //  metadata: { 'test-key': 'test-value' },
+ * //  createdOn: Invalid Date,  // Note: these dates resolve in seconds
+ * //  updatedOn: Invalid Date,
+ * //  status: 'Processing',
+ * //  percentDone: null,
+ * //  signedUrl: null,
+ * //  errorMessage: null
+ * // }
+ * ```
+ *
+ * @param assistantName - The name of the Assistant to upload the file to.
+ * @param config - The Pinecone configuration object.
+ * @throws An error if the file path is not provided.
+ * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+ */
 export const uploadFileClosed = (
   assistantName: string,
   config: PineconeConfiguration
