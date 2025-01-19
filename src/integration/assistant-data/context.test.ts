@@ -1,8 +1,8 @@
 import { Pinecone } from '../../pinecone';
-import { AssistantDataPlane } from '../../assistant/data';
+import { Assistant } from '../../assistant/data';
 
 let pinecone: Pinecone;
-let assistant: AssistantDataPlane;
+let assistant: Assistant;
 let assistantName: string;
 
 if (!process.env.ASSISTANT_NAME) {
