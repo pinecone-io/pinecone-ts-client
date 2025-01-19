@@ -22,7 +22,7 @@ export const AssistantHostSingleton = (function () {
     const describeResponse = await describeAssistant(assistantControlApi)(
       assistantName
     );
-    const host = describeResponse.host;
+    const host = describeResponse?.host;
 
     if (!host) {
       // if the host is empty for some reason, default based on region
@@ -72,7 +72,7 @@ export const AssistantHostSingleton = (function () {
     ) => {
       const normalizedHostUrl = normalizeUrl(ensureAssistantPath(hostUrl));
       // prevent adding an empty hostUrl to the cache
-      if (!normalizedHostUrl) {
+      if (!hostUrl || !normalizedHostUrl) {
         return;
       }
 

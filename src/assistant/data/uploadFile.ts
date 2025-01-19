@@ -80,7 +80,7 @@ export const uploadFileClosed = (
       config,
       assistantName
     );
-    console.log('THIS IS THE HOST URL:', hostUrl);
+
     let url = `${hostUrl}/files/${assistantName}`;
 
     if (options.metadata) {
