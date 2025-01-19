@@ -1,7 +1,5 @@
-import {
-  DescribeFileRequest,
-  ManageAssistantsApi as ManageAssistantsApiData,
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 
 /**
  * The `DescribeFile` interface describes the options that can be passed to the `describeFile` method.
@@ -54,9 +52,10 @@ export interface DescribeFile {
  */
 export const describeFileClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: DescribeFile) => {
+    const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
       assistantFileId: options.fileId,

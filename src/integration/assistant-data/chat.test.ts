@@ -97,7 +97,7 @@ describe('Chat error paths', () => {
       });
     };
     await expect(throwError()).rejects.toThrow(
-      'A call to https://prod-1-data.ke.pinecone.io/assistant/chat/nonexistent returned HTTP status 404.'
+      'A call to https://api.pinecone.io/assistant/assistants/nonexistent returned HTTP status 404.'
     );
   });
 });

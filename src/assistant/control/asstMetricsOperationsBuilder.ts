@@ -1,28 +1,28 @@
 import type { PineconeConfiguration } from '../../data';
 import {
-  ManageAssistantsApi as ManageAssistantsControlApi,
   Configuration,
   type ConfigurationParameters as AssistantOperationsApiConfigurationParameters,
   X_PINECONE_API_VERSION,
-} from '../../pinecone-generated-ts-fetch/assistant_control';
-import {
-  buildUserAgent,
-  getFetch,
-  normalizeUrl,
-  queryParamsStringify,
-} from '../../utils';
+  MetricsApi,
+} from '../../pinecone-generated-ts-fetch/assistant_evaluation';
+import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
 import { middleware } from '../../utils/middleware';
 
-export const assistantControlOperationsBuilder = (
+export const asstMetricsOperationsBuilder = (
   config: PineconeConfiguration
-): ManageAssistantsControlApi => {
+): MetricsApi => {
   const { apiKey } = config;
-  const controllerPath =
-    normalizeUrl(config.controllerHostUrl) ||
-    'https://api.pinecone.io/assistant';
+  // All calls to eval will have 'eval' as assistantName
+
+  let hostUrl = 'https://prod-1-data.ke.pinecone.io/assistant';
+  // If 'eu' is specified use that, otherwise default to 'us'
+  if (config.assistantRegion && config.assistantRegion.toLowerCase() === 'eu') {
+    hostUrl = 'https://prod-eu-data.ke.pinecone.io/assistant';
+  }
+
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
-    basePath: controllerPath,
+    basePath: hostUrl,
     apiKey,
     queryParamsStringify,
     headers: {
@@ -33,5 +33,6 @@ export const assistantControlOperationsBuilder = (
     fetchApi: getFetch(config),
     middleware,
   };
-  return new ManageAssistantsControlApi(new Configuration(apiConfig));
+
+  return new MetricsApi(new Configuration(apiConfig));
 };

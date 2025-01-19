@@ -1,7 +1,5 @@
-import {
-  DeleteFileRequest,
-  ManageAssistantsApi as ManageAssistantsApiData,
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { DeleteFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 
 /**
  * The `DeleteFile` interface describes the file ID for deleting a file uploaded to an Assistant.
@@ -35,9 +33,10 @@ export interface DeleteFile {
  */
 export const deleteFileClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: DeleteFile) => {
+    const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
       assistantFileId: options.fileId,

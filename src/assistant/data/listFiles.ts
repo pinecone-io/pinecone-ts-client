@@ -1,7 +1,5 @@
-import {
-  ListFilesRequest,
-  ManageAssistantsApi as ManageAssistantsApiData,
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { ListFilesRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 
 /**
  * The `ListFiles` interface describes the options (a single filter) that can be passed to the `listFiles` method.
@@ -45,9 +43,10 @@ export interface ListFiles {
  */
 export const listFilesClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: ListFiles) => {
+    const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
       filter: options.filter,

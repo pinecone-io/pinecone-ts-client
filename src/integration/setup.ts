@@ -10,6 +10,7 @@ import {
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 // todo: refactor to make conditions & loops more efficient
 
@@ -109,7 +110,7 @@ const setup = async () => {
 
   // Set up an Assistant and upload a file to it
   const assistantName = randomString(5);
-  await pc.assistant.createAssistant({
+  await pc.createAssistant({
     name: assistantName,
     instructions: 'test-instructions',
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
@@ -118,7 +119,7 @@ const setup = async () => {
   await sleep(2000);
 
   try {
-    await pc.assistant.getAssistant(assistantName);
+    await pc.describeAssistant(assistantName);
   } catch (e) {
     console.log('Error getting assistant:', e);
   }
@@ -128,14 +129,18 @@ const setup = async () => {
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`ASSISTANT_NAME=${assistantName}`);
 
-  const tempFileName = `tempfile-${Date.now()}.txt`;
+  const tempFileName = path.join(os.tmpdir(), `tempfile-${Date.now()}.txt`);
 
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`TEST_FILE=${tempFileName}`);
 
-  const data = 'This is some temporary data';
-  fs.writeFileSync(tempFileName, data);
-
+  try {
+    const data = 'This is some temporary data';
+    fs.writeFileSync(tempFileName, data);
+    console.log(`Temporary file created: ${tempFileName}`);
+  } catch (err) {
+    console.error('Error writing file:', err);
+  }
   // Add a small delay to ensure file system sync
   await sleep(1000);
 
@@ -149,7 +154,12 @@ const setup = async () => {
   await sleep(30000);
 
   // Delete file from local file system
-  fs.unlinkSync(path.resolve(process.cwd(), tempFileName));
+  try {
+    fs.unlinkSync(path.resolve(process.cwd(), tempFileName));
+    console.log(`Temporary file deleted: ${tempFileName}`);
+  } catch (err) {
+    console.error('Error deleting file:', err);
+  }
 };
 
 setup();

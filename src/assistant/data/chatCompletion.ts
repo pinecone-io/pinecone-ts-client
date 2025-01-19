@@ -1,10 +1,10 @@
 import {
   ChatCompletionAssistantRequest,
   ChatCompletionModel,
-  ManageAssistantsApi as ManageAssistantsApiData,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { messagesValidation, modelValidation } from './chat';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 
 export interface ChatCompletionRequest {
@@ -29,7 +29,7 @@ export interface ChatCompletionRequest {
  */
 export const chatCompletionClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (
     options: ChatCompletionRequest
@@ -37,6 +37,7 @@ export const chatCompletionClosed = (
     if (!options.messages) {
       throw new Error('No messages passed to Assistant');
     }
+    const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
     const request: ChatCompletionAssistantRequest = {

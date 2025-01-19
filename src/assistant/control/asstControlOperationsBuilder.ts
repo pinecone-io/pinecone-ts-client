@@ -1,23 +1,28 @@
 import type { PineconeConfiguration } from '../../data';
 import {
+  ManageAssistantsApi as ManageAssistantsControlApi,
   Configuration,
   type ConfigurationParameters as AssistantOperationsApiConfigurationParameters,
   X_PINECONE_API_VERSION,
-  MetricsApi,
-} from '../../pinecone-generated-ts-fetch/assistant_evaluation';
-import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
+} from '../../pinecone-generated-ts-fetch/assistant_control';
+import {
+  buildUserAgent,
+  getFetch,
+  normalizeUrl,
+  queryParamsStringify,
+} from '../../utils';
 import { middleware } from '../../utils/middleware';
-import { AssistantHostSingleton } from '../assistantHostSingleton';
 
-export const assistantEvalOperationsBuilder = (
+export const asstControlOperationsBuilder = (
   config: PineconeConfiguration
-): MetricsApi => {
+): ManageAssistantsControlApi => {
   const { apiKey } = config;
-  // All calls to eval will have 'eval' as assistantName
-  const hostUrl = AssistantHostSingleton.getHostUrl(config, 'eval');
+  const controllerPath =
+    normalizeUrl(config.controllerHostUrl) ||
+    'https://api.pinecone.io/assistant';
   const headers = config.additionalHeaders || null;
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
-    basePath: hostUrl,
+    basePath: controllerPath,
     apiKey,
     queryParamsStringify,
     headers: {
@@ -28,6 +33,5 @@ export const assistantEvalOperationsBuilder = (
     fetchApi: getFetch(config),
     middleware,
   };
-
-  return new MetricsApi(new Configuration(apiConfig));
+  return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };

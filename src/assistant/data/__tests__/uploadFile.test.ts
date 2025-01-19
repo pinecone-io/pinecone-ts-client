@@ -2,10 +2,12 @@ import { uploadFileClosed } from '../uploadFile';
 import fs from 'fs';
 import FormData from 'form-data';
 import axios from 'axios';
+import { AssistantHostSingleton } from '../../assistantHostSingleton';
 
+jest.mock('axios');
 jest.mock('fs');
 jest.mock('form-data');
-jest.mock('axios');
+jest.mock('../../assistantHostSingleton');
 
 const mockResponse = {
   data: {
@@ -29,7 +31,11 @@ describe('uploadFileClosed', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
     (axios.post as jest.Mock).mockResolvedValue(mockResponse);
+    (AssistantHostSingleton.getHostUrl as jest.Mock).mockResolvedValue(
+      'https://prod-1-data.ke.pinecone.io/assistant'
+    );
   });
 
   test('throws error when file path is not provided', async () => {
@@ -37,9 +43,9 @@ describe('uploadFileClosed', () => {
     await expect(upload({ path: '' })).rejects.toThrow('File path is required');
   });
 
-  test('correctly builds URL without metadata', () => {
+  test('correctly builds URL without metadata', async () => {
     const upload = uploadFileClosed(mockAssistantName, mockConfig);
-    upload({ path: 'test.txt' });
+    await upload({ path: 'test.txt' });
 
     expect(axios.post).toHaveBeenCalledWith(
       'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
@@ -48,10 +54,10 @@ describe('uploadFileClosed', () => {
     );
   });
 
-  test('correctly builds URL with metadata', () => {
+  test('correctly builds URL with metadata', async () => {
     const metadata = { key: 'value' };
     const upload = uploadFileClosed(mockAssistantName, mockConfig);
-    upload({ path: 'test.txt', metadata });
+    await upload({ path: 'test.txt', metadata });
 
     const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
     expect(axios.post).toHaveBeenCalledWith(
@@ -61,9 +67,9 @@ describe('uploadFileClosed', () => {
     );
   });
 
-  test('includes correct headers in request', () => {
+  test('includes correct headers in request', async () => {
     const upload = uploadFileClosed(mockAssistantName, mockConfig);
-    upload({ path: 'test.txt' });
+    await upload({ path: 'test.txt' });
 
     expect(axios.post).toHaveBeenCalledWith(
       expect.any(String),
@@ -78,12 +84,12 @@ describe('uploadFileClosed', () => {
     );
   });
 
-  test('creates form data with file stream', () => {
+  test('creates form data with file stream', async () => {
     const mockStream = { mock: 'stream' };
     (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
     const upload = uploadFileClosed(mockAssistantName, mockConfig);
-    upload({ path: 'test.txt' });
+    await upload({ path: 'test.txt' });
 
     expect(fs.createReadStream).toHaveBeenCalledWith('test.txt');
     expect(FormData.prototype.append).toHaveBeenCalledWith('file', mockStream);

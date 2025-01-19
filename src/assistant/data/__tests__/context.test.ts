@@ -1,18 +1,46 @@
 import { contextClosed } from '../context';
-import { ManageAssistantsApi } from '../../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  messagesValidation,
+  modelValidation,
+  ChatRequest,
+  chatClosed,
+} from '../chat';
+import {
+  ContextAssistantRequest,
+  ContextModel,
+  ManageAssistantsApi,
+} from '../../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
+
+const setupApiProvider = () => {
+  const fakeContextAssistant: (
+    req: ContextAssistantRequest
+  ) => Promise<ContextModel> = jest
+    .fn()
+    .mockImplementation(() => Promise.resolve({}));
+
+  const MAP = {
+    contextAssistant: fakeContextAssistant,
+  } as ManageAssistantsApi;
+  const AsstDataOperationsProvider = {
+    provideData: async () => MAP,
+  } as AsstDataOperationsProvider;
+  return { MAP, AsstDataOperationsProvider };
+};
 
 describe('contextClosed', () => {
   let mockApi: ManageAssistantsApi;
+  let asstOperationsProvider: AsstDataOperationsProvider;
 
   beforeEach(() => {
-    mockApi = {
-      contextAssistant: jest.fn(),
-    } as unknown as ManageAssistantsApi;
+    const { MAP, AsstDataOperationsProvider } = setupApiProvider();
+    mockApi = MAP;
+    asstOperationsProvider = AsstDataOperationsProvider;
   });
 
   test('creates a context function that calls the API with correct parameters', async () => {
     const assistantName = 'test-assistant';
-    const contextFn = contextClosed(assistantName, mockApi);
+    const contextFn = contextClosed(assistantName, asstOperationsProvider);
 
     const options = {
       query: 'test query',
@@ -31,7 +59,7 @@ describe('contextClosed', () => {
   });
 
   test('throws error when query is empty', async () => {
-    const contextFn = contextClosed('test-assistant', mockApi);
+    const contextFn = contextClosed('test-assistant', asstOperationsProvider);
 
     await expect(contextFn({ query: '' })).rejects.toThrow(
       'Must provide a query'
@@ -40,7 +68,7 @@ describe('contextClosed', () => {
 
   test('works without filter parameter', async () => {
     const assistantName = 'test-assistant';
-    const contextFn = contextClosed(assistantName, mockApi);
+    const contextFn = contextClosed(assistantName, asstOperationsProvider);
 
     const options = {
       query: 'test query',

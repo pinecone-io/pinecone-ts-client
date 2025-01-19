@@ -13,6 +13,18 @@ import {
   indexOperationsBuilder,
   CollectionName,
 } from './control';
+import {
+  createAssistant,
+  CreateAssistantOptions,
+  deleteAssistant,
+  describeAssistant,
+  updateAssistant,
+  UpdateAssistantOptions,
+  listAssistants,
+  evaluate,
+  AssistantEval,
+} from './assistant/control';
+import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
@@ -30,10 +42,10 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
-import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
-import { assistantControlOperationsBuilder } from './assistant/control/assistantOperationsBuilderCtrl';
+// import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
+import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
+import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
 import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
-import { assistantEvalOperationsBuilder } from './assistant/control/assistantOperationsProviderEval';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -96,9 +108,22 @@ export class Pinecone {
   private _listCollections: ReturnType<typeof listCollections>;
   /** @hidden */
   private _listIndexes: ReturnType<typeof listIndexes>;
+  /** @hidden */
+  private _createAssistant: ReturnType<typeof createAssistant>;
+  /** @hidden */
+  private _deleteAssistant: ReturnType<typeof deleteAssistant>;
+  /** @hidden */
+  private _updateAssistant: ReturnType<typeof updateAssistant>;
+  /** @hidden */
+  private _evaluate: ReturnType<typeof evaluate>;
+  /** @hidden */
+  private _describeAssistant: ReturnType<typeof describeAssistant>;
+  /** @hidden */
+  private _listAssistants: ReturnType<typeof listAssistants>;
+  /** @hidden */
 
   public inference: Inference;
-  public assistant: AssistantCtrlPlane;
+  // public assistant: AssistantCtrlPlane;
 
   /**
    * @example
@@ -132,8 +157,8 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
-    const assistantApiCtrl = assistantControlOperationsBuilder(this.config);
-    const assistantApiEval = assistantEvalOperationsBuilder(this.config);
+    const asstControlApi = asstControlOperationsBuilder(this.config);
+    const asstEvalApi = asstMetricsOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -145,11 +170,18 @@ export class Pinecone {
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
 
+    this._createAssistant = createAssistant(asstControlApi);
+    this._deleteAssistant = deleteAssistant(asstControlApi);
+    this._updateAssistant = updateAssistant(asstControlApi);
+    this._evaluate = evaluate(asstEvalApi);
+    this._describeAssistant = describeAssistant(asstControlApi);
+    this._listAssistants = listAssistants(asstControlApi);
+
     this.inference = new Inference(infApi);
-    this.assistant = new AssistantCtrlPlane(this.config, {
-      assistantApi: assistantApiCtrl,
-      evalApi: assistantApiEval,
-    });
+    // this.assistant = new AssistantCtrlPlane(this.config, {
+    //   assistantApi: assistantApiCtrl,
+    //   evalApi: assistantApiEval,
+    // });
   }
 
   /**
@@ -573,6 +605,194 @@ export class Pinecone {
    */
   describeCollection(collectionName: CollectionName) {
     return this._describeCollection(collectionName);
+  }
+
+  /**
+   * Creates a new Assistant.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.createAssistant({name: 'test1'});
+   * // {
+   * //  name: 'test11',
+   * //  instructions: undefined,
+   * //  metadata: undefined,
+   * //  status: 'Initializing',
+   * //  host: 'https://prod-1-data.ke.pinecone.io',
+   * //  createdAt: 2025-01-08T22:52:49.652Z,
+   * //  updatedAt: 2025-01-08T22:52:49.652Z
+   * // }
+   * ```
+   *
+   * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
+   * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
+   * and determines where the Assistant will be hosted.
+   * @throws Error if the Assistant API is not initialized.
+   * @throws Error if an invalid region is provided.
+   * @returns A Promise that resolves to an {@link Assistant} model.
+   */
+  async createAssistant(options: CreateAssistantOptions) {
+    const assistant = await this._createAssistant(options);
+
+    if (assistant.host) {
+      AssistantHostSingleton._set(this.config, assistant.name, assistant.host);
+    }
+
+    return Promise.resolve(assistant);
+  }
+
+  /**
+   * Deletes an Assistant by name.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.deleteAssistant('test1');
+   * ```
+   *
+   * @param assistantName - The name of the Assistant to be deleted.
+   * @throws Error if the Assistant API is not initialized.
+   */
+  async deleteAssistant(assistantName: string) {
+    await this._deleteAssistant(assistantName);
+    AssistantHostSingleton._delete(this.config, assistantName);
+    return Promise.resolve();
+  }
+
+  /**
+   * Retrieves information about an Assistant by name.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const test = await pc.getAssistant('test1');
+   * console.log(test);
+   * // {
+   * //  name: 'test1',
+   * //  instructions: undefined,
+   * //  metadata: undefined,
+   * //  status: 'Ready',
+   * //  host: 'https://prod-1-data.ke.pinecone.io',
+   * //  createdAt: 2025-01-08T22:24:50.525Z,
+   * //  updatedAt: 2025-01-08T22:24:52.303Z
+   * // }
+   * ```
+   *
+   * @param assistantName - The name of the Assistant to retrieve.
+   * @throws Error if the Assistant API is not initialized.
+   * @returns A Promise that resolves to an {@link Assistant} model.
+   */
+  async describeAssistant(assistantName: string) {
+    const assistant = await this._describeAssistant(assistantName);
+
+    if (assistant.host) {
+      AssistantHostSingleton._set(this.config, assistantName, assistant.host);
+    }
+
+    return Promise.resolve(assistant);
+  }
+
+  /**
+   * Retrieves a list of all Assistants for a given Pinecone API key.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistants = await pc.listAssistants();
+   * console.log(assistants);
+   * // {
+   * //  assistants: [
+   * //    {
+   * //      name: 'test2',
+   * //      instructions: 'test-instructions',
+   * //      metadata: [Object],
+   * //      status: 'Ready',
+   * //      host: 'https://prod-1-data.ke.pinecone.io',
+   * //      createdAt: 2025-01-06T19:14:18.633Z,
+   * //      updatedAt: 2025-01-06T19:14:36.977Z
+   * //    },
+   * //  ]
+   * // }
+   * ```
+   *
+   * @throws Error if the Assistant API is not initialized.
+   * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
+   */
+  async listAssistants() {
+    const assistantList = await this._listAssistants();
+
+    // For any listAssistants calls we want to update the AssistantHostSingleton cache.
+    // This prevents unneeded calls to describeAssistant for resolving the host for assistant operations.
+    if (assistantList.assistants && assistantList.assistants.length > 0) {
+      for (let i = 0; i < assistantList.assistants.length; i++) {
+        const assistant = assistantList.assistants[i];
+        if (assistant.host) {
+          AssistantHostSingleton._set(
+            this.config,
+            assistant.name,
+            assistant.host
+          );
+        }
+      }
+    }
+
+    return Promise.resolve(assistantList);
+  }
+
+  /**
+   * Updates an Assistant by name.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.updateAssistant({name: 'test1', instructions: 'some new  instructions!'});
+   * // {
+   * //  assistantName: test1,
+   * //  instructions: 'some new instructions!',
+   * //  metadata: undefined
+   * // }
+   * ```
+   *
+   * @param options - An {@link updateAssistant} object containing the name of the Assistant to be updated and
+   * optional instructions and metadata.
+   * @throws Error if the Assistant API is not initialized.
+   * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
+   */
+  updateAssistant(options: UpdateAssistantOptions) {
+    return this._updateAssistant(options);
+  }
+
+  /**
+   * Evaluates a question against a given answer and a ground truth answer.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.evaluate({
+   *    question: "What is the capital of France?",
+   *    answer: "Lyon is France's capital city",
+   *    groundTruth: "Paris is the capital city of France"
+   *   });
+   * // {
+   * //  metrics: { correctness: 0, completeness: 0, alignment: 0 }, // 0s across the board indicates incorrect
+   * //  reasoning: { evaluatedFacts: [ [Object] ] },
+   * //  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
+   * // }
+   * ```
+   * @param options - An {@link AssistantEval} object containing the question, the answer, and a ground truth answer to
+   * evaluate.
+   * @throws Error if the Evaluation API is not initialized.
+   * @returns A Promise that resolves to an {@link AlignmentResponse} object.
+   */
+  evaluate(options: AssistantEval) {
+    return this._evaluate(options);
   }
 
   /** @internal */

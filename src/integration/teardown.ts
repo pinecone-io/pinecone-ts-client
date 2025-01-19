@@ -30,7 +30,7 @@ export const teardown = async () => {
     throw new Error('ASSISTANT_NAME environment variable is not set');
   } else {
     const assistantName = process.env.ASSISTANT_NAME;
-    await pc.assistant.deleteAssistant(assistantName);
+    await pc.deleteAssistant(assistantName);
   }
 };
 

@@ -2,9 +2,9 @@ import {
   ChatAssistantRequest,
   type ChatModel,
   ChatModelEnum,
-  ManageAssistantsApi as ManageAssistantsApiData,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 
 /**
@@ -136,12 +136,14 @@ export interface ChatRequest {
  */
 export const chatClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: ChatRequest): Promise<ChatModel> => {
     if (!options.messages) {
       throw new Error('No messages passed to Assistant');
     }
+    const api = await apiProvider.provideData();
+
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
     const request: ChatAssistantRequest = {

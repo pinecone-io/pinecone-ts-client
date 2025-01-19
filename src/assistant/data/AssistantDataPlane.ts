@@ -1,11 +1,10 @@
-import { ManageAssistantsApi as ManageAssistantsApiData } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { chatClosed, ChatRequest } from './chat';
 import { ListFiles, listFilesClosed } from './listFiles';
 import { DescribeFile, describeFileClosed } from './describeFile';
 import { DeleteFile, deleteFileClosed } from './deleteFile';
 import { UploadFile, uploadFileClosed } from './uploadFile';
 import { PineconeConfiguration } from '../../data';
-import { assistantDataOperationsBuilder } from './assistantOperationsProviderData';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { Context, contextClosed } from './context';
 import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
 
@@ -25,7 +24,6 @@ import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
 export class AssistantDataPlane {
   private config: PineconeConfiguration;
 
-  readonly dataApi: ManageAssistantsApiData;
   readonly _chat: ReturnType<typeof chatClosed>;
   readonly _chatCompletions: ReturnType<typeof chatCompletionClosed>;
   readonly _listFiles: ReturnType<typeof listFilesClosed>;
@@ -50,19 +48,34 @@ export class AssistantDataPlane {
       throw new Error('No assistant name provided');
     }
     this.config = config;
-    this.dataApi = assistantDataOperationsBuilder(this.config, assistantName);
+    const asstDataOperationsProvider = new AsstDataOperationsProvider(
+      this.config,
+      assistantName
+    );
     this.assistantName = assistantName;
 
-    this._chat = chatClosed(this.assistantName, this.dataApi);
+    this._chat = chatClosed(this.assistantName, asstDataOperationsProvider);
     this._chatCompletions = chatCompletionClosed(
       this.assistantName,
-      this.dataApi
+      asstDataOperationsProvider
     );
-    this._listFiles = listFilesClosed(this.assistantName, this.dataApi);
-    this._describeFile = describeFileClosed(this.assistantName, this.dataApi);
+    this._listFiles = listFilesClosed(
+      this.assistantName,
+      asstDataOperationsProvider
+    );
+    this._describeFile = describeFileClosed(
+      this.assistantName,
+      asstDataOperationsProvider
+    );
     this._uploadFile = uploadFileClosed(this.assistantName, this.config);
-    this._deleteFile = deleteFileClosed(this.assistantName, this.dataApi);
-    this._context = contextClosed(this.assistantName, this.dataApi);
+    this._deleteFile = deleteFileClosed(
+      this.assistantName,
+      asstDataOperationsProvider
+    );
+    this._context = contextClosed(
+      this.assistantName,
+      asstDataOperationsProvider
+    );
   }
 
   // --------- Chat methods ---------

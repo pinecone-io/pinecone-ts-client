@@ -12,7 +12,7 @@ import { ManageAssistantsApi as ManageAssistantsControlApi } from '../../pinecon
  *
  * @param api - The `ManageAssistantsControlApi` object that defines the methods for interacting with the Assistant API.
  */
-export const deleteAssistantClosed = (api: ManageAssistantsControlApi) => {
+export const deleteAssistant = (api: ManageAssistantsControlApi) => {
   return async (assistantName: string): Promise<void> => {
     return await api.deleteAssistant({
       assistantName: assistantName,

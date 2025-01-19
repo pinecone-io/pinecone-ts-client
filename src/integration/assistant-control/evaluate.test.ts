@@ -2,10 +2,9 @@ import { Pinecone } from '../../pinecone';
 
 describe('evaluate', () => {
   const pc = new Pinecone();
-  const assistant = pc.assistant;
 
   test('Evaluate happy path', async () => {
-    const response = await pc.assistant.evaluate({
+    const response = await pc.evaluate({
       question: "What's the capital of France?",
       answer: "Paris is France's capital city",
       groundTruth: 'Paris is the capital city of France',
@@ -25,7 +24,7 @@ describe('evaluate', () => {
   });
 
   test('Evaluate with wrong answer', async () => {
-    const response = await assistant.evaluate({
+    const response = await pc.evaluate({
       question: "What's the capital of France?",
       answer: "Lyon is France's capital city",
       groundTruth: 'Paris is the capital city of France',

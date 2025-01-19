@@ -29,7 +29,7 @@ import {
  * @param api - The `ManageAssistantsControlApi` object that defines the methods for interacting with the Assistant API.
  * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
  */
-export const listAssistantsClosed = (api: ManageAssistantsControlApi) => {
+export const listAssistants = (api: ManageAssistantsControlApi) => {
   return async (): Promise<ListAssistants200Response> => {
     return await api.listAssistants();
   };

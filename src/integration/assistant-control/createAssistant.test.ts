@@ -10,19 +10,19 @@ beforeAll(async () => {
 describe('createAssistant happy path', () => {
   test('simple create', async () => {
     const assistantName = randomString(5);
-    await pinecone.assistant.createAssistant({
+    await pinecone.createAssistant({
       name: assistantName,
       instructions: 'test-instructions',
       metadata: { key: 'value', keyTwo: 'valueTwo' },
       region: 'us',
     });
     await sleep(2000);
-    const description = await pinecone.assistant.getAssistant(assistantName);
+    const description = await pinecone.describeAssistant(assistantName);
     expect(description.name).toEqual(assistantName);
     expect(description.instructions).toEqual('test-instructions');
     expect(description.metadata).toEqual({ key: 'value', keyTwo: 'valueTwo' });
 
-    await pinecone.assistant.deleteAssistant(assistantName);
+    await pinecone.deleteAssistant(assistantName);
   });
 });
 
@@ -30,7 +30,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with too much metadata', async () => {
     const assistantName = randomString(5);
     const throwError = async () => {
-      await pinecone.assistant.createAssistant({
+      await pinecone.createAssistant({
         name: assistantName,
         metadata: { key: 'a'.repeat(1000000) },
       });
@@ -41,7 +41,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with invalid region', async () => {
     const assistantName = randomString(5);
     const throwError = async () => {
-      await pinecone.assistant.createAssistant({
+      await pinecone.createAssistant({
         name: assistantName,
         region: 'invalid-region',
       });
@@ -54,7 +54,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with empty assistant name', async () => {
     const assistantName = '';
     const throwError = async () => {
-      await pinecone.assistant.createAssistant({
+      await pinecone.createAssistant({
         name: assistantName,
       });
     };
@@ -63,17 +63,17 @@ describe('createAssistant error paths', () => {
 
   test('createAssistant with duplicate name', async () => {
     const assistantName = randomString(5);
-    await pinecone.assistant.createAssistant({
+    await pinecone.createAssistant({
       name: assistantName,
     });
 
     const throwError = async () => {
-      await pinecone.assistant.createAssistant({
+      await pinecone.createAssistant({
         name: assistantName,
       });
     };
     await expect(throwError()).rejects.toThrow();
 
-    await pinecone.assistant.deleteAssistant(assistantName);
+    await pinecone.deleteAssistant(assistantName);
   });
 });

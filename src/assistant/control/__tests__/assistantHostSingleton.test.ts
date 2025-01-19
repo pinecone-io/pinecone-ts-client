@@ -1,8 +1,22 @@
 import { AssistantHostSingleton } from '../../assistantHostSingleton';
 
+const mockDescribeAsst = jest.fn();
+const mockAsstOperationsBuilder = jest.fn();
+
+jest.mock('../../control', () => {
+  const realControl = jest.requireActual('../../control');
+  return {
+    ...realControl,
+    describeAssistant: () => mockDescribeAsst,
+    assistantOperationsBuilder: (config) => mockAsstOperationsBuilder(config),
+  };
+});
+
 describe('AssistantHostSingleton', () => {
   afterEach(() => {
     AssistantHostSingleton._reset();
+    mockDescribeAsst.mockReset();
+    mockAsstOperationsBuilder.mockReset();
   });
 
   test('returns default host URL when no region is set', () => {

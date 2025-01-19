@@ -76,7 +76,11 @@ export const uploadFileClosed = (
       },
     };
 
-    const hostUrl = AssistantHostSingleton.getHostUrl(config, assistantName);
+    const hostUrl = await AssistantHostSingleton.getHostUrl(
+      config,
+      assistantName
+    );
+    console.log('THIS IS THE HOST URL:', hostUrl);
     let url = `${hostUrl}/files/${assistantName}`;
 
     if (options.metadata) {
@@ -85,18 +89,33 @@ export const uploadFileClosed = (
       );
       url += `?metadata=${encodedMetadata}`;
     }
-    const resp = await axios.post(url, form, reqHeaders);
-
-    return {
-      name: resp.data.name,
-      id: resp.data.id,
-      metadata: resp.data.metadata || null,
-      createdOn: new Date(resp.data.createdOn),
-      updatedOn: new Date(resp.data.updatedOn),
-      status: resp.data.status,
-      percentDone: resp.data.percentDone || null,
-      signedUrl: resp.data.signedUrl || null,
-      errorMessage: resp.data.errorMessage || null,
-    } as AssistantFileModel;
+    try {
+      const resp = await axios.post(url, form, reqHeaders);
+      return {
+        name: resp.data.name,
+        id: resp.data.id,
+        metadata: resp.data.metadata || null,
+        createdOn: new Date(resp.data.createdOn),
+        updatedOn: new Date(resp.data.updatedOn),
+        status: resp.data.status,
+        percentDone: resp.data.percentDone || null,
+        signedUrl: resp.data.signedUrl || null,
+        errorMessage: resp.data.errorMessage || null,
+      } as AssistantFileModel;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error.response?.status, error.message);
+        console.error('Axios error JSON:', error.toJSON());
+        throw new Error(
+          `Request failed with status ${error.response?.status || 'unknown'}`
+        );
+      } else {
+        console.error('Unexpected error:', error);
+        console.error('Axios error JSON:', JSON.stringify(error));
+        throw new Error(
+          'An unexpected error occurred while making the request'
+        );
+      }
+    }
   };
 };

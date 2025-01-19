@@ -1,11 +1,10 @@
-export {
-  createAssistantClosed,
-  createAssistantRequest,
-} from './createAssistant';
-export { deleteAssistantClosed } from './deleteAssistant';
-export { getAssistantClosed } from './getAssistant';
-export { listAssistantsClosed } from './listAssistants';
-export { updateAssistantClosed } from './updateAssistant';
-export { AssistantCtrlPlane } from './AssistantCtrlPlane';
-export { AssistantHostSingleton } from '../assistantHostSingleton';
-export { assistantControlOperationsBuilder } from './assistantOperationsBuilderCtrl';
+export { createAssistant, CreateAssistantOptions } from './createAssistant';
+export { deleteAssistant } from './deleteAssistant';
+export { describeAssistant } from './describeAssistant';
+export { listAssistants } from './listAssistants';
+export { updateAssistant, UpdateAssistantOptions } from './updateAssistant';
+export { evaluate, AssistantEval } from './evaluate';
+// export { AssistantCtrlPlane } from './AssistantCtrlPlane';
+// export { AssistantHostSingleton } from '../assistantHostSingleton';
+export { asstControlOperationsBuilder } from './asstControlOperationsBuilder';
+export { asstMetricsOperationsBuilder } from './asstMetricsOperationsBuilder';

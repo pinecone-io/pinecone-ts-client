@@ -3,7 +3,8 @@ import {
   type UpdateAssistant200Response,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
-export interface updateAssistant {
+// TODO: docstrings
+export interface UpdateAssistantOptions {
   assistantName: string;
   instructions?: string;
   metadata?: Record<string, string>;
@@ -27,9 +28,9 @@ export interface updateAssistant {
  * @throws Error if the Assistant API is not initialized.
  * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
  */
-export const updateAssistantClosed = (api: ManageAssistantsControlApi) => {
+export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
-    options: updateAssistant
+    options: UpdateAssistantOptions
   ): Promise<UpdateAssistant200Response> => {
     const resp = await api.updateAssistant({
       assistantName: options.assistantName,

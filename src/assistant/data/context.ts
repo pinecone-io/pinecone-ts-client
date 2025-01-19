@@ -1,7 +1,5 @@
-import {
-  ContextAssistantRequest,
-  ManageAssistantsApi as ManageAssistantsApiData,
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { ContextAssistantRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 
 /**
  * The `Context` interface describes the query and optional filter to retrieve context snippets from an Assistant.
@@ -49,12 +47,13 @@ export interface Context {
  */
 export const contextClosed = (
   assistantName: string,
-  api: ManageAssistantsApiData
+  apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: Context) => {
     if (!options.query) {
       throw new Error('Must provide a query');
     }
+    const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
       contextRequest: {

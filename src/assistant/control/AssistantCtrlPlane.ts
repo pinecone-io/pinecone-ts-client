@@ -3,17 +3,14 @@ import {
   ManageAssistantsApi as ManageAssistantsApiCtrl,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import { MetricsApi } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
-import { AssistantHostSingleton } from '../assistantHostSingleton';
+// import { AssistantHostSingleton } from '../assistantHostSingleton';
 import { PineconeConfiguration } from '../../data';
-import {
-  createAssistantClosed,
-  createAssistantRequest,
-} from './createAssistant';
-import { deleteAssistantClosed } from './deleteAssistant';
-import { getAssistantClosed } from './getAssistant';
-import { listAssistantsClosed } from './listAssistants';
-import { updateAssistant, updateAssistantClosed } from './updateAssistant';
-import { Eval, evaluateClosed } from './evaluate';
+import { createAssistant, CreateAssistantOptions } from './createAssistant';
+import { deleteAssistant } from './deleteAssistant';
+import { describeAssistant } from './describeAssistant';
+import { listAssistants } from './listAssistants';
+import { UpdateAssistantOptions, updateAssistant } from './updateAssistant';
+import { AssistantEval, evaluate } from './evaluate';
 
 /**
  *  The `AssistantCtrlPlane` class holds the control plane methods for interacting with
@@ -41,13 +38,13 @@ import { Eval, evaluateClosed } from './evaluate';
  * ```
  */
 export class AssistantCtrlPlane {
-  readonly _createAssistant?: ReturnType<typeof createAssistantClosed>;
-  readonly _deleteAssistant?: ReturnType<typeof deleteAssistantClosed>;
-  readonly _getAssistant?: ReturnType<typeof getAssistantClosed>;
-  readonly _listAssistants?: ReturnType<typeof listAssistantsClosed>;
-  readonly _updateAssistant?: ReturnType<typeof updateAssistantClosed>;
+  readonly _createAssistant?: ReturnType<typeof createAssistant>;
+  readonly _deleteAssistant?: ReturnType<typeof deleteAssistant>;
+  readonly _getAssistant?: ReturnType<typeof describeAssistant>;
+  readonly _listAssistants?: ReturnType<typeof listAssistants>;
+  readonly _updateAssistant?: ReturnType<typeof updateAssistant>;
   readonly evalApi?: MetricsApi;
-  readonly _evaluate?: ReturnType<typeof evaluateClosed>;
+  readonly _evaluate?: ReturnType<typeof evaluate>;
 
   private config: PineconeConfiguration;
 
@@ -67,14 +64,14 @@ export class AssistantCtrlPlane {
     this.config = config;
     if (params.evalApi) {
       this.evalApi = params.evalApi;
-      this._evaluate = evaluateClosed(this.evalApi);
+      this._evaluate = evaluate(this.evalApi);
     }
     if (params.assistantApi) {
-      this._createAssistant = createAssistantClosed(params.assistantApi);
-      this._deleteAssistant = deleteAssistantClosed(params.assistantApi);
-      this._getAssistant = getAssistantClosed(params.assistantApi);
-      this._listAssistants = listAssistantsClosed(params.assistantApi);
-      this._updateAssistant = updateAssistantClosed(params.assistantApi);
+      this._createAssistant = createAssistant(params.assistantApi);
+      this._deleteAssistant = deleteAssistant(params.assistantApi);
+      this._getAssistant = describeAssistant(params.assistantApi);
+      this._listAssistants = listAssistants(params.assistantApi);
+      this._updateAssistant = updateAssistant(params.assistantApi);
     }
   }
 
@@ -97,14 +94,14 @@ export class AssistantCtrlPlane {
    * // }
    * ```
    *
-   * @param options - A {@link createAssistantRequest} object containing the `name` of the Assistant to be created.
+   * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
    * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
    * and determines where the Assistant will be hosted.
    * @throws Error if the Assistant API is not initialized.
    * @throws Error if an invalid region is provided.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
-  async createAssistant(options: createAssistantRequest) {
+  async createAssistant(options: CreateAssistantOptions) {
     if (!this._createAssistant) {
       throw new Error('Assistant API is not initialized');
     }
@@ -123,7 +120,7 @@ export class AssistantCtrlPlane {
         region =
           options.region.toLowerCase() as CreateAssistantRequestRegionEnum;
       }
-      AssistantHostSingleton._set(this.config, options.name, region);
+      //AssistantHostSingleton._set(this.config, options.name, region);
       options.region = region;
     }
     return await this._createAssistant(options);
@@ -234,7 +231,7 @@ export class AssistantCtrlPlane {
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
-  async updateAssistant(options: updateAssistant) {
+  async updateAssistant(options: UpdateAssistantOptions) {
     if (!this._updateAssistant) {
       throw new Error('Assistant API is not initialized');
     }
@@ -262,12 +259,12 @@ export class AssistantCtrlPlane {
    * //  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
    * // }
    * ```
-   * @param options - An {@link Eval} object containing the question, the answer, and a ground truth answer to
+   * @param options - An {@link AssistantEval} object containing the question, the answer, and a ground truth answer to
    * evaluate.
    * @throws Error if the Evaluation API is not initialized.
    * @returns A Promise that resolves to an {@link AlignmentResponse} object.
    */
-  evaluate(options: Eval) {
+  evaluate(options: AssistantEval) {
     if (!this._evaluate) {
       throw new Error('Evaluation API is not initialized');
     }

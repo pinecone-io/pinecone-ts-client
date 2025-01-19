@@ -9,6 +9,7 @@ import {
   ChatModelEnum,
   ManageAssistantsApi,
 } from '../../../pinecone-generated-ts-fetch/assistant_data';
+import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
 const endpoints = ['chat', 'chatCompletion'];
 
@@ -86,12 +87,15 @@ endpoints.forEach((endpoint) => {
       });
 
       test('throws error when no messages provided', async () => {
-        const mockApi = {
-          chatAssistant: jest.fn(),
-        } as unknown as ManageAssistantsApi;
+        const AsstDataOperationsProvider = {
+          provideData: async () => new ManageAssistantsApi(),
+        } as AsstDataOperationsProvider;
 
-        const chat = chatClosed('test-assistant', mockApi);
-        const chatCompletion = chatCompletionClosed('test-assistant', mockApi);
+        const chat = chatClosed('test-assistant', AsstDataOperationsProvider);
+        const chatCompletion = chatCompletionClosed(
+          'test-assistant',
+          AsstDataOperationsProvider
+        );
 
         const input = {} as ChatRequest;
         const inputCompletion = {} as ChatCompletionRequest;

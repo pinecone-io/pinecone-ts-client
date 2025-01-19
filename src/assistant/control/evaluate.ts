@@ -4,9 +4,9 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 
 /**
- * The `Eval` interface defines the structure of the input object for the `evaluate` method.
+ * The `AssistantEval` interface defines the structure of the input object for the `evaluate` method.
  */
-export interface Eval {
+export interface AssistantEval {
   /**
    * The question to evaluate.
    */
@@ -39,12 +39,12 @@ export interface Eval {
  * //  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
  * // }
  * ```
- * @param options - An {@link Eval} object containing the question, the answer, and a ground truth answer to
+ * @param options - An {@link AssistantEval} object containing the question, the answer, and a ground truth answer to
  * evaluate.
  * @returns A Promise that resolves to an {@link AlignmentResponse} object.
  */
-export const evaluateClosed = (api: MetricsApi) => {
-  return async (options: Eval) => {
+export const evaluate = (metricsApi: MetricsApi) => {
+  return async (options: AssistantEval) => {
     if (
       options.question == '' ||
       options.answer == '' ||
@@ -62,6 +62,6 @@ export const evaluateClosed = (api: MetricsApi) => {
         groundTruthAnswer: options.groundTruth,
       },
     } as MetricsAlignmentRequest;
-    return api.metricsAlignment(request);
+    return metricsApi.metricsAlignment(request);
   };
 };

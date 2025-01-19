@@ -25,7 +25,7 @@ import {
  * @param api - The `ManageAssistantsControlApi` object that defines the methods for interacting with the Assistant API.
  * @returns A Promise that resolves to an {@link Assistant} model.
  */
-export const getAssistantClosed = (api: ManageAssistantsControlApi) => {
+export const describeAssistant = (api: ManageAssistantsControlApi) => {
   return async (assistantName: string): Promise<Assistant> => {
     return await api.getAssistant({
       assistantName: assistantName,

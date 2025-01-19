@@ -1,52 +1,80 @@
 import { Pinecone } from '../../pinecone';
 import { AssistantDataPlane } from '../../assistant/data';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { sleep } from '../test-helpers';
 
 let pinecone: Pinecone;
 let assistant: AssistantDataPlane;
 let assistantName: string;
 let tempFile: string;
+let tempFilePath: string;
 let tempFileWithMetadata: string;
-
-if (!process.env.ASSISTANT_NAME) {
-  throw new Error('ASSISTANT_NAME environment variable is not set');
-} else {
-  assistantName = process.env.ASSISTANT_NAME;
-}
+let tempFileWithMetadataPath: string;
 
 beforeAll(async () => {
+  if (!process.env.ASSISTANT_NAME) {
+    throw new Error('ASSISTANT_NAME environment variable is not set');
+  } else {
+    assistantName = process.env.ASSISTANT_NAME;
+  }
+
   pinecone = new Pinecone();
+  console.log('WHAT IS THE ASSISTANT NAME HERE: ', assistantName);
   assistant = pinecone.Assistant(assistantName);
 
   // Create two temporary test files
   const content = 'This is test content for file upload';
   // 1: file without metadata
   tempFile = `test-upload-${Date.now()}.txt`;
-  fs.writeFileSync(tempFile, content);
+  tempFilePath = path.join(os.tmpdir(), tempFile);
+  try {
+    fs.writeFileSync(tempFilePath, content);
+    console.log('File written:', tempFilePath);
+  } catch (err) {
+    console.error('Error writing file:', err);
+  }
 
   // 2: file with metadata
   tempFileWithMetadata = `test-upload-metadata-${Date.now()}.txt`;
-  fs.writeFileSync(tempFileWithMetadata, content);
+  tempFileWithMetadataPath = path.join(os.tmpdir(), tempFileWithMetadata);
+
+  try {
+    fs.writeFileSync(tempFileWithMetadataPath, content);
+    console.log('File written:', tempFileWithMetadataPath);
+  } catch (err) {
+    console.error('Error writing file:', err);
+  }
 
   // Add a small delay to ensure file system sync
-  await sleep(1000);
+  await sleep(5000);
+
+  if (!fs.existsSync(tempFilePath)) {
+    throw new Error(`Temporary file was not created: ${tempFilePath}`);
+  }
+  if (!fs.existsSync(tempFileWithMetadataPath)) {
+    throw new Error(
+      `Temporary file was not created: ${tempFileWithMetadataPath}`
+    );
+  }
 });
 
 afterAll(() => {
   // Cleanup: remove temporary test files
-  if (fs.existsSync(tempFile)) {
-    fs.unlinkSync(tempFile);
+  if (fs.existsSync(tempFilePath)) {
+    fs.unlinkSync(tempFilePath);
   }
-  if (fs.existsSync(tempFileWithMetadata)) {
-    fs.unlinkSync(tempFileWithMetadata);
+  if (fs.existsSync(tempFileWithMetadataPath)) {
+    fs.unlinkSync(tempFileWithMetadataPath);
   }
 });
 
 describe('Upload file happy path', () => {
   test('Upload file without metadata', async () => {
+    console.log('THIS IS WHERE THE TEST IS FAILING');
     const response = await assistant.uploadFile({
-      path: tempFile,
+      path: tempFilePath,
     });
     await sleep(30000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
     // b/c of setup.ts
@@ -62,8 +90,9 @@ describe('Upload file happy path', () => {
   });
 
   test('Upload file with metadata', async () => {
+    console.log('THIS IS WHERE THE TEST IS FAILING');
     const response = await assistant.uploadFile({
-      path: tempFileWithMetadata,
+      path: tempFileWithMetadataPath,
       metadata: {
         description: 'Test file',
         category: 'integration-test',
@@ -100,7 +129,7 @@ describe('Upload file error paths', () => {
   test('Upload to nonexistent assistant', async () => {
     const throwError = async () => {
       await pinecone.Assistant('nonexistent').uploadFile({
-        path: tempFile,
+        path: tempFileWithMetadataPath,
       });
     };
     await expect(throwError()).rejects.toThrow(/404/);
