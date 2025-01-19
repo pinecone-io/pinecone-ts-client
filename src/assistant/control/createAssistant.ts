@@ -28,27 +28,6 @@ export interface CreateAssistantOptions {
   region?: string;
 }
 
-/**
- * Creates a new Assistant with the given name and optional configurations.
- *
- * @example
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
- * await pc.assistant.createAssistant({name: 'test1'});
- * // {
- * //  name: 'test11',
- * //  instructions: undefined,
- * //  metadata: undefined,
- * //  status: 'Initializing',
- * //  host: 'https://prod-1-data.ke.pinecone.io',
- * //  createdAt: 2025-01-08T22:52:49.652Z,
- * //  updatedAt: 2025-01-08T22:52:49.652Z
- * // }
- *
- * @param api - The `ManageAssistantsControlApi` object that defines the methods for interacting with the Assistant API.
- * @returns A Promise that resolves to an {@link Assistant} model.
- */
 export const createAssistant = (api: ManageAssistantsControlApi) => {
   return async (options: CreateAssistantOptions): Promise<Assistant> => {
     if (options.region) {

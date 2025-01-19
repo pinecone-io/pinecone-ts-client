@@ -1,17 +1,28 @@
-import { AssistantCtrlPlane } from '../AssistantCtrlPlane';
-import { ManageAssistantsApi } from '../../../pinecone-generated-ts-fetch/assistant_control';
+import {
+  Assistant,
+  CreateAssistantOperationRequest,
+  ManageAssistantsApi,
+} from '../../../pinecone-generated-ts-fetch/assistant_control';
+import { createAssistant } from '../createAssistant';
+
+const setupManageAssistantsApi = () => {
+  const fakeCreateAssistant: (
+    req: CreateAssistantOperationRequest
+  ) => Promise<Assistant> = jest
+    .fn()
+    .mockImplementation(() => Promise.resolve({}));
+
+  const MAP = {
+    createAssistant: fakeCreateAssistant,
+  } as ManageAssistantsApi;
+  return MAP;
+};
 
 describe('AssistantCtrlPlane', () => {
-  let assistantCtrlPlane: AssistantCtrlPlane;
-  const mockApi = {
-    createAssistant: jest.fn(),
-  } as unknown as ManageAssistantsApi;
-  const mockConfig = { apiKey: 'test-api-key' };
+  let manageAssistantsApi: ManageAssistantsApi;
 
   beforeEach(() => {
-    assistantCtrlPlane = new AssistantCtrlPlane(mockConfig, {
-      assistantApi: mockApi,
-    });
+    manageAssistantsApi = setupManageAssistantsApi();
   });
 
   describe('createAssistant', () => {
@@ -24,7 +35,7 @@ describe('AssistantCtrlPlane', () => {
       };
 
       await expect(
-        assistantCtrlPlane.createAssistant(invalidRequest)
+        createAssistant(manageAssistantsApi)(invalidRequest)
       ).rejects.toThrow(
         'Invalid region specified. Must be one of "us" or "eu"'
       );
@@ -48,7 +59,7 @@ describe('AssistantCtrlPlane', () => {
 
       for (const request of validRequests) {
         await expect(
-          assistantCtrlPlane.createAssistant(request)
+          createAssistant(manageAssistantsApi)(request)
         ).resolves.not.toThrow();
       }
     });

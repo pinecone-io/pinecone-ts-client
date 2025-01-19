@@ -42,10 +42,9 @@ import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuild
 import { isBrowser } from './utils/environment';
 import { ValidateProperties } from './utils/validateProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
-// import { AssistantCtrlPlane } from './assistant/control/AssistantCtrlPlane';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
-import { AssistantDataPlane } from './assistant/data/AssistantDataPlane';
+import { Assistant } from './assistant/data/assistant';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -120,10 +119,8 @@ export class Pinecone {
   private _describeAssistant: ReturnType<typeof describeAssistant>;
   /** @hidden */
   private _listAssistants: ReturnType<typeof listAssistants>;
-  /** @hidden */
 
   public inference: Inference;
-  // public assistant: AssistantCtrlPlane;
 
   /**
    * @example
@@ -178,10 +175,6 @@ export class Pinecone {
     this._listAssistants = listAssistants(asstControlApi);
 
     this.inference = new Inference(infApi);
-    // this.assistant = new AssistantCtrlPlane(this.config, {
-    //   assistantApi: assistantApiCtrl,
-    //   evalApi: assistantApiEval,
-    // });
   }
 
   /**
@@ -669,7 +662,7 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const test = await pc.getAssistant('test1');
+   * const test = await pc.describeAssistant('test1');
    * console.log(test);
    * // {
    * //  name: 'test1',
@@ -905,7 +898,62 @@ export class Pinecone {
     return this.index<T>(indexName, indexHostUrl, additionalHeaders);
   }
 
+  /**
+   * Targets a specific assistant for performing operations.
+   *
+   * Once an assistant is targeted, you can perform operations such as uploading files,
+   * updating instructions, and chatting.
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const assistant = pc.Assistant('my-assistant');
+   *
+   * // Upload a file to the assistant
+   * await assistant.uploadFile({
+   *   path: 'test-file.txt',
+   *   metadata: { description: 'Sample test file' }
+   * });
+   *
+   * // Retrieve assistant details
+   * const details = await assistant.describe();
+   * console.log('Assistant details:', details);
+   *
+   * // Update assistant instructions
+   * await assistant.update({
+   *   instructions: 'Provide concise responses only.',
+   * });
+   *
+   * const chatResp = await assistant.chat({
+   *   messages: [{ role: 'user', content: 'What is the capital of France?' }],
+   * });
+   * console.log(chatResp);
+   * // {
+   * //  id: '000000000000000023e7fb015be9d0ad',
+   * //  finishReason: 'stop',
+   * //  message: {
+   * //    role: 'assistant',
+   * //    content: 'The capital of France is Paris.'
+   * //  },
+   * //  model: 'gpt-4o-2024-05-13',
+   * //  citations: [ { position: 209, references: [Array] } ],
+   * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+   * // }
+   * ```
+   *
+   * @param assistantName - The name of the assistant to target.
+   * @returns An {@link Assistant} object that can be used to perform assistant-related operations.
+   */
+  assistant(assistantName: string) {
+    return new Assistant(assistantName, this.config);
+  }
+
+  /**
+   * {@inheritDoc assistant}
+   */
+  // Alias method
   Assistant(assistantName: string) {
-    return new AssistantDataPlane(assistantName, this.config);
+    return this.assistant(assistantName);
   }
 }

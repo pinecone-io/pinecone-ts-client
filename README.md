@@ -1260,7 +1260,7 @@ that guide its behavior, and attach metadata for organization and tracking purpo
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-const assistant = await pc.assistant.createAssistant({
+const assistant = await pc.createAssistant({
   name: 'product-assistant',
   instructions: 'You are a helpful product recommendation assistant.',
   metadata: {
@@ -1279,7 +1279,7 @@ const assistant = await pc.assistant.createAssistant({
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.assistant.deleteAssistant('test1');
+await pc.deleteAssistant('test1');
 ```
 
 ### Get information about an Assistant
@@ -1289,7 +1289,7 @@ await pc.assistant.deleteAssistant('test1');
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const test = await pc.assistant.getAssistant('test1');
+const test = await pc.describeAssistant('test1');
 console.log(test);
 // {
 //  name: 'test10',
@@ -1309,7 +1309,7 @@ console.log(test);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.assistant.updateAssistant({
+await pc.updateAssistant({
   name: 'test1',
   instructions: 'some new  instructions!',
 });
@@ -1329,7 +1329,7 @@ names, instructions, metadata, status, and host.
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-const assistants = await pc.assistant.listAssistants();
+const assistants = await pc.listAssistants();
 console.log(assistants);
 // {
 //   assistants: [{
@@ -1519,7 +1519,7 @@ Assistant performed.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.assistant.evaluate({
+await pc.evaluate({
   question: 'What is the capital of France?',
   answer: "Lyon is France's capital city",
   groundTruth: 'Paris is the capital city of France',

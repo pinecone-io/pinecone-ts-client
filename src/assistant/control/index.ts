@@ -4,7 +4,5 @@ export { describeAssistant } from './describeAssistant';
 export { listAssistants } from './listAssistants';
 export { updateAssistant, UpdateAssistantOptions } from './updateAssistant';
 export { evaluate, AssistantEval } from './evaluate';
-// export { AssistantCtrlPlane } from './AssistantCtrlPlane';
-// export { AssistantHostSingleton } from '../assistantHostSingleton';
 export { asstControlOperationsBuilder } from './asstControlOperationsBuilder';
 export { asstMetricsOperationsBuilder } from './asstMetricsOperationsBuilder';

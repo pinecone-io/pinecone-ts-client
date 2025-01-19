@@ -6,5 +6,5 @@ export { ListFiles, listFilesClosed } from './listFiles';
 export { UploadFile, uploadFileClosed } from './uploadFile';
 export { Context, contextClosed } from './context';
 export { AssistantEval, evaluate } from '../control/evaluate';
-export { AssistantDataPlane } from './AssistantDataPlane';
+export { Assistant } from './assistant';
 export { AsstDataOperationsProvider } from './asstDataOperationsProvider';

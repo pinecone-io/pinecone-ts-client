@@ -1,12 +1,12 @@
 import { Pinecone } from '../../pinecone';
-import { AssistantDataPlane } from '../../assistant/data';
+import { Assistant } from '../../assistant/data';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { sleep } from '../test-helpers';
 
 let pinecone: Pinecone;
-let assistant: AssistantDataPlane;
+let assistant: Assistant;
 let assistantName: string;
 let tempFile: string;
 let tempFilePath: string;
@@ -21,7 +21,6 @@ beforeAll(async () => {
   }
 
   pinecone = new Pinecone();
-  console.log('WHAT IS THE ASSISTANT NAME HERE: ', assistantName);
   assistant = pinecone.Assistant(assistantName);
 
   // Create two temporary test files
@@ -72,7 +71,6 @@ afterAll(() => {
 
 describe('Upload file happy path', () => {
   test('Upload file without metadata', async () => {
-    console.log('THIS IS WHERE THE TEST IS FAILING');
     const response = await assistant.uploadFile({
       path: tempFilePath,
     });
@@ -90,7 +88,6 @@ describe('Upload file happy path', () => {
   });
 
   test('Upload file with metadata', async () => {
-    console.log('THIS IS WHERE THE TEST IS FAILING');
     const response = await assistant.uploadFile({
       path: tempFileWithMetadataPath,
       metadata: {

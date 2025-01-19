@@ -9,7 +9,7 @@ import { Context, contextClosed } from './context';
 import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
 
 /**
- * The `AssistantDataPlane` class holds the data plane methods for interacting with
+ * The `Assistant` class holds the data plane methods for interacting with
  *  [Assistants](https://docs.pinecone.io/guides/assistant/understanding-assistant).
  *
  *  This class's methods are instantiated on a Pinecone object and are used to interact with the data plane of an Assistant.
@@ -21,7 +21,7 @@ import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
  *  const assistant = pc.Assistant('assistant-name');
  *  ```
  */
-export class AssistantDataPlane {
+export class Assistant {
   private config: PineconeConfiguration;
 
   readonly _chat: ReturnType<typeof chatClosed>;
@@ -35,7 +35,7 @@ export class AssistantDataPlane {
   assistantName: string;
 
   /**
-   * Creates an instance of the `AssistantDataPlane` class.
+   * Creates an instance of the `Assistant` class.
    *
    * @param assistantName - The name of the Assistant.
    * @param config - The Pinecone configuration object containing an API key and other configuration parameters

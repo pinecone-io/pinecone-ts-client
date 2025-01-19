@@ -1,11 +1,5 @@
 import { contextClosed } from '../context';
 import {
-  messagesValidation,
-  modelValidation,
-  ChatRequest,
-  chatClosed,
-} from '../chat';
-import {
   ContextAssistantRequest,
   ContextModel,
   ManageAssistantsApi,

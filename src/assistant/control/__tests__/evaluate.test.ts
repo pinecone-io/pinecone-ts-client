@@ -1,17 +1,28 @@
-import { AssistantCtrlPlane } from '../AssistantCtrlPlane';
-import { MetricsApi } from '../../../pinecone-generated-ts-fetch/assistant_evaluation';
+import { evaluate } from '../evaluate';
+import {
+  AlignmentResponse,
+  MetricsAlignmentRequest,
+  MetricsApi,
+} from '../../../pinecone-generated-ts-fetch/assistant_evaluation';
+
+const setupMetricsApi = () => {
+  const fakeMetricsAlignment: (
+    req: MetricsAlignmentRequest
+  ) => Promise<AlignmentResponse> = jest
+    .fn()
+    .mockImplementation(() => Promise.resolve({}));
+
+  const MAP = {
+    metricsAlignment: fakeMetricsAlignment,
+  } as MetricsApi;
+  return MAP;
+};
 
 describe('AssistantCtrlPlane', () => {
-  let assistantCtrlPlane: AssistantCtrlPlane;
-  const mockEvalApi = {
-    evaluate: jest.fn(),
-  } as unknown as MetricsApi;
-  const mockConfig = { apiKey: 'test-api-key' };
+  let metricsApi: MetricsApi;
 
   beforeAll(() => {
-    assistantCtrlPlane = new AssistantCtrlPlane(mockConfig, {
-      evalApi: mockEvalApi,
-    });
+    metricsApi = setupMetricsApi();
   });
 
   describe('evaluate', () => {
@@ -35,7 +46,7 @@ describe('AssistantCtrlPlane', () => {
       ];
 
       for (const request of emptyRequests) {
-        await expect(assistantCtrlPlane.evaluate(request)).rejects.toThrow(
+        await expect(evaluate(metricsApi)(request)).rejects.toThrow(
           'Invalid input. Question, answer, and groundTruth must be non-empty strings.'
         );
       }

@@ -3,31 +3,26 @@ import {
   type UpdateAssistant200Response,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 
-// TODO: docstrings
+/**
+ * Options for updating an assistant's properties.
+ */
 export interface UpdateAssistantOptions {
+  /**
+   * The name of the assistant to be updated.
+   */
   assistantName: string;
+
+  /**
+   * Optional instructions for the assistant to apply to all responses.
+   */
   instructions?: string;
+
+  /**
+   * Optional metadata associated with the assistant.
+   */
   metadata?: Record<string, string>;
 }
 
-/**
- * Updates an Assistant by name.
- *
- * @example
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
- * await pc.assistant.updateAssistant({name: 'test1', instructions: 'some new  instructions!'});
- * // {
- * //  assistantName: test1,
- * //  instructions: 'some new instructions!',
- * //  metadata: undefined
- * // }
- * ```
- * @param api - The `ManageAssistantsControlApi` object that defines the methods for interacting with the Assistant API.
- * @throws Error if the Assistant API is not initialized.
- * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
- */
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
     options: UpdateAssistantOptions

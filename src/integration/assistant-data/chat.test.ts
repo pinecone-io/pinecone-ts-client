@@ -1,10 +1,10 @@
 import { Pinecone } from '../../pinecone';
-import { AssistantDataPlane } from '../../assistant/data';
+import { Assistant } from '../../assistant/data';
 import { PineconeBadRequestError } from '../../errors';
 import { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 let pinecone: Pinecone;
-let assistant: AssistantDataPlane;
+let assistant: Assistant;
 let assistantName: string;
 
 if (!process.env.ASSISTANT_NAME) {

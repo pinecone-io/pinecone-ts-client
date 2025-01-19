@@ -12,8 +12,6 @@ export const asstMetricsOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {
   const { apiKey } = config;
-  // All calls to eval will have 'eval' as assistantName
-
   let hostUrl = 'https://prod-1-data.ke.pinecone.io/assistant';
   // If 'eu' is specified use that, otherwise default to 'us'
   if (config.assistantRegion && config.assistantRegion.toLowerCase() === 'eu') {
