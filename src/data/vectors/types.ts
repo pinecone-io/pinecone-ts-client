@@ -36,6 +36,12 @@ export type PineconeConfiguration = {
    * Optional configuration field for specifying the maximum number of retries for a request. Defaults to 3.
    */
   maxRetries?: number;
+
+  /**
+   * Optional configuration field for specifying a region to use with the assistant APIs. If not specified, the default
+   * region of "us" is used.
+   */
+  assistantRegion?: string;
 };
 
 // Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing

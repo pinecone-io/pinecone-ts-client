@@ -36,6 +36,19 @@ pushd "ts-client-test-external-app"
   next dev & # `&` runs the command in the background
 popd
 
+# Wait for the server to be ready
+echo "Waiting for Next.js server to start..."
+max_attempts=30
+attempt=0
+until curl --silent --head http://localhost:3000/ > /dev/null; do
+  if [ $attempt -eq $max_attempts ]; then
+    echo "Next.js server failed to start within the expected time."
+    exit 1
+  fi
+  attempt=$((attempt+1))
+  sleep 2
+done
+
 # Run test file
 echo "Running tests..."
 localUrl='http://localhost:3000/api/createSeedQuery'  # TODO: parameterize later for different endpoints

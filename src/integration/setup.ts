@@ -4,8 +4,13 @@ import {
   generateRecords,
   globalNamespaceOne,
   prefix,
+  randomString,
   sleep,
 } from './test-helpers';
+
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 // todo: refactor to make conditions & loops more efficient
 
@@ -102,6 +107,61 @@ const setup = async () => {
   }
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`SERVERLESS_INDEX_NAME=${randomIndexName}`);
+
+  // Set up an Assistant and upload a file to it
+  const assistantName = randomString(5);
+  await pc.createAssistant({
+    name: assistantName,
+    instructions: 'test-instructions',
+    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
+    region: 'us',
+  });
+  await sleep(2000);
+
+  try {
+    await pc.describeAssistant(assistantName);
+  } catch (e) {
+    console.log('Error getting assistant:', e);
+  }
+
+  const assistant = pc.Assistant(assistantName);
+
+  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
+  console.log(`ASSISTANT_NAME=${assistantName}`);
+
+  const tempFileName = path.join(os.tmpdir(), `tempfile-${Date.now()}.txt`);
+
+  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
+  console.log(`TEST_FILE=${tempFileName}`);
+
+  try {
+    const data = 'This is some temporary data';
+    fs.writeFileSync(tempFileName, data);
+    console.log(`Temporary file created: ${tempFileName}`);
+  } catch (err) {
+    console.error('Error writing file:', err);
+  }
+  // Add a small delay to ensure file system sync
+  await sleep(1000);
+
+  // Upload file to assistant so chat works
+  const file = await assistant.uploadFile({
+    path: tempFileName,
+    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
+  });
+
+  console.log('File uploaded:', file);
+
+  // Another sleep b/c it currently takes a *long* time for a file to be available
+  await sleep(30000);
+
+  // Delete file from local file system
+  try {
+    fs.unlinkSync(path.resolve(process.cwd(), tempFileName));
+    console.log(`Temporary file deleted: ${tempFileName}`);
+  } catch (err) {
+    console.error('Error deleting file:', err);
+  }
 };
 
 setup();

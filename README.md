@@ -1245,6 +1245,292 @@ console.log(response);
 //}
 ```
 
+## Pinecone Assistant
+
+The [Pinecone Assistant API](https://docs.pinecone.io/guides/assistant/understanding-assistant) enables you to create and manage AI assistants powered by Pinecone's vector database
+capabilities. These Assistants can be customized with specific instructions and metadata, and can interact with
+files and engage in chat conversations.
+
+### Create an Assistant
+
+[Creates a new Assistant](https://docs.pinecone.io/guides/assistant/create-assistant) with specified configurations. You can define the Assistant's name, provide instructions
+that guide its behavior, and attach metadata for organization and tracking purposes.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const assistant = await pc.createAssistant({
+  name: 'product-assistant',
+  instructions: 'You are a helpful product recommendation assistant.',
+  metadata: {
+    team: 'product',
+    version: '1.0',
+  },
+});
+```
+
+### Delete an Assistant
+
+[Deletes an Assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant) by name.
+
+**Note:** Deleting an Assistant also deletes all associated files.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.deleteAssistant('test1');
+```
+
+### Get information about an Assistant
+
+[Retrieves information](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant) about an Assistant by name.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const test = await pc.describeAssistant('test1');
+console.log(test);
+// {
+//  name: 'test10',
+//  instructions: undefined,
+//  metadata: undefined,
+//  status: 'Ready',
+//  host: 'https://prod-1-data.ke.pinecone.io',
+//  createdAt: 2025-01-08T22:24:50.525Z,
+//  updatedAt: 2025-01-08T22:24:52.303Z
+// }
+```
+
+### Update an Assistant
+
+[Updates an Assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#add-instructions-to-an-assistant) by name. You can update the Assistant's name, instructions, and/or metadata.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.updateAssistant({
+  name: 'test1',
+  instructions: 'some new  instructions!',
+});
+// {
+//  assistantName: test1,
+//  instructions: 'some new instructions!',
+//  metadata: undefined
+// }
+```
+
+### List Assistants
+
+Retrieves a [list of all Assistants](https://docs.pinecone.io/guides/assistant/manage-assistants) in your account. This method returns details about each Assistant including their
+names, instructions, metadata, status, and host.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const assistants = await pc.listAssistants();
+console.log(assistants);
+// {
+//   assistants: [{
+//     name: 'product-assistant',
+//     instructions: 'You are a helpful product recommendation assistant.',
+//     metadata: { team: 'product', version: '1.0' },
+//     status: 'Ready',
+//     host: 'product-assistant-abc123.svc.pinecone.io'
+//   }]
+// }
+```
+
+### Chat with an Assistant
+
+You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` method. The latter's output is
+compatible with [OpenAI's Chat Completion](https://platform.openai.com/docs/api-reference/chat) format.
+
+**Note:** Your Assistant must contain files in order for chat to work.
+
+The following example shows how to chat with an Assistant using the `chat` method:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatResp = await assistant.chat({
+  messages: [{ role: 'user', content: 'What is the capital of France?' }],
+});
+console.log(chatResp);
+// {
+//  id: '000000000000000023e7fb015be9d0ad',
+//  finishReason: 'stop',
+//  message: {
+//    role: 'assistant',
+//    content: 'The capital of France is Paris.'
+//  },
+//  model: 'gpt-4o-2024-05-13',
+//  citations: [ { position: 209, references: [Array] } ],
+//  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+// }
+```
+
+### Inspect context snippets associated with a chat
+
+Returns [context snippets associated with a given query and an Assistant's response](https://docs.pinecone.io/guides/assistant/understanding-context-snippets). This is useful for understanding
+how the Assistant arrived at its answer(s).
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const response = await assistant.context({
+  query: 'What is the capital of France?',
+});
+console.log(response);
+// {
+//  snippets: [
+//    {
+//      type: 'text',
+//      content: 'The capital of France is Paris.',
+//      score: 0.9978925,
+//      reference: [Object]
+//    },
+//  ],
+//  usage: { promptTokens: 527, completionTokens: 0, totalTokens: 527 }
+// }
+```
+
+### Add files to an Assistant
+
+You can [add files to an Assistant](https://docs.pinecone.io/guides/assistant/manage-files#upload-a-local-file) to enable it to interact with files during chat conversations. The following
+example shows how to upload a local `test-file.txt` file to an Assistant.
+
+**Note:** You must upload at least 1 file in order to chat with an Assistant.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+await assistant.uploadFile({
+  path: 'test-file.txt',
+  metadata: { 'test-key': 'test-value' },
+});
+// {
+//  name: 'test-file.txt',
+//  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+//  metadata: { 'test-key': 'test-value' },
+//  createdOn: 2025-01-06T19:14:21.969Z,
+//  updatedOn: 2025-01-06T19:14:21.969Z,
+//  status: 'Processing',
+//  percentDone: null,
+//  signedUrl: null,
+//  errorMessage: null
+// }
+```
+
+### List all files in an Assistant
+
+[Lists all files](https://docs.pinecone.io/guides/assistant/manage-files#list-files-in-an-assistant) that have been uploaded to an Assistant. Optionally, you can pass a filter to list only files that
+meet certain criteria.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles({
+  filter: { metadata: { key: 'value' } },
+});
+console.log(files);
+// {
+//  files: [
+//    {
+//      name: 'test-file.txt',
+//      id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+//      metadata: [Object],
+//      createdOn: 2025-01-06T19:14:21.969Z,
+//      updatedOn: 2025-01-06T19:14:36.925Z,
+//      status: 'Available',
+//      percentDone: 1,
+//      signedUrl: undefined,
+//      errorMessage: undefined
+//    }
+//  ]
+// }
+```
+
+### Get the status of a file in an Assistant
+
+[Retrieves information about a file](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file) in an Assistant by ID.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles();
+let fileId: string;
+if (files.files) {
+  fileId = files.files[0].id;
+} else {
+  fileId = '';
+}
+const resp = await assistant.describeFile({ fileId: fileId });
+console.log(resp);
+// {
+//  name: 'test-file.txt',
+//  id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+//  metadata: undefined,
+//  createdOn: 2025-01-06T19:14:21.969Z,
+//  updatedOn: 2025-01-06T19:14:36.925Z,
+//  status: 'Available',
+//  percentDone: 1,
+//  signedUrl: undefined,
+//   errorMessage: undefined
+// }
+```
+
+### Delete a file from an Assistant
+
+[Deletes a file(s)](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file) from an Assistant by ID.
+
+**Note:** Deleting files is a PERMANENT operation. Deleted files _cannot_ be recovered.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles();
+let fileId: string;
+if (files.files) {
+  fileId = files.files[0].id;
+  await assistant.deleteFile({ fileId: fileId });
+}
+```
+
+### Evaluate answers
+
+You can also use the Assistant API to [evaluate the accuracy of a question-answer pair, given a known-true answer](https://docs.pinecone.io/guides/assistant/evaluate-answers).
+The API will return a set of metrics (`correctness`, `completeness`, and `alignment`) that indicate how well the
+Assistant performed.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.evaluate({
+  question: 'What is the capital of France?',
+  answer: "Lyon is France's capital city",
+  groundTruth: 'Paris is the capital city of France',
+});
+// {
+//  metrics: { correctness: 0, completeness: 0, alignment: 0 }, // 0s across the board indicates incorrect
+//  reasoning: { evaluatedFacts: [ [Object] ] },
+//  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
+// }
+```
+
 ## Testing
 
 All testing takes place automatically in CI and is configured using Github actions
