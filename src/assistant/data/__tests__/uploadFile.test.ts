@@ -1,83 +1,130 @@
-import { uploadFileClosed } from '../uploadFile';
+import { uploadFileInternal } from '../uploadFileInternal';
 import fs from 'fs';
-import FormData from 'form-data';
-import axios from 'axios';
-import { AssistantHostSingleton } from '../../assistantHostSingleton';
+import path from 'path';
+import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
-jest.mock('axios');
+const mockFetch = jest.fn();
 jest.mock('fs');
-jest.mock('form-data');
-jest.mock('../../assistantHostSingleton');
+jest.mock('path');
+jest.mock('../../../utils', () => ({
+  getFetch: () => mockFetch,
+  buildUserAgent: () => 'TestUserAgent',
+}));
 
-const mockResponse = {
-  data: {
-    name: 'test.txt',
-    id: 'test-id',
-    createdOn: new Date().toISOString(),
-    updatedOn: new Date().toISOString(),
-    status: 'ready',
-  },
-};
+const buildMockFetchResponse = (
+  isSuccess: boolean,
+  status: number,
+  body: string
+) =>
+  mockFetch.mockResolvedValue({
+    ok: isSuccess ? true : false,
+    status: status,
+    json: async () => JSON.parse(body),
+  });
 
-describe('uploadFileClosed', () => {
+describe('uploadFileInternal', () => {
   const mockConfig = {
     apiKey: 'test-api-key',
     additionalHeaders: {
       'Custom-Header': 'test',
     },
   };
-
   const mockAssistantName = 'test-assistant';
+  const mockFileContent = Buffer.from('test file content');
+  const mockResponse = {
+    data: {
+      name: 'test.txt',
+      id: 'test-id',
+      createdOn: new Date().toISOString(),
+      updatedOn: new Date().toISOString(),
+      status: 'ready',
+    },
+  };
+  const mockApiProvider = {
+    provideHostUrl: async () => 'https://prod-1-data.ke.pinecone.io/assistant',
+  } as AsstDataOperationsProvider;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
-    (axios.post as jest.Mock).mockResolvedValue(mockResponse);
-    (AssistantHostSingleton.getHostUrl as jest.Mock).mockResolvedValue(
-      'https://prod-1-data.ke.pinecone.io/assistant'
-    );
+    (fs.readFileSync as jest.Mock).mockResolvedValue(mockFileContent);
+    (path.basename as jest.Mock).mockReturnValue('test.txt');
   });
 
   test('throws error when file path is not provided', async () => {
-    const upload = uploadFileClosed(mockAssistantName, mockConfig);
+    const upload = uploadFileInternal(
+      mockAssistantName,
+      mockApiProvider,
+      mockConfig
+    );
     await expect(upload({ path: '' })).rejects.toThrow('File path is required');
   });
 
   test('correctly builds URL without metadata', async () => {
-    const upload = uploadFileClosed(mockAssistantName, mockConfig);
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const upload = uploadFileInternal(
+      mockAssistantName,
+      mockApiProvider,
+      mockConfig
+    );
     await upload({ path: 'test.txt' });
 
-    expect(axios.post).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
-      expect.any(FormData),
-      expect.any(Object)
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          'Api-Key': 'test-api-key',
+          'User-Agent': 'TestUserAgent',
+          'X-Pinecone-Api-Version': expect.any(String),
+        }),
+      })
     );
   });
 
   test('correctly builds URL with metadata', async () => {
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
     const metadata = { key: 'value' };
-    const upload = uploadFileClosed(mockAssistantName, mockConfig);
+    const upload = uploadFileInternal(
+      mockAssistantName,
+      mockApiProvider,
+      mockConfig
+    );
     await upload({ path: 'test.txt', metadata });
 
     const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
-    expect(axios.post).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}`,
-      expect.any(FormData),
-      expect.any(Object)
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          'Api-Key': 'test-api-key',
+          'User-Agent': 'TestUserAgent',
+          'X-Pinecone-Api-Version': expect.any(String),
+        }),
+      })
     );
   });
 
   test('includes correct headers in request', async () => {
-    const upload = uploadFileClosed(mockAssistantName, mockConfig);
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const upload = uploadFileInternal(
+      mockAssistantName,
+      mockApiProvider,
+      mockConfig
+    );
     await upload({ path: 'test.txt' });
 
-    expect(axios.post).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(FormData),
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
       expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
         headers: expect.objectContaining({
           'Api-Key': 'test-api-key',
-          'Custom-Header': 'test',
+          'User-Agent': 'TestUserAgent',
           'X-Pinecone-Api-Version': expect.any(String),
         }),
       })
@@ -85,13 +132,14 @@ describe('uploadFileClosed', () => {
   });
 
   test('creates form data with file stream', async () => {
-    const mockStream = { mock: 'stream' };
-    (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
-
-    const upload = uploadFileClosed(mockAssistantName, mockConfig);
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const upload = uploadFileInternal(
+      mockAssistantName,
+      mockApiProvider,
+      mockConfig
+    );
     await upload({ path: 'test.txt' });
 
-    expect(fs.createReadStream).toHaveBeenCalledWith('test.txt');
-    expect(FormData.prototype.append).toHaveBeenCalledWith('file', mockStream);
+    expect(fs.readFileSync).toHaveBeenCalledWith('test.txt');
   });
 });

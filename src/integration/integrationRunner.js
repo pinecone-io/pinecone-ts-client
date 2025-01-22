@@ -24,6 +24,11 @@ try {
     `SERVERLESS_INDEX_NAME=${SERVERLESS_INDEX_NAME} ASSISTANT_NAME=${ASSISTANT_NAME} TEST_FILE=${TEST_FILE} TEST_ENV=${TEST_ENV} jest src/integration -c jest.config.integration-node.js --runInBand --bail`,
     { stdio: 'inherit' }
   );
+} catch (error) {
+  console.error('Setup script failed with error:');
+  console.error(error.stdout?.toString() || 'No stdout');
+  console.error(error.stderr?.toString() || 'No stderr');
+  process.exit(1); // Ensure the script fails visibly in CI/CD
 } finally {
   // Step 3: Pass SERVERLESS_INDEX_NAME and ASSISTANT_NAME to teardown script, ensuring teardown runs even if tests fail
   if (SERVERLESS_INDEX_NAME && ASSISTANT_NAME && TEST_FILE) {

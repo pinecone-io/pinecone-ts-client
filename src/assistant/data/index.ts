@@ -3,7 +3,7 @@ export { ChatCompletionRequest, chatCompletionClosed } from './chatCompletion';
 export { DeleteFile, deleteFileClosed } from './deleteFile';
 export { DescribeFile, describeFileClosed } from './describeFile';
 export { ListFiles, listFilesClosed } from './listFiles';
-export { UploadFile, uploadFileClosed } from './uploadFile';
+export { UploadFile, uploadFileInternal } from './uploadFileInternal';
 export { Context, contextClosed } from './context';
 export { AssistantEval, evaluate } from '../control/evaluate';
 export { Assistant } from './assistant';

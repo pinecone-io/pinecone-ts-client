@@ -145,10 +145,12 @@ const setup = async () => {
   await sleep(1000);
 
   // Upload file to assistant so chat works
-  await assistant.uploadFile({
+  const file = await assistant.uploadFile({
     path: tempFileName,
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
   });
+
+  console.log('File uploaded:', file);
 
   // Another sleep b/c it currently takes a *long* time for a file to be available
   await sleep(30000);

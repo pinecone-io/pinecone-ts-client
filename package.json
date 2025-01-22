@@ -52,11 +52,5 @@
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
-  ],
-  "peerDependencies": {
-    "mime-types": "^2.1.35"
-  },
-  "dependencies": {
-    "axios": "^1.7.9"
-  }
+  ]
 }

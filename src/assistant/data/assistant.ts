@@ -2,7 +2,9 @@ import { chatClosed, ChatRequest } from './chat';
 import { ListFiles, listFilesClosed } from './listFiles';
 import { DescribeFile, describeFileClosed } from './describeFile';
 import { DeleteFile, deleteFileClosed } from './deleteFile';
-import { UploadFile, uploadFileClosed } from './uploadFile';
+// import { UploadFile, uploadFileClosed } from './uploadFile';
+import { UploadFile } from './uploadFileInternal';
+import { uploadFileInternal } from './uploadFileInternal';
 import { PineconeConfiguration } from '../../data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { Context, contextClosed } from './context';
@@ -28,7 +30,7 @@ export class Assistant {
   readonly _chatCompletions: ReturnType<typeof chatCompletionClosed>;
   readonly _listFiles: ReturnType<typeof listFilesClosed>;
   readonly _describeFile: ReturnType<typeof describeFileClosed>;
-  readonly _uploadFile: ReturnType<typeof uploadFileClosed>;
+  readonly _uploadFile: ReturnType<typeof uploadFileInternal>;
   readonly _deleteFile: ReturnType<typeof deleteFileClosed>;
   readonly _context: ReturnType<typeof contextClosed>;
 
@@ -67,7 +69,11 @@ export class Assistant {
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._uploadFile = uploadFileClosed(this.assistantName, this.config);
+    this._uploadFile = uploadFileInternal(
+      this.assistantName,
+      asstDataOperationsProvider,
+      this.config
+    );
     this._deleteFile = deleteFileClosed(
       this.assistantName,
       asstDataOperationsProvider

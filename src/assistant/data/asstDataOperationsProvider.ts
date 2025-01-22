@@ -52,6 +52,18 @@ export class AsstDataOperationsProvider {
     return this.asstDataOperations;
   }
 
+  async provideHostUrl() {
+    if (this.asstHostUrl) {
+      return this.asstHostUrl;
+    } else {
+      this.asstHostUrl = await AssistantHostSingleton.getHostUrl(
+        this.config,
+        this.asstName
+      );
+    }
+    return this.asstHostUrl;
+  }
+
   provideMetrics() {
     if (this.metrics) {
       return this.metrics;
@@ -90,6 +102,11 @@ export class AsstDataOperationsProvider {
       fetchApi: getFetch(this.config),
       middleware,
     };
+    console.log('API CONFIG GETTING PASSED THROUGH TO MADA', apiConfig);
+    console.log(
+      'THIS IS THE FETCH API SPECIFICALLY FOR MADA',
+      apiConfig.fetchApi
+    );
 
     return new ManageAssistantsDataApi(new DataConfiguration(apiConfig));
   }
