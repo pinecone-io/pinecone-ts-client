@@ -33,15 +33,42 @@ class EdgeExternalAppTest {
   };
 }
 
-const apiKey = process.env['PINECONE_API_KEY'];
-if (!apiKey) {
-  throw new Error('PINECONE_API_KEY key is required');
+// const apiKey = process.env['PINECONE_API_KEY'];
+// if (!apiKey) {
+//   throw new Error('PINECONE_API_KEY key is required');
+// }
+
+// const url = process.argv[2]; // Get local URL from the command line arg
+// console.log('URL COMING FROM PROCESS: ', url);
+// const { assertOnResponse } = new EdgeExternalAppTest(apiKey, url);
+
+// assertOnResponse().then((indexName) => {
+//   console.log(indexName);
+// });
+
+async function main() {
+  try {
+    const apiKey = process.env.PINECONE_API_KEY;
+    if (!apiKey) {
+      throw new Error('PINECONE_API_KEY environment variable is required.');
+    }
+
+    const url = process.argv[2];
+    if (!url) {
+      throw new Error('A valid URL argument is required.');
+    }
+
+    console.log('Testing against URL:', url);
+
+    const tester = new EdgeExternalAppTest(apiKey, url);
+    const indexName = await tester.assertOnResponse();
+
+    console.log('Test passed. Index name:', indexName);
+  } catch (error) {
+    console.error('Test failed:', error);
+    process.exit(1);
+  }
 }
 
-const url = process.argv[2]; // Get local URL from the command line arg
-
-const { assertOnResponse } = new EdgeExternalAppTest(apiKey, url);
-
-assertOnResponse().then((indexName) => {
-  console.log(indexName);
-});
+// Run the script
+main();
