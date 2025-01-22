@@ -17,7 +17,9 @@ class EdgeExternalAppTest {
     });
     if (!response || response.status !== 200) {
       throw new Error(
-        `Failed to hit endpoint. Error: ${response}. URL: ${url}`
+        `Failed to hit endpoint. Error: ${JSON.stringify(
+          response
+        )}. URL: ${url}`
       );
     }
     return response.json();
