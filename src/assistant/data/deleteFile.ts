@@ -31,7 +31,7 @@ export interface DeleteFile {
  * @param assistantName - The name of the Assistant to delete the file from.
  * @param api - The Pinecone API object.
  */
-export const deleteFileClosed = (
+export const deleteFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {

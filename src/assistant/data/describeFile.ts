@@ -50,7 +50,7 @@ export interface DescribeFile {
  * @param api - The API object to use to send the request.
  * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
  */
-export const describeFileClosed = (
+export const describeFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {

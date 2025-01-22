@@ -1,10 +1,10 @@
-export { ChatRequest, chatClosed } from './chat';
-export { ChatCompletionRequest, chatCompletionClosed } from './chatCompletion';
-export { DeleteFile, deleteFileClosed } from './deleteFile';
-export { DescribeFile, describeFileClosed } from './describeFile';
-export { ListFiles, listFilesClosed } from './listFiles';
-export { UploadFile, uploadFileInternal } from './uploadFileInternal';
-export { Context, contextClosed } from './context';
+export { ChatRequest, chat } from './chat';
+export { ChatCompletionRequest, chatCompletion } from './chatCompletion';
+export { DeleteFile, deleteFile } from './deleteFile';
+export { DescribeFile, describeFile } from './describeFile';
+export { ListFiles, listFiles } from './listFiles';
+export { UploadFile, uploadFile } from './uploadFile';
+export { Context, context } from './context';
 export { AssistantEval, evaluate } from '../control/evaluate';
 export { Assistant } from './assistant';
 export { AsstDataOperationsProvider } from './asstDataOperationsProvider';

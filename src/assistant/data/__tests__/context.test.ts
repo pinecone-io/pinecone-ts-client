@@ -1,4 +1,4 @@
-import { contextClosed } from '../context';
+import { context } from '../context';
 import {
   ContextAssistantRequest,
   ContextModel,
@@ -34,7 +34,7 @@ describe('contextClosed', () => {
 
   test('creates a context function that calls the API with correct parameters', async () => {
     const assistantName = 'test-assistant';
-    const contextFn = contextClosed(assistantName, asstOperationsProvider);
+    const contextFn = context(assistantName, asstOperationsProvider);
 
     const options = {
       query: 'test query',
@@ -53,7 +53,7 @@ describe('contextClosed', () => {
   });
 
   test('throws error when query is empty', async () => {
-    const contextFn = contextClosed('test-assistant', asstOperationsProvider);
+    const contextFn = context('test-assistant', asstOperationsProvider);
 
     await expect(contextFn({ query: '' })).rejects.toThrow(
       'Must provide a query'
@@ -62,7 +62,7 @@ describe('contextClosed', () => {
 
   test('works without filter parameter', async () => {
     const assistantName = 'test-assistant';
-    const contextFn = contextClosed(assistantName, asstOperationsProvider);
+    const contextFn = context(assistantName, asstOperationsProvider);
 
     const options = {
       query: 'test query',

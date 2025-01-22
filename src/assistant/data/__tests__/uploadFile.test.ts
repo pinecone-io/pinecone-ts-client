@@ -1,4 +1,4 @@
-import { uploadFileInternal } from '../uploadFileInternal';
+import { uploadFile } from '../uploadFile';
 import fs from 'fs';
 import path from 'path';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
@@ -52,21 +52,13 @@ describe('uploadFileInternal', () => {
   });
 
   test('throws error when file path is not provided', async () => {
-    const upload = uploadFileInternal(
-      mockAssistantName,
-      mockApiProvider,
-      mockConfig
-    );
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await expect(upload({ path: '' })).rejects.toThrow('File path is required');
   });
 
   test('correctly builds URL without metadata', async () => {
     buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
-    const upload = uploadFileInternal(
-      mockAssistantName,
-      mockApiProvider,
-      mockConfig
-    );
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt' });
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -86,11 +78,7 @@ describe('uploadFileInternal', () => {
   test('correctly builds URL with metadata', async () => {
     buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
     const metadata = { key: 'value' };
-    const upload = uploadFileInternal(
-      mockAssistantName,
-      mockApiProvider,
-      mockConfig
-    );
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt', metadata });
 
     const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
@@ -110,11 +98,7 @@ describe('uploadFileInternal', () => {
 
   test('includes correct headers in request', async () => {
     buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
-    const upload = uploadFileInternal(
-      mockAssistantName,
-      mockApiProvider,
-      mockConfig
-    );
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt' });
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -133,11 +117,7 @@ describe('uploadFileInternal', () => {
 
   test('creates form data with file stream', async () => {
     buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
-    const upload = uploadFileInternal(
-      mockAssistantName,
-      mockApiProvider,
-      mockConfig
-    );
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt' });
 
     expect(fs.readFileSync).toHaveBeenCalledWith('test.txt');

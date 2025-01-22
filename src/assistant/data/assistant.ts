@@ -1,14 +1,14 @@
-import { chatClosed, ChatRequest } from './chat';
-import { ListFiles, listFilesClosed } from './listFiles';
-import { DescribeFile, describeFileClosed } from './describeFile';
-import { DeleteFile, deleteFileClosed } from './deleteFile';
+import { chat, ChatRequest } from './chat';
+import { ListFiles, listFiles } from './listFiles';
+import { DescribeFile, describeFile } from './describeFile';
+import { DeleteFile, deleteFile } from './deleteFile';
 // import { UploadFile, uploadFileClosed } from './uploadFile';
-import { UploadFile } from './uploadFileInternal';
-import { uploadFileInternal } from './uploadFileInternal';
+import { UploadFile } from './uploadFile';
+import { uploadFile } from './uploadFile';
 import { PineconeConfiguration } from '../../data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import { Context, contextClosed } from './context';
-import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
+import { Context, context } from './context';
+import { chatCompletion, ChatCompletionRequest } from './chatCompletion';
 
 /**
  * The `Assistant` class holds the data plane methods for interacting with
@@ -26,13 +26,13 @@ import { chatCompletionClosed, ChatCompletionRequest } from './chatCompletion';
 export class Assistant {
   private config: PineconeConfiguration;
 
-  readonly _chat: ReturnType<typeof chatClosed>;
-  readonly _chatCompletions: ReturnType<typeof chatCompletionClosed>;
-  readonly _listFiles: ReturnType<typeof listFilesClosed>;
-  readonly _describeFile: ReturnType<typeof describeFileClosed>;
-  readonly _uploadFile: ReturnType<typeof uploadFileInternal>;
-  readonly _deleteFile: ReturnType<typeof deleteFileClosed>;
-  readonly _context: ReturnType<typeof contextClosed>;
+  readonly _chat: ReturnType<typeof chat>;
+  readonly _chatCompletions: ReturnType<typeof chatCompletion>;
+  readonly _listFiles: ReturnType<typeof listFiles>;
+  readonly _describeFile: ReturnType<typeof describeFile>;
+  readonly _uploadFile: ReturnType<typeof uploadFile>;
+  readonly _deleteFile: ReturnType<typeof deleteFile>;
+  readonly _context: ReturnType<typeof context>;
 
   assistantName: string;
 
@@ -56,32 +56,26 @@ export class Assistant {
     );
     this.assistantName = assistantName;
 
-    this._chat = chatClosed(this.assistantName, asstDataOperationsProvider);
-    this._chatCompletions = chatCompletionClosed(
+    this._chat = chat(this.assistantName, asstDataOperationsProvider);
+    this._chatCompletions = chatCompletion(
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._listFiles = listFilesClosed(
+    this._listFiles = listFiles(this.assistantName, asstDataOperationsProvider);
+    this._describeFile = describeFile(
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._describeFile = describeFileClosed(
-      this.assistantName,
-      asstDataOperationsProvider
-    );
-    this._uploadFile = uploadFileInternal(
+    this._uploadFile = uploadFile(
       this.assistantName,
       asstDataOperationsProvider,
       this.config
     );
-    this._deleteFile = deleteFileClosed(
+    this._deleteFile = deleteFile(
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._context = contextClosed(
-      this.assistantName,
-      asstDataOperationsProvider
-    );
+    this._context = context(this.assistantName, asstDataOperationsProvider);
   }
 
   // --------- Chat methods ---------

@@ -2,9 +2,9 @@ import {
   messagesValidation,
   modelValidation,
   ChatRequest,
-  chatClosed,
+  chat,
 } from '../chat';
-import { chatCompletionClosed, ChatCompletionRequest } from '../chatCompletion';
+import { chatCompletion, ChatCompletionRequest } from '../chatCompletion';
 import {
   ChatModelEnum,
   ManageAssistantsApi,
@@ -91,8 +91,8 @@ endpoints.forEach((endpoint) => {
           provideData: async () => new ManageAssistantsApi(),
         } as AsstDataOperationsProvider;
 
-        const chat = chatClosed('test-assistant', AsstDataOperationsProvider);
-        const chatCompletion = chatCompletionClosed(
+        const chatFn = chat('test-assistant', AsstDataOperationsProvider);
+        const chatCompletionFn = chatCompletion(
           'test-assistant',
           AsstDataOperationsProvider
         );
@@ -100,8 +100,8 @@ endpoints.forEach((endpoint) => {
         const input = {} as ChatRequest;
         const inputCompletion = {} as ChatCompletionRequest;
 
-        await expect(chat(input)).rejects.toThrow('No messages passed');
-        await expect(chatCompletion(inputCompletion)).rejects.toThrow(
+        await expect(chatFn(input)).rejects.toThrow('No messages passed');
+        await expect(chatCompletionFn(inputCompletion)).rejects.toThrow(
           'No messages passed'
         );
       });

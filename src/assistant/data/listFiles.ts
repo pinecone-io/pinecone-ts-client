@@ -41,7 +41,7 @@ export interface ListFiles {
  * @param assistantName - The name of the Assistant that the files are uploaded to.
  * @param api - The API object to use to send the request.
  */
-export const listFilesClosed = (
+export const listFiles = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {

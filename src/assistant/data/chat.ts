@@ -134,7 +134,7 @@ export interface ChatRequest {
  * @throws an Error if the model is not one of the available models.
  * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
  */
-export const chatClosed = (
+export const chat = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {

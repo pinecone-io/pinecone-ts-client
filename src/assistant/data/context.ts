@@ -45,7 +45,7 @@ export interface Context {
  * @throws An error if a query is not provided.
  * @returns A promise that resolves to a {@link Context} object containing the context snippets.
  */
-export const contextClosed = (
+export const context = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {

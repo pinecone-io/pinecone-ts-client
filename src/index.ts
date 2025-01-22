@@ -23,7 +23,7 @@ export { ChatCompletionRequest } from './assistant/data/chatCompletion';
 export { DeleteFile } from './assistant/data/deleteFile';
 export { DescribeFile } from './assistant/data/describeFile';
 export { ListFiles } from './assistant/data/listFiles';
-export { UploadFile } from './assistant/data/uploadFileInternal';
+export { UploadFile } from './assistant/data/uploadFile';
 export { Context } from './assistant/data/context';
 export { AssistantEval } from './assistant/control/evaluate';
 
