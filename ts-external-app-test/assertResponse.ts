@@ -9,7 +9,7 @@ class EdgeExternalAppTest {
 
   hitEndpoint = async (url: string) => {
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         pinecone_api_key: this.apiKey,
@@ -17,7 +17,11 @@ class EdgeExternalAppTest {
     });
     if (!response || response.status !== 200) {
       throw new Error(
-        `Failed to hit endpoint. \n code: ${response.status},\n text: ${response.statusText},\n type: ${response.type},\n url: ${response.url}`
+        `Failed to hit endpoint. \n 
+         code: ${response.status},\n 
+         text: ${response.statusText},\n 
+         type: ${response.type},\n 
+         url: ${response.url}`
       );
     }
     return response.json();
