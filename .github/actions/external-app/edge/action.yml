@@ -71,7 +71,7 @@ runs:
     - name: Clean up test index(es)
       run: |
         PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
-        matching_index="${{ env.indexName }}"
+        matching_index="$indexName"
 
         delete_response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "https://api.pinecone.io/indexes/$matching_index" \
         -H "Api-Key: $PINECONE_API_KEY")
