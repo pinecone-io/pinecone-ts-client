@@ -17,10 +17,10 @@ class EdgeExternalAppTest {
     });
     if (!response || response.status !== 200) {
       throw new Error(
-        `Failed to hit endpoint. \n 
-         code: ${response.status},\n 
-         text: ${response.statusText},\n 
-         type: ${response.type},\n 
+        `Failed to hit endpoint.
+         code: ${response.status},
+         text: ${response.statusText},
+         type: ${response.type},
          url: ${response.url}`
       );
     }
