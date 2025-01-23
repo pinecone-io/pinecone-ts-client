@@ -54,7 +54,7 @@ class EdgeExternalAppTest {
 
 async function main() {
   try {
-    const apiKey = process.env.PINECONE_API_KEY;
+    const apiKey = process.env['PINECONE_API_KEY'];
     if (!apiKey) {
       throw new Error('PINECONE_API_KEY environment variable is required.');
     }
