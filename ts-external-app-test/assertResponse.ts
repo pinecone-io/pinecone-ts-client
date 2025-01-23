@@ -16,8 +16,8 @@ class EdgeExternalAppTest {
       },
     });
     if (!response || response.status !== 200) {
-      const body = await response.text();
-      throw new Error(`Failed to hit endpoint. Error: ${body}. URL: ${url}`);
+      const json = await response.json();
+      throw new Error(`Failed to hit endpoint. JSON: ${json}. URL: ${url}`);
     }
     return response.json();
   };
