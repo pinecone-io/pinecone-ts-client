@@ -7,6 +7,7 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    if: always()
     outputs:
       serverlessIndexName: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
       assistantName: ${{ steps.step3.outputs.ASSISTANT_NAME }}
@@ -34,7 +35,6 @@ jobs:
           echo "TEST_FILE=$TEST_FILE" >> $GITHUB_OUTPUT
 
   unit-tests:
-    needs: setup
     name: Run unit tests
     runs-on: ubuntu-latest
     steps:
@@ -116,7 +116,7 @@ jobs:
     name: Teardown
     needs: integration-tests # Ensure teardown only runs after test jobs
     runs-on: ubuntu-latest
-    if: always() # Run teardown even if the tests fail
+    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -229,7 +229,6 @@ jobs:
   external-app:
     name: external-app
     runs-on: ubuntu-latest
-    if: always() # Run teardown even if the tests fail
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
