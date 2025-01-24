@@ -7,6 +7,7 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    if: always()
     outputs:
       serverlessIndexName: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
       assistantName: ${{ steps.step3.outputs.ASSISTANT_NAME }}
@@ -33,24 +34,8 @@ jobs:
           echo "ASSISTANT_NAME=$ASSISTANT_NAME" >> $GITHUB_OUTPUT
           echo "TEST_FILE=$TEST_FILE" >> $GITHUB_OUTPUT
 
-  unit-tests:
-    needs: setup
-    name: Run unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Run tests
-        env:
-          CI: true
-        run: npm run test:unit -- --coverage
-
   integration-tests:
-    needs: setup
+    needs: [setup]
     name: Run integration tests
     runs-on: ubuntu-latest
     outputs:
@@ -114,9 +99,9 @@ jobs:
 
   teardown:
     name: Teardown
-    needs: integration-tests # Ensure teardown only runs after test jobs
+    needs: [integration-tests] # Ensure teardown only runs after test jobs
+    if: success()
     runs-on: ubuntu-latest
-    if: always() # Run teardown even if the tests fail
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -132,6 +117,21 @@ jobs:
           TEST_FILE: ${{ needs.integration-tests.outputs.testFile}}
         run: |
           npx ts-node ./src/integration/teardown.ts
+
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run tests
+        env:
+          CI: true
+        run: npm run test:unit -- --coverage
 
   typescript-compilation-tests:
     name: TS compile
@@ -229,7 +229,6 @@ jobs:
   external-app:
     name: external-app
     runs-on: ubuntu-latest
-    if: always() # Run teardown even if the tests fail
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

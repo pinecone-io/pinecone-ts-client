@@ -9,14 +9,20 @@ class EdgeExternalAppTest {
 
   hitEndpoint = async (url: string) => {
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         pinecone_api_key: this.apiKey,
       },
     });
     if (!response || response.status !== 200) {
-      throw new Error(`Failed to hit endpoint: ${response.status}`);
+      throw new Error(
+        `Failed to hit endpoint.
+         code: ${response.status},
+         text: ${response.statusText},
+         type: ${response.type},
+         url: ${response.url}`
+      );
     }
     return response.json();
   };
@@ -48,7 +54,7 @@ class EdgeExternalAppTest {
 
 async function main() {
   try {
-    const apiKey = process.env.PINECONE_API_KEY;
+    const apiKey = process.env['PINECONE_API_KEY'];
     if (!apiKey) {
       throw new Error('PINECONE_API_KEY environment variable is required.');
     }
