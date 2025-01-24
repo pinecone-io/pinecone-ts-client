@@ -38,7 +38,6 @@ jobs:
     needs: [setup]
     name: Run integration tests
     runs-on: ubuntu-latest
-    if: always()
     outputs:
       serverlessIndexName: ${{ steps.runTests1.outputs.SERVERLESS_INDEX_NAME }}
       assistantName: ${{ steps.runTests1.outputs.ASSISTANT_NAME }}
@@ -101,7 +100,7 @@ jobs:
   teardown:
     name: Teardown
     needs: [integration-tests] # Ensure teardown only runs after test jobs
-    if: always()
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
