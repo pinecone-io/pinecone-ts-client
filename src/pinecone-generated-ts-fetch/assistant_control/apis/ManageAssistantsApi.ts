@@ -60,7 +60,7 @@ export interface UpdateAssistantOperationRequest {
 export class ManageAssistantsApi extends runtime.BaseAPI {
 
     /**
-     * The `create_assistant` endpoint [creates a Pinecone Assistant](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
+     * Create an assistant. This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.  For guidance and examples, see [Create an assistant](https://docs.pinecone.io/guides/assistant/create-assistant)
      * Create an assistant
      */
     async createAssistantRaw(requestParameters: CreateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Assistant>> {
@@ -90,7 +90,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `create_assistant` endpoint [creates a Pinecone Assistant](https://docs.pinecone.io/guides/assistant/create-assistant). This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.
+     * Create an assistant. This is where you specify the underlying training model, which cloud provider you would like to deploy with, and more.  For guidance and examples, see [Create an assistant](https://docs.pinecone.io/guides/assistant/create-assistant)
      * Create an assistant
      */
     async createAssistant(requestParameters: CreateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Assistant> {
@@ -99,7 +99,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `delete_assistant` endpoint [deletes an existing assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant).
+     * Delete an existing assistant.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant)
      * Delete an assistant
      */
     async deleteAssistantRaw(requestParameters: DeleteAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -126,7 +126,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `delete_assistant` endpoint [deletes an existing assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant).
+     * Delete an existing assistant.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant)
      * Delete an assistant
      */
     async deleteAssistant(requestParameters: DeleteAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -134,7 +134,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `get_assistant` endpoint [gets the status](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant) of an assistant.
+     * Get the status of an assistant.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant)
      * Check assistant status
      */
     async getAssistantRaw(requestParameters: GetAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Assistant>> {
@@ -161,7 +161,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `get_assistant` endpoint [gets the status](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant) of an assistant.
+     * Get the status of an assistant.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant)
      * Check assistant status
      */
     async getAssistant(requestParameters: GetAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Assistant> {
@@ -170,7 +170,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * This operation returns a list of all assistants in a project.
+     * List of all assistants in a project.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#list-assistants-for-a-project).
      * List assistants
      */
     async listAssistantsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListAssistants200Response>> {
@@ -193,7 +193,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * This operation returns a list of all assistants in a project.
+     * List of all assistants in a project.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#list-assistants-for-a-project).
      * List assistants
      */
     async listAssistants(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListAssistants200Response> {
@@ -202,7 +202,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `update_assistant` endpoint [updates an existing assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#update-an-existing-assistant). You can modify the assistant\'s instructions and metadata.
+     * Update an existing assistant. You can modify the assistant\'s instructions.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#add-instructions-to-an-assistant).
      * Update an assistant
      */
     async updateAssistantRaw(requestParameters: UpdateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateAssistant200Response>> {
@@ -236,7 +236,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `update_assistant` endpoint [updates an existing assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#update-an-existing-assistant). You can modify the assistant\'s instructions and metadata.
+     * Update an existing assistant. You can modify the assistant\'s instructions.  For guidance and examples, see [Manage assistants](https://docs.pinecone.io/guides/assistant/manage-assistants#add-instructions-to-an-assistant).
      * Update an assistant
      */
     async updateAssistant(requestParameters: UpdateAssistantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateAssistant200Response> {

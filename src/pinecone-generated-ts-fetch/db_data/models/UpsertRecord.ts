@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface UpsertRecord {
     /**
-     * The unique ID of the record to upsert.
+     * The unique ID of the record to upsert. Note that `id` can be used as an alias for `_id`.
      * @type {string}
      * @memberof UpsertRecord
      */
