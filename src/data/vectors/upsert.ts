@@ -6,7 +6,7 @@ import {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateProperties } from '../../utils/validateProperties';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../../utils';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
@@ -20,7 +20,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = (records: Array<PineconeRecord<T>>) => {
     for (const record of records) {
-      ValidateProperties(record, PineconeRecordsProperties);
+      ValidateObjectProperties(record, PineconeRecordsProperties);
     }
     if (records.length === 0) {
       throw new PineconeArgumentError(

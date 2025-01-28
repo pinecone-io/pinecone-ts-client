@@ -194,7 +194,7 @@ describe('createIndex', () => {
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
       'Object contained invalid properties: dimensionlshgoiwe. Valid properties include spec, name, dimension,' +
-        ' metric, deletionProtection, waitUntilReady, suppressConflicts, tags.'
+        ' metric, deletionProtection, waitUntilReady, suppressConflicts, tags, vectorType.'
     );
   });
 

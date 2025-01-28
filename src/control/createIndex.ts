@@ -9,7 +9,7 @@ import {
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -36,6 +36,7 @@ const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
   'waitUntilReady',
   'suppressConflicts',
   'tags',
+  'vectorType',
 ];
 
 /**
@@ -122,123 +123,13 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
 ];
 
 export const createIndex = (api: ManageIndexesApi) => {
-  const validator = (options: CreateIndexOptions) => {
-    if (options) {
-      ValidateProperties(options, CreateIndexOptionsProperties);
-    }
-    if (!options) {
-      throw new PineconeArgumentError(
-        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
-      );
-    }
-    if (!options.name) {
-      throw new PineconeArgumentError(
-        'You must pass a non-empty string for `name` in order to create an index.'
-      );
-    }
-    if (!options.dimension || options.dimension <= 0) {
-      throw new PineconeArgumentError(
-        'You must pass a positive integer for `dimension` in order to create an index.'
-      );
-    }
-    if (!options.spec) {
-      throw new PineconeArgumentError(
-        'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
-      );
-    }
-    if (options.spec) {
-      ValidateProperties(options.spec, CreateIndexSpecProperties);
-    }
-    if (options.spec.serverless) {
-      ValidateProperties(
-        options.spec.serverless,
-        CreateIndexServerlessSpecProperties
-      );
-      if (!options.spec.serverless.cloud) {
-        throw new PineconeArgumentError(
-          'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
-        );
-      }
-      if (!options.spec.serverless.region) {
-        throw new PineconeArgumentError(
-          'You must pass a `region` for the serverless `spec` object in order to create an index.'
-        );
-      }
-    }
-    if (options.spec.pod) {
-      ValidateProperties(options.spec.pod, CreateIndexPodSpecProperties);
-      if (!options.spec.pod.environment) {
-        throw new PineconeArgumentError(
-          'You must pass an `environment` for the pod `spec` object in order to create an index.'
-        );
-      }
-      if (!options.spec.pod.podType) {
-        throw new PineconeArgumentError(
-          'You must pass a `podType` for the pod `spec` object in order to create an index.'
-        );
-      }
-    }
-    if (
-      options.spec.serverless &&
-      options.spec.serverless.cloud &&
-      !Object.values(ServerlessSpecCloudEnum).includes(
-        options.spec.serverless.cloud
-      )
-    ) {
-      throw new PineconeArgumentError(
-        `Invalid cloud value: ${
-          options.spec.serverless.cloud
-        }. Valid values are: ${Object.values(ServerlessSpecCloudEnum).join(
-          ', '
-        )}.`
-      );
-    }
-    if (
-      options.metric &&
-      !Object.values(IndexModelMetricEnum).includes(options.metric)
-    ) {
-      {
-        throw new PineconeArgumentError(
-          `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
-        );
-      }
-    }
-    if (
-      options.spec.pod &&
-      options.spec.pod.replicas &&
-      options.spec.pod.replicas <= 0
-    ) {
-      throw new PineconeArgumentError(
-        'You must pass a positive integer for `replicas` in order to create an index.'
-      );
-    }
-    if (
-      options.spec.pod &&
-      options.spec.pod.pods &&
-      options.spec.pod.pods <= 0
-    ) {
-      throw new PineconeArgumentError(
-        'You must pass a positive integer for `pods` in order to create an index.'
-      );
-    }
-    if (
-      options.spec.pod &&
-      !ValidPodTypes.includes(<PodType>options.spec.pod.podType)
-    ) {
-      throw new PineconeArgumentError(
-        `Invalid pod type: ${
-          options.spec.pod.podType
-        }. Valid values are: ${ValidPodTypes.join(', ')}.`
-      );
-    }
-  };
-
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     // If metric is not specified, default to cosine
     if (options && !options.metric) {
       options.metric = IndexModelMetricEnum.Cosine;
     }
-    validator(options);
+
+    validateCreateIndexRequest(options);
     try {
       const createResponse = await api.createIndex({
         createIndexRequest: options as CreateIndexRequest,
@@ -282,5 +173,125 @@ const waitUntilIndexIsReady = async (
         `Error creating index ${indexName}: ${rawMessageText}`
     );
     throw err;
+  }
+};
+
+const validateCreateIndexRequest = (options: CreateIndexOptions) => {
+  if (!options) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+    );
+  }
+
+  // validate options properties
+  if (options) {
+    ValidateObjectProperties(options, CreateIndexOptionsProperties);
+  }
+  if (!options.name) {
+    throw new PineconeArgumentError(
+      'You must pass a non-empty string for `name` in order to create an index.'
+    );
+  }
+  if (!options.dimension || options.dimension <= 0) {
+    throw new PineconeArgumentError(
+      'You must pass a positive integer for `dimension` in order to create an index.'
+    );
+  }
+  if (!options.spec) {
+    throw new PineconeArgumentError(
+      'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
+    );
+  }
+
+  // validate options.metric
+  if (
+    options.metric &&
+    !Object.values(IndexModelMetricEnum).includes(options.metric)
+  ) {
+    {
+      throw new PineconeArgumentError(
+        `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
+      );
+    }
+  }
+
+  // validate options.spec properties
+  if (options.spec) {
+    ValidateObjectProperties(options.spec, CreateIndexSpecProperties);
+  }
+
+  // validate options.spec.serverless properties if serverless spec is passed
+  if (options.spec.serverless) {
+    ValidateObjectProperties(
+      options.spec.serverless,
+      CreateIndexServerlessSpecProperties
+    );
+    if (!options.spec.serverless.cloud) {
+      throw new PineconeArgumentError(
+        'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
+      );
+    }
+    if (!options.spec.serverless.region) {
+      throw new PineconeArgumentError(
+        'You must pass a `region` for the serverless `spec` object in order to create an index.'
+      );
+    }
+
+    if (
+      options.spec.serverless &&
+      options.spec.serverless.cloud &&
+      !Object.values(ServerlessSpecCloudEnum).includes(
+        options.spec.serverless.cloud
+      )
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid cloud value: ${
+          options.spec.serverless.cloud
+        }. Valid values are: ${Object.values(ServerlessSpecCloudEnum).join(
+          ', '
+        )}.`
+      );
+    }
+  } else if (options.spec.pod) {
+    // validate options.spec.pod properties if pod spec is passed
+    ValidateObjectProperties(options.spec.pod, CreateIndexPodSpecProperties);
+    if (!options.spec.pod.environment) {
+      throw new PineconeArgumentError(
+        'You must pass an `environment` for the pod `spec` object in order to create an index.'
+      );
+    }
+    if (!options.spec.pod.podType) {
+      throw new PineconeArgumentError(
+        'You must pass a `podType` for the pod `spec` object in order to create an index.'
+      );
+    }
+    if (
+      options.spec.pod &&
+      options.spec.pod.replicas &&
+      options.spec.pod.replicas <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `replicas` in order to create an index.'
+      );
+    }
+    if (
+      options.spec.pod &&
+      options.spec.pod.pods &&
+      options.spec.pod.pods <= 0
+    ) {
+      throw new PineconeArgumentError(
+        'You must pass a positive integer for `pods` in order to create an index.'
+      );
+    }
+    if (
+      options.spec.pod &&
+      !ValidPodTypes.includes(<PodType>options.spec.pod.podType)
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid pod type: ${
+          options.spec.pod.podType
+        }. Valid values are: ${ValidPodTypes.join(', ')}.`
+      );
+    }
   }
 };

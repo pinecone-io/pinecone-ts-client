@@ -40,7 +40,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
-import { ValidateProperties } from './utils/validateProperties';
+import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
@@ -146,7 +146,7 @@ export class Pinecone {
       );
     }
 
-    ValidateProperties(options, PineconeConfigurationProperties);
+    ValidateObjectProperties(options, PineconeConfigurationProperties);
 
     this.config = options;
 
