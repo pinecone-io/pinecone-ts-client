@@ -170,7 +170,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a positive integer for `dimension` in order to create an index.'
+      'You must pass a positive `dimension` when creating a dense index.'
     );
   });
 

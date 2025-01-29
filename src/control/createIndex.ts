@@ -192,15 +192,20 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
       'You must pass a non-empty string for `name` in order to create an index.'
     );
   }
-  if (!options.dimension || options.dimension <= 0) {
+  if (options.dimension && options.dimension <= 0) {
     throw new PineconeArgumentError(
       'You must pass a positive integer for `dimension` in order to create an index.'
     );
   }
+
+  // validate options.spec properties
   if (!options.spec) {
     throw new PineconeArgumentError(
       'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
     );
+  }
+  if (options.spec) {
+    ValidateObjectProperties(options.spec, CreateIndexSpecProperties);
   }
 
   // validate options.metric
@@ -215,30 +220,52 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     }
   }
 
-  // validate options.spec properties
-  if (options.spec) {
-    ValidateObjectProperties(options.spec, CreateIndexSpecProperties);
-  }
-
   // validate options.spec.serverless properties if serverless spec is passed
   if (options.spec.serverless) {
     ValidateObjectProperties(
       options.spec.serverless,
       CreateIndexServerlessSpecProperties
     );
+
+    // extract and default vectorType to 'dense' if not specified
+    const vectorType = options.vectorType
+      ? options.vectorType.toLowerCase()
+      : 'dense';
+    if (vectorType !== 'dense' && vectorType !== 'sparse') {
+      throw new PineconeArgumentError(
+        'Invalid `vectorType` value. Valid values are `dense` or `sparse`.'
+      );
+    }
+
+    // sparse indexes must have a metric of 'dotproduct' and no dimension
+    if (vectorType == 'sparse') {
+      if (options.dimension && options.dimension > 0) {
+        throw new PineconeArgumentError(
+          'Sparse indexes cannot have a `dimension`.'
+        );
+      }
+
+      if (options.metric && options.metric !== 'dotproduct') {
+        throw new PineconeArgumentError(
+          'Sparse indexes must have a `metric` of `dotproduct`.'
+        );
+      }
+    } else if (vectorType == 'dense') {
+      // dense indexes must have a dimension
+      if (!options.dimension || options.dimension <= 0) {
+        throw new PineconeArgumentError(
+          'You must pass a positive `dimension` when creating a dense index.'
+        );
+      }
+    }
+
+    // validate serverless cloud & region
     if (!options.spec.serverless.cloud) {
       throw new PineconeArgumentError(
         'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
       );
     }
-    if (!options.spec.serverless.region) {
-      throw new PineconeArgumentError(
-        'You must pass a `region` for the serverless `spec` object in order to create an index.'
-      );
-    }
-
     if (
-      options.spec.serverless &&
       options.spec.serverless.cloud &&
       !Object.values(ServerlessSpecCloudEnum).includes(
         options.spec.serverless.cloud
@@ -252,6 +279,11 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
         )}.`
       );
     }
+    if (!options.spec.serverless.region) {
+      throw new PineconeArgumentError(
+        'You must pass a `region` for the serverless `spec` object in order to create an index.'
+      );
+    }
   } else if (options.spec.pod) {
     // validate options.spec.pod properties if pod spec is passed
     ValidateObjectProperties(options.spec.pod, CreateIndexPodSpecProperties);
@@ -260,33 +292,38 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
         'You must pass an `environment` for the pod `spec` object in order to create an index.'
       );
     }
+
+    // pod indexes must have a dimension
+    if (!options.dimension || options.dimension <= 0) {
+      throw new PineconeArgumentError(
+        'You must pass a positive `dimension` when creating a dense index.'
+      );
+    }
+
+    // pod indexes must be dense
+    const vectorType = 'dense';
+    if (options.vectorType && options.vectorType.toLowerCase() !== vectorType) {
+      throw new PineconeArgumentError(
+        'Pod indexes must have a `vectorType` of `dense`.'
+      );
+    }
+
     if (!options.spec.pod.podType) {
       throw new PineconeArgumentError(
         'You must pass a `podType` for the pod `spec` object in order to create an index.'
       );
     }
-    if (
-      options.spec.pod &&
-      options.spec.pod.replicas &&
-      options.spec.pod.replicas <= 0
-    ) {
+    if (options.spec.pod.replicas && options.spec.pod.replicas <= 0) {
       throw new PineconeArgumentError(
         'You must pass a positive integer for `replicas` in order to create an index.'
       );
     }
-    if (
-      options.spec.pod &&
-      options.spec.pod.pods &&
-      options.spec.pod.pods <= 0
-    ) {
+    if (options.spec.pod.pods && options.spec.pod.pods <= 0) {
       throw new PineconeArgumentError(
         'You must pass a positive integer for `pods` in order to create an index.'
       );
     }
-    if (
-      options.spec.pod &&
-      !ValidPodTypes.includes(<PodType>options.spec.pod.podType)
-    ) {
+    if (!ValidPodTypes.includes(<PodType>options.spec.pod.podType)) {
       throw new PineconeArgumentError(
         `Invalid pod type: ${
           options.spec.pod.podType
