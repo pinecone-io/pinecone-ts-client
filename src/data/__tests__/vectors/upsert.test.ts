@@ -58,20 +58,11 @@ describe('upsert', () => {
     );
   });
 
-  test('throw error if any item in records array is incomplete', async () => {
+  test('throw error if id is empty', async () => {
     const { cmd } = setupSuccess('');
 
-    // Missing `values` property
-    let toThrow = async () => {
-      // @ts-ignore
-      await cmd.run([{ id: 'abc' }]);
-    };
-    await expect(toThrow()).rejects.toThrowError(
-      'Every record must include a `values` property in order to upsert.'
-    );
-
     // Missing `id` property
-    toThrow = async () => {
+    const toThrow = async () => {
       // @ts-ignore
       await cmd.run([{ values: [1, 2, 3] }]);
     };

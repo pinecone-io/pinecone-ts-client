@@ -14,7 +14,8 @@ update_apis_repo() {
 	  git fetch
 	  git checkout main
 	  git pull
-    just build
+	  just clean
+      just build
 	popd
 }
 
