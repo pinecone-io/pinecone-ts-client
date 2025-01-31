@@ -12,7 +12,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-// todo: refactor to make conditions & loops more efficient
 const setup = async () => {
   let apiKey: string;
 
@@ -24,6 +23,14 @@ const setup = async () => {
 
   const client = new Pinecone({ apiKey: apiKey });
 
+  // both of these processes create the external resources, and then store the names in the GITHUB_OUTPUT env var
+  await Promise.all([createServerlessIndex(client), createAssistant(client)]);
+};
+
+// main entrypoint
+setup();
+
+async function createServerlessIndex(client: Pinecone) {
   const randomIndexName = `serverless-integration-${Math.random()
     .toString(36)
     .slice(2, 8)}`;
@@ -106,7 +113,9 @@ const setup = async () => {
   }
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`SERVERLESS_INDEX_NAME=${randomIndexName}`);
+}
 
+async function createAssistant(client: Pinecone) {
   // Set up an Assistant and upload a file to it
   const assistantName = randomString(5);
   await client.createAssistant({
@@ -161,6 +170,4 @@ const setup = async () => {
   } catch (err) {
     console.error('Error deleting file:', err);
   }
-};
-
-setup();
+}

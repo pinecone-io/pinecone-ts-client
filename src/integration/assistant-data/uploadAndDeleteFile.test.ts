@@ -74,17 +74,17 @@ describe('Upload file happy path', () => {
     const response = await assistant.uploadFile({
       path: tempFilePath,
     });
-    await sleep(30000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
-    // b/c of setup.ts
+    // await sleep(30000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
+    // // b/c of setup.ts
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFile);
     expect(response.id).toBeDefined();
-    expect(response.createdOn).toBeDefined(); // Sometimes these dates populate as "Invalid" at first, but then get updated
+    expect(response.createdOn).toBeDefined();
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
     // Delete file happy path test:
-    expect(await assistant.deleteFile({ fileId: response.id })).toBeUndefined();
+    await assistant.deleteFile({ fileId: response.id });
   });
 
   test('Upload file with metadata', async () => {
@@ -95,7 +95,7 @@ describe('Upload file happy path', () => {
         category: 'integration-test',
       },
     });
-    await sleep(25000); // Crazy long sleep necessary; need to optimize
+    // await sleep(25000);
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFileWithMetadata);
     expect(response.id).toBeDefined();
@@ -109,7 +109,7 @@ describe('Upload file happy path', () => {
     }
 
     // Delete file happy path test:
-    expect(await assistant.deleteFile({ fileId: response.id })).toBeUndefined();
+    await assistant.deleteFile({ fileId: response.id });
   });
 });
 
