@@ -146,7 +146,7 @@ indexes().then((response) => {
 
 At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension`
 indicates the size of the vectors you intend to store in the index. For example, if your intention was to store and
-query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
+query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model. By default, serverless indexes will have a `vectorType` of `dense`.
 
 The `spec` configures how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
 
@@ -164,6 +164,28 @@ await pc.createIndex({
     },
   },
   tags: { team: 'data-science' },
+});
+```
+
+#### Create a sparse serverless index
+
+You can also use `vectorType` to create `sparse` serverless indexes. These indexes enable direct indexing and retrieval of sparse vectors, supporting traditional methods like BM25 and learned sparse models such as [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0). A `sparse` index must have a distance metric of `dotproduct` and does not require a specified dimension:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
+  name: 'sample-index',
+  metric: 'dotproduct',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+  tags: { team: 'data-science' },
+  vectorType: 'sparse',
 });
 ```
 
