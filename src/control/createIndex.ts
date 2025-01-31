@@ -124,6 +124,12 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
 
 export const createIndex = (api: ManageIndexesApi) => {
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
+    if (!options) {
+      throw new PineconeArgumentError(
+        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+      );
+    }
+
     // If metric is not specified for a sparse index, default to dotproduct
     if (options.vectorType && options.vectorType.toLowerCase() === 'sparse') {
       if (!options.metric) {
@@ -184,12 +190,6 @@ const waitUntilIndexIsReady = async (
 };
 
 const validateCreateIndexRequest = (options: CreateIndexOptions) => {
-  if (!options) {
-    throw new PineconeArgumentError(
-      'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
-    );
-  }
-
   // validate options properties
   if (options) {
     ValidateObjectProperties(options, CreateIndexOptionsProperties);

@@ -33,6 +33,11 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
           'Every record must include an `id` property in order to upsert.'
         );
       }
+      if (!record.values && !record.sparseValues) {
+        throw new PineconeArgumentError(
+          'Every record must include either `values` or `sparseValues` in order to upsert.'
+        );
+      }
     });
   };
 
