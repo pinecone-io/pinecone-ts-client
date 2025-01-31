@@ -13,7 +13,6 @@ import * as path from 'path';
 import * as os from 'os';
 
 // todo: refactor to make conditions & loops more efficient
-
 const setup = async () => {
   let apiKey: string;
 
@@ -23,13 +22,13 @@ const setup = async () => {
     apiKey = process.env['PINECONE_API_KEY'];
   }
 
-  const pc = new Pinecone({ apiKey: apiKey });
+  const client = new Pinecone({ apiKey: apiKey });
 
   const randomIndexName = `serverless-integration-${Math.random()
     .toString(36)
     .slice(2, 8)}`;
 
-  const indexes: IndexList = await pc.listIndexes();
+  const indexes: IndexList = await client.listIndexes();
 
   if (indexes.indexes) {
     if (indexes.indexes.some((index) => index.name === randomIndexName)) {
@@ -54,7 +53,7 @@ const setup = async () => {
       const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
 
       //   upsert records into namespace
-      await pc
+      await client
         .index(randomIndexName)
         .namespace(globalNamespaceOne)
         .upsert(allRecords);
@@ -62,7 +61,7 @@ const setup = async () => {
       await sleep(10000);
     } else {
       // Create serverless index for data plane tests
-      await pc.createIndex({
+      await client.createIndex({
         name: randomIndexName,
         dimension: 2,
         metric: 'dotproduct',
@@ -97,7 +96,7 @@ const setup = async () => {
       const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
 
       //   upsert records into namespace
-      await pc
+      await client
         .index(randomIndexName)
         .namespace(globalNamespaceOne)
         .upsert(allRecords);
@@ -110,7 +109,7 @@ const setup = async () => {
 
   // Set up an Assistant and upload a file to it
   const assistantName = randomString(5);
-  await pc.createAssistant({
+  await client.createAssistant({
     name: assistantName,
     instructions: 'test-instructions',
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
@@ -119,12 +118,12 @@ const setup = async () => {
   await sleep(2000);
 
   try {
-    await pc.describeAssistant(assistantName);
+    await client.describeAssistant(assistantName);
   } catch (e) {
     console.log('Error getting assistant:', e);
   }
 
-  const assistant = pc.Assistant(assistantName);
+  const assistant = client.Assistant(assistantName);
 
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`ASSISTANT_NAME=${assistantName}`);

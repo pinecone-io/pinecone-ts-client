@@ -70,4 +70,15 @@ describe('upsert', () => {
       'Every record must include an `id` property in order to upsert.'
     );
   });
+
+  test('throw error if values and sparseValues are empty', () => {
+    const { cmd } = setupSuccess('');
+    const toThrow = async () => {
+      // @ts-ignore
+      cmd.run([{ id: '1' }]);
+    };
+    expect(toThrow()).rejects.toThrowError(
+      'Every record must include either a `values` or `sparseValues` property in order to upsert.'
+    );
+  });
 });

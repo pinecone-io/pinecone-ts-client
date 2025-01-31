@@ -1,4 +1,4 @@
-import { PineconeNotFoundError } from '../../errors';
+import { PineconeArgumentError, PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomIndexName } from '../test-helpers';
 
@@ -152,39 +152,83 @@ describe('create index', () => {
         }
       });
 
-      // todo: trigger an insufficient quota scenario
-      test.skip('This literally tests nothing and passes no matter what you do', async () => {
-        test('insufficient quota', async () => {
-          const indexName = randomIndexName('serverless-create');
-
-          try {
-            await pinecone.createIndex({
-              name: indexName,
-              dimension: 5,
-              metric: 'cosine',
-              spec: {
-                serverless: {
-                  cloud: 'aws',
-                  region: 'us-west-2',
-                },
+      test('create sparse index with invalid metric', async () => {
+        try {
+          const indexName = randomIndexName('sparse-error');
+          await pinecone.createIndex({
+            name: indexName,
+            metric: 'cosine',
+            vectorType: 'sparse',
+            spec: {
+              serverless: {
+                cloud: 'aws',
+                region: 'us-east-1',
               },
-            });
-          } catch (e) {
-            const err = e as PineconeNotFoundError;
-            // todo: this err.name is not actually checking anything; can put nonsense in there & test passes
-            expect(err.name).toEqual('PineconeBadRequestErsdfdror');
-            // todo: this err.message is not actually checking anything; can put nonsense in there & test passes
-            expect(err.message).toContain('exsdfdceeds the project quota');
-          }
-        });
+            },
+          });
+        } catch (e) {
+          const err = e as PineconeArgumentError;
+          expect(err.name).toEqual('PineconeArgumentError');
+          expect(err.message).toContain(
+            'Sparse indexes must have a `metric` of `dotproduct`'
+          );
+        }
+      });
+
+      test('create sparse index with invalid dimension', async () => {
+        try {
+          const indexName = randomIndexName('sparse-error');
+          await pinecone.createIndex({
+            name: indexName,
+            dimension: 5,
+            vectorType: 'sparse',
+            spec: {
+              serverless: {
+                cloud: 'aws',
+                region: 'us-east-1',
+              },
+            },
+          });
+        } catch (e) {
+          const err = e as PineconeArgumentError;
+          expect(err.name).toEqual('PineconeArgumentError');
+          expect(err.message).toContain(
+            'Sparse indexes cannot have a `dimension`'
+          );
+        }
       });
     });
   });
 
   describe('pod index tests', () => {
+    describe('happy path', () => {
+      test('create pod index', async () => {
+        const indexName = randomIndexName('test-pod-create');
+        await pinecone.createIndex({
+          name: indexName,
+          dimension: 5,
+          metric: 'cosine',
+          spec: {
+            pod: {
+              environment: 'us-east-1-aws',
+              podType: 'p1.x1',
+              pods: 1,
+            },
+          },
+        });
+
+        const description = await pinecone.describeIndex(indexName);
+        expect(description.name).toEqual(indexName);
+        expect(description.dimension).toEqual(5);
+        expect(description.metric).toEqual('cosine');
+        expect(description.host).toBeDefined();
+        expect(description.vectorType).toEqual('dense');
+      });
+    });
+
     describe('error cases', () => {
       test('create from non-existent collection', async () => {
-        const indexName = randomIndexName('serverless-create');
+        const indexName = randomIndexName('collection-error');
 
         try {
           await pinecone.createIndex({
@@ -205,6 +249,31 @@ describe('create index', () => {
           expect(err.name).toEqual('PineconeBadRequestError');
           expect(err.message).toContain(
             'Resource non-existent-collection not found'
+          );
+        }
+      });
+
+      test('create sparse pod index', async () => {
+        try {
+          const indexName = randomIndexName('sparse-error');
+          await pinecone.createIndex({
+            name: indexName,
+            dimension: 5,
+            vectorType: 'sparse',
+            spec: {
+              pod: {
+                environment: 'us-east-1-aws',
+                podType: 'p1.x1',
+                pods: 1,
+                sourceCollection: 'non-existent-collection',
+              },
+            },
+          });
+        } catch (e) {
+          const err = e as PineconeArgumentError;
+          expect(err.name).toEqual('PineconeArgumentError');
+          expect(err.message).toContain(
+            'Pod indexes must have a `vectorType` of `dense`'
           );
         }
       });
