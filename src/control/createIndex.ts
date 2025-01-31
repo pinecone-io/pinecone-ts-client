@@ -124,9 +124,16 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
 
 export const createIndex = (api: ManageIndexesApi) => {
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
-    // If metric is not specified, default to cosine
-    if (options && !options.metric) {
-      options.metric = IndexModelMetricEnum.Cosine;
+    // If metric is not specified for a sparse index, default to dotproduct
+    if (options.vectorType && options.vectorType.toLowerCase() === 'sparse') {
+      if (!options.metric) {
+        options.metric = IndexModelMetricEnum.Dotproduct;
+      }
+    } else {
+      // If metric is not specified for a dense index, default to cosine
+      if (!options.metric) {
+        options.metric = IndexModelMetricEnum.Cosine;
+      }
     }
 
     validateCreateIndexRequest(options);
