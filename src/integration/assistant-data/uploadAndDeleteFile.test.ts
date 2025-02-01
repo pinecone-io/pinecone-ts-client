@@ -74,14 +74,15 @@ describe('Upload file happy path', () => {
     const response = await assistant.uploadFile({
       path: tempFilePath,
     });
-    // await sleep(30000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
-    // // b/c of setup.ts
+
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFile);
     expect(response.id).toBeDefined();
     expect(response.createdOn).toBeDefined();
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
+
+    await sleep(30000);
 
     // Delete file happy path test:
     await assistant.deleteFile({ fileId: response.id });
@@ -95,7 +96,7 @@ describe('Upload file happy path', () => {
         category: 'integration-test',
       },
     });
-    // await sleep(25000);
+
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFileWithMetadata);
     expect(response.id).toBeDefined();
@@ -107,6 +108,8 @@ describe('Upload file happy path', () => {
       expect(response.metadata['description']).toEqual('Test file');
       expect(response.metadata['category']).toEqual('integration-test');
     }
+
+    await sleep(30000);
 
     // Delete file happy path test:
     await assistant.deleteFile({ fileId: response.id });

@@ -5,6 +5,7 @@ import {
   globalNamespaceOne,
   prefix,
   randomString,
+  randomIndexName,
   sleep,
 } from './test-helpers';
 
@@ -31,88 +32,65 @@ const setup = async () => {
 setup();
 
 async function createServerlessIndex(client: Pinecone) {
-  const randomIndexName = `serverless-integration-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+  let serverlessIndexName = randomIndexName('serverless-integration');
+  const indexes = await client.listIndexes();
+  const serverlessIndex = indexes.indexes?.find(
+    (index) => index.spec.serverless
+  );
+  serverlessIndexName = serverlessIndex?.name || serverlessIndexName;
 
-  const indexes: IndexList = await client.listIndexes();
-
-  if (indexes.indexes) {
-    if (indexes.indexes.some((index) => index.name === randomIndexName)) {
-      // Seed index with data
-      const recordsToUpsert = generateRecords({
-        prefix: prefix,
-        dimension: 2,
-        quantity: 10,
-        withSparseValues: true,
-        withMetadata: true,
-      });
-
-      // (Upsert 1 record with a different prefix, so can test prefix filtering)
-      const oneRecordWithDiffPrefix = generateRecords({
-        prefix: diffPrefix,
-        dimension: 2,
-        quantity: 1,
-        withSparseValues: true,
-        withMetadata: true,
-      });
-
-      const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-
-      //   upsert records into namespace
-      await client
-        .index(randomIndexName)
-        .namespace(globalNamespaceOne)
-        .upsert(allRecords);
-
-      await sleep(10000);
-    } else {
-      // Create serverless index for data plane tests
-      await client.createIndex({
-        name: randomIndexName,
-        dimension: 2,
-        metric: 'dotproduct',
-        spec: {
-          serverless: {
-            cloud: 'aws',
-            region: 'us-west-2',
-          },
+  const createAndSeedNewServerlessIndex = async (newIndexName: string) => {
+    // Create serverless index for data plane tests
+    await client.createIndex({
+      name: newIndexName,
+      dimension: 2,
+      metric: 'dotproduct',
+      spec: {
+        serverless: {
+          cloud: 'aws',
+          region: 'us-west-2',
         },
-        waitUntilReady: true,
-        tags: { project: 'pinecone-integration-tests-serverless' },
-      });
+      },
+      waitUntilReady: true,
+      tags: { project: 'pinecone-integration-tests-serverless' },
+    });
 
-      // Seed index with data
-      const recordsToUpsert = generateRecords({
-        prefix: prefix,
-        dimension: 2,
-        quantity: 10,
-        withSparseValues: true,
-        withMetadata: true,
-      });
+    // Seed index with data
+    const recordsToUpsert = generateRecords({
+      prefix: prefix,
+      dimension: 2,
+      quantity: 10,
+      withSparseValues: true,
+      withMetadata: true,
+    });
 
-      // (Upsert 1 record with a different prefix, so can test prefix filtering)
-      const oneRecordWithDiffPrefix = generateRecords({
-        prefix: diffPrefix,
-        dimension: 2,
-        quantity: 1,
-        withSparseValues: true,
-        withMetadata: true,
-      });
+    // (Upsert 1 record with a different prefix, so can test prefix filtering)
+    const oneRecordWithDiffPrefix = generateRecords({
+      prefix: diffPrefix,
+      dimension: 2,
+      quantity: 1,
+      withSparseValues: true,
+      withMetadata: true,
+    });
 
-      const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
+    const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
 
-      //   upsert records into namespace
-      await client
-        .index(randomIndexName)
-        .namespace(globalNamespaceOne)
-        .upsert(allRecords);
+    //   upsert records into namespace
+    await client
+      .index(newIndexName)
+      .namespace(globalNamespaceOne)
+      .upsert(allRecords);
 
-      await sleep(10000);
-    }
+    await sleep(10000);
+  };
+
+  // if there's not an existing serverlessIndex, create one
+  if (!serverlessIndex) {
+    await createAndSeedNewServerlessIndex(serverlessIndexName);
   }
+
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
-  console.log(`SERVERLESS_INDEX_NAME=${randomIndexName}`);
+  console.log(`SERVERLESS_INDEX_NAME=${serverlessIndexName}`);
 }
 
 async function createAssistant(client: Pinecone) {
