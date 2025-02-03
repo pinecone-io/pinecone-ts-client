@@ -1366,20 +1366,24 @@ console.log(assistants);
 
 ### Chat with an Assistant
 
-You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` method. The latter's output is
-compatible with [OpenAI's Chat Completion](https://platform.openai.com/docs/api-reference/chat) format.
+You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` methods.
 
 **Note:** Your Assistant must contain files in order for chat to work.
 
-The following example shows how to chat with an Assistant using the `chat` method:
+The following example shows how to chat with an Assistant using the `chat` methods:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
-const chatResp = await assistant.chat({
-  messages: [{ role: 'user', content: 'What is the capital of France?' }],
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
 });
 console.log(chatResp);
 // {
@@ -1391,6 +1395,40 @@ console.log(chatResp);
 //  },
 //  model: 'gpt-4o-2024-05-13',
 //  citations: [ { position: 209, references: [Array] } ],
+//  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+// }
+```
+
+`chatCompletion` is based on the [OpenAI Chat Completion](https://platform.openai.com/docs/api-reference/chat) format, and is useful if OpenAI-compatible responses. However, it has limited functionality compared to the standard `chat` method. Read more [here](https://docs.pinecone.io/reference/api/2025-01/assistant/chat_completion_assistant).
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+console.log(chatResp);
+// {
+//  id: '000000000000000023e7fb015be9d0ad',
+//  choices: [
+//    {
+//      finishReason: 'stop',
+//      index: 0,
+//      message: {
+//        role: 'assistant',
+//        content: 'The capital of France is Paris.'
+//      }
+//    }
+//  ],
+//  finishReason: 'stop',
+//  model: 'gpt-4o-2024-05-13',
 //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
 // }
 ```
