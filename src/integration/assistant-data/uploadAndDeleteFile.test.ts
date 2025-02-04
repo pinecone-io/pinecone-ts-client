@@ -141,7 +141,9 @@ describe('Upload file error paths', () => {
         path: '',
       });
     };
-    await expect(throwError()).rejects.toThrow('File path is required');
+    await expect(throwError()).rejects.toThrow(
+      'You must pass an object with required properties (`path`) to upload a file.'
+    );
   });
 });
 
