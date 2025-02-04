@@ -8,6 +8,17 @@ export interface ListFilesOptions {
   filter?: object;
 }
 
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type ListFilesOptionsType = keyof ListFilesOptions;
+export const ListFilesOptionsType: ListFilesOptionsType[] = ['filter'];
+
+/**
+ * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
+ */
+export interface AssistantFilesList {
+  files?: Array<AssistantFileModel>;
+}
+
 /**
  * Enum representing the possible statuses of an assistant file.
  *
@@ -68,13 +79,6 @@ export interface AssistantFileModel {
 }
 
 /**
- * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
- */
-export interface AssistantFilesList {
-  files?: Array<AssistantFileModel>;
-}
-
-/**
  * An enum representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
  */
 export const ChatModelEnum = {
@@ -107,6 +111,15 @@ export interface ChatOptions {
   filter?: object;
 }
 
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type ChatOptionsType = keyof ChatOptions;
+export const ChatOptionsType: ChatOptionsType[] = [
+  'messages',
+  'stream',
+  'model',
+  'filter',
+];
+
 /**
  * The `ContextOptions` interface describes the query and optional filter to retrieve context snippets from an Assistant.
  */
@@ -121,6 +134,9 @@ export interface ContextOptions {
   filter?: Record<string, string>;
 }
 
+type ContextOptionsType = keyof ContextOptions;
+export const ContextOptionsType: ContextOptionsType[] = ['query', 'filter'];
+
 /**
  * The `UploadFileOptions` interface describes the file path for uploading a file to an Assistant and optional metadata.
  */
@@ -134,3 +150,10 @@ export interface UploadFileOptions {
    */
   metadata?: Record<string, string>;
 }
+
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type UploadFileOptionsType = keyof UploadFileOptions;
+export const UploadFileOptionsType: UploadFileOptionsType[] = [
+  'path',
+  'metadata',
+];

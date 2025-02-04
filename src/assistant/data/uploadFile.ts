@@ -17,13 +17,12 @@ export const uploadFile = (
   apiProvider: AsstDataOperationsProvider,
   config: PineconeConfiguration
 ) => {
-  return async (req: UploadFileOptions): Promise<AssistantFileModel> => {
+  return async (options: UploadFileOptions): Promise<AssistantFileModel> => {
     const fetch = getFetch(config);
-    if (!req.path) {
-      throw new PineconeArgumentError('File path is required');
-    }
-    const fileBuffer = fs.readFileSync(req.path);
-    const fileName = path.basename(req.path);
+    validateUploadFileOptions(options);
+
+    const fileBuffer = fs.readFileSync(options.path);
+    const fileName = path.basename(options.path);
     const mimeType = getMimeType(fileName);
     const fileBlob = new Blob([fileBuffer], { type: mimeType });
     const formData = new FormData();
@@ -37,8 +36,10 @@ export const uploadFile = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
-    if (req.metadata) {
-      const encodedMetadata = encodeURIComponent(JSON.stringify(req.metadata));
+    if (options.metadata) {
+      const encodedMetadata = encodeURIComponent(
+        JSON.stringify(options.metadata)
+      );
       filesUrl += `?metadata=${encodedMetadata}`;
     }
 
@@ -64,6 +65,14 @@ export const uploadFile = (
   };
 };
 
+const validateUploadFileOptions = (options: UploadFileOptions) => {
+  if (!options || !options.path) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`path`) to upload a file.'
+    );
+  }
+};
+
 // get mime types for accepted file types
 function getMimeType(filePath: string) {
   const extensionToMimeType = {
@@ -71,6 +80,7 @@ function getMimeType(filePath: string) {
     json: 'application/json',
     txt: 'text/plain',
     md: 'text/markdown',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   };
 
   // Extract file extension and ensure it's lowercase

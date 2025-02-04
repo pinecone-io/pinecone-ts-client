@@ -96,9 +96,11 @@ endpoints.forEach((endpoint) => {
         const input = {} as ChatOptions;
         const inputCompletion = {} as ChatOptions;
 
-        await expect(chatFn(input)).rejects.toThrow('No messages passed');
+        await expect(chatFn(input)).rejects.toThrow(
+          'You must pass an object with required properties (`messages`) to chat with an assistant.'
+        );
         await expect(chatCompletionFn(inputCompletion)).rejects.toThrow(
-          'No messages passed'
+          'You must pass an object with required properties (`messages`) to chat with an assistant.'
         );
       });
     });

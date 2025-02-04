@@ -3,7 +3,11 @@ import type {
   ChatCompletionModel,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
-import { messagesValidation, modelValidation } from './chat';
+import {
+  messagesValidation,
+  modelValidation,
+  validateChatOptions,
+} from './chat';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 import type { ChatOptions } from './types';
@@ -26,9 +30,8 @@ export const chatCompletion = (
   apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: ChatOptions): Promise<ChatCompletionModel> => {
-    if (!options.messages) {
-      throw new Error('No messages passed to Assistant');
-    }
+    validateChatOptions(options);
+
     const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);

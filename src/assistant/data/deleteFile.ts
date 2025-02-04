@@ -1,5 +1,6 @@
 import { DeleteFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Deletes a file uploaded to an Assistant by ID.
@@ -26,6 +27,11 @@ export const deleteFile = (
   apiProvider: AsstDataOperationsProvider
 ) => {
   return async (fileId: string): Promise<void> => {
+    if (!fileId) {
+      throw new PineconeArgumentError(
+        'You must pass the fileId of a file to delete.'
+      );
+    }
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,

@@ -3,7 +3,9 @@ import {
   ContextAssistantRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { ContextOptions } from './types';
+import { ContextOptionsType, type ContextOptions } from './types';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
@@ -40,9 +42,8 @@ export const context = (
   apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: ContextOptions): Promise<ContextModel> => {
-    if (!options.query) {
-      throw new Error('Must provide a query');
-    }
+    validateContextOptions(options);
+
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
@@ -53,4 +54,14 @@ export const context = (
     } as ContextAssistantRequest;
     return api.contextAssistant(request);
   };
+};
+
+const validateContextOptions = (options: ContextOptions) => {
+  if (!options || !options.query) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+    );
+  }
+
+  ValidateObjectProperties(options, ContextOptionsType);
 };

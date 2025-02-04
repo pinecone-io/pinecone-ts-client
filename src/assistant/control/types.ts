@@ -23,6 +23,15 @@ export interface CreateAssistantOptions {
   region?: string;
 }
 
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type CreateAssistantOptionsType = keyof CreateAssistantOptions;
+export const CreateAssistantOptionsType: CreateAssistantOptionsType[] = [
+  'name',
+  'instructions',
+  'metadata',
+  'region',
+];
+
 /**
  * Options for updating an assistant's properties.
  */
@@ -37,6 +46,13 @@ export interface UpdateAssistantOptions {
    */
   metadata?: Record<string, string>;
 }
+
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type UpdateAssistantOptionsType = keyof UpdateAssistantOptions;
+export const UpdateAssistantOptionsType: UpdateAssistantOptionsType[] = [
+  'instructions',
+  'metadata',
+];
 
 /**
  * The `UpdateAssistantResponse` interface describes the response object returned when updating an Assistant.

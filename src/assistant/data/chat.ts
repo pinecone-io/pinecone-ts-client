@@ -7,6 +7,9 @@ import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 import type { ChatOptions } from './types';
+import { ChatOptionsType } from './types';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Validates the messages passed to the Assistant.
@@ -117,11 +120,9 @@ export const chat = (
   apiProvider: AsstDataOperationsProvider
 ) => {
   return async (options: ChatOptions): Promise<ChatModel> => {
-    if (!options.messages) {
-      throw new Error('No messages passed to Assistant');
-    }
-    const api = await apiProvider.provideData();
+    validateChatOptions(options);
 
+    const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
     const request: ChatAssistantRequest = {
@@ -138,6 +139,28 @@ export const chat = (
       api.chatAssistant(request)
     );
 
-    return retryWrapper.execute();
+    return await retryWrapper.execute();
   };
+};
+
+export const validateChatOptions = (options: ChatOptions) => {
+  if (!options || !options.messages) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`messages`) to chat with an assistant.'
+    );
+  }
+
+  ValidateObjectProperties(options, ChatOptionsType);
+
+  if (options.model) {
+    if (
+      !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid model: "${options.model}". Valid models are: ${Object.values(
+          ChatModelEnum
+        ).join(', ')}.`
+      );
+    }
+  }
 };

@@ -1,6 +1,7 @@
 import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { AssistantFileModel } from './types';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Describes a file uploaded to an Assistant.
@@ -42,6 +43,11 @@ export const describeFile = (
   apiProvider: AsstDataOperationsProvider
 ) => {
   return async (fileId: string): Promise<AssistantFileModel> => {
+    if (!fileId) {
+      throw new PineconeArgumentError(
+        'You must pass the fileId of a file to describe.'
+      );
+    }
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,

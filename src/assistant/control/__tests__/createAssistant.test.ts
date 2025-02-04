@@ -30,8 +30,6 @@ describe('AssistantCtrlPlane', () => {
       const invalidRequest = {
         name: 'test-assistant',
         region: 'invalid-region',
-        sourceCollection: 'test-collection',
-        model: 'test-model',
       };
 
       await expect(
@@ -46,14 +44,10 @@ describe('AssistantCtrlPlane', () => {
         {
           name: 'test-assistant-1',
           region: 'US',
-          sourceCollection: 'test-collection',
-          model: 'test-model',
         },
         {
           name: 'test-assistant-2',
           region: 'eu',
-          sourceCollection: 'test-collection',
-          model: 'test-model',
         },
       ];
 
