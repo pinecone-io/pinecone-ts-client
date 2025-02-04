@@ -157,9 +157,11 @@ export const validateChatOptions = (options: ChatOptions) => {
       !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
     ) {
       throw new PineconeArgumentError(
-        `Invalid model: "${options.model}". Valid models are: ${Object.values(
+        `Invalid model: "${options.model}". Must be one of: ${Object.values(
           ChatModelEnum
-        ).join(', ')}.`
+        )
+          .map((model) => `"${model}"`)
+          .join(', ')}.`
       );
     }
   }
