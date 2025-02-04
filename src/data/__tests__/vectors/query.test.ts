@@ -21,9 +21,6 @@ const setupResponse = (response, isSuccess) => {
 
   return { fakeQuery, VOA, VectorProvider, cmd };
 };
-const setupSuccess = (response) => {
-  return setupResponse(response, true);
-};
 
 describe('Query command tests', () => {
   test('should throw error when known property is misspelled', async () => {

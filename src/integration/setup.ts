@@ -1,4 +1,4 @@
-import { IndexList, Pinecone } from '../index';
+import { Pinecone } from '../index';
 import {
   diffPrefix,
   generateRecords,
