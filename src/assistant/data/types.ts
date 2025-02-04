@@ -9,6 +9,81 @@ export interface ListFilesOptions {
 }
 
 /**
+ * Enum representing the possible statuses of an assistant file.
+ *
+ * - `Processing`: The file is currently being processed and is not yet available.
+ * - `Available`: The file has been processed and is ready for use.
+ * - `Deleting`: The file is in the process of being deleted.
+ * - `ProcessingFailed`: There was an error encountered will processing.
+ */
+export const AssistantFileStatusEnum = {
+  Processing: 'Processing',
+  Available: 'Available',
+  Deleting: 'Deleting',
+  ProcessingFailed: 'ProcessingFailed',
+} as const;
+export type AssistantFileStatusEnum =
+  (typeof AssistantFileStatusEnum)[keyof typeof AssistantFileStatusEnum];
+
+/**
+ * Represents a file associated with an assistant.
+ */
+export interface AssistantFileModel {
+  /**
+   * The name of the file.
+   */
+  name: string;
+  /**
+   * The unique identifier for the file.
+   */
+  id: string;
+  /**
+   * Optional metadata associated with the file.
+   */
+  metadata?: object | null;
+  /**
+   * The date and time the file was created.
+   */
+  createdOn?: Date;
+  /**
+   * The date and time the file was last updated.
+   */
+  updatedOn?: Date;
+  /**
+   * The current status of the file.
+   */
+  status?: AssistantFileStatusEnum;
+  /**
+   * The percentage of the file that has been processed
+   */
+  percentDone?: number | null;
+  /**
+   * A signed url that gives you access to the underlying file
+   */
+  signedUrl?: string | null;
+  /**
+   * A message describing any error during file processing, provided only if an error occurs.
+   */
+  errorMessage?: string | null;
+}
+
+/**
+ * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
+ */
+export interface AssistantFilesList {
+  files?: Array<AssistantFileModel>;
+}
+
+/**
+ * An enum representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
+ */
+export const ChatModelEnum = {
+  Gpt4o: 'gpt-4o',
+  Claude35Sonnet: 'claude-3-5-sonnet',
+} as const;
+export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
+
+/**
  * The `ChatOptions` interface describes the request format for sending a message to an Assistant.
  */
 export interface ChatOptions {
@@ -22,7 +97,8 @@ export interface ChatOptions {
    */
   stream?: boolean;
   /**
-   * The large language model to use for answer generation. Must be one outlined in {@link ChatModelEnum}.
+   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
+   * If empty, the assistant will default to using 'gpt-4o' model.
    */
   model?: string;
   /**

@@ -1,5 +1,6 @@
 import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
+import type { AssistantFileModel } from './types';
 
 /**
  * Describes a file uploaded to an Assistant.
@@ -34,13 +35,13 @@ import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
  *
  * @param assistantName - The name of the Assistant that the file is uploaded to.
  * @param api - The API object to use to send the request.
- * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+ * @returns A promise that resolves to a {@link AssistantFile} object containing the file details.
  */
 export const describeFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (fileId: string) => {
+  return async (fileId: string): Promise<AssistantFileModel> => {
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,

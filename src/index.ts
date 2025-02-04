@@ -6,17 +6,33 @@ export * as Errors from './errors';
 export { EmbeddingsList } from './models/embeddingsList';
 
 // Interface exports
-export { RerankOptions } from './inference/inference';
-export {
+export type { RerankOptions } from './inference/inference';
+export type {
   RerankResult,
   RerankResultUsage,
   RankedDocument,
 } from './pinecone-generated-ts-fetch/inference';
 export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
 export type {
+  AssistantList,
+  AssistantModel,
+  AssistantStatusEnum,
+  AssistantFileModel,
+  AssistantFilesList,
+  AssistantFileStatusEnum,
+  ChatOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
   CreateAssistantOptions,
   UpdateAssistantOptions,
-} from './assistant/control';
+  UpdateAssistantResponse,
+} from './assistant';
+export type {
+  ChatModel,
+  ChatCompletionModel,
+  ContextModel,
+} from './pinecone-generated-ts-fetch/assistant_data';
 
 // Type exports
 export type {

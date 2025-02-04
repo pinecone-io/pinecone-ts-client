@@ -27,6 +27,9 @@ export type {
   ContextOptions,
   ListFilesOptions,
   UploadFileOptions,
+  AssistantFileModel,
+  AssistantFileStatusEnum,
+  AssistantFilesList,
 } from './data/types';
 
 /**
@@ -122,7 +125,7 @@ export class Assistant {
    * }
    * ```
    *
-   * @param options - A {@link ChatRequest} object containing the message and optional parameters to send to the
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
    * Assistant.
    * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
    */
@@ -136,8 +139,9 @@ export class Assistant {
    *
    * See {@link chat} for example usage.
    *
-   * @param options - A {@link ChatCompletionRequest} object containing the message and optional parameters to send
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
    * to an Assistant.
+   * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
    */
   chatCompletions(options: ChatOptions) {
     return this._chatCompletions(options);
@@ -173,8 +177,8 @@ export class Assistant {
    * // }
    * ```
    *
-   * @param options - A {@link ListFiles} object containing optional parameters to filter the list of files.
-   * @returns A promise that resolves to a {@link ListFiles200Response} object containing a list of files.
+   * @param options - A {@link ListFilesOptions} object containing optional parameters to filter the list of files.
+   * @returns A promise that resolves to a {@link AssistantFilesList} object containing a list of files.
    */
   listFiles(options?: ListFilesOptions) {
     if (!options) {
@@ -271,6 +275,7 @@ export class Assistant {
    * ```
    *
    * @param options - A {@link DeleteFile} object containing the file ID to delete.
+   * @returns A promise that resolves to void on success.
    */
   deleteFile(fileId: string) {
     return this._deleteFile(fileId);

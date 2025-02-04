@@ -1,6 +1,6 @@
 import { ListFilesRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { ListFilesOptions } from './types';
+import type { AssistantFilesList, ListFilesOptions } from './types';
 
 /**
  * Lists files (with optional filter) uploaded to an Assistant.
@@ -36,12 +36,12 @@ export const listFiles = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: ListFilesOptions) => {
+  return async (options: ListFilesOptions): Promise<AssistantFilesList> => {
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
       filter: options.filter,
     } as ListFilesRequest;
-    return api.listFiles(request);
+    return await api.listFiles(request);
   };
 };

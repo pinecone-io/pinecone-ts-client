@@ -28,11 +28,6 @@ export interface CreateAssistantOptions {
  */
 export interface UpdateAssistantOptions {
   /**
-   * The name of the assistant to be updated.
-   */
-  assistantName: string;
-
-  /**
    * Optional instructions for the assistant to apply to all responses.
    */
   instructions?: string;

@@ -1,4 +1,7 @@
-import { ContextAssistantRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  ContextModel,
+  ContextAssistantRequest,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { ContextOptions } from './types';
 
@@ -30,13 +33,13 @@ import type { ContextOptions } from './types';
  * @param assistantName - The name of the Assistant to retrieve the context snippets from.
  * @param api - The Pinecone API object.
  * @throws An error if a query is not provided.
- * @returns A promise that resolves to a {@link Context} object containing the context snippets.
+ * @returns A promise that resolves to a {@link ContextModel} object containing the context snippets.
  */
 export const context = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: ContextOptions) => {
+  return async (options: ContextOptions): Promise<ContextModel> => {
     if (!options.query) {
       throw new Error('Must provide a query');
     }

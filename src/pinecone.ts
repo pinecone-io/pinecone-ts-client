@@ -750,8 +750,8 @@ export class Pinecone {
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
-  updateAssistant(options: UpdateAssistantOptions) {
-    return this._updateAssistant(options);
+  updateAssistant(assistantName: string, options: UpdateAssistantOptions) {
+    return this._updateAssistant(assistantName, options);
   }
 
   /** @internal */

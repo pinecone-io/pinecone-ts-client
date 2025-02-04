@@ -25,7 +25,7 @@ export const deleteFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (fileId: string) => {
+  return async (fileId: string): Promise<void> => {
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,

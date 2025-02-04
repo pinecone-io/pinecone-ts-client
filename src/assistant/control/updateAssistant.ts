@@ -3,10 +3,11 @@ import type { UpdateAssistantOptions, UpdateAssistantResponse } from './types';
 
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
+    name: string,
     options: UpdateAssistantOptions
   ): Promise<UpdateAssistantResponse> => {
     return await api.updateAssistant({
-      assistantName: options.assistantName,
+      assistantName: name,
       updateAssistantRequest: {
         instructions: options?.instructions,
         metadata: options?.metadata,
