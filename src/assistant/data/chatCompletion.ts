@@ -1,4 +1,4 @@
-import {
+import type {
   ChatCompletionAssistantRequest,
   ChatCompletionModel,
   MessageModel,
@@ -6,30 +6,7 @@ import {
 import { messagesValidation, modelValidation } from './chat';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
-
-/**
- * The `ChatCompletionRequest` interface describes the request format for sending a message to an Assistant using the
- * chatCompletion method.
- */
-export interface ChatCompletionRequest {
-  /**
-   * The messages to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
-   * objects, must have exactly two keys: `role` and `content`. The `role` key can only be one of `user` or `assistant`.
-   */
-  messages: string[] | Array<{ [key: string]: string }>;
-  /**
-   * If false, the Assistant will return a single JSON response. If true, the Assistant will return a stream of responses.
-   */
-  stream?: boolean;
-  /**
-   * The large language model to use for answer generation. Must be one outlined in {@link ChatModelEnum}.
-   */
-  model?: string;
-  /**
-   * A filter against which documents can be retrieved.
-   */
-  filter?: object;
-}
+import type { ChatOptions } from './types';
 
 /**
  * Sends a message to the Assistant and receives a response. Response is compatible with
@@ -48,9 +25,7 @@ export const chatCompletion = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (
-    options: ChatCompletionRequest
-  ): Promise<ChatCompletionModel> => {
+  return async (options: ChatOptions): Promise<ChatCompletionModel> => {
     if (!options.messages) {
       throw new Error('No messages passed to Assistant');
     }

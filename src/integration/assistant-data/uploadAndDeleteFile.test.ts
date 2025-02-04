@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -85,7 +85,7 @@ describe('Upload file happy path', () => {
     await sleep(30000);
 
     // Delete file happy path test:
-    await assistant.deleteFile({ fileId: response.id });
+    await assistant.deleteFile(response.id);
   });
 
   test('Upload file with metadata', async () => {
@@ -112,7 +112,7 @@ describe('Upload file happy path', () => {
     await sleep(30000);
 
     // Delete file happy path test:
-    await assistant.deleteFile({ fileId: response.id });
+    await assistant.deleteFile(response.id);
   });
 });
 
@@ -148,9 +148,7 @@ describe('Upload file error paths', () => {
 describe('Delete file error paths', () => {
   test('Delete non-existent file', async () => {
     const throwError = async () => {
-      await assistant.deleteFile({
-        fileId: 'nonexistent-file-id',
-      });
+      await assistant.deleteFile('nonexistent-file-id');
     };
     await expect(throwError()).rejects.toThrow(/404/);
   });

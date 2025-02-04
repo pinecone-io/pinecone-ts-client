@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 
 let pinecone: Pinecone;
 let assistant: Assistant;

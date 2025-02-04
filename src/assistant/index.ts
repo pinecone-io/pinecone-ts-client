@@ -1,12 +1,33 @@
-import { chat, ChatRequest } from './chat';
-import { ListFiles, listFiles } from './listFiles';
-import { DescribeFile, describeFile } from './describeFile';
-import { DeleteFile, deleteFile } from './deleteFile';
-import { UploadFile, uploadFile } from './uploadFile';
-import { PineconeConfiguration } from '../../data';
-import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import { Context, context } from './context';
-import { chatCompletion, ChatCompletionRequest } from './chatCompletion';
+import { chat } from './data/chat';
+import type {
+  ChatOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+} from './data/types';
+import { chatCompletion } from './data/chatCompletion';
+import { listFiles } from './data/listFiles';
+import { describeFile } from './data/describeFile';
+import { deleteFile } from './data/deleteFile';
+import { uploadFile } from './data/uploadFile';
+import { PineconeConfiguration } from '../data';
+import { AsstDataOperationsProvider } from './data/asstDataOperationsProvider';
+import { context } from './data/context';
+
+export type {
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+  UpdateAssistantResponse,
+  AssistantStatusEnum,
+  AssistantModel,
+  AssistantList,
+} from './control/types';
+export type {
+  ChatOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+} from './data/types';
 
 /**
  * The `Assistant` class holds the data plane methods for interacting with
@@ -105,7 +126,7 @@ export class Assistant {
    * Assistant.
    * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
    */
-  chat(options: ChatRequest) {
+  chat(options: ChatOptions) {
     return this._chat(options);
   }
 
@@ -118,7 +139,7 @@ export class Assistant {
    * @param options - A {@link ChatCompletionRequest} object containing the message and optional parameters to send
    * to an Assistant.
    */
-  chatCompletions(options: ChatCompletionRequest) {
+  chatCompletions(options: ChatOptions) {
     return this._chatCompletions(options);
   }
 
@@ -155,7 +176,7 @@ export class Assistant {
    * @param options - A {@link ListFiles} object containing optional parameters to filter the list of files.
    * @returns A promise that resolves to a {@link ListFiles200Response} object containing a list of files.
    */
-  listFiles(options?: ListFiles) {
+  listFiles(options?: ListFilesOptions) {
     if (!options) {
       options = {};
     }
@@ -196,8 +217,8 @@ export class Assistant {
    * @param options - A {@link DescribeFile} object containing the file ID to describe.
    * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
    */
-  describeFile(options: DescribeFile) {
-    return this._describeFile(options);
+  describeFile(fileId: string) {
+    return this._describeFile(fileId);
   }
 
   /**
@@ -228,7 +249,7 @@ export class Assistant {
    * @param options - A {@link UploadFile} object containing the file path and optional metadata.
    * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
    */
-  uploadFile(options: UploadFile) {
+  uploadFile(options: UploadFileOptions) {
     return this._uploadFile(options);
   }
 
@@ -251,8 +272,8 @@ export class Assistant {
    *
    * @param options - A {@link DeleteFile} object containing the file ID to delete.
    */
-  deleteFile(options: DeleteFile) {
-    return this._deleteFile(options);
+  deleteFile(fileId: string) {
+    return this._deleteFile(fileId);
   }
 
   /**
@@ -283,7 +304,7 @@ export class Assistant {
    * @param options
    * @returns A promise that resolves to a {@link Context} object containing the context snippets.
    */
-  context(options: Context) {
+  context(options: ContextOptions) {
     return this._context(options);
   }
 }

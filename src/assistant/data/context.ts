@@ -1,19 +1,6 @@
 import { ContextAssistantRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-
-/**
- * The `Context` interface describes the query and optional filter to retrieve context snippets from an Assistant.
- */
-export interface Context {
-  /**
-   * The query to retrieve context snippets for.
-   */
-  query: string;
-  /**
-   * Optional filter to apply to the context snippets.
-   */
-  filter?: Record<string, string>;
-}
+import type { ContextOptions } from './types';
 
 /**
  * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
@@ -49,7 +36,7 @@ export const context = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: Context) => {
+  return async (options: ContextOptions) => {
     if (!options.query) {
       throw new Error('Must provide a query');
     }

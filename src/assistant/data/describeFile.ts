@@ -2,20 +2,6 @@ import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 
 /**
- * The `DescribeFile` interface describes the options that can be passed to the `describeFile` method.
- */
-export interface DescribeFile {
-  /**
-   * The ID of the file to describe.
-   */
-  fileId: string;
-  /**
-   * Whether to include a signed URL for the file. Points to a GCP bucket if `true`.
-   */
-  includeUrl?: boolean;
-}
-
-/**
  * Describes a file uploaded to an Assistant.
  *
  * @example
@@ -54,12 +40,12 @@ export const describeFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: DescribeFile) => {
+  return async (fileId: string) => {
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
-      assistantFileId: options.fileId,
-      includeUrl: options.includeUrl,
+      assistantFileId: fileId,
+      includeUrl: 'true',
     } as DescribeFileRequest;
     return api.describeFile(request);
   };

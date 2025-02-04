@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 import { PineconeBadRequestError } from '../../errors';
 import { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 

@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -25,9 +25,7 @@ beforeAll(async () => {
 
 describe('Describe file happy path', () => {
   test('Describe file', async () => {
-    const response = await assistant.describeFile({
-      fileId: fileId,
-    });
+    const response = await assistant.describeFile(fileId);
     expect(response).toBeDefined();
     expect(response.status).toBeDefined();
     expect(response.id).toBeDefined();
@@ -44,27 +42,21 @@ describe('Describe file happy path', () => {
 describe('Describe file error paths', () => {
   test('Describe with nonexistent fileId', async () => {
     const throwError = async () => {
-      await assistant.describeFile({
-        fileId: 'nonexistent-file-id',
-      });
+      await assistant.describeFile('nonexistent-file-id');
     };
     await expect(throwError()).rejects.toThrow(/404/);
   });
 
   test('Describe with empty fileId', async () => {
     const throwError = async () => {
-      await assistant.describeFile({
-        fileId: '',
-      });
+      await assistant.describeFile('');
     };
     await expect(throwError()).rejects.toThrow();
   });
 
   test('Describe file with nonexistent assistant', async () => {
     const throwError = async () => {
-      await pinecone.Assistant('nonexistent').describeFile({
-        fileId: fileId,
-      });
+      await pinecone.Assistant('nonexistent').describeFile(fileId);
     };
     await expect(throwError()).rejects.toThrow(/404/);
   });

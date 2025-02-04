@@ -41,7 +41,7 @@ import { isBrowser } from './utils/environment';
 import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
-import { Assistant } from './assistant/data/assistant';
+import { Assistant } from './assistant';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use

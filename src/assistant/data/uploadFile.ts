@@ -8,29 +8,16 @@ import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { handleApiError, PineconeArgumentError } from '../../errors';
 import { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch } from '../../utils';
+import type { UploadFileOptions } from './types';
 import fs from 'fs';
 import path from 'path';
-
-/**
- * The `UploadFile` interface describes the file path for uploading a file to an Assistant and optional metadata.
- */
-export interface UploadFile {
-  /**
-   * The (local) path to the file to upload.
-   */
-  path: string;
-  /**
-   * Optional metadata to attach to the file.
-   */
-  metadata?: Record<string, string>;
-}
 
 export const uploadFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider,
   config: PineconeConfiguration
 ) => {
-  return async (req: UploadFile) => {
+  return async (req: UploadFileOptions) => {
     const fetch = getFetch(config);
     if (!req.path) {
       throw new PineconeArgumentError('File path is required');

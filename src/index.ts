@@ -1,6 +1,7 @@
 // Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
+export { Assistant } from './assistant';
 export * as Errors from './errors';
 export { EmbeddingsList } from './models/embeddingsList';
 
@@ -12,20 +13,10 @@ export {
   RankedDocument,
 } from './pinecone-generated-ts-fetch/inference';
 export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
-export {
-  UpdateAssistantOperationRequest,
-  UpdateAssistantRequest,
-} from './pinecone-generated-ts-fetch/assistant_control';
-export { CreateAssistantOptions } from './assistant/control/createAssistant';
-export { UpdateAssistantOptions } from './assistant/control/updateAssistant';
-export { ChatRequest } from './assistant/data/chat';
-export { ChatCompletionRequest } from './assistant/data/chatCompletion';
-export { DeleteFile } from './assistant/data/deleteFile';
-export { DescribeFile } from './assistant/data/describeFile';
-export { ListFiles } from './assistant/data/listFiles';
-export { UploadFile } from './assistant/data/uploadFile';
-export { Context } from './assistant/data/context';
-export { AssistantEval } from './assistant/control/evaluate';
+export type {
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+} from './assistant/control';
 
 // Type exports
 export type {

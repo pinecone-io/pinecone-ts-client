@@ -1,11 +1,12 @@
 import {
   ChatAssistantRequest,
-  type ChatModel,
   ChatModelEnum,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
+import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
+import type { ChatOptions } from './types';
 
 /**
  * Validates the messages passed to the Assistant.
@@ -15,7 +16,7 @@ import { RetryOnServerFailure } from '../../utils';
  * @throws An Error if the message object does not have exactly two keys: `role` and `content`.
  * @returns An array of {@link MessageModel} objects containing the messages to send to the Assistant.
  */
-export const messagesValidation = (options: ChatRequest): MessageModel[] => {
+export const messagesValidation = (options: ChatOptions): MessageModel[] => {
   let messages: MessageModel[] = [];
 
   // If messages are passed as a list of strings:
@@ -65,7 +66,7 @@ export const messagesValidation = (options: ChatRequest): MessageModel[] => {
  * @param options - A {@link ChatRequest} object containing the model to use for the Assistant.
  * @throws An Error if the model is not one of the available models as outlined in {@link ChatModelEnum}.
  */
-export const modelValidation = (options: ChatRequest) => {
+export const modelValidation = (options: ChatOptions) => {
   // Make sure passed string for 'model' matches one of the Enum values; default to Gpt4o
   let model: ChatModelEnum = ChatModelEnum.Gpt4o;
   if (options.model) {
@@ -79,29 +80,6 @@ export const modelValidation = (options: ChatRequest) => {
   }
   return model;
 };
-
-/**
- * The `ChatRequest` interface describes the request format for sending a message to an Assistant.
- */
-export interface ChatRequest {
-  /**
-   * The messages to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
-   * objects, must have exactly two keys: `role` and `content`. The `role` key can only be one of `user` or `assistant`.
-   */
-  messages: string[] | Array<{ [key: string]: string }>;
-  /**
-   * If false, the Assistant will return a single JSON response. If true, the Assistant will return a stream of responses.
-   */
-  stream?: boolean;
-  /**
-   * The large language model to use for answer generation. Must be one outlined in {@link ChatModelEnum}.
-   */
-  model?: string;
-  /**
-   * A filter against which documents can be retrieved.
-   */
-  filter?: object;
-}
 
 /**
  * Sends a message to the Assistant and receives a response. Retries the request if the server fails.
@@ -138,7 +116,7 @@ export const chat = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: ChatRequest): Promise<ChatModel> => {
+  return async (options: ChatOptions): Promise<ChatModel> => {
     if (!options.messages) {
       throw new Error('No messages passed to Assistant');
     }

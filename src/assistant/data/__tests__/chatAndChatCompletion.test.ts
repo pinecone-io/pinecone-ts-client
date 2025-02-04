@@ -1,10 +1,6 @@
-import {
-  messagesValidation,
-  modelValidation,
-  ChatRequest,
-  chat,
-} from '../chat';
-import { chatCompletion, ChatCompletionRequest } from '../chatCompletion';
+import { messagesValidation, modelValidation, chat } from '../chat';
+import type { ChatOptions } from '../types';
+import { chatCompletion } from '../chatCompletion';
 import {
   ChatModelEnum,
   ManageAssistantsApi,
@@ -17,7 +13,7 @@ endpoints.forEach((endpoint) => {
   describe(`${endpoint} validation`, () => {
     describe('messagesValidation', () => {
       test('converts string array to MessageModel array', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: ['Hello', 'How are you?'],
         };
 
@@ -30,7 +26,7 @@ endpoints.forEach((endpoint) => {
       });
 
       test('validates message objects with role and content', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: [
             { role: 'user', content: 'Hello' },
             { role: 'assistant', content: 'Hi there!' },
@@ -41,7 +37,7 @@ endpoints.forEach((endpoint) => {
       });
 
       test('throws error when role is missing', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: [{ content: 'Hello' }],
         };
 
@@ -51,7 +47,7 @@ endpoints.forEach((endpoint) => {
       });
 
       test('throws error when object has invalid keys', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: [{ role: 'user', content: 'Hello', extra: 'field' }],
         };
 
@@ -61,7 +57,7 @@ endpoints.forEach((endpoint) => {
 
     describe('modelValidation', () => {
       test('returns default GPT-4 model when no model specified', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: ['Hello'],
         };
 
@@ -69,7 +65,7 @@ endpoints.forEach((endpoint) => {
       });
 
       test('validates correct model string', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: ['Hello'],
           model: 'gpt-4o',
         };
@@ -78,7 +74,7 @@ endpoints.forEach((endpoint) => {
       });
 
       test('throws error for invalid model', () => {
-        const input: ChatRequest | ChatCompletionRequest = {
+        const input: ChatOptions = {
           messages: ['Hello'],
           model: 'invalid-model',
         };
@@ -97,8 +93,8 @@ endpoints.forEach((endpoint) => {
           AsstDataOperationsProvider
         );
 
-        const input = {} as ChatRequest;
-        const inputCompletion = {} as ChatCompletionRequest;
+        const input = {} as ChatOptions;
+        const inputCompletion = {} as ChatOptions;
 
         await expect(chatFn(input)).rejects.toThrow('No messages passed');
         await expect(chatCompletionFn(inputCompletion)).rejects.toThrow(
