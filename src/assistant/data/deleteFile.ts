@@ -1,15 +1,6 @@
 import { DeleteFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-
-/**
- * The `DeleteFile` interface describes the file ID for deleting a file uploaded to an Assistant.
- */
-export interface DeleteFile {
-  /**
-   * The ID of the file to delete.
-   */
-  fileId: string;
-}
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Deletes a file uploaded to an Assistant by ID.
@@ -35,11 +26,16 @@ export const deleteFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: DeleteFile) => {
+  return async (fileId: string): Promise<void> => {
+    if (!fileId) {
+      throw new PineconeArgumentError(
+        'You must pass the fileId of a file to delete.'
+      );
+    }
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
-      assistantFileId: options.fileId,
+      assistantFileId: fileId,
     } as DeleteFileRequest;
     return api.deleteFile(request);
   };

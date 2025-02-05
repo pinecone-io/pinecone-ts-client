@@ -1,31 +1,38 @@
 // Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
+export { Assistant } from './assistant';
 export * as Errors from './errors';
 export { EmbeddingsList } from './models/embeddingsList';
 
 // Interface exports
-export { RerankOptions } from './inference/inference';
-export {
+export type { RerankOptions } from './inference/inference';
+export type {
   RerankResult,
   RerankResultUsage,
   RankedDocument,
 } from './pinecone-generated-ts-fetch/inference';
 export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
-export {
-  UpdateAssistantOperationRequest,
-  UpdateAssistantRequest,
-} from './pinecone-generated-ts-fetch/assistant_control';
-export { CreateAssistantOptions } from './assistant/control/createAssistant';
-export { UpdateAssistantOptions } from './assistant/control/updateAssistant';
-export { ChatRequest } from './assistant/data/chat';
-export { ChatCompletionRequest } from './assistant/data/chatCompletion';
-export { DeleteFile } from './assistant/data/deleteFile';
-export { DescribeFile } from './assistant/data/describeFile';
-export { ListFiles } from './assistant/data/listFiles';
-export { UploadFile } from './assistant/data/uploadFile';
-export { Context } from './assistant/data/context';
-export { AssistantEval } from './assistant/control/evaluate';
+export type {
+  AssistantList,
+  AssistantModel,
+  AssistantStatusEnum,
+  AssistantFileModel,
+  AssistantFilesList,
+  AssistantFileStatusEnum,
+  ChatOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+  UpdateAssistantResponse,
+} from './assistant';
+export type {
+  ChatModel,
+  ChatCompletionModel,
+  ContextModel,
+} from './pinecone-generated-ts-fetch/assistant_data';
 
 // Type exports
 export type {

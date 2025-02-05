@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -42,7 +42,9 @@ describe('Context error paths', () => {
     const throwError = async () => {
       await assistant.context({ query: '' });
     };
-    await expect(throwError()).rejects.toThrow('Must provide a query');
+    await expect(throwError()).rejects.toThrow(
+      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+    );
   });
 
   test('Context with nonexistent assistant', async () => {

@@ -146,7 +146,7 @@ indexes().then((response) => {
 
 At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension`
 indicates the size of the vectors you intend to store in the index. For example, if your intention was to store and
-query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
+query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model. By default, serverless indexes will have a `vectorType` of `dense`.
 
 The `spec` configures how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
 
@@ -164,6 +164,29 @@ await pc.createIndex({
     },
   },
   tags: { team: 'data-science' },
+});
+```
+
+#### Create a sparse serverless index
+
+You can also use `vectorType` to create `sparse` serverless indexes. These indexes enable direct indexing and retrieval of sparse vectors, supporting traditional methods like BM25 and learned sparse models such as [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0). A `sparse` index must have a distance `metric` of `dotproduct` and does not require a specified dimension. If no
+metric is provided with a `vectorType` of `sparse`, it will default to `dotproduct`:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
+  name: 'sample-index',
+  metric: 'dotproduct',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+  tags: { team: 'data-science' },
+  vectorType: 'sparse',
 });
 ```
 
@@ -1344,20 +1367,24 @@ console.log(assistants);
 
 ### Chat with an Assistant
 
-You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` method. The latter's output is
-compatible with [OpenAI's Chat Completion](https://platform.openai.com/docs/api-reference/chat) format.
+You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` methods.
 
 **Note:** Your Assistant must contain files in order for chat to work.
 
-The following example shows how to chat with an Assistant using the `chat` method:
+The following example shows how to chat with an Assistant using the `chat` methods:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
-const chatResp = await assistant.chat({
-  messages: [{ role: 'user', content: 'What is the capital of France?' }],
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
 });
 console.log(chatResp);
 // {
@@ -1369,6 +1396,40 @@ console.log(chatResp);
 //  },
 //  model: 'gpt-4o-2024-05-13',
 //  citations: [ { position: 209, references: [Array] } ],
+//  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+// }
+```
+
+`chatCompletion` is based on the [OpenAI Chat Completion](https://platform.openai.com/docs/api-reference/chat) format, and is useful if OpenAI-compatible responses. However, it has limited functionality compared to the standard `chat` method. Read more [here](https://docs.pinecone.io/reference/api/2025-01/assistant/chat_completion_assistant).
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+console.log(chatResp);
+// {
+//  id: '000000000000000023e7fb015be9d0ad',
+//  choices: [
+//    {
+//      finishReason: 'stop',
+//      index: 0,
+//      message: {
+//        role: 'assistant',
+//        content: 'The capital of France is Paris.'
+//      }
+//    }
+//  ],
+//  finishReason: 'stop',
+//  model: 'gpt-4o-2024-05-13',
 //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
 // }
 ```

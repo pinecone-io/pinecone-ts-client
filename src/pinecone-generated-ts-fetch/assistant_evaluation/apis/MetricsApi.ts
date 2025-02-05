@@ -38,7 +38,7 @@ export interface MetricsAlignmentRequest {
 export class MetricsApi extends runtime.BaseAPI {
 
     /**
-     * The `metrics_alignment` endpoint [evaluates](https://docs.pinecone.io/guides/assistant/understanding-evaluation)  the correctness, completeness, and alignment of a generated answer with respect to a question and a ground truth answer.  The correctness and completeness are evaluated based on the precision and recall of the generated answer with respect to the ground truth answer facts.  Alignment is the harmonic mean of correctness and completeness. 
+     * Evaluate the correctness and completeness of a response from an assistant or a RAG system. The correctness and completeness are evaluated based on the precision and recall of the generated answer with respect to the ground truth answer facts. Alignment is the harmonic mean of correctness and completeness.  For guidance and examples, see [Evaluate answers](https://docs.pinecone.io/guides/assistant/evaluate-answers).
      * Evaluate an answer
      */
     async metricsAlignmentRaw(requestParameters: MetricsAlignmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlignmentResponse>> {
@@ -68,7 +68,7 @@ export class MetricsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `metrics_alignment` endpoint [evaluates](https://docs.pinecone.io/guides/assistant/understanding-evaluation)  the correctness, completeness, and alignment of a generated answer with respect to a question and a ground truth answer.  The correctness and completeness are evaluated based on the precision and recall of the generated answer with respect to the ground truth answer facts.  Alignment is the harmonic mean of correctness and completeness. 
+     * Evaluate the correctness and completeness of a response from an assistant or a RAG system. The correctness and completeness are evaluated based on the precision and recall of the generated answer with respect to the ground truth answer facts. Alignment is the harmonic mean of correctness and completeness.  For guidance and examples, see [Evaluate answers](https://docs.pinecone.io/guides/assistant/evaluate-answers).
      * Evaluate an answer
      */
     async metricsAlignment(requestParameters: MetricsAlignmentRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlignmentResponse> {

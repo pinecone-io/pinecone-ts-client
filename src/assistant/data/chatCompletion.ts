@@ -1,18 +1,16 @@
-import {
+import type {
   ChatCompletionAssistantRequest,
   ChatCompletionModel,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
-import { messagesValidation, modelValidation } from './chat';
+import {
+  messagesValidation,
+  modelValidation,
+  validateChatOptions,
+} from './chat';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
-
-export interface ChatCompletionRequest {
-  messages: string[] | Array<{ [key: string]: string }>;
-  stream?: boolean;
-  model?: string;
-  filter?: object;
-}
+import type { ChatOptions } from './types';
 
 /**
  * Sends a message to the Assistant and receives a response. Response is compatible with
@@ -31,12 +29,9 @@ export const chatCompletion = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (
-    options: ChatCompletionRequest
-  ): Promise<ChatCompletionModel> => {
-    if (!options.messages) {
-      throw new Error('No messages passed to Assistant');
-    }
+  return async (options: ChatOptions): Promise<ChatCompletionModel> => {
+    validateChatOptions(options);
+
     const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);

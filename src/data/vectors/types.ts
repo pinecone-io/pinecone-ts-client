@@ -100,7 +100,7 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
   /**
    * An array of numbers representing an embedding vector.
    */
-  values: RecordValues;
+  values?: RecordValues;
 
   /**
    * Records can optionally include sparse and dense values when an index

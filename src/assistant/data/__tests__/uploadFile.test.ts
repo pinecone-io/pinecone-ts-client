@@ -53,7 +53,9 @@ describe('uploadFileInternal', () => {
 
   test('throws error when file path is not provided', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
-    await expect(upload({ path: '' })).rejects.toThrow('File path is required');
+    await expect(upload({ path: '' })).rejects.toThrow(
+      'You must pass an object with required properties (`path`) to upload a file.'
+    );
   });
 
   test('correctly builds URL without metadata', async () => {

@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 import { PineconeBadRequestError } from '../../errors';
 import { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 
@@ -86,7 +86,7 @@ describe('Chat error paths', () => {
       });
     };
     await expect(throwError()).rejects.toThrow(
-      'Invalid model specified. Must be one of "gpt-4o" or "claude-3-5-sonnet"'
+      'Invalid model: "invalid". Must be one of: "gpt-4o", "claude-3-5-sonnet"'
     );
   });
 

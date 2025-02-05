@@ -1,10 +1,8 @@
-import {
-  type ListAssistants200Response,
-  ManageAssistantsApi as ManageAssistantsControlApi,
-} from '../../pinecone-generated-ts-fetch/assistant_control';
+import { ManageAssistantsApi as ManageAssistantsControlApi } from '../../pinecone-generated-ts-fetch/assistant_control';
+import type { AssistantList } from './types';
 
 export const listAssistants = (api: ManageAssistantsControlApi) => {
-  return async (): Promise<ListAssistants200Response> => {
+  return async (): Promise<AssistantList> => {
     return await api.listAssistants();
   };
 };

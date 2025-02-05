@@ -1,19 +1,11 @@
-import { ContextAssistantRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  ContextModel,
+  ContextAssistantRequest,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-
-/**
- * The `Context` interface describes the query and optional filter to retrieve context snippets from an Assistant.
- */
-export interface Context {
-  /**
-   * The query to retrieve context snippets for.
-   */
-  query: string;
-  /**
-   * Optional filter to apply to the context snippets.
-   */
-  filter?: Record<string, string>;
-}
+import { ContextOptionsType, type ContextOptions } from './types';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
@@ -43,16 +35,15 @@ export interface Context {
  * @param assistantName - The name of the Assistant to retrieve the context snippets from.
  * @param api - The Pinecone API object.
  * @throws An error if a query is not provided.
- * @returns A promise that resolves to a {@link Context} object containing the context snippets.
+ * @returns A promise that resolves to a {@link ContextModel} object containing the context snippets.
  */
 export const context = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: Context) => {
-    if (!options.query) {
-      throw new Error('Must provide a query');
-    }
+  return async (options: ContextOptions): Promise<ContextModel> => {
+    validateContextOptions(options);
+
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
@@ -63,4 +54,14 @@ export const context = (
     } as ContextAssistantRequest;
     return api.contextAssistant(request);
   };
+};
+
+const validateContextOptions = (options: ContextOptions) => {
+  if (!options || !options.query) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+    );
+  }
+
+  ValidateObjectProperties(options, ContextOptionsType);
 };
