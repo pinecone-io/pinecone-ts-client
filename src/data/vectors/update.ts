@@ -6,7 +6,7 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateProperties } from '../../utils/validateProperties';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../../utils';
 
 /**
@@ -54,7 +54,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = (options: UpdateOptions<T>) => {
     if (options) {
-      ValidateProperties(options, UpdateOptionsProperties);
+      ValidateObjectProperties(options, UpdateOptionsProperties);
     }
     if (options && !options.id) {
       throw new PineconeArgumentError(

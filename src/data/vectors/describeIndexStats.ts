@@ -1,6 +1,6 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateProperties } from '../../utils/validateProperties';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
 /**
  * A count of the number of records found inside a namespace
@@ -55,7 +55,7 @@ export type DescribeIndexStatsOptions = {
 export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
   const validator = (options: DescribeIndexStatsOptions) => {
     if (options) {
-      ValidateProperties(options, ['filter']);
+      ValidateObjectProperties(options, ['filter']);
     }
     const map = options['filter'];
     for (const key in map) {

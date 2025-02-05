@@ -4,7 +4,7 @@ import {
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
-import { ValidateProperties } from '../utils/validateProperties';
+import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
 // Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
 type CreateCollectionRequestType = keyof CreateCollectionRequest;
@@ -14,7 +14,7 @@ export const CreateCollectionRequestProperties: CreateCollectionRequestType[] =
 export const createCollection = (api: ManageIndexesApi) => {
   const validator = (options: CreateCollectionRequest) => {
     if (options) {
-      ValidateProperties(options, CreateCollectionRequestProperties);
+      ValidateObjectProperties(options, CreateCollectionRequestProperties);
     }
     if (!options || typeof options !== 'object') {
       throw new PineconeArgumentError(

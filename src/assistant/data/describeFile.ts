@@ -1,19 +1,7 @@
 import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-
-/**
- * The `DescribeFile` interface describes the options that can be passed to the `describeFile` method.
- */
-export interface DescribeFile {
-  /**
-   * The ID of the file to describe.
-   */
-  fileId: string;
-  /**
-   * Whether to include a signed URL for the file. Points to a GCP bucket if `true`.
-   */
-  includeUrl?: boolean;
-}
+import type { AssistantFileModel } from './types';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Describes a file uploaded to an Assistant.
@@ -48,18 +36,23 @@ export interface DescribeFile {
  *
  * @param assistantName - The name of the Assistant that the file is uploaded to.
  * @param api - The API object to use to send the request.
- * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+ * @returns A promise that resolves to a {@link AssistantFile} object containing the file details.
  */
 export const describeFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: DescribeFile) => {
+  return async (fileId: string): Promise<AssistantFileModel> => {
+    if (!fileId) {
+      throw new PineconeArgumentError(
+        'You must pass the fileId of a file to describe.'
+      );
+    }
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
-      assistantFileId: options.fileId,
-      includeUrl: options.includeUrl,
+      assistantFileId: fileId,
+      includeUrl: 'true',
     } as DescribeFileRequest;
     return api.describeFile(request);
   };

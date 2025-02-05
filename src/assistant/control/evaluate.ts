@@ -2,24 +2,7 @@ import {
   MetricsApi,
   MetricsAlignmentRequest,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
-
-/**
- * The `AssistantEval` interface defines the structure of the input object for the `evaluate` method.
- */
-export interface AssistantEval {
-  /**
-   * The question to evaluate.
-   */
-  question: string;
-  /**
-   * The answer to evaluate.
-   */
-  answer: string;
-  /**
-   * The ground truth answer against which evaluate the question-answer pair.
-   */
-  groundTruth: string;
-}
+import type { AssistantEval } from './types';
 
 export const evaluate = (metricsApi: MetricsApi) => {
   return async (options: AssistantEval) => {

@@ -2,7 +2,7 @@ import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateProperties } from '../../utils/validateProperties';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -124,7 +124,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
 
   validator = (options: QueryOptions) => {
     if (options) {
-      ValidateProperties(options, QueryOptionsProperties);
+      ValidateObjectProperties(options, QueryOptionsProperties);
     }
     if (!options) {
       throw new PineconeArgumentError(

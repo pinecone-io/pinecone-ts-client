@@ -37,7 +37,7 @@ export interface Vector {
      * @type {Array<number>}
      * @memberof Vector
      */
-    values: Array<number>;
+    values?: Array<number>;
     /**
      * 
      * @type {SparseValues}
@@ -58,7 +58,6 @@ export interface Vector {
 export function instanceOfVector(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "values" in value;
 
     return isInstance;
 }
@@ -74,7 +73,7 @@ export function VectorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ve
     return {
         
         'id': json['id'],
-        'values': json['values'],
+        'values': !exists(json, 'values') ? undefined : json['values'],
         'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
         'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
     };

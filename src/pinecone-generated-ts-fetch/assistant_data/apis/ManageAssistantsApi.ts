@@ -92,7 +92,7 @@ export interface UploadFileRequest {
 export class ManageAssistantsApi extends runtime.BaseAPI {
 
     /**
-     * The `chat_assistant` endpoint allows you to [chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant) and get back citations in structured form.   This is the recommended way to chat with an assistant, as it offers more functionality and control over the assistant\'s responses and references than the `chat_completion_assistant` endpoint.
+     * Chat with an assistant and get back citations in structured form.   This is the recommended way to chat with an assistant, as it offers more functionality and control over the assistant\'s responses and references than the OpenAI-compatible chat interface.  For guidance and examples, see [Chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant).
      * Chat with an assistant
      */
     async chatAssistantRaw(requestParameters: ChatAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatModel>> {
@@ -126,7 +126,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `chat_assistant` endpoint allows you to [chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant) and get back citations in structured form.   This is the recommended way to chat with an assistant, as it offers more functionality and control over the assistant\'s responses and references than the `chat_completion_assistant` endpoint.
+     * Chat with an assistant and get back citations in structured form.   This is the recommended way to chat with an assistant, as it offers more functionality and control over the assistant\'s responses and references than the OpenAI-compatible chat interface.  For guidance and examples, see [Chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant).
      * Chat with an assistant
      */
     async chatAssistant(requestParameters: ChatAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatModel> {
@@ -135,7 +135,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `chat_completion_assistant` endpoint is used to [chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant). This endpoint is based on the OpenAI Chat Completion API, a commonly used and adopted API.   It is useful if you need inline citations or OpenAI-compatible responses, but has limited functionality compared to the [`chat_assistant`](https://docs.pinecone.io/reference/api/2024-07/assistant/chat_assistant) operation.
+     * Chat with an assistant. This endpoint is based on the OpenAI Chat Completion API, a commonly used and adopted API.   It is useful if you need inline citations or OpenAI-compatible responses, but has limited functionality compared to the standard chat interface.  For guidance and examples, see [Chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant).
      * Chat through an OpenAI-compatible interface
      */
     async chatCompletionAssistantRaw(requestParameters: ChatCompletionAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatCompletionModel>> {
@@ -169,7 +169,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `chat_completion_assistant` endpoint is used to [chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant). This endpoint is based on the OpenAI Chat Completion API, a commonly used and adopted API.   It is useful if you need inline citations or OpenAI-compatible responses, but has limited functionality compared to the [`chat_assistant`](https://docs.pinecone.io/reference/api/2024-07/assistant/chat_assistant) operation.
+     * Chat with an assistant. This endpoint is based on the OpenAI Chat Completion API, a commonly used and adopted API.   It is useful if you need inline citations or OpenAI-compatible responses, but has limited functionality compared to the standard chat interface.  For guidance and examples, see [Chat with an assistant](https://docs.pinecone.io/guides/assistant/chat-with-assistant).
      * Chat through an OpenAI-compatible interface
      */
     async chatCompletionAssistant(requestParameters: ChatCompletionAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatCompletionModel> {
@@ -178,7 +178,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `context_assistant` endpoint allows you to retrieve context from an assistant that might be used as part of RAG or any agentic flow.
+     * Retrieve context snippets from an assistant to use as part of RAG or any agentic flow.  For guidance and examples, see [Retrieve context snippets](https://docs.pinecone.io/guides/assistant/retrieve-context-snippets).
      * Retrieve context from an assistant
      */
     async contextAssistantRaw(requestParameters: ContextAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ContextModel>> {
@@ -212,7 +212,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `context_assistant` endpoint allows you to retrieve context from an assistant that might be used as part of RAG or any agentic flow.
+     * Retrieve context snippets from an assistant to use as part of RAG or any agentic flow.  For guidance and examples, see [Retrieve context snippets](https://docs.pinecone.io/guides/assistant/retrieve-context-snippets).
      * Retrieve context from an assistant
      */
     async contextAssistant(requestParameters: ContextAssistantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ContextModel> {
@@ -221,7 +221,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `delete_file` endpoint [deletes an uploaded file](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file) from an assistant.
+     * Delete an uploaded file from an assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file).
      * Delete an uploaded file
      */
     async deleteFileRaw(requestParameters: DeleteFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -252,7 +252,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `delete_file` endpoint [deletes an uploaded file](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file) from an assistant.
+     * Delete an uploaded file from an assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file).
      * Delete an uploaded file
      */
     async deleteFile(requestParameters: DeleteFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -260,7 +260,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describe_file` endpoint provides the [current status and metadata of a file](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file) uploaded to an assistant.
+     * Get the status and metadata of a file uploaded to an assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file).
      * Describe a file upload
      */
     async describeFileRaw(requestParameters: DescribeFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AssistantFileModel>> {
@@ -295,7 +295,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `describe_file` endpoint provides the [current status and metadata of a file](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file) uploaded to an assistant.
+     * Get the status and metadata of a file uploaded to an assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file).
      * Describe a file upload
      */
     async describeFile(requestParameters: DescribeFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AssistantFileModel> {
@@ -304,7 +304,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list_files` endpoint returns a [list of all files in an assistant](https://docs.pinecone.io//guides/assistant/manage-files#list-files-in-an-assistant), with an option to filter files with metadata.
+     * List all files in an assistant, with an option to filter files with metadata.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#list-files-in-an-assistant).
      * List Files
      */
     async listFilesRaw(requestParameters: ListFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListFiles200Response>> {
@@ -335,7 +335,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `list_files` endpoint returns a [list of all files in an assistant](https://docs.pinecone.io//guides/assistant/manage-files#list-files-in-an-assistant), with an option to filter files with metadata.
+     * List all files in an assistant, with an option to filter files with metadata.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#list-files-in-an-assistant).
      * List Files
      */
     async listFiles(requestParameters: ListFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListFiles200Response> {
@@ -344,7 +344,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `upload_file` endpoint [uploads a file](https://docs.pinecone.io/guides/assistant/upload-file) to the specified assistant.
+     * Upload a file to the specified assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#upload-a-local-file).
      * Upload file to assistant
      */
     async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AssistantFileModel>> {
@@ -400,7 +400,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * The `upload_file` endpoint [uploads a file](https://docs.pinecone.io/guides/assistant/upload-file) to the specified assistant.
+     * Upload a file to the specified assistant.  For guidance and examples, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files#upload-a-local-file).
      * Upload file to assistant
      */
     async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AssistantFileModel> {

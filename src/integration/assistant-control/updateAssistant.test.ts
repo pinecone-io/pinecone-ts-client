@@ -18,8 +18,7 @@ describe('updateAssistant inplace updates, happy path', () => {
       region: 'us',
     });
 
-    await pinecone.updateAssistant({
-      assistantName: assistantName,
+    await pinecone.updateAssistant(assistantName, {
       instructions: 'new-instructions',
       metadata: { key: 'newValue', keyTwo: 'newValueTwo' },
     });
@@ -34,7 +33,6 @@ describe('updateAssistant inplace updates, happy path', () => {
     await pinecone.deleteAssistant(assistantName);
   });
 
-  // todo: change this test if product says this is not the desired behavior
   test('updateAssistant with new metadata key:value pair', async () => {
     const assistantName = randomString(5);
     await pinecone.createAssistant({
@@ -42,8 +40,7 @@ describe('updateAssistant inplace updates, happy path', () => {
       metadata: { key: 'value', keyTwo: 'valueTwo' },
     });
 
-    await pinecone.updateAssistant({
-      assistantName: assistantName,
+    await pinecone.updateAssistant(assistantName, {
       metadata: { keyThree: 'valueThree' },
     });
 
@@ -57,9 +54,7 @@ describe('updateAssistant inplace updates, happy path', () => {
 describe('updateAssistant error paths', () => {
   test('Update non-existent assistant', async () => {
     const throwError = async () => {
-      await pinecone.updateAssistant({
-        assistantName: 'non-existent-assistant',
-      });
+      await pinecone.updateAssistant('non-existent-assistant', {});
     };
     await expect(throwError()).rejects.toThrow(PineconeNotFoundError);
   });

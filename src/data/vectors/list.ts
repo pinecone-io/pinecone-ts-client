@@ -3,7 +3,7 @@ import type {
   ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
-import { ValidateProperties } from '../../utils/validateProperties';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -31,7 +31,7 @@ export const listPaginated = (
 ) => {
   const validator = (options: ListOptions) => {
     if (options) {
-      ValidateProperties(options, ListOptionsProperties);
+      ValidateObjectProperties(options, ListOptionsProperties);
     }
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {

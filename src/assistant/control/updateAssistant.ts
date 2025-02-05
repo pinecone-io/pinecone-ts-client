@@ -1,43 +1,36 @@
-import {
-  ManageAssistantsApi as ManageAssistantsControlApi,
-  type UpdateAssistant200Response,
-} from '../../pinecone-generated-ts-fetch/assistant_control';
-
-/**
- * Options for updating an assistant's properties.
- */
-export interface UpdateAssistantOptions {
-  /**
-   * The name of the assistant to be updated.
-   */
-  assistantName: string;
-
-  /**
-   * Optional instructions for the assistant to apply to all responses.
-   */
-  instructions?: string;
-
-  /**
-   * Optional metadata associated with the assistant.
-   */
-  metadata?: Record<string, string>;
-}
+import { ManageAssistantsApi as ManageAssistantsControlApi } from '../../pinecone-generated-ts-fetch/assistant_control';
+import type { UpdateAssistantOptions, UpdateAssistantResponse } from './types';
+import { UpdateAssistantOptionsType } from './types';
+import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { PineconeArgumentError } from '../../errors';
 
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
+    name: string,
     options: UpdateAssistantOptions
-  ): Promise<UpdateAssistant200Response> => {
-    const resp = await api.updateAssistant({
-      assistantName: options.assistantName,
+  ): Promise<UpdateAssistantResponse> => {
+    if (!name) {
+      throw new PineconeArgumentError(
+        'You must pass the name of an assistant to update.'
+      );
+    }
+
+    validateUpdateAssistantOptions(options);
+    return await api.updateAssistant({
+      assistantName: name,
       updateAssistantRequest: {
         instructions: options?.instructions,
         metadata: options?.metadata,
       },
     });
-    return {
-      name: options.assistantName,
-      instructions: resp.instructions,
-      metadata: resp.metadata,
-    } as UpdateAssistant200Response;
   };
+};
+
+const validateUpdateAssistantOptions = (options: UpdateAssistantOptions) => {
+  if (!options) {
+    throw new PineconeArgumentError(
+      'You must pass an object with at least one property to update an assistant.'
+    );
+  }
+  ValidateObjectProperties(options, UpdateAssistantOptionsType);
 };

@@ -44,7 +44,9 @@ export interface RerankRequest {
      */
     returnDocuments?: boolean;
     /**
-     * The fields to rank the documents by. If not provided, the default is `"text"`.
+     * The field(s) to consider for reranking. If not provided, the default is `["text"]`.
+     * 
+     * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models).
      * @type {Array<string>}
      * @memberof RerankRequest
      */

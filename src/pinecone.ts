@@ -21,8 +21,6 @@ import {
   updateAssistant,
   UpdateAssistantOptions,
   listAssistants,
-  evaluate,
-  AssistantEval,
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type {
@@ -40,11 +38,10 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
-import { ValidateProperties } from './utils/validateProperties';
+import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
-import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
-import { Assistant } from './assistant/data/assistant';
+import { Assistant } from './assistant';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -114,8 +111,6 @@ export class Pinecone {
   /** @hidden */
   private _updateAssistant: ReturnType<typeof updateAssistant>;
   /** @hidden */
-  private _evaluate: ReturnType<typeof evaluate>;
-  /** @hidden */
   private _describeAssistant: ReturnType<typeof describeAssistant>;
   /** @hidden */
   private _listAssistants: ReturnType<typeof listAssistants>;
@@ -146,7 +141,7 @@ export class Pinecone {
       );
     }
 
-    ValidateProperties(options, PineconeConfigurationProperties);
+    ValidateObjectProperties(options, PineconeConfigurationProperties);
 
     this.config = options;
 
@@ -155,7 +150,6 @@ export class Pinecone {
     const api = indexOperationsBuilder(this.config);
     const infApi = inferenceOperationsBuilder(this.config);
     const asstControlApi = asstControlOperationsBuilder(this.config);
-    const asstEvalApi = asstMetricsOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -170,7 +164,6 @@ export class Pinecone {
     this._createAssistant = createAssistant(asstControlApi);
     this._deleteAssistant = deleteAssistant(asstControlApi);
     this._updateAssistant = updateAssistant(asstControlApi);
-    this._evaluate = evaluate(asstEvalApi);
     this._describeAssistant = describeAssistant(asstControlApi);
     this._listAssistants = listAssistants(asstControlApi);
 
@@ -757,35 +750,8 @@ export class Pinecone {
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
-  updateAssistant(options: UpdateAssistantOptions) {
-    return this._updateAssistant(options);
-  }
-
-  /**
-   * Evaluates a question against a given answer and a ground truth answer.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.evaluate({
-   *    question: "What is the capital of France?",
-   *    answer: "Lyon is France's capital city",
-   *    groundTruth: "Paris is the capital city of France"
-   *   });
-   * // {
-   * //  metrics: { correctness: 0, completeness: 0, alignment: 0 }, // 0s across the board indicates incorrect
-   * //  reasoning: { evaluatedFacts: [ [Object] ] },
-   * //  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
-   * // }
-   * ```
-   * @param options - An {@link AssistantEval} object containing the question, the answer, and a ground truth answer to
-   * evaluate.
-   * @throws Error if the Evaluation API is not initialized.
-   * @returns A Promise that resolves to an {@link AlignmentResponse} object.
-   */
-  evaluate(options: AssistantEval) {
-    return this._evaluate(options);
+  updateAssistant(assistantName: string, options: UpdateAssistantOptions) {
+    return this._updateAssistant(assistantName, options);
   }
 
   /** @internal */

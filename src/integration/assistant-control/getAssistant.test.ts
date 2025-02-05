@@ -16,7 +16,7 @@ afterAll(async () => {
   await pinecone.deleteAssistant(assistantName);
 });
 
-describe('getAssistant happy path', () => {
+describe('describeAssistant happy path', () => {
   test('simple get', async () => {
     const assistantInfo = await pinecone.describeAssistant(assistantName);
     expect(assistantInfo.name).toEqual(assistantName);
@@ -29,7 +29,7 @@ describe('getAssistant happy path', () => {
   });
 });
 
-describe('getAssistant error paths', () => {
+describe('describeAssistant error paths', () => {
   test('get non-existent assistant', async () => {
     const throwError = async () => {
       await pinecone.describeAssistant('non-existent-assistant');

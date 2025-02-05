@@ -3,6 +3,7 @@ import type {
   PineconeRecord,
   RecordMetadata,
   RecordSparseValues,
+  RecordValues,
 } from '../data';
 import { Index, Pinecone } from '../index';
 
@@ -33,33 +34,32 @@ export const generateRecords = ({
   dimension = 5,
   quantity = 3,
   prefix = null,
+  withValues = true,
   withSparseValues = false,
   withMetadata = false,
 }: {
   dimension?: number;
   quantity?: number;
   prefix?: string | null;
+  withValues?: boolean;
   withSparseValues?: boolean;
   withMetadata?: boolean;
 }): PineconeRecord[] => {
   const records: PineconeRecord[] = [];
   for (let i = 0; i < quantity; i++) {
-    const values: number[] = [];
-    for (let j = 0; j < dimension; j++) {
-      values.push(parseFloat(Math.random().toFixed(5)));
-    }
     const id = prefix === null ? i.toString() : `${prefix}-${i}`;
+
+    const values = withValues ? generateValues(dimension) : undefined;
+    const sparseValues = withSparseValues
+      ? generateSparseValues(dimension)
+      : undefined;
 
     let vector: PineconeRecord = {
       id,
       values,
+      sparseValues,
     };
-    if (withSparseValues) {
-      vector = {
-        ...vector,
-        sparseValues: generateSparseValues(dimension),
-      };
-    }
+
     if (withMetadata) {
       vector = {
         ...vector,
@@ -69,6 +69,15 @@ export const generateRecords = ({
     records.push(vector);
   }
   return records;
+};
+
+export const generateValues = (dimension: number): RecordValues => {
+  const values: number[] = [];
+  for (let i = 0; i < dimension; i++) {
+    values.push(parseFloat(Math.random().toFixed(5)));
+  }
+
+  return values;
 };
 
 export const generateSparseValues = (dimension: number): RecordSparseValues => {
@@ -130,10 +139,11 @@ export const waitUntilRecordsReady = async (
   const sleepIntervalMs = 3000;
   let indexStats = await index.describeIndexStats();
 
+  // if namespace is empty or the record count is not equal to the number of records we expect
   while (
-    indexStats.namespaces &&
-    !indexStats.namespaces[namespace] &&
-    indexStats.namespaces[namespace]?.recordCount !== recordIds.length
+    (indexStats.namespaces && !indexStats.namespaces[namespace]) ||
+    (indexStats.namespaces &&
+      indexStats.namespaces[namespace]?.recordCount !== recordIds.length)
   ) {
     await sleep(sleepIntervalMs);
     indexStats = await index.describeIndexStats();

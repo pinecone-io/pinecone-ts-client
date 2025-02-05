@@ -5,7 +5,7 @@ import {
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
-import { ValidateProperties } from '../utils/validateProperties';
+import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../utils';
 
 // Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
@@ -19,7 +19,7 @@ export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
 export const configureIndex = (api: ManageIndexesApi) => {
   const validator = (indexName: IndexName, options: ConfigureIndexRequest) => {
     if (options) {
-      ValidateProperties(options, ConfigureIndexRequestProperties);
+      ValidateObjectProperties(options, ConfigureIndexRequestProperties);
     }
 
     if (!indexName) {
@@ -36,7 +36,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     }
     if (options.spec) {
       if (options.spec.pod) {
-        ValidateProperties(options.spec.pod, ['replicas', 'podType']);
+        ValidateObjectProperties(options.spec.pod, ['replicas', 'podType']);
       }
       if (options.spec.pod && options.spec.pod.replicas) {
         if (options.spec.pod.replicas <= 0) {

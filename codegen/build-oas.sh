@@ -11,10 +11,11 @@ build_dir="build"
 update_apis_repo() {
 	echo "Updating apis repo"
 	pushd codegen/apis
-	  git fetch
-	  git checkout main
-	  git pull
-    just build
+		git fetch
+		git checkout main
+		git pull
+		just clean
+		just build
 	popd
 }
 

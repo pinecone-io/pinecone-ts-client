@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { Assistant } from '../../assistant/data';
+import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -74,17 +74,18 @@ describe('Upload file happy path', () => {
     const response = await assistant.uploadFile({
       path: tempFilePath,
     });
-    await sleep(30000); // Crazy long sleep necessary; need to optimize (+ technically we already know this works
-    // b/c of setup.ts
+
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFile);
     expect(response.id).toBeDefined();
-    expect(response.createdOn).toBeDefined(); // Sometimes these dates populate as "Invalid" at first, but then get updated
+    expect(response.createdOn).toBeDefined();
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
+    await sleep(30000);
+
     // Delete file happy path test:
-    expect(await assistant.deleteFile({ fileId: response.id })).toBeUndefined();
+    await assistant.deleteFile(response.id);
   });
 
   test('Upload file with metadata', async () => {
@@ -95,7 +96,7 @@ describe('Upload file happy path', () => {
         category: 'integration-test',
       },
     });
-    await sleep(25000); // Crazy long sleep necessary; need to optimize
+
     expect(response).toBeDefined();
     expect(response.name).toEqual(tempFileWithMetadata);
     expect(response.id).toBeDefined();
@@ -108,8 +109,10 @@ describe('Upload file happy path', () => {
       expect(response.metadata['category']).toEqual('integration-test');
     }
 
+    await sleep(30000);
+
     // Delete file happy path test:
-    expect(await assistant.deleteFile({ fileId: response.id })).toBeUndefined();
+    await assistant.deleteFile(response.id);
   });
 });
 
@@ -138,16 +141,16 @@ describe('Upload file error paths', () => {
         path: '',
       });
     };
-    await expect(throwError()).rejects.toThrow('File path is required');
+    await expect(throwError()).rejects.toThrow(
+      'You must pass an object with required properties (`path`) to upload a file.'
+    );
   });
 });
 
 describe('Delete file error paths', () => {
   test('Delete non-existent file', async () => {
     const throwError = async () => {
-      await assistant.deleteFile({
-        fileId: 'nonexistent-file-id',
-      });
+      await assistant.deleteFile('nonexistent-file-id');
     };
     await expect(throwError()).rejects.toThrow(/404/);
   });
