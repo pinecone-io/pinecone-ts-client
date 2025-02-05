@@ -169,7 +169,8 @@ await pc.createIndex({
 
 #### Create a sparse serverless index
 
-You can also use `vectorType` to create `sparse` serverless indexes. These indexes enable direct indexing and retrieval of sparse vectors, supporting traditional methods like BM25 and learned sparse models such as [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0). A `sparse` index must have a distance metric of `dotproduct` and does not require a specified dimension:
+You can also use `vectorType` to create `sparse` serverless indexes. These indexes enable direct indexing and retrieval of sparse vectors, supporting traditional methods like BM25 and learned sparse models such as [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0). A `sparse` index must have a distance `metric` of `dotproduct` and does not require a specified dimension. If no
+metric is provided with a `vectorType` of `sparse`, it will default to `dotproduct`:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
