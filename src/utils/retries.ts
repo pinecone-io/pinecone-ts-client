@@ -51,6 +51,7 @@ export class RetryOnServerFailure<T, A extends any[]> {
 
         // On the last retry, throw a MaxRetriesExceededError
         if (attempt === this.maxRetries - 1) {
+          console.warn('ACTUAL ERROR:', error);
           throw new PineconeMaxRetriesExceededError(this.maxRetries);
         }
 
