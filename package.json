@@ -36,7 +36,7 @@
     "@edge-runtime/jest-environment": "^2.3.3",
     "@edge-runtime/types": "^2.2.3",
     "@types/jest": "^29.5.0",
-    "@types/node": "^22.13.1",
+    "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "dotenv": "^16.0.3",

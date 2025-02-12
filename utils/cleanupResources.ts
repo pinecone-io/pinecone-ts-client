@@ -40,12 +40,12 @@ for (const envVar of ['PINECONE_API_KEY']) {
     }
   }
 
-  const assistants = await p.listAssistants();
-  if (assistants.assistants.length > 0) {
-    for (const assistant of assistants.assistants) {
-      console.log(`Deleting assistant ${assistant.name}`);
-      await p.deleteAssistant(assistant.name);
-    }
-  }
+  // const assistants = await p.listAssistants();
+  // if (assistants.assistants.length > 0) {
+  //   for (const assistant of assistants.assistants) {
+  //     console.log(`Deleting assistant ${assistant.name}`);
+  //     await p.deleteAssistant(assistant.name);
+  //   }
+  // }
   process.exit();
 })();
