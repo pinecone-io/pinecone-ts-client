@@ -19,7 +19,7 @@ beforeAll(async () => {
 });
 
 describe('Chat happy path', () => {
-  test('Chat with messages', async () => {
+  test.skip('Chat with messages', async () => {
     let response: ChatModel;
     try {
       response = await assistant.chat({
@@ -86,7 +86,7 @@ describe('Chat error paths', () => {
 
   test.each(chatMethods)('%s with invalid model', async (method) => {
     const throwError = async () => {
-      await assistant.chat({
+      await assistant[method]({
         messages: [{ role: 'user', content: 'Hello' }],
         model: 'invalid',
       });

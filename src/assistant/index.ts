@@ -188,7 +188,7 @@ export class Assistant {
    * to an Assistant.
    * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
    */
-  chatCompletions(options: ChatOptions) {
+  chatCompletion(options: ChatOptions) {
     return this._chatCompletion(options);
   }
 
@@ -202,7 +202,7 @@ export class Assistant {
    * to an Assistant.
    * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
    */
-  chatCompletionsStream(options: ChatOptions) {
+  chatCompletionStream(options: ChatOptions) {
     return this._chatCompletionStream(options);
   }
 

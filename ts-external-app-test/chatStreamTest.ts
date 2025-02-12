@@ -4,7 +4,7 @@ const client = new Pinecone();
 
 const newStream = await client
   .assistant('test-chat-stream')
-  .chatCompletionsStream({ messages: ['tell me about API design'] });
+  .chatCompletionStream({ messages: ['tell me about API design'] });
 
 (async () => {
   // print entire chunks
