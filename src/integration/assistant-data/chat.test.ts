@@ -49,16 +49,22 @@ describe('Chat happy path', () => {
 });
 
 describe('Chat error paths', () => {
-  test('Chat with empty messages', async () => {
+  const chatMethods = [
+    'chat',
+    'chatStream',
+    'chatCompletion',
+    'chatCompletionStream',
+  ];
+  test.each(chatMethods)('%s with empty messages', async (method) => {
     const throwError = async () => {
-      await assistant.chat({ messages: [] });
+      await assistant[method]({ messages: [] });
     };
     await expect(throwError()).rejects.toThrow('Must have at least 1 message');
   });
 
-  test('Chat with invalid role type', async () => {
+  test.each(chatMethods)('%s with invalid role type', async (method) => {
     const throwError = async () => {
-      await assistant.chat({
+      await assistant[method]({
         messages: [{ role: 'invalid', content: 'Hello' }],
       });
     };
@@ -67,9 +73,9 @@ describe('Chat error paths', () => {
     );
   });
 
-  test('Chat with no role key', async () => {
+  test.each(chatMethods)('%s with no role key', async (method) => {
     const throwError = async () => {
-      await assistant.chat({
+      await assistant[method]({
         messages: [{}],
       });
     };
@@ -78,7 +84,7 @@ describe('Chat error paths', () => {
     );
   });
 
-  test('Chat with invalid model', async () => {
+  test.each(chatMethods)('%s with invalid model', async (method) => {
     const throwError = async () => {
       await assistant.chat({
         messages: [{ role: 'user', content: 'Hello' }],
@@ -90,9 +96,9 @@ describe('Chat error paths', () => {
     );
   });
 
-  test('Chat with nonexistent assistant', async () => {
+  test.each(chatMethods)('%s with nonexistent assistant', async (method) => {
     const throwError = async () => {
-      await pinecone.Assistant('nonexistent').chat({
+      await pinecone.Assistant('nonexistent')[method]({
         messages: [{ role: 'user', content: 'Hello' }],
       });
     };

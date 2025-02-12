@@ -196,7 +196,7 @@ export interface MessageEndChunk extends BaseChunk {
   usage: UsageModel;
 }
 
-export interface StreamedChatCompletionsResponse {
+export interface StreamedChatCompletionResponse {
   id: string;
   choices: ChoiceModel[];
   model: string;

@@ -7,7 +7,7 @@ import type {
 } from './data/types';
 import { chatCompletion } from './data/chatCompletion';
 import { chatStream } from './data/chatStream';
-import { chatCompletionsStream } from './data/chatCompletionsStream';
+import { chatCompletionStream } from './data/chatCompletionStream';
 import { listFiles } from './data/listFiles';
 import { describeFile } from './data/describeFile';
 import { deleteFile } from './data/deleteFile';
@@ -53,7 +53,7 @@ export class Assistant {
   readonly _chat: ReturnType<typeof chat>;
   readonly _chatStream: ReturnType<typeof chatStream>;
   readonly _chatCompletions: ReturnType<typeof chatCompletion>;
-  readonly _chatCompletionsStream: ReturnType<typeof chatCompletionsStream>;
+  readonly _chatCompletionsStream: ReturnType<typeof chatCompletionStream>;
   readonly _listFiles: ReturnType<typeof listFiles>;
   readonly _describeFile: ReturnType<typeof describeFile>;
   readonly _uploadFile: ReturnType<typeof uploadFile>;
@@ -92,7 +92,7 @@ export class Assistant {
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._chatCompletionsStream = chatCompletionsStream(
+    this._chatCompletionsStream = chatCompletionStream(
       this.assistantName,
       asstDataOperationsProvider,
       this.config
