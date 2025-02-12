@@ -99,10 +99,6 @@ export interface ChatOptions {
    */
   messages: string[] | Array<{ [key: string]: string }>;
   /**
-   * If false, the Assistant will return a single JSON response. If true, the Assistant will return a stream of responses.
-   */
-  stream?: boolean;
-  /**
    * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
    * If empty, the assistant will default to using 'gpt-4o' model.
    */
@@ -117,7 +113,6 @@ export interface ChatOptions {
 type ChatOptionsType = keyof ChatOptions;
 export const ChatOptionsType: ChatOptionsType[] = [
   'messages',
-  'stream',
   'model',
   'filter',
 ];

@@ -56,7 +56,7 @@ export const chat = (
       assistantName: assistantName,
       chat: {
         messages: messages,
-        stream: options.stream,
+        stream: false,
         model: model,
         filter: options.filter,
       },

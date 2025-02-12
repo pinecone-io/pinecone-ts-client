@@ -39,7 +39,7 @@ export const chatCompletion = (
       assistantName: assistantName,
       searchCompletions: {
         messages: messages,
-        stream: options.stream,
+        stream: false,
         model: model,
         filter: options.filter,
       },
