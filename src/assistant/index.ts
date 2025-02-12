@@ -52,8 +52,8 @@ export class Assistant {
 
   readonly _chat: ReturnType<typeof chat>;
   readonly _chatStream: ReturnType<typeof chatStream>;
-  readonly _chatCompletions: ReturnType<typeof chatCompletion>;
-  readonly _chatCompletionsStream: ReturnType<typeof chatCompletionStream>;
+  readonly _chatCompletion: ReturnType<typeof chatCompletion>;
+  readonly _chatCompletionStream: ReturnType<typeof chatCompletionStream>;
   readonly _listFiles: ReturnType<typeof listFiles>;
   readonly _describeFile: ReturnType<typeof describeFile>;
   readonly _uploadFile: ReturnType<typeof uploadFile>;
@@ -88,11 +88,11 @@ export class Assistant {
       asstDataOperationsProvider,
       this.config
     );
-    this._chatCompletions = chatCompletion(
+    this._chatCompletion = chatCompletion(
       this.assistantName,
       asstDataOperationsProvider
     );
-    this._chatCompletionsStream = chatCompletionStream(
+    this._chatCompletionStream = chatCompletionStream(
       this.assistantName,
       asstDataOperationsProvider,
       this.config
@@ -189,7 +189,7 @@ export class Assistant {
    * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
    */
   chatCompletions(options: ChatOptions) {
-    return this._chatCompletions(options);
+    return this._chatCompletion(options);
   }
 
   /**
@@ -203,7 +203,7 @@ export class Assistant {
    * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
    */
   chatCompletionsStream(options: ChatOptions) {
-    return this._chatCompletionsStream(options);
+    return this._chatCompletionStream(options);
   }
 
   // --------- File methods ---------
