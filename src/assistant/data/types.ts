@@ -1,3 +1,5 @@
+import type { UsageModel } from '../../pinecone-generated-ts-fetch/assistant_data';
+
 /**
  * The `ListFilesOptions` interface describes the options (a single filter) that can be passed to the `listFiles` method.
  */
@@ -157,3 +159,68 @@ export const UploadFileOptionsType: UploadFileOptionsType[] = [
   'path',
   'metadata',
 ];
+
+export type StreamedChatResponse =
+  | MessageStartChunk
+  | ContentChunk
+  | CitationChunk
+  | MessageEndChunk;
+
+interface BaseChunk {
+  type: string;
+  id: string;
+  model: string;
+}
+
+export interface MessageStartChunk extends BaseChunk {
+  type: 'message_start';
+  role: string;
+}
+
+export interface ContentChunk extends BaseChunk {
+  type: 'content_chunk';
+  delta: {
+    content: string;
+  };
+}
+
+export interface CitationChunk extends BaseChunk {
+  type: 'citation';
+  citation: {
+    position: number;
+    references: Array<{
+      file: AssistantFileModel;
+      pages: number[];
+    }>;
+  };
+}
+
+export interface MessageEndChunk extends BaseChunk {
+  type: 'message_end';
+  finishReason: string;
+  usage: UsageModel;
+}
+
+export interface StreamedChatCompletionsResponse {
+  id: string;
+  choices: ChoiceModel[];
+  model: string;
+}
+
+export interface ChoiceModel {
+  finishReason?: FinishReasonEnum;
+  index: number;
+  delta: {
+    role?: string;
+    content?: string;
+  };
+}
+
+export const FinishReasonEnum = {
+  Stop: 'stop',
+  Length: 'length',
+  ContentFilter: 'content_filter',
+  FunctionCall: 'function_call',
+} as const;
+export type FinishReasonEnum =
+  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];

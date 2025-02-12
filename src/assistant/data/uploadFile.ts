@@ -6,7 +6,7 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { handleApiError, PineconeArgumentError } from '../../errors';
-import { PineconeConfiguration } from '../../data';
+import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch } from '../../utils';
 import type { AssistantFileModel, UploadFileOptions } from './types';
 import fs from 'fs';

@@ -6,6 +6,8 @@ import type {
   UploadFileOptions,
 } from './data/types';
 import { chatCompletion } from './data/chatCompletion';
+import { chatStream } from './data/chatStream';
+import { chatCompletionsStream } from './data/chatCompletionsStream';
 import { listFiles } from './data/listFiles';
 import { describeFile } from './data/describeFile';
 import { deleteFile } from './data/deleteFile';
@@ -49,7 +51,9 @@ export class Assistant {
   private config: PineconeConfiguration;
 
   readonly _chat: ReturnType<typeof chat>;
+  readonly _chatStream: ReturnType<typeof chatStream>;
   readonly _chatCompletions: ReturnType<typeof chatCompletion>;
+  readonly _chatCompletionsStream: ReturnType<typeof chatCompletionsStream>;
   readonly _listFiles: ReturnType<typeof listFiles>;
   readonly _describeFile: ReturnType<typeof describeFile>;
   readonly _uploadFile: ReturnType<typeof uploadFile>;
@@ -79,9 +83,19 @@ export class Assistant {
     this.assistantName = assistantName;
 
     this._chat = chat(this.assistantName, asstDataOperationsProvider);
+    this._chatStream = chatStream(
+      this.assistantName,
+      asstDataOperationsProvider,
+      this.config
+    );
     this._chatCompletions = chatCompletion(
       this.assistantName,
       asstDataOperationsProvider
+    );
+    this._chatCompletionsStream = chatCompletionsStream(
+      this.assistantName,
+      asstDataOperationsProvider,
+      this.config
     );
     this._listFiles = listFiles(this.assistantName, asstDataOperationsProvider);
     this._describeFile = describeFile(
@@ -134,6 +148,37 @@ export class Assistant {
   }
 
   /**
+   * Sends a message to the Assistant and receives a streamed response. Retries the request if the server fails.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.Assistant(assistantName);
+   * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
+   * // {
+   * //  id: '000000000000000023e7fb015be9d0ad',
+   * //  finishReason: 'stop',
+   * //  message: {
+   * //    role: 'assistant',
+   * //    content: 'The capital of France is Paris.'
+   * //  },
+   * //  model: 'gpt-4o-2024-05-13',
+   * //  citations: [ { position: 209, references: [Array] } ],
+   * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+   * }
+   * ```
+   *
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
+   * Assistant.
+   * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
+   */
+  chatStream(options: ChatOptions) {
+    return this._chatStream(options);
+  }
+
+  /**
    * Sends a message to the Assistant and receives a response. Response is compatible with
    * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
    *
@@ -145,6 +190,20 @@ export class Assistant {
    */
   chatCompletions(options: ChatOptions) {
     return this._chatCompletions(options);
+  }
+
+  /**
+   * Sends a message to the Assistant and receives a streamed response. Response is compatible with
+   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   *
+   * See {@link chat} for example usage.
+   *
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
+   * to an Assistant.
+   * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
+   */
+  chatCompletionsStream(options: ChatOptions) {
+    return this._chatCompletionsStream(options);
   }
 
   // --------- File methods ---------
