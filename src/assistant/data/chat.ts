@@ -11,37 +11,6 @@ import { ChatOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
 
-/**
- * Sends a message to the Assistant and receives a response. Retries the request if the server fails.
- *
- * @example
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
- * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
- * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
- * console.log(chatResp);
- * // {
- * //  id: '000000000000000023e7fb015be9d0ad',
- * //  finishReason: 'stop',
- * //  message: {
- * //    role: 'assistant',
- * //    content: 'The capital of France is Paris.'
- * //  },
- * //  model: 'gpt-4o-2024-05-13',
- * //  citations: [ { position: 209, references: [Array] } ],
- * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
- * // }
- * ```
- *
- * @param assistantName - The name of the Assistant to send the message to.
- * @param api - The API object to use to send the request.
- * @throws An Error if no messages are provided.
- * @throws an Error if the message object is not formatted correctly.
- * @throws an Error if the model is not one of the available models.
- * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
- */
 export const chat = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider

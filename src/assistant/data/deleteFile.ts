@@ -37,6 +37,6 @@ export const deleteFile = (
       assistantName: assistantName,
       assistantFileId: fileId,
     } as DeleteFileRequest;
-    return api.deleteFile(request);
+    return await api.deleteFile(request);
   };
 };

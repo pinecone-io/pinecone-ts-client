@@ -1,7 +1,15 @@
 import { Pinecone } from '../../pinecone';
 import { Assistant } from '../../assistant';
 import { PineconeBadRequestError } from '../../errors';
-import { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  ChatCompletionModel,
+  ChatModel,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { ChatStream } from '../../utils/';
+import type {
+  StreamedChatCompletionResponse,
+  StreamedChatResponse,
+} from '../../assistant/data/types';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -18,9 +26,10 @@ beforeAll(async () => {
   assistant = pinecone.Assistant(assistantName);
 });
 
-describe('Chat happy path', () => {
-  test('Chat with messages', async () => {
+describe('non-streaming chat success paths', () => {
+  test('chat', async () => {
     let response: ChatModel;
+
     try {
       response = await assistant.chat({
         messages: [{ role: 'user', content: 'Hello' }],
@@ -46,6 +55,111 @@ describe('Chat happy path', () => {
     expect(response.usage).toBeDefined();
     expect(response.finishReason).toBeDefined();
   });
+
+  test('chatCompletion', async () => {
+    let response: ChatCompletionModel;
+
+    try {
+      response = await assistant.chatCompletion({
+        messages: [{ role: 'user', content: 'Hello' }],
+      });
+    } catch (error) {
+      const errorResponse = error as PineconeBadRequestError;
+      if (errorResponse.name == 'PineconeBadRequestError') {
+        console.log(
+          'Assistant not ready to chat yet, trying again ',
+          errorResponse.message
+        );
+        response = await assistant.chatCompletion({
+          messages: [{ role: 'user', content: 'Hello' }],
+        });
+      } else {
+        throw error;
+      }
+    }
+    expect(response).toBeDefined();
+    expect(response.id).toBeDefined();
+    expect(response.model).toBeDefined();
+    expect(response.usage).toBeDefined();
+    expect(response.choices).toBeDefined();
+  });
+});
+
+describe('streaming chat success paths', () => {
+  test('chatStream', async () => {
+    let response: ChatStream<StreamedChatResponse>;
+
+    try {
+      response = await assistant.chatStream({
+        messages: [{ role: 'user', content: 'Hello' }],
+      });
+    } catch (error) {
+      const errorResponse = error as PineconeBadRequestError;
+      if (errorResponse.name == 'PineconeBadRequestError') {
+        console.log(
+          'Assistant not ready to chat yet, trying again ',
+          errorResponse.message
+        );
+        response = await assistant.chatStream({
+          messages: [{ role: 'user', content: 'Hello' }],
+        });
+      } else {
+        throw error;
+      }
+    }
+
+    // stream response and validate
+    expect(response).toBeDefined();
+    for await (const chatMessage of response) {
+      expect(chatMessage).toBeDefined();
+      expect(chatMessage.id).toBeDefined();
+      expect(chatMessage.model).toBeDefined();
+      expect(chatMessage.type).toBeDefined();
+
+      if (chatMessage.type === 'message_start') {
+        expect(chatMessage.role).toBeDefined();
+      } else if (chatMessage.type === 'content_chunk') {
+        expect(chatMessage.delta).toBeDefined();
+      } else if (chatMessage.type === 'citation') {
+        expect(chatMessage.citation).toBeDefined();
+      } else if (chatMessage.type === 'message_end') {
+        expect(chatMessage.finishReason).toBeDefined();
+        expect(chatMessage.usage).toBeDefined();
+      }
+    }
+  });
+
+  test('chatCompletionStream', async () => {
+    let response: ChatStream<StreamedChatCompletionResponse>;
+
+    try {
+      response = await assistant.chatCompletionStream({
+        messages: [{ role: 'user', content: 'Hello' }],
+      });
+    } catch (error) {
+      const errorResponse = error as PineconeBadRequestError;
+      if (errorResponse.name == 'PineconeBadRequestError') {
+        console.log(
+          'Assistant not ready to chat yet, trying again ',
+          errorResponse.message
+        );
+        response = await assistant.chatCompletionStream({
+          messages: [{ role: 'user', content: 'Hello' }],
+        });
+      } else {
+        throw error;
+      }
+    }
+
+    // stream response and validate
+    expect(response).toBeDefined();
+    for await (const chatMessage of response) {
+      expect(chatMessage).toBeDefined();
+      expect(chatMessage.id).toBeDefined();
+      expect(chatMessage.model).toBeDefined();
+      expect(chatMessage.choices).toBeDefined();
+    }
+  });
 });
 
 describe('Chat error paths', () => {
@@ -55,6 +169,7 @@ describe('Chat error paths', () => {
     'chatCompletion',
     'chatCompletionStream',
   ];
+
   test.each(chatMethods)('%s with empty messages', async (method) => {
     const throwError = async () => {
       await assistant[method]({ messages: [] });

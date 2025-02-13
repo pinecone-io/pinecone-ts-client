@@ -23,6 +23,6 @@ export const evaluate = (metricsApi: MetricsApi) => {
         groundTruthAnswer: options.groundTruth,
       },
     } as MetricsAlignmentRequest;
-    return metricsApi.metricsAlignment(request);
+    return await metricsApi.metricsAlignment(request);
   };
 };
