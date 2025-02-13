@@ -19,7 +19,7 @@ beforeAll(async () => {
 });
 
 describe('Chat happy path', () => {
-  test.skip('Chat with messages', async () => {
+  test('Chat with messages', async () => {
     let response: ChatModel;
     try {
       response = await assistant.chat({
