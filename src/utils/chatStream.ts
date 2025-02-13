@@ -25,8 +25,13 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
             const convertedJson = convertKeysToCamelCase(parsedJson);
             yield convertedJson as Item;
           } catch (err) {
-            console.warn(`Skipping malformed JSON:${line}`);
+            console.debug(`Skipping malformed JSON:${line}`);
+            continue;
           }
+        } else {
+          // skip malformed chunk
+          console.debug(`Skipping malformed chunk:${line}`);
+          continue;
         }
       }
     }
@@ -36,7 +41,7 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
         const convertedJson = convertKeysToCamelCase(parsedJson);
         yield convertedJson as Item;
       } catch (err) {
-        console.warn(`Skipping malformed JSON:${buffer}`);
+        console.debug(`Skipping malformed JSON:${buffer}`);
       }
     }
   }
