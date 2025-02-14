@@ -19,16 +19,16 @@ describe('deleteAssistant happy path', () => {
     await pinecone.deleteAssistant(assistantName);
     await sleep(3000);
 
-    await expect(
-      await pinecone.describeAssistant(assistantName)
-    ).rejects.toThrow(PineconeNotFoundError);
+    await expect(pinecone.describeAssistant(assistantName)).rejects.toThrow(
+      PineconeNotFoundError
+    );
   });
 });
 
 describe('deleteAssistant error paths', () => {
   test('delete non-existent assistant', async () => {
     await expect(
-      await pinecone.deleteAssistant('non-existent-assistant')
+      pinecone.deleteAssistant('non-existent-assistant')
     ).rejects.toThrow(PineconeNotFoundError);
   });
 });
