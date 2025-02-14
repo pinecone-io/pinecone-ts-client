@@ -1,6 +1,9 @@
 import { PineconeArgumentError } from '../errors';
 
-export function ValidateProperties(item: any, validProperties: string[]) {
+export function ValidateObjectProperties(
+  item: object,
+  validProperties: string[]
+) {
   const itemKeys = Object.keys(item);
   // Check for any keys in `item` that are not in `validProperties`
   const invalidKeys = itemKeys.filter((key) => !validProperties.includes(key));

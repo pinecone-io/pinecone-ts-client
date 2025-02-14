@@ -38,6 +38,14 @@ for (const envVar of ['PINECONE_API_KEY']) {
         await p.deleteIndex(index.name);
       }
     }
-    process.exit();
   }
+
+  const assistants = await p.listAssistants();
+  if (assistants.assistants.length > 0) {
+    for (const assistant of assistants.assistants) {
+      console.log(`Deleting assistant ${assistant.name}`);
+      await p.deleteAssistant(assistant.name);
+    }
+  }
+  process.exit();
 })();

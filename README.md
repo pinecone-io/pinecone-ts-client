@@ -146,7 +146,7 @@ indexes().then((response) => {
 
 At a minimum, to create a serverless index you must specify a `name`, `dimension`, and `spec`. The `dimension`
 indicates the size of the vectors you intend to store in the index. For example, if your intention was to store and
-query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model.
+query embeddings (vectors) generated with OpenAI's [textembedding-ada-002](https://platform.openai.com/docs/guides/embeddings/second-generation-models) model, you would need to create an index with dimension `1536` to match the output of that model. By default, serverless indexes will have a `vectorType` of `dense`.
 
 The `spec` configures how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted. For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
 
@@ -164,6 +164,29 @@ await pc.createIndex({
     },
   },
   tags: { team: 'data-science' },
+});
+```
+
+#### Create a sparse serverless index
+
+You can also use `vectorType` to create `sparse` serverless indexes. These indexes enable direct indexing and retrieval of sparse vectors, supporting traditional methods like BM25 and learned sparse models such as [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0). A `sparse` index must have a distance `metric` of `dotproduct` and does not require a specified dimension. If no
+metric is provided with a `vectorType` of `sparse`, it will default to `dotproduct`:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndex({
+  name: 'sample-index',
+  metric: 'dotproduct',
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+  tags: { team: 'data-science' },
+  vectorType: 'sparse',
 });
 ```
 
@@ -1243,6 +1266,464 @@ console.log(response);
 // ],
 // usage: { rerankUnits: 1 }
 //}
+```
+
+## Pinecone Assistant
+
+The [Pinecone Assistant API](https://docs.pinecone.io/guides/assistant/understanding-assistant) enables you to create and manage AI assistants powered by Pinecone's vector database
+capabilities. These Assistants can be customized with specific instructions and metadata, and can interact with
+files and engage in chat conversations.
+
+### Create an Assistant
+
+[Creates a new Assistant](https://docs.pinecone.io/guides/assistant/create-assistant) with specified configurations. You can define the Assistant's name, provide instructions
+that guide its behavior, and attach metadata for organization and tracking purposes.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const assistant = await pc.createAssistant({
+  name: 'product-assistant',
+  instructions: 'You are a helpful product recommendation assistant.',
+  metadata: {
+    team: 'product',
+    version: '1.0',
+  },
+});
+```
+
+### Delete an Assistant
+
+[Deletes an Assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#delete-an-assistant) by name.
+
+**Note:** Deleting an Assistant also deletes all associated files.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.deleteAssistant('test1');
+```
+
+### Get information about an Assistant
+
+[Retrieves information](https://docs.pinecone.io/guides/assistant/manage-assistants#get-the-status-of-an-assistant) about an Assistant by name.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const test = await pc.describeAssistant('test1');
+console.log(test);
+// {
+//  name: 'test10',
+//  instructions: undefined,
+//  metadata: undefined,
+//  status: 'Ready',
+//  host: 'https://prod-1-data.ke.pinecone.io',
+//  createdAt: 2025-01-08T22:24:50.525Z,
+//  updatedAt: 2025-01-08T22:24:52.303Z
+// }
+```
+
+### Update an Assistant
+
+[Updates an Assistant](https://docs.pinecone.io/guides/assistant/manage-assistants#add-instructions-to-an-assistant) by name. You can update the Assistant's name, instructions, and/or metadata.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.updateAssistant('test1', {
+  instructions: 'some new  instructions!',
+});
+```
+
+### List Assistants
+
+Retrieves a [list of all Assistants](https://docs.pinecone.io/guides/assistant/manage-assistants) in your account. This method returns details about each Assistant including their
+names, instructions, metadata, status, and host.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const assistants = await pc.listAssistants();
+console.log(assistants);
+// {
+//   assistants: [{
+//     name: 'product-assistant',
+//     instructions: 'You are a helpful product recommendation assistant.',
+//     metadata: { team: 'product', version: '1.0' },
+//     status: 'Ready',
+//     host: 'product-assistant-abc123.svc.pinecone.io'
+//   }]
+// }
+```
+
+### Chat with an Assistant
+
+You can [chat with Assistants](https://docs.pinecone.io/guides/assistant/chat-with-assistant) using either the `chat` method or the `chatCompletion` methods.
+
+**Note:** Your Assistant must contain files in order for chat to work.
+
+The following example shows how to chat with an Assistant using the `chat` methods:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+console.log(chatResp);
+// {
+//  id: '000000000000000023e7fb015be9d0ad',
+//  finishReason: 'stop',
+//  message: {
+//    role: 'assistant',
+//    content: 'The capital of France is Paris.'
+//  },
+//  model: 'gpt-4o-2024-05-13',
+//  citations: [ { position: 209, references: [Array] } ],
+//  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+// }
+```
+
+`chatCompletion` is based on the [OpenAI Chat Completion](https://platform.openai.com/docs/api-reference/chat) format, and is useful if OpenAI-compatible responses. However, it has limited functionality compared to the standard `chat` method. Read more [here](https://docs.pinecone.io/reference/api/2025-01/assistant/chat_completion_assistant).
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatResp = await assistant.chatCompletion({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+console.log(chatResp);
+// {
+//  id: '000000000000000023e7fb015be9d0ad',
+//  choices: [
+//    {
+//      finishReason: 'stop',
+//      index: 0,
+//      message: {
+//        role: 'assistant',
+//        content: 'The capital of France is Paris.'
+//      }
+//    }
+//  ],
+//  finishReason: 'stop',
+//  model: 'gpt-4o-2024-05-13',
+//  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
+// }
+```
+
+### Stream Assistant responses
+
+Assistant chat responses can also be streamed using the `chatStream` and `chatCompletionStream` methods on the `Assistant` class. These methods return a `ChatStream` which implements `AsyncIterable`, returning an [async iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) object allowing for manipulation of the stream. You can stream either the chat or chat completions operations.
+
+Note: The shape of the JSON returned in each streamed chunk will be different depending which method is being used.
+
+Chat stream:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatStream = await assistant.chatStream({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+
+for await (const chunk of chatStream) {
+  console.log(chunk);
+}
+// Each chunk in the stream will have a different shape depending on the type:
+//
+// {
+//   type: 'message_start',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   role: 'assistant'
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: 'The' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' capital' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' of' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' France' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' is Paris.' }
+// }
+// {
+//   type: 'citation',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   citation: { position: 1538, references: [ [Object] ] }
+// }
+// {
+//   type: 'message_end',
+//   id: '000000000000000002378669324ef087',
+//   model: 'gpt-4o-2024-05-13',
+//   finishReason: 'stop',
+//   usage: { promptTokens: 9080, completionTokens: 312, totalTokens: 9392 }
+// }
+```
+
+Chat completion stream:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatCompletionStream = await assistant.chatCompletionStream({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+
+for await (const chunk of chatCompletionStream) {
+  console.log(chunk);
+}
+// Each chunk will have the same OpenAI compatible completion shape:
+//
+// {
+//   id: 'response-id',
+//   choices: [
+//     {
+//       index: 0,
+//       delta: {
+//         role: 'assistant'
+//       },
+//       finishReason: null
+//     }
+//   ],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: null
+// }
+// {
+//   id: 'response-id',
+//   choices: [
+//     {
+//       index: 0,
+//       delta: {
+//         content: 'The capital'
+//       },
+//       finishReason: null
+//     }
+//   ],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: null
+// }
+// ... rest of stream
+// {
+//   id: 'response-id',
+//   choices: [],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: {
+//     promptTokens: 9080,
+//     completionTokens: 338,
+//     totalTokens: 9418
+//   }
+// }
+```
+
+### Inspect context snippets associated with a chat
+
+Returns [context snippets associated with a given query and an Assistant's response](https://docs.pinecone.io/guides/assistant/understanding-context-snippets). This is useful for understanding
+how the Assistant arrived at its answer(s).
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const context = await assistant.context({
+  query: 'What is the capital of France?',
+});
+console.log(context);
+// {
+//  snippets: [
+//    {
+//      type: 'text',
+//      content: 'The capital of France is Paris.',
+//      score: 0.9978925,
+//      reference: [Object]
+//    },
+//  ],
+//  usage: { promptTokens: 527, completionTokens: 0, totalTokens: 527 }
+// }
+```
+
+### Add files to an Assistant
+
+You can [add files to an Assistant](https://docs.pinecone.io/guides/assistant/manage-files#upload-a-local-file) to enable it to interact with files during chat conversations. The following
+example shows how to upload a local `test-file.txt` file to an Assistant.
+
+**Note:** You must upload at least 1 file in order to chat with an Assistant.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+await assistant.uploadFile({
+  path: 'test-file.txt',
+  metadata: { 'test-key': 'test-value' },
+});
+// {
+//  name: 'test-file.txt',
+//  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+//  metadata: { 'test-key': 'test-value' },
+//  createdOn: 2025-01-06T19:14:21.969Z,
+//  updatedOn: 2025-01-06T19:14:21.969Z,
+//  status: 'Processing',
+//  percentDone: null,
+//  signedUrl: null,
+//  errorMessage: null
+// }
+```
+
+### List all files in an Assistant
+
+[Lists all files](https://docs.pinecone.io/guides/assistant/manage-files#list-files-in-an-assistant) that have been uploaded to an Assistant. Optionally, you can pass a filter to list only files that
+meet certain criteria.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles({
+  filter: { metadata: { key: 'value' } },
+});
+console.log(files);
+// {
+//  files: [
+//    {
+//      name: 'test-file.txt',
+//      id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+//      metadata: [Object],
+//      createdOn: 2025-01-06T19:14:21.969Z,
+//      updatedOn: 2025-01-06T19:14:36.925Z,
+//      status: 'Available',
+//      percentDone: 1,
+//      signedUrl: undefined,
+//      errorMessage: undefined
+//    }
+//  ]
+// }
+```
+
+### Get the status of a file in an Assistant
+
+[Retrieves information about a file](https://docs.pinecone.io/guides/assistant/manage-files#get-the-status-of-a-file) in an Assistant by ID.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles();
+let fileId: string;
+if (files.files) {
+  fileId = files.files[0].id;
+} else {
+  fileId = '';
+}
+const resp = await assistant.describeFile({ fileId: fileId });
+console.log(resp);
+// {
+//  name: 'test-file.txt',
+//  id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+//  metadata: undefined,
+//  createdOn: 2025-01-06T19:14:21.969Z,
+//  updatedOn: 2025-01-06T19:14:36.925Z,
+//  status: 'Available',
+//  percentDone: 1,
+//  signedUrl: undefined,
+//   errorMessage: undefined
+// }
+```
+
+### Delete a file from an Assistant
+
+[Deletes a file(s)](https://docs.pinecone.io/guides/assistant/manage-files#delete-a-file) from an Assistant by ID.
+
+**Note:** Deleting files is a PERMANENT operation. Deleted files _cannot_ be recovered.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const files = await assistant.listFiles();
+let fileId: string;
+if (files.files) {
+  fileId = files.files[0].id;
+  await assistant.deleteFile({ fileId: fileId });
+}
+```
+
+### Evaluate answers
+
+You can also use the Assistant API to [evaluate the accuracy of a question-answer pair, given a known-true answer](https://docs.pinecone.io/guides/assistant/evaluate-answers).
+The API will return a set of metrics (`correctness`, `completeness`, and `alignment`) that indicate how well the
+Assistant performed.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+await pc.evaluate({
+  question: 'What is the capital of France?',
+  answer: "Lyon is France's capital city",
+  groundTruth: 'Paris is the capital city of France',
+});
+// {
+//  metrics: { correctness: 0, completeness: 0, alignment: 0 }, // 0s across the board indicates incorrect
+//  reasoning: { evaluatedFacts: [ [Object] ] },
+//  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
+// }
 ```
 
 ## Testing

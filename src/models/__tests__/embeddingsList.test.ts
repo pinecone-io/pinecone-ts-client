@@ -4,6 +4,8 @@ import {
   EmbeddingsListUsage,
 } from '../../pinecone-generated-ts-fetch/inference';
 
+// TODO: add tests for sparse vector types
+
 describe('EmbeddingsList', () => {
   let mockEmbeddings: Array<Embedding>;
   let mockUsage: EmbeddingsListUsage;
@@ -11,13 +13,21 @@ describe('EmbeddingsList', () => {
   let embeddingsList: EmbeddingsList;
 
   beforeAll(() => {
-    mockEmbeddings = [{ values: [1, 2, 3] }, { values: [4, 5, 6] }];
+    mockEmbeddings = [
+      { vectorType: 'dense', values: [1, 2, 3] },
+      { vectorType: 'dense', values: [4, 5, 6] },
+    ];
     mockUsage = { totalTokens: 3 };
     mockModel = 'someEmbeddingModel';
-    embeddingsList = new EmbeddingsList(mockModel, mockEmbeddings, mockUsage);
+    embeddingsList = new EmbeddingsList(
+      mockModel,
+      'dense',
+      mockEmbeddings,
+      mockUsage
+    );
   });
 
-  it('Should initialize embeddingsList class correctly', () => {
+  test('Should initialize embeddingsList class correctly', () => {
     expect(embeddingsList).toBeInstanceOf(EmbeddingsList);
     expect(embeddingsList.model).toEqual(mockModel);
     expect(embeddingsList.data).toEqual(mockEmbeddings);
@@ -25,14 +35,14 @@ describe('EmbeddingsList', () => {
     expect(embeddingsList.data?.values).toEqual(mockEmbeddings.values);
   });
 
-  it('Should return correct Embedding by index and by element', () => {
+  test('Should return correct Embedding by index and by element', () => {
     expect(embeddingsList.get(0)).toEqual(mockEmbeddings[0]);
 
     const elementToFindIndexOf: Embedding = mockEmbeddings[0];
     expect(embeddingsList.indexOf(elementToFindIndexOf)).toEqual(0);
   });
 
-  it('Should truncate output of values when necessary', () => {
+  test('Should truncate output of values when necessary', () => {
     const manyValues = [1, 2, 3, 4, 5, 6, 7, 8];
     const truncatedManyValues =
       embeddingsList.truncateValuesForDisplay(manyValues);
@@ -51,11 +61,20 @@ describe('truncateData', () => {
   let embeddingsList: EmbeddingsList;
   let mockModel: string;
 
+  // todo: make this common to all tests in this file b/c it's redundant
   beforeAll(() => {
-    mockEmbeddings = [{ values: [1, 2, 3] }, { values: [4, 5, 6] }];
+    mockEmbeddings = [
+      { vectorType: 'dense', values: [1, 2, 3] },
+      { vectorType: 'dense', values: [4, 5, 6] },
+    ];
     mockUsage = { totalTokens: 3 };
     mockModel = 'someEmbeddingModel';
-    embeddingsList = new EmbeddingsList(mockModel, mockEmbeddings, mockUsage);
+    embeddingsList = new EmbeddingsList(
+      mockModel,
+      'dense',
+      mockEmbeddings,
+      mockUsage
+    );
   });
 
   // Mock the truncateValues method to avoid side effects
@@ -70,14 +89,15 @@ describe('truncateData', () => {
       });
   });
 
-  it('Should truncate output of data object when appropriate', () => {
+  test('Should truncate output of data object when appropriate', () => {
     const mockEmbeddingsWithoutTruncationExpected: Array<Embedding> = [
-      { values: [1, 2, 3] },
-      { values: [4, 5, 6] },
-      { values: [7, 8, 9] },
+      { vectorType: 'dense', values: [1, 2, 3] },
+      { vectorType: 'dense', values: [4, 5, 6] },
+      { vectorType: 'dense', values: [7, 8, 9] },
     ];
     embeddingsList = new EmbeddingsList(
       mockModel,
+      'dense',
       mockEmbeddingsWithoutTruncationExpected,
       mockUsage
     );
@@ -93,17 +113,18 @@ describe('truncateData', () => {
     );
   });
 
-  it('should truncate data correctly when there are more than 5 embeddings', () => {
+  test('should truncate data correctly when there are more than 5 embeddings', () => {
     const mockEmbeddingsWithTruncationExpected: Array<Embedding> = [
-      { values: [1, 2, 3, 4, 5] },
-      { values: [6, 7, 8, 9, 10] },
-      { values: [11, 12, 13, 14, 15] },
-      { values: [16, 17, 18, 19, 20] },
-      { values: [21, 22, 23, 24, 25] },
-      { values: [26, 27, 28, 29, 30] },
+      { vectorType: 'dense', values: [1, 2, 3, 4, 5] },
+      { vectorType: 'dense', values: [6, 7, 8, 9, 10] },
+      { vectorType: 'dense', values: [11, 12, 13, 14, 15] },
+      { vectorType: 'dense', values: [16, 17, 18, 19, 20] },
+      { vectorType: 'dense', values: [21, 22, 23, 24, 25] },
+      { vectorType: 'dense', values: [26, 27, 28, 29, 30] },
     ];
     embeddingsList = new EmbeddingsList(
       mockModel,
+      'dense',
       mockEmbeddingsWithTruncationExpected,
       mockUsage
     );
@@ -111,7 +132,7 @@ describe('truncateData', () => {
     const expectedTruncatedData = [
       { values: [1, 2, '...', 4, 5] },
       { values: [6, 7, '...', 9, 10] },
-      `   ... (2 more embeddings) ...`,
+      `... (2 more embeddings) ...`,
       { values: [21, 22, '...', 24, 25] },
       { values: [26, 27, '...', 29, 30] },
     ];

@@ -38,6 +38,8 @@ export class Inference {
     });
   }
 
+  // TODO: Add way of handling sparse vs dense embeddings in response obj; right now it's hard-coded to "dense" as a
+  //  bandaid fix
   /* Generate embeddings for a list of input strings using a specified embedding model. */
   async embed(
     model: string,
@@ -46,6 +48,11 @@ export class Inference {
   ): Promise<EmbeddingsList> {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> =
       this._formatInputs(inputs);
+    if (params && params.inputType) {
+      // Rename `inputType` to `input_type`
+      params.input_type = params.inputType;
+      delete params.inputType;
+    }
     const typedRequest: EmbedOperationRequest = {
       embedRequest: {
         model: model,
@@ -54,7 +61,12 @@ export class Inference {
       },
     };
     const response = await this._inferenceApi.embed(typedRequest);
-    return new EmbeddingsList(response.model, response.data, response.usage);
+    return new EmbeddingsList(
+      response.model,
+      'dense',
+      response.data,
+      response.usage
+    );
   }
 
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order

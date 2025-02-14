@@ -17,7 +17,7 @@
     "build": "rm -rf dist/ && tsc",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
-    "generate:openapi": "./codegen/build-oas.sh 2024-07 && npm run build && npm run format",
+    "generate:openapi": "./codegen/build-oas.sh 2025-01 && npm run build && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
@@ -26,7 +26,7 @@
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --runInBand --bail",
     "test:integration-local:edge": "TEST_ENV=edge node src/integration/integrationRunner.js",
     "test:integration:cleanup": "npm run build && node utils/cleanupResources.ts",
-    "test:external-app-local": "chmod +x src/external-app/local-external-app.sh && src/external-app/local-external-app.sh",
+    "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
     "test:unit": "jest src/"
   },
   "engines": {
@@ -36,7 +36,7 @@
     "@edge-runtime/jest-environment": "^2.3.3",
     "@edge-runtime/types": "^2.2.3",
     "@types/jest": "^29.5.0",
-    "@types/node": "^18.19.61",
+    "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
     "dotenv": "^16.0.3",
