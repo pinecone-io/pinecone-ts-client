@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { ChatStream } from '../chatStream';
+import { ChatStream } from '../../assistant/chatStream';
 import { convertKeysToCamelCase } from '../convertKeys';
 
 jest.mock('../convertKeys');
