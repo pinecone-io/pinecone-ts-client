@@ -1332,15 +1332,9 @@ console.log(test);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.updateAssistant({
-  name: 'test1',
+await pc.updateAssistant('test1', {
   instructions: 'some new  instructions!',
 });
-// {
-//  assistantName: test1,
-//  instructions: 'some new instructions!',
-//  metadata: undefined
-// }
 ```
 
 ### List Assistants
@@ -1434,6 +1428,146 @@ console.log(chatResp);
 // }
 ```
 
+### Stream Assistant responses
+
+Assistant chat responses can also be streamed using the `chatStream` and `chatCompletionStream` methods on the `Assistant` class. These methods return a `ChatStream` which implements `AsyncIterable`, returning an [async iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) object allowing for manipulation of the stream. You can stream either the chat or chat completions operations.
+
+Note: The shape of the JSON returned in each streamed chunk will be different depending which method is being used.
+
+Chat stream:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatStream = await assistant.chatStream({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+
+for await (const chunk of chatStream) {
+  console.log(chunk);
+}
+// Each chunk in the stream will have a different shape depending on the type:
+//
+// {
+//   type: 'message_start',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   role: 'assistant'
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: 'The' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' capital' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' of' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' France' }
+// }
+// {
+//   type: 'content_chunk',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   delta: { content: ' is Paris.' }
+// }
+// {
+//   type: 'citation',
+//   id: 'response_id',
+//   model: 'gpt-4o-2024-05-13',
+//   citation: { position: 1538, references: [ [Object] ] }
+// }
+// {
+//   type: 'message_end',
+//   id: '000000000000000002378669324ef087',
+//   model: 'gpt-4o-2024-05-13',
+//   finishReason: 'stop',
+//   usage: { promptTokens: 9080, completionTokens: 312, totalTokens: 9392 }
+// }
+```
+
+Chat completion stream:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const assistantName = 'test1';
+const assistant = pc.Assistant(assistantName);
+const chatCompletionStream = await assistant.chatCompletionStream({
+  messages: [
+    {
+      role: 'user',
+      content: 'What is the capital of France?',
+    },
+  ],
+});
+
+for await (const chunk of chatCompletionStream) {
+  console.log(chunk);
+}
+// Each chunk will have the same OpenAI compatible completion shape:
+//
+// {
+//   id: 'response-id',
+//   choices: [
+//     {
+//       index: 0,
+//       delta: {
+//         role: 'assistant'
+//       },
+//       finishReason: null
+//     }
+//   ],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: null
+// }
+// {
+//   id: 'response-id',
+//   choices: [
+//     {
+//       index: 0,
+//       delta: {
+//         content: 'The capital'
+//       },
+//       finishReason: null
+//     }
+//   ],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: null
+// }
+// ... rest of stream
+// {
+//   id: 'response-id',
+//   choices: [],
+//   model: 'gpt-4o-2024-05-13',
+//   usage: {
+//     promptTokens: 9080,
+//     completionTokens: 338,
+//     totalTokens: 9418
+//   }
+// }
+```
+
 ### Inspect context snippets associated with a chat
 
 Returns [context snippets associated with a given query and an Assistant's response](https://docs.pinecone.io/guides/assistant/understanding-context-snippets). This is useful for understanding
@@ -1444,10 +1578,10 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
-const response = await assistant.context({
+const context = await assistant.context({
   query: 'What is the capital of France?',
 });
-console.log(response);
+console.log(context);
 // {
 //  snippets: [
 //    {

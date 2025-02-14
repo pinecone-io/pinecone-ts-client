@@ -52,7 +52,7 @@ export const context = (
         filter: options.filter,
       },
     } as ContextAssistantRequest;
-    return api.contextAssistant(request);
+    return await api.contextAssistant(request);
   };
 };
 

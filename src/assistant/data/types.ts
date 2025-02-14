@@ -1,3 +1,5 @@
+import type { UsageModel } from '../../pinecone-generated-ts-fetch/assistant_data';
+
 /**
  * The `ListFilesOptions` interface describes the options (a single filter) that can be passed to the `listFiles` method.
  */
@@ -97,10 +99,6 @@ export interface ChatOptions {
    */
   messages: string[] | Array<{ [key: string]: string }>;
   /**
-   * If false, the Assistant will return a single JSON response. If true, the Assistant will return a stream of responses.
-   */
-  stream?: boolean;
-  /**
    * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
    * If empty, the assistant will default to using 'gpt-4o' model.
    */
@@ -115,7 +113,6 @@ export interface ChatOptions {
 type ChatOptionsType = keyof ChatOptions;
 export const ChatOptionsType: ChatOptionsType[] = [
   'messages',
-  'stream',
   'model',
   'filter',
 ];
@@ -157,3 +154,176 @@ export const UploadFileOptionsType: UploadFileOptionsType[] = [
   'path',
   'metadata',
 ];
+
+/**
+ * A discriminated union representing a chunked response in a streamed chat.
+ * This can be one of several chunk types: {@link MessageStartChunk}, {@link ContentChunk}, {@link CitationChunk}, or {@link MessageEndChunk}.
+ * These represent the objects that will be streamed as a part of the assistant't response.
+ */
+export type StreamedChatResponse =
+  | MessageStartChunk
+  | ContentChunk
+  | CitationChunk
+  | MessageEndChunk;
+
+/**
+ * Describes the common properties of all the chunk types streamed in a chat response.
+ * The different chunk types form a a discriminated union type {@link StreamedChatResponse}.
+ */
+export interface BaseChunk {
+  /**
+   * The type of chunk. Either `message_start`, `content_chunk`, `citation`, or `message_end`.
+   */
+  type: string;
+  /**
+   * The unique identifier for the streaming response.
+   */
+  id: string;
+  /**
+   * The model used to generate the response.
+   */
+  model: string;
+}
+
+/**
+ * Describes the start of a streamed message in a chat response.
+ */
+export interface MessageStartChunk extends BaseChunk {
+  /**
+   * The type of the chunk indicating the beginning of the stream.
+   */
+  type: 'message_start';
+  /**
+   * The role of the message sender. Either `user` or `assistant`.
+   */
+  role: string;
+}
+
+/**
+ * Describes a chunk containing a piece of message content.
+ */
+export interface ContentChunk extends BaseChunk {
+  /**
+   * The type of the chunk indicating content.
+   */
+  type: 'content_chunk';
+  /**
+   * The content delta, representing a portion of the message content.
+   */
+  delta: {
+    content: string;
+  };
+}
+
+/**
+ * Describes a chunk containing citation information for a message.
+ */
+export interface CitationChunk extends BaseChunk {
+  /**
+   * The type of the chunk indicating a citation.
+   */
+  type: 'citation';
+  /**
+   * The citation details, including the position and references.
+   */
+  citation: {
+    /**
+     * The position of the citation within the message content.
+     */
+    position: number;
+    /**
+     * An array of references associated with the citation.
+     */
+    references: Array<{
+      /**
+       * The {@link AssistantFileModel} associated with the citation.
+       */
+      file: AssistantFileModel;
+      /**
+       * The pages in the file that are referenced.
+       */
+      pages: number[];
+    }>;
+  };
+}
+
+/**
+ * Describes the end of a streamed message in a chat response.
+ */
+export interface MessageEndChunk extends BaseChunk {
+  /**
+   * The type of the chunk indicating the end of the stream.
+   */
+  type: 'message_end';
+  /**
+   * The reason why the message generation finished.
+   */
+  finishReason: FinishReasonEnum;
+  /**
+   * The usage details associated with the streamed response.
+   */
+  usage: UsageModel;
+}
+
+/**
+ * Describes a streamed response for chat completion request. Each response chunk will have the
+ * same shape.
+ */
+export interface StreamedChatCompletionResponse {
+  /**
+   * The unique identifier for the streaming response.
+   */
+  id: string;
+  /**
+   * An array of {@link ChoiceModel} representing different response types.
+   */
+  choices: ChoiceModel[];
+  /**
+   * The model used to generate the response.
+   */
+  model: string;
+}
+
+/**
+ * Describes a single choice in a streamed chat response.
+ */
+export interface ChoiceModel {
+  /**
+   * The reason why the response generation finished, if applicable.
+   */
+  finishReason?: FinishReasonEnum;
+  /**
+   * The index of the choice in the response.
+   */
+  index: number;
+  /**
+   * The delta object containing role and content updates for the choice.
+   */
+  delta: {
+    /**
+     * The role of the message sender.
+     */
+    role?: string;
+    /**
+     * The content of the message.
+     */
+    content?: string;
+  };
+}
+
+/**
+ * Enum representing the reasons why a response generation may finish.
+ *
+ * - `Stop`: The response was completed normally.
+ * - `Length`: The response was truncated due to length constraints.
+ * - `ContentFilter`: The response was stopped by a content filter.
+ * - `FunctionCall`: The response generation was interrupted by a function call.
+ */
+export const FinishReasonEnum = {
+  Stop: 'stop',
+  Length: 'length',
+  ContentFilter: 'content_filter',
+  FunctionCall: 'function_call',
+} as const;
+export type FinishReasonEnum =
+  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];

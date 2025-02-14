@@ -54,6 +54,6 @@ export const describeFile = (
       assistantFileId: fileId,
       includeUrl: 'true',
     } as DescribeFileRequest;
-    return api.describeFile(request);
+    return await api.describeFile(request);
   };
 };

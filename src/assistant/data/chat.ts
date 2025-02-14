@@ -11,6 +11,58 @@ import { ChatOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
 
+export const chat = (
+  assistantName: string,
+  apiProvider: AsstDataOperationsProvider
+) => {
+  return async (options: ChatOptions): Promise<ChatModel> => {
+    validateChatOptions(options);
+
+    const api = await apiProvider.provideData();
+    const messages = messagesValidation(options) as MessageModel[];
+    const model = modelValidation(options);
+    const request: ChatAssistantRequest = {
+      assistantName: assistantName,
+      chat: {
+        messages: messages,
+        stream: false,
+        model: model,
+        filter: options.filter,
+      },
+    };
+
+    const retryWrapper = new RetryOnServerFailure(() =>
+      api.chatAssistant(request)
+    );
+
+    return await retryWrapper.execute();
+  };
+};
+
+export const validateChatOptions = (options: ChatOptions) => {
+  if (!options || !options.messages) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`messages`) to chat with an assistant.'
+    );
+  }
+
+  ValidateObjectProperties(options, ChatOptionsType);
+
+  if (options.model) {
+    if (
+      !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
+    ) {
+      throw new PineconeArgumentError(
+        `Invalid model: "${options.model}". Must be one of: ${Object.values(
+          ChatModelEnum
+        )
+          .map((model) => `"${model}"`)
+          .join(', ')}.`
+      );
+    }
+  }
+};
+
 /**
  * Validates the messages passed to the Assistant.
  *
@@ -82,87 +134,4 @@ export const modelValidation = (options: ChatOptions) => {
     }
   }
   return model;
-};
-
-/**
- * Sends a message to the Assistant and receives a response. Retries the request if the server fails.
- *
- * @example
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
- * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
- * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
- * console.log(chatResp);
- * // {
- * //  id: '000000000000000023e7fb015be9d0ad',
- * //  finishReason: 'stop',
- * //  message: {
- * //    role: 'assistant',
- * //    content: 'The capital of France is Paris.'
- * //  },
- * //  model: 'gpt-4o-2024-05-13',
- * //  citations: [ { position: 209, references: [Array] } ],
- * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
- * // }
- * ```
- *
- * @param assistantName - The name of the Assistant to send the message to.
- * @param api - The API object to use to send the request.
- * @throws An Error if no messages are provided.
- * @throws an Error if the message object is not formatted correctly.
- * @throws an Error if the model is not one of the available models.
- * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
- */
-export const chat = (
-  assistantName: string,
-  apiProvider: AsstDataOperationsProvider
-) => {
-  return async (options: ChatOptions): Promise<ChatModel> => {
-    validateChatOptions(options);
-
-    const api = await apiProvider.provideData();
-    const messages = messagesValidation(options) as MessageModel[];
-    const model = modelValidation(options);
-    const request: ChatAssistantRequest = {
-      assistantName: assistantName,
-      chat: {
-        messages: messages,
-        stream: options.stream,
-        model: model,
-        filter: options.filter,
-      },
-    };
-
-    const retryWrapper = new RetryOnServerFailure(() =>
-      api.chatAssistant(request)
-    );
-
-    return await retryWrapper.execute();
-  };
-};
-
-export const validateChatOptions = (options: ChatOptions) => {
-  if (!options || !options.messages) {
-    throw new PineconeArgumentError(
-      'You must pass an object with required properties (`messages`) to chat with an assistant.'
-    );
-  }
-
-  ValidateObjectProperties(options, ChatOptionsType);
-
-  if (options.model) {
-    if (
-      !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
-    ) {
-      throw new PineconeArgumentError(
-        `Invalid model: "${options.model}". Must be one of: ${Object.values(
-          ChatModelEnum
-        )
-          .map((model) => `"${model}"`)
-          .join(', ')}.`
-      );
-    }
-  }
 };

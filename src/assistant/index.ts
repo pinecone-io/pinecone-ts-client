@@ -6,6 +6,8 @@ import type {
   UploadFileOptions,
 } from './data/types';
 import { chatCompletion } from './data/chatCompletion';
+import { chatStream } from './data/chatStream';
+import { chatCompletionStream } from './data/chatCompletionStream';
 import { listFiles } from './data/listFiles';
 import { describeFile } from './data/describeFile';
 import { deleteFile } from './data/deleteFile';
@@ -24,6 +26,16 @@ export type {
 } from './control/types';
 export type {
   ChatOptions,
+  ChatModelEnum,
+  ChoiceModel,
+  FinishReasonEnum,
+  StreamedChatResponse,
+  StreamedChatCompletionResponse,
+  BaseChunk,
+  MessageStartChunk,
+  ContentChunk,
+  CitationChunk,
+  MessageEndChunk,
   ContextOptions,
   ListFilesOptions,
   UploadFileOptions,
@@ -31,25 +43,28 @@ export type {
   AssistantFileStatusEnum,
   AssistantFilesList,
 } from './data/types';
+export { ChatStream } from './chatStream';
 
 /**
  * The `Assistant` class holds the data plane methods for interacting with
  *  [Assistants](https://docs.pinecone.io/guides/assistant/understanding-assistant).
  *
- *  This class's methods are instantiated on a Pinecone object and are used to interact with the data plane of an Assistant.
+ *  This class can be instantiated through a {@link Pinecone} object, and is used to interact with a specific assistant.
  *
  *  @example
  *  ```typescript
  *  import { Pinecone } from '@pinecone-database/pinecone';
  *  const pc = new Pinecone();
- *  const assistant = pc.Assistant('assistant-name');
+ *  const assistant = pc.assistant('assistant-name');
  *  ```
  */
 export class Assistant {
   private config: PineconeConfiguration;
 
   readonly _chat: ReturnType<typeof chat>;
-  readonly _chatCompletions: ReturnType<typeof chatCompletion>;
+  readonly _chatStream: ReturnType<typeof chatStream>;
+  readonly _chatCompletion: ReturnType<typeof chatCompletion>;
+  readonly _chatCompletionStream: ReturnType<typeof chatCompletionStream>;
   readonly _listFiles: ReturnType<typeof listFiles>;
   readonly _describeFile: ReturnType<typeof describeFile>;
   readonly _uploadFile: ReturnType<typeof uploadFile>;
@@ -61,7 +76,7 @@ export class Assistant {
   /**
    * Creates an instance of the `Assistant` class.
    *
-   * @param assistantName - The name of the Assistant.
+   * @param assistantName - The name of the assistant.
    * @param config - The Pinecone configuration object containing an API key and other configuration parameters
    * needed for API calls.
    *
@@ -79,9 +94,19 @@ export class Assistant {
     this.assistantName = assistantName;
 
     this._chat = chat(this.assistantName, asstDataOperationsProvider);
-    this._chatCompletions = chatCompletion(
+    this._chatStream = chatStream(
+      this.assistantName,
+      asstDataOperationsProvider,
+      this.config
+    );
+    this._chatCompletion = chatCompletion(
       this.assistantName,
       asstDataOperationsProvider
+    );
+    this._chatCompletionStream = chatCompletionStream(
+      this.assistantName,
+      asstDataOperationsProvider,
+      this.config
     );
     this._listFiles = listFiles(this.assistantName, asstDataOperationsProvider);
     this._describeFile = describeFile(
@@ -103,14 +128,14 @@ export class Assistant {
   // --------- Chat methods ---------
 
   /**
-   * Sends a message to the Assistant and receives a response. Retries the request if the server fails.
+   * Sends a message to the assistant and receives a response. Retries the request if the server fails.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
    * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
    * // {
    * //  id: '000000000000000023e7fb015be9d0ad',
@@ -122,42 +147,131 @@ export class Assistant {
    * //  model: 'gpt-4o-2024-05-13',
    * //  citations: [ { position: 209, references: [Array] } ],
    * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
-   * }
+   * // }
    * ```
    *
    * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
-   * Assistant.
-   * @returns A promise that resolves to a {@link ChatModel} object containing the response from the Assistant.
+   * assistant.
+   * @returns A promise that resolves to a {@link ChatModel} object containing the response from the assistant.
    */
   chat(options: ChatOptions) {
     return this._chat(options);
   }
 
   /**
-   * Sends a message to the Assistant and receives a response. Response is compatible with
-   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
-   *
-   * See {@link chat} for example usage.
-   *
-   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
-   * to an Assistant.
-   * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the Assistant.
-   */
-  chatCompletions(options: ChatOptions) {
-    return this._chatCompletions(options);
-  }
-
-  // --------- File methods ---------
-
-  /**
-   * Lists files (with optional filter) uploaded to an Assistant.
+   * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatResponse>}. Retries the request if the server fails.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
+   * const chatStream = await assistant.chatStream({ messages: [{ role: 'user', content: 'What is the capital of France?'}]});
+   *
+   * // stream the response and log each chunk
+   * for await (const chunk of newStream) {
+   *   console.log(chunk);
+   * }
+   * // each chunk will have a variable shape depending on the type:
+   * // { type:"message_start", id:"response_id", model:"gpt-4o-2024-05-13", role:"assistant"}
+   * // { type:"content_chunk", id:"response_id", model:"gpt-4o-2024-05-13", delta:{ content:"The"}}
+   * // { type:"content_chunk", id:"response_id", model:"gpt-4o-2024-05-13", delta:{ content:" test"}}
+   * // { type:"message_end", id:"response_id", model:"gpt-4o-2024-05-13", finishReason:"stop",usage:{ promptTokens:371,completionTokens:48,totalTokens:419}}
+   * ```
+   *
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
+   * assistant.
+   * @returns A promise that resolves to a {@link ChatStream<StreamedChatResponse>}.
+   */
+  chatStream(options: ChatOptions) {
+    return this._chatStream(options);
+  }
+
+  /**
+   * Sends a message to the assistant and receives a response that is compatible with
+   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.assistant(assistantName);
+   * const chatCompletion = await assistant.chatCompletion({ messages: [{ role: 'user', content: 'What is the capital of France?' }]});
+   * console.log(chatCompletion);
+   * // {
+   * //  id: "response_id",
+   * //  choices: [
+   * //  {
+   * //    finishReason: "stop",
+   * //    index: 0,
+   * //    message: {
+   * //      role: "assistant",
+   * //      content: "The data mentioned is described as \"some temporary data\"  [1].\n\nReferences:\n1. [test-chat.txt](https://storage.googleapis.com/knowledge-prod-files/your_file_resource) \n"
+   * //    }
+   * //   }
+   * //  ],
+   * //  model: "gpt-4o-2024-05-13",
+   * //  usage: {
+   * //    promptTokens: 371,
+   * //    completionTokens: 19,
+   * //    totalTokens: 390
+   * //  }
+   * // }
+   * ```
+   *
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
+   * to an assistant.
+   * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the assistant.
+   */
+  chatCompletion(options: ChatOptions) {
+    return this._chatCompletion(options);
+  }
+
+  /**
+   * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatCompletionResponse>}. Response is compatible with
+   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.assistant(assistantName);
+   * const chatStream = await assistant.chatCompletionStream({messages: [{role: 'user', content: "What is the capital of France?"}]});
+   *
+   * // stream the response and log each chunk
+   * for await (const chunk of newStream) {
+   *   if (chunk.choices.length > 0 && chunk.choices[0].delta.content) {
+   *     process.stdout.write(chunk.choices[0].delta.content);
+   *   }
+   * }
+   * // { id: 'response_id', choices: [{ index: 0, delta: { role: 'assistant' }, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
+   * // { id: 'response_id', choices: [{ index: 0, delta: { content: 'The' }}, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
+   * // { id: 'response_id', choices: [{ index: 0, delta: { content: ' test' }}, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
+   * // { id: 'response_id', choices: [], model: 'gpt-4o-2024-05-13', usage: { promptTokens: 371, completionTokens: 48, totalTokens: 419 }}
+   * ```
+   *
+   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
+   * to an assistant.
+   * @returns A promise that resolves to a {@link ChatStream<StreamedChatCompletionResponse>}.
+   */
+  chatCompletionStream(options: ChatOptions) {
+    return this._chatCompletionStream(options);
+  }
+
+  // --------- File methods ---------
+
+  /**
+   * Lists files (with optional filter) uploaded to an assistant.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistantName = 'test1';
+   * const assistant = pc.assistant(assistantName);
    * const files = await assistant.listFiles({filter: {metadata: {key: 'value'}}});
    * console.log(files);
    * // {
@@ -188,14 +302,14 @@ export class Assistant {
   }
 
   /**
-   * Describes a file uploaded to an Assistant.
+   * Describes a file uploaded to an assistant.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
    * const files = await assistant.listFiles();
    * let fileId: string;
    * if (files.files) {
@@ -226,7 +340,7 @@ export class Assistant {
   }
 
   /**
-   * Uploads a file to an Assistant.
+   * Uploads a file to an assistant.
    *
    * Note: This method does *not* use the generated code from the OpenAPI spec.
    *
@@ -235,7 +349,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
    * await assistant.uploadFile({path: "test-file.txt", metadata: {"test-key": "test-value"}})
    * // {
    * //  name: 'test-file.txt',
@@ -258,14 +372,14 @@ export class Assistant {
   }
 
   /**
-   * Deletes a file uploaded to an Assistant by ID.
+   * Deletes a file uploaded to an assistant by ID.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
    * const files = await assistant.listFiles();
    * let fileId: string;
    * if (files.files) {
@@ -283,14 +397,14 @@ export class Assistant {
 
   /**
    * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
-   * by an Assistant during the retrieval process.
+   * by an assistant during the retrieval process.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.Assistant(assistantName);
+   * const assistant = pc.assistant(assistantName);
    * const response = await assistant.context({query: "What is the capital of France?"});
    * console.log(response);
    * // {

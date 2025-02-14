@@ -1,7 +1,7 @@
 // Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
-export { Assistant } from './assistant';
+export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
 export { EmbeddingsList } from './models/embeddingsList';
 
@@ -17,11 +17,21 @@ export type {
   AssistantList,
   AssistantModel,
   AssistantStatusEnum,
-  AssistantFileModel,
-  AssistantFilesList,
-  AssistantFileStatusEnum,
   ChatOptions,
+  ChatModelEnum,
+  ChoiceModel,
+  FinishReasonEnum,
+  StreamedChatResponse,
+  StreamedChatCompletionResponse,
+  BaseChunk,
+  MessageStartChunk,
+  ContentChunk,
+  CitationChunk,
+  MessageEndChunk,
   ContextOptions,
+  AssistantFileModel,
+  AssistantFileStatusEnum,
+  AssistantFilesList,
   ListFilesOptions,
   UploadFileOptions,
   CreateAssistantOptions,
@@ -30,8 +40,12 @@ export type {
 } from './assistant';
 export type {
   ChatModel,
+  ChatModelFinishReasonEnum,
   ChatCompletionModel,
+  CitationModel,
   ContextModel,
+  MessageModel,
+  UsageModel,
 } from './pinecone-generated-ts-fetch/assistant_data';
 
 // Type exports
