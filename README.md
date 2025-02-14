@@ -1332,8 +1332,7 @@ console.log(test);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.updateAssistant({
-  name: 'test1',
+await pc.updateAssistant('test1', {
   instructions: 'some new  instructions!',
 });
 ```

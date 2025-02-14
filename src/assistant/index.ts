@@ -208,7 +208,7 @@ export class Assistant {
    * //    index: 0,
    * //    message: {
    * //      role: "assistant",
-   * //      content: "The data mentioned is described as \"some temporary data\"  [1].\n\nReferences:\n1. [test-chat.txt](https://storage.googleapis.com/knowledge-prod-files/0b3dc744-fc03-4752-af7a-0fa25e2ea732%2F940864ff-f412-4828-b772-3e39442aa011%2F7d031d41-60b1-4517-9050-ba0e210de17f.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=ke-prod-1%40pc-knowledge-prod.iam.gserviceaccount.com%2F20250214%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250214T062103Z&X-Goog-Expires=3600&X-Goog-SignedHeaders=host&response-content-disposition=inline&response-content-type=text%2Fplain&X-Goog-Signature=54a609a124be5223d754bc7259a8307a5101f65c92680c98978ed23774e3eb22f53927bc18f38070167a670956b91419648c28d542fc97a8070851f4f27b6b492b621790858c6fa3c03986d8bb0c919348574f3539c503bac2b4879b026cac28298eb7dc7ebea3bbf61f9058eda9d04978a8bdd4dabd10f738d7d8b402f4ae517a85a42f5ce64ca4a8846789f3a45c296422898c638c677fe1d8035c135ee4a8496027da4fecc515990e532a54a9bad5f17a59a584c6092ba61c92f92eccc308e09df40150da55f1317f0e9a9e38f88f19ce5bbe6480aaaf265d4067b641bfdc0f425d7b2dd8ceb007f05c1847e60cb17b76205a804b13d2395385233b18d55e) \n"
+   * //      content: "The data mentioned is described as \"some temporary data\"  [1].\n\nReferences:\n1. [test-chat.txt](https://storage.googleapis.com/knowledge-prod-files/your_file_resource) \n"
    * //    }
    * //   }
    * //  ],

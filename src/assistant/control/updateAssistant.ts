@@ -16,12 +16,17 @@ export const updateAssistant = (api: ManageAssistantsControlApi) => {
     }
 
     validateUpdateAssistantOptions(options);
+    const updateAssistantRequest = {};
+    if (options?.instructions) {
+      updateAssistantRequest['instructions'] = options.instructions;
+    }
+    if (options?.metadata) {
+      updateAssistantRequest['metadata'] = options.metadata;
+    }
+
     return await api.updateAssistant({
       assistantName: name,
-      updateAssistantRequest: {
-        instructions: options?.instructions,
-        metadata: options?.metadata,
-      },
+      updateAssistantRequest: updateAssistantRequest,
     });
   };
 };

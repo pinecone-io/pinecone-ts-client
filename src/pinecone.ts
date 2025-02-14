@@ -737,7 +737,7 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.updateAssistant({name: 'test1', instructions: 'some new  instructions!'});
+   * await pc.updateAssistant('test1', { instructions: 'some new  instructions!'});
    * // {
    * //  assistantName: test1,
    * //  instructions: 'some new instructions!',
@@ -745,7 +745,8 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param options - An {@link updateAssistant} object containing the name of the Assistant to be updated and
+   * @param assistantName - The name of the assistant being updated.
+   * @param options - An {@link updateAssistant} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
