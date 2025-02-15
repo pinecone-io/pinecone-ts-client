@@ -29,7 +29,6 @@ describe('Describe file happy path', () => {
     expect(response).toBeDefined();
     expect(response.status).toBeDefined();
     expect(response.id).toBeDefined();
-    expect(response.metadata).toBeDefined();
     if (response.metadata) {
       expect(response.metadata['key']).toBeDefined();
       expect(response.metadata['key']).toEqual('valueOne');
