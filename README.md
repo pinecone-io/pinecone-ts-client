@@ -1104,19 +1104,15 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 
 ## Inference
 
-Interact with Pinecone's [Inference API](https://docs.pinecone.io/guides/inference/understanding-inference) (currently in [public preview](https://docs.pinecone.io/release-notes/feature-availability)). The Pinecone Inference API is a service that gives
-you access to inference models hosted on Pinecone's infrastructure.
+Use embedding and & reranking models hosted by Pinecone. Learn more about Inference in the [docs](https://docs.pinecone.io/guides/inference/understanding-inference).
 
-**Notes:**
-
-Supported models:
-
-- Embedding: [multilingual-e5-large](https://docs.pinecone.io/models/multilingual-e5-large)
-- Reranking: [bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)
+To see the available models:
+- [Embedding](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models)
+- [Reranking](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) 
 
 ## Create embeddings
 
-Send text to Pinecone's Inference API to generate embeddings for documents and queries.
+Generate embeddings for documents and queries.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
