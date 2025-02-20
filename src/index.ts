@@ -11,6 +11,8 @@ export type {
   RerankResultUsage,
   RankedDocument,
   EmbeddingsList,
+  EmbeddingsListUsage,
+  Embedding,
 } from './pinecone-generated-ts-fetch/inference';
 export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
 export type {
