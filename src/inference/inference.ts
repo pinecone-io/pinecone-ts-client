@@ -1,10 +1,10 @@
 import {
+  EmbeddingsList,
   EmbedOperationRequest,
   EmbedRequestInputsInner,
   InferenceApi,
   RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
-import { EmbeddingsList } from '../models';
 import { PineconeArgumentError } from '../errors';
 
 /** Options one can send with a request to {@link rerank} *
@@ -38,8 +38,6 @@ export class Inference {
     });
   }
 
-  // TODO: Add way of handling sparse vs dense embeddings in response obj; right now it's hard-coded to "dense" as a
-  //  bandaid fix
   /* Generate embeddings for a list of input strings using a specified embedding model. */
   async embed(
     model: string,
@@ -60,13 +58,7 @@ export class Inference {
         parameters: params,
       },
     };
-    const response = await this._inferenceApi.embed(typedRequest);
-    return new EmbeddingsList(
-      response.model,
-      'dense',
-      response.data,
-      response.usage
-    );
+    return await this._inferenceApi.embed(typedRequest);
   }
 
   /** Rerank documents against a query with a reranking model. Each document is ranked in descending relevance order

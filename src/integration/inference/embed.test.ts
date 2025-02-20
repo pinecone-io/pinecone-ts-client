@@ -1,5 +1,4 @@
 import { Pinecone } from '../../pinecone';
-import { EmbeddingsList } from '../../models';
 
 describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
   let inputs: Array<string>;
@@ -20,9 +19,6 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
 
   test('Confirm output types', async () => {
     const response = await pinecone.inference.embed(model, inputs, params);
-    const responseAsArray = response as EmbeddingsList;
-    expect(responseAsArray.length).toBe(inputs.length);
-    expect(response instanceof EmbeddingsList).toBe(true);
     expect(response.model).toBeDefined();
     expect(response.data).toBeDefined();
     expect(response.usage).toBeDefined();

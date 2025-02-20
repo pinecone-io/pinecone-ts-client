@@ -3,7 +3,6 @@ export { Pinecone } from './pinecone';
 export { Index } from './data';
 export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
-export { EmbeddingsList } from './models/embeddingsList';
 
 // Interface exports
 export type { RerankOptions } from './inference/inference';
@@ -11,6 +10,7 @@ export type {
   RerankResult,
   RerankResultUsage,
   RankedDocument,
+  EmbeddingsList,
 } from './pinecone-generated-ts-fetch/inference';
 export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
 export type {

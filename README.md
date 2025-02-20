@@ -1107,8 +1107,9 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 Use embedding and & reranking models hosted by Pinecone. Learn more about Inference in the [docs](https://docs.pinecone.io/guides/inference/understanding-inference).
 
 To see the available models:
+
 - [Embedding](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models)
-- [Reranking](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) 
+- [Reranking](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models)
 
 ## Create embeddings
 
