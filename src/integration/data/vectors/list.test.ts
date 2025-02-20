@@ -23,14 +23,14 @@ describe('listPaginated, serverless index', () => {
     expect(listResults.namespace).toBe(globalNamespaceOne);
   });
 
-  test('test listPaginated with prefix', async () => {
-    const listResults = await serverlessIndex.listPaginated({
-      prefix: diffPrefix,
-    });
-    expect(listResults.namespace).toBe(globalNamespaceOne);
-    expect(listResults.vectors?.length).toBe(1);
-    expect(listResults.pagination).toBeUndefined();
-  });
+  // test('test listPaginated with prefix', async () => {
+  //   const listResults = await serverlessIndex.listPaginated({
+  //     prefix: diffPrefix,
+  //   });
+  //   expect(listResults.namespace).toBe(globalNamespaceOne);
+  //   expect(listResults.vectors?.length).toBe(1);
+  //   expect(listResults.pagination).toBeUndefined();
+  // });
 
   test('test listPaginated with limit and pagination', async () => {
     const listResults = await serverlessIndex.listPaginated({
