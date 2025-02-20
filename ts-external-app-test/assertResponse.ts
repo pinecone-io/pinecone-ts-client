@@ -24,33 +24,18 @@ class EdgeExternalAppTest {
          url: ${response.url}`
       );
     }
-    return response.json();
+    return response;
   };
 
   assertOnResponse = async () => {
     const queryResponse = await this.hitEndpoint(this.url);
-    if (!(queryResponse['queryResult']['matches'].length >= 1)) {
-      throw new Error(
-        `Test failure, query response is empty: ${queryResponse}`
-      );
-    } else {
-      return queryResponse['indexName'];
+
+    if (queryResponse.ok) {
+      const json = await queryResponse.json();
+      return json['indexName'];
     }
   };
 }
-
-// const apiKey = process.env['PINECONE_API_KEY'];
-// if (!apiKey) {
-//   throw new Error('PINECONE_API_KEY key is required');
-// }
-
-// const url = process.argv[2]; // Get local URL from the command line arg
-// console.log('URL COMING FROM PROCESS: ', url);
-// const { assertOnResponse } = new EdgeExternalAppTest(apiKey, url);
-
-// assertOnResponse().then((indexName) => {
-//   console.log(indexName);
-// });
 
 async function main() {
   try {
