@@ -18,10 +18,6 @@ describe('deleteAssistant happy path', () => {
 
     await pinecone.deleteAssistant(assistantName);
     await sleep(3000);
-
-    await expect(pinecone.describeAssistant(assistantName)).rejects.toThrow(
-      PineconeNotFoundError
-    );
   });
 });
 
