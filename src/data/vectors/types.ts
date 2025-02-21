@@ -132,3 +132,10 @@ export type OperationUsage = {
    */
   readUnits?: number;
 };
+
+/**
+ * Integrated records require an `id` field in addition to any relevant model fields, or metadata.
+ */
+export type IntegratedRecord<T extends RecordMetadata = RecordMetadata> = {
+  id: string;
+} & T;

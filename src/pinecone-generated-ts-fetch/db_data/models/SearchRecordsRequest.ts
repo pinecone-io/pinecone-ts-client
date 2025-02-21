@@ -39,7 +39,7 @@ export interface SearchRecordsRequest {
      */
     query: SearchRecordsRequestQuery;
     /**
-     * The fields to return in the search results.
+     * The fields to return in the search results. If not specified, the response will include all fields.
      * @type {Array<string>}
      * @memberof SearchRecordsRequest
      */

@@ -165,7 +165,7 @@ export const createIndex = (api: ManageIndexesApi) => {
   };
 };
 
-const waitUntilIndexIsReady = async (
+export const waitUntilIndexIsReady = async (
   api: ManageIndexesApi,
   indexName: string,
   seconds: number = 0

@@ -9,6 +9,11 @@ export type {
   CreateIndexServerlessSpec,
   CreateIndexPodSpec,
 } from './createIndex';
+export { createIndexForModel } from './createIndexForModel';
+export type {
+  CreateIndexForModelOptions,
+  CreateIndexForModelEmbed,
+} from './createIndexForModel';
 export { deleteIndex } from './deleteIndex';
 export type { DeleteIndexOptions } from './deleteIndex';
 export { describeIndex } from './describeIndex';
