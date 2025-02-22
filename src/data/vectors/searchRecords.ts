@@ -4,19 +4,19 @@ import { RetryOnServerFailure } from '../../utils';
 import { SearchRecordsResponse } from '../../pinecone-generated-ts-fetch/db_data';
 
 export type SearchRecordsOptions = {
-  query: SearchRecordsQueryOptions;
+  query: SearchRecordsQuery;
   fields?: Array<string>;
-  rerank?: SearchRecordsRerankOptions;
+  rerank?: SearchRecordsRerank;
 };
 
-export type SearchRecordsQueryOptions = {
+export type SearchRecordsQuery = {
   topK: number;
   filter?: object;
   inputs?: object;
   vector?: SearchRecordsVector;
 };
 
-export type SearchRecordsRerankOptions = {
+export type SearchRecordsRerank = {
   model: string;
   rankFields: Array<string>;
   topN?: number;
@@ -41,7 +41,9 @@ export class SearchRecordsCommand {
 
   validator = (options: SearchRecordsOptions) => {
     if (!options.query) {
-      throw new PineconeArgumentError('You must pass a query object.');
+      throw new PineconeArgumentError(
+        'You must pass a `query` object to search.'
+      );
     }
   };
 

@@ -52,22 +52,6 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
-    // const retryWrapper = new RetryOnServerFailure(
-    //   api.upsertRecordsNamespace.bind(api),
-    //   maxRetries
-    // );
-
-    // await retryWrapper.execute({
-    //   namespace: this.namespace,
-    //   upsertRecord: records as Array<UpsertRecord>,
-    // });
-
-    // const response = await fetch(upsertRecordsUrl, {
-    //   method: 'POST',
-    //   headers: requestHeaders,
-    //   body: toNdJson(records),
-    // });
-
     const retryWrapper = new RetryOnServerFailure(
       () =>
         fetch(upsertRecordsUrl, {
@@ -89,11 +73,6 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       );
       throw err;
     }
-
-    // return await api.upsertRecordsNamespace({
-    //   namespace: this.namespace,
-    //   upsertRecord: records as Array<UpsertRecord>,
-    // } as UpsertRecordsNamespaceRequest);
   }
 }
 
