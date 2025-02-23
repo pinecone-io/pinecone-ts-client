@@ -25,7 +25,7 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
   suppressConflicts?: boolean;
 }
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type CreateIndexOptionsType = keyof CreateIndexOptions;
 const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
   'spec',
@@ -54,7 +54,7 @@ export interface CreateIndexSpec {
   pod?: CreateIndexPodSpec;
 }
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type CreateIndexSpecType = keyof CreateIndexSpec;
 const CreateIndexSpecProperties: CreateIndexSpecType[] = ['serverless', 'pod'];
 
@@ -71,7 +71,7 @@ export interface CreateIndexServerlessSpec {
   region: string;
 }
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type CreateIndexServerlessSpecType = keyof CreateIndexServerlessSpec;
 const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
   'cloud',
@@ -110,7 +110,7 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type CreateIndexPodSpecType = keyof CreateIndexPodSpec;
 const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
   'environment',
@@ -165,7 +165,7 @@ export const createIndex = (api: ManageIndexesApi) => {
   };
 };
 
-const waitUntilIndexIsReady = async (
+export const waitUntilIndexIsReady = async (
   api: ManageIndexesApi,
   indexName: string,
   seconds: number = 0

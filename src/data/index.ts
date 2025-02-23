@@ -14,11 +14,17 @@ import { describeIndexStats } from './vectors/describeIndexStats';
 import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
+import { UpsertRecordsCommand } from './vectors/upsertRecords';
+import {
+  SearchRecordsCommand,
+  SearchRecordsOptions,
+} from './vectors/searchRecords';
 import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
   PineconeRecord,
   RecordMetadata,
+  IntegratedRecord,
 } from './vectors/types';
 import { StartImportCommand } from './bulk/startImport';
 import { ListImportsCommand } from './bulk/listImports';
@@ -132,6 +138,29 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   _describeIndexStats: ReturnType<typeof describeIndexStats>;
   /** @hidden */
   _listPaginated: ReturnType<typeof listPaginated>;
+  /** @hidden */
+  private _deleteAll: ReturnType<typeof deleteAll>;
+  /** @hidden */
+  private _fetchCommand: FetchCommand<T>;
+  /** @hidden */
+  private _queryCommand: QueryCommand<T>;
+  /** @hidden */
+  private _updateCommand: UpdateCommand<T>;
+  /** @hidden */
+  private _upsertCommand: UpsertCommand<T>;
+  /** @hidden */
+  private _upsertRecordsCommand: UpsertRecordsCommand<T>;
+  /** @hidden */
+  private _searchRecordsCommand: SearchRecordsCommand;
+  /** @hidden */
+  private _startImportCommand: StartImportCommand;
+  /** @hidden */
+  private _listImportsCommand: ListImportsCommand;
+  /** @hidden */
+  private _describeImportCommand: DescribeImportCommand;
+  /** @hidden */
+  private _cancelImportCommand: CancelImportCommand;
+
   /** @internal */
   private config: PineconeConfiguration;
   /** @internal */
@@ -145,24 +174,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     /** An optional host address override for data operations. */
     indexHostUrl?: string;
   };
-  /** @hidden */
-  private _deleteAll: ReturnType<typeof deleteAll>;
-  /** @hidden */
-  private _fetchCommand: FetchCommand<T>;
-  /** @hidden */
-  private _queryCommand: QueryCommand<T>;
-  /** @hidden */
-  private _updateCommand: UpdateCommand<T>;
-  /** @hidden */
-  private _upsertCommand: UpsertCommand<T>;
-  /** @hidden */
-  private _startImportCommand: StartImportCommand;
-  /** @hidden */
-  private _listImportsCommand: ListImportsCommand;
-  /** @hidden */
-  private _describeImportCommand: DescribeImportCommand;
-  /** @hidden */
-  private _cancelImportCommand: CancelImportCommand;
 
   /**
    * Instantiation of Index is handled by {@link Pinecone}
@@ -196,19 +207,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       indexHostUrl: indexHostUrl,
     };
 
+    // vector & record operations
     const dataOperationsProvider = new VectorOperationsProvider(
       config,
       indexName,
       indexHostUrl,
       additionalHeaders
     );
-
     this._deleteAll = deleteAll(dataOperationsProvider, namespace);
     this._deleteMany = deleteMany(dataOperationsProvider, namespace);
     this._deleteOne = deleteOne(dataOperationsProvider, namespace);
     this._describeIndexStats = describeIndexStats(dataOperationsProvider);
     this._listPaginated = listPaginated(dataOperationsProvider, namespace);
-
     this._fetchCommand = new FetchCommand<T>(dataOperationsProvider, namespace);
     this._queryCommand = new QueryCommand<T>(dataOperationsProvider, namespace);
     this._updateCommand = new UpdateCommand<T>(
@@ -219,8 +229,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       dataOperationsProvider,
       namespace
     );
+    this._upsertRecordsCommand = new UpsertRecordsCommand<T>(
+      dataOperationsProvider,
+      namespace,
+      config
+    );
+    this._searchRecordsCommand = new SearchRecordsCommand(
+      dataOperationsProvider,
+      namespace
+    );
 
-    // The 2024-10 OAS introduced a separate bulk-operations API to be used in data plane operations
+    // bulk operations
     const bulkApiProvider = new BulkOperationsProvider(
       config,
       indexName,
@@ -537,6 +556,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async update(options: UpdateOptions<T>) {
     return await this._updateCommand.run(options, this.config.maxRetries);
+  }
+
+  async upsertRecords(data: Array<IntegratedRecord<T>>) {
+    return await this._upsertRecordsCommand.run(data, this.config.maxRetries);
+  }
+
+  async searchRecords(options: SearchRecordsOptions) {
+    return await this._searchRecordsCommand.run(options);
   }
 
   /**

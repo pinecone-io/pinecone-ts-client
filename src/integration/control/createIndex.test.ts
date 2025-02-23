@@ -223,6 +223,8 @@ describe('create index', () => {
         expect(description.metric).toEqual('cosine');
         expect(description.host).toBeDefined();
         expect(description.vectorType).toEqual('dense');
+
+        await pinecone.deleteIndex(indexName);
       });
     });
 

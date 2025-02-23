@@ -48,8 +48,8 @@ export interface RerankOperationRequest {
 export class InferenceApi extends runtime.BaseAPI {
 
     /**
-     * Generate embeddings for input data.  For guidance and examples, see [Generate embeddings](https://docs.pinecone.io/guides/inference/generate-embeddings).
-     * Embed data
+     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Embed data](https://docs.pinecone.io/guides/inference/generate-embeddings).
+     * Generate vectors
      */
     async embedRaw(requestParameters: EmbedOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EmbeddingsList>> {
         const queryParameters: any = {};
@@ -74,8 +74,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generate embeddings for input data.  For guidance and examples, see [Generate embeddings](https://docs.pinecone.io/guides/inference/generate-embeddings).
-     * Embed data
+     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Embed data](https://docs.pinecone.io/guides/inference/generate-embeddings).
+     * Generate vectors
      */
     async embed(requestParameters: EmbedOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EmbeddingsList> {
         const response = await this.embedRaw(requestParameters, initOverrides);
@@ -83,8 +83,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
-     * Rerank documents
+     * Rerank query results according to their relevance to a query. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank results
      */
     async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
         const queryParameters: any = {};
@@ -109,8 +109,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
-     * Rerank documents
+     * Rerank query results according to their relevance to a query. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank results
      */
     async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {
         const response = await this.rerankRaw(requestParameters, initOverrides);

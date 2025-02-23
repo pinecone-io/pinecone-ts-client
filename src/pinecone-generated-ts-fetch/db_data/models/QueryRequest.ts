@@ -45,7 +45,7 @@ export interface QueryRequest {
      */
     topK: number;
     /**
-     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
+     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata). You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
      * @type {object}
      * @memberof QueryRequest
      */
@@ -63,14 +63,14 @@ export interface QueryRequest {
      */
     includeMetadata?: boolean;
     /**
-     * DEPRECATED. The query vectors. Each `query()` request can contain only one of the parameters `queries`, `vector`, or  `id`.
+     * DEPRECATED. Use `vector` or `id` instead.
      * @type {Array<QueryVector>}
      * @memberof QueryRequest
      * @deprecated
      */
     queries?: Array<QueryVector>;
     /**
-     * The query vector. This should be the same length as the dimension of the index being queried. Each `query` request can contain only one of the parameters `id` or `vector`.
+     * The query vector. This should be the same length as the dimension of the index being queried. Each request can contain either the `id` or `vector` parameter.
      * @type {Array<number>}
      * @memberof QueryRequest
      */
@@ -82,7 +82,7 @@ export interface QueryRequest {
      */
     sparseVector?: SparseValues;
     /**
-     * The unique ID of the vector to be used as a query vector. Each `query` request can contain only one of the parameters `queries`, `vector`, or  `id`.
+     * The unique ID of the vector to be used as a query vector. Each request can contain either the `vector` or `id` parameter.
      * @type {string}
      * @memberof QueryRequest
      */

@@ -2,6 +2,7 @@ import {
   describeIndex,
   listIndexes,
   createIndex,
+  createIndexForModel,
   deleteIndex,
   configureIndex,
   listCollections,
@@ -12,6 +13,7 @@ import {
   IndexName,
   indexOperationsBuilder,
   CollectionName,
+  CreateIndexForModelOptions,
 } from './control';
 import {
   createAssistant,
@@ -93,6 +95,8 @@ export class Pinecone {
   /** @hidden */
   private _createIndex: ReturnType<typeof createIndex>;
   /** @hidden */
+  private _createIndexForModel: ReturnType<typeof createIndexForModel>;
+  /** @hidden */
   private _describeCollection: ReturnType<typeof describeCollection>;
   /** @hidden */
   private _describeIndex: ReturnType<typeof describeIndex>;
@@ -154,6 +158,7 @@ export class Pinecone {
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
     this._createIndex = createIndex(api);
+    this._createIndexForModel = createIndexForModel(api);
     this._describeCollection = describeCollection(api);
     this._deleteCollection = deleteCollection(api);
     this._describeIndex = describeIndex(api);
@@ -450,6 +455,10 @@ export class Pinecone {
    */
   createIndex(options: CreateIndexOptions) {
     return this._createIndex(options);
+  }
+
+  createIndexForModel(options: CreateIndexForModelOptions) {
+    return this._createIndexForModel(options);
   }
 
   /**

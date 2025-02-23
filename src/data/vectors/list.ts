@@ -17,7 +17,7 @@ export type ListOptions = {
   paginationToken?: string;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type ListOptionsType = keyof ListOptions;
 const ListOptionsProperties: ListOptionsType[] = [
   'prefix',
