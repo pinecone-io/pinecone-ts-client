@@ -75,13 +75,14 @@ async function createServerlessIndex(client: Pinecone) {
 
     const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
 
-    //   upsert records into namespace
+    // upsert records into namespace
     await client
       .index(newIndexName)
       .namespace(globalNamespaceOne)
       .upsert(allRecords);
 
-    await sleep(10000);
+    // wait for records to become available
+    await sleep(25000);
   };
 
   // if there's not an existing serverlessIndex, create one

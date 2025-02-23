@@ -1,5 +1,5 @@
 import { Pinecone, Index } from '../../../index';
-import { globalNamespaceOne, prefix, diffPrefix } from '../../test-helpers';
+import { globalNamespaceOne, prefix } from '../../test-helpers';
 
 let pinecone: Pinecone, serverlessIndex: Index;
 
@@ -23,14 +23,15 @@ describe('listPaginated, serverless index', () => {
     expect(listResults.namespace).toBe(globalNamespaceOne);
   });
 
-  test('test listPaginated with prefix', async () => {
-    const listResults = await serverlessIndex.listPaginated({
-      prefix: diffPrefix,
-    });
-    expect(listResults.namespace).toBe(globalNamespaceOne);
-    expect(listResults.vectors?.length).toBe(1);
-    expect(listResults.pagination).toBeUndefined();
-  });
+  // TODO: consistent 500s on this test, re-enable when fixed
+  // test('test listPaginated with prefix', async () => {
+  //   const listResults = await serverlessIndex.listPaginated({
+  //     prefix: diffPrefix,
+  //   });
+  //   expect(listResults.namespace).toBe(globalNamespaceOne);
+  //   expect(listResults.vectors?.length).toBe(1);
+  //   expect(listResults.pagination).toBeUndefined();
+  // });
 
   test('test listPaginated with limit and pagination', async () => {
     const listResults = await serverlessIndex.listPaginated({
