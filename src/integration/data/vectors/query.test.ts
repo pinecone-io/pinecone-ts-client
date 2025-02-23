@@ -75,17 +75,13 @@ describe('query tests on serverless index', () => {
     );
   });
 
-  test('query with vector and sparseVector values', async () => {
+  test('query with vector values', async () => {
     const topK = 1;
 
     await assertWithRetries(
       () =>
         serverlessIndex.query({
           vector: [0.11, 0.22],
-          sparseVector: {
-            indices: [32, 5],
-            values: [0.11, 0.22],
-          },
           topK,
         }),
       (results: QueryResponse) => {
@@ -101,16 +97,11 @@ describe('query tests on serverless index', () => {
 
   test('query with includeValues: true', async () => {
     const queryVec = Array.from({ length: 2 }, () => Math.random());
-    const sparseVec = {
-      indices: [0, 1],
-      values: Array.from({ length: 2 }, () => Math.random()),
-    };
 
     await assertWithRetries(
       () =>
         serverlessIndex.query({
           vector: queryVec,
-          sparseVector: sparseVec,
           topK: 2,
           includeValues: true,
           includeMetadata: true,

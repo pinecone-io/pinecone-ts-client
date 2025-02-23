@@ -60,7 +60,7 @@ async function createServerlessIndex(client: Pinecone) {
       prefix: prefix,
       dimension: 2,
       quantity: 10,
-      withSparseValues: true,
+      withSparseValues: false,
       withMetadata: true,
     });
 
@@ -69,7 +69,7 @@ async function createServerlessIndex(client: Pinecone) {
       prefix: diffPrefix,
       dimension: 2,
       quantity: 1,
-      withSparseValues: true,
+      withSparseValues: false,
       withMetadata: true,
     });
 
