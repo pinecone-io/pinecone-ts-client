@@ -31,9 +31,7 @@ export const randomString = (length) => {
 };
 
 export const randomIndexName = (testName: string): string => {
-  return `${process.env.TEST_ENV}-${testName}-${randomString(8)}`
-    .toLowerCase()
-    .slice(0, 45);
+  return `${testName}-${randomString(8)}`.toLowerCase().slice(0, 45);
 };
 
 export const generateRecords = ({
