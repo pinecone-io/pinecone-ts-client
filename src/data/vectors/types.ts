@@ -44,7 +44,7 @@ export type PineconeConfiguration = {
   assistantRegion?: string;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type PineconeConfigurationType = keyof PineconeConfiguration;
 export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'apiKey',
@@ -114,7 +114,7 @@ export type PineconeRecord<T extends RecordMetadata = RecordMetadata> = {
   metadata?: T;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type PineconeRecordsType = keyof PineconeRecord;
 export const PineconeRecordsProperties: PineconeRecordsType[] = [
   'id',

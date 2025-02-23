@@ -34,7 +34,7 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   metadata?: Partial<T>;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type UpdateOptionsType = keyof UpdateOptions;
 const UpdateOptionsProperties: UpdateOptionsType[] = [
   'id',

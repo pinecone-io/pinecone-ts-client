@@ -8,7 +8,7 @@ import type { IndexName } from './types';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../utils';
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
 export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
   'deletionProtection',
