@@ -92,8 +92,7 @@ describe('Integrated Inference API tests', () => {
         console.log('SEARCH RECORDS RESPONSE: ', results);
         expect(results.result.hits).toBeDefined();
         expect(results.result.hits.length).toEqual(3);
-      },
-      90000
+      }
     );
   });
 });

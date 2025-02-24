@@ -158,7 +158,7 @@ type Assertions = (result: any) => void;
 export const assertWithRetries = async (
   asyncFn: () => Promise<any>,
   assertionsFn: Assertions,
-  totalMsWait: number = 50000,
+  totalMsWait: number = 90000,
   delay: number = 3000
 ) => {
   let lastError: any = null;
