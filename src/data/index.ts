@@ -40,6 +40,7 @@ export type {
   RecordValues,
   RecordMetadata,
   RecordMetadataValue,
+  IntegratedRecord,
 } from './vectors/types';
 export type {
   DeleteManyOptions,
@@ -63,6 +64,12 @@ export type {
   QueryShared,
 } from './vectors/query';
 export type { ListOptions } from './vectors/list';
+export type {
+  SearchRecordsOptions,
+  SearchRecordsQuery,
+  SearchRecordsRerank,
+  SearchRecordsVector,
+} from './vectors/searchRecords';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -558,10 +565,130 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     return await this._updateCommand.run(options, this.config.maxRetries);
   }
 
+  /**
+   * Upsert integrated records into a specific namespace within an index.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const namespace = pc.index('integrated-index').namespace('my-namespace');
+   *
+   * await namespace.upsertRecords([
+   *   {
+   *     id: 'rec1',
+   *     chunk_text:
+   *       "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
+   *     category: 'product',
+   *   },
+   *   {
+   *     id: 'rec2',
+   *     chunk_text:
+   *       'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
+   *     category: 'nutrition',
+   *   },
+   *   {
+   *     id: 'rec3',
+   *     chunk_text:
+   *       'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
+   *     category: 'cultivation',
+   *   },
+   *   {
+   *     id: 'rec4',
+   *     chunk_text:
+   *       'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
+   *     category: 'product',
+   *   },
+   *   {
+   *     id: 'rec5',
+   *     chunk_text:
+   *       'Apple went public in 1980, making history with one of the largest IPOs at that time.',
+   *     category: 'milestone',
+   *   },
+   *   {
+   *     id: 'rec6',
+   *     chunk_text:
+   *       'Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases.',
+   *     category: 'nutrition',
+   *   },
+   *   {
+   *     id: 'rec7',
+   *     chunk_text:
+   *       "Known for its design-forward products, Apple's branding and market strategy have greatly influenced the technology sector and popularized minimalist design worldwide.",
+   *     category: 'influence',
+   *   },
+   *   {
+   *     id: 'rec8',
+   *     chunk_text:
+   *       'The high fiber content in apples can also help regulate blood sugar levels, making them a favorable snack for people with diabetes.',
+   *     category: 'nutrition',
+   *   },
+   * ]);
+   * ```
+   *
+   * @param data - An array of {@link IntegratedRecord} objects to upsert.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns a promise that resolves when the operation is complete.
+   */
   async upsertRecords(data: Array<IntegratedRecord<T>>) {
     return await this._upsertRecordsCommand.run(data, this.config.maxRetries);
   }
 
+  /**
+   * Search a specific namespace for records within an index.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const namespace = pc.index('integrated-index').namespace('my-namespace');
+   *
+   * const response = await namespace.searchRecords({
+   *   query: {
+   *     inputs: { text: 'disease prevention' }, topK: 4 },
+   *     rerank: {
+   *       model: 'bge-reranker-v2-m3',
+   *       topN: 2,
+   *       rankFields: ['chunk_text'],
+   *     },
+   *   fields: ['category', 'chunk_text'],
+   * });
+   * console.log(response);
+   * // {
+   * //   "result": {
+   * //     "hits": [
+   * //       {
+   * //         "id": "rec6",
+   * //         "score": 0.1318424493074417,
+   * //         "fields": {
+   * //           "category": "nutrition",
+   * //           "chunk_text": "Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases."
+   * //         }
+   * //       },
+   * //       {
+   * //         "id": "rec2",
+   * //         "score": 0.004867417272180319,
+   * //         "fields": {
+   * //           "category": "nutrition",
+   * //           "chunk_text": "Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut."
+   * //         }
+   * //       }
+   * //     ]
+   * //   },
+   * //   "usage": {
+   * //     "readUnits": 1,
+   * //     "embedTotalTokens": 8,
+   * //     "rerankUnits": 1
+   * //   }
+   * // }
+   * ```
+   *
+   * @param options - The {@link SearchRecordsOptions} for the operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns a promise that resolves to {@link SearchRecordsResponse} when the operation is complete.
+   */
   async searchRecords(options: SearchRecordsOptions) {
     return await this._searchRecordsCommand.run(options);
   }

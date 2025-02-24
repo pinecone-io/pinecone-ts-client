@@ -443,8 +443,7 @@ export class Pinecone {
    * })
    * ```
    *
-   * @param options - The index configuration.
-   *
+   * @param options - The {@link CreateIndexOptions} for creating the index.
    * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
    * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -457,6 +456,36 @@ export class Pinecone {
     return this._createIndex(options);
   }
 
+  /**
+   * Creates a new integrated index which allows working with integrated inference capabilities.
+   * @see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference)
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.createIndexForModel({
+   *   name: 'integrated-index',
+   *   cloud: 'aws',
+   *   region: 'us-east-1',
+   *   embed: {
+   *     model: 'multilingual-e5-large',
+   *     fieldMap: { text: 'chunk_text' },
+   *   },
+   *   waitUntilReady: true,
+   * });
+   * ```
+   *
+   * @param options - The {@link CreateIndexForModelOptions} for creating the index.
+   * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
+   * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
+   * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
+   */
   createIndexForModel(options: CreateIndexForModelOptions) {
     return this._createIndexForModel(options);
   }
