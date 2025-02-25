@@ -190,6 +190,26 @@ await pc.createIndex({
 });
 ```
 
+#### Create an integrated index
+
+Integrated inference requires a serverless index configured for a specific embedding model. You can either create a new index for a model or configure an existing index for a model. To create an index that accepts source text and converts it to vectors automatically using an embedding model hosted by Pinecone, use the `createIndexForModel` method:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+await pc.createIndexForModel({
+  name: 'integrated-index',
+  cloud: 'aws',
+  region: 'us-east-1',
+  embed: {
+    model: 'multilingual-e5-large',
+    fieldMap: { text: 'chunk_text' },
+  },
+  waitUntilReady: true,
+});
+```
+
 #### Create a pod-based index with optional configurations
 
 To create a pod-based index, you define `pod` in the `spec` object which contains the `environment` where the index should be hosted, and the `podType` and `pods` size to use. Many optional configuration fields allow greater control over hardware resources and availability. To learn more about the purpose of these fields, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes) and [Scale pod-based indexes](https://docs.pinecone.io/guides/indexes/scale-pod-based-indexes).
@@ -1263,6 +1283,120 @@ console.log(response);
 // ],
 // usage: { rerankUnits: 1 }
 //}
+```
+
+## Integrated Inference
+
+When using an index with integrated inference, embedding and reranking operations are tied to index operations and do not require extra steps. This allows working with an index that accepts source text and converts it to vectors automatically using an embedding model hosted by Pinecone.
+
+Integrated inference requires a serverless index configured for a specific embedding model. You can either create a new index for a model or configure an existing index for a model. See [Create an integrated index](#create-an-integrated-index) for specifics on creating these indexes.
+
+Once you have an index configured for a specific embedding model, use the `upsertRecords` operation on the `Index` class to convert your source data to embeddings and upsert them into a namespace.
+
+### Upsert integrated records
+
+Note the following requirements for each record:
+
+- Each record must contain a unique `id`, which will serve as the record identifier in the index namespace.
+- Each record must contain a field with the data for embedding. This field must match the field_map specified when creating the index.
+- Any additional fields in the record will be stored in the index and can be returned in search results or used to filter search results.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+// Target an integrated index
+const index = pc.index('integrated-index');
+
+const records = [
+  {
+    id: 'rec1',
+    chunk_text:
+      "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
+    category: 'product',
+  },
+  {
+    id: 'rec2',
+    chunk_text:
+      'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
+    category: 'nutrition',
+  },
+  {
+    id: 'rec3',
+    chunk_text:
+      'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
+    category: 'cultivation',
+  },
+  {
+    id: 'rec4',
+    chunk_text:
+      'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
+    category: 'product',
+  },
+  {
+    id: 'rec5',
+    chunk_text:
+      'Apple went public in 1980, making history with one of the largest IPOs at that time.',
+    category: 'milestone',
+  },
+  {
+    id: 'rec6',
+    chunk_text:
+      'Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases.',
+    category: 'nutrition',
+  },
+  {
+    id: 'rec7',
+    chunk_text:
+      "Known for its design-forward products, Apple's branding and market strategy have greatly influenced the technology sector and popularized minimalist design worldwide.",
+    category: 'influence',
+  },
+  {
+    id: 'rec8',
+    chunk_text:
+      'The high fiber content in apples can also help regulate blood sugar levels, making them a favorable snack for people with diabetes.',
+    category: 'nutrition',
+  },
+];
+
+// Upsert the data into your index
+await index.upsertRecords(records);
+```
+
+### Search integrated records
+
+Use the `searchRecords` method to convert a query to a vector embedding and then search your namespace for the most semantically similar records, along with their similarity scores.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+// Target an integrated index
+const namespace = pc.index('integrated-index').namespace('namespace1');
+
+// search for 4 records most semantically relevant to the query 'Disease prevention'
+const response = await namespace.searchRecords({
+  query: { topK: 4, inputs: { text: 'Disease prevention' } },
+});
+```
+
+To rerank initial search results based on relevance to the query, add the rerank parameter, including the [reranking model](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) you want to use, the number of reranked results to return, and the fields to use for reranking, if different than the main query.
+
+For example, repeat the search for the 4 documents most semantically related to the query, “Disease prevention”, but this time rerank the results and return only the 2 most relevant documents:
+
+```typescript
+const response = await namespace.searchRecords({
+  query: {
+    topK: 4,
+    inputs: { text: 'Disease prevention' },
+  },
+  rerank: {
+    model: 'bge-reranker-v2-m3',
+    topN: 2,
+    rankFields: ['chunk_text'],
+  },
+  fields: ['category', 'chunk_text'],
+});
 ```
 
 ## Pinecone Assistant
