@@ -1306,7 +1306,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Target an integrated index
-const index = pc.index('integrated-index');
+const namespace = pc.index('integrated-index').namespace('namespace1');
 
 const records = [
   {
@@ -1360,7 +1360,7 @@ const records = [
 ];
 
 // Upsert the data into your index
-await index.upsertRecords(records);
+await namespace.upsertRecords(records);
 ```
 
 ### Search integrated records
