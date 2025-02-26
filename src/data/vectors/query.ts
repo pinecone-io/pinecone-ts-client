@@ -70,7 +70,7 @@ export type QueryByVectorValues = QueryShared & {
  */
 export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type QueryOptionsType = keyof QueryByRecordId | keyof QueryByVectorValues;
 const QueryOptionsProperties: QueryOptionsType[] = [
   'id',

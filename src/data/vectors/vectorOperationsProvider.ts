@@ -55,6 +55,10 @@ export class VectorOperationsProvider {
     return this.vectorOperations;
   }
 
+  async provideHostUrl() {
+    return await IndexHostSingleton.getHostUrl(this.config, this.indexName);
+  }
+
   buildDataOperationsConfig() {
     const headers = this.additionalHeaders || null;
 

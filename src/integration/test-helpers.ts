@@ -30,6 +30,10 @@ export const randomString = (length) => {
   return result;
 };
 
+export const randomIndexName = (testName: string): string => {
+  return `${testName}-${randomString(8)}`.toLowerCase().slice(0, 45);
+};
+
 export const generateRecords = ({
   dimension = 5,
   quantity = 3,
@@ -99,12 +103,6 @@ export const generateMetadata = (): RecordMetadata => {
   return { [metaKey]: metaValue };
 };
 
-export const randomIndexName = (testName: string): string => {
-  return `${process.env.TEST_ENV}-${testName}-${randomString(8)}`
-    .toLowerCase()
-    .slice(0, 45);
-};
-
 export const sleep = async (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -160,27 +158,23 @@ type Assertions = (result: any) => void;
 export const assertWithRetries = async (
   asyncFn: () => Promise<any>,
   assertionsFn: Assertions,
-  maxRetries: number = 5,
-  delay: number = 2000
+  totalMsWait: number = 90000,
+  delay: number = 3000
 ) => {
-  let attempts = 0;
+  let lastError: any = null;
 
-  while (attempts < maxRetries) {
+  for (let msElapsed = 0; msElapsed < totalMsWait; msElapsed += delay) {
     try {
       const result = await asyncFn();
       assertionsFn(result);
       return;
     } catch (error) {
-      attempts++;
-      if (attempts <= maxRetries) {
-        await sleep(delay);
-        // Double the delay for exponential backoff
-        delay *= 2;
-      } else {
-        throw error;
-      }
+      lastError = error;
+      await sleep(delay);
     }
   }
+
+  throw lastError;
 };
 
 export const getRecordIds = async (index) => {

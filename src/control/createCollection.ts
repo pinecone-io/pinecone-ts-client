@@ -6,7 +6,7 @@ import {
 import { PineconeArgumentError } from '../errors';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
-// Properties for validation to ensure no unknown/invalid properties are passed, no req'd properties are missing
+// Properties for validation to ensure no unknown/invalid properties are passed
 type CreateCollectionRequestType = keyof CreateCollectionRequest;
 export const CreateCollectionRequestProperties: CreateCollectionRequestType[] =
   ['source', 'name'];

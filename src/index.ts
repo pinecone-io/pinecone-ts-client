@@ -14,7 +14,12 @@ export type {
   EmbeddingsListUsage,
   Embedding,
 } from './pinecone-generated-ts-fetch/inference';
-export type { ListResponse } from './pinecone-generated-ts-fetch/db_data';
+export type {
+  ListResponse,
+  SearchRecordsResponse,
+  SearchRecordsResponseResult,
+  SearchUsage,
+} from './pinecone-generated-ts-fetch/db_data';
 export type {
   AssistantList,
   AssistantModel,
@@ -71,6 +76,7 @@ export type {
   FetchResponse,
   IndexStatsDescription,
   IndexStatsNamespaceSummary,
+  IntegratedRecord,
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
@@ -103,4 +109,6 @@ export type {
   ServerlessSpecCloudEnum,
   PodSpec,
   PodSpecMetadataConfig,
+  CreateIndexForModelRequest,
+  IndexModelMetricEnum,
 } from './pinecone-generated-ts-fetch/db_control';
