@@ -34,6 +34,12 @@ import {
 export interface ContextModel {
     /**
      * 
+     * @type {string}
+     * @memberof ContextModel
+     */
+    id?: string;
+    /**
+     * 
      * @type {Array<SnippetModel>}
      * @memberof ContextModel
      */
@@ -67,6 +73,7 @@ export function ContextModelFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'snippets': ((json['snippets'] as Array<any>).map(SnippetModelFromJSON)),
         'usage': UsageModelFromJSON(json['usage']),
     };
@@ -81,6 +88,7 @@ export function ContextModelToJSON(value?: ContextModel | null): any {
     }
     return {
         
+        'id': value.id,
         'snippets': ((value.snippets as Array<any>).map(SnippetModelToJSON)),
         'usage': UsageModelToJSON(value.usage),
     };

@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { MessageModel } from './MessageModel';
+import {
+    MessageModelFromJSON,
+    MessageModelFromJSONTyped,
+    MessageModelToJSON,
+} from './MessageModel';
+
 /**
  * Parameters to retrieve context from an assistant.
  * @export
@@ -20,17 +27,29 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ContextRequest {
     /**
-     * The query that is used to generate the context.
+     * The query that is used to generate the context. Exactly one of query or messages should be provided.
      * @type {string}
      * @memberof ContextRequest
      */
-    query: string;
+    query?: string;
     /**
      * Optionally filter which documents can be retrieved using the following metadata fields.
      * @type {object}
      * @memberof ContextRequest
      */
     filter?: object;
+    /**
+     * The list of messages to use for generating the context. Exactly one of query or messages should be provided.
+     * @type {Array<MessageModel>}
+     * @memberof ContextRequest
+     */
+    messages?: Array<MessageModel>;
+    /**
+     * The number of context snippets to return. Default is 15.
+     * @type {number}
+     * @memberof ContextRequest
+     */
+    topK?: number;
 }
 
 /**
@@ -38,7 +57,6 @@ export interface ContextRequest {
  */
 export function instanceOfContextRequest(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "query" in value;
 
     return isInstance;
 }
@@ -53,8 +71,10 @@ export function ContextRequestFromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'query': json['query'],
+        'query': !exists(json, 'query') ? undefined : json['query'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
+        'messages': !exists(json, 'messages') ? undefined : ((json['messages'] as Array<any>).map(MessageModelFromJSON)),
+        'topK': !exists(json, 'top_k') ? undefined : json['top_k'],
     };
 }
 
@@ -69,6 +89,8 @@ export function ContextRequestToJSON(value?: ContextRequest | null): any {
         
         'query': value.query,
         'filter': value.filter,
+        'messages': value.messages === undefined ? undefined : ((value.messages as Array<any>).map(MessageModelToJSON)),
+        'top_k': value.topK,
     };
 }
 

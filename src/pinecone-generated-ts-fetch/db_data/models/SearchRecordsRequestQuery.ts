@@ -21,19 +21,19 @@ import {
 } from './SearchRecordsVector';
 
 /**
- * The query inputs to search with.
+ * The query inputs to search with. Each request can contain only one of the following parameters: `inputs`, `vector`, or `id`.
  * @export
  * @interface SearchRecordsRequestQuery
  */
 export interface SearchRecordsRequestQuery {
     /**
-     * The number of results to return for each search.
+     * The number of similar records to return.
      * @type {number}
      * @memberof SearchRecordsRequestQuery
      */
     topK: number;
     /**
-     * The filter to apply.
+     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
      * @type {object}
      * @memberof SearchRecordsRequestQuery
      */

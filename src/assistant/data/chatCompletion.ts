@@ -10,13 +10,15 @@ import {
 } from './chat';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
-import type { ChatOptions } from './types';
+import type { ChatCompletionOptions } from './types';
 
 export const chatCompletion = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (options: ChatOptions): Promise<ChatCompletionModel> => {
+  return async (
+    options: ChatCompletionOptions
+  ): Promise<ChatCompletionModel> => {
     validateChatOptions(options);
 
     const api = await apiProvider.provideData();
