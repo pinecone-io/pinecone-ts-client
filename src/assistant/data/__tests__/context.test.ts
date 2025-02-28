@@ -56,7 +56,7 @@ describe('contextClosed', () => {
     const contextFn = context('test-assistant', asstOperationsProvider);
 
     await expect(contextFn({ query: '' })).rejects.toThrow(
-      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
     );
   });
 

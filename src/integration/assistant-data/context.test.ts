@@ -43,7 +43,7 @@ describe('Context error paths', () => {
       await assistant.context({ query: '' });
     };
     await expect(throwError()).rejects.toThrow(
-      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
     );
   });
 
