@@ -25,6 +25,7 @@ export type {
   AssistantModel,
   AssistantStatusEnum,
   ChatOptions,
+  ChatCompletionOptions,
   ChatModelEnum,
   ChoiceModel,
   FinishReasonEnum,
@@ -51,6 +52,7 @@ export type {
   ChatCompletionModel,
   CitationModel,
   ContextModel,
+  HighlightModel,
   MessageModel,
   UsageModel,
 } from './pinecone-generated-ts-fetch/assistant_data';

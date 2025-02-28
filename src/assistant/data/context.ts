@@ -57,9 +57,9 @@ export const context = (
 };
 
 const validateContextOptions = (options: ContextOptions) => {
-  if (!options || !options.query) {
+  if (!options || (!options.query && !options.messages)) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`query`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
     );
   }
 

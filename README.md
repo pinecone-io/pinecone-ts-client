@@ -1503,7 +1503,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
-const chatResp = await assistant.chatCompletion({
+const chatResp = await assistant.chat({
   messages: [
     {
       role: 'user',
@@ -1710,7 +1710,8 @@ const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
 const context = await assistant.context({
-  query: 'What is the capital of France?',
+  messages: ['What is the capital of France?'],
+  topK: 1,
 });
 console.log(context);
 // {
@@ -1834,27 +1835,6 @@ if (files.files) {
   fileId = files.files[0].id;
   await assistant.deleteFile({ fileId: fileId });
 }
-```
-
-### Evaluate answers
-
-You can also use the Assistant API to [evaluate the accuracy of a question-answer pair, given a known-true answer](https://docs.pinecone.io/guides/assistant/evaluate-answers).
-The API will return a set of metrics (`correctness`, `completeness`, and `alignment`) that indicate how well the
-Assistant performed.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-const pc = new Pinecone();
-await pc.evaluate({
-  question: 'What is the capital of France?',
-  answer: "Lyon is France's capital city",
-  groundTruth: 'Paris is the capital city of France',
-});
-// {
-//  metrics: { correctness: 0, completeness: 0, alignment: 0 }, // 0s across the board indicates incorrect
-//  reasoning: { evaluatedFacts: [ [Object] ] },
-//  usage: { promptTokens: 1134, completionTokens: 21, totalTokens: 1155 }
-// }
 ```
 
 ## Testing

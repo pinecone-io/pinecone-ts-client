@@ -1,5 +1,6 @@
 import { chat } from './data/chat';
 import type {
+  ChatCompletionOptions,
   ChatOptions,
   ContextOptions,
   ListFilesOptions,
@@ -26,6 +27,7 @@ export type {
 } from './control/types';
 export type {
   ChatOptions,
+  ChatCompletionOptions,
   ChatModelEnum,
   ChoiceModel,
   FinishReasonEnum,
@@ -221,11 +223,11 @@ export class Assistant {
    * // }
    * ```
    *
-   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
+   * @param options - A {@link ChatCompletionOptions} object containing the message and optional parameters to send
    * to an assistant.
    * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the assistant.
    */
-  chatCompletion(options: ChatOptions) {
+  chatCompletion(options: ChatCompletionOptions) {
     return this._chatCompletion(options);
   }
 
@@ -253,11 +255,11 @@ export class Assistant {
    * // { id: 'response_id', choices: [], model: 'gpt-4o-2024-05-13', usage: { promptTokens: 371, completionTokens: 48, totalTokens: 419 }}
    * ```
    *
-   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send
+   * @param options - A {@link ChatCompletionOptions} object containing the message and optional parameters to send
    * to an assistant.
    * @returns A promise that resolves to a {@link ChatStream<StreamedChatCompletionResponse>}.
    */
-  chatCompletionStream(options: ChatOptions) {
+  chatCompletionStream(options: ChatCompletionOptions) {
     return this._chatCompletionStream(options);
   }
 

@@ -43,6 +43,7 @@ export const chatStream = (
         stream: true,
         model: modelValidation(options),
         filter: options.filter,
+        includeHighlights: options.includeHighlights,
       }),
     });
 

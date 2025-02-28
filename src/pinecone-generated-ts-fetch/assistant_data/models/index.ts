@@ -13,6 +13,7 @@ export * from './ContextModel';
 export * from './ContextRequest';
 export * from './ErrorResponse';
 export * from './ErrorResponseError';
+export * from './HighlightModel';
 export * from './ListFiles200Response';
 export * from './MessageModel';
 export * from './ReferenceModel';

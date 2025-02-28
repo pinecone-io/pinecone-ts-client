@@ -28,6 +28,8 @@ export const chat = (
         stream: false,
         model: model,
         filter: options.filter,
+        jsonResponse: options.jsonResponse,
+        includeHighlights: options.includeHighlights,
       },
     };
 

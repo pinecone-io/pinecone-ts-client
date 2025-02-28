@@ -19,6 +19,12 @@ import {
     AssistantFileModelFromJSONTyped,
     AssistantFileModelToJSON,
 } from './AssistantFileModel';
+import type { HighlightModel } from './HighlightModel';
+import {
+    HighlightModelFromJSON,
+    HighlightModelFromJSONTyped,
+    HighlightModelToJSON,
+} from './HighlightModel';
 
 /**
  * The ReferenceModel describes a single reference in a citation.
@@ -38,6 +44,12 @@ export interface ReferenceModel {
      * @memberof ReferenceModel
      */
     pages?: Array<number>;
+    /**
+     * 
+     * @type {HighlightModel}
+     * @memberof ReferenceModel
+     */
+    highlight?: HighlightModel;
 }
 
 /**
@@ -61,6 +73,7 @@ export function ReferenceModelFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'file': !exists(json, 'file') ? undefined : AssistantFileModelFromJSON(json['file']),
         'pages': !exists(json, 'pages') ? undefined : json['pages'],
+        'highlight': !exists(json, 'highlight') ? undefined : HighlightModelFromJSON(json['highlight']),
     };
 }
 
@@ -75,6 +88,7 @@ export function ReferenceModelToJSON(value?: ReferenceModel | null): any {
         
         'file': AssistantFileModelToJSON(value.file),
         'pages': value.pages,
+        'highlight': HighlightModelToJSON(value.highlight),
     };
 }
 

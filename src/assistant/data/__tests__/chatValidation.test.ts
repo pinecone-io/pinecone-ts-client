@@ -35,6 +35,7 @@ describe(`chat validation tests`, () => {
 
     test('throws error when role is missing', () => {
       const input: ChatOptions = {
+        // @ts-ignore
         messages: [{ content: 'Hello' }],
       };
 
@@ -45,6 +46,7 @@ describe(`chat validation tests`, () => {
 
     test('throws error when object has invalid keys', () => {
       const input: ChatOptions = {
+        // @ts-ignore
         messages: [{ role: 'user', content: 'Hello', extra: 'field' }],
       };
 

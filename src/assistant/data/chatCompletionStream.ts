@@ -5,7 +5,10 @@ import {
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, ChatStream } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { ChatOptions, StreamedChatCompletionResponse } from './types';
+import type {
+  ChatCompletionOptions,
+  StreamedChatCompletionResponse,
+} from './types';
 import { handleApiError } from '../../errors';
 import { ReadableStream } from 'node:stream/web';
 import { Readable } from 'node:stream';
@@ -21,7 +24,7 @@ export const chatCompletionStream = (
   config: PineconeConfiguration
 ) => {
   return async (
-    options: ChatOptions
+    options: ChatCompletionOptions
   ): Promise<ChatStream<StreamedChatCompletionResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);

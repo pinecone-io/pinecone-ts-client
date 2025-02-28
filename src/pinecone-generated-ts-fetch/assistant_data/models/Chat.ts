@@ -56,6 +56,12 @@ export interface Chat {
      * @memberof Chat
      */
     jsonResponse?: boolean;
+    /**
+     * If true, the assistant will be instructed to return highlights from the referenced documents that support its response.
+     * @type {boolean}
+     * @memberof Chat
+     */
+    includeHighlights?: boolean;
 }
 
 
@@ -94,6 +100,7 @@ export function ChatFromJSONTyped(json: any, ignoreDiscriminator: boolean): Chat
         'model': !exists(json, 'model') ? undefined : json['model'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
         'jsonResponse': !exists(json, 'json_response') ? undefined : json['json_response'],
+        'includeHighlights': !exists(json, 'include_highlights') ? undefined : json['include_highlights'],
     };
 }
 
@@ -111,6 +118,7 @@ export function ChatToJSON(value?: Chat | null): any {
         'model': value.model,
         'filter': value.filter,
         'json_response': value.jsonResponse,
+        'include_highlights': value.includeHighlights,
     };
 }
 

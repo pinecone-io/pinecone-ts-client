@@ -90,14 +90,66 @@ export const ChatModelEnum = {
 export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
 
 /**
- * The `ChatOptions` interface describes the request format for sending a message to an Assistant.
+ * Describes the format of a message in an assistant chat. The `role` key can only be one of `user` or `assistant`.
+ */
+export interface MessageModel {
+  role: string;
+  content: string;
+}
+
+/**
+ * The messages to send to an assistant. Can be a list of strings or a list of {@link MessageModel} objects.
+ * The `role` key can only be one of `user` or `assistant`.
+ */
+export type MessagesModel = string[] | MessageModel[];
+
+/**
+ * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
  */
 export interface ChatOptions {
   /**
-   * The messages to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
+   * The {@link MessagesModel} to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
    * objects, must have exactly two keys: `role` and `content`. The `role` key can only be one of `user` or `assistant`.
    */
-  messages: string[] | Array<{ [key: string]: string }>;
+  messages: MessagesModel;
+  /**
+   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
+   * If empty, the assistant will default to using 'gpt-4o' model.
+   */
+  model?: string;
+  /**
+   * A filter against which documents can be retrieved.
+   */
+  filter?: object;
+  /**
+   * If true, the assistant will be instructed to return a JSON response.
+   */
+  jsonResponse?: boolean;
+  /**
+   * If true, the assistant will be instructed to return highlights from the referenced documents that support its response.
+   */
+  includeHighlights?: boolean;
+}
+
+// Properties for validation to ensure no unkonwn/invalid properties are passed.
+type ChatOptionsType = keyof ChatOptions;
+export const ChatOptionsType: ChatOptionsType[] = [
+  'messages',
+  'model',
+  'filter',
+  'jsonResponse',
+  'includeHighlights',
+];
+
+/**
+ * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
+ */
+export interface ChatCompletionOptions {
+  /**
+   * The {@link MessagesModel} to send to the Assistant. Can be a list of strings or a list of objects. If sent as a list of
+   * objects, must have exactly two keys: `role` and `content`. The `role` key can only be one of `user` or `assistant`.
+   */
+  messages: MessagesModel;
   /**
    * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
    * If empty, the assistant will default to using 'gpt-4o' model.
@@ -110,8 +162,8 @@ export interface ChatOptions {
 }
 
 // Properties for validation to ensure no unkonwn/invalid properties are passed.
-type ChatOptionsType = keyof ChatOptions;
-export const ChatOptionsType: ChatOptionsType[] = [
+type ChatCompletionOptionsType = keyof ChatCompletionOptions;
+export const ChatCompletionOptionsType: ChatCompletionOptionsType[] = [
   'messages',
   'model',
   'filter',
@@ -122,17 +174,30 @@ export const ChatOptionsType: ChatOptionsType[] = [
  */
 export interface ContextOptions {
   /**
-   * The query to retrieve context snippets for.
+   * The query to retrieve context snippets for. Either `query` or `messages` should be provided.
    */
-  query: string;
+  query?: string;
+  /**
+   * The list of {@link MessageModel} to use for generating the context. Either `query` or `messages` should be provided.
+   */
+  messages?: MessagesModel;
   /**
    * Optional filter to apply to the context snippets.
    */
   filter?: Record<string, string>;
+  /**
+   * The number of context snippets to return. Default is 15.
+   */
+  topK?: number;
 }
 
 type ContextOptionsType = keyof ContextOptions;
-export const ContextOptionsType: ContextOptionsType[] = ['query', 'filter'];
+export const ContextOptionsType: ContextOptionsType[] = [
+  'query',
+  'filter',
+  'messages',
+  'topK',
+];
 
 /**
  * The `UploadFileOptions` interface describes the file path for uploading a file to an Assistant and optional metadata.
