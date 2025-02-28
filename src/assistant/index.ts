@@ -27,6 +27,7 @@ export type {
 } from './control/types';
 export type {
   ChatOptions,
+  ChatCompletionOptions,
   ChatModelEnum,
   ChoiceModel,
   FinishReasonEnum,
