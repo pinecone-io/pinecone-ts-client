@@ -24,13 +24,13 @@ export interface Hit {
      * @type {string}
      * @memberof Hit
      */
-    id: string;
+    _id: string;
     /**
      * The similarity score of the returned record.
      * @type {number}
      * @memberof Hit
      */
-    score: number;
+    _score: number;
     /**
      * The selected record fields associated with the search hit.
      * @type {object}
@@ -44,8 +44,8 @@ export interface Hit {
  */
 export function instanceOfHit(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "score" in value;
+    isInstance = isInstance && "_id" in value;
+    isInstance = isInstance && "_score" in value;
     isInstance = isInstance && "fields" in value;
 
     return isInstance;
@@ -61,8 +61,8 @@ export function HitFromJSONTyped(json: any, ignoreDiscriminator: boolean): Hit {
     }
     return {
         
-        'id': json['_id'],
-        'score': json['_score'],
+        '_id': json['_id'],
+        '_score': json['_score'],
         'fields': json['fields'],
     };
 }
@@ -76,8 +76,8 @@ export function HitToJSON(value?: Hit | null): any {
     }
     return {
         
-        '_id': value.id,
-        '_score': value.score,
+        '_id': value._id,
+        '_score': value._score,
         'fields': value.fields,
     };
 }
