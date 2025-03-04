@@ -72,6 +72,28 @@ generate_client() {
 	echo "export * from './api_version';" >> ${destination}/${module_name}/index.ts
 }
 
+# Generated TypeScript code attempts to internally map OpenAPI fields that begin
+# with "_" to a non-underscored alternative. Along with a polymorphic object,
+# this causes collisions and headaches. We massage the generated models to
+# maintain the original field names from the OpenAPI spec and circumvent
+# the remapping behavior as this is simpler for now than creating a fully
+# custom java generator class.
+clean_oas_underscore_manipulation() {
+	db_data_destination="${destination}/db_data/models"
+
+	# echo "cleaning up Hit.ts"
+	sed -i '' \
+	-e 's/id:/_id:/g' \
+	-e 's/score:/_score:/g' \
+	-e "s/'id'/'_id'/g" \
+	-e "s/'score'/'_score'/g" \
+	-e 's/"id"/"_id"/g' \
+	-e 's/"score"/"_score"/g' \
+	-e 's/\.id/\._id/g' \
+	-e 's/\.score/\._score/g' \
+	"${db_data_destination}/Hit.ts"
+}
+
 update_apis_repo
 verify_spec_version $version
 
@@ -82,3 +104,5 @@ for module in "${modules[@]}"; do
 	generate_client $module
 	sleep 1
 done
+
+clean_oas_underscore_manipulation
