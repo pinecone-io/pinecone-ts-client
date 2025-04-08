@@ -47,7 +47,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrowSpec).rejects.toThrowError(
-        'You must pass either `spec`, `deletionProtection` or `tags` to configureIndex in order to update.'
+        'You must pass either `spec`, `deletionProtection`, `tags`, or `embed` to configureIndex in order to update.'
       );
     });
 
