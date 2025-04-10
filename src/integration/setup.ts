@@ -103,7 +103,7 @@ async function createAssistant(client: Pinecone) {
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
     region: 'us',
   });
-  await sleep(2000);
+  await sleep(5000);
 
   try {
     await client.describeAssistant(assistantName);
