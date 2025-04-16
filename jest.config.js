@@ -13,7 +13,6 @@ module.exports = {
   testPathIgnorePatterns: ['src/integration', 'dist/'],
   testTimeout: 150000,
   verbose: true,
-  detectOpenHandles: false,
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!**/src/pinecone-generated-ts-fetch/**',
