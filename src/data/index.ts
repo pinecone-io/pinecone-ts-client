@@ -31,6 +31,10 @@ import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
+import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
+import { listNamespaces } from './namespaces/listNamespaces';
+import { describeNamespace } from './namespaces/describeNamespace';
+import { deleteNamespace } from './namespaces/deleteNamespace';
 
 export type {
   PineconeConfiguration,
@@ -167,6 +171,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _describeImportCommand: DescribeImportCommand;
   /** @hidden */
   private _cancelImportCommand: CancelImportCommand;
+  /** @hidden */
+  private _listNamespacesCommand: ReturnType<typeof listNamespaces>;
+  /** @hidden */
+  private _describeNamespaceCommand: ReturnType<typeof describeNamespace>;
+  /** @hidden */
+  private _deleteNamespaceCommand: ReturnType<typeof deleteNamespace>;
 
   /** @internal */
   private config: PineconeConfiguration;
@@ -269,6 +279,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       bulkApiProvider,
       namespace
     );
+
+    // namespace operations
+    const namespaceApiProvider = new NamespaceOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl,
+      additionalHeaders
+    );
+    this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
+    this._describeNamespaceCommand = describeNamespace(namespaceApiProvider);
+    this._deleteNamespaceCommand = deleteNamespace(namespaceApiProvider);
   }
 
   /**
@@ -797,5 +818,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async cancelImport(id: string) {
     return await this._cancelImportCommand.run(id);
+  }
+
+  async listNamespaces() {
+    return await this._listNamespacesCommand();
+  }
+
+  async describeNamespace(namespace: string) {
+    return await this._describeNamespaceCommand(namespace);
+  }
+
+  async deleteNamespace(namespace: string) {
+    return await this._deleteNamespaceCommand(namespace);
   }
 }

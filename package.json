@@ -17,7 +17,7 @@
     "build": "rm -rf dist/ && tsc",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
-    "generate:openapi": "./codegen/build-oas.sh 2025-01 && npm run build && npm run format",
+    "generate:openapi": "./codegen/build-oas.sh 2025-04 && npm run build && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && node utils/replInit.ts",
