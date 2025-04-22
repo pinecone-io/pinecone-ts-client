@@ -10,14 +10,14 @@ import { PineconeArgumentError } from '../../errors';
 export const createAssistant = (api: ManageAssistantsControlApi) => {
   return async (options: CreateAssistantOptions): Promise<AssistantModel> => {
     validateCreateAssistantOptions(options);
-    return await api.createAssistant({
+    return (await api.createAssistant({
       createAssistantRequest: {
         name: options.name,
         instructions: options?.instructions,
         metadata: options?.metadata,
         region: options?.region as CreateAssistantRequestRegionEnum,
       },
-    });
+    })) as AssistantModel;
   };
 };
 
