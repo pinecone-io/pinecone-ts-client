@@ -171,53 +171,48 @@ describe('Chat error paths', () => {
   ];
 
   test.each(chatMethods)('%s with empty messages', async (method) => {
-    const throwError = async () => {
-      await assistant[method]({ messages: [] });
-    };
-    await expect(throwError()).rejects.toThrow('Must have at least 1 message');
+    await expect(assistant[method]({ messages: [] })).rejects.toThrow(
+      'Must have at least 1 message'
+    );
   });
 
   test.each(chatMethods)('%s with invalid role type', async (method) => {
-    const throwError = async () => {
-      await assistant[method]({
+    await expect(
+      assistant[method]({
         messages: [{ role: 'invalid', content: 'Hello' }],
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
+      })
+    ).rejects.toThrow(
       'No role specified in message object. Must be one of "user" or "assistant"'
     );
   });
 
   test.each(chatMethods)('%s with no role key', async (method) => {
-    const throwError = async () => {
-      await assistant[method]({
+    await expect(
+      assistant[method]({
         messages: [{}],
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
+      })
+    ).rejects.toThrow(
       'Message object must have exactly two keys: "role" and "content"'
     );
   });
 
   test.each(chatMethods)('%s with invalid model', async (method) => {
-    const throwError = async () => {
-      await assistant[method]({
+    await expect(
+      assistant[method]({
         messages: [{ role: 'user', content: 'Hello' }],
         model: 'invalid',
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
+      })
+    ).rejects.toThrow(
       'Invalid model: "invalid". Must be one of: "gpt-4o", "claude-3-5-sonnet"'
     );
   });
 
   test.each(chatMethods)('%s with nonexistent assistant', async (method) => {
-    const throwError = async () => {
-      await pinecone.Assistant('nonexistent')[method]({
+    await expect(
+      pinecone.Assistant('nonexistent')[method]({
         messages: [{ role: 'user', content: 'Hello' }],
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
+      })
+    ).rejects.toThrow(
       'A call to https://api.pinecone.io/assistant/assistants/nonexistent returned HTTP status 404.'
     );
   });

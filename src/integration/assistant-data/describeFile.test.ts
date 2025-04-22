@@ -40,23 +40,18 @@ describe('Describe file happy path', () => {
 
 describe('Describe file error paths', () => {
   test('Describe with nonexistent fileId', async () => {
-    const throwError = async () => {
-      await assistant.describeFile('nonexistent-file-id');
-    };
-    await expect(throwError()).rejects.toThrow(/404/);
+    await expect(assistant.describeFile('nonexistent-file-id')).rejects.toThrow(
+      /404/
+    );
   });
 
   test('Describe with empty fileId', async () => {
-    const throwError = async () => {
-      await assistant.describeFile('');
-    };
-    await expect(throwError()).rejects.toThrow();
+    await expect(assistant.describeFile('')).rejects.toThrow();
   });
 
   test('Describe file with nonexistent assistant', async () => {
-    const throwError = async () => {
-      await pinecone.Assistant('nonexistent').describeFile(fileId);
-    };
-    await expect(throwError()).rejects.toThrow(/404/);
+    await expect(
+      pinecone.Assistant('nonexistent').describeFile(fileId)
+    ).rejects.toThrow(/404/);
   });
 });

@@ -11,10 +11,7 @@ describe('RetryOnServerFailure', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeInternalServerError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
-    const errorResult = async () => {
-      await retryWrapper.execute();
-    };
-    await expect(errorResult).rejects.toThrowError(
+    await expect(retryWrapper.execute()).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
   });
@@ -24,10 +21,7 @@ describe('RetryOnServerFailure', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeUnavailableError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
-    const errorResult = async () => {
-      await retryWrapper.execute();
-    };
-    await expect(errorResult).rejects.toThrowError(
+    await expect(retryWrapper.execute()).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
   });
@@ -45,12 +39,9 @@ describe('RetryOnServerFailure', () => {
     const fakeAsyncFn: () => Promise<object> = jest
       .fn()
       .mockImplementation(() => Promise.resolve({}));
-    const toThrow = async () => {
-      new RetryOnServerFailure(fakeAsyncFn, 11);
-    };
-    await expect(toThrow()).rejects.toThrowError(
-      'Max retries cannot exceed 10'
-    );
+    await expect(
+      new RetryOnServerFailure(fakeAsyncFn, 11)
+    ).rejects.toThrowError('Max retries cannot exceed 10');
   });
 
   test('Should retry when first encounter error, then succeed when eventually get good response back', async () => {
