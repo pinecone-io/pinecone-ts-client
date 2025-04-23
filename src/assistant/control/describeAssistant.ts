@@ -9,8 +9,8 @@ export const describeAssistant = (api: ManageAssistantsControlApi) => {
         'You must pass the name of an assistant to update.'
       );
     }
-    return await api.getAssistant({
+    return (await api.getAssistant({
       assistantName: assistantName,
-    });
+    })) as AssistantModel;
   };
 };

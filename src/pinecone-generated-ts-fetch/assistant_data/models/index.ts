@@ -10,6 +10,7 @@ export * from './ChatModel';
 export * from './ChoiceModel';
 export * from './CitationModel';
 export * from './ContextModel';
+export * from './ContextOptionsModel';
 export * from './ContextRequest';
 export * from './ErrorResponse';
 export * from './ErrorResponseError';

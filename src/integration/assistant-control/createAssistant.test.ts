@@ -29,36 +29,31 @@ describe('createAssistant happy path', () => {
 describe('createAssistant error paths', () => {
   test('createAssistant with too much metadata', async () => {
     const assistantName = randomString(5);
-    const throwError = async () => {
-      await pinecone.createAssistant({
+    await expect(
+      pinecone.createAssistant({
         name: assistantName,
         metadata: { key: 'a'.repeat(1000000) },
-      });
-    };
-    await expect(throwError()).rejects.toThrow('Metadata is too large');
+      })
+    ).rejects.toThrow('Metadata is too large');
   });
 
   test('createAssistant with invalid region', async () => {
     const assistantName = randomString(5);
-    const throwError = async () => {
-      await pinecone.createAssistant({
+    await expect(
+      pinecone.createAssistant({
         name: assistantName,
         region: 'invalid-region',
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
-      'Invalid region specified. Must be one of "us" or "eu"'
-    );
+      })
+    ).rejects.toThrow('Invalid region specified. Must be one of "us" or "eu"');
   });
 
   test('createAssistant with empty assistant name', async () => {
     const assistantName = '';
-    const throwError = async () => {
-      await pinecone.createAssistant({
+    await expect(
+      pinecone.createAssistant({
         name: assistantName,
-      });
-    };
-    await expect(throwError()).rejects.toThrow('Invalid assistant name');
+      })
+    ).rejects.toThrow('Invalid assistant name');
   });
 
   test('createAssistant with duplicate name', async () => {
@@ -66,13 +61,11 @@ describe('createAssistant error paths', () => {
     await pinecone.createAssistant({
       name: assistantName,
     });
-
-    const throwError = async () => {
-      await pinecone.createAssistant({
+    await expect(
+      pinecone.createAssistant({
         name: assistantName,
-      });
-    };
-    await expect(throwError()).rejects.toThrow();
+      })
+    ).rejects.toThrow();
 
     await pinecone.deleteAssistant(assistantName);
   });

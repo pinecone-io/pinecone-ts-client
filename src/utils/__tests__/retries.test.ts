@@ -11,10 +11,7 @@ describe('RetryOnServerFailure', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeInternalServerError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
-    const errorResult = async () => {
-      await retryWrapper.execute();
-    };
-    await expect(errorResult).rejects.toThrowError(
+    await expect(retryWrapper.execute()).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
   });
@@ -24,10 +21,7 @@ describe('RetryOnServerFailure', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeUnavailableError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
-    const errorResult = async () => {
-      await retryWrapper.execute();
-    };
-    await expect(errorResult).rejects.toThrowError(
+    await expect(retryWrapper.execute()).rejects.toThrowError(
       PineconeMaxRetriesExceededError
     );
   });

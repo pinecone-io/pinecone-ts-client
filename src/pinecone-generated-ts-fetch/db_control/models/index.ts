@@ -1,14 +1,19 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './BackupList';
+export * from './BackupModel';
+export * from './ByocSpec';
 export * from './CollectionList';
 export * from './CollectionModel';
 export * from './ConfigureIndexRequest';
 export * from './ConfigureIndexRequestEmbed';
 export * from './ConfigureIndexRequestSpec';
 export * from './ConfigureIndexRequestSpecPod';
+export * from './CreateBackupRequest';
 export * from './CreateCollectionRequest';
 export * from './CreateIndexForModelRequest';
 export * from './CreateIndexForModelRequestEmbed';
+export * from './CreateIndexFromBackupRequest';
 export * from './CreateIndexRequest';
 export * from './DeletionProtection';
 export * from './ErrorResponse';
@@ -19,6 +24,9 @@ export * from './IndexModelSpec';
 export * from './IndexModelStatus';
 export * from './IndexSpec';
 export * from './ModelIndexEmbed';
+export * from './PaginationResponse';
 export * from './PodSpec';
 export * from './PodSpecMetadataConfig';
+export * from './RestoreJobList';
+export * from './RestoreJobModel';
 export * from './ServerlessSpec';

@@ -29,7 +29,15 @@ const setup = async () => {
 };
 
 // main entrypoint
-setup();
+setup()
+  .then(() => {
+    console.log('Setup script completed successfully.');
+    process.exit(0); // optional, but ensures clean exit
+  })
+  .catch((error) => {
+    console.error('Setup script failed:', error);
+    process.exit(1);
+  });
 
 async function createServerlessIndex(client: Pinecone) {
   let serverlessIndexName = randomIndexName('serverless-integration');

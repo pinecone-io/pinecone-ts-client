@@ -53,9 +53,8 @@ describe('updateAssistant inplace updates, happy path', () => {
 
 describe('updateAssistant error paths', () => {
   test('Update non-existent assistant', async () => {
-    const throwError = async () => {
-      await pinecone.updateAssistant('non-existent-assistant', {});
-    };
-    await expect(throwError()).rejects.toThrow(PineconeNotFoundError);
+    await expect(
+      pinecone.updateAssistant('non-existent-assistant', {})
+    ).rejects.toThrow(PineconeNotFoundError);
   });
 });

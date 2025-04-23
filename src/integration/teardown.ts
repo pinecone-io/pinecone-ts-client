@@ -34,4 +34,12 @@ export const teardown = async () => {
   }
 };
 
-teardown();
+teardown()
+  .then(() => {
+    console.log('Teardown script completed successfully.');
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('Teardown script failed:', err);
+    process.exit(1);
+  });
