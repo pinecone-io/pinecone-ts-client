@@ -89,7 +89,6 @@ describe('Integrated Inference API tests', () => {
           query: { topK: 3, inputs: { text: 'apple corporation' } },
         }),
       (results: SearchRecordsResponse) => {
-        console.log('SEARCH RECORDS RESPONSE: ', results);
         expect(results.result.hits).toBeDefined();
         expect(results.result.hits.length).toEqual(3);
       }

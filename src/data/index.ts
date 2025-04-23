@@ -213,7 +213,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   constructor(
     indexName: string,
     config: PineconeConfiguration,
-    namespace = '',
+    namespace = '__default__',
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
   ) {
