@@ -21,7 +21,7 @@ try {
   // Step 2: Run Jest tests
   console.log(`Executing integration tests in Jest environment: "${TEST_ENV}"`);
   execSync(
-    `SERVERLESS_INDEX_NAME=${SERVERLESS_INDEX_NAME} ASSISTANT_NAME=${ASSISTANT_NAME} TEST_FILE=${TEST_FILE} TEST_ENV=${TEST_ENV} jest src/integration -c jest.config.integration-node.js --detectOpenHandles --runInBand --bail`,
+    `SERVERLESS_INDEX_NAME=${SERVERLESS_INDEX_NAME} ASSISTANT_NAME=${ASSISTANT_NAME} TEST_FILE=${TEST_FILE} TEST_ENV=${TEST_ENV} jest src/integration -c jest.config.integration-node.js --detectOpenHandles --runInBand --bail --forceExit`,
     { stdio: 'inherit' }
   );
 } catch (error) {
