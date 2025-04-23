@@ -145,13 +145,9 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
     startMockServer(false);
 
     // Catch expected error from Upsert operation
-    const errorResult = async () => {
-      await mockServerlessIndex.upsert(recordsToUpsert);
-    };
-
-    await expect(errorResult).rejects.toThrowError(
-      PineconeMaxRetriesExceededError
-    );
+    await expect(
+      mockServerlessIndex.upsert(recordsToUpsert)
+    ).rejects.toThrowError(PineconeMaxRetriesExceededError);
 
     // Out of 3 total tries, 2 are retries (i.e. delays), and 1 is the initial call:
     expect(retrySpy).toHaveBeenCalledTimes(1);

@@ -118,30 +118,27 @@ describe('Upload file happy path', () => {
 
 describe('Upload file error paths', () => {
   test('Upload with nonexistent file path', async () => {
-    const throwError = async () => {
-      await assistant.uploadFile({
+    await expect(
+      assistant.uploadFile({
         path: 'nonexistent-file.txt',
-      });
-    };
-    await expect(throwError()).rejects.toThrow();
+      })
+    ).rejects.toThrow();
   });
 
   test('Upload to nonexistent assistant', async () => {
-    const throwError = async () => {
-      await pinecone.Assistant('nonexistent').uploadFile({
+    await expect(
+      pinecone.Assistant('nonexistent').uploadFile({
         path: tempFileWithMetadataPath,
-      });
-    };
-    await expect(throwError()).rejects.toThrow(/404/);
+      })
+    ).rejects.toThrow(/404/);
   });
 
   test('Upload with empty file path', async () => {
-    const throwError = async () => {
-      await assistant.uploadFile({
+    await expect(
+      assistant.uploadFile({
         path: '',
-      });
-    };
-    await expect(throwError()).rejects.toThrow(
+      })
+    ).rejects.toThrow(
       'You must pass an object with required properties (`path`) to upload a file.'
     );
   });
@@ -149,9 +146,8 @@ describe('Upload file error paths', () => {
 
 describe('Delete file error paths', () => {
   test('Delete non-existent file', async () => {
-    const throwError = async () => {
-      await assistant.deleteFile('nonexistent-file-id');
-    };
-    await expect(throwError()).rejects.toThrow(/404/);
+    await expect(assistant.deleteFile('nonexistent-file-id')).rejects.toThrow(
+      /404/
+    );
   });
 });

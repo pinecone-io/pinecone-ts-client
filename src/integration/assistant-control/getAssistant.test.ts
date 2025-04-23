@@ -31,9 +31,8 @@ describe('describeAssistant happy path', () => {
 
 describe('describeAssistant error paths', () => {
   test('get non-existent assistant', async () => {
-    const throwError = async () => {
-      await pinecone.describeAssistant('non-existent-assistant');
-    };
-    await expect(throwError()).rejects.toThrow(PineconeNotFoundError);
+    await expect(
+      pinecone.describeAssistant('non-existent-assistant')
+    ).rejects.toThrow(PineconeNotFoundError);
   });
 });
