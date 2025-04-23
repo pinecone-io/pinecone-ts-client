@@ -39,9 +39,12 @@ describe('RetryOnServerFailure', () => {
     const fakeAsyncFn: () => Promise<object> = jest
       .fn()
       .mockImplementation(() => Promise.resolve({}));
-    await expect(
-      new RetryOnServerFailure(fakeAsyncFn, 11)
-    ).rejects.toThrowError('Max retries cannot exceed 10');
+    const toThrow = async () => {
+      new RetryOnServerFailure(fakeAsyncFn, 11);
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'Max retries cannot exceed 10'
+    );
   });
 
   test('Should retry when first encounter error, then succeed when eventually get good response back', async () => {
