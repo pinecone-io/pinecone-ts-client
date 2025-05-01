@@ -24,6 +24,7 @@ import type {
   CreateCollectionRequest,
   CreateIndexForModelRequest,
   CreateIndexFromBackupRequest,
+  CreateIndexFromBackupResponse,
   CreateIndexRequest,
   ErrorResponse,
   IndexList,
@@ -50,6 +51,8 @@ import {
     CreateIndexForModelRequestToJSON,
     CreateIndexFromBackupRequestFromJSON,
     CreateIndexFromBackupRequestToJSON,
+    CreateIndexFromBackupResponseFromJSON,
+    CreateIndexFromBackupResponseToJSON,
     CreateIndexRequestFromJSON,
     CreateIndexRequestToJSON,
     ErrorResponseFromJSON,
@@ -342,7 +345,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      * Create an index from a backup.
      * Create an index from a backup
      */
-    async createIndexFromBackupRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createIndexFromBackupRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
         if (requestParameters.backupId === null || requestParameters.backupId === undefined) {
             throw new runtime.RequiredError('backupId','Required parameter requestParameters.backupId was null or undefined when calling createIndexFromBackup.');
         }
@@ -369,15 +372,16 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             body: CreateIndexFromBackupRequestToJSON(requestParameters.createIndexFromBackupRequest),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateIndexFromBackupResponseFromJSON(jsonValue));
     }
 
     /**
      * Create an index from a backup.
      * Create an index from a backup
      */
-    async createIndexFromBackup(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createIndexFromBackupRaw(requestParameters, initOverrides);
+    async createIndexFromBackup(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {
+        const response = await this.createIndexFromBackupRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**

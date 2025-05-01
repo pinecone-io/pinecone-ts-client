@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface CreateBackupRequest {
     /**
-     * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
+     * The name of the backup.
      * @type {string}
      * @memberof CreateBackupRequest
      */
