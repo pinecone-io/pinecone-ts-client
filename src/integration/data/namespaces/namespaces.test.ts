@@ -21,7 +21,7 @@ describe('namespaces operations', () => {
       .namespace(namespaceTwo);
 
     // Seed indexes
-    const recordsToUpsert = generateRecords({ dimension: 5, quantity: 5 });
+    const recordsToUpsert = generateRecords({ dimension: 2, quantity: 5 });
     await serverlessIndexNsOne.upsert(recordsToUpsert);
     await serverlessIndexNsTwo.upsert(recordsToUpsert);
   });
