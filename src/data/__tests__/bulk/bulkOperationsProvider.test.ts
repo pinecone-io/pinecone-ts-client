@@ -7,7 +7,7 @@ jest.mock('../../../pinecone-generated-ts-fetch/db_data', () => ({
   Configuration: jest.fn(),
 }));
 
-describe('DataOperationsProvider', () => {
+describe('BulkOperationsProvider', () => {
   let real;
   const config = {
     apiKey: 'test-api-key',
