@@ -2,8 +2,11 @@ import { ListNamespacesResponse } from '../../pinecone-generated-ts-fetch/db_dat
 import { NamespaceOperationsProvider } from '../namespaces/namespacesOperationsProvider';
 
 export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
-  return async (): Promise<ListNamespacesResponse> => {
+  return async (
+    limit?: number,
+    paginationToken?: string
+  ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
-    return await api.listNamespaces();
+    return await api.listNamespaces({ limit, paginationToken });
   };
 };
