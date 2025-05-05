@@ -58,14 +58,11 @@ runs:
         vercel --token ${{ inputs.vercel-token }} --prod
       shell: bash
 
-    - name: Hit Vercel app endpoint(s) via assertResponse.ts file
+    - name: Run end-to-end tests against the deployed Vercel app with assertResponse.ts
       run: |
-        npm install -g typescript
-        npm install -g ts-node
-        export PINECONE_API_KEY="${{ inputs.PINECONE_API_KEY }}"
-        ciUrl='https://ts-client-test-external-app.vercel.app/api/createSeedQuery'
-        indexName=$(ts-node ts-external-app-test/assertResponse.ts "$ciUrl" | grep "Index name:" | awk '{print $NF}' | tr -d '\r')
-        echo "indexName=$indexName" >> $GITHUB_ENV
+        npx tsx ts-external-app-test/assertResponse.ts
+      env:
+        PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
       shell: bash
 
     - name: Clean up test index(es)
