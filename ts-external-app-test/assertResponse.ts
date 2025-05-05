@@ -1,6 +1,4 @@
-import https from 'https';
-
-const BASE_URL = 'https://ts-client-test-external-app.vercel.app/api';
+let BASE_URL = 'https://ts-client-test-external-app.vercel.app/api';
 const INDEX_NAME = 'test-external-index';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -14,45 +12,35 @@ interface RequestOptions {
 async function request(path: string, options: RequestOptions): Promise<any> {
   const { method = 'GET', body, headers = {} } = options;
   const url = new URL(`${BASE_URL}${path}`);
-  return new Promise((resolve, reject) => {
-    const req = https.request(
-      {
-        method,
-        path: url.pathname + url.search,
-        port: 443,
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
+
+  try {
+    const response = await fetch(url.toString(), {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
       },
-      (res) => {
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () => {
-          try {
-            const json = JSON.parse(data);
-            resolve(json);
-          } catch (error) {
-            reject(
-              new Error(
-                `Failed to parse JSON response from ${url}: ${error.message}`
-              )
-            );
-          }
-        });
-      }
-    );
+      body: body ? JSON.stringify(body) : undefined,
+    });
 
-    req.on('error', (error) =>
-      reject(new Error(`Request to ${url} failed: ${error.message}`))
-    );
-
-    if (body) {
-      req.write(JSON.stringify(body));
+    if (!response.ok) {
+      throw new Error(
+        `Request to ${url} failed with status ${response.status}: ${response.statusText}`
+      );
     }
 
-    req.end();
-  });
+    const text = await response.text();
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      throw new Error(
+        `Failed to parse JSON response from ${url}: ${error.message}`
+      );
+    }
+  } catch (error) {
+    throw new Error(`Request to ${url} failed: ${error.message}`);
+  }
 }
 
 async function createIndex(apiKey: string) {
@@ -63,15 +51,7 @@ async function createIndex(apiKey: string) {
       pinecone_index_name: INDEX_NAME,
     },
   });
-  if (!response || response.status !== 200) {
-    throw new Error(
-      `Failed to createIndex:
-        code: ${response.status},
-        text: ${response.statusText},
-        type: ${response.type},
-        url: ${response.url}`
-    );
-  }
+  console.log('Response from createIndex:', response);
 }
 
 async function describeIndexDetails(apiKey: string) {
@@ -82,15 +62,7 @@ async function describeIndexDetails(apiKey: string) {
       pinecone_index_name: INDEX_NAME,
     },
   });
-  if (!response || response.status !== 200) {
-    throw new Error(
-      `Failed to describeIndexDetails:
-        code: ${response.status},
-        text: ${response.statusText},
-        type: ${response.type},
-        url: ${response.url}`
-    );
-  }
+  console.log('Response from describeIndexDetails:', response);
 }
 
 async function deleteIndex(apiKey: string) {
@@ -101,15 +73,7 @@ async function deleteIndex(apiKey: string) {
       pinecone_index_name: INDEX_NAME,
     },
   });
-  if (!response || response.status !== 200) {
-    throw new Error(
-      `Failed to deleteIndex:
-        code: ${response.status},
-        text: ${response.statusText},
-        type: ${response.type},
-        url: ${response.url}`
-    );
-  }
+  console.log('Response from deleteIndex:', response);
 }
 
 async function run() {
@@ -117,6 +81,14 @@ async function run() {
     const apiKey = process.env['PINECONE_API_KEY'];
     if (!apiKey) {
       throw new Error('PINECONE_API_KEY environment variable is required.');
+    }
+
+    const args = process.argv.slice(2);
+    if (args.length > 0) {
+      const hostOverride = args.find((arg) => arg.startsWith('--base-url='));
+      if (hostOverride) {
+        BASE_URL = hostOverride.split('=')[1];
+      }
     }
 
     console.log(`Creating test index: ${INDEX_NAME}`);
