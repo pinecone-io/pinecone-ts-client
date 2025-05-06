@@ -98,7 +98,11 @@ async function run() {
     await new Promise((resolve) => setTimeout(resolve, 10000));
 
     console.log('Describing test index');
-    const description = await describeIndexDetails(apiKey);
+    const description = await retry(
+      () => describeIndexDetails(apiKey),
+      4,
+      3000
+    );
     console.log('Index description:', description);
     console.log(`Test passed using index: ${INDEX_NAME}`);
     deleteIndex(apiKey);
@@ -106,6 +110,30 @@ async function run() {
   } catch (error) {
     console.error('Test failed:', error);
     process.exit(1);
+  }
+}
+
+async function retry<T>(
+  fn: () => Promise<T>,
+  retries: number = 3,
+  delayMs: number = 2000
+) {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      const isServerError =
+        err instanceof Error && /status 500/.test(err.message);
+
+      if (!isServerError || attempt >= retries) {
+        throw err;
+      }
+
+      console.warn(`Retrying after error: ${err.message}`);
+      attempt++;
+      await new Promise((res) => setTimeout(res, delayMs));
+    }
   }
 }
 
