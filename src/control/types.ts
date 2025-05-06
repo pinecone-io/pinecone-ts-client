@@ -20,6 +20,9 @@ export type IndexName = string;
  */
 export type CollectionName = string;
 
+export type BackupId = string;
+export type RestoreJobId = string;
+
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
