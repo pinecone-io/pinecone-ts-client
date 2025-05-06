@@ -57,11 +57,11 @@ export interface ModelInfo {
      */
     vectorType?: ModelInfoVectorTypeEnum;
     /**
-     * The embedding model dimension (applies to dense embedding models only).
+     * The default embedding model dimension (applies to dense embedding models only).
      * @type {number}
      * @memberof ModelInfo
      */
-    dimension?: number;
+    defaultDimension?: number;
     /**
      * The modality of the model (e.g. 'text').
      * @type {string}
@@ -73,13 +73,25 @@ export interface ModelInfo {
      * @type {number}
      * @memberof ModelInfo
      */
-    sequenceLength?: number;
+    maxSequenceLength?: number;
     /**
      * The maximum batch size (number of sequences) supported by the model.
      * @type {number}
      * @memberof ModelInfo
      */
-    batchSize?: number;
+    maxBatchSize?: number;
+    /**
+     * The name of the provider of the model.
+     * @type {string}
+     * @memberof ModelInfo
+     */
+    providerName?: string;
+    /**
+     * The list of supported dimensions for the model (applies to dense embedding models only).
+     * @type {Array<number>}
+     * @memberof ModelInfo
+     */
+    supportedDimensions?: Array<number>;
     /**
      * The distance metrics supported by the model for similarity search.
      * @type {Array<ModelInfoMetric>}
@@ -141,10 +153,12 @@ export function ModelInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'shortDescription': json['short_description'],
         'type': json['type'],
         'vectorType': !exists(json, 'vector_type') ? undefined : json['vector_type'],
-        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'defaultDimension': !exists(json, 'default_dimension') ? undefined : json['default_dimension'],
         'modality': !exists(json, 'modality') ? undefined : json['modality'],
-        'sequenceLength': !exists(json, 'sequence_length') ? undefined : json['sequence_length'],
-        'batchSize': !exists(json, 'batch_size') ? undefined : json['batch_size'],
+        'maxSequenceLength': !exists(json, 'max_sequence_length') ? undefined : json['max_sequence_length'],
+        'maxBatchSize': !exists(json, 'max_batch_size') ? undefined : json['max_batch_size'],
+        'providerName': !exists(json, 'provider_name') ? undefined : json['provider_name'],
+        'supportedDimensions': !exists(json, 'supported_dimensions') ? undefined : json['supported_dimensions'],
         'supportedMetrics': !exists(json, 'supported_metrics') ? undefined : ((json['supported_metrics'] as Array<any>).map(ModelInfoMetricFromJSON)),
         'supportedParameters': ((json['supported_parameters'] as Array<any>).map(ModelInfoSupportedParameterFromJSON)),
     };
@@ -163,10 +177,12 @@ export function ModelInfoToJSON(value?: ModelInfo | null): any {
         'short_description': value.shortDescription,
         'type': value.type,
         'vector_type': value.vectorType,
-        'dimension': value.dimension,
+        'default_dimension': value.defaultDimension,
         'modality': value.modality,
-        'sequence_length': value.sequenceLength,
-        'batch_size': value.batchSize,
+        'max_sequence_length': value.maxSequenceLength,
+        'max_batch_size': value.maxBatchSize,
+        'provider_name': value.providerName,
+        'supported_dimensions': value.supportedDimensions,
         'supported_metrics': value.supportedMetrics === undefined ? undefined : ((value.supportedMetrics as Array<any>).map(ModelInfoMetricToJSON)),
         'supported_parameters': ((value.supportedParameters as Array<any>).map(ModelInfoSupportedParameterToJSON)),
     };

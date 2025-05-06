@@ -9,7 +9,6 @@ import type {
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
-import { waitUntilIndexIsReady } from '../createIndex';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexForModelResponse = (

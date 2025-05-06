@@ -14,6 +14,7 @@ export * from './CreateCollectionRequest';
 export * from './CreateIndexForModelRequest';
 export * from './CreateIndexForModelRequestEmbed';
 export * from './CreateIndexFromBackupRequest';
+export * from './CreateIndexFromBackupResponse';
 export * from './CreateIndexRequest';
 export * from './DeletionProtection';
 export * from './ErrorResponse';

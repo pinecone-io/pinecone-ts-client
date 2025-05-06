@@ -15,10 +15,14 @@ export type {
   Embedding,
 } from './pinecone-generated-ts-fetch/inference';
 export type {
+  ImportModel,
   ListResponse,
+  ListNamespacesResponse,
+  NamespaceDescription,
   SearchRecordsResponse,
   SearchRecordsResponseResult,
   SearchUsage,
+  StartImportResponse,
 } from './pinecone-generated-ts-fetch/db_data';
 export type {
   AssistantList,
