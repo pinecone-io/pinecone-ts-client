@@ -642,7 +642,7 @@ const list = await pc.listCollections();
 
 ## Index operations
 
-Pinecone indexes support operations for working with vector data using operations such as upsert, query, fetch, and delete.
+Pinecone indexes support operations for working with vector data using methods such as upsert, query, fetch, and delete.
 
 ### Targeting an index
 
@@ -733,6 +733,25 @@ await index.fetch(['1']);
 ```
 
 See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for more information.
+
+### Managing namespaces
+
+There are several operations for managing namespaces within an index. You can list the namespaces within an index, describe a specific namespace, or delete a namespace entirely.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const index = pc.index('test-index');
+
+// list all namespaces
+const namespacesResp = await index.listNamespaces();
+
+// describe a namespace
+const namespace = await index.describeNamespace('ns1');
+
+// delete a namespace (including all record data)
+await index.deleteNamespace('ns1');
+```
 
 ### Upsert vectors
 

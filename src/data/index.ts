@@ -31,6 +31,10 @@ import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
+import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
+import { listNamespaces } from './namespaces/listNamespaces';
+import { describeNamespace } from './namespaces/describeNamespace';
+import { deleteNamespace } from './namespaces/deleteNamespace';
 
 export type {
   PineconeConfiguration,
@@ -167,6 +171,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _describeImportCommand: DescribeImportCommand;
   /** @hidden */
   private _cancelImportCommand: CancelImportCommand;
+  /** @hidden */
+  private _listNamespacesCommand: ReturnType<typeof listNamespaces>;
+  /** @hidden */
+  private _describeNamespaceCommand: ReturnType<typeof describeNamespace>;
+  /** @hidden */
+  private _deleteNamespaceCommand: ReturnType<typeof deleteNamespace>;
 
   /** @internal */
   private config: PineconeConfiguration;
@@ -269,6 +279,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       bulkApiProvider,
       namespace
     );
+
+    // namespace operations
+    const namespaceApiProvider = new NamespaceOperationsProvider(
+      config,
+      indexName,
+      indexHostUrl,
+      additionalHeaders
+    );
+    this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
+    this._describeNamespaceCommand = describeNamespace(namespaceApiProvider);
+    this._deleteNamespaceCommand = deleteNamespace(namespaceApiProvider);
   }
 
   /**
@@ -797,5 +818,67 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async cancelImport(id: string) {
     return await this._cancelImportCommand.run(id);
+  }
+
+  /**
+   * Returns a list of namespaces within the index.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.listNamespaces(10));
+   *
+   * // {
+   * //   namespaces: [
+   * //     { name: 'ns-1', recordCount: '1' },
+   * //     { name: 'ns-2', recordCount: '1' }
+   * //   ],
+   * //   pagination: undefined
+   * // }
+   * ```
+   *
+   * @param limit - (Optional) Max number of import operations to return per page.
+   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   */
+  async listNamespaces(limit?: number, paginationToken?: string) {
+    return await this._listNamespacesCommand(limit, paginationToken);
+  }
+
+  /**
+   * Returns the details of a specific namespace.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * console.log(await index.describeNamespace('ns-1'));
+   *
+   * // { name: 'ns-1', recordCount: '1' }
+   * ```
+   *
+   * @param namespace - The namespace to describe.
+   */
+  async describeNamespace(namespace: string) {
+    return await this._describeNamespaceCommand(namespace);
+  }
+
+  /**
+   * Deletes a specific namespace from the index, including all records within it.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index('my-serverless-index');
+   * await index.deleteNamespace('ns-1');
+   * ```
+   *
+   * @param namespace - The namespace to delete.
+   */
+  async deleteNamespace(namespace: string) {
+    return await this._deleteNamespaceCommand(namespace);
   }
 }

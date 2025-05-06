@@ -7,11 +7,6 @@ import {
   waitUntilReady,
 } from '../../test-helpers';
 
-// todo: deleting non-existent records
-// todo: delete all records in namespace
-// todo: delete namespace
-// todo: delete index (?)
-
 let pinecone: Pinecone,
   serverlessIndexName: string,
   serverlessIndex: Index,
