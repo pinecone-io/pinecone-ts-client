@@ -1,5 +1,5 @@
 name: Spin up Vercel App
-
+description: 'Deploys the Vercel app and runs end-to-end tests against it'
 inputs:
   vercel-token:
     required: true

@@ -95,7 +95,7 @@ async function run() {
     await createIndex(apiKey);
 
     // wait a bit for index creation before hitting describeIndexDetails
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     console.log('Describing test index');
     const description = await describeIndexDetails(apiKey);
