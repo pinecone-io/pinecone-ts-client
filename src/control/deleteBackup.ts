@@ -3,7 +3,7 @@ import type { BackupId } from './types';
 import { PineconeArgumentError } from '../errors';
 
 /**
- * The ID of the backup to delete.
+ * The string ID of the backup to delete.
  */
 export type DeleteBackupOptions = BackupId;
 

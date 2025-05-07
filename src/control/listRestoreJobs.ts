@@ -4,10 +4,16 @@ import {
 } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
- * The limit and pagination token for the list of restore jobs.
+ * The options for listing restore jobs.
  */
 export interface ListRestoreJobsOptions {
+  /**
+   * Maximum number of restore jobs to return.
+   */
   limit?: number;
+  /**
+   * Token used for pagination to retrieve the next page of results.
+   */
   paginationToken?: string;
 }
 

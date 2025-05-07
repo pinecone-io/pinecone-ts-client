@@ -6,7 +6,7 @@ import type { BackupId } from './types';
 import { PineconeArgumentError } from '../errors';
 
 /**
- * The ID of the backup to describe.
+ * The string ID of the backup to describe.
  */
 export type DescribeBackupOptions = BackupId;
 

@@ -6,7 +6,7 @@ import type { RestoreJobId } from './types';
 import { PineconeArgumentError } from '../errors';
 
 /**
- * The ID of the restore job to describe.
+ * The string ID of the restore job to describe.
  */
 export type DescribeRestoreJobOptions = RestoreJobId;
 
