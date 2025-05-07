@@ -820,7 +820,7 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the assistant being updated.
-   * @param options - An {@link updateAssistant} object containing the name of the assistant to be updated and
+   * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
@@ -845,30 +845,260 @@ export class Pinecone {
     return this.config;
   }
 
+  /**
+   * Creates a backup of an index.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.createBackup({ indexName: 'my-index', name: 'my-index-backup-1', description: 'weekly backup' });
+   * // {
+   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //   sourceIndexName: 'my-index',
+   * //   sourceIndexId: 'b480770b-600d-4c4e-bf19-799c933ae2bf',
+   * //   name: 'my-index-backup-1',
+   * //   description: 'weekly backup',
+   * //   status: 'Initializing',
+   * //   cloud: 'aws',
+   * //   region: 'us-east-1',
+   * //   dimension: 1024,
+   * //   metric: 'cosine',
+   * //   recordCount: 500,
+   * //   namespaceCount: 4,
+   * //   sizeBytes: 78294,
+   * //   tags: {},
+   * //   createdAt: '2025-05-07T03:11:11.722238160Z'
+   * // }
+   * ```
+   *
+   * @param options - A {@link CreateBackupOptions} object containing the indexName to backup, and an optional name
+   * and description for the backup.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link BackupModel} object.
+   */
   createBackup(options: CreateBackupOptions) {
     return this._createBackup(options);
   }
 
+  /**
+   * Creates an index from an existing backup.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.createIndexFromBackup({ backupId: '11450b9f-96e5-47e5-9186-03f346b1f385', name: 'my-index-restore-1' });
+   * // {
+   * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
+   * //   indexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe'
+   * // }
+   * ```
+   *
+   * @param options - A {@link CreateIndexFromBackupOptions} object containing the backupId for the backup to restore
+   * the index from, and the name of the new index. Optionally, you can provide new tags or deletionProtection values for the index.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link CreateIndexFromBackupResponse} object.
+   */
   createIndexFromBackup(options: CreateIndexFromBackupOptions) {
     return this._createIndexFromBackup(options);
   }
 
+  /**
+   * Describes a backup.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * // {
+   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //   sourceIndexName: 'my-index',
+   * //   sourceIndexId: 'b480770b-600d-4c4e-bf19-799c933ae2bf',
+   * //   name: 'my-index-backup-1',
+   * //   description: 'weekly backup',
+   * //   status: 'Initializing',
+   * //   cloud: 'aws',
+   * //   region: 'us-east-1',
+   * //   dimension: 1024,
+   * //   metric: 'cosine',
+   * //   recordCount: 500,
+   * //   namespaceCount: 4,
+   * //   sizeBytes: 78294,
+   * //   tags: {},
+   * //   createdAt: '2025-05-07T03:11:11.722238160Z'
+   * // }
+   * ```
+   *
+   * @param options - The backupId of the backup to describe.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link BackupModel} object.
+   */
   describeBackup(backupName: DescribeBackupOptions) {
     return this._describeBackup(backupName);
   }
 
+  /**
+   * Describes a restore job.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * // {
+   * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
+   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //   targetIndexName: 'my-index-restore-1',
+   * //   targetIndexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe',
+   * //   status: 'Completed',
+   * //   createdAt: 2025-05-07T03:38:37.107Z,
+   * //   completedAt: 2025-05-07T03:40:23.687Z,
+   * //   percentComplete: 100
+   * // }
+   * ```
+   *
+   * @param options - The restoreJobId of the restore job to describe.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link RestoreJobModel} object.
+   */
   describeRestoreJob(restoreJobId: DescribeRestoreJobOptions) {
     return this._describeRestoreJob(restoreJobId);
   }
 
+  /**
+   * Deletes a backup.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.deleteBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * ```
+   *
+   * @param options - The backupId of the backup to delete.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves when the request to delete the backup is completed.
+   */
   deleteBackup(backupName: DeleteBackupOptions) {
     return this._deleteBackup(backupName);
   }
 
+  /**
+   * Lists backups within a project or a specific index. Pass an indexName to list backups for that index,
+   * otherwise the operation will return all backups in the project.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.listBackups({ indexName: 'my-index', limit: 2 });
+   * // {
+   * //   data: [
+   * //     {
+   * //       backupId: '6a00902c-d118-4ad3-931c-49328c26d558',
+   * //       sourceIndexName: 'my-index',
+   * //       sourceIndexId: '0888b4d9-0b7b-447e-a403-ab057ceee4d4',
+   * //       name: 'my-index-backup-2',
+   * //       description: undefined,
+   * //       status: 'Ready',
+   * //       cloud: 'aws',
+   * //       region: 'us-east-1',
+   * //       dimension: 5,
+   * //       metric: 'cosine',
+   * //       recordCount: 200,
+   * //       namespaceCount: 2,
+   * //       sizeBytes: 67284,
+   * //       tags: {},
+   * //       createdAt: '2025-05-07T18:34:13.626650Z'
+   * //     },
+   * //     {
+   * //       backupId: '2b362ea3-b7cf-4950-866f-0dff37ab781e',
+   * //       sourceIndexName: 'my-index',
+   * //       sourceIndexId: '0888b4d9-0b7b-447e-a403-ab057ceee4d4',
+   * //       name: 'my-index-backup-1',
+   * //       description: undefined,
+   * //       status: 'Ready',
+   * //       cloud: 'aws',
+   * //       region: 'us-east-1',
+   * //       dimension: 1024,
+   * //       metric: 'cosine',
+   * //       recordCount: 500,
+   * //       namespaceCount: 4,
+   * //       sizeBytes: 78294,
+   * //       tags: {},
+   * //       createdAt: '2025-05-07T18:33:59.888270Z'
+   * //     },
+   * //   ],
+   * //   pagination: undefined
+   * // }
+   * ```
+   *
+   * @param options - A {@link ListBackupsOptions} object containing the optional indexName, limit, and paginationToken values.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link BackupList} object.
+   */
   listBackups(options: ListBackupsOptions) {
     return this._listBackups(options);
   }
 
+  /**
+   * Lists restore jobs within a project.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.listRestoreJobs({ limit: 3 });
+   * // {
+   * //   data: [
+   * //     {
+   * //       restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
+   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //       targetIndexName: 'my-index-restore-1',
+   * //       targetIndexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe',
+   * //       status: 'Completed',
+   * //       createdAt: 2025-05-07T03:38:37.107Z,
+   * //       completedAt: 2025-05-07T03:40:23.687Z,
+   * //       percentComplete: 100
+   * //     },
+   * //     {
+   * //       restoreJobId: 'c60a62e0-63b9-452a-88af-31d89c56c988',
+   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //       targetIndexName: 'my-index-restore-2',
+   * //       targetIndexId: 'f2c9a846-799f-4b19-81a4-f3096b3d6114',
+   * //       status: 'Completed',
+   * //       createdAt: 2025-05-07T21:42:38.971Z,
+   * //       completedAt: 2025-05-07T21:43:11.782Z,
+   * //       percentComplete: 100
+   * //     },
+   * //     {
+   * //       restoreJobId: '792837b7-8001-47bf-9c11-1859826b9c10',
+   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
+   * //       targetIndexName: 'my-index-restore-3',
+   * //       targetIndexId: '620dda62-c999-4dd1-b083-6beb087b31e7',
+   * //       status: 'Pending',
+   * //       createdAt: 2025-05-07T21:48:39.580Z,
+   * //       completedAt: 2025-05-07T21:49:12.084Z,
+   * //       percentComplete: 45
+   * //     }
+   * //   ],
+   * //   pagination: undefined
+   * // }
+   * ```
+   *
+   * @param options - A {@link ListBackupsOptions} object containing the optional indexName, limit, and paginationToken values.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to a {@link BackupList} object.
+   */
   listRestoreJobs(options: ListRestoreJobsOptions) {
     return this._listRestoreJobs(options);
   }
