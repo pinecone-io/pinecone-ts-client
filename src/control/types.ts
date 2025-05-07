@@ -21,6 +21,7 @@ export type IndexName = string;
 export type CollectionName = string;
 
 export type BackupId = string;
+
 export type RestoreJobId = string;
 
 /**

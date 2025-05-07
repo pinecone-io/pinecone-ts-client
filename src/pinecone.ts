@@ -1,19 +1,33 @@
 import {
-  describeIndex,
-  listIndexes,
+  configureIndex,
+  createBackup,
+  createCollection,
   createIndex,
   createIndexForModel,
-  deleteIndex,
-  configureIndex,
-  listCollections,
-  createCollection,
-  describeCollection,
+  createIndexFromBackup,
+  deleteBackup,
   deleteCollection,
+  deleteIndex,
+  describeBackup,
+  describeCollection,
+  describeIndex,
+  describeRestoreJob,
+  indexOperationsBuilder,
+  listBackups,
+  listCollections,
+  listIndexes,
+  listRestoreJobs,
+  CollectionName,
+  CreateBackupOptions,
+  CreateIndexFromBackupOptions,
+  DeleteBackupOptions,
+  DescribeBackupOptions,
+  ListBackupsOptions,
+  ListRestoreJobsOptions,
+  CreateIndexForModelOptions,
   CreateIndexOptions,
   IndexName,
-  indexOperationsBuilder,
-  CollectionName,
-  CreateIndexForModelOptions,
+  DescribeRestoreJobOptions,
 } from './control';
 import {
   createAssistant,
@@ -118,6 +132,20 @@ export class Pinecone {
   private _describeAssistant: ReturnType<typeof describeAssistant>;
   /** @hidden */
   private _listAssistants: ReturnType<typeof listAssistants>;
+  /** @hidden */
+  private _createBackup: ReturnType<typeof createBackup>;
+  /** @hidden */
+  private _createIndexFromBackup: ReturnType<typeof createIndexFromBackup>;
+  /** @hidden */
+  private _describeBackup: ReturnType<typeof describeBackup>;
+  /** @hidden */
+  private _describeRestoreJob: ReturnType<typeof describeRestoreJob>;
+  /** @hidden */
+  private _deleteBackup: ReturnType<typeof deleteBackup>;
+  /** @hidden */
+  private _listBackups: ReturnType<typeof listBackups>;
+  /** @hidden */
+  private _listRestoreJobs: ReturnType<typeof listRestoreJobs>;
 
   public inference: Inference;
 
@@ -171,6 +199,14 @@ export class Pinecone {
     this._updateAssistant = updateAssistant(asstControlApi);
     this._describeAssistant = describeAssistant(asstControlApi);
     this._listAssistants = listAssistants(asstControlApi);
+
+    this._createBackup = createBackup(api);
+    this._createIndexFromBackup = createIndexFromBackup(api);
+    this._describeBackup = describeBackup(api);
+    this._describeRestoreJob = describeRestoreJob(api);
+    this._deleteBackup = deleteBackup(api);
+    this._listBackups = listBackups(api);
+    this._listRestoreJobs = listRestoreJobs(api);
 
     this.inference = new Inference(infApi);
   }
@@ -807,6 +843,34 @@ export class Pinecone {
    */
   getConfig() {
     return this.config;
+  }
+
+  createBackup(options: CreateBackupOptions) {
+    return this._createBackup(options);
+  }
+
+  createIndexFromBackup(options: CreateIndexFromBackupOptions) {
+    return this._createIndexFromBackup(options);
+  }
+
+  describeBackup(backupName: DescribeBackupOptions) {
+    return this._describeBackup(backupName);
+  }
+
+  describeRestoreJob(restoreJobId: DescribeRestoreJobOptions) {
+    return this._describeRestoreJob(restoreJobId);
+  }
+
+  deleteBackup(backupName: DeleteBackupOptions) {
+    return this._deleteBackup(backupName);
+  }
+
+  listBackups(options: ListBackupsOptions) {
+    return this._listBackups(options);
+  }
+
+  listRestoreJobs(options: ListRestoreJobsOptions) {
+    return this._listRestoreJobs(options);
   }
 
   /**

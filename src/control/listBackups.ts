@@ -13,12 +13,14 @@ export interface ListBackupsOptions {
 }
 
 export const listBackups = (api: ManageIndexesApi) => {
-  return async (listBackupOptions: ListBackupsOptions): Promise<BackupList> => {
-    const indexName = listBackupOptions.indexName;
+  return async (
+    listBackupOptions: ListBackupsOptions = {}
+  ): Promise<BackupList> => {
+    const { indexName, ...rest } = listBackupOptions;
     if (!indexName) {
       return await api.listProjectBackups();
     } else {
-      return await api.listIndexBackups({ ...listBackupOptions, indexName });
+      return await api.listIndexBackups({ indexName, ...rest });
     }
   };
 };
