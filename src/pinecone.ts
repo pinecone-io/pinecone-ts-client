@@ -852,7 +852,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.createBackup({ indexName: 'my-index', name: 'my-index-backup-1', description: 'weekly backup' });
+   * const backup = await pc.createBackup({ indexName: 'my-index', name: 'my-index-backup-1', description: 'weekly backup' });
+   * console.log(backup);
    * // {
    * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
    * //   sourceIndexName: 'my-index',
