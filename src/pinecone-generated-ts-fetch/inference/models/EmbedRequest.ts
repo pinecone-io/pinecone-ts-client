@@ -27,13 +27,13 @@ import {
  */
 export interface EmbedRequest {
     /**
-     * The [model](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models) to use for embedding generation.
+     * The [model](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) to use for embedding generation.
      * @type {string}
      * @memberof EmbedRequest
      */
     model: string;
     /**
-     * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models) for available model parameters.
+     * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available model parameters.
      * @type {{ [key: string]: any; }}
      * @memberof EmbedRequest
      */

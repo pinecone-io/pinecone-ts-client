@@ -38,7 +38,7 @@ export interface DeleteRequest {
      */
     namespace?: string;
     /**
-     * If specified, the metadata filter here will be used to select the vectors to delete. This is mutually exclusive with specifying ids to delete in the ids param or using delete_all=True. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
+     * If specified, the metadata filter here will be used to select the vectors to delete. This is mutually exclusive with specifying ids to delete in the ids param or using delete_all=True. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * Serverless indexes do not support delete by metadata. Instead, you can use the `list` operation to fetch the vector IDs based on their common ID prefix and then delete the records by ID.
      * @type {object}
      * @memberof DeleteRequest

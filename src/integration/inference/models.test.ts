@@ -11,7 +11,7 @@ describe('inference models', () => {
   test('get model', async () => {
     const model = await pinecone.inference.getModel('multilingual-e5-large');
     expect(model).toBeDefined();
-    expect(model.name).toEqual('multilingual-e5-large');
+    expect(model.model).toEqual('multilingual-e5-large');
   });
 
   test('list models', async () => {

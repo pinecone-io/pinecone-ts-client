@@ -5,15 +5,12 @@ import {
   InferenceApi,
 } from '../pinecone-generated-ts-fetch/inference';
 
-export type EmbedOptions = {
-  model: string;
-  inputs: Array<string>;
-  params: Record<string, string>;
-};
-
 export const embed = (infApi: InferenceApi) => {
-  return async (options: EmbedOptions): Promise<EmbeddingsList> => {
-    const { model, inputs, params } = options;
+  return async (
+    model: string,
+    inputs: Array<string>,
+    params?: Record<string, string>
+  ): Promise<EmbeddingsList> => {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> = inputs.map(
       (str) => {
         return { text: str };

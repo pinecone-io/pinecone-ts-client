@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface DescribeIndexStatsRequest {
     /**
-     * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
+     * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * 
      * Serverless indexes do not support filtering `describe_index_stats` by metadata.
      * @type {object}

@@ -25,7 +25,7 @@ export const rerank = (infApi: InferenceApi) => {
     model: string,
     query: string,
     documents: Array<{ [key: string]: string } | string>,
-    options: RerankOptions
+    options: RerankOptions = {}
   ): Promise<RerankResult> => {
     if (documents.length == 0) {
       throw new PineconeArgumentError(
