@@ -1364,12 +1364,101 @@ If you do not specify a namespace, the records in the default namespace `''` wil
 
 Use embedding and & reranking models hosted by Pinecone. Learn more about Inference in the [docs](https://docs.pinecone.io/guides/inference/understanding-inference).
 
-To see the available models:
+### Models
 
-- [Embedding](https://docs.pinecone.io/guides/inference/understanding-inference#embedding-models)
-- [Reranking](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models)
+To see available models you can use the `getModel` and `listModels` methods on the `Inference` class:
 
-## Create embeddings
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const client = new Pinecone({ apiKey: '<Your API key from app.pinecone.io>' });
+
+const models = await pc.inference.listModels();
+console.log(models);
+// {
+//   models: [
+//     {
+//       model: 'llama-text-embed-v2',
+//       shortDescription: 'A high performance dense embedding model optimized for multilingual and cross-lingual text question-answering retrieval with support for long documents (up to 2048 tokens) and dynamic embedding size (Matryoshka Embeddings).',
+//       type: 'embed',
+//       vectorType: 'dense',
+//       defaultDimension: 1024,
+//       modality: 'text',
+//       maxSequenceLength: 2048,
+//       maxBatchSize: 96,
+//       providerName: 'NVIDIA',
+//       supportedDimensions: [Array],
+//       supportedMetrics: [Array],
+//       supportedParameters: [Array]
+//     },
+//     ...
+//     {
+//       model: 'pinecone-rerank-v0',
+//       shortDescription: 'A state of the art reranking model that out-performs competitors on widely accepted benchmarks. It can handle chunks up to 512 tokens (1-2 paragraphs)',
+//       type: 'rerank',
+//       vectorType: undefined,
+//       defaultDimension: undefined,
+//       modality: 'text',
+//       maxSequenceLength: 512,
+//       maxBatchSize: 100,
+//       providerName: 'Pinecone',
+//       supportedDimensions: undefined,
+//       supportedMetrics: undefined,
+//       supportedParameters: [Array]
+//     }
+//   ]
+// }
+
+const model = await pc.inference.getModel('pinecone-sparse-english-v0');
+console.log(model);
+// {
+//   model: 'pinecone-sparse-english-v0',
+//   shortDescription: 'A sparse embedding model for converting text to sparse vectors for keyword or hybrid semantic/keyword search. Built on the innovations of the DeepImpact architecture.',
+//   type: 'embed',
+//   vectorType: 'sparse',
+//   defaultDimension: undefined,
+//   modality: 'text',
+//   maxSequenceLength: 512,
+//   maxBatchSize: 96,
+//   providerName: 'Pinecone',
+//   supportedDimensions: undefined,
+//   supportedMetrics: [ 'DotProduct' ],
+//   supportedParameters: [
+//     {
+//       parameter: 'input_type',
+//       type: 'one_of',
+//       valueType: 'string',
+//       required: true,
+//       allowedValues: [Array],
+//       min: undefined,
+//       max: undefined,
+//       _default: undefined
+//     },
+//     {
+//       parameter: 'truncate',
+//       type: 'one_of',
+//       valueType: 'string',
+//       required: false,
+//       allowedValues: [Array],
+//       min: undefined,
+//       max: undefined,
+//       _default: 'END'
+//     },
+//     {
+//       parameter: 'return_tokens',
+//       type: 'any',
+//       valueType: 'boolean',
+//       required: false,
+//       allowedValues: undefined,
+//       min: undefined,
+//       max: undefined,
+//       _default: false
+//     }
+//   ]
+// }
+```
+
+### Create embeddings
 
 Generate embeddings for documents and queries.
 
@@ -1432,7 +1521,7 @@ generateQueryEmbeddings().then((embeddingsResponse) => {
 // << Send query to Pinecone to retrieve similar documents >>
 ```
 
-## Rerank documents
+### Rerank documents
 
 Rerank documents in descending relevance-order against a query.
 

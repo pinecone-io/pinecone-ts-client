@@ -231,8 +231,8 @@ export class Inference {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const models = await pc.inference.listModels();
-   * console.log(models);
+   * const model = await pc.inference.getModel('pinecone-sparse-english-v0');
+   * console.log(model);
    * // {
    * //   model: 'pinecone-sparse-english-v0',
    * //   shortDescription: 'A sparse embedding model for converting text to sparse vectors for keyword or hybrid semantic/keyword search. Built on the innovations of the DeepImpact architecture.',
