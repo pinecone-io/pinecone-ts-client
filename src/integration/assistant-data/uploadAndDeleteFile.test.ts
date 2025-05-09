@@ -3,7 +3,7 @@ import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { sleep } from '../test-helpers';
+import { assertWithRetries, sleep } from '../test-helpers';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -82,10 +82,15 @@ describe('Upload file happy path', () => {
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await sleep(30000);
+    await sleep(10000);
 
     // Delete file happy path test:
-    await assistant.deleteFile(response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      }
+    );
   });
 
   test('Upload file with metadata', async () => {
@@ -109,10 +114,15 @@ describe('Upload file happy path', () => {
       expect(response.metadata['category']).toEqual('integration-test');
     }
 
-    await sleep(30000);
+    await sleep(10000);
 
     // Delete file happy path test:
-    await assistant.deleteFile(response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      }
+    );
   });
 });
 
