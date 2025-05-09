@@ -17,6 +17,6 @@ describe('inference models', () => {
   test('list models', async () => {
     const modelList = await pinecone.inference.listModels();
     expect(modelList).toBeDefined();
-    expect(modelList.models).toBeGreaterThan(0);
+    expect(modelList.models?.length).toBeGreaterThan(0);
   });
 });
