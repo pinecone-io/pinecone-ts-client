@@ -109,7 +109,7 @@ export interface UpsertVectorsRequest {
 export class VectorOperationsApi extends runtime.BaseAPI {
 
     /**
-     * Delete vectors by id from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+     * Delete vectors by id from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/manage-data/delete-data).
      * Delete vectors
      */
     async deleteVectorsRaw(requestParameters: DeleteVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -139,7 +139,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete vectors by id from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/data/delete-data).
+     * Delete vectors by id from a single namespace.  For guidance and examples, see [Delete data](https://docs.pinecone.io/guides/manage-data/delete-data).
      * Delete vectors
      */
     async deleteVectors(requestParameters: DeleteVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
@@ -187,7 +187,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch vectors
      */
     async fetchVectorsRaw(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
@@ -222,7 +222,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/data/fetch-data).
+     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch vectors
      */
     async fetchVectors(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {
@@ -231,7 +231,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+     * List the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectorsRaw(requestParameters: ListVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResponse>> {
@@ -270,7 +270,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+     * List the IDs of vectors in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
      * List vector IDs
      */
     async listVectors(requestParameters: ListVectorsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResponse> {
@@ -279,7 +279,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
      * Search with a vector
      */
     async queryVectorsRaw(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
@@ -309,7 +309,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
      * Search with a vector
      */
     async queryVectors(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QueryResponse> {
@@ -318,7 +318,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
      * Search with text
      */
     async searchRecordsNamespaceRaw(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchRecordsResponse>> {
@@ -352,7 +352,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Query data](https://docs.pinecone.io/guides/data/query-data).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
      * Search with text
      */
     async searchRecordsNamespace(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchRecordsResponse> {
@@ -361,7 +361,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+     * Update a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
      * Update a vector
      */
     async updateVectorRaw(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -391,7 +391,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/data/update-data).
+     * Update a vector in a namespace. If a value is included, it will overwrite the previous value. If a `set_metadata` is included, the values of the fields specified in it will be added or overwrite the previous value.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
      * Update a vector
      */
     async updateVector(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
@@ -400,7 +400,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data#upsert-text).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-text).
      * Upsert text
      */
     async upsertRecordsNamespaceRaw(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -434,7 +434,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data#upsert-text).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-text).
      * Upsert text
      */
     async upsertRecordsNamespace(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -442,7 +442,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data#upsert-vectors).
+     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-vectors).
      * Upsert vectors
      */
     async upsertVectorsRaw(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
@@ -472,7 +472,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/data/upsert-data#upsert-vectors).
+     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-vectors).
      * Upsert vectors
      */
     async upsertVectors(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertResponse> {

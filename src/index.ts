@@ -5,7 +5,7 @@ export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
 
 // Interface exports
-export type { RerankOptions } from './inference/inference';
+export type { RerankOptions } from './inference/rerank';
 export type {
   RerankResult,
   RerankResultUsage,
