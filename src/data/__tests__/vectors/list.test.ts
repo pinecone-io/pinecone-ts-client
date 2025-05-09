@@ -49,7 +49,7 @@ describe('list', () => {
     const toThrow = async () => {
       await listPaginatedFn({ limit: -3 });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       '`limit` property must be greater than 0'
     );
   });
@@ -61,7 +61,7 @@ describe('list', () => {
       // @ts-ignore
       await listPaginatedFn({ limitgadsf: -3 });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'Object contained invalid properties: limitgadsf. Valid properties include prefix, limit, paginationToken.'
     );
   });
@@ -73,7 +73,7 @@ describe('list', () => {
       // @ts-ignore
       await listPaginatedFn({ limit: 3, testy: 'test' });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'Object contained invalid properties: testy. Valid properties include prefix, limit, paginationToken.'
     );
   });

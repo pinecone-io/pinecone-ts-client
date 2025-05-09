@@ -63,7 +63,7 @@ export interface RerankOperationRequest {
 export class InferenceApi extends runtime.BaseAPI {
 
     /**
-     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Embed data](https://docs.pinecone.io/guides/inference/generate-embeddings).
+     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding).
      * Generate vectors
      */
     async embedRaw(requestParameters: EmbedOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EmbeddingsList>> {
@@ -89,7 +89,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/inference/understanding-inference).  For guidance and examples, see [Embed data](https://docs.pinecone.io/guides/inference/generate-embeddings).
+     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding).
      * Generate vectors
      */
     async embed(requestParameters: EmbedOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EmbeddingsList> {
@@ -174,7 +174,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Rerank documents
      */
     async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
@@ -200,7 +200,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank documents](https://docs.pinecone.io/guides/inference/rerank).
+     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Rerank documents
      */
     async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {

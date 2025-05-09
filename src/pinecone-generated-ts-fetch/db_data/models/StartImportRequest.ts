@@ -33,7 +33,7 @@ export interface StartImportRequest {
      */
     integrationId?: string;
     /**
-     * The [URI prefix](https://docs.pinecone.io/guides/data/understanding-imports#directory-structure) under which the data to import is available. All data within this prefix will be listed then imported into the target index. Currently only `s3://` URIs are supported.
+     * The [URI prefix](https://docs.pinecone.io/guides/index-data/import-data#prepare-your-data) under which the data to import is available. All data within this prefix will be listed then imported into the target index. Currently only `s3://` URIs are supported.
      * @type {string}
      * @memberof StartImportRequest
      */

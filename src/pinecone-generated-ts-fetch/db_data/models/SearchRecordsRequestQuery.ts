@@ -33,7 +33,7 @@ export interface SearchRecordsRequestQuery {
      */
     topK: number;
     /**
-     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/data/understanding-metadata).
+     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * @type {object}
      * @memberof SearchRecordsRequestQuery
      */

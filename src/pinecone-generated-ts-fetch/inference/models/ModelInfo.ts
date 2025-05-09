@@ -37,7 +37,7 @@ export interface ModelInfo {
      * @type {string}
      * @memberof ModelInfo
      */
-    name: string;
+    model: string;
     /**
      * A summary of the model.
      * @type {string}
@@ -131,7 +131,7 @@ export type ModelInfoVectorTypeEnum = typeof ModelInfoVectorTypeEnum[keyof typeo
  */
 export function instanceOfModelInfo(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "model" in value;
     isInstance = isInstance && "shortDescription" in value;
     isInstance = isInstance && "type" in value;
     isInstance = isInstance && "supportedParameters" in value;
@@ -149,7 +149,7 @@ export function ModelInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'name': json['name'],
+        'model': json['model'],
         'shortDescription': json['short_description'],
         'type': json['type'],
         'vectorType': !exists(json, 'vector_type') ? undefined : json['vector_type'],
@@ -173,7 +173,7 @@ export function ModelInfoToJSON(value?: ModelInfo | null): any {
     }
     return {
         
-        'name': value.name,
+        'model': value.model,
         'short_description': value.shortDescription,
         'type': value.type,
         'vector_type': value.vectorType,

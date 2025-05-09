@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface RerankRequest {
     /**
-     * The [model](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) to use for reranking.
+     * The [model](https://docs.pinecone.io/guides/search/rerank-results#reranking-models) to use for reranking.
      * @type {string}
      * @memberof RerankRequest
      */
@@ -46,7 +46,7 @@ export interface RerankRequest {
     /**
      * The field(s) to consider for reranking. If not provided, the default is `["text"]`.
      * 
-     * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models).
+     * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/search/rerank-results#reranking-models).
      * @type {Array<string>}
      * @memberof RerankRequest
      */
@@ -58,7 +58,7 @@ export interface RerankRequest {
      */
     documents: Array<{ [key: string]: any; }>;
     /**
-     * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) for available model parameters.
+     * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/search/rerank-results#reranking-models) for available model parameters.
      * @type {{ [key: string]: any; }}
      * @memberof RerankRequest
      */
