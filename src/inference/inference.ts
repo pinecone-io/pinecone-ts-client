@@ -139,7 +139,7 @@ export class Inference {
     return this._rerank(model, query, documents, options);
   }
 
-  async listModels(options: ListModelsOptions): Promise<ModelInfoList> {
+  async listModels(options?: ListModelsOptions): Promise<ModelInfoList> {
     return this._listModels(options);
   }
 

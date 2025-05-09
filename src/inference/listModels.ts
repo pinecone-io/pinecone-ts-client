@@ -11,7 +11,7 @@ export interface ListModelsOptions {
 }
 
 export const listModels = (infApi: InferenceApi) => {
-  return async (options: ListModelsOptions): Promise<ModelInfoList> => {
+  return async (options?: ListModelsOptions): Promise<ModelInfoList> => {
     return await infApi.listModels(options);
   };
 };
