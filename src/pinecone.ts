@@ -52,7 +52,6 @@ import {
 import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
-import { inferenceOperationsBuilder } from './inference/inferenceOperationsBuilder';
 import { isBrowser } from './utils/environment';
 import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
@@ -180,7 +179,6 @@ export class Pinecone {
     this._checkForBrowser();
 
     const api = indexOperationsBuilder(this.config);
-    const infApi = inferenceOperationsBuilder(this.config);
     const asstControlApi = asstControlOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
@@ -208,7 +206,7 @@ export class Pinecone {
     this._listBackups = listBackups(api);
     this._listRestoreJobs = listRestoreJobs(api);
 
-    this.inference = new Inference(infApi);
+    this.inference = new Inference(this.config);
   }
 
   /**

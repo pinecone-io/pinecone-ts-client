@@ -1,43 +1,35 @@
-import { Inference } from '../inference';
-import type { PineconeConfiguration } from '../../data';
-import { inferenceOperationsBuilder } from '../inferenceOperationsBuilder';
+import type {
+  InferenceApi,
+  EmbeddingsList,
+  EmbedOperationRequest,
+} from '../../pinecone-generated-ts-fetch/inference';
+import { embed } from '../embed';
 
-let inference: Inference;
+const setupEmbedResponse = (isSuccess) => {
+  const fakeEmbed: (req: EmbedOperationRequest) => Promise<EmbeddingsList> =
+    jest
+      .fn()
+      .mockImplementation(() =>
+        isSuccess ? Promise.resolve({}) : Promise.reject({})
+      );
+  const IA = { embed: fakeEmbed } as InferenceApi;
+  return IA;
+};
 
-beforeAll(() => {
-  const config: PineconeConfiguration = { apiKey: 'test-api-key' };
-  const infApi = inferenceOperationsBuilder(config);
-  inference = new Inference(infApi);
-});
-
-describe('Inference Class: _formatInputs', () => {
-  test('Should format inputs correctly', () => {
-    const inputs = ['input1', 'input2'];
-    const expected = [{ text: 'input1' }, { text: 'input2' }];
-    const result = inference._formatInputs(inputs);
-    expect(result).toEqual(expected);
-  });
-});
-
-describe('Inference Class: embed', () => {
-  test('Should throw error if response is missing required fields', async () => {
+describe('embed', () => {
+  test('should format inputs correctly', async () => {
     const model = 'test-model';
     const inputs = ['input1', 'input2'];
+    const expectedInputs = [{ text: 'input1' }, { text: 'input2' }];
     const params = { inputType: 'text', truncate: 'END' };
+    const options = { model, inputs, params };
 
-    const mockedIncorrectResponse = { model: 'test-model' };
-    const expectedError = Error(
-      'Response from Inference API is missing required fields'
+    const IA = setupEmbedResponse(true);
+    await embed(IA)(options);
+    expect(IA.embed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        embedRequest: expect.objectContaining({ inputs: expectedInputs }),
+      })
     );
-    const embed = jest.spyOn(inference._inferenceApi, 'embed');
-    // @ts-ignore
-    embed.mockResolvedValue(mockedIncorrectResponse);
-
-    try {
-      await inference.embed(model, inputs, params);
-    } catch (error) {
-      console.log('Error = ', error);
-      expect(error).toEqual(expectedError);
-    }
   });
 });
