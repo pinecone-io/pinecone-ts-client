@@ -18,7 +18,7 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
   });
 
   test('Confirm output types', async () => {
-    const response = await pinecone.inference.embed(model, inputs, params);
+    const response = await pinecone.inference.embed({ model, inputs, params });
     expect(response.model).toBeDefined();
     expect(response.data).toBeDefined();
     expect(response.usage).toBeDefined();

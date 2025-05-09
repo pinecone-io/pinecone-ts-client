@@ -1,5 +1,7 @@
 import {
   EmbeddingsList,
+  ModelInfo,
+  ModelInfoList,
   RerankResult,
 } from '../pinecone-generated-ts-fetch/inference';
 import { inferenceOperationsBuilder } from './inferenceOperationsBuilder';
@@ -8,6 +10,8 @@ import type { EmbedOptions } from './embed';
 import { embed } from './embed';
 import type { RerankOptions } from './rerank';
 import { rerank } from './rerank';
+import { getModel } from './getModel';
+import { listModels, ListModelsOptions } from './listModels';
 
 /* This class is the class through which users interact with Pinecone's inference API.  */
 export class Inference {
@@ -15,6 +19,10 @@ export class Inference {
   _embed: ReturnType<typeof embed>;
   /** @hidden */
   _rerank: ReturnType<typeof rerank>;
+  /** @hidden */
+  _listModels: ReturnType<typeof listModels>;
+  /** @hidden */
+  _getModel: ReturnType<typeof getModel>;
   /** @internal */
   config: PineconeConfiguration;
 
@@ -23,6 +31,8 @@ export class Inference {
     const inferenceApi = inferenceOperationsBuilder(this.config);
     this._embed = embed(inferenceApi);
     this._rerank = rerank(inferenceApi);
+    this._listModels = listModels(inferenceApi);
+    this._getModel = getModel(inferenceApi);
   }
 
   embed(options: EmbedOptions): Promise<EmbeddingsList> {
@@ -127,5 +137,13 @@ export class Inference {
     options: RerankOptions = {}
   ): Promise<RerankResult> {
     return this._rerank(model, query, documents, options);
+  }
+
+  async listModels(options: ListModelsOptions): Promise<ModelInfoList> {
+    return this._listModels(options);
+  }
+
+  async getModel(modelName: string): Promise<ModelInfo> {
+    return this._getModel(modelName);
   }
 }
