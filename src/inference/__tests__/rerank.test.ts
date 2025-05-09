@@ -1,6 +1,3 @@
-import { Inference } from '../inference';
-import type { PineconeConfiguration } from '../../data';
-import { inferenceOperationsBuilder } from '../inferenceOperationsBuilder';
 import { PineconeArgumentError } from '../../errors';
 import {
   InferenceApi,
@@ -9,7 +6,6 @@ import {
 } from '../../pinecone-generated-ts-fetch/inference';
 import { rerank } from '../rerank';
 
-let inference: Inference;
 const rerankModel = 'test-model';
 const myQuery = 'test-query';
 

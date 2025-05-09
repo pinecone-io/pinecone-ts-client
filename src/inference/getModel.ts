@@ -1,3 +1,4 @@
+import { PineconeArgumentError } from '../errors';
 import {
   ModelInfo,
   InferenceApi,
@@ -6,7 +7,7 @@ import {
 export const getModel = (infApi: InferenceApi) => {
   return async (modelName: string): Promise<ModelInfo> => {
     if (!modelName) {
-      throw new Error(
+      throw new PineconeArgumentError(
         'You must pass a non-empty string for `modelName` in order to get a model'
       );
     }
