@@ -21,6 +21,16 @@ export type IndexName = string;
 export type CollectionName = string;
 
 /**
+ * The unique identifier representing a backup.
+ *
+ * @see [Backups overview](https://docs.pinecone.io/guides/manage-data/backups-overview)
+ */
+export type BackupId = string;
+
+/** The unique identifier representing a restore job. */
+export type RestoreJobId = string;
+
+/**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
 export type PodType =
