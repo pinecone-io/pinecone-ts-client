@@ -28,3 +28,19 @@ export type { DeleteCollectionOptions } from './deleteCollection';
 export { describeCollection } from './describeCollection';
 export type { DescribeCollectionOptions } from './describeCollection';
 export { listCollections } from './listCollections';
+
+// Backup Operations
+export { createBackup } from './createBackup';
+export type { CreateBackupOptions } from './createBackup';
+export { createIndexFromBackup } from './createIndexFromBackup';
+export type { CreateIndexFromBackupOptions } from './createIndexFromBackup';
+export { describeBackup } from './describeBackup';
+export type { DescribeBackupOptions } from './describeBackup';
+export { describeRestoreJob } from './describeRestoreJob';
+export type { DescribeRestoreJobOptions } from './describeRestoreJob';
+export { listBackups } from './listBackups';
+export type { ListBackupsOptions } from './listBackups';
+export { listRestoreJobs } from './listRestoreJobs';
+export type { ListRestoreJobsOptions } from './listRestoreJobs';
+export { deleteBackup } from './deleteBackup';
+export type { DeleteBackupOptions } from './deleteBackup';
