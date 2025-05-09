@@ -1,5 +1,5 @@
-import { Pinecone } from '../../../index';
-import { generateRecords, sleep } from '../../test-helpers';
+import { ListNamespacesResponse, Pinecone } from '../../../index';
+import { assertWithRetries, generateRecords, sleep } from '../../test-helpers';
 
 const namespaceOne = 'namespace-one';
 const namespaceTwo = 'namespace-two';
@@ -53,14 +53,21 @@ describe('namespaces operations', () => {
 
   test('delete namespace', async () => {
     await pinecone.index(serverlessIndexName).deleteNamespace(namespaceTwo);
-    await sleep(2000); // Wait for the delete operation to complete
 
-    const response = await pinecone.index(serverlessIndexName).listNamespaces();
-    expect(response.namespaces).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: namespaceOne })])
-    );
-    expect(response.namespaces).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: namespaceTwo })])
+    await assertWithRetries(
+      () => pinecone.index(serverlessIndexName).listNamespaces(),
+      (response: ListNamespacesResponse) => {
+        expect(response.namespaces).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: namespaceOne }),
+          ])
+        );
+        expect(response.namespaces).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: namespaceTwo }),
+          ])
+        );
+      }
     );
   });
 });
