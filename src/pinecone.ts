@@ -890,7 +890,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.createIndexFromBackup({ backupId: '11450b9f-96e5-47e5-9186-03f346b1f385', name: 'my-index-restore-1' });
+   * const response = await pc.createIndexFromBackup({ backupId: '11450b9f-96e5-47e5-9186-03f346b1f385', name: 'my-index-restore-1' });
+   * console.log(response);
    * // {
    * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
    * //   indexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe'
@@ -914,7 +915,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * const backup = await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * console.log(backup);
    * // {
    * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
    * //   sourceIndexName: 'my-index',
@@ -950,7 +952,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * const restoreJob = await pc.describeRestoreJob('4d4c8693-10fd-4204-a57b-1e3e626fca07');
+   * console.log(restoreJob);
    * // {
    * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
    * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
@@ -999,7 +1002,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.listBackups({ indexName: 'my-index', limit: 2 });
+   * const backupsList = await pc.listBackups({ indexName: 'my-index', limit: 2 });
+   * console.log(backupsList);
    * // {
    * //   data: [
    * //     {
@@ -1057,7 +1061,8 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.listRestoreJobs({ limit: 3 });
+   * const restoreJobsList = await pc.listRestoreJobs({ limit: 3 });
+   * console.log(restoreJobsList);
    * // {
    * //   data: [
    * //     {

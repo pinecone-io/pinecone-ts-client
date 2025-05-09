@@ -685,10 +685,11 @@ a new restore job, which can be used to view the progress of the index restorati
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.createIndexFromBackup({
+const response = await pc.createIndexFromBackup({
   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
   name: 'my-index-restore-1',
 });
+console.log(response);
 // {
 //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
 //   indexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe'
