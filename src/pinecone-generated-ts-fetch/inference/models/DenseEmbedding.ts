@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { VectorType } from './VectorType';
-import {
-    VectorTypeFromJSON,
-    VectorTypeFromJSONTyped,
-    VectorTypeToJSON,
-} from './VectorType';
-
 /**
  * A dense embedding of a single input
  * @export
@@ -33,11 +26,11 @@ export interface DenseEmbedding {
      */
     values: Array<number>;
     /**
-     * 
-     * @type {VectorType}
+     * Indicates whether this is a 'dense' or 'sparse' embedding.
+     * @type {string}
      * @memberof DenseEmbedding
      */
-    vectorType: VectorType;
+    vectorType: string;
 }
 
 /**
@@ -62,7 +55,7 @@ export function DenseEmbeddingFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'values': json['values'],
-        'vectorType': VectorTypeFromJSON(json['vector_type']),
+        'vectorType': json['vector_type'],
     };
 }
 
@@ -76,7 +69,7 @@ export function DenseEmbeddingToJSON(value?: DenseEmbedding | null): any {
     return {
         
         'values': value.values,
-        'vector_type': VectorTypeToJSON(value.vectorType),
+        'vector_type': value.vectorType,
     };
 }
 

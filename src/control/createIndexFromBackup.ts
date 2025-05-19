@@ -42,7 +42,7 @@ export const createIndexFromBackup = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.createIndexFromBackup({
+    return await api.createIndexFromBackupOperation({
       backupId: createIndexFromBackupOptions.backupId,
       createIndexFromBackupRequest: {
         name: createIndexFromBackupOptions.name,

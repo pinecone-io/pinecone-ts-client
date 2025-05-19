@@ -22,7 +22,7 @@ const setupCreateIndexFromBackupResponse = (
     );
 
   const MIA = {
-    createIndexFromBackup: fakeCreateIndexFromBackup,
+    createIndexFromBackupOperation: fakeCreateIndexFromBackup,
   } as ManageIndexesApi;
 
   return MIA;
@@ -38,7 +38,7 @@ describe('createIndexFromBackup', () => {
       deletionProtection: 'enabled',
     });
     expect(returned).toEqual({} as CreateIndexFromBackupResponse);
-    expect(MIA.createIndexFromBackup).toHaveBeenCalledWith({
+    expect(MIA.createIndexFromBackupOperation).toHaveBeenCalledWith({
       backupId: '12345-ajfielkas-123123',
       createIndexFromBackupRequest: {
         name: 'my-restored-index',
