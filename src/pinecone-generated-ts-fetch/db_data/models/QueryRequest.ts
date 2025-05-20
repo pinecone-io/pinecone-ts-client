@@ -45,7 +45,7 @@ export interface QueryRequest {
      */
     topK: number;
     /**
-     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata). You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
+     * The filter to apply. You can use vector metadata to limit your search. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * @type {object}
      * @memberof QueryRequest
      */

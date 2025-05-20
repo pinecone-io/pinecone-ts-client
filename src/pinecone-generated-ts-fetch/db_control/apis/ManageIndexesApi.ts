@@ -128,6 +128,11 @@ export interface ListIndexBackupsRequest {
     paginationToken?: string;
 }
 
+export interface ListProjectBackupsRequest {
+    limit?: number;
+    paginationToken?: string;
+}
+
 export interface ListRestoreJobsRequest {
     limit?: number;
     paginationToken?: string;
@@ -345,13 +350,13 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      * Create an index from a backup.
      * Create an index from a backup
      */
-    async createIndexFromBackupRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
+    async createIndexFromBackupOperationRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
         if (requestParameters.backupId === null || requestParameters.backupId === undefined) {
-            throw new runtime.RequiredError('backupId','Required parameter requestParameters.backupId was null or undefined when calling createIndexFromBackup.');
+            throw new runtime.RequiredError('backupId','Required parameter requestParameters.backupId was null or undefined when calling createIndexFromBackupOperation.');
         }
 
         if (requestParameters.createIndexFromBackupRequest === null || requestParameters.createIndexFromBackupRequest === undefined) {
-            throw new runtime.RequiredError('createIndexFromBackupRequest','Required parameter requestParameters.createIndexFromBackupRequest was null or undefined when calling createIndexFromBackup.');
+            throw new runtime.RequiredError('createIndexFromBackupRequest','Required parameter requestParameters.createIndexFromBackupRequest was null or undefined when calling createIndexFromBackupOperation.');
         }
 
         const queryParameters: any = {};
@@ -379,8 +384,8 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      * Create an index from a backup.
      * Create an index from a backup
      */
-    async createIndexFromBackup(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {
-        const response = await this.createIndexFromBackupRaw(requestParameters, initOverrides);
+    async createIndexFromBackupOperation(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {
+        const response = await this.createIndexFromBackupOperationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -745,8 +750,16 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      * List all backups for a project.
      * List backups for all indexes in a project
      */
-    async listProjectBackupsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupList>> {
+    async listProjectBackupsRaw(requestParameters: ListProjectBackupsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupList>> {
         const queryParameters: any = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.paginationToken !== undefined) {
+            queryParameters['paginationToken'] = requestParameters.paginationToken;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -768,8 +781,8 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      * List all backups for a project.
      * List backups for all indexes in a project
      */
-    async listProjectBackups(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupList> {
-        const response = await this.listProjectBackupsRaw(initOverrides);
+    async listProjectBackups(requestParameters: ListProjectBackupsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupList> {
+        const response = await this.listProjectBackupsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -1,13 +1,20 @@
 import {
   ModelInfoList,
   InferenceApi,
-  ListModelsTypeEnum,
-  ListModelsVectorTypeEnum,
 } from '../pinecone-generated-ts-fetch/inference';
 
+/**
+ * The options for listing models.
+ */
 export interface ListModelsOptions {
-  type?: ListModelsTypeEnum;
-  vectorType?: ListModelsVectorTypeEnum;
+  /**
+   * Filter to limit the models returned. ('embed' or 'rerank')
+   */
+  type?: string;
+  /**
+   * Filter embedding models by vector type ('dense' or 'sparse'). Only relevant when type is 'embed'.
+   */
+  vectorType?: string;
 }
 
 export const listModels = (infApi: InferenceApi) => {

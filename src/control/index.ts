@@ -30,6 +30,7 @@ export type { DescribeCollectionOptions } from './describeCollection';
 export { listCollections } from './listCollections';
 
 // Backup Operations
+export type { BackupId, RestoreJobId } from './types';
 export { createBackup } from './createBackup';
 export type { CreateBackupOptions } from './createBackup';
 export { createIndexFromBackup } from './createIndexFromBackup';

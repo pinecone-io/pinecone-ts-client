@@ -12,7 +12,7 @@ import { rerank } from './rerank';
 import { getModel } from './getModel';
 import { listModels, ListModelsOptions } from './listModels';
 
-/* The Inference class uses the InferenceApi to generate embeddings, rerank documents, and work with models.  */
+/* The Inference class uses the Inference API to generate embeddings, rerank documents, and work with models.  */
 export class Inference {
   /** @hidden */
   _embed: ReturnType<typeof embed>;

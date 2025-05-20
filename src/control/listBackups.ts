@@ -27,7 +27,9 @@ export const listBackups = (api: ManageIndexesApi) => {
   ): Promise<BackupList> => {
     const { indexName, ...rest } = listBackupOptions;
     if (!indexName) {
-      return await api.listProjectBackups();
+      return await api.listProjectBackups({
+        ...rest,
+      });
     } else {
       return await api.listIndexBackups({ indexName, ...rest });
     }

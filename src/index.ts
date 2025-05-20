@@ -1,11 +1,12 @@
 // Class, function exports
 export { Pinecone } from './pinecone';
 export { Index } from './data';
+export { Inference } from './inference';
 export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
 
 // Interface exports
-export type { RerankOptions } from './inference/rerank';
+export type { RerankOptions, ListModelsOptions } from './inference';
 export type {
   RerankResult,
   RerankResultUsage,
@@ -13,6 +14,8 @@ export type {
   EmbeddingsList,
   EmbeddingsListUsage,
   Embedding,
+  ModelInfo,
+  ModelInfoList,
 } from './pinecone-generated-ts-fetch/inference';
 export type {
   ImportModel,
@@ -63,13 +66,22 @@ export type {
 
 // Type exports
 export type {
+  BackupId,
+  RestoreJobId,
   CollectionName,
+  CreateBackupOptions,
+  CreateIndexFromBackupOptions,
+  DescribeBackupOptions,
+  DescribeRestoreJobOptions,
+  ListRestoreJobsOptions,
+  DeleteBackupOptions,
   CreateIndexOptions,
   DeleteCollectionOptions,
   DeleteIndexOptions,
   DescribeIndexOptions,
   DescribeCollectionOptions,
   IndexName,
+  ListBackupsOptions,
   PodType,
 } from './control';
 export type {

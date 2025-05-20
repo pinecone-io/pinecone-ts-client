@@ -49,13 +49,13 @@ export interface ModelInfo {
      * @type {string}
      * @memberof ModelInfo
      */
-    type: ModelInfoTypeEnum;
+    type: string;
     /**
      * Whether the embedding model produces 'dense' or 'sparse' embeddings.
      * @type {string}
      * @memberof ModelInfo
      */
-    vectorType?: ModelInfoVectorTypeEnum;
+    vectorType?: string;
     /**
      * The default embedding model dimension (applies to dense embedding models only).
      * @type {number}
@@ -105,26 +105,6 @@ export interface ModelInfo {
      */
     supportedParameters: Array<ModelInfoSupportedParameter>;
 }
-
-
-/**
- * @export
- */
-export const ModelInfoTypeEnum = {
-    Embed: 'embed',
-    Rerank: 'rerank'
-} as const;
-export type ModelInfoTypeEnum = typeof ModelInfoTypeEnum[keyof typeof ModelInfoTypeEnum];
-
-/**
- * @export
- */
-export const ModelInfoVectorTypeEnum = {
-    Dense: 'dense',
-    Sparse: 'sparse'
-} as const;
-export type ModelInfoVectorTypeEnum = typeof ModelInfoVectorTypeEnum[keyof typeof ModelInfoVectorTypeEnum];
-
 
 /**
  * Check if a given object implements the ModelInfo interface.

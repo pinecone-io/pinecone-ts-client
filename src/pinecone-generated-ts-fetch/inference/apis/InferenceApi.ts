@@ -49,8 +49,8 @@ export interface GetModelRequest {
 }
 
 export interface ListModelsRequest {
-    type?: ListModelsTypeEnum;
-    vectorType?: ListModelsVectorTypeEnum;
+    type?: string;
+    vectorType?: string;
 }
 
 export interface RerankOperationRequest {
@@ -63,7 +63,7 @@ export interface RerankOperationRequest {
 export class InferenceApi extends runtime.BaseAPI {
 
     /**
-     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding).
+     * Generate vector embeddings for input data. This endpoint uses Pinecone\'s [hosted embedding models](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models).
      * Generate vectors
      */
     async embedRaw(requestParameters: EmbedOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EmbeddingsList>> {
@@ -89,7 +89,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generate vector embeddings for input data. This endpoint uses [Pinecone Inference](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding).
+     * Generate vector embeddings for input data. This endpoint uses Pinecone\'s [hosted embedding models](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models).
      * Generate vectors
      */
     async embed(requestParameters: EmbedOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EmbeddingsList> {
@@ -98,8 +98,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get model details.
-     * Get available model details.
+     * Get a description of a model hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Describe a model
      */
     async getModelRaw(requestParameters: GetModelRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelInfo>> {
         if (requestParameters.modelName === null || requestParameters.modelName === undefined) {
@@ -125,8 +125,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get model details.
-     * Get available model details.
+     * Get a description of a model hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Describe a model
      */
     async getModel(requestParameters: GetModelRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelInfo> {
         const response = await this.getModelRaw(requestParameters, initOverrides);
@@ -134,8 +134,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get available models.
-     * Get available models.
+     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * List available models
      */
     async listModelsRaw(requestParameters: ListModelsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelInfoList>> {
         const queryParameters: any = {};
@@ -165,8 +165,8 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get available models.
-     * Get available models.
+     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * List available models
      */
     async listModels(requestParameters: ListModelsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelInfoList> {
         const response = await this.listModelsRaw(requestParameters, initOverrides);
@@ -174,7 +174,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Rerank results according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Rerank documents
      */
     async rerankRaw(requestParameters: RerankOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RerankResult>> {
@@ -200,7 +200,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Rerank documents according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Rerank results according to their relevance to a query.  For guidance and examples, see [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Rerank documents
      */
     async rerank(requestParameters: RerankOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RerankResult> {
@@ -209,20 +209,3 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
 }
-
-/**
- * @export
- */
-export const ListModelsTypeEnum = {
-    Embed: 'embed',
-    Rerank: 'rerank'
-} as const;
-export type ListModelsTypeEnum = typeof ListModelsTypeEnum[keyof typeof ListModelsTypeEnum];
-/**
- * @export
- */
-export const ListModelsVectorTypeEnum = {
-    Dense: 'dense',
-    Sparse: 'sparse'
-} as const;
-export type ListModelsVectorTypeEnum = typeof ListModelsVectorTypeEnum[keyof typeof ListModelsVectorTypeEnum];

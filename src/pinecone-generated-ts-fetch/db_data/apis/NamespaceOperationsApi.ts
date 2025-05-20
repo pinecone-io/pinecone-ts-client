@@ -36,7 +36,7 @@ export interface DescribeNamespaceRequest {
     namespace: string;
 }
 
-export interface ListNamespacesRequest {
+export interface ListNamespacesOperationRequest {
     limit?: number;
     paginationToken?: string;
 }
@@ -83,7 +83,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Describe a namespace within an index, showing the vector count within the namespace.
+     * Describe a [namespace](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index, including the total number of vectors in the namespace.
      * Describe a namespace
      */
     async describeNamespaceRaw(requestParameters: DescribeNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NamespaceDescription>> {
@@ -110,7 +110,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Describe a namespace within an index, showing the vector count within the namespace.
+     * Describe a [namespace](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index, including the total number of vectors in the namespace.
      * Describe a namespace
      */
     async describeNamespace(requestParameters: DescribeNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NamespaceDescription> {
@@ -119,10 +119,10 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a list of all namespaces within an index.
-     * Get list of all namespaces
+     * Get a list of all [namespaces](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.
+     * List namespaces
      */
-    async listNamespacesRaw(requestParameters: ListNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListNamespacesResponse>> {
+    async listNamespacesOperationRaw(requestParameters: ListNamespacesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListNamespacesResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters.limit !== undefined) {
@@ -150,11 +150,11 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a list of all namespaces within an index.
-     * Get list of all namespaces
+     * Get a list of all [namespaces](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.
+     * List namespaces
      */
-    async listNamespaces(requestParameters: ListNamespacesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListNamespacesResponse> {
-        const response = await this.listNamespacesRaw(requestParameters, initOverrides);
+    async listNamespacesOperation(requestParameters: ListNamespacesOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListNamespacesResponse> {
+        const response = await this.listNamespacesOperationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

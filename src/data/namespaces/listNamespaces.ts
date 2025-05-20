@@ -7,6 +7,6 @@ export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
     paginationToken?: string
   ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
-    return await api.listNamespaces({ limit, paginationToken });
+    return await api.listNamespacesOperation({ limit, paginationToken });
   };
 };
