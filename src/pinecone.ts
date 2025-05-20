@@ -51,7 +51,7 @@ import {
 } from './errors';
 import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
-import { Inference } from './inference/inference';
+import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
 import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
