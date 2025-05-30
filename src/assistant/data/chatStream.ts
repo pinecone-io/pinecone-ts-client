@@ -5,7 +5,11 @@ import {
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, ChatStream } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { ChatOptions, StreamedChatResponse } from './types';
+import type {
+  ChatOptions,
+  ContextOptions,
+  StreamedChatResponse,
+} from './types';
 import { handleApiError } from '../../errors';
 import { ReadableStream } from 'node:stream/web';
 import { Readable } from 'node:stream';
@@ -35,6 +39,20 @@ export const chatStream = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
+    // format context options
+    let contextOptions: object | void = undefined;
+    if (options.contextOptions?.topK || options.contextOptions?.snippetSize) {
+      contextOptions = {
+        top_k: options.contextOptions?.topK || options.topK,
+        snippet_size: options.contextOptions?.snippetSize,
+      };
+    } else if (options.topK) {
+      contextOptions = {
+        top_k: options.topK,
+      };
+    }
+
+    // we call the API directly via fetch, so we need to snake_case the keys (normally generated code handles this)
     const response = await fetch(chatUrl, {
       method: 'POST',
       headers: requestHeaders,
@@ -43,7 +61,9 @@ export const chatStream = (
         stream: true,
         model: modelValidation(options),
         filter: options.filter,
-        includeHighlights: options.includeHighlights,
+        json_response: options.jsonResponse,
+        include_highlights: options.includeHighlights,
+        context_options: contextOptions,
       }),
     });
 
