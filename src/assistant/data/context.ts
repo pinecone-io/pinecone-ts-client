@@ -50,6 +50,9 @@ export const context = (
       contextRequest: {
         query: options.query,
         filter: options.filter,
+        messages: options.messages,
+        topK: options.topK,
+        snippetSize: options.snippetSize,
       },
     } as ContextAssistantRequest;
     return await api.contextAssistant(request);

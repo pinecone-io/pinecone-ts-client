@@ -32,6 +32,7 @@ export type {
   AssistantModel,
   AssistantStatusEnum,
   ChatOptions,
+  ChatContextOptions,
   ChatCompletionOptions,
   ChatModelEnum,
   ChoiceModel,

@@ -104,6 +104,20 @@ export interface MessageModel {
 export type MessagesModel = string[] | MessageModel[];
 
 /**
+ * Controls the context snippets sent to the LLM.
+ */
+export interface ChatContextOptions {
+  /**
+   * The maximum number of context snippets to use. Default is 16. Maximum is 64.
+   */
+  topK?: number;
+  /**
+   * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
+   */
+  snippetSize?: number;
+}
+
+/**
  * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
  */
 export interface ChatOptions {
@@ -129,6 +143,8 @@ export interface ChatOptions {
    * If true, the assistant will be instructed to return highlights from the referenced documents that support its response.
    */
   includeHighlights?: boolean;
+
+  contextOptions?: ChatContextOptions;
 }
 
 // Properties for validation to ensure no unkonwn/invalid properties are passed.
@@ -139,6 +155,7 @@ export const ChatOptionsType: ChatOptionsType[] = [
   'filter',
   'jsonResponse',
   'includeHighlights',
+  'contextOptions',
 ];
 
 /**
@@ -186,9 +203,13 @@ export interface ContextOptions {
    */
   filter?: Record<string, string>;
   /**
-   * The number of context snippets to return. Default is 15.
+   * The maximum number of context snippets to return. Default is 16. Maximum is 64.
    */
   topK?: number;
+  /**
+   * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
+   */
+  snippetSize?: number;
 }
 
 type ContextOptionsType = keyof ContextOptions;

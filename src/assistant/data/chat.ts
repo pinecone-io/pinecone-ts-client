@@ -30,6 +30,7 @@ export const chat = (
         filter: options.filter,
         jsonResponse: options.jsonResponse,
         includeHighlights: options.includeHighlights,
+        contextOptions: options.contextOptions,
       },
     };
 
