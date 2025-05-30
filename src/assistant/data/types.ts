@@ -163,6 +163,7 @@ export const ChatOptionsType: ChatOptionsType[] = [
   'filter',
   'jsonResponse',
   'includeHighlights',
+  'topK',
   'contextOptions',
 ];
 
