@@ -43,8 +43,12 @@ export const chatStream = (
     let contextOptions: object | void = undefined;
     if (options.contextOptions?.topK || options.contextOptions?.snippetSize) {
       contextOptions = {
-        top_k: options.contextOptions.topK,
-        snippet_size: options.contextOptions.snippetSize,
+        top_k: options.contextOptions?.topK || options.topK,
+        snippet_size: options.contextOptions?.snippetSize,
+      };
+    } else if (options.topK) {
+      contextOptions = {
+        top_k: options.topK,
       };
     }
 

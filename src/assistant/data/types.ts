@@ -143,7 +143,15 @@ export interface ChatOptions {
    * If true, the assistant will be instructed to return highlights from the referenced documents that support its response.
    */
   includeHighlights?: boolean;
-
+  /**
+   * The maximum number of context snippets to use. Default is 16. Maximum is 64.
+   * `topK` can also be passed through `contextOptions`. If both are passed, `contextOptions.topK` will be used.
+   * @deprecated Use `contextOptions.topK` instead.
+   */
+  topK?: number;
+  /**
+   * Controls the context snippets sent to the LLM.
+   */
   contextOptions?: ChatContextOptions;
 }
 

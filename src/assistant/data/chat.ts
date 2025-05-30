@@ -21,6 +21,7 @@ export const chat = (
     const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
+
     const request: ChatAssistantRequest = {
       assistantName: assistantName,
       chat: {
@@ -30,7 +31,11 @@ export const chat = (
         filter: options.filter,
         jsonResponse: options.jsonResponse,
         includeHighlights: options.includeHighlights,
-        contextOptions: options.contextOptions,
+        contextOptions: {
+          // use topK from contextOptions if provided, otherwise use topK from options
+          topK: options.contextOptions?.topK || options.topK,
+          snippetSize: options.contextOptions?.snippetSize,
+        },
       },
     };
 
