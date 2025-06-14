@@ -130,12 +130,15 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
  * @throws An Error if the model is not one of the available models as outlined in {@link ChatModelEnum}.
  */
 export const modelValidation = (options: ChatOptions) => {
+  const allowedModels = Object.values(ChatModelEnum);
   // Make sure passed string for 'model' matches one of the Enum values; default to Gpt4o
   let model: ChatModelEnum = ChatModelEnum.Gpt4o;
   if (options.model) {
-    if (!Object.values(ChatModelEnum).toString().includes(options.model)) {
+    if (!allowedModels.includes(options.model as ChatModelEnum)) {
       throw new Error(
-        'Invalid model specified. Must be one of "gpt-4o" or "claude-3-5-sonnet"'
+        `Invalid model specified. Must be one of ${allowedModels
+          .map((m) => `"${m}"`)
+          .join(', ')}:`
       );
     } else {
       model = options.model as ChatModelEnum;
