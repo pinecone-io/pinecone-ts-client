@@ -279,7 +279,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
+     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance, examples, and limits, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with a vector
      */
     async queryVectorsRaw(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<QueryResponse>> {
@@ -309,7 +309,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
+     * Search a namespace using a query vector. It retrieves the ids of the most similar items in a namespace, along with their similarity scores.  For guidance, examples, and limits, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with a vector
      */
     async queryVectors(requestParameters: QueryVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<QueryResponse> {
@@ -318,7 +318,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance, examples, and limits, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with text
      */
     async searchRecordsNamespaceRaw(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchRecordsResponse>> {
@@ -352,7 +352,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/semantic-search).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance, examples, and limits, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with text
      */
     async searchRecordsNamespace(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchRecordsResponse> {
@@ -400,7 +400,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-text).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert text
      */
     async upsertRecordsNamespaceRaw(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -434,7 +434,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-text).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/reference/api/2025-01/control-plane/create_for_model).  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert text
      */
     async upsertRecordsNamespace(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -442,7 +442,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-vectors).
+     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert vectors
      */
     async upsertVectorsRaw(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertResponse>> {
@@ -472,7 +472,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance and examples, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data#upsert-vectors).
+     * Upsert vectors into a namespace. If a new value is upserted for an existing vector ID, it will overwrite the previous value.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert vectors
      */
     async upsertVectors(requestParameters: UpsertVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertResponse> {

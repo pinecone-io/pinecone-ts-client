@@ -69,6 +69,12 @@ export interface IndexModel {
      */
     host: string;
     /**
+     * The private endpoint URL of an index.
+     * @type {string}
+     * @memberof IndexModel
+     */
+    privateHost?: string;
+    /**
      * 
      * @type {DeletionProtection}
      * @memberof IndexModel
@@ -147,6 +153,7 @@ export function IndexModelFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'metric': json['metric'],
         'host': json['host'],
+        'privateHost': !exists(json, 'private_host') ? undefined : json['private_host'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : DeletionProtectionFromJSON(json['deletion_protection']),
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
         'embed': !exists(json, 'embed') ? undefined : ModelIndexEmbedFromJSON(json['embed']),
@@ -169,6 +176,7 @@ export function IndexModelToJSON(value?: IndexModel | null): any {
         'dimension': value.dimension,
         'metric': value.metric,
         'host': value.host,
+        'private_host': value.privateHost,
         'deletion_protection': DeletionProtectionToJSON(value.deletionProtection),
         'tags': value.tags,
         'embed': ModelIndexEmbedToJSON(value.embed),

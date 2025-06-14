@@ -203,7 +203,7 @@ describe('Chat error paths', () => {
         model: 'invalid',
       })
     ).rejects.toThrow(
-      'Invalid model: "invalid". Must be one of: "gpt-4o", "claude-3-5-sonnet"'
+      'Invalid model: "invalid". Must be one of: "gpt-4o", "gpt-4.1", "o4-mini", "claude-3-5-sonnet", "claude-3-7-sonnet", "gemini-2.5-pro"'
     );
   });
 

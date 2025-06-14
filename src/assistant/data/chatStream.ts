@@ -5,11 +5,7 @@ import {
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, ChatStream } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type {
-  ChatOptions,
-  ContextOptions,
-  StreamedChatResponse,
-} from './types';
+import type { ChatOptions, StreamedChatResponse } from './types';
 import { handleApiError } from '../../errors';
 import { ReadableStream } from 'node:stream/web';
 import { Readable } from 'node:stream';

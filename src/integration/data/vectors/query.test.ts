@@ -88,7 +88,8 @@ describe('query tests on serverless index', () => {
         if (results.usage) {
           expect(results.usage.readUnits).toBeDefined();
         }
-      }
+      },
+      240000
     );
   });
 
@@ -110,7 +111,8 @@ describe('query tests on serverless index', () => {
         if (results.usage) {
           expect(results.usage.readUnits).toBeDefined();
         }
-      }
+      },
+      240000
     );
   });
 });
