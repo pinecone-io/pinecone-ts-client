@@ -27,7 +27,7 @@ import {
  */
 export interface UpsertRequest {
     /**
-     * An array containing the vectors to upsert. Recommended batch limit is 100 vectors.
+     * An array containing the vectors to upsert. Recommended batch limit is up to 1000 vectors.
      * @type {Array<Vector>}
      * @memberof UpsertRequest
      */

@@ -45,6 +45,12 @@ export interface SearchCompletions {
      */
     model?: SearchCompletionsModelEnum;
     /**
+     * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+     * @type {number}
+     * @memberof SearchCompletions
+     */
+    temperature?: number;
+    /**
      * Optionally filter which documents can be retrieved using the following metadata fields.
      * @type {object}
      * @memberof SearchCompletions
@@ -58,7 +64,11 @@ export interface SearchCompletions {
  */
 export const SearchCompletionsModelEnum = {
     Gpt4o: 'gpt-4o',
-    Claude35Sonnet: 'claude-3-5-sonnet'
+    Gpt41: 'gpt-4.1',
+    O4Mini: 'o4-mini',
+    Claude35Sonnet: 'claude-3-5-sonnet',
+    Claude37Sonnet: 'claude-3-7-sonnet',
+    Gemini25Pro: 'gemini-2.5-pro'
 } as const;
 export type SearchCompletionsModelEnum = typeof SearchCompletionsModelEnum[keyof typeof SearchCompletionsModelEnum];
 
@@ -86,6 +96,7 @@ export function SearchCompletionsFromJSONTyped(json: any, ignoreDiscriminator: b
         'messages': ((json['messages'] as Array<any>).map(MessageModelFromJSON)),
         'stream': !exists(json, 'stream') ? undefined : json['stream'],
         'model': !exists(json, 'model') ? undefined : json['model'],
+        'temperature': !exists(json, 'temperature') ? undefined : json['temperature'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
     };
 }
@@ -102,6 +113,7 @@ export function SearchCompletionsToJSON(value?: SearchCompletions | null): any {
         'messages': ((value.messages as Array<any>).map(MessageModelToJSON)),
         'stream': value.stream,
         'model': value.model,
+        'temperature': value.temperature,
         'filter': value.filter,
     };
 }

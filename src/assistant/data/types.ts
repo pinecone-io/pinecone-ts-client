@@ -132,6 +132,12 @@ export interface ChatOptions {
    */
   model?: string;
   /**
+   * Controls the randomness of the model's output: lower values make responses more deterministic,
+   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   */
+  temperature?: number;
+
+  /**
    * A filter against which documents can be retrieved.
    */
   filter?: object;
@@ -160,6 +166,7 @@ type ChatOptionsType = keyof ChatOptions;
 export const ChatOptionsType: ChatOptionsType[] = [
   'messages',
   'model',
+  'temperature',
   'filter',
   'jsonResponse',
   'includeHighlights',
@@ -182,6 +189,11 @@ export interface ChatCompletionOptions {
    */
   model?: string;
   /**
+   * Controls the randomness of the model's output: lower values make responses more deterministic,
+   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   */
+  temperature?: number;
+  /**
    * A filter against which documents can be retrieved.
    */
   filter?: object;
@@ -192,6 +204,7 @@ type ChatCompletionOptionsType = keyof ChatCompletionOptions;
 export const ChatCompletionOptionsType: ChatCompletionOptionsType[] = [
   'messages',
   'model',
+  'temperature',
   'filter',
 ];
 
