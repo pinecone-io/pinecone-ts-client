@@ -239,7 +239,7 @@ describe('configure index', () => {
         const err = e as BasePineconeError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'Configuring replicas and pod type is not supported for serverless'
+          'Cannot change the capacity mode of an existing index'
         );
       }
     });
