@@ -42,7 +42,10 @@ export const describeFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider
 ) => {
-  return async (fileId: string): Promise<AssistantFileModel> => {
+  return async (
+    fileId: string,
+    includeUrl: boolean
+  ): Promise<AssistantFileModel> => {
     if (!fileId) {
       throw new PineconeArgumentError(
         'You must pass the fileId of a file to describe.'
@@ -52,7 +55,7 @@ export const describeFile = (
     const request = {
       assistantName: assistantName,
       assistantFileId: fileId,
-      includeUrl: 'true',
+      includeUrl: includeUrl.toString(),
     } as DescribeFileRequest;
     return await api.describeFile(request);
   };

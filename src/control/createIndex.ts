@@ -69,6 +69,9 @@ export interface CreateIndexServerlessSpec {
 
   /** The region where you would like your index to be created. */
   region: string;
+
+  /** The name of the collection to be used as the source for the index. NOTE: Collections can only be created from pods-based indexes. */
+  sourceCollection?: string;
 }
 
 // Properties for validation to ensure no unknown/invalid properties are passed
@@ -76,6 +79,7 @@ type CreateIndexServerlessSpecType = keyof CreateIndexServerlessSpec;
 const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
   'cloud',
   'region',
+  'sourceCollection',
 ];
 
 /**

@@ -262,7 +262,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: cloudsdfd. Valid properties include cloud, region.'
+      'Object contained invalid properties: cloudsdfd. Valid properties include cloud, region, sourceCollection.'
     );
   });
 

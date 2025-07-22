@@ -47,7 +47,7 @@ export interface ListNamespacesOperationRequest {
 export class NamespaceOperationsApi extends runtime.BaseAPI {
 
     /**
-     * Delete a namespace from an index.
+     * Delete a namespace from a serverless index. Deleting a namespace is irreversible; all data in the namespace is permanently deleted.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * Delete a namespace
      */
     async deleteNamespaceRaw(requestParameters: DeleteNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
@@ -74,7 +74,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a namespace from an index.
+     * Delete a namespace from a serverless index. Deleting a namespace is irreversible; all data in the namespace is permanently deleted.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * Delete a namespace
      */
     async deleteNamespace(requestParameters: DeleteNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
@@ -83,7 +83,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Describe a [namespace](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index, including the total number of vectors in the namespace.
+     * Describe a namespace in a serverless index, including the total number of vectors in the namespace.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * Describe a namespace
      */
     async describeNamespaceRaw(requestParameters: DescribeNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NamespaceDescription>> {
@@ -110,7 +110,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Describe a [namespace](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index, including the total number of vectors in the namespace.
+     * Describe a namespace in a serverless index, including the total number of vectors in the namespace.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * Describe a namespace
      */
     async describeNamespace(requestParameters: DescribeNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NamespaceDescription> {
@@ -119,7 +119,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a list of all [namespaces](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.
+     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * List namespaces
      */
     async listNamespacesOperationRaw(requestParameters: ListNamespacesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListNamespacesResponse>> {
@@ -150,7 +150,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a list of all [namespaces](https://docs.pinecone.io/guides/index-data/indexing-overview#namespaces) in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.
+     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * List namespaces
      */
     async listNamespacesOperation(requestParameters: ListNamespacesOperationRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListNamespacesResponse> {
