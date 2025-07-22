@@ -31,6 +31,12 @@ export interface ServerlessSpec {
      * @memberof ServerlessSpec
      */
     region: string;
+    /**
+     * The name of the collection to be used as the source for the index.
+     * @type {string}
+     * @memberof ServerlessSpec
+     */
+    sourceCollection?: string;
 }
 
 
@@ -68,6 +74,7 @@ export function ServerlessSpecFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'cloud': json['cloud'],
         'region': json['region'],
+        'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
     };
 }
 
@@ -82,6 +89,7 @@ export function ServerlessSpecToJSON(value?: ServerlessSpec | null): any {
         
         'cloud': value.cloud,
         'region': value.region,
+        'source_collection': value.sourceCollection,
     };
 }
 

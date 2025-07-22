@@ -62,7 +62,7 @@ export interface AssistantFileModel {
      */
     percentDone?: number | null;
     /**
-     * A signed url that gives you access to the underlying file
+     * A [signed URL](https://cloud.google.com/storage/docs/access-control/signed-urls) that provides temporary, read-only access to the underlying file. Anyone with the link can access the file, so treat it as sensitive data. Expires after a short time.
      * @type {string}
      * @memberof AssistantFileModel
      */
