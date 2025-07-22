@@ -335,11 +335,12 @@ export class Assistant {
    * // }
    * ```
    *
-   * @param options - A {@link DescribeFile} object containing the file ID to describe.
+   * @param fileId - The ID of the file to describe.
+   * @param includeUrl - Whether to include the signed URL in the response. Defaults to true.
    * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
    */
-  describeFile(fileId: string) {
-    return this._describeFile(fileId);
+  describeFile(fileId: string, includeUrl: boolean = true) {
+    return this._describeFile(fileId, includeUrl);
   }
 
   /**
