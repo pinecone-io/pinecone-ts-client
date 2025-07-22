@@ -33,7 +33,7 @@ export interface StartImportRequest {
      */
     integrationId?: string;
     /**
-     * The URI of the bucket and import directory containing the namespaces and Parquet files you want to import, for example, `s3://BUCKET_NAME/IMPORT_DIR` for Amazong S3 or `gs://BUCKET_NAME/IMPORT_DIR` for Google Cloud Storage. For more information, see [Import directory structure](https://docs.pinecone.io/guides/index-data/import-data#directory-structure).
+     * The URI of the bucket and import directory containing the namespaces and Parquet files you want to import, for example, `s3://BUCKET_NAME/IMPORT_DIR` for Amazon S3 or `gs://BUCKET_NAME/IMPORT_DIR` for Google Cloud Storage. For more information, see [Import directory structure](https://docs.pinecone.io/guides/index-data/import-data#directory-structure).
      * @type {string}
      * @memberof StartImportRequest
      */
