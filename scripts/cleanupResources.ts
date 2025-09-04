@@ -35,7 +35,7 @@ async function safeDelete(
   // Delete collections
   console.log('\n--- Cleaning up collections ---');
   const collectionList = await p.listCollections();
-  if (collectionList.collections) {
+  if (collectionList.collections && collectionList.collections.length > 0) {
     for (const collection of collectionList.collections) {
       console.log(`Attempting to delete collection ${collection.name}...`);
       await safeDelete(
@@ -51,7 +51,7 @@ async function safeDelete(
   // Delete indexes
   console.log('\n--- Cleaning up indexes ---');
   const response = await p.listIndexes();
-  if (response.indexes) {
+  if (response.indexes && response.indexes.length > 0) {
     for (const index of response.indexes) {
       console.log(`Processing index ${index.name}...`);
 

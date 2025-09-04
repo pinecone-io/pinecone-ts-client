@@ -5,7 +5,7 @@ module.exports = {
     ['github-actions', { silent: false }],
     'jest-progress-bar-reporter',
   ],
-  setupFilesAfterEnv: ['./utils/globalUnitTestSetup.ts'],
+  setupFilesAfterEnv: ['./scripts/globalUnitTestSetup.ts'],
   transform: {
     '^.+\\.ts?$': 'ts-jest',
   },
