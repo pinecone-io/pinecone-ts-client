@@ -46,7 +46,7 @@
     "jest-progress-bar-reporter": "^1.0.25",
     "prettier": "^2.8.8",
     "ts-jest": "^29.3.2",
-    "typedoc": "^0.24.8",
+    "typedoc": "^0.28.12",
     "typescript": "^5.9.2"
   },
   "types": "dist/index.d.ts",
