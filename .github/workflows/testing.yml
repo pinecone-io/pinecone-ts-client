@@ -137,8 +137,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tsVersion:
-          [
+        tsVersion: [
             '~4.5.0',
             '~4.6.0',
             '~4.7.0',
@@ -153,7 +152,7 @@ jobs:
             '~5.6.0',
             '~5.7.0',
             '~5.8.0',
-            'latest',
+            # 'latest', # TODO: Add back in when bumping node and other dependencies for next major release
           ]
     steps:
       - name: Checkout
