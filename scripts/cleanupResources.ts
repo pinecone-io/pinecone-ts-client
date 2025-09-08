@@ -108,11 +108,13 @@ async function safeDelete(
   const backups = await p.listBackups();
   if (backups.data.length > 0) {
     for (const backup of backups.data) {
-      console.log(`Attempting to delete backup ${backup.name}...`);
+      console.log(
+        `Attempting to delete backup ${backup.name} (ID: ${backup.backupId})...`
+      );
       await safeDelete(
         () => p.deleteBackup(backup.backupId),
         'backup',
-        backup.name
+        `${backup.name} (ID: ${backup.backupId})`
       );
     }
   } else {
