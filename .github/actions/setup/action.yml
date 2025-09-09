@@ -1,12 +1,10 @@
 name: 'Setup'
 description: 'Node setup, install, and build'
 inputs:
-  pinecone_api_key:
-    description: 'API key'
-    required: true
   node_version:
     description: 'Node.js version to setup'
-    required: true
+    required: false
+    default: '18.x'
 runs:
   using: 'composite'
   steps:
@@ -22,7 +20,7 @@ runs:
         key: npm-${{ hashFiles('package-lock.json') }}
     - name: Install npm packages
       run: |
-        npm install --ignore-scripts
+        npm install
       shell: bash
     - name: Build typescript
       run: npm run build
