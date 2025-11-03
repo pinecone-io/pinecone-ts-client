@@ -15,11 +15,13 @@ if (!process.env.ASSISTANT_NAME) {
 beforeAll(async () => {
   pinecone = new Pinecone();
   assistant = pinecone.Assistant(assistantName);
-  const files = await assistant.listFiles();
-  if (files.files) {
-    fileId = files.files.map((f) => f.id)[0];
+  const files = await assistant.listFiles({
+    filter: { key: 'valueOne' },
+  });
+  if (files.files && files.files.length > 0) {
+    fileId = files.files[0].id;
   } else {
-    throw new Error('No files found');
+    throw new Error('No files found with metadata key: valueOne');
   }
 });
 
