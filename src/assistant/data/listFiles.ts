@@ -11,7 +11,7 @@ import type { AssistantFilesList, ListFilesOptions } from './types';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
  * const assistant = pc.Assistant(assistantName);
- * const files = await assistant.listFiles({filter: {metadata: {key: 'value'}}});
+ * const files = await assistant.listFiles({filter: {key: 'value'}});
  * console.log(files);
  * // {
  * //  files: [
@@ -40,7 +40,7 @@ export const listFiles = (
     const api = await apiProvider.provideData();
     const request = {
       assistantName: assistantName,
-      filter: options.filter,
+      filter: options.filter && JSON.stringify(options.filter),
     } as ListFilesRequest;
     return await api.listFiles(request);
   };

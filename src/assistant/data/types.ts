@@ -253,7 +253,7 @@ export interface UploadFileOptions {
   /**
    * Optional metadata to attach to the file.
    */
-  metadata?: Record<string, string>;
+  metadata?: Record<string, string | number>;
 }
 
 // Properties for validation to ensure no unkonwn/invalid properties are passed.

@@ -2094,7 +2094,7 @@ const pc = new Pinecone();
 const assistantName = 'test1';
 const assistant = pc.Assistant(assistantName);
 const files = await assistant.listFiles({
-  filter: { metadata: { key: 'value' } },
+  filter: { key: 'value' },
 });
 console.log(files);
 // {

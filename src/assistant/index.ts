@@ -275,7 +275,7 @@ export class Assistant {
    * const pc = new Pinecone();
    * const assistantName = 'test1';
    * const assistant = pc.assistant(assistantName);
-   * const files = await assistant.listFiles({filter: {metadata: {key: 'value'}}});
+   * const files = await assistant.listFiles({filter: {key: 'value'}});
    * console.log(files);
    * // {
    * //  files: [
