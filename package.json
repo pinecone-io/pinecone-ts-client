@@ -1,6 +1,6 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "6.1.2",
+  "version": "6.1.3",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
