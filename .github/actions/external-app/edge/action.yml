@@ -17,7 +17,7 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: '18.20.3'
+        node-version: '20.9.0'
 
     - name: Build pinecone-ts-client code
       run: npm install && npm run build
