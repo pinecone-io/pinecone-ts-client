@@ -86,7 +86,11 @@ export interface AssistantFileModel {
 // TODO - add new models: https://github.com/pinecone-io/apis/blob/8fc17fe9a78da060e2ab026bf5d02b22de594c89/src/release/assistant/data/resources/chat/Chat.yaml#L42
 export const ChatModelEnum = {
   Gpt4o: 'gpt-4o',
+  Gpt41: 'gpt-4.1',
+  O4Mini: 'o4-mini',
   Claude35Sonnet: 'claude-3-5-sonnet',
+  Claude37Sonnet: 'claude-3-7-sonnet',
+  Gemini25Pro: 'gemini-2.5-pro',
 } as const;
 export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
 
