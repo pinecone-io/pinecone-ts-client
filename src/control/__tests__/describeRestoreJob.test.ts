@@ -15,7 +15,7 @@ describe('describeRestoreJob', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       describeRestoreJob: fakeDescribeRestoreJob,
-    } as ManageIndexesApi;
+    } as unknown as ManageIndexesApi;
 
     return MIA;
   };
@@ -24,9 +24,11 @@ describe('describeRestoreJob', () => {
     const MIA = setupSuccessResponse(undefined);
     const returned = await describeRestoreJob(MIA)('restore-job-id');
     expect(returned).toEqual(undefined);
-    expect(MIA.describeRestoreJob).toHaveBeenCalledWith({
-      jobId: 'restore-job-id',
-    });
+    expect(MIA.describeRestoreJob).toHaveBeenCalledWith(
+      expect.objectContaining({
+        jobId: 'restore-job-id',
+      })
+    );
   });
 
   test('should throw backupId is not provided', async () => {

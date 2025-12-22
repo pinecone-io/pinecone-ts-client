@@ -83,6 +83,7 @@ export interface AssistantFileModel {
 /**
  * An enum representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
  */
+// TODO - add new models: https://github.com/pinecone-io/apis/blob/8fc17fe9a78da060e2ab026bf5d02b22de594c89/src/release/assistant/data/resources/chat/Chat.yaml#L42
 export const ChatModelEnum = {
   Gpt4o: 'gpt-4o',
   Claude35Sonnet: 'claude-3-5-sonnet',

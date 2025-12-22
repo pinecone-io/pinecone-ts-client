@@ -15,7 +15,7 @@ describe('listBackups', () => {
 
     const MIA = {
       listRestoreJobs: fakeListRestoreJobs,
-    } as ManageIndexesApi;
+    } as unknown as ManageIndexesApi;
 
     return MIA;
   };
@@ -26,9 +26,11 @@ describe('listBackups', () => {
       limit: 10,
       paginationToken: 'pagination-token',
     });
-    expect(MIA.listRestoreJobs).toHaveBeenCalledWith({
-      limit: 10,
-      paginationToken: 'pagination-token',
-    });
+    expect(MIA.listRestoreJobs).toHaveBeenCalledWith(
+      expect.objectContaining({
+        limit: 10,
+        paginationToken: 'pagination-token',
+      })
+    );
   });
 });

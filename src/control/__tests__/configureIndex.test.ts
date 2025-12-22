@@ -34,7 +34,9 @@ describe('configureIndex', () => {
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
-    const IOA = { configureIndex: fakeConfigure } as ManageIndexesApi;
+    const IOA = {
+      configureIndex: fakeConfigure,
+    } as unknown as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
       spec: {
@@ -56,6 +58,7 @@ describe('configureIndex', () => {
           example: 'tag',
         },
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 });

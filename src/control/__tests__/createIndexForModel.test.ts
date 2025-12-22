@@ -47,7 +47,7 @@ const setupCreateIndexForModelResponse = (
   const MIA = {
     createIndexForModel: fakeCreateIndexForModel,
     describeIndex: fakeDescribeIndex,
-  } as ManageIndexesApi;
+  } as unknown as ManageIndexesApi;
 
   return MIA;
 };
@@ -79,6 +79,7 @@ describe('createIndexForModel', () => {
 
     expect(MIA.createIndexForModel).toHaveBeenCalledWith({
       createIndexForModelRequest: mockCreateReq,
+      xPineconeApiVersion: '2025-10',
     });
   });
 

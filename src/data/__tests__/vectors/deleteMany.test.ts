@@ -12,6 +12,7 @@ describe('deleteMany', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123', '456', '789'], namespace: 'namespace' },
+      xPineconeApiVersion: '2025-10',
     });
   });
 
@@ -24,6 +25,7 @@ describe('deleteMany', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { filter: { genre: 'ambient' }, namespace: 'namespace' },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

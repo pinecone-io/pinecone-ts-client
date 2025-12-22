@@ -1,15 +1,15 @@
 import {
   ChatAssistantRequest,
-  ChatModelEnum,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 import type { ChatOptions } from './types';
-import { ChatOptionsType } from './types';
+import { ChatModelEnum, ChatOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
+import { withAssistantDataApiVersion } from './apiVersion';
 
 export const chat = (
   assistantName: string,
@@ -22,22 +22,23 @@ export const chat = (
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
 
-    const request: ChatAssistantRequest = {
-      assistantName: assistantName,
-      chat: {
-        messages: messages,
-        stream: false,
-        model: model,
-        filter: options.filter,
-        jsonResponse: options.jsonResponse,
-        includeHighlights: options.includeHighlights,
-        contextOptions: {
-          // use topK from contextOptions if provided, otherwise use topK from options
-          topK: options.contextOptions?.topK || options.topK,
-          snippetSize: options.contextOptions?.snippetSize,
+    const request: ChatAssistantRequest =
+      withAssistantDataApiVersion<ChatAssistantRequest>({
+        assistantName: assistantName,
+        chatRequest: {
+          messages: messages,
+          stream: false,
+          model: model,
+          filter: options.filter,
+          jsonResponse: options.jsonResponse,
+          includeHighlights: options.includeHighlights,
+          contextOptions: {
+            // use topK from contextOptions if provided, otherwise use topK from options
+            topK: options.contextOptions?.topK || options.topK,
+            snippetSize: options.contextOptions?.snippetSize,
+          },
         },
-      },
-    };
+      });
 
     const retryWrapper = new RetryOnServerFailure(() =>
       api.chatAssistant(request)
@@ -58,6 +59,7 @@ export const validateChatOptions = (options: ChatOptions) => {
 
   if (options.model) {
     if (
+      typeof options.model !== 'string' ||
       !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
     ) {
       throw new PineconeArgumentError(
@@ -131,7 +133,7 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
  */
 export const modelValidation = (options: ChatOptions) => {
   const allowedModels = Object.values(ChatModelEnum);
-  // Make sure passed string for 'model' matches one of the Enum values; default to Gpt4o
+  // default to GPT-4o for backward compatibility
   let model: ChatModelEnum = ChatModelEnum.Gpt4o;
   if (options.model) {
     if (!allowedModels.includes(options.model as ChatModelEnum)) {

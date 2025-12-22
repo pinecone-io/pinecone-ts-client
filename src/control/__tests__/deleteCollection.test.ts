@@ -19,7 +19,7 @@ const setupMocks = (
     deleteCollection: fakeDeleteCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as ManageIndexesApi;
+  return IOA as unknown as ManageIndexesApi;
 };
 
 describe('deleteCollection', () => {

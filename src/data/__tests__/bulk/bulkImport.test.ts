@@ -4,9 +4,9 @@ import { DescribeImportCommand } from '../../bulk/describeImport';
 import { CancelImportCommand } from '../../bulk/cancelImport';
 import { BulkOperationsProvider } from '../../bulk/bulkOperationsProvider';
 import {
-  ImportErrorModeOnErrorEnum,
   ListBulkImportsRequest,
   StartBulkImportRequest,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../../errors';
 
@@ -40,34 +40,44 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'continue';
 
-    const expectedRequest: StartBulkImportRequest = {
+    const expectedRequest: Partial<StartBulkImportRequest> = {
       startImportRequest: {
         uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Continue },
+        errorMode: { onError: 'continue' },
       },
     };
 
     await startImportCommand.run(uri, errorMode);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(apiMock.startBulkImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...expectedRequest,
+      })
+    );
   });
 
   test('should call startImport with correct request when errorMode is "abort"', async () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'abort';
 
-    const expectedRequest: StartBulkImportRequest = {
+    const expectedRequest: Partial<StartBulkImportRequest> = {
       startImportRequest: {
         uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Abort },
+        errorMode: { onError: 'abort' },
       },
     };
 
     await startImportCommand.run(uri, errorMode);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(apiMock.startBulkImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...expectedRequest,
+      })
+    );
   });
 
   test('should throw PineconeArgumentError for invalid errorMode', async () => {
@@ -84,17 +94,22 @@ describe('StartImportCommand', () => {
   test('should use "continue" as default when errorMode is undefined', async () => {
     const uri = 's3://my-bucket/my-file.csv';
 
-    const expectedRequest: StartBulkImportRequest = {
+    const expectedRequest: Partial<StartBulkImportRequest> = {
       startImportRequest: {
         uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Continue },
+        errorMode: { onError: 'continue' },
       },
     };
 
     await startImportCommand.run(uri, undefined);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(apiMock.startBulkImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...expectedRequest,
+      })
+    );
   });
 
   test('should throw error when URI/1st arg is missing', async () => {
@@ -112,14 +127,19 @@ describe('StartImportCommand', () => {
   test('should call listImport with correct request', async () => {
     const limit = 1;
 
-    const expectedRequest: ListBulkImportsRequest = {
+    const expectedRequest: Partial<ListBulkImportsRequest> = {
       limit,
     };
 
     await listImportCommand.run(limit);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.listBulkImports).toHaveBeenCalledWith(expectedRequest);
+    expect(apiMock.listBulkImports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...expectedRequest,
+      })
+    );
   });
 
   test('should call describeImport with correct request', async () => {
@@ -129,7 +149,12 @@ describe('StartImportCommand', () => {
     await describeImportCommand.run(importId);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.describeBulkImport).toHaveBeenCalledWith(req);
+    expect(apiMock.describeBulkImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...req,
+      })
+    );
   });
 
   test('should call cancelImport with correct request', async () => {
@@ -139,6 +164,11 @@ describe('StartImportCommand', () => {
     await cancelImportCommand.run(importId);
 
     expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.cancelBulkImport).toHaveBeenCalledWith(req);
+    expect(apiMock.cancelBulkImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        ...req,
+      })
+    );
   });
 });

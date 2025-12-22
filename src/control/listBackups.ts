@@ -1,7 +1,10 @@
 import {
   ManageIndexesApi,
   BackupList,
+  ListIndexBackupsRequest,
+  ListProjectBackupsRequest,
 } from '../pinecone-generated-ts-fetch/db_control';
+import { withControlApiVersion } from './apiVersion';
 
 /**
  * The options for listing backups.
@@ -27,11 +30,15 @@ export const listBackups = (api: ManageIndexesApi) => {
   ): Promise<BackupList> => {
     const { indexName, ...rest } = listBackupOptions;
     if (!indexName) {
-      return await api.listProjectBackups({
-        ...rest,
-      });
+      return await api.listProjectBackups(
+        withControlApiVersion<ListProjectBackupsRequest>({
+          ...rest,
+        })
+      );
     } else {
-      return await api.listIndexBackups({ indexName, ...rest });
+      return await api.listIndexBackups(
+        withControlApiVersion<ListIndexBackupsRequest>({ indexName, ...rest })
+      );
     }
   };
 };

@@ -1,6 +1,7 @@
 import { OperationUsage, RecordValues, RecordSparseValues } from './types';
 import type { PineconeRecord, RecordMetadata } from './types';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
@@ -180,6 +181,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
     this.validator(query);
     const api = await this.apiProvider.provide();
     const results = await api.queryVectors({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       queryRequest: { ...query, namespace: this.namespace },
     });
     const matches = results.matches ? results.matches : [];

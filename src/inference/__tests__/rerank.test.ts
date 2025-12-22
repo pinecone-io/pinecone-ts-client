@@ -15,7 +15,7 @@ const setupRerankResponse = (response = {}, isSuccess = true) => {
     .mockImplementation(() =>
       isSuccess ? Promise.resolve(response) : Promise.reject(response)
     );
-  const IA = { rerank: fakeRerank } as InferenceApi;
+  const IA = { rerank: fakeRerank } as unknown as InferenceApi;
   return IA;
 };
 
@@ -48,7 +48,9 @@ describe('rerank', () => {
       returnDocuments: true,
       topN: 2,
     };
-    expect(IA.rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
+    expect(IA.rerank).toHaveBeenCalledWith(
+      expect.objectContaining({ rerankRequest: expectedReq })
+    );
   });
 
   test('Confirm provided rankFields override default `text` field for reranking', async () => {
@@ -72,7 +74,9 @@ describe('rerank', () => {
       returnDocuments: true,
       topN: 2,
     };
-    expect(IA.rerank).toHaveBeenCalledWith({ rerankRequest: expectedReq });
+    expect(IA.rerank).toHaveBeenCalledWith(
+      expect.objectContaining({ rerankRequest: expectedReq })
+    );
   });
 
   test('Confirm error thrown if query is missing', async () => {

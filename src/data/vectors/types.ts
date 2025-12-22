@@ -53,6 +53,7 @@ export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'additionalHeaders',
   'sourceTag',
   'maxRetries',
+  'assistantRegion',
 ];
 
 /** The id of the record */

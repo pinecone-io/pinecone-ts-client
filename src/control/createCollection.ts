@@ -2,9 +2,11 @@ import {
   CollectionModel,
   CreateCollectionRequest,
   ManageIndexesApi,
+  CreateCollectionOperationRequest,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
+import { withControlApiVersion } from './apiVersion';
 
 // Properties for validation to ensure no unknown/invalid properties are passed
 type CreateCollectionRequestType = keyof CreateCollectionRequest;
@@ -40,6 +42,10 @@ export const createCollection = (api: ManageIndexesApi) => {
 
   return async (options: CreateCollectionRequest): Promise<CollectionModel> => {
     validator(options);
-    return await api.createCollection({ createCollectionRequest: options });
+    return await api.createCollection(
+      withControlApiVersion<CreateCollectionOperationRequest>({
+        createCollectionRequest: options,
+      })
+    );
   };
 };

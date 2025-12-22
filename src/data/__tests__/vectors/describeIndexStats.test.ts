@@ -49,6 +49,7 @@ describe('describeIndexStats', () => {
     });
     expect(DPA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

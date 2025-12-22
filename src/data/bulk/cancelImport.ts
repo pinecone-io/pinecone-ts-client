@@ -1,4 +1,5 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 
 export class CancelImportCommand {
   apiProvider: BulkOperationsProvider;
@@ -14,6 +15,9 @@ export class CancelImportCommand {
       id: id,
     };
     const api = await this.apiProvider.provide();
-    return await api.cancelBulkImport(req);
+    return await api.cancelBulkImport({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      ...req,
+    });
   }
 }

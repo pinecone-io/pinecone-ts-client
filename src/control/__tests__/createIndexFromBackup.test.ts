@@ -23,7 +23,7 @@ const setupCreateIndexFromBackupResponse = (
 
   const MIA = {
     createIndexFromBackupOperation: fakeCreateIndexFromBackup,
-  } as ManageIndexesApi;
+  } as unknown as ManageIndexesApi;
 
   return MIA;
 };
@@ -45,6 +45,7 @@ describe('createIndexFromBackup', () => {
         tags: { test: 'test-tag' },
         deletionProtection: 'enabled',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

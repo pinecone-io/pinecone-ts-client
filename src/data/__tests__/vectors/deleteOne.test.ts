@@ -32,6 +32,7 @@ describe('deleteOne', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'namespace' },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

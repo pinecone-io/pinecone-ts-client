@@ -1,7 +1,9 @@
 import {
   BackupModel,
   ManageIndexesApi,
+  CreateBackupOperationRequest,
 } from '../pinecone-generated-ts-fetch/db_control';
+import { withControlApiVersion } from './apiVersion';
 
 /**
  * The options for creating an index backup.
@@ -31,12 +33,14 @@ export const createBackup = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.createBackup({
-      indexName: createBackupOptions.indexName,
-      createBackupRequest: {
-        name: createBackupOptions.name,
-        description: createBackupOptions.description,
-      },
-    });
+    return await api.createBackup(
+      withControlApiVersion<CreateBackupOperationRequest>({
+        indexName: createBackupOptions.indexName,
+        createBackupRequest: {
+          name: createBackupOptions.name,
+          description: createBackupOptions.description,
+        },
+      })
+    );
   };
 };

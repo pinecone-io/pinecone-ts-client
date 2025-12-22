@@ -12,7 +12,7 @@ describe('deleteBackup', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       deleteBackup: fakeDeleteBackup,
-    } as ManageIndexesApi;
+    } as unknown as ManageIndexesApi;
 
     return MIA;
   };
@@ -21,9 +21,11 @@ describe('deleteBackup', () => {
     const MIA = setupSuccessResponse(undefined);
     const returned = await deleteBackup(MIA)('backup-id');
     expect(returned).toEqual(undefined);
-    expect(MIA.deleteBackup).toHaveBeenCalledWith({
-      backupId: 'backup-id',
-    });
+    expect(MIA.deleteBackup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backupId: 'backup-id',
+      })
+    );
   });
 
   test('should throw backupId is not provided', async () => {

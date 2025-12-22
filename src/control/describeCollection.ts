@@ -1,9 +1,11 @@
 import {
   ManageIndexesApi,
   CollectionModel,
+  DescribeCollectionRequest,
 } from '../pinecone-generated-ts-fetch/db_control';
 import type { CollectionName } from './types';
 import { PineconeArgumentError } from '../errors';
+import { withControlApiVersion } from './apiVersion';
 
 /**
  * The name of collection to describe.
@@ -18,6 +20,10 @@ export const describeCollection = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.describeCollection({ collectionName: name });
+    return await api.describeCollection(
+      withControlApiVersion<DescribeCollectionRequest>({
+        collectionName: name,
+      })
+    );
   };
 };

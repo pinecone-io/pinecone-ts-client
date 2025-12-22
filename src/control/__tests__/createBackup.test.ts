@@ -22,7 +22,7 @@ const setupCreateBackupResponse = (
 
   const MIA = {
     createBackup: fakeCreateBackup,
-  } as ManageIndexesApi;
+  } as unknown as ManageIndexesApi;
 
   return MIA;
 };
@@ -42,6 +42,7 @@ describe('createBackup', () => {
         name: 'backup-name',
         description: 'backup-description',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

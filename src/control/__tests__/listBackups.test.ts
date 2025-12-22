@@ -20,7 +20,7 @@ describe('listBackups', () => {
     const MIA = {
       listIndexBackups: fakeListIndexBackups,
       listProjectBackups: fakeListProjectBackups,
-    } as ManageIndexesApi;
+    } as unknown as ManageIndexesApi;
 
     return MIA;
   };
@@ -32,11 +32,13 @@ describe('listBackups', () => {
       limit: 10,
       paginationToken: 'pagination-token',
     });
-    expect(MIA.listIndexBackups).toHaveBeenCalledWith({
-      indexName: 'my-index',
-      limit: 10,
-      paginationToken: 'pagination-token',
-    });
+    expect(MIA.listIndexBackups).toHaveBeenCalledWith(
+      expect.objectContaining({
+        indexName: 'my-index',
+        limit: 10,
+        paginationToken: 'pagination-token',
+      })
+    );
   });
 
   test('calls the openapi describe project backup endpoint when indexName is not provided', async () => {

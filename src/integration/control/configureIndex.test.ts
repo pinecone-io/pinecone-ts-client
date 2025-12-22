@@ -52,19 +52,22 @@ describe('configure index', () => {
   describe('pod index', () => {
     test('scale replicas up', async () => {
       const description = await pinecone.describeIndex(podIndexName);
-      expect(description.spec.pod?.replicas).toEqual(1);
+      const spec = description.spec as any;
+      expect(spec.pod?.replicas).toEqual(1);
 
       await pinecone.configureIndex(podIndexName, {
         spec: { pod: { replicas: 2 } },
       });
       const description2 = await pinecone.describeIndex(podIndexName);
-      expect(description2.spec.pod?.replicas).toEqual(2);
+      const spec2 = description2.spec as any;
+      expect(spec2.pod?.replicas).toEqual(2);
     });
 
     test('scale podType up', async () => {
       // Verify starting state of podType is same as originally created
       const description = await pinecone.describeIndex(podIndexName);
-      expect(description.spec.pod?.podType).toEqual('p1.x1');
+      const spec = description.spec as any;
+      expect(spec.pod?.podType).toEqual('p1.x1');
 
       await pinecone.configureIndex(podIndexName, {
         spec: { pod: { podType: 'p1.x2' } },
@@ -72,7 +75,8 @@ describe('configure index', () => {
 
       await waitUntilReady(podIndexName);
       const description2 = await pinecone.describeIndex(podIndexName);
-      expect(description2.spec.pod?.podType).toEqual('p1.x2');
+      const spec2 = description2.spec as any;
+      expect(spec2.pod?.podType).toEqual('p1.x2');
     });
 
     test('Remove index tag from pod index', async () => {
@@ -218,7 +222,6 @@ describe('configure index', () => {
     test('cannot set deletionProtection value other than enabled / disabled', async () => {
       try {
         await pinecone.configureIndex(serverlessIndexName, {
-          // @ts-expect-error
           deletionProtection: 'bogus',
         });
       } catch (e) {

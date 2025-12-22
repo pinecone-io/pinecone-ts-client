@@ -2,6 +2,8 @@ import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { AssistantFileModel } from './types';
 import { PineconeArgumentError } from '../../errors';
+import { withAssistantDataApiVersion } from './apiVersion';
+import { mapAssistantFileStatus } from './fileStatus';
 
 /**
  * Describes a file uploaded to an Assistant.
@@ -57,6 +59,12 @@ export const describeFile = (
       assistantFileId: fileId,
       includeUrl: includeUrl.toString(),
     } as DescribeFileRequest;
-    return await api.describeFile(request);
+    const response = await api.describeFile(
+      withAssistantDataApiVersion(request)
+    );
+    return {
+      ...response,
+      status: mapAssistantFileStatus(response.status),
+    };
   };
 };

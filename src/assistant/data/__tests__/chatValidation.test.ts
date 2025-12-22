@@ -1,10 +1,8 @@
 import { messagesValidation, modelValidation, chat } from '../chat';
 import type { ChatOptions } from '../types';
 import { chatCompletion } from '../chatCompletion';
-import {
-  ChatModelEnum,
-  ManageAssistantsApi,
-} from '../../../pinecone-generated-ts-fetch/assistant_data';
+import { ChatModelEnum } from '../types';
+import { ManageAssistantsApi } from '../../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
 describe(`chat validation tests`, () => {

@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
 import {
   PineconeRecord,
@@ -55,6 +56,7 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     );
 
     await retryWrapper.execute({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       upsertRequest: {
         vectors: records as Array<Vector>,
         namespace: this.namespace,

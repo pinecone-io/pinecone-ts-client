@@ -56,7 +56,7 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const IOA = {
     createCollection: fakeCreateCollection,
     listIndexes: fakeListIndexes,
-  } as ManageIndexesApi;
+  } as unknown as ManageIndexesApi;
 
   return IOA;
 };
@@ -187,6 +187,7 @@ describe('createCollection', () => {
         name: 'collection-name',
         source: 'index-name',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 });

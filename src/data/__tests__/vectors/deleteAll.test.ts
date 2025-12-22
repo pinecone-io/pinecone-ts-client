@@ -11,6 +11,7 @@ describe('deleteAll', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { deleteAll: true, namespace: 'namespace' },
+      xPineconeApiVersion: '2025-10',
     });
   });
 });

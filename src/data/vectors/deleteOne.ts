@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
 
@@ -23,7 +24,10 @@ export const deleteOne = (
   return async (options: DeleteOneOptions): Promise<void> => {
     validator(options);
     const api = await apiProvider.provide();
-    await api.deleteVectors({ deleteRequest: { ids: [options], namespace } });
+    await api.deleteVectors({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      deleteRequest: { ids: [options], namespace },
+    });
     return;
   };
 };

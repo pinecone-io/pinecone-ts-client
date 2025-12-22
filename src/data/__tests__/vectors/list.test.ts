@@ -40,6 +40,7 @@ describe('list', () => {
     expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
+      xPineconeApiVersion: '2025-10',
     });
   });
 

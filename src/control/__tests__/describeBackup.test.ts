@@ -15,7 +15,7 @@ describe('describeBackup', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       describeBackup: fakeDescribeBackup,
-    } as ManageIndexesApi;
+    } as unknown as ManageIndexesApi;
 
     return MIA;
   };
@@ -24,9 +24,11 @@ describe('describeBackup', () => {
     const MIA = setupSuccessResponse(undefined);
     const returned = await describeBackup(MIA)('backup-id');
     expect(returned).toEqual(undefined);
-    expect(MIA.describeBackup).toHaveBeenCalledWith({
-      backupId: 'backup-id',
-    });
+    expect(MIA.describeBackup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backupId: 'backup-id',
+      })
+    );
   });
 
   test('should throw backupId is not provided', async () => {

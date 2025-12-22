@@ -1,8 +1,9 @@
 import { BulkOperationsProvider } from './bulkOperationsProvider';
 import {
-  ImportErrorModeOnErrorEnum,
+  ImportErrorMode,
   StartBulkImportRequest,
   StartImportResponse,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 
@@ -26,7 +27,7 @@ export class StartImportCommand {
       );
     }
 
-    let error: ImportErrorModeOnErrorEnum = ImportErrorModeOnErrorEnum.Continue;
+    let error: ImportErrorMode['onError'] = 'continue';
 
     if (errorMode) {
       if (
@@ -38,11 +39,12 @@ export class StartImportCommand {
         );
       }
       if (errorMode?.toLowerCase() == 'abort') {
-        error = ImportErrorModeOnErrorEnum.Abort;
+        error = 'abort';
       }
     }
 
     const req: StartBulkImportRequest = {
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       startImportRequest: {
         uri: uri,
         errorMode: { onError: error },

@@ -23,7 +23,7 @@ const setupMocks = (
     describeCollection: fakeDescribeCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as ManageIndexesApi;
+  return IOA as unknown as ManageIndexesApi;
 };
 
 describe('describeCollection', () => {

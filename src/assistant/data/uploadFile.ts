@@ -11,6 +11,7 @@ import { buildUserAgent, getFetch } from '../../utils';
 import type { AssistantFileModel, UploadFileOptions } from './types';
 import fs from 'fs';
 import path from 'path';
+import { mapAssistantFileStatus } from './fileStatus';
 
 export const uploadFile = (
   assistantName: string,
@@ -50,10 +51,14 @@ export const uploadFile = (
     });
 
     if (response.ok) {
-      const assistantFileModel = new JSONApiResponse(response, (jsonValue) =>
-        AssistantFileModelFromJSON(jsonValue)
+      const assistantFileModel = await new JSONApiResponse(
+        response,
+        (jsonValue) => AssistantFileModelFromJSON(jsonValue)
       ).value();
-      return assistantFileModel;
+      return {
+        ...assistantFileModel,
+        status: mapAssistantFileStatus(assistantFileModel.status),
+      };
     } else {
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
