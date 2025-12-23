@@ -3,6 +3,7 @@ import {
   ContextAssistantRequest,
   ContextModel,
   ManageAssistantsApi,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
@@ -48,7 +49,11 @@ describe('contextClosed', () => {
       contextRequest: {
         query: options.query,
         filter: options.filter,
+        messages: undefined,
+        topK: undefined,
+        snippetSize: undefined,
       },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -75,7 +80,11 @@ describe('contextClosed', () => {
       contextRequest: {
         query: options.query,
         filter: undefined,
+        messages: undefined,
+        topK: undefined,
+        snippetSize: undefined,
       },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });
