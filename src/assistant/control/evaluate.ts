@@ -1,6 +1,6 @@
 import {
   MetricsApi,
-  MetricsAlignmentRequest,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 import type { AssistantEval } from './types';
 
@@ -16,13 +16,13 @@ export const evaluate = (metricsApi: MetricsApi) => {
       );
     }
 
-    const request = {
+    return await metricsApi.metricsAlignment({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       alignmentRequest: {
         question: options.question,
         answer: options.answer,
         groundTruthAnswer: options.groundTruth,
       },
-    } as MetricsAlignmentRequest;
-    return await metricsApi.metricsAlignment(request);
+    });
   };
 };

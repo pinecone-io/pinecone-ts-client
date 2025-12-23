@@ -1,5 +1,5 @@
 import {
-  CreateIndexForModelOperationRequest,
+  X_PINECONE_API_VERSION,
   CreateIndexForModelRequest,
   IndexModel,
   ManageIndexesApi,
@@ -7,7 +7,6 @@ import {
 import { PineconeArgumentError } from '../errors';
 import { waitUntilIndexIsReady } from './createIndex';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
-import { withControlApiVersion } from './apiVersion';
 
 /**
  * Options for creating an index for a specific model.
@@ -113,11 +112,10 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
 
     validateCreateIndexForModelRequest(options);
     try {
-      const createResponse = await api.createIndexForModel(
-        withControlApiVersion<CreateIndexForModelOperationRequest>({
-          createIndexForModelRequest: options as CreateIndexForModelRequest,
-        })
-      );
+      const createResponse = await api.createIndexForModel({
+        createIndexForModelRequest: options as CreateIndexForModelRequest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+      });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, createResponse.name);
       }

@@ -1,6 +1,7 @@
 import {
   AssistantFileModel as GeneratedAssistantFileModel,
   ListFilesRequest,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type {
@@ -8,7 +9,6 @@ import type {
   AssistantFilesList,
   ListFilesOptions,
 } from './types';
-import { withAssistantDataApiVersion } from './apiVersion';
 import { mapAssistantFileStatus } from './fileStatus';
 
 /**
@@ -47,11 +47,11 @@ export const listFiles = (
 ) => {
   return async (options: ListFilesOptions): Promise<AssistantFilesList> => {
     const api = await apiProvider.provideData();
-    const request = {
+    const response = await api.listFiles({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       assistantName: assistantName,
       filter: options.filter && JSON.stringify(options.filter),
-    } as ListFilesRequest;
-    const response = await api.listFiles(withAssistantDataApiVersion(request));
+    });
     return {
       files: response.files?.map(mapAssistantFileModel),
     };

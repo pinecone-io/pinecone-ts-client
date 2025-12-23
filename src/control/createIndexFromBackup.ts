@@ -1,9 +1,8 @@
 import {
   CreateIndexFromBackupResponse,
-  CreateIndexFromBackupOperationRequest,
+  X_PINECONE_API_VERSION,
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/db_control';
-import { withControlApiVersion } from './apiVersion';
 
 /**
  * The options for creating a new index from an existing backup.
@@ -43,15 +42,14 @@ export const createIndexFromBackup = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.createIndexFromBackupOperation(
-      withControlApiVersion<CreateIndexFromBackupOperationRequest>({
-        backupId: createIndexFromBackupOptions.backupId,
-        createIndexFromBackupRequest: {
-          name: createIndexFromBackupOptions.name,
-          tags: createIndexFromBackupOptions.tags,
-          deletionProtection: createIndexFromBackupOptions.deletionProtection,
-        },
-      })
-    );
+    return await api.createIndexFromBackupOperation({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      backupId: createIndexFromBackupOptions.backupId,
+      createIndexFromBackupRequest: {
+        name: createIndexFromBackupOptions.name,
+        tags: createIndexFromBackupOptions.tags,
+        deletionProtection: createIndexFromBackupOptions.deletionProtection,
+      },
+    });
   };
 };

@@ -1,11 +1,10 @@
 import {
   ManageIndexesApi,
   BackupModel,
-  DescribeBackupRequest,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import type { BackupId } from './types';
 import { PineconeArgumentError } from '../errors';
-import { withControlApiVersion } from './apiVersion';
 
 /**
  * The string ID of the backup to describe.
@@ -20,8 +19,9 @@ export const describeBackup = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.describeBackup(
-      withControlApiVersion<DescribeBackupRequest>({ backupId: backupId })
-    );
+    return await api.describeBackup({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      backupId: backupId,
+    });
   };
 };

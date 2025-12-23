@@ -1,6 +1,7 @@
 import {
   ChatAssistantRequest,
   MessageModel,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
@@ -9,7 +10,6 @@ import type { ChatOptions } from './types';
 import { ChatModelEnum, ChatOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
-import { withAssistantDataApiVersion } from './apiVersion';
 
 export const chat = (
   assistantName: string,
@@ -22,8 +22,9 @@ export const chat = (
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
 
-    const request: ChatAssistantRequest =
-      withAssistantDataApiVersion<ChatAssistantRequest>({
+    const retryWrapper = new RetryOnServerFailure(() =>
+      api.chatAssistant({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
         assistantName: assistantName,
         chatRequest: {
           messages: messages,
@@ -38,10 +39,7 @@ export const chat = (
             snippetSize: options.contextOptions?.snippetSize,
           },
         },
-      });
-
-    const retryWrapper = new RetryOnServerFailure(() =>
-      api.chatAssistant(request)
+      })
     );
 
     return await retryWrapper.execute();

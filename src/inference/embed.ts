@@ -1,10 +1,9 @@
 import {
   EmbeddingsList,
-  EmbedOperationRequest,
+  X_PINECONE_API_VERSION,
   EmbedRequestInputsInner,
   InferenceApi,
 } from '../pinecone-generated-ts-fetch/inference';
-import { withInferenceApiVersion } from './apiVersion';
 
 export const embed = (infApi: InferenceApi) => {
   return async (
@@ -23,13 +22,13 @@ export const embed = (infApi: InferenceApi) => {
       delete params.inputType;
     }
 
-    const typedRequest: Omit<EmbedOperationRequest, 'xPineconeApiVersion'> = {
+    return await infApi.embed({
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,
         parameters: params,
       },
-    };
-    return await infApi.embed(withInferenceApiVersion(typedRequest));
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

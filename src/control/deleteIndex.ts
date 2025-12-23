@@ -1,10 +1,9 @@
 import {
-  DeleteIndexRequest,
+  X_PINECONE_API_VERSION,
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { IndexName } from './types';
 import { PineconeArgumentError } from '../errors';
-import { withControlApiVersion } from './apiVersion';
 
 /** The name of index to delete */
 export type DeleteIndexOptions = IndexName;
@@ -16,9 +15,10 @@ export const deleteIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `indexName` in order to delete an index'
       );
     }
-    await api.deleteIndex(
-      withControlApiVersion<DeleteIndexRequest>({ indexName })
-    );
+    await api.deleteIndex({
+      indexName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     return;
   };
 };

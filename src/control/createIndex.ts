@@ -1,16 +1,14 @@
 import {
   CreateIndexRequest,
-  CreateIndexOperationRequest,
   IndexModel,
   ManageIndexesApi,
   PodSpecMetadataConfig,
-  DescribeIndexRequest,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
-import { withControlApiVersion } from './apiVersion';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -149,11 +147,10 @@ export const createIndex = (api: ManageIndexesApi) => {
 
     validateCreateIndexRequest(options);
     try {
-      const createResponse = await api.createIndex(
-        withControlApiVersion<CreateIndexOperationRequest>({
-          createIndexRequest: options as CreateIndexRequest,
-        })
-      );
+      const createResponse = await api.createIndex({
+        createIndexRequest: options as CreateIndexRequest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+      });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, options.name);
       }
@@ -178,9 +175,10 @@ export const waitUntilIndexIsReady = async (
   seconds: number = 0
 ): Promise<IndexModel> => {
   try {
-    const indexDescription = await api.describeIndex(
-      withControlApiVersion<DescribeIndexRequest>({ indexName })
-    );
+    const indexDescription = await api.describeIndex({
+      indexName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     if (!indexDescription.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       return await waitUntilIndexIsReady(api, indexName, seconds + 1);

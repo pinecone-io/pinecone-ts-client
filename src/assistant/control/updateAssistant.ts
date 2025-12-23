@@ -1,12 +1,11 @@
 import {
   ManageAssistantsApi as ManageAssistantsControlApi,
-  UpdateAssistantOperationRequest,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import type { UpdateAssistantOptions, UpdateAssistantResponse } from './types';
 import { UpdateAssistantOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
-import { withAssistantControlApiVersion } from './apiVersion';
 
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
@@ -28,12 +27,11 @@ export const updateAssistant = (api: ManageAssistantsControlApi) => {
       updateAssistantRequest['metadata'] = options.metadata;
     }
 
-    return await api.updateAssistant(
-      withAssistantControlApiVersion<UpdateAssistantOperationRequest>({
-        assistantName: name,
-        updateAssistantRequest: updateAssistantRequest,
-      })
-    );
+    return await api.updateAssistant({
+      assistantName: name,
+      updateAssistantRequest: updateAssistantRequest,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };
 

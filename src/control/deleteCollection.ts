@@ -1,10 +1,9 @@
 import {
-  DeleteCollectionRequest,
   ManageIndexesApi,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import type { CollectionName } from './types';
 import { PineconeArgumentError } from '../errors';
-import { withControlApiVersion } from './apiVersion';
 
 /**
  * The name of collection to delete.
@@ -18,9 +17,10 @@ export const deleteCollection = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `collectionName`'
       );
     }
-    await api.deleteCollection(
-      withControlApiVersion<DeleteCollectionRequest>({ collectionName })
-    );
+    await api.deleteCollection({
+      collectionName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     return;
   };
 };

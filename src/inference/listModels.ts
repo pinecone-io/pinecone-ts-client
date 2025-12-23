@@ -1,9 +1,8 @@
 import {
   ModelInfoList,
   InferenceApi,
-  ListModelsRequest,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/inference';
-import { withInferenceApiVersion } from './apiVersion';
 
 /**
  * The options for listing models.
@@ -21,8 +20,9 @@ export interface ListModelsOptions {
 
 export const listModels = (infApi: InferenceApi) => {
   return async (options?: ListModelsOptions): Promise<ModelInfoList> => {
-    return await infApi.listModels(
-      withInferenceApiVersion<ListModelsRequest>(options || {})
-    );
+    return await infApi.listModels({
+      ...options,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

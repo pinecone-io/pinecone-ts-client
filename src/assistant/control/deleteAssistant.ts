@@ -1,9 +1,8 @@
 import {
-  DeleteAssistantRequest,
   ManageAssistantsApi as ManageAssistantsControlApi,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import { PineconeArgumentError } from '../../errors';
-import { withAssistantControlApiVersion } from './apiVersion';
 
 export const deleteAssistant = (api: ManageAssistantsControlApi) => {
   return async (assistantName: string): Promise<void> => {
@@ -12,10 +11,9 @@ export const deleteAssistant = (api: ManageAssistantsControlApi) => {
         'You must pass the name of an assistant to update.'
       );
     }
-    return await api.deleteAssistant(
-      withAssistantControlApiVersion<DeleteAssistantRequest>({
-        assistantName: assistantName,
-      })
-    );
+    return await api.deleteAssistant({
+      assistantName: assistantName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

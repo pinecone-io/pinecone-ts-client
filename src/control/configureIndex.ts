@@ -2,13 +2,12 @@ import {
   ManageIndexesApi,
   IndexModel,
   ConfigureIndexRequest,
-  ConfigureIndexOperationRequest,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../utils';
-import { withControlApiVersion } from './apiVersion';
 
 // Properties for validation to ensure no unknown/invalid properties are passed
 type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
@@ -68,11 +67,10 @@ export const configureIndex = (api: ManageIndexesApi) => {
       maxRetries
     );
 
-    return await retryWrapper.execute(
-      withControlApiVersion<ConfigureIndexOperationRequest>({
-        indexName,
-        configureIndexRequest: options,
-      })
-    );
+    return await retryWrapper.execute({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      indexName,
+      configureIndexRequest: options,
+    });
   };
 };
