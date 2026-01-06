@@ -1,4 +1,7 @@
-import { ManageAssistantsApi as ManageAssistantsControlApi } from '../../pinecone-generated-ts-fetch/assistant_control';
+import {
+  ManageAssistantsApi as ManageAssistantsControlApi,
+  X_PINECONE_API_VERSION,
+} from '../../pinecone-generated-ts-fetch/assistant_control';
 import { PineconeArgumentError } from '../../errors';
 
 export const deleteAssistant = (api: ManageAssistantsControlApi) => {
@@ -10,6 +13,7 @@ export const deleteAssistant = (api: ManageAssistantsControlApi) => {
     }
     return await api.deleteAssistant({
       assistantName: assistantName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   };
 };

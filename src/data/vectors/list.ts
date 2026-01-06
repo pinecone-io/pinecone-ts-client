@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type {
   ListVectorsRequest,
   ListResponse,
@@ -45,6 +46,7 @@ export const listPaginated = (
     }
 
     const listRequest: ListVectorsRequest = {
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       ...options,
       namespace,
     };

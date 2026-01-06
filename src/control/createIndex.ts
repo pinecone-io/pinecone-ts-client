@@ -2,9 +2,8 @@ import {
   CreateIndexRequest,
   IndexModel,
   ManageIndexesApi,
-  ServerlessSpecCloudEnum,
   PodSpecMetadataConfig,
-  IndexModelMetricEnum,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
@@ -65,7 +64,7 @@ const CreateIndexSpecProperties: CreateIndexSpecType[] = ['serverless', 'pod'];
  */
 export interface CreateIndexServerlessSpec {
   /** The public cloud where you would like your index hosted. */
-  cloud: ServerlessSpecCloudEnum;
+  cloud: string;
 
   /** The region where you would like your index to be created. */
   region: string;
@@ -137,12 +136,12 @@ export const createIndex = (api: ManageIndexesApi) => {
     // If metric is not specified for a sparse index, default to dotproduct
     if (options.vectorType && options.vectorType.toLowerCase() === 'sparse') {
       if (!options.metric) {
-        options.metric = IndexModelMetricEnum.Dotproduct;
+        options.metric = 'dotproduct';
       }
     } else {
       // If metric is not specified for a dense index, default to cosine
       if (!options.metric) {
-        options.metric = IndexModelMetricEnum.Cosine;
+        options.metric = 'cosine';
       }
     }
 
@@ -150,6 +149,7 @@ export const createIndex = (api: ManageIndexesApi) => {
     try {
       const createResponse = await api.createIndex({
         createIndexRequest: options as CreateIndexRequest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, options.name);
@@ -175,7 +175,10 @@ export const waitUntilIndexIsReady = async (
   seconds: number = 0
 ): Promise<IndexModel> => {
   try {
-    const indexDescription = await api.describeIndex({ indexName });
+    const indexDescription = await api.describeIndex({
+      indexName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     if (!indexDescription.status?.ready) {
       await new Promise((r) => setTimeout(r, 1000));
       return await waitUntilIndexIsReady(api, indexName, seconds + 1);
@@ -222,7 +225,9 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   // validate options.metric
   if (
     options.metric &&
-    !Object.values(IndexModelMetricEnum).includes(options.metric)
+    !['cosine', 'euclidean', 'dotproduct'].includes(
+      options.metric.toLowerCase()
+    )
   ) {
     {
       throw new PineconeArgumentError(
@@ -278,16 +283,12 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     }
     if (
       options.spec.serverless.cloud &&
-      !Object.values(ServerlessSpecCloudEnum).includes(
-        options.spec.serverless.cloud
+      !['aws', 'gcp', 'azure'].includes(
+        options.spec.serverless.cloud.toLowerCase()
       )
     ) {
       throw new PineconeArgumentError(
-        `Invalid cloud value: ${
-          options.spec.serverless.cloud
-        }. Valid values are: ${Object.values(ServerlessSpecCloudEnum).join(
-          ', '
-        )}.`
+        `Invalid cloud value: ${options.spec.serverless.cloud}. Valid values are: aws, gcp, or azure.`
       );
     }
     if (!options.spec.serverless.region) {

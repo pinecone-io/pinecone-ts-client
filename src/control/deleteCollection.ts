@@ -1,4 +1,7 @@
-import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/db_control';
+import {
+  ManageIndexesApi,
+  X_PINECONE_API_VERSION,
+} from '../pinecone-generated-ts-fetch/db_control';
 import type { CollectionName } from './types';
 import { PineconeArgumentError } from '../errors';
 
@@ -14,7 +17,10 @@ export const deleteCollection = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `collectionName`'
       );
     }
-    await api.deleteCollection({ collectionName });
+    await api.deleteCollection({
+      collectionName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     return;
   };
 };

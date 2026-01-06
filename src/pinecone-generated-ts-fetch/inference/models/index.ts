@@ -10,7 +10,6 @@ export * from './ErrorResponse';
 export * from './ErrorResponseError';
 export * from './ModelInfo';
 export * from './ModelInfoList';
-export * from './ModelInfoMetric';
 export * from './ModelInfoSupportedParameter';
 export * from './ModelInfoSupportedParameterAllowedValuesInner';
 export * from './ModelInfoSupportedParameterDefault';

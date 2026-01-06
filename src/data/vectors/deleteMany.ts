@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type { DeleteRequest } from '../../pinecone-generated-ts-fetch/db_data';
 import type { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
@@ -57,6 +58,7 @@ export const deleteMany = (
 
     const api = await apiProvider.provide();
     await api.deleteVectors({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       deleteRequest: { ...requestOptions, namespace },
     });
   };

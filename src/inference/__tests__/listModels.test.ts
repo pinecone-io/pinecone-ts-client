@@ -24,6 +24,7 @@ describe('listModels', () => {
     expect(IA.listModels).toHaveBeenCalledWith({
       type: 'embed',
       vectorType: 'sparse',
+      xPineconeApiVersion: '2025-10',
     });
   });
 });

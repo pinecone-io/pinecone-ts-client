@@ -46,6 +46,7 @@ describe('update', () => {
         },
         setMetadata: { genre: 'ambient' },
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

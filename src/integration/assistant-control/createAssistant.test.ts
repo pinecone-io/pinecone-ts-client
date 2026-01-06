@@ -34,7 +34,7 @@ describe('createAssistant error paths', () => {
         name: assistantName,
         metadata: { key: 'a'.repeat(1000000) },
       })
-    ).rejects.toThrow('Metadata is too large');
+    ).rejects.toThrow(/Metadata exceeds maximum length of 16384 bytes/);
   });
 
   test('createAssistant with invalid region', async () => {

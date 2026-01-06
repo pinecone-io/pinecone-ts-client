@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type {
   OperationUsage,
   PineconeRecord,
@@ -46,6 +47,7 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
     this.validator(ids);
     const api = await this.apiProvider.provide();
     const response = await api.fetchVectors({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       ids: ids,
       namespace: this.namespace,
     });

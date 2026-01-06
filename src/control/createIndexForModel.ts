@@ -1,11 +1,8 @@
 import {
-  CreateIndexRequestMetricEnum,
+  X_PINECONE_API_VERSION,
   CreateIndexForModelRequest,
   IndexModel,
-  IndexModelMetricEnum,
   ManageIndexesApi,
-  DeletionProtection,
-  ServerlessSpecCloudEnum,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import { waitUntilIndexIsReady } from './createIndex';
@@ -23,7 +20,7 @@ export type CreateIndexForModelOptions = {
   /**
    * The public cloud where you would like your index hosted.
    */
-  cloud: ServerlessSpecCloudEnum;
+  cloud: string;
   /**
    * The region where you would like your index to be created.
    */
@@ -35,7 +32,7 @@ export type CreateIndexForModelOptions = {
   /**
    * Allows configuring an index to be protected from deletion. Defaults to `disabled`.
    */
-  deletionProtection?: DeletionProtection;
+  deletionProtection?: string;
   /**
    * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
    */
@@ -78,7 +75,7 @@ export type CreateIndexForModelEmbed = {
    * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If not specified, the metric
    * will be defaulted according to the model. Cannot be updated once set.
    */
-  metric?: CreateIndexRequestMetricEnum;
+  metric?: string;
   /**
    * Identifies the name of the text field from your document model that will be embedded.
    */
@@ -117,6 +114,7 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
     try {
       const createResponse = await api.createIndexForModel({
         createIndexForModelRequest: options as CreateIndexForModelRequest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
         return await waitUntilIndexIsReady(api, createResponse.name);
@@ -156,12 +154,10 @@ const validateCreateIndexForModelRequest = (
   }
   if (
     options.cloud &&
-    !Object.values(ServerlessSpecCloudEnum).includes(options.cloud)
+    !['aws', 'gcp', 'azure'].includes(options.cloud.toLowerCase())
   ) {
     throw new PineconeArgumentError(
-      `Invalid cloud value: ${options.cloud}. Valid values are: ${Object.values(
-        ServerlessSpecCloudEnum
-      ).join(', ')}.`
+      `Invalid cloud value: ${options.cloud}. Valid values are: aws, gcp, or azure.`
     );
   }
 
@@ -182,13 +178,13 @@ const validateCreateIndexForModelRequest = (
   }
   if (
     options.embed.metric &&
-    !Object.values(IndexModelMetricEnum).includes(options.embed.metric)
+    !['cosine', 'euclidean', 'dotproduct'].includes(
+      options.embed.metric.toLowerCase()
+    )
   ) {
     {
       throw new PineconeArgumentError(
-        `Invalid metric value: ${
-          options.embed.metric
-        }. Valid values are: ${Object.values(IndexModelMetricEnum).join(', ')}.`
+        `Invalid metric value: ${options.embed.metric}. Valid values are: cosine, euclidean, or dotproduct.`
       );
     }
   }

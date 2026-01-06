@@ -1,7 +1,10 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import {
+  X_PINECONE_API_VERSION,
+  SearchRecordsResponse,
+} from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { RetryOnServerFailure } from '../../utils';
-import { SearchRecordsResponse } from '../../pinecone-generated-ts-fetch/db_data';
 
 /**
  * Options for searching records within a specific namespace.
@@ -123,6 +126,7 @@ export class SearchRecordsCommand {
     );
 
     return await retryWrapper.execute({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       searchRecordsRequest: searchOptions,
       namespace: this.namespace,
     });

@@ -11,6 +11,7 @@ import { buildUserAgent, getFetch } from '../../utils';
 import type { AssistantFileModel, UploadFileOptions } from './types';
 import fs from 'fs';
 import path from 'path';
+import { mapAssistantFileStatus } from './fileStatus';
 
 export const uploadFile = (
   assistantName: string,
@@ -24,7 +25,7 @@ export const uploadFile = (
     const fileBuffer = fs.readFileSync(options.path);
     const fileName = path.basename(options.path);
     const mimeType = getMimeType(fileName);
-    const fileBlob = new Blob([fileBuffer], { type: mimeType });
+    const fileBlob = new Blob([new Uint8Array(fileBuffer)], { type: mimeType });
     const formData = new FormData();
     formData.append('file', fileBlob, fileName);
     const hostUrl = await apiProvider.provideHostUrl();
@@ -50,10 +51,14 @@ export const uploadFile = (
     });
 
     if (response.ok) {
-      const assistantFileModel = new JSONApiResponse(response, (jsonValue) =>
-        AssistantFileModelFromJSON(jsonValue)
+      const assistantFileModel = await new JSONApiResponse(
+        response,
+        (jsonValue) => AssistantFileModelFromJSON(jsonValue)
       ).value();
-      return assistantFileModel;
+      return {
+        ...assistantFileModel,
+        status: mapAssistantFileStatus(assistantFileModel.status),
+      };
     } else {
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),

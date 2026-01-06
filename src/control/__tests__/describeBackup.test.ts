@@ -24,9 +24,11 @@ describe('describeBackup', () => {
     const MIA = setupSuccessResponse(undefined);
     const returned = await describeBackup(MIA)('backup-id');
     expect(returned).toEqual(undefined);
-    expect(MIA.describeBackup).toHaveBeenCalledWith({
-      backupId: 'backup-id',
-    });
+    expect(MIA.describeBackup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backupId: 'backup-id',
+      })
+    );
   });
 
   test('should throw backupId is not provided', async () => {

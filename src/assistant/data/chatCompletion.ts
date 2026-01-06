@@ -1,8 +1,8 @@
 import type {
-  ChatCompletionAssistantRequest,
   ChatCompletionModel,
   MessageModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_data';
 import {
   messagesValidation,
   modelValidation,
@@ -24,17 +24,17 @@ export const chatCompletion = (
     const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
-    const request: ChatCompletionAssistantRequest = {
-      assistantName: assistantName,
-      searchCompletions: {
-        messages: messages,
-        stream: false,
-        model: model,
-        filter: options.filter,
-      },
-    };
     const retryWrapper = new RetryOnServerFailure(() =>
-      api.chatCompletionAssistant(request)
+      api.chatCompletionAssistant({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        assistantName: assistantName,
+        searchCompletions: {
+          messages: messages,
+          stream: false,
+          model: model,
+          filter: options.filter,
+        },
+      })
     );
 
     return await retryWrapper.execute();

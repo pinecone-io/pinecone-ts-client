@@ -43,7 +43,7 @@ async function createServerlessIndex(client: Pinecone) {
   let serverlessIndexName = randomIndexName('serverless-integration');
   const indexes = await client.listIndexes();
   const serverlessIndex = indexes.indexes?.find(
-    (index) => index.spec.serverless
+    (index) => (index.spec as any).serverless
   );
   serverlessIndexName = serverlessIndex?.name || serverlessIndexName;
 

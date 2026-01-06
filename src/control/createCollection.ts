@@ -2,6 +2,7 @@ import {
   CollectionModel,
   CreateCollectionRequest,
   ManageIndexesApi,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
@@ -40,6 +41,9 @@ export const createCollection = (api: ManageIndexesApi) => {
 
   return async (options: CreateCollectionRequest): Promise<CollectionModel> => {
     validator(options);
-    return await api.createCollection({ createCollectionRequest: options });
+    return await api.createCollection({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      createCollectionRequest: options,
+    });
   };
 };

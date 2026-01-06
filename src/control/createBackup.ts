@@ -1,6 +1,7 @@
 import {
   BackupModel,
   ManageIndexesApi,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
@@ -32,6 +33,7 @@ export const createBackup = (api: ManageIndexesApi) => {
     }
 
     return await api.createBackup({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       indexName: createBackupOptions.indexName,
       createBackupRequest: {
         name: createBackupOptions.name,

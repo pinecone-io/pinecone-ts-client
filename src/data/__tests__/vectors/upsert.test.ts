@@ -17,6 +17,7 @@ const setupResponse = (response, isSuccess) => {
 
   return { fakeUpsert, VOA, VectorProvider, cmd };
 };
+
 const setupSuccess = (response) => {
   return setupResponse(response, true);
 };
@@ -33,6 +34,7 @@ describe('upsert', () => {
         namespace: 'namespace',
         vectors: [{ id: '1', values: [1, 2, 3] }],
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

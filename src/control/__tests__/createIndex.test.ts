@@ -85,6 +85,7 @@ describe('createIndex', () => {
           example: 'tag',
         },
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 
@@ -116,6 +117,7 @@ describe('createIndex', () => {
           },
         },
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 
@@ -310,9 +312,11 @@ describe('createIndex', () => {
           },
           waitUntilReady: true,
         },
+        xPineconeApiVersion: '2025-10',
       });
       expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
+        xPineconeApiVersion: '2025-10',
       });
     });
 
@@ -352,6 +356,7 @@ describe('createIndex', () => {
         expect(result).toEqual({ status: { ready: true, state: 'Ready' } });
         expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
+          xPineconeApiVersion: '2025-10',
         });
       });
     });

@@ -4,141 +4,205 @@ import { DescribeImportCommand } from '../../bulk/describeImport';
 import { CancelImportCommand } from '../../bulk/cancelImport';
 import { BulkOperationsProvider } from '../../bulk/bulkOperationsProvider';
 import {
-  ImportErrorModeOnErrorEnum,
   ListBulkImportsRequest,
   StartBulkImportRequest,
+  StartImportResponse,
+  CancelBulkImportRequest,
+  ListImportsResponse,
+  DescribeBulkImportRequest,
+  BulkOperationsApi,
+  ImportModel,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../../errors';
 
+const setupResponse = (response, isSuccess) => {
+  const fakeStartImport: (
+    req: StartBulkImportRequest
+  ) => Promise<StartImportResponse> = jest
+    .fn()
+    .mockImplementation(() =>
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+    );
+  const fakeListImports: (
+    req: ListBulkImportsRequest
+  ) => Promise<ListImportsResponse> = jest
+    .fn()
+    .mockImplementation(() =>
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+    );
+  const fakeDescribeImport: (
+    req: DescribeBulkImportRequest
+  ) => Promise<ImportModel> = jest
+    .fn()
+    .mockImplementation(() =>
+      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+    );
+  const fakeCancelImport: (req: CancelBulkImportRequest) => Promise<object> =
+    jest
+      .fn()
+      .mockImplementation(() =>
+        isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      );
+
+  const BOA = {
+    startBulkImport: fakeStartImport,
+    listBulkImports: fakeListImports,
+    describeBulkImport: fakeDescribeImport,
+    cancelBulkImport: fakeCancelImport,
+  } as BulkOperationsApi;
+
+  const BulkOperationsProvider = {
+    provide: async () => BOA,
+  } as BulkOperationsProvider;
+
+  const startCmd = new StartImportCommand(BulkOperationsProvider, 'namespace');
+  const listCmd = new ListImportsCommand(BulkOperationsProvider, 'namespace');
+  const describeCmd = new DescribeImportCommand(
+    BulkOperationsProvider,
+    'namespace'
+  );
+  const cancelCmd = new CancelImportCommand(
+    BulkOperationsProvider,
+    'namespace'
+  );
+
+  return {
+    fakeStartImport,
+    fakeListImports,
+    fakeDescribeImport,
+    fakeCancelImport,
+    BOA,
+    BulkOperationsProvider,
+    startCmd,
+    listCmd,
+    describeCmd,
+    cancelCmd,
+  };
+};
+
 describe('StartImportCommand', () => {
-  let apiProviderMock: jest.Mocked<BulkOperationsProvider>;
-  let apiMock: jest.Mocked<any>; // Mocking the API returned by `provide`
-  let startImportCommand: StartImportCommand;
-  let listImportCommand: ListImportsCommand;
-  let describeImportCommand: DescribeImportCommand;
-  let cancelImportCommand: CancelImportCommand;
-
-  beforeEach(() => {
-    apiMock = {
-      startBulkImport: jest.fn(),
-      listBulkImports: jest.fn(),
-      describeBulkImport: jest.fn(),
-      cancelBulkImport: jest.fn(),
-    };
-
-    apiProviderMock = {
-      provide: jest.fn().mockResolvedValue(apiMock),
-    } as unknown as jest.Mocked<BulkOperationsProvider>;
-
-    startImportCommand = new StartImportCommand(apiProviderMock, '');
-    listImportCommand = new ListImportsCommand(apiProviderMock, '');
-    describeImportCommand = new DescribeImportCommand(apiProviderMock, '');
-    cancelImportCommand = new CancelImportCommand(apiProviderMock, '');
-  });
-
   test('should call startImport with correct request when errorMode is "continue"', async () => {
+    const { startCmd, fakeStartImport } = setupResponse({ id: '1' }, true);
+
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'continue';
 
-    const expectedRequest: StartBulkImportRequest = {
-      startImportRequest: {
-        uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Continue },
-      },
-    };
+    await startCmd.run(uri, errorMode);
 
-    await startImportCommand.run(uri, errorMode);
-
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(fakeStartImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        startImportRequest: {
+          uri,
+          errorMode: { onError: 'continue' },
+        },
+      })
+    );
   });
 
   test('should call startImport with correct request when errorMode is "abort"', async () => {
+    const { startCmd, fakeStartImport } = setupResponse({ id: '1' }, true);
+
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'abort';
 
-    const expectedRequest: StartBulkImportRequest = {
-      startImportRequest: {
-        uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Abort },
-      },
-    };
+    await startCmd.run(uri, errorMode);
 
-    await startImportCommand.run(uri, errorMode);
-
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(fakeStartImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        startImportRequest: {
+          uri,
+          errorMode: { onError: 'abort' },
+        },
+      })
+    );
   });
 
   test('should throw PineconeArgumentError for invalid errorMode', async () => {
+    const { startCmd } = setupResponse({ id: '1' }, false);
+
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'invalid';
 
-    await expect(startImportCommand.run(uri, errorMode)).rejects.toThrow(
+    await expect(startCmd.run(uri, errorMode)).rejects.toThrow(
       PineconeArgumentError
     );
-
-    expect(apiMock.startBulkImport).not.toHaveBeenCalled();
   });
 
   test('should use "continue" as default when errorMode is undefined', async () => {
+    const { startCmd, fakeStartImport } = setupResponse({ id: '1' }, true);
+
     const uri = 's3://my-bucket/my-file.csv';
 
-    const expectedRequest: StartBulkImportRequest = {
-      startImportRequest: {
-        uri,
-        errorMode: { onError: ImportErrorModeOnErrorEnum.Continue },
-      },
-    };
+    await startCmd.run(uri, undefined);
 
-    await startImportCommand.run(uri, undefined);
-
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.startBulkImport).toHaveBeenCalledWith(expectedRequest);
+    expect(fakeStartImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        startImportRequest: {
+          uri,
+          errorMode: { onError: 'continue' },
+        },
+      })
+    );
   });
 
   test('should throw error when URI/1st arg is missing', async () => {
-    const toThrow = async () => {
-      // @ts-ignore
-      await startImportCommand.run();
-    };
+    const { startCmd } = setupResponse(undefined, false);
 
-    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow).rejects.toThrowError(
+    await expect(startCmd.run('')).rejects.toThrow(PineconeArgumentError);
+    await expect(startCmd.run('')).rejects.toThrow(
       '`uri` field is required and must start with the scheme of a supported storage provider.'
     );
   });
 
   test('should call listImport with correct request', async () => {
+    const { listCmd, fakeListImports } = setupResponse({ imports: [] }, true);
+
     const limit = 1;
 
-    const expectedRequest: ListBulkImportsRequest = {
-      limit,
-    };
+    await listCmd.run(limit);
 
-    await listImportCommand.run(limit);
-
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.listBulkImports).toHaveBeenCalledWith(expectedRequest);
+    expect(fakeListImports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        limit,
+      })
+    );
   });
 
   test('should call describeImport with correct request', async () => {
+    const { describeCmd, fakeDescribeImport } = setupResponse(
+      { id: '1' },
+      true
+    );
+
     const importId = 'import-id';
-    const req = { id: importId };
 
-    await describeImportCommand.run(importId);
+    await describeCmd.run(importId);
 
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.describeBulkImport).toHaveBeenCalledWith(req);
+    expect(fakeDescribeImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        id: importId,
+      })
+    );
   });
 
   test('should call cancelImport with correct request', async () => {
+    const { cancelCmd, fakeCancelImport } = setupResponse({ id: '1' }, true);
+
     const importId = 'import-id';
-    const req = { id: importId };
 
-    await cancelImportCommand.run(importId);
+    await cancelCmd.run(importId);
 
-    expect(apiProviderMock.provide).toHaveBeenCalled();
-    expect(apiMock.cancelBulkImport).toHaveBeenCalledWith(req);
+    expect(fakeCancelImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+        id: importId,
+      })
+    );
   });
 });

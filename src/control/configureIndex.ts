@@ -2,6 +2,7 @@ import {
   ManageIndexesApi,
   IndexModel,
   ConfigureIndexRequest,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
@@ -40,12 +41,13 @@ export const configureIndex = (api: ManageIndexesApi) => {
         'You must pass either `spec`, `deletionProtection`, `tags`, or `embed` to configureIndex in order to update.'
       );
     }
+    // TODO - update to handle new configuration properties - serverless, etc
+    // Look at refactoring to remove the nested spec shape, and rely on top level values
     if (options.spec) {
-      if (options.spec.pod) {
-        ValidateObjectProperties(options.spec.pod, ['replicas', 'podType']);
-      }
-      if (options.spec.pod && options.spec.pod.replicas) {
-        if (options.spec.pod.replicas <= 0) {
+      const spec = options.spec as NonNullable<ConfigureIndexRequest['spec']>;
+      if (spec && 'pod' in spec && spec.pod) {
+        ValidateObjectProperties(spec.pod, ['replicas', 'podType']);
+        if (spec.pod.replicas && spec.pod.replicas <= 0) {
           throw new PineconeArgumentError(
             '`replicas` must be a positive integer.'
           );
@@ -67,6 +69,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
     );
 
     return await retryWrapper.execute({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       indexName,
       configureIndexRequest: options,
     });

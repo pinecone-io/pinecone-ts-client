@@ -1,8 +1,6 @@
 import { Pinecone, Index } from '../../../index';
 import { globalNamespaceOne, getRecordIds } from '../../test-helpers';
 
-// todo: add pod tests
-
 let pinecone: Pinecone,
   serverlessIndex: Index,
   recordIds: Array<string> | undefined;
