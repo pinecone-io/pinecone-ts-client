@@ -17,6 +17,7 @@ const setupResponse = (response, isSuccess) => {
 
   return { fakeUpsert, VOA, VectorProvider, cmd };
 };
+
 const setupSuccess = (response) => {
   return setupResponse(response, true);
 };

@@ -42,6 +42,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
       );
     }
     // TODO - update to handle new configuration properties - serverless, etc
+    // Look at refactoring to remove the nested spec shape, and rely on top level values
     if (options.spec) {
       const spec = options.spec as NonNullable<ConfigureIndexRequest['spec']>;
       if (spec && 'pod' in spec && spec.pod) {
