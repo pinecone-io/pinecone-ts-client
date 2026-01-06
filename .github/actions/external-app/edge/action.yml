@@ -52,9 +52,9 @@ runs:
       run: |
         cd ts-client-test-external-app
         npm install --global vercel@latest
-        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io--yes
+        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --yes
         vercel pull --yes --token ${{ inputs.vercel-token }} --scope pinecone-io
-        vercel build --token ${{ inputs.vercel-token }}
+        vercel build --token ${{ inputs.vercel-token }} --scope pinecone-io
         vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --prod
       shell: bash
 
