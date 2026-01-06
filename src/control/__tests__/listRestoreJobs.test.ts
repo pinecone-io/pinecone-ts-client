@@ -15,7 +15,7 @@ describe('listBackups', () => {
 
     const MIA = {
       listRestoreJobs: fakeListRestoreJobs,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     return MIA;
   };

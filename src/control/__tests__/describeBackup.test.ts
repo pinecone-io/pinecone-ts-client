@@ -15,7 +15,7 @@ describe('describeBackup', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       describeBackup: fakeDescribeBackup,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     return MIA;
   };

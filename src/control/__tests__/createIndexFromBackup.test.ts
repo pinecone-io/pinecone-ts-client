@@ -23,7 +23,7 @@ const setupCreateIndexFromBackupResponse = (
 
   const MIA = {
     createIndexFromBackupOperation: fakeCreateIndexFromBackup,
-  } as unknown as ManageIndexesApi;
+  } as ManageIndexesApi;
 
   return MIA;
 };

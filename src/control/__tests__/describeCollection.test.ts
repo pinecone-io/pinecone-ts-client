@@ -5,6 +5,7 @@ import type {
   DescribeCollectionRequest,
   CollectionList,
   CollectionModel,
+  ListCollectionsRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
 const setupMocks = (
@@ -16,14 +17,16 @@ const setupMocks = (
   ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(describeResponse);
-  const fakeListCollections: () => Promise<CollectionList> = jest
+  const fakeListCollections: (
+    req: ListCollectionsRequest
+  ) => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
   const IOA = {
     describeCollection: fakeDescribeCollection,
     listCollections: fakeListCollections,
   };
-  return IOA as unknown as ManageIndexesApi;
+  return IOA as ManageIndexesApi;
 };
 
 describe('describeCollection', () => {

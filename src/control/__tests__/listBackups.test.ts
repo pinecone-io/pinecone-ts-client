@@ -2,6 +2,7 @@ import { listBackups } from '../listBackups';
 import {
   BackupList,
   ListIndexBackupsRequest,
+  ListProjectBackupsRequest,
   ManageIndexesApi,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
@@ -13,14 +14,16 @@ describe('listBackups', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
 
-    const fakeListProjectBackups: () => Promise<BackupList> = jest
+    const fakeListProjectBackups: (
+      req: ListProjectBackupsRequest
+    ) => Promise<BackupList> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
 
     const MIA = {
       listIndexBackups: fakeListIndexBackups,
       listProjectBackups: fakeListProjectBackups,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     return MIA;
   };

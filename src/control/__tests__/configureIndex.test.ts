@@ -36,7 +36,7 @@ describe('configureIndex', () => {
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
     const IOA = {
       configureIndex: fakeConfigure,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
       spec: {

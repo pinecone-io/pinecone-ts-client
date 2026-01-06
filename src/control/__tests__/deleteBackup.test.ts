@@ -12,7 +12,7 @@ describe('deleteBackup', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       deleteBackup: fakeDeleteBackup,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     return MIA;
   };

@@ -1,7 +1,7 @@
 import { PineconeArgumentError } from '../../errors';
 import {
   InferenceApi,
-  RerankRequest,
+  RerankOperationRequest,
   RerankResult,
 } from '../../pinecone-generated-ts-fetch/inference';
 import { rerank } from '../rerank';
@@ -10,12 +10,13 @@ const rerankModel = 'test-model';
 const myQuery = 'test-query';
 
 const setupRerankResponse = (response = {}, isSuccess = true) => {
-  const fakeRerank: (req: RerankRequest) => Promise<RerankResult> = jest
-    .fn()
-    .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
-    );
-  const IA = { rerank: fakeRerank } as unknown as InferenceApi;
+  const fakeRerank: (req: RerankOperationRequest) => Promise<RerankResult> =
+    jest
+      .fn()
+      .mockImplementation(() =>
+        isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      );
+  const IA = { rerank: fakeRerank } as InferenceApi;
   return IA;
 };
 

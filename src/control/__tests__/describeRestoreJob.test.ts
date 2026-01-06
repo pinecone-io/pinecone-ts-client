@@ -15,7 +15,7 @@ describe('describeRestoreJob', () => {
       .mockImplementation(() => Promise.resolve(responseData));
     const MIA = {
       describeRestoreJob: fakeDescribeRestoreJob,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     return MIA;
   };

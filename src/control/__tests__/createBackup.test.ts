@@ -22,7 +22,7 @@ const setupCreateBackupResponse = (
 
   const MIA = {
     createBackup: fakeCreateBackup,
-  } as unknown as ManageIndexesApi;
+  } as ManageIndexesApi;
 
   return MIA;
 };

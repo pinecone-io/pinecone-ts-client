@@ -27,8 +27,8 @@ describe('StartImportCommand', () => {
     };
 
     apiProviderMock = {
-      provide: jest.fn().mockResolvedValue(apiMock),
-    } as unknown as jest.Mocked<BulkOperationsProvider>;
+      provide: async () => apiMock,
+    } as jest.Mocked<BulkOperationsProvider>;
 
     startImportCommand = new StartImportCommand(apiProviderMock, '');
     listImportCommand = new ListImportsCommand(apiProviderMock, '');

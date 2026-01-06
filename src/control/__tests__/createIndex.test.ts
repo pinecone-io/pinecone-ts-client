@@ -44,7 +44,7 @@ const setupCreateIndexResponse = (
   const MIA = {
     createIndex: fakeCreateIndex,
     describeIndex: fakeDescribeIndex,
-  } as unknown as ManageIndexesApi;
+  } as ManageIndexesApi;
 
   return MIA;
 };
