@@ -226,7 +226,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch vectors
      */
     async fetchVectorsRaw(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
@@ -269,7 +269,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return vectors by ID from a single namespace. The returned vectors include the vector data and/or metadata.  For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch vectors
      */
     async fetchVectors(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {

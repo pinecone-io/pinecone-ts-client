@@ -13,18 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BackupModelSchema } from './BackupModelSchema';
-import {
-    BackupModelSchemaFromJSON,
-    BackupModelSchemaFromJSONTyped,
-    BackupModelSchemaToJSON,
-} from './BackupModelSchema';
 import type { CreateIndexForModelRequestEmbed } from './CreateIndexForModelRequestEmbed';
 import {
     CreateIndexForModelRequestEmbedFromJSON,
     CreateIndexForModelRequestEmbedFromJSONTyped,
     CreateIndexForModelRequestEmbedToJSON,
 } from './CreateIndexForModelRequestEmbed';
+import type { MetadataSchema } from './MetadataSchema';
+import {
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 import type { ReadCapacity } from './ReadCapacity';
 import {
     ReadCapacityFromJSON,
@@ -72,10 +72,10 @@ export interface CreateIndexForModelRequest {
     tags?: { [key: string]: string; };
     /**
      * 
-     * @type {BackupModelSchema}
+     * @type {MetadataSchema}
      * @memberof CreateIndexForModelRequest
      */
-    schema?: BackupModelSchema;
+    schema?: MetadataSchema;
     /**
      * 
      * @type {ReadCapacity}
@@ -118,7 +118,7 @@ export function CreateIndexForModelRequestFromJSONTyped(json: any, ignoreDiscrim
         'region': json['region'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : json['deletion_protection'],
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
-        'schema': !exists(json, 'schema') ? undefined : BackupModelSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
         'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
         'embed': CreateIndexForModelRequestEmbedFromJSON(json['embed']),
     };
@@ -138,7 +138,7 @@ export function CreateIndexForModelRequestToJSON(value?: CreateIndexForModelRequ
         'region': value.region,
         'deletion_protection': value.deletionProtection,
         'tags': value.tags,
-        'schema': BackupModelSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
         'read_capacity': ReadCapacityToJSON(value.readCapacity),
         'embed': CreateIndexForModelRequestEmbedToJSON(value.embed),
     };
