@@ -16,12 +16,38 @@ import {
   validateReadCapacity,
 } from './createIndex';
 
+/**
+ * Options for configuring an index.
+ * @see [Manage Indexes](https://docs.pinecone.io/guides/manage-data/manage-indexes)
+ */
 export type ConfigureIndexOptions = {
+  /**
+   * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
+   * Possible values: `disabled` or `enabled`.
+   */
   deletionProtection?: string;
+  /**
+   * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.
+   * Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
+   */
   tags?: { [key: string]: string };
+  /**
+   * The integrated inference embedding settings for this index.
+   */
   embed?: ConfigureIndexRequestEmbed;
+  /**
+   * The number of replicas. Replicas duplicate your index. They provide higher availability and throughput. Replicas can be scaled up or down as your needs change.
+   */
   podReplicas?: number;
+  /**
+   * The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
+   */
   podType?: string;
+  /**
+   * The read capacity configuration for dedicated read nodes.
+   *
+   * @see [Dedicated Read Nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
+   */
   readCapacity?: CreateIndexReadCapacity;
 };
 

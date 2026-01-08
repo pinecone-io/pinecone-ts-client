@@ -162,7 +162,7 @@ const CreateIndexByocSpecProperties: CreateIndexByocSpecType[] = [
  * The allowed node types for dedicated read capacity determining the type of machines to use: `b1` or `t1`.
  * `t1` includes increased processing power and memory.
  */
-type DedicatedNodeType = 'b1' | 't1';
+export type DedicatedNodeType = 'b1' | 't1';
 
 /**
  * On-demand read capacity configuration.
