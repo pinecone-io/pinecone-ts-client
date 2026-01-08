@@ -445,7 +445,9 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   }
 };
 
-export const validateReadCapacity = (readCapacity: CreateIndexReadCapacity) => {
+export const validateReadCapacity = (
+  readCapacity: CreateIndexReadCapacity | undefined
+) => {
   if (!readCapacity) return; // default to OnDemand
 
   // Normalize and validate mode

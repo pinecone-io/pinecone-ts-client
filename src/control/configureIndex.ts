@@ -2,26 +2,44 @@ import {
   ManageIndexesApi,
   IndexModel,
   ConfigureIndexRequest,
+  ConfigureIndexRequestEmbed,
+  ConfigureIndexRequestSpec,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../utils';
+import {
+  CreateIndexReadCapacity,
+  toApiReadCapacity,
+  validateReadCapacity,
+} from './createIndex';
+
+export type ConfigureIndexOptions = {
+  deletionProtection?: string;
+  tags?: { [key: string]: string };
+  embed?: ConfigureIndexRequestEmbed;
+  podReplicas?: number;
+  podType?: string;
+  readCapacity?: CreateIndexReadCapacity;
+};
 
 // Properties for validation to ensure no unknown/invalid properties are passed
-type ConfigureIndexRequestType = keyof ConfigureIndexRequest;
-export const ConfigureIndexRequestProperties: ConfigureIndexRequestType[] = [
+type ConfigureIndexOptionsType = keyof ConfigureIndexOptions;
+export const ConfigureIndexOptionsProperties: ConfigureIndexOptionsType[] = [
   'deletionProtection',
-  'spec',
   'tags',
   'embed',
+  'podReplicas',
+  'podType',
+  'readCapacity',
 ];
 
 export const configureIndex = (api: ManageIndexesApi) => {
-  const validator = (indexName: IndexName, options: ConfigureIndexRequest) => {
+  const validator = (indexName: IndexName, options: ConfigureIndexOptions) => {
     if (options) {
-      ValidateObjectProperties(options, ConfigureIndexRequestProperties);
+      ValidateObjectProperties(options, ConfigureIndexOptionsProperties);
     }
 
     if (!indexName) {
@@ -29,36 +47,30 @@ export const configureIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `indexName` to configureIndex.'
       );
     }
+
     // !options.deletionProtection evaluates to false if options.deletionProtection is undefined, empty string, or
     // not provided
     if (
-      !options.spec &&
       !options.deletionProtection &&
       !options.tags &&
-      !options.embed
+      !options.embed &&
+      options.podReplicas === undefined &&
+      options.podType === undefined &&
+      options.readCapacity === undefined
     ) {
       throw new PineconeArgumentError(
-        'You must pass either `spec`, `deletionProtection`, `tags`, or `embed` to configureIndex in order to update.'
+        'You must pass at least one configuration option to configureIndex.'
       );
     }
-    // TODO - update to handle new configuration properties - serverless, etc
-    // Look at refactoring to remove the nested spec shape, and rely on top level values
-    if (options.spec) {
-      const spec = options.spec as NonNullable<ConfigureIndexRequest['spec']>;
-      if (spec && 'pod' in spec && spec.pod) {
-        ValidateObjectProperties(spec.pod, ['replicas', 'podType']);
-        if (spec.pod.replicas && spec.pod.replicas <= 0) {
-          throw new PineconeArgumentError(
-            '`replicas` must be a positive integer.'
-          );
-        }
-      }
+
+    if (options.readCapacity) {
+      validateReadCapacity(options.readCapacity);
     }
   };
 
   return async (
     indexName: IndexName,
-    options: ConfigureIndexRequest,
+    options: ConfigureIndexOptions,
     maxRetries?: number
   ): Promise<IndexModel> => {
     validator(indexName, options);
@@ -68,10 +80,51 @@ export const configureIndex = (api: ManageIndexesApi) => {
       maxRetries
     );
 
+    const spec = buildConfigureSpec(options);
+    const request: ConfigureIndexRequest = {
+      deletionProtection: options.deletionProtection,
+      tags: options.tags,
+      embed: options.embed,
+      spec,
+    };
+
     return await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       indexName,
-      configureIndexRequest: options,
+      configureIndexRequest: request,
     });
   };
+};
+
+const buildConfigureSpec = (
+  options: ConfigureIndexOptions
+): ConfigureIndexRequestSpec | undefined => {
+  const hasPod =
+    options.podReplicas !== undefined || options.podType !== undefined;
+  const hasServerless = options.readCapacity !== undefined;
+
+  if (hasPod && hasServerless) {
+    throw new PineconeArgumentError(
+      'Cannot configure both serverless (readCapacity) and pod (podReplicas/podType)index values.'
+    );
+  }
+
+  if (hasPod) {
+    return {
+      pod: {
+        replicas: options.podReplicas,
+        podType: options.podType,
+      },
+    };
+  }
+
+  if (hasServerless) {
+    return {
+      serverless: {
+        readCapacity: toApiReadCapacity(options.readCapacity),
+      },
+    };
+  }
+
+  return undefined;
 };

@@ -93,6 +93,7 @@ describe('createIndexForModel', () => {
         region: 'us-east-1',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
@@ -113,6 +114,7 @@ describe('createIndexForModel', () => {
         region: 'us-east-1',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
@@ -133,6 +135,7 @@ describe('createIndexForModel', () => {
         cloud: 'aws',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
