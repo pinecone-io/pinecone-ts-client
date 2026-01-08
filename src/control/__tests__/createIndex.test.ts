@@ -153,7 +153,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
+      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
     );
 
     // Missing dimension
@@ -219,7 +219,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: poddf. Valid properties include serverless, pod.'
+      'Object contained invalid properties: poddf. Valid properties include serverless, pod, byoc.'
     );
   });
 
@@ -264,7 +264,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: cloudsdfd. Valid properties include cloud, region, sourceCollection.'
+      'Object contained invalid properties: cloudsdfd. Valid properties include cloud, region, sourceCollection, schema, readCapacity.'
     );
   });
 
