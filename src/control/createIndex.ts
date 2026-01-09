@@ -388,6 +388,11 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
         'You must pass a `region` for the serverless `spec` object in order to create an index.'
       );
     }
+
+    // validate readCapacity if provided
+    if (options.spec.serverless.readCapacity) {
+      validateReadCapacity(options.spec.serverless.readCapacity);
+    }
   } else if (options.spec.pod) {
     // validate options.spec.pod properties if pod spec is passed
     ValidateObjectProperties(options.spec.pod, CreateIndexPodSpecProperties);

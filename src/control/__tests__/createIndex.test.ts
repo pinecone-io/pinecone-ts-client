@@ -361,4 +361,341 @@ describe('createIndex', () => {
       });
     });
   });
+
+  describe('createIndex with readCapacity', () => {
+    test('creates serverless index with default OnDemand readCapacity', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: undefined,
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates serverless index with explicit OnDemand readCapacity', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: { mode: 'OnDemand' },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: { mode: 'OnDemand' },
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates serverless index with Dedicated readCapacity', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: {
+              mode: 'Dedicated',
+              nodeType: 'b1',
+              manual: { replicas: 2, shards: 1 },
+            },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'Dedicated',
+                dedicated: {
+                  nodeType: 'b1',
+                  scaling: 'Manual',
+                  manual: { replicas: 2, shards: 1 },
+                },
+              },
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates serverless index with Dedicated readCapacity (mode omitted)', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: {
+              nodeType: 't1',
+              manual: { replicas: 4, shards: 2 },
+            },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'Dedicated',
+                dedicated: {
+                  nodeType: 't1',
+                  scaling: 'Manual',
+                  manual: { replicas: 4, shards: 2 },
+                },
+              },
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+  });
+
+  describe('createIndex with BYOC spec', () => {
+    test('creates BYOC index successfully', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'byoc-index',
+        dimension: 128,
+        spec: {
+          byoc: {
+            environment: 'us-east-1-aws',
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'byoc-index',
+          dimension: 128,
+          metric: 'cosine',
+          spec: {
+            byoc: {
+              environment: 'us-east-1-aws',
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('throws error if BYOC environment is not provided', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () => {
+        await createIndex(MIA)({
+          name: 'byoc-index',
+          dimension: 128,
+          spec: {
+            // @ts-ignore
+            byoc: {},
+          },
+        });
+      };
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.'
+      );
+    });
+  });
+
+  describe('createIndex readCapacity validation', () => {
+    test('throws error for invalid readCapacity mode', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () => {
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              // @ts-ignore
+              readCapacity: { mode: 'InvalidMode' },
+            },
+          },
+        });
+      };
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /Invalid read capacity mode.*Valid values are.*OnDemand.*Dedicated/i
+      );
+    });
+
+    test('throws error for invalid dedicated nodeType', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () => {
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                // @ts-ignore
+                nodeType: 'invalid',
+                manual: { replicas: 1, shards: 1 },
+              },
+            },
+          },
+        });
+      };
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /Invalid node type.*Valid values are.*b1.*t1/i
+      );
+    });
+
+    test('throws error for missing manual config in dedicated mode', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () =>
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              // @ts-ignore
+              readCapacity: {
+                nodeType: 'b1',
+              },
+            },
+          },
+        });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /manual is required for dedicated mode/i
+      );
+    });
+
+    test('throws error for invalid replicas value', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () =>
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                nodeType: 'b1',
+                manual: { replicas: -1, shards: 1 },
+              },
+            },
+          },
+        });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /replicas must be 0 or a positive integer/i
+      );
+    });
+
+    test('throws error for invalid shards value', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () =>
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                nodeType: 'b1',
+                manual: { replicas: 1, shards: 0 },
+              },
+            },
+          },
+        });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /shards must be a positive integer/i
+      );
+    });
+
+    test('allows replicas to be 0 for dedicated mode', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: {
+              nodeType: 'b1',
+              manual: { replicas: 0, shards: 1 },
+            },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalled();
+    });
+  });
 });

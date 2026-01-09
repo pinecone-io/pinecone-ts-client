@@ -64,6 +64,7 @@ const CreateIndexForModelOptionsProperties: CreateIndexForModelOptionsType[] = [
   'region',
   'embed',
   'deletionProtection',
+  'readCapacity',
   'tags',
   'waitUntilReady',
   'suppressConflicts',
