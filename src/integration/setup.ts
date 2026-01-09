@@ -90,7 +90,7 @@ async function createServerlessIndex(client: Pinecone) {
       .upsert(allRecords);
 
     // wait for records to become available
-    await sleep(25000);
+    await sleep(45000);
   };
 
   // if there's not an existing serverlessIndex, create one
