@@ -33,6 +33,33 @@ export type PineconeConfiguration = {
   sourceTag?: string;
 
   /**
+   * Optional caller information that is applied to the User-Agent header with all requests.
+   * Used to identify agentic callers using the SDK (e.g., AI coding assistants).
+   *
+   * @example
+   * ```typescript
+   * const pc = new Pinecone({
+   *   apiKey: 'your-api-key',
+   *   caller: {
+   *     provider: 'google',
+   *     model: 'gemini'
+   *   }
+   * });
+   * // User-Agent: ...; caller=google:gemini
+   * ```
+   */
+  caller?: {
+    /**
+     * Optional provider identifier (e.g., 'google', 'anthropic', 'openai').
+     */
+    provider?: string;
+    /**
+     * Required model name (e.g., 'gemini', 'claude-code', 'gpt-4').
+     */
+    model: string;
+  };
+
+  /**
    * Optional configuration field for specifying the maximum number of retries for a request. Defaults to 3.
    */
   maxRetries?: number;
@@ -52,6 +79,7 @@ export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'fetchApi',
   'additionalHeaders',
   'sourceTag',
+  'caller',
   'maxRetries',
 ];
 
