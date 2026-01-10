@@ -16,31 +16,31 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface BackupModelSchemaFieldsValue
+ * @interface MetadataSchemaFieldsValue
  */
-export interface BackupModelSchemaFieldsValue {
+export interface MetadataSchemaFieldsValue {
     /**
      * Whether the field is filterable. If true, the field is indexed and can be used in filters. Only true values are allowed.
      * @type {boolean}
-     * @memberof BackupModelSchemaFieldsValue
+     * @memberof MetadataSchemaFieldsValue
      */
     filterable?: boolean;
 }
 
 /**
- * Check if a given object implements the BackupModelSchemaFieldsValue interface.
+ * Check if a given object implements the MetadataSchemaFieldsValue interface.
  */
-export function instanceOfBackupModelSchemaFieldsValue(value: object): boolean {
+export function instanceOfMetadataSchemaFieldsValue(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function BackupModelSchemaFieldsValueFromJSON(json: any): BackupModelSchemaFieldsValue {
-    return BackupModelSchemaFieldsValueFromJSONTyped(json, false);
+export function MetadataSchemaFieldsValueFromJSON(json: any): MetadataSchemaFieldsValue {
+    return MetadataSchemaFieldsValueFromJSONTyped(json, false);
 }
 
-export function BackupModelSchemaFieldsValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): BackupModelSchemaFieldsValue {
+export function MetadataSchemaFieldsValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetadataSchemaFieldsValue {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -50,7 +50,7 @@ export function BackupModelSchemaFieldsValueFromJSONTyped(json: any, ignoreDiscr
     };
 }
 
-export function BackupModelSchemaFieldsValueToJSON(value?: BackupModelSchemaFieldsValue | null): any {
+export function MetadataSchemaFieldsValueToJSON(value?: MetadataSchemaFieldsValue | null): any {
     if (value === undefined) {
         return undefined;
     }

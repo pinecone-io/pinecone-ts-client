@@ -5,7 +5,12 @@ import {
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
-import { waitUntilIndexIsReady } from './createIndex';
+import {
+  CreateIndexReadCapacity,
+  waitUntilIndexIsReady,
+  validateReadCapacity,
+  toApiReadCapacity,
+} from './createIndex';
 import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
 /**
@@ -34,6 +39,10 @@ export type CreateIndexForModelOptions = {
    */
   deletionProtection?: string;
   /**
+   * The read capacity configuration for the index. Defaults to OnDemand if not provided.
+   */
+  readCapacity?: CreateIndexReadCapacity;
+  /**
    * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
    */
   tags?: { [key: string]: string };
@@ -55,6 +64,7 @@ const CreateIndexForModelOptionsProperties: CreateIndexForModelOptionsType[] = [
   'region',
   'embed',
   'deletionProtection',
+  'readCapacity',
   'tags',
   'waitUntilReady',
   'suppressConflicts',
@@ -79,7 +89,7 @@ export type CreateIndexForModelEmbed = {
   /**
    * Identifies the name of the text field from your document model that will be embedded.
    */
-  fieldMap?: object;
+  fieldMap: object;
   /**
    * The read parameters for the embedding model.
    */
@@ -112,8 +122,12 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
 
     validateCreateIndexForModelRequest(options);
     try {
+      const createRequest: CreateIndexForModelRequest = {
+        ...options,
+        readCapacity: toApiReadCapacity(options.readCapacity),
+      };
       const createResponse = await api.createIndexForModel({
-        createIndexForModelRequest: options as CreateIndexForModelRequest,
+        createIndexForModelRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
@@ -166,6 +180,11 @@ const validateCreateIndexForModelRequest = (
       'You must pass a non-empty string for `region` in order to create an index.'
     );
   }
+
+  if (options.readCapacity) {
+    validateReadCapacity(options.readCapacity);
+  }
+
   if (!options.embed) {
     throw new PineconeArgumentError(
       'You must pass an `embed` object in order to create an index.'

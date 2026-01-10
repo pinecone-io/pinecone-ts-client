@@ -3,8 +3,6 @@
 export * from './BYOC';
 export * from './BackupList';
 export * from './BackupModel';
-export * from './BackupModelSchema';
-export * from './BackupModelSchemaFieldsValue';
 export * from './ByocSpec';
 export * from './CollectionList';
 export * from './CollectionModel';
@@ -25,6 +23,8 @@ export * from './IndexModel';
 export * from './IndexModelSpec';
 export * from './IndexModelStatus';
 export * from './IndexSpec';
+export * from './MetadataSchema';
+export * from './MetadataSchemaFieldsValue';
 export * from './ModelIndexEmbed';
 export * from './PaginationResponse';
 export * from './PodBased';

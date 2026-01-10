@@ -13,52 +13,52 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BackupModelSchemaFieldsValue } from './BackupModelSchemaFieldsValue';
+import type { MetadataSchemaFieldsValue } from './MetadataSchemaFieldsValue';
 import {
-    BackupModelSchemaFieldsValueFromJSON,
-    BackupModelSchemaFieldsValueFromJSONTyped,
-    BackupModelSchemaFieldsValueToJSON,
-} from './BackupModelSchemaFieldsValue';
+    MetadataSchemaFieldsValueFromJSON,
+    MetadataSchemaFieldsValueFromJSONTyped,
+    MetadataSchemaFieldsValueToJSON,
+} from './MetadataSchemaFieldsValue';
 
 /**
  * Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported.
  * @export
- * @interface BackupModelSchema
+ * @interface MetadataSchema
  */
-export interface BackupModelSchema {
+export interface MetadataSchema {
     /**
      * A map of metadata field names to their configuration. The field name must be a valid metadata field name. The field name must be unique.
-     * @type {{ [key: string]: BackupModelSchemaFieldsValue; }}
-     * @memberof BackupModelSchema
+     * @type {{ [key: string]: MetadataSchemaFieldsValue; }}
+     * @memberof MetadataSchema
      */
-    fields: { [key: string]: BackupModelSchemaFieldsValue; };
+    fields: { [key: string]: MetadataSchemaFieldsValue; };
 }
 
 /**
- * Check if a given object implements the BackupModelSchema interface.
+ * Check if a given object implements the MetadataSchema interface.
  */
-export function instanceOfBackupModelSchema(value: object): boolean {
+export function instanceOfMetadataSchema(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "fields" in value;
 
     return isInstance;
 }
 
-export function BackupModelSchemaFromJSON(json: any): BackupModelSchema {
-    return BackupModelSchemaFromJSONTyped(json, false);
+export function MetadataSchemaFromJSON(json: any): MetadataSchema {
+    return MetadataSchemaFromJSONTyped(json, false);
 }
 
-export function BackupModelSchemaFromJSONTyped(json: any, ignoreDiscriminator: boolean): BackupModelSchema {
+export function MetadataSchemaFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetadataSchema {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'fields': (mapValues(json['fields'], BackupModelSchemaFieldsValueFromJSON)),
+        'fields': (mapValues(json['fields'], MetadataSchemaFieldsValueFromJSON)),
     };
 }
 
-export function BackupModelSchemaToJSON(value?: BackupModelSchema | null): any {
+export function MetadataSchemaToJSON(value?: MetadataSchema | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,7 +67,7 @@ export function BackupModelSchemaToJSON(value?: BackupModelSchema | null): any {
     }
     return {
         
-        'fields': (mapValues(value.fields, BackupModelSchemaFieldsValueToJSON)),
+        'fields': (mapValues(value.fields, MetadataSchemaFieldsValueToJSON)),
     };
 }
 

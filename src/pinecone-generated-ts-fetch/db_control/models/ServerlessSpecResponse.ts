@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BackupModelSchema } from './BackupModelSchema';
+import type { MetadataSchema } from './MetadataSchema';
 import {
-    BackupModelSchemaFromJSON,
-    BackupModelSchemaFromJSONTyped,
-    BackupModelSchemaToJSON,
-} from './BackupModelSchema';
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 import type { ReadCapacityResponse } from './ReadCapacityResponse';
 import {
     ReadCapacityResponseFromJSON,
@@ -59,10 +59,10 @@ export interface ServerlessSpecResponse {
     sourceCollection?: string;
     /**
      * 
-     * @type {BackupModelSchema}
+     * @type {MetadataSchema}
      * @memberof ServerlessSpecResponse
      */
-    schema?: BackupModelSchema;
+    schema?: MetadataSchema;
 }
 
 /**
@@ -91,7 +91,7 @@ export function ServerlessSpecResponseFromJSONTyped(json: any, ignoreDiscriminat
         'region': json['region'],
         'readCapacity': ReadCapacityResponseFromJSON(json['read_capacity']),
         'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
-        'schema': !exists(json, 'schema') ? undefined : BackupModelSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
     };
 }
 
@@ -108,7 +108,7 @@ export function ServerlessSpecResponseToJSON(value?: ServerlessSpecResponse | nu
         'region': value.region,
         'read_capacity': ReadCapacityResponseToJSON(value.readCapacity),
         'source_collection': value.sourceCollection,
-        'schema': BackupModelSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
     };
 }
 

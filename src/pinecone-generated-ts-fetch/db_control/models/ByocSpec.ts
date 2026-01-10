@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BackupModelSchema } from './BackupModelSchema';
+import type { MetadataSchema } from './MetadataSchema';
 import {
-    BackupModelSchemaFromJSON,
-    BackupModelSchemaFromJSONTyped,
-    BackupModelSchemaToJSON,
-} from './BackupModelSchema';
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 
 /**
  * Configuration needed to deploy an index in a BYOC environment.
@@ -34,10 +34,10 @@ export interface ByocSpec {
     environment: string;
     /**
      * 
-     * @type {BackupModelSchema}
+     * @type {MetadataSchema}
      * @memberof ByocSpec
      */
-    schema?: BackupModelSchema;
+    schema?: MetadataSchema;
 }
 
 /**
@@ -61,7 +61,7 @@ export function ByocSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     return {
         
         'environment': json['environment'],
-        'schema': !exists(json, 'schema') ? undefined : BackupModelSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
     };
 }
 
@@ -75,7 +75,7 @@ export function ByocSpecToJSON(value?: ByocSpec | null): any {
     return {
         
         'environment': value.environment,
-        'schema': BackupModelSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
     };
 }
 

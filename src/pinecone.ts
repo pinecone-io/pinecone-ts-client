@@ -40,7 +40,6 @@ import {
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type {
-  ConfigureIndexRequest,
   CreateCollectionRequest,
   HTTPHeaders,
 } from './pinecone-generated-ts-fetch/db_control';
@@ -57,6 +56,7 @@ import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { Assistant } from './assistant';
+import { ConfigureIndexOptions } from './control/configureIndex';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -573,7 +573,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
+  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
     return this._configureIndex(indexName, options, this.config.maxRetries);
   }
 

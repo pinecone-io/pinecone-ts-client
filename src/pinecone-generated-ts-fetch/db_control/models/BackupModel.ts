@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { BackupModelSchema } from './BackupModelSchema';
+import type { MetadataSchema } from './MetadataSchema';
 import {
-    BackupModelSchemaFromJSON,
-    BackupModelSchemaFromJSONTyped,
-    BackupModelSchemaToJSON,
-} from './BackupModelSchema';
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 
 /**
  * The BackupModel describes the configuration and status of a Pinecone backup.
@@ -89,10 +89,10 @@ export interface BackupModel {
     metric?: string;
     /**
      * 
-     * @type {BackupModelSchema}
+     * @type {MetadataSchema}
      * @memberof BackupModel
      */
-    schema?: BackupModelSchema;
+    schema?: MetadataSchema;
     /**
      * Total number of records in the backup.
      * @type {number}
@@ -160,7 +160,7 @@ export function BackupModelFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'region': json['region'],
         'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
-        'schema': !exists(json, 'schema') ? undefined : BackupModelSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
         'recordCount': !exists(json, 'record_count') ? undefined : json['record_count'],
         'namespaceCount': !exists(json, 'namespace_count') ? undefined : json['namespace_count'],
         'sizeBytes': !exists(json, 'size_bytes') ? undefined : json['size_bytes'],
@@ -188,7 +188,7 @@ export function BackupModelToJSON(value?: BackupModel | null): any {
         'region': value.region,
         'dimension': value.dimension,
         'metric': value.metric,
-        'schema': BackupModelSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
         'record_count': value.recordCount,
         'namespace_count': value.namespaceCount,
         'size_bytes': value.sizeBytes,

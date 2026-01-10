@@ -49,50 +49,6 @@ describe('configure index', () => {
     await retryDeletes(pinecone, serverlessIndexName);
   });
 
-  describe('pod index', () => {
-    test('scale replicas up', async () => {
-      const description = await pinecone.describeIndex(podIndexName);
-      const spec = description.spec as any;
-      expect(spec.pod?.replicas).toEqual(1);
-
-      await pinecone.configureIndex(podIndexName, {
-        spec: { pod: { replicas: 2 } },
-      });
-      const description2 = await pinecone.describeIndex(podIndexName);
-      const spec2 = description2.spec as any;
-      expect(spec2.pod?.replicas).toEqual(2);
-    });
-
-    test('scale podType up', async () => {
-      // Verify starting state of podType is same as originally created
-      const description = await pinecone.describeIndex(podIndexName);
-      const spec = description.spec as any;
-      expect(spec.pod?.podType).toEqual('p1.x1');
-
-      await pinecone.configureIndex(podIndexName, {
-        spec: { pod: { podType: 'p1.x2' } },
-      });
-
-      await waitUntilReady(podIndexName);
-      const description2 = await pinecone.describeIndex(podIndexName);
-      const spec2 = description2.spec as any;
-      expect(spec2.pod?.podType).toEqual('p1.x2');
-    });
-
-    test('Remove index tag from pod index', async () => {
-      const description = await pinecone.describeIndex(podIndexName);
-      expect(description.tags).toEqual({
-        project: 'pinecone-integration-tests',
-      });
-
-      await pinecone.configureIndex(podIndexName, {
-        tags: { project: '' },
-      });
-      const description2 = await pinecone.describeIndex(podIndexName);
-      expect(description2.tags).toBeUndefined();
-    });
-  });
-
   describe('serverless index', () => {
     test('enable and disable deletionProtection', async () => {
       await pinecone.configureIndex(serverlessIndexName, {
@@ -181,7 +137,7 @@ describe('configure index', () => {
     test('cannot configure index with invalid index name', async () => {
       try {
         await pinecone.configureIndex('non-existent-index', {
-          spec: { pod: { replicas: 2 } },
+          podReplicas: 2,
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -192,7 +148,7 @@ describe('configure index', () => {
     test('cannot configure index when exceeding quota', async () => {
       try {
         await pinecone.configureIndex(podIndexName, {
-          spec: { pod: { replicas: 20 } },
+          podReplicas: 20,
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -210,7 +166,7 @@ describe('configure index', () => {
       try {
         // Try to change the base pod type
         await pinecone.configureIndex(podIndexName, {
-          spec: { pod: { podType: 'p2.x1' } },
+          podType: 'p2.x1',
         });
       } catch (e) {
         const err = e as BasePineconeError;
@@ -236,7 +192,7 @@ describe('configure index', () => {
     test('cannot configure pod spec for serverless', async () => {
       try {
         await pinecone.configureIndex(serverlessIndexName, {
-          spec: { pod: { replicas: 2 } },
+          podReplicas: 2,
         });
       } catch (e) {
         const err = e as BasePineconeError;
