@@ -22,7 +22,7 @@ describe('bulk import', () => {
       waitUntilReady: true,
     });
 
-    index = pinecone.index(indexName);
+    index = pinecone.index({ name: indexName });
   });
 
   afterAll(async () => {

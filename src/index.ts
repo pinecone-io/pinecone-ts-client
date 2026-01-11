@@ -84,6 +84,7 @@ export type {
   ListBackupsOptions,
   PodType,
 } from './control';
+export type { IndexOptions, AssistantOptions } from './types';
 export type {
   DeleteManyByFilterOptions,
   DeleteManyByRecordIdOptions,

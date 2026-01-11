@@ -56,7 +56,11 @@ export class VectorOperationsProvider {
   }
 
   async provideHostUrl() {
-    return await IndexHostSingleton.getHostUrl(this.config, this.indexName);
+    if (this.indexHostUrl) {
+      return this.indexHostUrl;
+    } else {
+      return await IndexHostSingleton.getHostUrl(this.config, this.indexName);
+    }
   }
 
   buildDataOperationsConfig() {

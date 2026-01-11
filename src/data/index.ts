@@ -35,6 +35,7 @@ import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsPr
 import { listNamespaces } from './namespaces/listNamespaces';
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
+import { IndexOptions } from '../types';
 
 export type {
   PineconeConfiguration,
@@ -85,7 +86,7 @@ export type {
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone()
  *
- * const index = pc.index('index-name')
+ * const index = pc.index({ name: 'index-name' })
  * ```
  *
  * ### Targeting an index, with user-defined Metadata types
@@ -103,7 +104,7 @@ export type {
  * }
  *
  * // Specify a custom metadata type while targeting the index
- * const index = pc.index<MovieMetadata>('test-index');
+ * const index = pc.index<MovieMetadata>({ name: 'test-index' });
  *
  * // Now you get type errors if upserting malformed metadata
  * await index.upsert([{
@@ -183,7 +184,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @internal */
   private target: {
     /** The name of the index that will receive data operations when this class instance is used to upsert, update, query, or delete. */
-    index: string;
+    indexName: string;
 
     /** The namespace where operations will be performed. If not set, the default namespace of `''` will be used. */
     namespace: string;
@@ -200,92 +201,95 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    * ```
    *
    * @constructor
-   * @param indexName - The name of the index that will receive operations from this {@link Index} instance.
+   * @param options - The {@link IndexOptions} for targeting the index.
    * @param config - The configuration from the Pinecone client.
-   * @param namespace - The namespace for the index.
-   * @param indexHostUrl - An optional override for the host address used for data operations.
-   * @param additionalHeaders - An optional object of additional header to send with each request.
    */
-  constructor(
-    indexName: string,
-    config: PineconeConfiguration,
-    namespace = '__default__',
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
-  ) {
+  constructor(options: IndexOptions, config: PineconeConfiguration) {
     this.config = config;
     this.target = {
-      index: indexName,
-      namespace: namespace,
-      indexHostUrl: indexHostUrl,
+      indexName: options.name,
+      namespace: options.namespace || '',
+      indexHostUrl: options.host,
     };
 
     // vector & record operations
     const dataOperationsProvider = new VectorOperationsProvider(
       config,
-      indexName,
-      indexHostUrl,
-      additionalHeaders
+      this.target.indexName,
+      this.target.indexHostUrl,
+      options.additionalHeaders
     );
-    this._deleteAll = deleteAll(dataOperationsProvider, namespace);
-    this._deleteMany = deleteMany(dataOperationsProvider, namespace);
-    this._deleteOne = deleteOne(dataOperationsProvider, namespace);
+    this._deleteAll = deleteAll(dataOperationsProvider, this.target.namespace);
+    this._deleteMany = deleteMany(
+      dataOperationsProvider,
+      this.target.namespace
+    );
+    this._deleteOne = deleteOne(dataOperationsProvider, this.target.namespace);
     this._describeIndexStats = describeIndexStats(dataOperationsProvider);
-    this._listPaginated = listPaginated(dataOperationsProvider, namespace);
-    this._fetchCommand = new FetchCommand<T>(dataOperationsProvider, namespace);
-    this._queryCommand = new QueryCommand<T>(dataOperationsProvider, namespace);
+    this._listPaginated = listPaginated(
+      dataOperationsProvider,
+      this.target.namespace
+    );
+    this._fetchCommand = new FetchCommand<T>(
+      dataOperationsProvider,
+      this.target.namespace
+    );
+    this._queryCommand = new QueryCommand<T>(
+      dataOperationsProvider,
+      this.target.namespace
+    );
     this._updateCommand = new UpdateCommand<T>(
       dataOperationsProvider,
-      namespace
+      this.target.namespace
     );
     this._upsertCommand = new UpsertCommand<T>(
       dataOperationsProvider,
-      namespace
+      this.target.namespace
     );
     this._upsertRecordsCommand = new UpsertRecordsCommand<T>(
       dataOperationsProvider,
-      namespace,
+      this.target.namespace,
       config
     );
     this._searchRecordsCommand = new SearchRecordsCommand(
       dataOperationsProvider,
-      namespace
+      this.target.namespace
     );
 
     // bulk operations
     const bulkApiProvider = new BulkOperationsProvider(
       config,
-      indexName,
-      indexHostUrl,
-      additionalHeaders
+      this.target.indexName,
+      this.target.indexHostUrl,
+      options.additionalHeaders
     );
     this._startImportCommand = new StartImportCommand(
       bulkApiProvider,
-      namespace
+      this.target.namespace
     );
     this._listImportsCommand = new ListImportsCommand(
       bulkApiProvider,
-      namespace
+      this.target.namespace
     );
     this._describeImportCommand = new DescribeImportCommand(
       bulkApiProvider,
-      namespace
+      this.target.namespace
     );
     this._cancelImportCommand = new CancelImportCommand(
       bulkApiProvider,
-      namespace
+      this.target.namespace
     );
 
     // namespace operations
     const namespaceApiProvider = new NamespaceOperationsProvider(
       config,
-      indexName,
-      indexHostUrl,
-      additionalHeaders
+      this.target.indexName,
+      this.target.indexHostUrl,
+      options.additionalHeaders
     );
     this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
     this._describeNamespaceCommand = describeNamespace(namespaceApiProvider);
@@ -300,7 +304,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.describeIndexStats();
    * // {
@@ -343,7 +347,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.deleteMany(['record-1', 'record-2']);
    *
@@ -366,7 +370,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.deleteOne('record-1');
    * ```
@@ -386,7 +390,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.describeIndexStats();
    * // {
@@ -418,7 +422,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const index = pc.index('my-index').namespace('my-namespace');
+   * const index = pc.index({ name: 'my-index', namespace: 'my-namespace' });
    *
    * const results = await index.listPaginated({ prefix: 'doc1#' });
    * console.log(results);
@@ -454,49 +458,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Returns an {@link Index} targeting the specified namespace. By default, all operations take place inside the default namespace `''`.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * // Create an Index client instance scoped to operate on a
-   * // single namespace
-   * const ns = pc.index('my-index').namespace('my-namespace');
-   *
-   * // Now operations against this intance only affect records in
-   * // the targeted namespace
-   * ns.upsert([
-   *   // ... records to upsert in namespace 'my-namespace'
-   * ])
-   *
-   * ns.query({
-   *   // ... query records in namespace 'my-namespace'
-   * })
-   * ```
-   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
-   *
-   * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
-   * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
-   */
-  namespace(namespace: string): Index<T> {
-    return new Index<T>(
-      this.target.index,
-      this.config,
-      namespace,
-      this.target.indexHostUrl
-    );
-  }
-
-  /**
    * Upsert records to the index.
    *
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.upsert([{
    *  id: 'record-1',
@@ -523,7 +491,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.fetch(['record-1', 'record-2']);
    * ```
@@ -545,7 +513,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-index');
+   * const index = pc.index({ name: 'my-index' });
    *
    * await index.query({ topK: 3, id: 'record-1'});
    *
@@ -569,7 +537,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('imdb-movies');
+   * const index = pc.index({ name: 'imdb-movies' });
    *
    * await index.update({
    *   id: '18593',
@@ -593,7 +561,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const namespace = pc.index('integrated-index').namespace('my-namespace');
+   *
+   * const namespace = pc.index({ name: 'integrated-index', namespace: 'my-namespace' });
    *
    * await namespace.upsertRecords([
    *   {
@@ -663,7 +632,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const namespace = pc.index('integrated-index').namespace('my-namespace');
+   * const namespace = pc.index({ name: 'integrated-index', namespace: 'my-namespace' });
    *
    * const response = await namespace.searchRecords({
    *   query: {
@@ -721,7 +690,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.startImport('s3://my-bucket/my-data'));
    *
    * // {"id":"1"}
@@ -746,7 +715,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.listImports());
    *
    * // {
@@ -780,7 +749,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.describeImport('import-id'));
    *
    * // {
@@ -808,7 +777,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.cancelImport('import-id'));
    *
    * // {}
@@ -827,7 +796,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.listNamespaces(10));
    *
    * // {
@@ -853,7 +822,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * console.log(await index.describeNamespace('ns-1'));
    *
    * // { name: 'ns-1', recordCount: '1' }
@@ -872,7 +841,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index('my-serverless-index');
+   * const index = pc.index({ name: 'my-serverless-index' });
    * await index.deleteNamespace('ns-1');
    * ```
    *

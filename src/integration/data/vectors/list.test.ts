@@ -9,9 +9,10 @@ beforeAll(async () => {
     throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
   }
   const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
-  serverlessIndex = pinecone
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne);
+  serverlessIndex = pinecone.index({
+    name: serverlessIndexName,
+    namespace: globalNamespaceOne,
+  });
 });
 
 describe('listPaginated, serverless index', () => {

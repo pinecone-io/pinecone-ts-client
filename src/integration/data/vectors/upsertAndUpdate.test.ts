@@ -47,13 +47,15 @@ beforeAll(async () => {
 
   await Promise.all([densePromise, sparsePromise]);
 
-  srvrlssIndexDense = pinecone
-    .index(srvrlssIndexDenseName)
-    .namespace(globalNamespaceOne);
+  srvrlssIndexDense = pinecone.index({
+    name: srvrlssIndexDenseName,
+    namespace: globalNamespaceOne,
+  });
 
-  srvrlssIndexSparse = pinecone
-    .index(srvrlssIndexSparseName)
-    .namespace(globalNamespaceOne);
+  srvrlssIndexSparse = pinecone.index({
+    name: srvrlssIndexSparseName,
+    namespace: globalNamespaceOne,
+  });
 });
 
 afterAll(async () => {

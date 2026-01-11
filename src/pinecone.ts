@@ -39,10 +39,7 @@ import {
   listAssistants,
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
-import type {
-  CreateCollectionRequest,
-  HTTPHeaders,
-} from './pinecone-generated-ts-fetch/db_control';
+import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -57,6 +54,7 @@ import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
+import { IndexOptions, AssistantOptions } from './types';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -454,7 +452,7 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index('my-index').upsert(records)
+   * await pc.index({ name: 'my-index' }).upsert(records)
    * ```
    *
    * @example
@@ -1114,7 +1112,7 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
-   * const index = pc.index('index-name')
+   * const index = pc.index({ name: 'index-name' })
    * ```
    *
    * #### Targeting an index, with user-defined Metadata types
@@ -1133,7 +1131,7 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const index = pc.index<MovieMetadata>('test-index');
+   * const index = pc.index<MovieMetadata>({ name: 'test-index' });
    *
    * // Now you get type errors if upserting malformed metadata
    * await index.upsert([{
@@ -1169,23 +1167,18 @@ export class Pinecone {
    * ```
    *
    * @typeParam T - The type of metadata associated with each record.
-   * @param indexName - The name of the index to target.
-   * @param indexHostUrl - An optional host url to use for operations against this index. If not provided, the host url will be resolved by calling {@link describeIndex}.
-   * @param additionalHeaders - An optional object containing additional headers to pass with each index request.
-   * @typeParam T - The type of the metadata object associated with each record.
+   * @param options - The {@link IndexOptions} for targeting the index.
    * @returns An {@link Index} object that can be used to perform data operations.
    */
-  index<T extends RecordMetadata = RecordMetadata>(
-    indexName: string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
-  ) {
+  index<T extends RecordMetadata = RecordMetadata>(options: IndexOptions) {
     return new Index<T>(
-      indexName,
-      this.config,
-      undefined,
-      indexHostUrl,
-      additionalHeaders
+      {
+        name: options.name,
+        namespace: options.namespace,
+        host: options.host,
+        additionalHeaders: options.additionalHeaders,
+      },
+      this.config
     );
   }
 
@@ -1193,12 +1186,8 @@ export class Pinecone {
    * {@inheritDoc index}
    */
   // Alias method to match the Python SDK capitalization
-  Index<T extends RecordMetadata = RecordMetadata>(
-    indexName: string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
-  ) {
-    return this.index<T>(indexName, indexHostUrl, additionalHeaders);
+  Index<T extends RecordMetadata = RecordMetadata>(options: IndexOptions) {
+    return this.index<T>(options);
   }
 
   /**
@@ -1211,7 +1200,7 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    *
    * const pc = new Pinecone();
-   * const assistant = pc.Assistant('my-assistant');
+   * const assistant = pc.assistant({ name: 'my-assistant' });
    *
    * // Upload a file to the assistant
    * await assistant.uploadFile({
@@ -1245,18 +1234,18 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param assistantName - The name of the assistant to target.
+   * @param options - The {@link AssistantOptions} for targeting the assistant.
    * @returns An {@link Assistant} object that can be used to perform assistant-related operations.
    */
-  assistant(assistantName: string) {
-    return new Assistant(assistantName, this.config);
+  assistant(options: AssistantOptions) {
+    return new Assistant(options, this.config);
   }
 
   /**
    * {@inheritDoc assistant}
    */
   // Alias method
-  Assistant(assistantName: string) {
-    return this.assistant(assistantName);
+  Assistant(options: AssistantOptions) {
+    return this.assistant(options);
   }
 }

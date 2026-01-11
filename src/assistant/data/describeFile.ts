@@ -13,7 +13,7 @@ import { mapAssistantFileStatus } from './fileStatus';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
+ * const assistant = pc.assistant({ name: assistantName });
  * const files = await assistant.listFiles();
  * let fileId: string;
  * if (files.files) {

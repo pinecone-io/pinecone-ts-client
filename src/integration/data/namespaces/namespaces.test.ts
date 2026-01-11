@@ -12,13 +12,15 @@ describe('namespaces operations', () => {
       throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
     }
     serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
-    const serverlessIndexNsOne = pinecone
-      .index(serverlessIndexName)
-      .namespace(namespaceOne);
+    const serverlessIndexNsOne = pinecone.index({
+      name: serverlessIndexName,
+      namespace: namespaceOne,
+    });
 
-    const serverlessIndexNsTwo = pinecone
-      .index(serverlessIndexName)
-      .namespace(namespaceTwo);
+    const serverlessIndexNsTwo = pinecone.index({
+      name: serverlessIndexName,
+      namespace: namespaceTwo,
+    });
 
     // Seed indexes
     const recordsToUpsert = generateRecords({ dimension: 2, quantity: 5 });
@@ -28,7 +30,9 @@ describe('namespaces operations', () => {
   });
 
   test('list namespaces', async () => {
-    const response = await pinecone.index(serverlessIndexName).listNamespaces();
+    const response = await pinecone
+      .index({ name: serverlessIndexName })
+      .listNamespaces();
 
     expect(response.namespaces).toEqual(
       expect.arrayContaining([
@@ -40,22 +44,24 @@ describe('namespaces operations', () => {
 
   test('describe namespace', async () => {
     let response = await pinecone
-      .index(serverlessIndexName)
+      .index({ name: serverlessIndexName })
       .describeNamespace(namespaceOne);
 
     expect(response.name).toEqual(namespaceOne);
 
     response = await pinecone
-      .index(serverlessIndexName)
+      .index({ name: serverlessIndexName })
       .describeNamespace(namespaceTwo);
     expect(response.name).toEqual(namespaceTwo);
   });
 
   test('delete namespace', async () => {
-    await pinecone.index(serverlessIndexName).deleteNamespace(namespaceTwo);
+    await pinecone
+      .index({ name: serverlessIndexName })
+      .deleteNamespace(namespaceTwo);
 
     await assertWithRetries(
-      () => pinecone.index(serverlessIndexName).listNamespaces(),
+      () => pinecone.index({ name: serverlessIndexName }).listNamespaces(),
       (response: ListNamespacesResponse) => {
         expect(response.namespaces).toEqual(
           expect.arrayContaining([

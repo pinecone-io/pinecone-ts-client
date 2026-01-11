@@ -72,9 +72,11 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 2,
     });
 
-    mockServerlessIndex = pinecone
-      .Index(indexName, 'http://localhost:4000')
-      .namespace(globalNamespaceOne);
+    mockServerlessIndex = pinecone.Index({
+      name: indexName,
+      host: 'http://localhost:4000',
+      namespace: globalNamespaceOne,
+    });
 
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
@@ -99,9 +101,11 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 2,
     });
 
-    mockServerlessIndex = pinecone
-      .Index(indexName, 'http://localhost:4000')
-      .namespace(globalNamespaceOne);
+    mockServerlessIndex = pinecone.Index({
+      name: indexName,
+      host: 'http://localhost:4000',
+      namespace: globalNamespaceOne,
+    });
 
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');
@@ -134,9 +138,11 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 3,
     });
 
-    mockServerlessIndex = pinecone
-      .Index(indexName, 'http://localhost:4000')
-      .namespace(globalNamespaceOne);
+    mockServerlessIndex = pinecone.Index({
+      name: indexName,
+      host: 'http://localhost:4000',
+      namespace: globalNamespaceOne,
+    });
 
     const retrySpy = jest.spyOn(RetryOnServerFailure.prototype, 'execute');
     const delaySpy = jest.spyOn(RetryOnServerFailure.prototype, 'delay');

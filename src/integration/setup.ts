@@ -85,8 +85,7 @@ async function createServerlessIndex(client: Pinecone) {
 
     // upsert records into namespace
     await client
-      .index(newIndexName)
-      .namespace(globalNamespaceOne)
+      .index({ name: newIndexName, namespace: globalNamespaceOne })
       .upsert(allRecords);
 
     // wait for records to become available
@@ -119,7 +118,7 @@ async function createAssistant(client: Pinecone) {
     console.log('Error getting assistant:', e);
   }
 
-  const assistant = client.Assistant(assistantName);
+  const assistant = client.Assistant({ name: assistantName });
 
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`ASSISTANT_NAME=${assistantName}`);
