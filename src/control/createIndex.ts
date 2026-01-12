@@ -455,9 +455,13 @@ export const validateReadCapacity = (
 ) => {
   if (!readCapacity) return; // default to OnDemand
 
-  // Normalize and validate mode
-  const mode = readCapacity.mode?.toLowerCase();
-  if (mode && mode !== 'ondemand' && mode !== 'dedicated') {
+  // Validate mode if provided
+  const mode = readCapacity.mode;
+  if (
+    mode &&
+    mode.toLowerCase() !== 'ondemand' &&
+    mode.toLowerCase() !== 'dedicated'
+  ) {
     throw new PineconeArgumentError(
       `Invalid read capacity mode: ${mode}. Valid values are: 'OnDemand' or 'Dedicated'.`
     );
@@ -465,8 +469,6 @@ export const validateReadCapacity = (
 
   if (!isDedicated(readCapacity)) {
     // OnDemand mode: no dedicated fields provided
-    if (mode === 'ondemand' || !mode) return;
-    // validated above, return
     return;
   }
 
@@ -500,7 +502,9 @@ export const isDedicated = (
 ): rc is ReadCapacityDedicatedParams =>
   !!rc &&
   typeof rc === 'object' &&
-  (rc.mode === 'Dedicated' || 'nodeType' in rc || 'manual' in rc);
+  (rc.mode?.toLowerCase() === 'dedicated' ||
+    'nodeType' in rc ||
+    'manual' in rc);
 
 export const toApiReadCapacity = (
   rc: CreateIndexReadCapacity | undefined

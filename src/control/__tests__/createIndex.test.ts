@@ -697,5 +697,125 @@ describe('createIndex', () => {
 
       expect(MIA.createIndex).toHaveBeenCalled();
     });
+
+    test('accepts case-insensitive mode: lowercase "dedicated" is handled correctly', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: {
+              // @ts-expect-error Testing runtime case-insensitive handling
+              mode: 'dedicated',
+              nodeType: 'b1',
+              manual: { replicas: 2, shards: 1 },
+            },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'Dedicated',
+                dedicated: {
+                  nodeType: 'b1',
+                  scaling: 'Manual',
+                  manual: { replicas: 2, shards: 1 },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('throws error when case-insensitive "dedicated" mode is missing required nodeType', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () =>
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'dedicated' as any, // Testing runtime case-insensitive handling
+                manual: { replicas: 1, shards: 1 },
+              },
+            },
+          },
+        });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /Invalid node type.*Valid values are.*b1.*t1/i
+      );
+    });
+
+    test('throws error when case-insensitive "dedicated" mode is missing manual config', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      const toThrow = async () =>
+        await createIndex(MIA)({
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'dedicated' as any, // Testing runtime case-insensitive handling
+                nodeType: 'b1',
+              } as any, // Missing manual field
+            },
+          },
+        });
+
+      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrowError(
+        /manual is required for dedicated mode/i
+      );
+    });
+
+    test('accepts case-insensitive mode: lowercase "ondemand" is handled correctly', async () => {
+      const MIA = setupCreateIndexResponse(undefined, undefined);
+      await createIndex(MIA)({
+        name: 'serverless-index',
+        dimension: 384,
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-east-1',
+            readCapacity: {
+              mode: 'ondemand' as any, // Testing runtime case-insensitive handling
+            },
+          },
+        },
+      });
+
+      expect(MIA.createIndex).toHaveBeenCalledWith({
+        createIndexRequest: {
+          name: 'serverless-index',
+          dimension: 384,
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1',
+              readCapacity: { mode: 'OnDemand' },
+            },
+          },
+        },
+      });
+    });
   });
 });
