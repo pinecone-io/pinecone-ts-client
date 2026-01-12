@@ -219,7 +219,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this.config = config;
     this.target = {
       indexName: options.name || '',
-      namespace: options.namespace || '',
+      namespace: options.namespace || '__default__',
       indexHostUrl: options.host,
     };
 
