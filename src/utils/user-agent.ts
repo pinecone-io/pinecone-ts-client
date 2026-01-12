@@ -24,6 +24,16 @@ export const buildUserAgent = (config: PineconeConfiguration) => {
     userAgentParts.push(`source_tag=${normalizeSourceTag(config.sourceTag)}`);
   }
 
+  if (config.callerModelProvider) {
+    userAgentParts.push(
+      `caller_model_provider=${normalizeCallerInfo(config.callerModelProvider)}`
+    );
+  }
+
+  if (config.callerModel) {
+    userAgentParts.push(`caller_model=${normalizeCallerInfo(config.callerModel)}`);
+  }
+
   return userAgentParts.join('; ');
 };
 
@@ -42,6 +52,25 @@ const normalizeSourceTag = (sourceTag: string) => {
   return sourceTag
     .toLowerCase()
     .replace(/[^a-z0-9_ :]/g, '')
+    .trim()
+    .replace(/[ ]+/g, '_');
+};
+
+const normalizeCallerInfo = (info: string) => {
+  if (!info) {
+    return;
+  }
+
+  /**
+   * normalize caller information
+   * 1. Lowercase
+   * 2. Limit charset to [a-z0-9_.-]
+   * 3. Trim left/right spaces
+   * 4. Condense multiple spaces to one, and replace with underscore
+   */
+  return info
+    .toLowerCase()
+    .replace(/[^a-z0-9_.\- ]/g, '')
     .trim()
     .replace(/[ ]+/g, '_');
 };

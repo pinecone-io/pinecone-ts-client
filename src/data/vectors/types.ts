@@ -42,6 +42,20 @@ export type PineconeConfiguration = {
    * region of "us" is used.
    */
   assistantRegion?: string;
+
+  /**
+   * Optional configuration field for specifying the LLM model being used.
+   * This information is included in the User-Agent header for telemetry purposes.
+   * Example: 'gpt-4', 'claude-3-opus', 'gemini-pro'
+   */
+  callerModel?: string;
+
+  /**
+   * Optional configuration field for specifying the model provider.
+   * This information is included in the User-Agent header for telemetry purposes.
+   * Example: 'openai', 'anthropic', 'google'
+   */
+  callerModelProvider?: string;
 };
 
 // Properties for validation to ensure no unknown/invalid properties are passed
@@ -54,6 +68,8 @@ export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'sourceTag',
   'maxRetries',
   'assistantRegion',
+  'callerModel',
+  'callerModelProvider',
 ];
 
 /** The id of the record */

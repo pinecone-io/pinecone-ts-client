@@ -97,7 +97,7 @@ describe('Pinecone', () => {
           } as PineconeConfiguration);
         }).toThrow(
           'Object contained invalid properties: unknownProp. Valid properties include apiKey, controllerHostUrl,' +
-            ' fetchApi, additionalHeaders, sourceTag, maxRetries, assistantRegion.'
+            ' fetchApi, additionalHeaders, sourceTag, maxRetries, assistantRegion, callerModel, callerModelProvider.'
         );
       });
     });
@@ -110,6 +110,16 @@ describe('Pinecone', () => {
             fetchApi: utils.getFetch({} as PineconeConfiguration),
             controllerHostUrl: 'https://foo-bar.io',
             sourceTag: 'test-tag-123',
+          } as PineconeConfiguration);
+        }).not.toThrow();
+      });
+
+      test('should not throw when caller configuration properties provided', () => {
+        expect(() => {
+          new Pinecone({
+            apiKey: 'test-key',
+            callerModel: 'gpt-4',
+            callerModelProvider: 'openai',
           } as PineconeConfiguration);
         }).not.toThrow();
       });
