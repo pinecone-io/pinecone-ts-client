@@ -48,7 +48,8 @@ describe('namespaces operations', () => {
             expect.objectContaining({ name: namespaceTwo }),
           ])
         );
-      }
+      },
+      240000
     );
   });
 

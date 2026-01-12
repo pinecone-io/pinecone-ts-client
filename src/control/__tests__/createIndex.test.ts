@@ -721,6 +721,7 @@ describe('createIndex', () => {
         createIndexRequest: {
           name: 'serverless-index',
           dimension: 384,
+          metric: 'cosine',
           spec: {
             serverless: {
               cloud: 'aws',
@@ -736,6 +737,7 @@ describe('createIndex', () => {
             },
           },
         },
+        xPineconeApiVersion: '2025-10',
       });
     });
 
@@ -807,6 +809,7 @@ describe('createIndex', () => {
         createIndexRequest: {
           name: 'serverless-index',
           dimension: 384,
+          metric: 'cosine',
           spec: {
             serverless: {
               cloud: 'aws',
@@ -815,6 +818,7 @@ describe('createIndex', () => {
             },
           },
         },
+        xPineconeApiVersion: '2025-10',
       });
     });
   });
