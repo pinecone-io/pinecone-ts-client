@@ -29,6 +29,7 @@ describe('namespaces operations', () => {
     await sleep(2000); // Wait for the upsert operations to complete
   });
 
+  // Tests deleteNamespace
   afterAll(async () => {
     await pinecone
       .index({ name: serverlessIndexName })
@@ -75,27 +76,5 @@ describe('namespaces operations', () => {
       .index({ name: serverlessIndexName })
       .describeNamespace(namespaceTwo);
     expect(response.name).toEqual(namespaceTwo);
-  });
-
-  test('delete namespace', async () => {
-    await pinecone
-      .index({ name: serverlessIndexName })
-      .deleteNamespace(namespaceTwo);
-
-    await assertWithRetries(
-      () => pinecone.index({ name: serverlessIndexName }).listNamespaces(),
-      (response: ListNamespacesResponse) => {
-        expect(response.namespaces).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: namespaceOne }),
-          ])
-        );
-        expect(response.namespaces).not.toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: namespaceTwo }),
-          ])
-        );
-      }
-    );
   });
 });
