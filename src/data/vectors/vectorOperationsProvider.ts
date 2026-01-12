@@ -17,14 +17,14 @@ import { middleware } from '../../utils/middleware';
 
 export class VectorOperationsProvider {
   private config: PineconeConfiguration;
-  private indexName: string;
+  private indexName?: string;
   private indexHostUrl?: string;
   private vectorOperations?: VectorOperationsApi;
   private additionalHeaders?: HTTPHeaders;
 
   constructor(
     config: PineconeConfiguration,
-    indexName: string,
+    indexName?: string,
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
   ) {
@@ -44,6 +44,11 @@ export class VectorOperationsProvider {
     if (this.indexHostUrl) {
       this.vectorOperations = this.buildDataOperationsConfig();
     } else {
+      if (!this.indexName) {
+        throw new Error(
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+        );
+      }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
@@ -56,7 +61,16 @@ export class VectorOperationsProvider {
   }
 
   async provideHostUrl() {
-    return await IndexHostSingleton.getHostUrl(this.config, this.indexName);
+    if (this.indexHostUrl) {
+      return this.indexHostUrl;
+    } else {
+      if (!this.indexName) {
+        throw new Error(
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+        );
+      }
+      return await IndexHostSingleton.getHostUrl(this.config, this.indexName);
+    }
   }
 
   buildDataOperationsConfig() {

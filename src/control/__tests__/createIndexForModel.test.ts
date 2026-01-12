@@ -93,6 +93,7 @@ describe('createIndexForModel', () => {
         region: 'us-east-1',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
@@ -113,6 +114,7 @@ describe('createIndexForModel', () => {
         region: 'us-east-1',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
@@ -133,6 +135,7 @@ describe('createIndexForModel', () => {
         cloud: 'aws',
         embed: {
           model: 'test-model',
+          fieldMap: { testField: 'test-field' },
         },
       });
     } catch (err) {
@@ -159,5 +162,265 @@ describe('createIndexForModel', () => {
         'You must pass an `embed` object in order to create an index.'
       );
     }
+  });
+
+  describe('createIndexForModel with readCapacity', () => {
+    test('creates index with default OnDemand readCapacity when omitted', async () => {
+      const MIA = setupCreateIndexForModelResponse(
+        { name: 'test-index' },
+        { status: { ready: true, state: 'Ready' } }
+      );
+
+      await createIndexForModel(MIA)({
+        name: 'test-index',
+        cloud: 'aws',
+        region: 'us-east-1',
+        embed: {
+          model: 'multilingual-e5-large',
+          fieldMap: { text: 'text' },
+        },
+      });
+
+      expect(MIA.createIndexForModel).toHaveBeenCalledWith({
+        createIndexForModelRequest: {
+          name: 'test-index',
+          cloud: 'aws',
+          region: 'us-east-1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          readCapacity: undefined,
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates index with explicit OnDemand readCapacity', async () => {
+      const MIA = setupCreateIndexForModelResponse(
+        { name: 'test-index' },
+        { status: { ready: true, state: 'Ready' } }
+      );
+
+      await createIndexForModel(MIA)({
+        name: 'test-index',
+        cloud: 'aws',
+        region: 'us-east-1',
+        embed: {
+          model: 'multilingual-e5-large',
+          fieldMap: { text: 'text' },
+        },
+        readCapacity: { mode: 'OnDemand' },
+      });
+
+      expect(MIA.createIndexForModel).toHaveBeenCalledWith({
+        createIndexForModelRequest: {
+          name: 'test-index',
+          cloud: 'aws',
+          region: 'us-east-1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          readCapacity: { mode: 'OnDemand' },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates index with Dedicated readCapacity', async () => {
+      const MIA = setupCreateIndexForModelResponse(
+        { name: 'test-index' },
+        { status: { ready: true, state: 'Ready' } }
+      );
+
+      await createIndexForModel(MIA)({
+        name: 'test-index',
+        cloud: 'gcp',
+        region: 'us-central1',
+        embed: {
+          model: 'multilingual-e5-large',
+          fieldMap: { text: 'text' },
+        },
+        readCapacity: {
+          mode: 'Dedicated',
+          nodeType: 't1',
+          manual: { replicas: 3, shards: 2 },
+        },
+      });
+
+      expect(MIA.createIndexForModel).toHaveBeenCalledWith({
+        createIndexForModelRequest: {
+          name: 'test-index',
+          cloud: 'gcp',
+          region: 'us-central1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          readCapacity: {
+            mode: 'Dedicated',
+            dedicated: {
+              nodeType: 't1',
+              scaling: 'Manual',
+              manual: { replicas: 3, shards: 2 },
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+
+    test('creates index with Dedicated readCapacity (mode inferred)', async () => {
+      const MIA = setupCreateIndexForModelResponse(
+        { name: 'test-index' },
+        { status: { ready: true, state: 'Ready' } }
+      );
+
+      await createIndexForModel(MIA)({
+        name: 'test-index',
+        cloud: 'azure',
+        region: 'eastus2',
+        embed: {
+          model: 'multilingual-e5-large',
+          fieldMap: { text: 'text' },
+        },
+        readCapacity: {
+          nodeType: 'b1',
+          manual: { replicas: 1, shards: 1 },
+        },
+      });
+
+      expect(MIA.createIndexForModel).toHaveBeenCalledWith({
+        createIndexForModelRequest: {
+          name: 'test-index',
+          cloud: 'azure',
+          region: 'eastus2',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          readCapacity: {
+            mode: 'Dedicated',
+            dedicated: {
+              nodeType: 'b1',
+              scaling: 'Manual',
+              manual: { replicas: 1, shards: 1 },
+            },
+          },
+        },
+        xPineconeApiVersion: '2025-10',
+      });
+    });
+  });
+
+  describe('createIndexForModel readCapacity validation', () => {
+    test('throws error for invalid readCapacity mode', async () => {
+      const MIA = setupCreateIndexForModelResponse(undefined, undefined);
+
+      try {
+        await createIndexForModel(MIA)({
+          name: 'test-index',
+          cloud: 'aws',
+          region: 'us-east-1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          // @ts-ignore
+          readCapacity: { mode: 'BadMode' },
+        });
+        fail('Should have thrown an error');
+      } catch (err) {
+        expect(err).toBeInstanceOf(PineconeArgumentError);
+        expect((err as PineconeArgumentError).message).toMatch(
+          /Invalid read capacity mode/i
+        );
+      }
+    });
+
+    test('throws error for invalid dedicated nodeType', async () => {
+      const MIA = setupCreateIndexForModelResponse(undefined, undefined);
+
+      try {
+        await createIndexForModel(MIA)({
+          name: 'test-index',
+          cloud: 'aws',
+          region: 'us-east-1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          readCapacity: {
+            // @ts-ignore
+            nodeType: 'x99',
+            manual: { replicas: 1, shards: 1 },
+          },
+        });
+        fail('Should have thrown an error');
+      } catch (err) {
+        expect(err).toBeInstanceOf(PineconeArgumentError);
+        expect((err as PineconeArgumentError).message).toMatch(
+          /Invalid node type.*b1.*t1/i
+        );
+      }
+    });
+
+    test('throws error for missing manual config', async () => {
+      const MIA = setupCreateIndexForModelResponse(undefined, undefined);
+
+      try {
+        await createIndexForModel(MIA)({
+          name: 'test-index',
+          cloud: 'aws',
+          region: 'us-east-1',
+          embed: {
+            model: 'multilingual-e5-large',
+            fieldMap: { text: 'text' },
+          },
+          // @ts-ignore
+          readCapacity: { nodeType: 'b1' },
+        });
+        fail('Should have thrown an error');
+      } catch (err) {
+        expect(err).toBeInstanceOf(PineconeArgumentError);
+        expect((err as PineconeArgumentError).message).toMatch(
+          /manual is required for dedicated mode/i
+        );
+      }
+    });
+  });
+
+  describe('createIndexForModel with waitUntilReady', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    test('polls describeIndex when waitUntilReady is true', async () => {
+      const MIA = setupCreateIndexForModelResponse(
+        { name: 'test-index' },
+        { status: { ready: true, state: 'Ready' } }
+      );
+
+      const returned = await createIndexForModel(MIA)({
+        name: 'test-index',
+        cloud: 'aws',
+        region: 'us-east-1',
+        embed: {
+          model: 'multilingual-e5-large',
+          fieldMap: { text: 'text' },
+        },
+        waitUntilReady: true,
+      });
+
+      expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
+      expect(MIA.describeIndex).toHaveBeenCalledWith({
+        indexName: 'test-index',
+        xPineconeApiVersion: '2025-10',
+      });
+    });
   });
 });

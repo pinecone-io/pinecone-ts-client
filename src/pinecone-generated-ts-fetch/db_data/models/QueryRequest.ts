@@ -51,7 +51,7 @@ export interface QueryRequest {
      */
     filter?: object;
     /**
-     * Indicates whether vector values are included in the response.
+     * Indicates whether vector values are included in the response. For on-demand indexes, setting this to `true` may increase latency, especially with higher `topK` values, because vector values are retrieved from object storage. Unless you need vector values, set this to `false` for better performance.
      * @type {boolean}
      * @memberof QueryRequest
      */

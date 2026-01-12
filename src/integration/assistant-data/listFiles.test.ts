@@ -21,7 +21,7 @@ if (!process.env.ASSISTANT_NAME) {
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  assistant = pinecone.Assistant(assistantName);
+  assistant = pinecone.Assistant({ name: assistantName });
 
   // Upload few more files with metadata to the assistant
   const content = 'This is test content for file upload';

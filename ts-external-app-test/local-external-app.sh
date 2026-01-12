@@ -8,12 +8,15 @@ if [ -z "$PINECONE_API_KEY" ]; then
   exit 1
 fi
 
+# Build the SDK first
+echo "Building SDK..."
+npm run build
+
 (
   cd ts-client-test-external-app || exit 1
 
-  git pull origin main
-  npm install
-  npm link @pinecone-database/pinecone
+  git pull origin main 2>/dev/null || true  # Ignore if not a git repo
+  npm install  # Install from file:.. automatically
   next dev & # `&` runs the command in the background
 )
 

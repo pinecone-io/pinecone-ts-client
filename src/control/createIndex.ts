@@ -1,8 +1,11 @@
 import {
   CreateIndexRequest,
   IndexModel,
+  IndexSpec,
   ManageIndexesApi,
+  MetadataSchema,
   PodSpecMetadataConfig,
+  ReadCapacity,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { debugLog } from '../utils';
@@ -51,11 +54,18 @@ export interface CreateIndexSpec {
 
   /** The pod object allows you to configure a pods-based index. */
   pod?: CreateIndexPodSpec;
+
+  /** The byoc object allows you to configure a BYOC index. */
+  byoc?: CreateIndexByocSpec;
 }
 
 // Properties for validation to ensure no unknown/invalid properties are passed
 type CreateIndexSpecType = keyof CreateIndexSpec;
-const CreateIndexSpecProperties: CreateIndexSpecType[] = ['serverless', 'pod'];
+const CreateIndexSpecProperties: CreateIndexSpecType[] = [
+  'serverless',
+  'pod',
+  'byoc',
+];
 
 /**
  * Configuration needed to deploy a serverless index.
@@ -69,8 +79,14 @@ export interface CreateIndexServerlessSpec {
   /** The region where you would like your index to be created. */
   region: string;
 
+  /** The read capacity configuration for the index. Defaults to OnDemand if not provided. */
+  readCapacity?: CreateIndexReadCapacity;
+
   /** The name of the collection to be used as the source for the index. NOTE: Collections can only be created from pods-based indexes. */
   sourceCollection?: string;
+
+  /** The metadata schema for the index. */
+  schema?: MetadataSchema;
 }
 
 // Properties for validation to ensure no unknown/invalid properties are passed
@@ -79,6 +95,8 @@ const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
   'cloud',
   'region',
   'sourceCollection',
+  'schema',
+  'readCapacity',
 ];
 
 /**
@@ -125,6 +143,64 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
   'sourceCollection',
 ];
 
+/**
+ * Configuration needed to deploy a BYOC index.
+ *
+ * @see [Bring Your Own Cloud](https://docs.pinecone.io/guides/production/bring-your-own-cloud)
+ */
+export interface CreateIndexByocSpec {
+  /** The environment identifier for the BYOC index. */
+  environment: string;
+}
+
+type CreateIndexByocSpecType = keyof CreateIndexByocSpec;
+const CreateIndexByocSpecProperties: CreateIndexByocSpecType[] = [
+  'environment',
+];
+
+/**
+ * The allowed node types for dedicated read capacity determining the type of machines to use: `b1` or `t1`.
+ * `t1` includes increased processing power and memory.
+ */
+export type DedicatedNodeType = 'b1' | 't1';
+
+/**
+ * On-demand read capacity configuration.
+ * If CreateIndexReadCapacity or mode is omitted, the index will be created with on-demand read capacity.
+ */
+export type ReadCapacityOnDemandParams = {
+  /** The mode of the index. */
+  mode?: 'OnDemand';
+};
+
+/**
+ * Dedicated read capacity configuration.
+ *
+ * @see [Dedicated Read Nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
+ */
+export type ReadCapacityDedicatedParams = {
+  /** The mode of the index. */
+  mode?: 'Dedicated';
+
+  /** The type of machines to use. Available options: `b1`, `t1`. */
+  nodeType: DedicatedNodeType;
+
+  /** The configuration for manual scaling. */
+  manual: {
+    /** The number of replicas to use. Replicas duplicate the compute resources and data of an index, allowing higher query throughput and availability.
+     * Setting replicas to 0 disables the index but can be used to reduce costs while usage is paused. */
+    replicas: number;
+
+    /** The number of shards to use. Shards determine the storage capacity of an index, with each shard providing 250 GB of storage. */
+    shards: number;
+  };
+};
+
+/** The read capacity configuration for the index. Default is on-demand. */
+export type CreateIndexReadCapacity =
+  | ReadCapacityOnDemandParams
+  | ReadCapacityDedicatedParams;
+
 export const createIndex = (api: ManageIndexesApi) => {
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     if (!options) {
@@ -146,9 +222,25 @@ export const createIndex = (api: ManageIndexesApi) => {
     }
 
     validateCreateIndexRequest(options);
+
     try {
+      const createRequest: CreateIndexRequest = {
+        ...options,
+        spec: {
+          ...options.spec,
+          serverless: options.spec.serverless
+            ? {
+                ...options.spec.serverless,
+                readCapacity: toApiReadCapacity(
+                  options.spec.serverless?.readCapacity
+                ),
+              }
+            : undefined,
+        } as IndexSpec,
+      };
+
       const createResponse = await api.createIndex({
-        createIndexRequest: options as CreateIndexRequest,
+        createIndexRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
@@ -215,7 +307,7 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   // validate options.spec properties
   if (!options.spec) {
     throw new PineconeArgumentError(
-      'You must pass a `pods` or `serverless` `spec` object in order to create an index.'
+      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
     );
   }
   if (options.spec) {
@@ -296,6 +388,11 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
         'You must pass a `region` for the serverless `spec` object in order to create an index.'
       );
     }
+
+    // validate readCapacity if provided
+    if (options.spec.serverless.readCapacity) {
+      validateReadCapacity(options.spec.serverless.readCapacity);
+    }
   } else if (options.spec.pod) {
     // validate options.spec.pod properties if pod spec is passed
     ValidateObjectProperties(options.spec.pod, CreateIndexPodSpecProperties);
@@ -342,5 +439,92 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
         }. Valid values are: ${ValidPodTypes.join(', ')}.`
       );
     }
+  } else if (options.spec.byoc) {
+    ValidateObjectProperties(options.spec.byoc, CreateIndexByocSpecProperties);
+    // Validate that environment is passed
+    if (!options.spec.byoc.environment) {
+      throw new PineconeArgumentError(
+        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.'
+      );
+    }
   }
+};
+
+export const validateReadCapacity = (
+  readCapacity: CreateIndexReadCapacity | undefined
+) => {
+  if (!readCapacity) return; // default to OnDemand
+
+  // Validate mode if provided
+  const mode = readCapacity.mode;
+  if (
+    mode &&
+    mode.toLowerCase() !== 'ondemand' &&
+    mode.toLowerCase() !== 'dedicated'
+  ) {
+    throw new PineconeArgumentError(
+      `Invalid read capacity mode: ${mode}. Valid values are: 'OnDemand' or 'Dedicated'.`
+    );
+  }
+
+  if (!isDedicated(readCapacity)) {
+    // OnDemand mode: no dedicated fields provided
+    return;
+  }
+
+  // Dedicated mode
+  const { nodeType, manual } = readCapacity as ReadCapacityDedicatedParams;
+  if (!nodeType || !['b1', 't1'].includes(nodeType)) {
+    throw new PineconeArgumentError(
+      `Invalid node type: ${nodeType}. Valid values are: 'b1' or 't1'.`
+    );
+  }
+  if (!manual) {
+    throw new PineconeArgumentError(
+      'CreateIndexReadCapacity.manual is required for dedicated mode.'
+    );
+  }
+  const { replicas, shards } = manual;
+  if (!Number.isInteger(replicas) || replicas < 0) {
+    throw new PineconeArgumentError(
+      'CreateIndexReadCapacity.manual.replicas must be 0 or a positive integer.'
+    );
+  }
+  if (!Number.isInteger(shards) || shards <= 0) {
+    throw new PineconeArgumentError(
+      'CreateIndexReadCapacity.manual.shards must be a positive integer.'
+    );
+  }
+};
+
+export const isDedicated = (
+  rc: CreateIndexReadCapacity
+): rc is ReadCapacityDedicatedParams =>
+  !!rc &&
+  typeof rc === 'object' &&
+  (rc.mode?.toLowerCase() === 'dedicated' ||
+    'nodeType' in rc ||
+    'manual' in rc);
+
+export const toApiReadCapacity = (
+  rc: CreateIndexReadCapacity | undefined
+): ReadCapacity | undefined => {
+  if (!rc) return undefined;
+
+  if (!isDedicated(rc)) {
+    return { mode: 'OnDemand' };
+  }
+
+  const { nodeType, manual } = rc;
+  return {
+    mode: 'Dedicated',
+    dedicated: {
+      nodeType,
+      scaling: 'Manual',
+      manual: {
+        replicas: manual.replicas,
+        shards: manual.shards,
+      },
+    },
+  };
 };

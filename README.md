@@ -347,7 +347,7 @@ When the new index is ready, it should contain all the data that was in the coll
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-await pc.index('product-description-p2x2').describeIndexStats();
+await pc.index({ name: 'product-description-p2x2' }).describeIndexStats();
 // {
 //   namespaces: { '': { recordCount: 78000 } },
 //   dimension: 256,
@@ -865,25 +865,29 @@ Pinecone indexes support operations for working with vector data using methods s
 
 ### Targeting an index
 
-To perform data operations on an index, you target it using the `index` method.
+To perform data operations on an index, you target it using the `index` method. You can target an index by providing its `name`, its `host`, or both.
+
+#### Targeting by name
+
+When you provide only a name, the SDK will automatically call `describeIndex` to resolve the index host URL:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('test-index');
+const index = pc.index({ name: 'test-index' });
 
 // Now perform index operations
 await index.fetch(['1']);
 ```
 
-The first argument is the name of the index you are targeting. There's an optional second argument for providing an
-index host override. Providing this second argument allows you to bypass the SDK's default behavior of resolving
-your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io), or by using the `describeIndex` or `listIndexes` operations.
+#### Targeting by host
+
+You can also provide options like a host URL override to bypass the SDK's default behavior of resolving your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io), or by using the `describeIndex` or `listIndexes` operations.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('test-index', 'my-index-host-1532-svc.io');
+const index = pc.index({ host: 'my-index-host-1532-svc.io' });
 
 // Now perform index operations against: https://my-index-host-1532-svc.io
 await index.fetch(['1']);
@@ -940,12 +944,12 @@ if (movie.metadata) {
 
 ### Targeting a namespace
 
-By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can target the namespace by chaining a call to `namespace()`.
+By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can specify the namespace in the options object.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('test-index').namespace('ns1');
+const index = pc.index({ name: 'test-index', namespace: 'ns1' });
 
 // Now perform index operations in the targeted index and namespace
 await index.fetch(['1']);
@@ -960,7 +964,7 @@ There are several operations for managing namespaces within an index. You can li
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('test-index');
+const index = pc.index({ name: 'test-index' });
 
 // list all namespaces
 const namespacesResp = await index.listNamespaces();
@@ -992,7 +996,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Target an index
-const index = pc.index('sample-index');
+const index = pc.index({ name: 'sample-index' });
 
 // Prepare your data. The length of each array
 // of vector values must match the dimension of
@@ -1043,7 +1047,7 @@ await pc.createIndex({
   },
 });
 
-const index = pc.Index(indexName);
+const index = pc.index({ name: indexName });
 
 const storageURI = 's3://my-bucket/my-directory/';
 
@@ -1073,7 +1077,7 @@ namespace. In that case, target the index and use the `describeIndexStats()` com
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('example-index');
+const index = pc.index({ name: 'example-index' });
 
 await index.describeIndexStats();
 // {
@@ -1113,7 +1117,7 @@ For example, to query by vector values you would pass the `vector` param in the 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index' });
 
 await index.query({ topK: 3, vector: [0.22, 0.66] });
 // {
@@ -1157,7 +1161,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Target the index and namespace
-const index = pc.index('my-index').namespace('my-namespace');
+const index = pc.index({ name: 'my-index', namespace: 'my-namespace' });
 
 const results = await index.query({ topK: 3, vector: [0.22, 0.66] });
 ```
@@ -1170,7 +1174,7 @@ the record with the specified ID [may be in this operation's response](https://d
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index' });
 
 const results = await index.query({ topK: 10, id: '1' });
 ```
@@ -1196,7 +1200,7 @@ await pc.createIndex({
   waitUntilReady: true,
 });
 
-const index = pc.index('hybrid-search-index');
+const index = pc.index({ name: 'hybrid-search-index' });
 
 const hybridRecords = [
   {
@@ -1234,7 +1238,7 @@ You may want to update vector `values`, `sparseValues`, or `metadata`. Specify t
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('imdb-movies');
+const index = pc.index({ name: 'imdb-movies' });
 
 await index.update({
   id: '18593',
@@ -1261,7 +1265,7 @@ assuming a `limit` of `3` and `doc1` document being [chunked](https://www.pineco
 
 ```typescript
 const pc = new Pinecone();
-const index = pc.index('my-index').namespace('my-namespace');
+const index = pc.index({ name: 'my-index', namespace: 'my-namespace' });
 
 // Fetch the 1st 3 vector IDs matching prefix 'doc1#'
 const results = await index.listPaginated({ limit: 3, prefix: 'doc1#' });
@@ -1301,7 +1305,7 @@ console.log(nextResults);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index' });
 
 const fetchResult = await index.fetch(['id-1', 'id-2']);
 ```
@@ -1315,7 +1319,7 @@ For convenience there are several delete-related methods. You can verify the res
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index' });
 
 await index.deleteOne('id-to-delete');
 ```
@@ -1325,7 +1329,7 @@ await index.deleteOne('id-to-delete');
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index' });
 
 await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```
@@ -1337,7 +1341,7 @@ await index.deleteMany(['id-1', 'id-2', 'id-3']);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('albums-database');
+const index = pc.index({ name: 'albums-database' });
 
 await index.deleteMany({ genre: 'rock' });
 ```
@@ -1353,9 +1357,9 @@ To nuke everything in the targeted namespace, use the `deleteAll` method.
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-const index = pc.index('my-index');
+const index = pc.index({ name: 'my-index', namespace: 'foo-namespace' });
 
-await index.namespace('foo-namespace').deleteAll();
+await index.deleteAll();
 ```
 
 If you do not specify a namespace, the records in the default namespace `''` will be deleted.
@@ -1633,7 +1637,10 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Target an integrated index
-const namespace = pc.index('integrated-index').namespace('namespace1');
+const namespace = pc.index({
+  name: 'integrated-index',
+  namespace: 'namespace1',
+});
 
 const records = [
   {
@@ -1699,7 +1706,10 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Target an integrated index
-const namespace = pc.index('integrated-index').namespace('namespace1');
+const namespace = pc.index({
+  name: 'integrated-index',
+  namespace: 'namespace1',
+});
 
 // search for 4 records most semantically relevant to the query 'Disease prevention'
 const response = await namespace.searchRecords({
@@ -1829,7 +1839,7 @@ The following example shows how to chat with an Assistant using the `chat` metho
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const chatResp = await assistant.chat({
   messages: [
     {
@@ -1858,7 +1868,7 @@ console.log(chatResp);
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const chatResp = await assistant.chatCompletion({
   messages: [
     {
@@ -1898,7 +1908,7 @@ Chat stream:
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const chatStream = await assistant.chatStream({
   messages: [
     {
@@ -1970,7 +1980,7 @@ Chat completion stream:
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const chatCompletionStream = await assistant.chatCompletionStream({
   messages: [
     {
@@ -2035,7 +2045,7 @@ how the Assistant arrived at its answer(s).
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const context = await assistant.context({
   messages: ['What is the capital of France?'],
   topK: 1,
@@ -2065,7 +2075,7 @@ example shows how to upload a local `test-file.txt` file to an Assistant.
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 await assistant.uploadFile({
   path: 'test-file.txt',
   metadata: { 'test-key': 'test-value' },
@@ -2092,7 +2102,7 @@ meet certain criteria.
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const files = await assistant.listFiles({
   filter: { key: 'value' },
 });
@@ -2122,7 +2132,7 @@ console.log(files);
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const files = await assistant.listFiles();
 let fileId: string;
 if (files.files) {
@@ -2155,7 +2165,7 @@ console.log(resp);
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const assistantName = 'test1';
-const assistant = pc.Assistant(assistantName);
+const assistant = pc.Assistant({ name: assistantName });
 const files = await assistant.listFiles();
 let fileId: string;
 if (files.files) {

@@ -2,12 +2,18 @@
 export { indexOperationsBuilder } from './indexOperationsBuilder';
 export type { IndexName, PodType } from './types';
 export { configureIndex } from './configureIndex';
+export type { ConfigureIndexOptions } from './configureIndex';
 export { createIndex } from './createIndex';
 export type {
+  CreateIndexByocSpec,
   CreateIndexOptions,
   CreateIndexSpec,
   CreateIndexServerlessSpec,
   CreateIndexPodSpec,
+  CreateIndexReadCapacity,
+  DedicatedNodeType,
+  ReadCapacityOnDemandParams,
+  ReadCapacityDedicatedParams,
 } from './createIndex';
 export { createIndexForModel } from './createIndexForModel';
 export type {

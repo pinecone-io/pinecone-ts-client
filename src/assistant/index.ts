@@ -16,6 +16,8 @@ import { uploadFile } from './data/uploadFile';
 import { PineconeConfiguration } from '../data';
 import { AsstDataOperationsProvider } from './data/asstDataOperationsProvider';
 import { context } from './data/context';
+import { AssistantOptions } from '../types';
+import { PineconeArgumentError } from '../errors';
 
 export type {
   CreateAssistantOptions,
@@ -58,7 +60,7 @@ export { ChatStream } from './chatStream';
  *  ```typescript
  *  import { Pinecone } from '@pinecone-database/pinecone';
  *  const pc = new Pinecone();
- *  const assistant = pc.assistant('assistant-name');
+ *  const assistant = pc.assistant({ name: 'assistant-name' });
  *  ```
  */
 export class Assistant {
@@ -79,22 +81,27 @@ export class Assistant {
   /**
    * Creates an instance of the `Assistant` class.
    *
-   * @param assistantName - The name of the assistant.
+   * @param options - The {@link AssistantOptions} for targeting the assistant.
    * @param config - The Pinecone configuration object containing an API key and other configuration parameters
    * needed for API calls.
    *
    * @throws An error if no assistant name is provided.
    */
-  constructor(assistantName: string, config: PineconeConfiguration) {
-    if (!assistantName) {
-      throw new Error('No assistant name provided');
+  constructor(options: AssistantOptions, config: PineconeConfiguration) {
+    if (!options.name || options.name.trim() === '') {
+      throw new PineconeArgumentError(
+        'Assistant name is required and cannot be empty.'
+      );
     }
+
     this.config = config;
     const asstDataOperationsProvider = new AsstDataOperationsProvider(
       this.config,
-      assistantName
+      options.name,
+      options.host,
+      options.additionalHeaders
     );
-    this.assistantName = assistantName;
+    this.assistantName = options.name;
 
     this._chat = chat(this.assistantName, asstDataOperationsProvider);
     this._chatStream = chatStream(
@@ -138,7 +145,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
    * // {
    * //  id: '000000000000000023e7fb015be9d0ad',
@@ -169,7 +176,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const chatStream = await assistant.chatStream({ messages: [{ role: 'user', content: 'What is the capital of France?'}]});
    *
    * // stream the response and log each chunk
@@ -200,7 +207,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const chatCompletion = await assistant.chatCompletion({ messages: [{ role: 'user', content: 'What is the capital of France?' }]});
    * console.log(chatCompletion);
    * // {
@@ -241,7 +248,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const chatStream = await assistant.chatCompletionStream({messages: [{role: 'user', content: "What is the capital of France?"}]});
    *
    * // stream the response and log each chunk
@@ -274,7 +281,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const files = await assistant.listFiles({filter: {key: 'value'}});
    * console.log(files);
    * // {
@@ -312,7 +319,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const files = await assistant.listFiles();
    * let fileId: string;
    * if (files.files) {
@@ -353,7 +360,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * await assistant.uploadFile({path: "test-file.txt", metadata: {"test-key": "test-value"}})
    * // {
    * //  name: 'test-file.txt',
@@ -383,7 +390,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const files = await assistant.listFiles();
    * let fileId: string;
    * if (files.files) {
@@ -408,7 +415,7 @@ export class Assistant {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const assistantName = 'test1';
-   * const assistant = pc.assistant(assistantName);
+   * const assistant = pc.assistant({ name: assistantName });
    * const response = await assistant.context({query: "What is the capital of France?"});
    * console.log(response);
    * // {

@@ -39,11 +39,8 @@ import {
   listAssistants,
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
-import type {
-  ConfigureIndexRequest,
-  CreateCollectionRequest,
-  HTTPHeaders,
-} from './pinecone-generated-ts-fetch/db_control';
+import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
+import type { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -57,6 +54,8 @@ import { ValidateObjectProperties } from './utils/validateObjectProperties';
 import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { Assistant } from './assistant';
+import { ConfigureIndexOptions } from './control/configureIndex';
+import { IndexOptions, AssistantOptions } from './types';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -454,7 +453,7 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index('my-index').upsert(records)
+   * await pc.index({ name: 'my-index' }).upsert(records)
    * ```
    *
    * @example
@@ -573,7 +572,7 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexRequest) {
+  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
     return this._configureIndex(indexName, options, this.config.maxRetries);
   }
 
@@ -1110,11 +1109,37 @@ export class Pinecone {
   /**
    * Targets a specific index for performing data operations.
    *
+   * You can target an index by providing its `name`, its `host`, or both. If only `name` is provided,
+   * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
+   * perform data operations directly against that host.
+   *
+   * #### Targeting an index by name (options object - recommended)
+   *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
+   * const index = pc.index({ name: 'index-name' })
+   * ```
+   *
+   * #### Targeting an index by name (legacy string syntax - deprecated)
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // Legacy syntax - will be removed in next major version
    * const index = pc.index('index-name')
+   * ```
+   *
+   * #### Targeting an index by host
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // You can find the host URL in the Pinecone console or via describeIndex()
+   * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
    * ```
    *
    * #### Targeting an index, with user-defined Metadata types
@@ -1133,7 +1158,7 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const index = pc.index<MovieMetadata>('test-index');
+   * const index = pc.index<MovieMetadata>({ name: 'test-index' });
    *
    * // Now you get type errors if upserting malformed metadata
    * await index.upsert([{
@@ -1169,23 +1194,47 @@ export class Pinecone {
    * ```
    *
    * @typeParam T - The type of metadata associated with each record.
-   * @param indexName - The name of the index to target.
-   * @param indexHostUrl - An optional host url to use for operations against this index. If not provided, the host url will be resolved by calling {@link describeIndex}.
-   * @param additionalHeaders - An optional object containing additional headers to pass with each index request.
-   * @typeParam T - The type of the metadata object associated with each record.
+   * @param options - The {@link IndexOptions} for targeting the index.
    * @returns An {@link Index} object that can be used to perform data operations.
+   */
+  index<T extends RecordMetadata = RecordMetadata>(
+    options: IndexOptions
+  ): Index<T>;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.index({ name: 'index-name' })`.
+   * This signature will be removed in the next major version.
    */
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
-  ) {
+  ): Index<T>;
+  index<T extends RecordMetadata = RecordMetadata>(
+    optionsOrName: IndexOptions | string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T> {
+    // Handle legacy string-based API
+    if (typeof optionsOrName === 'string') {
+      return new Index<T>(
+        {
+          name: optionsOrName,
+          host: indexHostUrl,
+          additionalHeaders: additionalHeaders,
+        },
+        this.config
+      );
+    }
+
+    // Handle new options-based API
     return new Index<T>(
-      indexName,
-      this.config,
-      undefined,
-      indexHostUrl,
-      additionalHeaders
+      {
+        name: optionsOrName.name,
+        namespace: optionsOrName.namespace,
+        host: optionsOrName.host,
+        additionalHeaders: optionsOrName.additionalHeaders,
+      },
+      this.config
     );
   }
 
@@ -1194,11 +1243,23 @@ export class Pinecone {
    */
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
+    options: IndexOptions
+  ): Index<T>;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
-  ) {
-    return this.index<T>(indexName, indexHostUrl, additionalHeaders);
+  ): Index<T>;
+  Index<T extends RecordMetadata = RecordMetadata>(
+    optionsOrName: IndexOptions | string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T> {
+    return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
   }
 
   /**
@@ -1207,27 +1268,34 @@ export class Pinecone {
    * Once an assistant is targeted, you can perform operations such as uploading files,
    * updating instructions, and chatting.
    *
+   * #### Targeting an assistant (options object - recommended)
+   *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    *
    * const pc = new Pinecone();
-   * const assistant = pc.Assistant('my-assistant');
+   * const assistant = pc.assistant({ name: 'my-assistant' });
    *
    * // Upload a file to the assistant
    * await assistant.uploadFile({
    *   path: 'test-file.txt',
    *   metadata: { description: 'Sample test file' }
    * });
+   * ```
    *
-   * // Retrieve assistant details
-   * const details = await assistant.describe();
-   * console.log('Assistant details:', details);
+   * #### Targeting an assistant (legacy string syntax - deprecated)
    *
-   * // Update assistant instructions
-   * await assistant.update({
-   *   instructions: 'Provide concise responses only.',
-   * });
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
    *
+   * const pc = new Pinecone();
+   * // Legacy syntax - will be removed in next major version
+   * const assistant = pc.assistant('my-assistant');
+   * ```
+   *
+   * #### Full example with chat
+   *
+   * ```typescript
    * const chatResp = await assistant.chat({
    *   messages: [{ role: 'user', content: 'What is the capital of France?' }],
    * });
@@ -1245,18 +1313,48 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param assistantName - The name of the assistant to target.
+   * @param options - The {@link AssistantOptions} for targeting the assistant.
    * @returns An {@link Assistant} object that can be used to perform assistant-related operations.
    */
-  assistant(assistantName: string) {
-    return new Assistant(assistantName, this.config);
+  assistant(options: AssistantOptions): Assistant;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.assistant({ name: 'assistant-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  assistant(name: string, host?: string): Assistant;
+  assistant(
+    optionsOrName: AssistantOptions | string,
+    host?: string
+  ): Assistant {
+    // Handle legacy string-based API
+    if (typeof optionsOrName === 'string') {
+      return new Assistant(
+        {
+          name: optionsOrName,
+          host: host,
+        },
+        this.config
+      );
+    }
+
+    // Handle new options-based API
+    return new Assistant(optionsOrName, this.config);
   }
 
   /**
    * {@inheritDoc assistant}
    */
   // Alias method
-  Assistant(assistantName: string) {
-    return this.assistant(assistantName);
+  Assistant(options: AssistantOptions): Assistant;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Assistant(name: string, host?: string): Assistant;
+  Assistant(
+    optionsOrName: AssistantOptions | string,
+    host?: string
+  ): Assistant {
+    return this.assistant(optionsOrName as any, host);
   }
 }

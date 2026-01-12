@@ -6,31 +6,32 @@ import type {
 } from '../../pinecone-generated-ts-fetch/db_control';
 
 describe('configureIndex', () => {
-  test('calls the openapi configure endpoint', async () => {
-    const indexModel: IndexModel = {
-      name: 'index-name',
-      dimension: 5,
-      metric: 'cosine',
-      host: 'https://index-host.com',
-      vectorType: 'dense',
-      spec: {
-        pod: {
-          environment: 'us-east1-gcp',
-          replicas: 4,
-          shards: 1,
-          pods: 4,
-          podType: 'p2.x2',
-        },
+  const indexModel: IndexModel = {
+    name: 'index-name',
+    dimension: 5,
+    metric: 'cosine',
+    host: 'https://index-host.com',
+    vectorType: 'dense',
+    spec: {
+      pod: {
+        environment: 'us-east1-gcp',
+        replicas: 4,
+        shards: 1,
+        pods: 4,
+        podType: 'p2.x2',
       },
-      status: {
-        ready: true,
-        state: 'Ready',
-      },
-      tags: {
-        example: 'tag',
-      },
-      deletionProtection: 'disabled', // Redundant, but for example purposes
-    };
+    },
+    status: {
+      ready: true,
+      state: 'Ready',
+    },
+    tags: {
+      example: 'tag',
+    },
+    deletionProtection: 'disabled', // Redundant, but for example purposes
+  };
+
+  test('calls the openapi configure endpoint with pod index configuration', async () => {
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
@@ -39,9 +40,8 @@ describe('configureIndex', () => {
     } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)('index-name', {
-      spec: {
-        pod: { replicas: 4, podType: 'p2.x2' },
-      },
+      podReplicas: 4,
+      podType: 'p2.x2',
       deletionProtection: 'disabled',
       tags: {
         example: 'tag',

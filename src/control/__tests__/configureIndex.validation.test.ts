@@ -22,7 +22,7 @@ describe('configureIndex argument validations', () => {
 
     test('should throw if index name is empty string', async () => {
       const toThrow = async () =>
-        await configureIndex(MIA)('', { spec: { pod: { replicas: 2 } } });
+        await configureIndex(MIA)('', { podReplicas: 2 });
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
@@ -37,7 +37,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, spec, tags, embed.'
+        'Object contained invalid properties: speculoos. Valid properties include deletionProtection, tags, embed, podReplicas, podType, readCapacity.'
       );
     });
 
@@ -47,7 +47,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrowSpec).rejects.toThrowError(
-        'You must pass either `spec`, `deletionProtection`, `tags`, or `embed` to configureIndex in order to update.'
+        'You must pass at least one configuration option to configureIndex.'
       );
     });
 
@@ -55,25 +55,12 @@ describe('configureIndex argument validations', () => {
       const toThrow = async () =>
         await configureIndex(MIA)('index-name', {
           // @ts-ignore
-          spec: { pod: { replicasroonies: 2 } },
+          spec: { replicasroonies: 2 },
         });
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: replicasroonies. Valid properties include replicas, podType.'
-      );
-    });
-
-    test('should throw if replicas is not greater than 0', async () => {
-      const toThrow = async () =>
-        await configureIndex(MIA)('index-name', {
-          // @ts-ignore
-          spec: { pod: { replicas: -1 } },
-        });
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        '`replicas` must be a positive integer.'
+        'Object contained invalid properties: spec. Valid properties include deletionProtection, tags, embed, podReplicas, podType, readCapacity.'
       );
     });
   });

@@ -23,7 +23,7 @@ if (!process.env.ASSISTANT_NAME) {
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  assistant = pinecone.Assistant(assistantName);
+  assistant = pinecone.Assistant({ name: assistantName });
 });
 
 describe('non-streaming chat success paths', () => {
@@ -209,7 +209,7 @@ describe('Chat error paths', () => {
 
   test.each(chatMethods)('%s with nonexistent assistant', async (method) => {
     await expect(
-      pinecone.Assistant('nonexistent')[method]({
+      pinecone.Assistant({ name: 'nonexistent' })[method]({
         messages: [{ role: 'user', content: 'Hello' }],
       })
     ).rejects.toThrow(

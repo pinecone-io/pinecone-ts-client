@@ -30,9 +30,10 @@ beforeAll(async () => {
     suppressConflicts: true,
   });
 
-  serverlessIndex = pinecone
-    .index(serverlessIndexName)
-    .namespace(globalNamespaceOne);
+  serverlessIndex = pinecone.index({
+    name: serverlessIndexName,
+    namespace: globalNamespaceOne,
+  });
 
   // Seed index
   const recordsToUpsert = generateRecords({ dimension: 5, quantity: 5 });
