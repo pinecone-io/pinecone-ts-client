@@ -40,6 +40,7 @@ import {
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
+import type { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
 import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
@@ -1112,13 +1113,23 @@ export class Pinecone {
    * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
    * perform data operations directly against that host.
    *
-   * #### Targeting an index by name
+   * #### Targeting an index by name (options object - recommended)
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
    * const index = pc.index({ name: 'index-name' })
+   * ```
+   *
+   * #### Targeting an index by name (legacy string syntax - deprecated)
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // Legacy syntax - will be removed in next major version
+   * const index = pc.index('index-name')
    * ```
    *
    * #### Targeting an index by host
@@ -1186,13 +1197,42 @@ export class Pinecone {
    * @param options - The {@link IndexOptions} for targeting the index.
    * @returns An {@link Index} object that can be used to perform data operations.
    */
-  index<T extends RecordMetadata = RecordMetadata>(options: IndexOptions) {
+  index<T extends RecordMetadata = RecordMetadata>(
+    options: IndexOptions
+  ): Index<T>;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.index({ name: 'index-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  index<T extends RecordMetadata = RecordMetadata>(
+    indexName: string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T>;
+  index<T extends RecordMetadata = RecordMetadata>(
+    optionsOrName: IndexOptions | string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T> {
+    // Handle legacy string-based API
+    if (typeof optionsOrName === 'string') {
+      return new Index<T>(
+        {
+          name: optionsOrName,
+          host: indexHostUrl,
+          additionalHeaders: additionalHeaders,
+        },
+        this.config
+      );
+    }
+
+    // Handle new options-based API
     return new Index<T>(
       {
-        name: options.name,
-        namespace: options.namespace,
-        host: options.host,
-        additionalHeaders: options.additionalHeaders,
+        name: optionsOrName.name,
+        namespace: optionsOrName.namespace,
+        host: optionsOrName.host,
+        additionalHeaders: optionsOrName.additionalHeaders,
       },
       this.config
     );
@@ -1202,8 +1242,24 @@ export class Pinecone {
    * {@inheritDoc index}
    */
   // Alias method to match the Python SDK capitalization
-  Index<T extends RecordMetadata = RecordMetadata>(options: IndexOptions) {
-    return this.index<T>(options);
+  Index<T extends RecordMetadata = RecordMetadata>(
+    options: IndexOptions
+  ): Index<T>;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Index<T extends RecordMetadata = RecordMetadata>(
+    indexName: string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T>;
+  Index<T extends RecordMetadata = RecordMetadata>(
+    optionsOrName: IndexOptions | string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders
+  ): Index<T> {
+    return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
   }
 
   /**
@@ -1211,6 +1267,8 @@ export class Pinecone {
    *
    * Once an assistant is targeted, you can perform operations such as uploading files,
    * updating instructions, and chatting.
+   *
+   * #### Targeting an assistant (options object - recommended)
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
@@ -1223,16 +1281,21 @@ export class Pinecone {
    *   path: 'test-file.txt',
    *   metadata: { description: 'Sample test file' }
    * });
+   * ```
    *
-   * // Retrieve assistant details
-   * const details = await assistant.describe();
-   * console.log('Assistant details:', details);
+   * #### Targeting an assistant (legacy string syntax - deprecated)
    *
-   * // Update assistant instructions
-   * await assistant.update({
-   *   instructions: 'Provide concise responses only.',
-   * });
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
    *
+   * const pc = new Pinecone();
+   * // Legacy syntax - will be removed in next major version
+   * const assistant = pc.assistant('my-assistant');
+   * ```
+   *
+   * #### Full example with chat
+   *
+   * ```typescript
    * const chatResp = await assistant.chat({
    *   messages: [{ role: 'user', content: 'What is the capital of France?' }],
    * });
@@ -1253,15 +1316,45 @@ export class Pinecone {
    * @param options - The {@link AssistantOptions} for targeting the assistant.
    * @returns An {@link Assistant} object that can be used to perform assistant-related operations.
    */
-  assistant(options: AssistantOptions) {
-    return new Assistant(options, this.config);
+  assistant(options: AssistantOptions): Assistant;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.assistant({ name: 'assistant-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  assistant(name: string, host?: string): Assistant;
+  assistant(
+    optionsOrName: AssistantOptions | string,
+    host?: string
+  ): Assistant {
+    // Handle legacy string-based API
+    if (typeof optionsOrName === 'string') {
+      return new Assistant(
+        {
+          name: optionsOrName,
+          host: host,
+        },
+        this.config
+      );
+    }
+
+    // Handle new options-based API
+    return new Assistant(optionsOrName, this.config);
   }
 
   /**
    * {@inheritDoc assistant}
    */
   // Alias method
-  Assistant(options: AssistantOptions) {
-    return this.assistant(options);
+  Assistant(options: AssistantOptions): Assistant;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Assistant(name: string, host?: string): Assistant;
+  Assistant(
+    optionsOrName: AssistantOptions | string,
+    host?: string
+  ): Assistant {
+    return this.assistant(optionsOrName as any, host);
   }
 }
