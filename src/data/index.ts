@@ -19,7 +19,6 @@ import {
   SearchRecordsCommand,
   SearchRecordsOptions,
 } from './vectors/searchRecords';
-import { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import type {
   PineconeConfiguration,
   PineconeRecord,
@@ -201,7 +200,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
+   * // Target by name
    * const index = pc.index({ name: 'my-index' });
+   *
+   * // Target by host (bypasses describeIndex call)
+   * const index = pc.index({ host: 'my-index-abc123.svc.pinecone.io' });
    * ```
    *
    * @constructor
@@ -209,9 +212,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param config - The configuration from the Pinecone client.
    */
   constructor(options: IndexOptions, config: PineconeConfiguration) {
+    if (!options.name && !options.host) {
+      throw new Error('Either name or host must be provided in IndexOptions');
+    }
+
     this.config = config;
     this.target = {
-      indexName: options.name,
+      indexName: options.name || '',
       namespace: options.namespace || '',
       indexHostUrl: options.host,
     };

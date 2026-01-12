@@ -1108,11 +1108,27 @@ export class Pinecone {
   /**
    * Targets a specific index for performing data operations.
    *
+   * You can target an index by providing its `name`, its `host`, or both. If only `name` is provided,
+   * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
+   * perform data operations directly against that host.
+   *
+   * #### Targeting an index by name
+   *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
    * const index = pc.index({ name: 'index-name' })
+   * ```
+   *
+   * #### Targeting an index by host
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // You can find the host URL in the Pinecone console or via describeIndex()
+   * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
    * ```
    *
    * #### Targeting an index, with user-defined Metadata types

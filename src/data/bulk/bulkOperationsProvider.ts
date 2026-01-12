@@ -17,14 +17,14 @@ import { middleware } from '../../utils/middleware';
 
 export class BulkOperationsProvider {
   private readonly config: PineconeConfiguration;
-  private readonly indexName: string;
+  private readonly indexName?: string;
   private indexHostUrl?: string;
   private bulkOperations?: BulkOperationsApi;
   private readonly additionalHeaders?: HTTPHeaders;
 
   constructor(
     config: PineconeConfiguration,
-    indexName: string,
+    indexName?: string,
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
   ) {
@@ -44,6 +44,11 @@ export class BulkOperationsProvider {
     if (this.indexHostUrl) {
       this.bulkOperations = this.buildBulkOperationsConfig();
     } else {
+      if (!this.indexName) {
+        throw new Error(
+          'Either indexName or indexHostUrl must be provided to BulkOperationsProvider'
+        );
+      }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName
