@@ -17,6 +17,7 @@ import { PineconeConfiguration } from '../data';
 import { AsstDataOperationsProvider } from './data/asstDataOperationsProvider';
 import { context } from './data/context';
 import { AssistantOptions } from '../types';
+import { PineconeArgumentError } from '../errors';
 
 export type {
   CreateAssistantOptions,
@@ -87,6 +88,12 @@ export class Assistant {
    * @throws An error if no assistant name is provided.
    */
   constructor(options: AssistantOptions, config: PineconeConfiguration) {
+    if (!options.name || options.name.trim() === '') {
+      throw new PineconeArgumentError(
+        'Assistant name is required and cannot be empty.'
+      );
+    }
+
     this.config = config;
     const asstDataOperationsProvider = new AsstDataOperationsProvider(
       this.config,
