@@ -35,6 +35,7 @@ import { listNamespaces } from './namespaces/listNamespaces';
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
 import { IndexOptions } from '../types';
+import { PineconeArgumentError } from '../errors';
 
 export type {
   PineconeConfiguration,
@@ -213,7 +214,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   constructor(options: IndexOptions, config: PineconeConfiguration) {
     if (!options.name && !options.host) {
-      throw new Error('Either name or host must be provided in IndexOptions');
+      throw new PineconeArgumentError(
+        'Either name or host must be provided in IndexOptions'
+      );
     }
 
     this.config = config;

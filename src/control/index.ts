@@ -2,6 +2,7 @@
 export { indexOperationsBuilder } from './indexOperationsBuilder';
 export type { IndexName, PodType } from './types';
 export { configureIndex } from './configureIndex';
+export type { ConfigureIndexOptions } from './configureIndex';
 export { createIndex } from './createIndex';
 export type {
   CreateIndexByocSpec,
