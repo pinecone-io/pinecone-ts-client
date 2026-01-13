@@ -64,6 +64,7 @@ export type {
   ScoredPineconeRecord,
   QueryByRecordId,
   QueryByVectorValues,
+  QueryBySparseVector,
   QueryOptions,
   QueryResponse,
   QueryShared,

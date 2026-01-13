@@ -161,4 +161,89 @@ describe('Query command tests', () => {
       })
     ).rejects.toThrow(PineconeArgumentError);
   });
+
+  test('should allow querying with only sparseVector (no vector)', async () => {
+    const { cmd, fakeQuery } = setupResponse(
+      { matches: [{ id: 'result-1', score: 0.9 }], namespace: 'namespace' },
+      true
+    );
+    await cmd.run({
+      sparseVector: { indices: [0, 1], values: [0.5, 0.3] },
+      topK: 5,
+    });
+    expect(fakeQuery).toHaveBeenCalledWith({
+      xPineconeApiVersion: expect.any(String),
+      queryRequest: {
+        sparseVector: { indices: [0, 1], values: [0.5, 0.3] },
+        topK: 5,
+        namespace: 'namespace',
+      },
+    });
+  });
+
+  test('should allow querying with sparseVector and includeMetadata', async () => {
+    const { cmd, fakeQuery } = setupResponse(
+      { matches: [{ id: 'result-1', score: 0.9 }], namespace: 'namespace' },
+      true
+    );
+    await cmd.run({
+      sparseVector: { indices: [0, 1, 2], values: [0.5, 0.3, 0.2] },
+      topK: 10,
+      includeMetadata: true,
+    });
+    expect(fakeQuery).toHaveBeenCalledWith({
+      xPineconeApiVersion: expect.any(String),
+      queryRequest: {
+        sparseVector: { indices: [0, 1, 2], values: [0.5, 0.3, 0.2] },
+        topK: 10,
+        includeMetadata: true,
+        namespace: 'namespace',
+      },
+    });
+  });
+
+  test('should throw error when neither id, vector, nor sparseVector is provided', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(
+      // @ts-ignore - Testing invalid input
+      cmd.run({ topK: 5 })
+    ).rejects.toThrow(
+      'You must provide at least one of: `id`, `vector`, or `sparseVector` to query the index.'
+    );
+    await expect(
+      // @ts-ignore - Testing invalid input
+      cmd.run({ topK: 5 })
+    ).rejects.toThrow(PineconeArgumentError);
+  });
+
+  test('should throw error when vector is empty and no sparseVector is provided', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(cmd.run({ vector: [], topK: 1 })).rejects.toThrow(
+      'You must enter an array of `RecordValues` in order to query by vector values.'
+    );
+    await expect(cmd.run({ vector: [], topK: 1 })).rejects.toThrow(
+      PineconeArgumentError
+    );
+  });
+
+  test('should allow querying with both vector and sparseVector', async () => {
+    const { cmd, fakeQuery } = setupResponse(
+      { matches: [{ id: 'result-1', score: 0.95 }], namespace: 'namespace' },
+      true
+    );
+    await cmd.run({
+      vector: [0.1, 0.2, 0.3],
+      sparseVector: { indices: [0, 1], values: [0.5, 0.3] },
+      topK: 5,
+    });
+    expect(fakeQuery).toHaveBeenCalledWith({
+      xPineconeApiVersion: expect.any(String),
+      queryRequest: {
+        vector: [0.1, 0.2, 0.3],
+        sparseVector: { indices: [0, 1], values: [0.5, 0.3] },
+        topK: 5,
+        namespace: 'namespace',
+      },
+    });
+  });
 });

@@ -66,13 +66,34 @@ export type QueryByVectorValues = QueryShared & {
    */
   sparseVector?: RecordSparseValues;
 };
+
+/**
+ * Include sparse vector values in your query configuration along with properties defined
+ * in { @link QueryShared }. This allows querying sparse-only indexes for cascading retrieval.
+ *
+ * @see [Querying data](https://docs.pinecone.io/docs/query-data)
+ * @see [Cascading retrieval](https://www.pinecone.io/blog/cascading-retrieval/)
+ */
+export type QueryBySparseVector = QueryShared & {
+  /**
+   * The sparse values of the query vector.
+   */
+  sparseVector: RecordSparseValues;
+};
+
 /**
  * The options that may be passed to {@link Index.query }
  */
-export type QueryOptions = QueryByRecordId | QueryByVectorValues;
+export type QueryOptions =
+  | QueryByRecordId
+  | QueryByVectorValues
+  | QueryBySparseVector;
 
 // Properties for validation to ensure no unknown/invalid properties are passed
-type QueryOptionsType = keyof QueryByRecordId | keyof QueryByVectorValues;
+type QueryOptionsType =
+  | keyof QueryByRecordId
+  | keyof QueryByVectorValues
+  | keyof QueryBySparseVector;
 const QueryOptionsProperties: QueryOptionsType[] = [
   'id',
   'vector',
@@ -150,17 +171,12 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
         );
       }
     }
+
+    // Validate specific field requirements first
     if ('id' in options) {
       if (!options.id) {
         throw new PineconeArgumentError(
           'You must enter non-empty string for `id` to query by record ID.'
-        );
-      }
-    }
-    if ('vector' in options) {
-      if (options.vector.length === 0) {
-        throw new PineconeArgumentError(
-          'You must enter an array of `RecordValues` in order to query by vector values.'
         );
       }
     }
@@ -174,6 +190,33 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
             ' sparse vector values.'
         );
       }
+    }
+
+    // Calculate which valid query methods are present
+    const hasId = 'id' in options && options.id;
+    const hasVector =
+      'vector' in options && options.vector && options.vector.length > 0;
+    const hasSparseVector =
+      'sparseVector' in options &&
+      options.sparseVector?.indices &&
+      options.sparseVector.indices.length > 0 &&
+      options.sparseVector?.values &&
+      options.sparseVector.values.length > 0;
+
+    // Now validate vector - allow empty if sparseVector is present
+    if ('vector' in options && options.vector !== undefined) {
+      if (options.vector.length === 0 && !hasSparseVector) {
+        throw new PineconeArgumentError(
+          'You must enter an array of `RecordValues` in order to query by vector values.'
+        );
+      }
+    }
+
+    // Validate that at least one query method is provided
+    if (!hasId && !hasVector && !hasSparseVector) {
+      throw new PineconeArgumentError(
+        'You must provide at least one of: `id`, `vector`, or `sparseVector` to query the index.'
+      );
     }
   };
 
