@@ -31,6 +31,8 @@ import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
+import { createNamespace } from './namespaces/createNamespace';
+import type { CreateNamespaceOptions } from './namespaces/createNamespace';
 import { listNamespaces } from './namespaces/listNamespaces';
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
@@ -75,6 +77,7 @@ export type {
   SearchRecordsRerank,
   SearchRecordsVector,
 } from './vectors/searchRecords';
+export type { CreateNamespaceOptions } from './namespaces/createNamespace';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -172,6 +175,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _describeImportCommand: DescribeImportCommand;
   /** @hidden */
   private _cancelImportCommand: CancelImportCommand;
+  /** @hidden */
+  private _createNamespaceCommand: ReturnType<typeof createNamespace>;
   /** @hidden */
   private _listNamespacesCommand: ReturnType<typeof listNamespaces>;
   /** @hidden */
@@ -301,6 +306,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       this.target.indexHostUrl,
       options.additionalHeaders
     );
+    this._createNamespaceCommand = createNamespace(namespaceApiProvider);
     this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
     this._describeNamespaceCommand = describeNamespace(namespaceApiProvider);
     this._deleteNamespaceCommand = deleteNamespace(namespaceApiProvider);
@@ -800,6 +806,34 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
+   * Creates a new namespace within the index with an optional metadata schema.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'my-serverless-index' });
+   * await index.createNamespace({
+   *   name: 'my-namespace',
+   *   schema: {
+   *     fields: {
+   *       genre: { filterable: true },
+   *       year: { filterable: true }
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @param options - Configuration options for creating the namespace.
+   * @param options.name - (Required) The name of the namespace to create.
+   * @param options.schema - (Optional) The metadata schema for the namespace. By default, all metadata is indexed;
+   * when a schema is present, only fields which are present in the `fields` object with `filterable: true` are indexed.
+   */
+  async createNamespace(options: CreateNamespaceOptions) {
+    return await this._createNamespaceCommand(options);
+  }
+
+  /**
    * Returns a list of namespaces within the index.
    *
    * @example
@@ -820,9 +854,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param limit - (Optional) Max number of import operations to return per page.
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   * @param prefix - (Optional) Prefix of the namespaces to list. Acts as a filter to return only namespaces that start with this prefix.
    */
-  async listNamespaces(limit?: number, paginationToken?: string) {
-    return await this._listNamespacesCommand(limit, paginationToken);
+  async listNamespaces(
+    limit?: number,
+    paginationToken?: string,
+    prefix?: string
+  ) {
+    return await this._listNamespacesCommand(limit, paginationToken, prefix);
   }
 
   /**

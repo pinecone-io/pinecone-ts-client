@@ -97,6 +97,7 @@ export type {
 } from './control';
 export type { IndexOptions, AssistantOptions } from './types';
 export type {
+  CreateNamespaceOptions,
   DeleteManyByFilterOptions,
   DeleteManyByRecordIdOptions,
   DeleteManyOptions,
