@@ -1,6 +1,10 @@
 import { UpsertCommand } from './vectors/upsert';
 import type { FetchOptions } from './vectors/fetch';
 import { FetchCommand } from './vectors/fetch';
+import {
+  FetchByMetadataCommand,
+  FetchByMetadataOptions,
+} from './vectors/fetchByMetadata';
 import type { UpdateOptions } from './vectors/update';
 import { UpdateCommand } from './vectors/update';
 import type { QueryOptions } from './vectors/query';
@@ -158,6 +162,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
   private _fetchCommand: FetchCommand<T>;
   /** @hidden */
+  private _fetchByMetadataCommand: FetchByMetadataCommand<T>;
+  /** @hidden */
   private _queryCommand: QueryCommand<T>;
   /** @hidden */
   private _updateCommand: UpdateCommand<T>;
@@ -250,6 +256,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       this.target.namespace
     );
     this._fetchCommand = new FetchCommand<T>(
+      dataOperationsProvider,
+      this.target.namespace
+    );
+    this._fetchByMetadataCommand = new FetchByMetadataCommand<T>(
       dataOperationsProvider,
       this.target.namespace
     );
@@ -518,6 +528,27 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async fetch(options: FetchOptions) {
     return await this._fetchCommand.run(options);
+  }
+
+  /**
+   * Fetch records from the index by metadata filter.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'my-index' });
+   *
+   * await index.fetchByMetadata({ filter: { genre: 'classical' } });
+   * ```
+   *
+   * @param options - The {@link FetchByMetadataOptions} for the operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves with the {@link FetchByMetadataResponse} when the fetch is completed.
+   */
+  async fetchByMetadata(options: FetchByMetadataOptions) {
+    return await this._fetchByMetadataCommand.run(options);
   }
 
   /**
