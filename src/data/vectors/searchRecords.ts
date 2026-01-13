@@ -2,6 +2,7 @@ import { VectorOperationsProvider } from './vectorOperationsProvider';
 import {
   X_PINECONE_API_VERSION,
   SearchRecordsResponse,
+  SearchMatchTerms,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { RetryOnServerFailure } from '../../utils';
@@ -46,6 +47,21 @@ export type SearchRecordsQuery = {
    * The {@link SearchRecordsVector} to search with, if provided.
    */
   vector?: SearchRecordsVector;
+  /**
+   * The unique ID of the vector to be used as a query vector.
+   */
+  id?: string;
+  /**
+   * Specifies which terms must be present in the text of each search hit based on the specified strategy.
+   * The match is performed against the text field specified in the integrated index fieldMap configuration.
+   * Terms are normalized and tokenized into single tokens before matching, and order does not matter.
+   * Expected format: {"strategy": "all", "terms": ["term1", "term2", "term3"]}
+   * Currently, only "all" strategy is supported, which means all specified terms must be present.
+   *
+   * **Limitations:** matchTerms is only supported for sparse indexes with integrated embedding configured to
+   * use the pinecone-sparse-english-v0 model.
+   */
+  matchTerms?: SearchMatchTerms;
 };
 
 /**

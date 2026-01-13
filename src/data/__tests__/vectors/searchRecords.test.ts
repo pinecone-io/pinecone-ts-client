@@ -37,6 +37,8 @@ describe('SearchRecordsCommand', () => {
         filter: { test: 'test' },
         inputs: { chunk: 'input' },
         vector: { sparseValues: [0.2, 0.5, 0.6], sparseIndicies: [1, 2, 3] },
+        id: 'test-id',
+        matchTerms: { strategy: 'all', terms: ['term1', 'term2', 'term3'] },
       },
       fields: ['chunk', 'test'],
       rerank: {
