@@ -1,5 +1,8 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
-import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
+import {
+  UpdateRequest,
+  X_PINECONE_API_VERSION,
+} from '../../pinecone-generated-ts-fetch/db_data';
 import type {
   RecordId,
   RecordValues,
@@ -33,6 +36,14 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
    * The metadata you would like to store with this record.
    */
   metadata?: Partial<T>;
+
+  /**
+   * A metadata filter expression. When provided, updates all vectors in the namespace that match
+   * the filter criteria. Must not be provided when using id. Either `id` or `filter` must be provided.
+   *
+   * @see [Metadata filtering](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
+   */
+  filter?: object;
 };
 
 // Properties for validation to ensure no unknown/invalid properties are passed
@@ -42,6 +53,7 @@ const UpdateOptionsProperties: UpdateOptionsType[] = [
   'values',
   'sparseValues',
   'metadata',
+  'filter',
 ];
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
@@ -57,9 +69,14 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     if (options) {
       ValidateObjectProperties(options, UpdateOptionsProperties);
     }
-    if (options && !options.id) {
+    if (options && !options.id && !options.filter) {
       throw new PineconeArgumentError(
-        'You must enter a non-empty string for the `id` field in order to update a record.'
+        'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
+      );
+    }
+    if (options && options.id && options.filter) {
+      throw new PineconeArgumentError(
+        'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
       );
     }
   };
@@ -67,11 +84,13 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   async run(options: UpdateOptions<T>, maxRetries?: number): Promise<void> {
     this.validator(options);
 
-    const requestOptions = {
+    const request: UpdateRequest = {
       id: options['id'],
       values: options['values'],
       sparseValues: options['sparseValues'],
       setMetadata: options['metadata'],
+      filter: options['filter'],
+      namespace: this.namespace,
     };
 
     const api = await this.apiProvider.provide();
@@ -82,7 +101,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
 
     await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      updateRequest: { ...requestOptions, namespace: this.namespace },
+      updateRequest: request,
     });
     return;
   }

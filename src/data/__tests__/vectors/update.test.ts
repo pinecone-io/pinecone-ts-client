@@ -78,7 +78,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Object contained invalid properties: unknown. Valid properties include id, values, sparseValues, metadata.'
+      'Object contained invalid properties: unknown. Valid properties include id, values, sparseValues, metadata, filter.'
     );
   });
 
@@ -94,7 +94,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Object contained invalid properties: metadataaaa. Valid properties include id, values, sparseValues, metadata.'
+      'Object contained invalid properties: metadataaaa. Valid properties include id, values, sparseValues, metadata, filter.'
     );
   });
 });

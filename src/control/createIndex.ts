@@ -151,6 +151,9 @@ const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
 export interface CreateIndexByocSpec {
   /** The environment identifier for the BYOC index. */
   environment: string;
+
+  /** The metadata schema for the index. */
+  schema?: MetadataSchema;
 }
 
 type CreateIndexByocSpecType = keyof CreateIndexByocSpec;
