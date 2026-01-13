@@ -70,9 +70,11 @@ export class RetryOnServerFailure<T, A extends any[]> {
     if (response) {
       if (
         response.name &&
-        ['PineconeUnavailableError', 'PineconeInternalServerError', 'PineconeConnectionError'].includes(
-          response.name
-        )
+        [
+          'PineconeUnavailableError',
+          'PineconeInternalServerError',
+          'PineconeConnectionError',
+        ].includes(response.name)
       ) {
         return true;
       }
