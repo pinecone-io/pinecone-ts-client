@@ -70,7 +70,7 @@ export class RetryOnServerFailure<T, A extends any[]> {
     if (response) {
       if (
         response.name &&
-        ['PineconeUnavailableError', 'PineconeInternalServerError'].includes(
+        ['PineconeUnavailableError', 'PineconeInternalServerError', 'PineconeConnectionError'].includes(
           response.name
         )
       ) {
@@ -127,7 +127,8 @@ export class RetryOnServerFailure<T, A extends any[]> {
     if (error.name) {
       return (
         error.name !== 'PineconeUnavailableError' &&
-        error.name !== 'PineconeInternalServerError'
+        error.name !== 'PineconeInternalServerError' &&
+        error.name !== 'PineconeConnectionError'
       );
     }
     return true;
