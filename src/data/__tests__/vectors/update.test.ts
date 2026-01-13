@@ -50,7 +50,7 @@ describe('update', () => {
     });
   });
 
-  test('throws error if no id is provided', async () => {
+  test('throws error if no id or filter are provided', async () => {
     const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
@@ -61,11 +61,24 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must enter a non-empty string for the `id` field in order to update a record.'
+      'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
     );
   });
 
-  test('throws error if no unknown property is passed', async () => {
+  test('throws error if both id and filter are provided', async () => {
+    const { cmd } = setupSuccess('');
+    const toThrow = async () => {
+      await cmd.run({
+        id: 'abc',
+        filter: { genre: 'ambient' },
+      });
+    };
+    await expect(toThrow()).rejects.toThrowError(
+      'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
+    );
+  });
+
+  test('throws error if unknown property is passed', async () => {
     const { cmd } = setupSuccess('');
     const toThrow = async () => {
       await cmd.run({
@@ -79,22 +92,6 @@ describe('update', () => {
     };
     await expect(toThrow()).rejects.toThrowError(
       'Object contained invalid properties: unknown. Valid properties include id, values, sparseValues, metadata, filter.'
-    );
-  });
-
-  test('throws error if no known property is misspelled', async () => {
-    const { cmd } = setupSuccess('');
-    const toThrow = async () => {
-      await cmd.run({
-        id: 'abc',
-        values: [1, 2, 3, 4, 5],
-        sparseValues: { indices: [15, 30, 25], values: [0.5, 0.5, 0.2] },
-        // @ts-ignore
-        metadataaaa: { genre: 'ambient' },
-      });
-    };
-    await expect(toThrow()).rejects.toThrowError(
-      'Object contained invalid properties: metadataaaa. Valid properties include id, values, sparseValues, metadata, filter.'
     );
   });
 });
