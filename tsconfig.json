@@ -17,5 +17,10 @@
     "experimentalDecorators": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/integration/custom-jest-environment.ts",
+    "src/integration/custom-jest-environment-edge.ts",
+    "src/integration/globalTeardown.ts"
+  ]
 }
