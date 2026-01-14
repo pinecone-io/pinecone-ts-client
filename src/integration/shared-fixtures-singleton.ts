@@ -14,6 +14,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
+// IntegrationFixtures defines resources which are shared across multiple integration test files.
+// If there are resources that need to be setup, torn down, and shared across multiple test files,
+// it should be managed here.
 export interface IntegrationFixtures {
   client: Pinecone;
   serverlessIndex: {

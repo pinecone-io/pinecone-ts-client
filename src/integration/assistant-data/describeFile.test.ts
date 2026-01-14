@@ -12,7 +12,7 @@ beforeAll(async () => {
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
-  
+
   const files = await assistant.listFiles({
     filter: { key: 'valueOne' },
   });

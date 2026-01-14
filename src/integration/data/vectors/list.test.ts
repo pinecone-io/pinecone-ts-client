@@ -7,7 +7,7 @@ let pinecone: Pinecone, serverlessIndex: Index;
 beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
-  
+
   serverlessIndex = pinecone.index({
     name: fixtures.serverlessIndex.name,
     namespace: globalNamespaceOne,

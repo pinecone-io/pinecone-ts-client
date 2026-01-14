@@ -13,7 +13,7 @@ let pinecone: Pinecone,
 beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
-  
+
   serverlessIndex = pinecone.index({
     name: fixtures.serverlessIndex.name,
     namespace: globalNamespaceOne,
@@ -44,7 +44,7 @@ describe('query tests on serverless index', () => {
   });
 
   test('query when topK is greater than number of records', async () => {
-    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
+    const topK = 11; // in shared-fixtures-singleton.ts, we seed the serverless index w/11 records
     if (recordIds) {
       const idForQuerying = recordIds[1];
 
