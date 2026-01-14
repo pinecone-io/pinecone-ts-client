@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { assertWithRetries, sleep } from '../test-helpers';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -14,13 +15,9 @@ let tempFileWithMetadata: string;
 let tempFileWithMetadataPath: string;
 
 beforeAll(async () => {
-  if (!process.env.ASSISTANT_NAME) {
-    throw new Error('ASSISTANT_NAME environment variable is not set');
-  } else {
-    assistantName = process.env.ASSISTANT_NAME;
-  }
-
-  pinecone = new Pinecone();
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 
   // Create two temporary test files

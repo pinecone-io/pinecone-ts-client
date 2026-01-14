@@ -107,7 +107,7 @@ export const sleep = async (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const waitUntilReady = async (indexName: string) => {
+export const waitUntilIndexReady = async (indexName: string) => {
   const p = new Pinecone();
   const sleepIntervalMs = 1000;
   let isReady = false;
@@ -125,6 +125,53 @@ export const waitUntilReady = async (indexName: string) => {
       }
     } catch (error) {
       throw new Error(`Error while waiting for index to be ready: ${error}`);
+    }
+  }
+};
+
+export const waitUntilAssistantReady = async (assistantName: string) => {
+  const p = new Pinecone();
+  const sleepIntervalMs = 1000;
+  let isReady = false;
+
+  while (!isReady) {
+    try {
+      const description = await p.describeAssistant(assistantName);
+      if (description.status === 'Ready') {
+        isReady = true;
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      throw new Error(
+        `Error while waiting for assistant to be ready: ${error}`
+      );
+    }
+  }
+};
+
+export const waitUntilAssistantFileReady = async (
+  assistantName: string,
+  fileId: string
+) => {
+  const p = new Pinecone();
+  const sleepIntervalMs = 1000;
+  let isReady = false;
+
+  while (!isReady) {
+    try {
+      const description = await p
+        .Assistant({ name: assistantName })
+        .describeFile(fileId, true);
+      if (description.status === 'Available') {
+        isReady = true;
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      throw new Error(
+        `Error while waiting for assistant file to be ready: ${error}`
+      );
     }
   }
 };

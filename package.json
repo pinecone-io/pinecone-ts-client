@@ -22,9 +22,7 @@
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && tsx scripts/replInit.ts",
     "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --detectOpenHandles --runInBand --bail --forceExit",
-    "test:integration-local:node": "TEST_ENV=node node scripts/integrationRunner.js",
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --detectOpenHandles --runInBand --bail --forceExit",
-    "test:integration-local:edge": "TEST_ENV=edge node scripts/integrationRunner.js",
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
     "test:unit": "jest src/"

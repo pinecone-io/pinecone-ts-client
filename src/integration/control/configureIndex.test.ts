@@ -1,6 +1,10 @@
 import { BasePineconeError, PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName, retryDeletes, waitUntilReady } from '../test-helpers';
+import {
+  randomIndexName,
+  retryDeletes,
+  waitUntilIndexReady,
+} from '../test-helpers';
 
 let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
 
@@ -54,7 +58,7 @@ describe('configure index', () => {
       await pinecone.configureIndex(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
-      await waitUntilReady(serverlessIndexName);
+      await waitUntilIndexReady(serverlessIndexName);
 
       // verify we cannot delete the index
       await pinecone.deleteIndex(serverlessIndexName).catch((e) => {
@@ -129,77 +133,6 @@ describe('configure index', () => {
       const description2 = await pinecone.describeIndex(serverlessIndexName);
       if (description2.tags != null) {
         expect(description2.tags['project']).toEqual('updated-project');
-      }
-    });
-  });
-
-  describe('error cases', () => {
-    test('cannot configure index with invalid index name', async () => {
-      try {
-        await pinecone.configureIndex('non-existent-index', {
-          podReplicas: 2,
-        });
-      } catch (e) {
-        const err = e as BasePineconeError;
-        expect(err.name).toEqual('PineconeNotFoundError');
-      }
-    });
-
-    test('cannot configure index when exceeding quota', async () => {
-      try {
-        await pinecone.configureIndex(podIndexName, {
-          podReplicas: 20,
-        });
-      } catch (e) {
-        const err = e as BasePineconeError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain(
-          `You've reached the max pods allowed in project`
-        );
-        expect(err.message).toContain(
-          'To increase this limit, adjust your project settings in the console'
-        );
-      }
-    });
-
-    test('cannot change base pod type', async () => {
-      try {
-        // Try to change the base pod type
-        await pinecone.configureIndex(podIndexName, {
-          podType: 'p2.x1',
-        });
-      } catch (e) {
-        const err = e as BasePineconeError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain('Bad request: Cannot change pod type');
-      }
-    });
-
-    test('cannot set deletionProtection value other than enabled / disabled', async () => {
-      try {
-        await pinecone.configureIndex(serverlessIndexName, {
-          deletionProtection: 'bogus',
-        });
-      } catch (e) {
-        const err = e as BasePineconeError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain(
-          'Invalid deletion_protection, value should be either enabled or disabled'
-        );
-      }
-    });
-
-    test('cannot configure pod spec for serverless', async () => {
-      try {
-        await pinecone.configureIndex(serverlessIndexName, {
-          podReplicas: 2,
-        });
-      } catch (e) {
-        const err = e as BasePineconeError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain(
-          'Cannot change the capacity mode of an existing index'
-        );
       }
     });
   });

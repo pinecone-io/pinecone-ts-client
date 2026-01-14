@@ -1,14 +1,13 @@
 import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone, serverlessIndexName: string;
 
-beforeAll(() => {
-  pinecone = new Pinecone();
-  if (!process.env.SERVERLESS_INDEX_NAME) {
-    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  }
-  serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+beforeAll(async () => {
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  serverlessIndexName = fixtures.serverlessIndex.name;
 });
 
 describe('describe index; serverless', () => {

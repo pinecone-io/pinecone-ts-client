@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { sleep } from '../test-helpers';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -13,14 +14,10 @@ let tempFilePath: string;
 const uploadedFileIds: string[] = [];
 const testRunId = Date.now();
 
-if (!process.env.ASSISTANT_NAME) {
-  throw new Error('ASSISTANT_NAME environment variable is not set');
-} else {
-  assistantName = process.env.ASSISTANT_NAME;
-}
-
 beforeAll(async () => {
-  pinecone = new Pinecone();
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 
   // Upload few more files with metadata to the assistant
