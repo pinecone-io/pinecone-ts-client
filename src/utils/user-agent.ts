@@ -53,9 +53,10 @@ const normalizeSourceTag = (sourceTag: string) => {
     .replace(/[ ]+/g, '_');
 };
 
-const formatCaller = (
-  caller: { provider?: string; model: string }
-): string | undefined => {
+const formatCaller = (caller: {
+  provider?: string;
+  model: string;
+}): string | undefined => {
   if (!caller.model) {
     return;
   }
@@ -83,13 +84,13 @@ const normalizeCallerString = (str: string): string | undefined => {
   /**
    * normalize caller string
    * 1. Lowercase
-   * 2. Limit charset to [a-z0-9_ :-] (allowing colons, hyphens, and spaces)
+   * 2. Limit charset to [a-z0-9_ :\-.] (allowing colons, hyphens, periods, and spaces)
    * 3. Trim left/right spaces
    * 4. Condense multiple spaces to one, and replace with underscore
    */
   return str
     .toLowerCase()
-    .replace(/[^a-z0-9_ :-]/g, '')
+    .replace(/[^a-z0-9_ :\-.]/g, '')
     .trim()
     .replace(/[ ]+/g, '_');
 };
