@@ -5,9 +5,9 @@ import {
   prefix,
   diffPrefix,
   randomIndexName,
-  sleep,
   waitUntilAssistantReady,
   waitUntilAssistantFileReady,
+  waitUntilRecordsReady,
 } from './test-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -80,7 +80,11 @@ export const setup = async () => {
 
   // Wait for data to be indexed
   console.error('\tWaiting for data to be indexed...');
-  await sleep(45000);
+  await waitUntilRecordsReady(
+    pc.index({ name: indexName, namespace: globalNamespaceOne }),
+    globalNamespaceOne,
+    allRecords.map((record) => record.id)
+  );
 
   // Create assistant
   const assistantName = `test-assistant-${Date.now()}`;
@@ -104,7 +108,7 @@ export const setup = async () => {
   console.error(`\tUploading test file: ${testFilePath}`);
   const file = await assistant.uploadFile({
     path: testFilePath,
-    metadata: { key: 'valueOne' },
+    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
   });
 
   await waitUntilAssistantFileReady(assistantName, file.id);
