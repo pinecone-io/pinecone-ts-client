@@ -1,0 +1,42 @@
+---
+alwaysApply: true
+---
+
+## Documentation
+- When changing code, review nearby JavaDoc strings to ensure they are up to date
+- Include `@throws` tags in JavaDoc for all exceptions that methods can throw
+- Provide usage examples in JavaDoc using `<pre>{@code ... }</pre>` blocks for public APIs
+- Document parameter constraints and validation rules in JavaDoc
+
+## Exception Handling
+- Use appropriate custom exception types from `io.pinecone.exceptions` package (e.g., `PineconeValidationException`, `PineconeBadRequestException`)
+- Include descriptive error messages that help users understand what went wrong
+- When wrapping exceptions, preserve the original cause using the constructor that accepts `Throwable`
+- Map HTTP status codes to appropriate exception types using `HttpErrorMapper` patterns
+
+## Validation
+- Validate input parameters early in public methods, throwing `PineconeValidationException` for invalid inputs
+- Provide clear, actionable error messages that reference documentation when appropriate
+- Use static validation methods (like `validatePodIndexParams`) for complex validation logic that may be reused
+- Validate null and empty strings explicitly before use
+
+## Code Generation
+- Never manually edit files in `org.openapitools.*` packages - these are auto-generated
+- If changes are needed to generated code, update the source OpenAPI/Proto files in `codegen/` and regenerate
+
+## Testing
+- Ensure all major requirements are captured as test cases
+- Write unit tests for validation logic and error handling paths
+- Include integration tests for end-to-end workflows
+- Test both success and failure scenarios, including edge cases
+- Use descriptive test method names that clearly indicate what is being tested
+
+## Thread Safety
+- Be aware of shared mutable state (e.g., `ConcurrentHashMap` for connections)
+- Document thread-safety guarantees in JavaDoc for classes that maintain shared state
+- Use thread-safe collections when sharing data across threads
+
+## Resource Management
+- Reuse `OkHttpClient` instances rather than creating new ones for each request
+- Document resource lifecycle and cleanup requirements in JavaDoc
+- Ensure proper cleanup of connections and resources in error scenarios
