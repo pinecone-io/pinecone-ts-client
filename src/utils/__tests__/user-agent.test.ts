@@ -1,5 +1,6 @@
 import { buildUserAgent } from '../user-agent';
 import * as EnvironmentModule from '../environment';
+import type { PineconeConfiguration } from '../../data';
 
 describe('user-agent', () => {
   describe('buildUserAgent', () => {
@@ -76,7 +77,7 @@ describe('user-agent', () => {
 
   describe('caller formatting', () => {
     test('normalizes caller strings with special characters', () => {
-      let config = {
+      let config: PineconeConfiguration = {
         apiKey: 'test-api-key',
         caller: {
           provider: 'Google',
@@ -119,7 +120,7 @@ describe('user-agent', () => {
     });
 
     test('handles empty or invalid caller values gracefully', () => {
-      let config = {
+      let config: PineconeConfiguration = {
         apiKey: 'test-api-key',
         caller: {
           provider: '',
