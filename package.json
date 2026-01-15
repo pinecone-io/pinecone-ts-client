@@ -21,8 +21,12 @@
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && tsx scripts/replInit.ts",
+    "integration:setup": "npx ts-node ./src/integration/setup.ts",
+    "integration:teardown": "npx ts-node ./src/integration/teardown.ts",
     "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --detectOpenHandles --runInBand --bail --forceExit",
     "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --detectOpenHandles --runInBand --bail --forceExit",
+    "test:integration:local": "./scripts/run-integration-tests-local.sh",
+    "test:integration:local:edge": "./scripts/run-integration-tests-local.sh edge",
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
     "test:unit": "jest src/"

@@ -4,9 +4,35 @@ on:
   workflow_call: {}
 
 jobs:
+  setup:
+    name: Setup shared resources
+    runs-on: ubuntu-latest
+    outputs:
+      fixturesJson: ${{ steps.setup.outputs.FIXTURES_JSON }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run setup script
+        id: setup
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        run: |
+          SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
+          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
+          # Show setup logs (not the JSON line)
+          echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
+
   integration-tests:
+    needs: [setup]
     name: Run integration tests
     runs-on: ubuntu-latest
+    outputs:
+      fixturesJson: ${{ needs.setup.outputs.fixturesJson }}
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -42,6 +68,7 @@ jobs:
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          FIXTURES_JSON: ${{ needs.setup.outputs.fixturesJson }}
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
       - name: Run integration tests (Staging)
@@ -50,7 +77,26 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
+          FIXTURES_JSON: ${{ needs.setup.outputs.fixturesJson }}
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
+
+  teardown:
+    name: Teardown shared resources
+    needs: [integration-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run teardown script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          FIXTURES_JSON: ${{ needs.integration-tests.outputs.fixturesJson }}
+        run: npx ts-node ./src/integration/teardown.ts
 
   unit-tests:
     name: Run unit tests

@@ -24,7 +24,7 @@ describe('describe index; serverless', () => {
     expect(description.status.ready).toEqual(true);
     expect(description.status.state).toEqual('Ready');
     expect(description.tags).toEqual({
-      project: 'pinecone-integration-tests-serverless',
+      project: 'pinecone-integration-tests',
     });
   });
 });

@@ -1,4 +1,4 @@
-import { BasePineconeError, PineconeBadRequestError } from '../../errors';
+import { PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
 import {
   randomIndexName,

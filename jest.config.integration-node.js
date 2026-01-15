@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: './src/integration/custom-jest-environment.ts',
+  testEnvironment: 'node',
   reporters: [['github-actions', { silent: false }], 'default'],
   setupFilesAfterEnv: ['./src/integration/jest-setup.ts'],
   transform: {
@@ -12,9 +12,8 @@ module.exports = {
       },
     ],
   },
-  globalTeardown: './src/integration/globalTeardown.ts',
   testPathIgnorePatterns: [],
-  testTimeout: 600000,
+  testTimeout: 600000, // 10 minutes
   verbose: true,
   detectOpenHandles: true,
   resetModules: false,

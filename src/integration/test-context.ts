@@ -1,27 +1,40 @@
-import type {
-  IntegrationFixtures,
-  FixtureManager,
-} from './shared-fixtures-singleton';
+import { Pinecone } from '../index';
 
-// Extend global to include our fixture manager accessor
-declare global {
-  function getSharedFixtureManager(): FixtureManager | null;
+/**
+ * Integration test fixtures interface
+ */
+export interface IntegrationFixtures {
+  client: Pinecone;
+  serverlessIndex: {
+    name: string;
+    dimension: number;
+    metric: string;
+  };
+  assistant: {
+    name: string;
+    testFilePath: string;
+  };
 }
 
 /**
- * Get the shared integration test fixtures.
+ * Parses the FIXTURES_JSON environment variable and returns a typed IntegrationFixtures object.
+ * The FIXTURES_JSON environment variable should be set by running the setup script first:
  *
- * This provides type-safe access to shared integration test resources:
- * - Pinecone client
- * - Pre-configured serverless index
- * - Assistant with uploaded test file
+ * Use the convenience script that does everything:
+ * ```bash
+ * npm run test:integration:local
+ * ```
  *
- * The fixtures are lazily initialized on first access through the
- * custom Jest environment, and shared across all test files in the same test run.
+ * Or run the setup script manually:
+ * ```bash
+ * npm run integration:setup
+ * export FIXTURES_JSON='...'  # Copy from setup output
+ * npm run test:integration:node
+ * ```
  *
  * @example
  * ```typescript
- * import { getTestContext } from '../../test-context';
+ * import { getTestContext } from '../test-context';
  *
  * let fixtures: IntegrationFixtures;
  *
@@ -38,17 +51,54 @@ declare global {
  * ```
  */
 export const getTestContext = async (): Promise<IntegrationFixtures> => {
-  // Access via global function injected by custom environment
-  const manager = global.getSharedFixtureManager();
+  const fixturesJson = process.env.FIXTURES_JSON;
 
-  if (!manager) {
+  if (!fixturesJson) {
     throw new Error(
-      'Fixture manager not initialized by custom Jest environment'
+      'FIXTURES_JSON environment variable not set.\n\n' +
+        'Run the setup script first:\n' +
+        '  npm run integration:setup\n\n' +
+        'Then export the FIXTURES_JSON value from the output, or use:\n' +
+        '  npm run test:integration:local\n'
     );
   }
 
-  return manager.getFixtures();
-};
+  let data;
+  try {
+    data = JSON.parse(fixturesJson);
+  } catch (error) {
+    throw new Error(
+      `Failed to parse FIXTURES_JSON: ${error}\n` +
+        `Value: ${fixturesJson.substring(0, 100)}...`
+    );
+  }
 
-// Re-export the type for convenience
-export type { IntegrationFixtures };
+  // Validate required fields
+  if (!data.serverlessIndex?.name) {
+    throw new Error('FIXTURES_JSON missing serverlessIndex.name');
+  }
+  if (!data.assistant?.name) {
+    throw new Error('FIXTURES_JSON missing assistant.name');
+  }
+
+  const apiKey = process.env.PINECONE_API_KEY;
+  if (!apiKey) {
+    throw new Error('PINECONE_API_KEY environment variable not set');
+  }
+
+  // Create Pinecone client
+  const client = new Pinecone({ apiKey });
+
+  return {
+    client,
+    serverlessIndex: {
+      name: data.serverlessIndex.name,
+      dimension: data.serverlessIndex.dimension || 2,
+      metric: data.serverlessIndex.metric || 'dotproduct',
+    },
+    assistant: {
+      name: data.assistant.name,
+      testFilePath: data.assistant.testFilePath || '',
+    },
+  };
+};
