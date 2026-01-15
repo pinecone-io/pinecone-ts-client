@@ -116,16 +116,16 @@ describe('user-agent', () => {
       expect(userAgent).toContain('caller=claude_code_version');
     });
 
-    test('handles caller with provider containing colons and hyphens', () => {
+    test('removes colons from caller values', () => {
       const config = {
         apiKey: 'test-api-key',
         caller: {
-          provider: 'provider-name',
-          model: 'model-name',
+          provider: 'open:ai',
+          model: 'gpt:4',
         },
       };
       const userAgent = buildUserAgent(config);
-      expect(userAgent).toContain('caller=provider-name:model-name');
+      expect(userAgent).toContain('caller=openai:gpt4');
     });
 
     test('handles empty or invalid caller values gracefully', () => {
