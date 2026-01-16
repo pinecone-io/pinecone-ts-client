@@ -1,6 +1,6 @@
 import { Pinecone } from '../../pinecone';
 import { SearchRecordsResponse } from '../../pinecone-generated-ts-fetch/db_data';
-import { assertWithRetries, randomIndexName, sleep } from '../test-helpers';
+import { assertWithRetries, randomIndexName } from '../test-helpers';
 
 describe('Integrated Inference API tests', () => {
   let pinecone: Pinecone;

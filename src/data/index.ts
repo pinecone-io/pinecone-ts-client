@@ -44,6 +44,7 @@ import { IndexOptions } from '../types';
 import { PineconeArgumentError } from '../errors';
 
 export type {
+  OperationUsage,
   PineconeConfiguration,
   PineconeRecord,
   RecordId,
@@ -65,6 +66,10 @@ export type {
   IndexStatsNamespaceSummary,
 } from './vectors/describeIndexStats';
 export type { FetchOptions, FetchResponse } from './vectors/fetch';
+export type {
+  FetchByMetadataOptions,
+  FetchByMetadataResponse,
+} from './vectors/fetchByMetadata';
 export type { UpdateOptions } from './vectors/update';
 export type {
   ScoredPineconeRecord,
