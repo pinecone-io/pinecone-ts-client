@@ -14,6 +14,9 @@ concurrency:
   group: npm-rc-release
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   version-and-release:
     name: Release RC build to NPM
