@@ -3,7 +3,7 @@ import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { sleep } from '../test-helpers';
+import { waitUntilAssistantFileReady } from '../test-helpers';
 import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
@@ -30,8 +30,6 @@ beforeAll(async () => {
   } catch (err) {
     console.error('Error writing file:', err);
   }
-  // Add a small delay to ensure file system sync
-  await sleep(5000);
 
   if (!fs.existsSync(tempFilePath)) {
     throw new Error(`Temporary file was not created: ${tempFilePath}`);
@@ -48,6 +46,8 @@ beforeAll(async () => {
     });
     console.log('File uploaded:', file);
     uploadedFileIds.push(file.id);
+    // Wait for file to be ready instead of fixed delay
+    await waitUntilAssistantFileReady(assistantName, file.id);
   }
 
   // Clean up local temp file

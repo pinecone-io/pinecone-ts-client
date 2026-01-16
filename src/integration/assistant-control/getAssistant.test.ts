@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, sleep } from '../test-helpers';
+import { randomString, waitUntilAssistantReady } from '../test-helpers';
 import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
@@ -9,7 +9,9 @@ beforeAll(async () => {
   pinecone = new Pinecone();
   assistantName = randomString(5);
   await pinecone.createAssistant({ name: assistantName });
-  await sleep(2000);
+
+  // Wait for assistant to be ready instead of fixed sleep
+  await waitUntilAssistantReady(assistantName);
 });
 
 afterAll(async () => {

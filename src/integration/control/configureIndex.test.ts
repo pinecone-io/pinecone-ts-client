@@ -6,31 +6,14 @@ import {
   waitUntilIndexReady,
 } from '../test-helpers';
 
-let podIndexName: string, serverlessIndexName: string, pinecone: Pinecone;
+let serverlessIndexName: string, pinecone: Pinecone;
 
 describe('configure index', () => {
   beforeAll(async () => {
     pinecone = new Pinecone();
-    podIndexName = randomIndexName('pod-configure');
     serverlessIndexName = randomIndexName('serverless-configure');
 
-    // create pod index
-    await pinecone.createIndex({
-      name: podIndexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        pod: {
-          environment: 'us-east1-gcp',
-          podType: 'p1.x1',
-          pods: 1,
-        },
-      },
-      tags: { project: 'pinecone-integration-tests' },
-      waitUntilReady: true,
-    });
-
-    // create serverless index
+    // Create serverless index (removed unused pod index)
     await pinecone.createIndex({
       name: serverlessIndexName,
       dimension: 5,
@@ -49,7 +32,6 @@ describe('configure index', () => {
   afterAll(async () => {
     // Note: using retryDeletes instead of waitUntilReady due to backend bug where index status is ready, but index
     // is actually still upgrading
-    await retryDeletes(pinecone, podIndexName);
     await retryDeletes(pinecone, serverlessIndexName);
   });
 

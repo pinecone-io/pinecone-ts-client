@@ -181,7 +181,7 @@ export const waitUntilRecordsReady = async (
   namespace: string,
   recordIds: string[]
 ): Promise<IndexStatsDescription> => {
-  const sleepIntervalMs = 3000;
+  const sleepIntervalMs = 1000; // Reduced from 3000ms for faster polling
   let indexStats = await index.describeIndexStats();
 
   // if namespace is empty or the record count is not equal to the number of records we expect
@@ -194,9 +194,7 @@ export const waitUntilRecordsReady = async (
     indexStats = await index.describeIndexStats();
   }
 
-  // Sleeping one final time before returning for a bit more breathing room for freshness
-  await sleep(sleepIntervalMs);
-
+  // Records are ready, return immediately
   return indexStats;
 };
 

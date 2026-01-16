@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, sleep } from '../test-helpers';
+import { randomString, waitUntilAssistantReady } from '../test-helpers';
 
 let pinecone: Pinecone;
 
@@ -16,7 +16,10 @@ describe('createAssistant happy path', () => {
       metadata: { key: 'value', keyTwo: 'valueTwo' },
       region: 'us',
     });
-    await sleep(2000);
+
+    // Wait for assistant to be ready instead of fixed sleep
+    await waitUntilAssistantReady(assistantName);
+
     const description = await pinecone.describeAssistant(assistantName);
     expect(description.name).toEqual(assistantName);
     expect(description.instructions).toEqual('test-instructions');

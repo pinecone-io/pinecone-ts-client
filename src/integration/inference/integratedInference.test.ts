@@ -80,8 +80,15 @@ describe('Integrated Inference API tests', () => {
 
     await pinecone.index({ name: indexName }).upsertRecords(upsertRecords);
 
-    // wait for records to become available
-    await sleep(25000);
+    // Wait for records to become available using polling instead of fixed wait
+    await assertWithRetries(
+      () => pinecone.index({ name: indexName }).describeIndexStats(),
+      (stats) => {
+        expect(stats.totalRecordCount).toBeGreaterThanOrEqual(8);
+      },
+      30000, // max wait 30s
+      2000 // check every 2s instead of waiting fixed 25s
+    );
 
     await assertWithRetries(
       () =>

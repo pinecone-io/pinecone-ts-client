@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, sleep } from '../test-helpers';
+import { randomString, waitUntilAssistantReady } from '../test-helpers';
 import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
@@ -16,8 +16,10 @@ describe('deleteAssistant happy path', () => {
       name: assistantName,
     });
 
+    // Wait for assistant to be ready before deleting
+    await waitUntilAssistantReady(assistantName);
+
     await pinecone.deleteAssistant(assistantName);
-    await sleep(3000);
   });
 });
 

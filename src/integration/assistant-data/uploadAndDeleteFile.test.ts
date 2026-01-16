@@ -3,7 +3,10 @@ import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { assertWithRetries, sleep } from '../test-helpers';
+import {
+  assertWithRetries,
+  waitUntilAssistantFileReady,
+} from '../test-helpers';
 import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
@@ -43,9 +46,6 @@ beforeAll(async () => {
     console.error('Error writing file:', err);
   }
 
-  // Add a small delay to ensure file system sync
-  await sleep(5000);
-
   if (!fs.existsSync(tempFilePath)) {
     throw new Error(`Temporary file was not created: ${tempFilePath}`);
   }
@@ -79,7 +79,8 @@ describe('Upload file happy path', () => {
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await sleep(10000);
+    // Wait for file to be ready before attempting delete
+    await waitUntilAssistantFileReady(assistantName, response.id);
 
     // Delete file happy path test:
     assertWithRetries(
@@ -111,7 +112,8 @@ describe('Upload file happy path', () => {
       expect(response.metadata['category']).toEqual('integration-test');
     }
 
-    await sleep(10000);
+    // Wait for file to be ready before attempting delete
+    await waitUntilAssistantFileReady(assistantName, response.id);
 
     // Delete file happy path test:
     assertWithRetries(
