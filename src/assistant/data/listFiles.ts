@@ -1,6 +1,15 @@
-import { ListFilesRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  AssistantFileModel as GeneratedAssistantFileModel,
+  ListFilesRequest,
+  X_PINECONE_API_VERSION,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { AssistantFilesList, ListFilesOptions } from './types';
+import type {
+  AssistantFileModel,
+  AssistantFilesList,
+  ListFilesOptions,
+} from './types';
+import { mapAssistantFileStatus } from './fileStatus';
 
 /**
  * Lists files (with optional filter) uploaded to an Assistant.
@@ -10,7 +19,7 @@ import type { AssistantFilesList, ListFilesOptions } from './types';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
+ * const assistant = pc.assistant({ name: assistantName });
  * const files = await assistant.listFiles({filter: {key: 'value'}});
  * console.log(files);
  * // {
@@ -38,10 +47,22 @@ export const listFiles = (
 ) => {
   return async (options: ListFilesOptions): Promise<AssistantFilesList> => {
     const api = await apiProvider.provideData();
-    const request = {
+    const response = await api.listFiles({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       assistantName: assistantName,
       filter: options.filter && JSON.stringify(options.filter),
-    } as ListFilesRequest;
-    return await api.listFiles(request);
+    });
+    return {
+      files: response.files?.map(mapAssistantFileModel),
+    };
+  };
+};
+
+const mapAssistantFileModel = (
+  file: GeneratedAssistantFileModel
+): AssistantFileModel => {
+  return {
+    ...file,
+    status: mapAssistantFileStatus(file.status),
   };
 };

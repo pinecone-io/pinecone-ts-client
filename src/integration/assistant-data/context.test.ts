@@ -13,7 +13,7 @@ if (!process.env.ASSISTANT_NAME) {
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  assistant = pinecone.Assistant(assistantName);
+  assistant = pinecone.Assistant({ name: assistantName });
 });
 
 describe('Context happy path', () => {
@@ -46,7 +46,7 @@ describe('Context error paths', () => {
 
   test('Context with nonexistent assistant', async () => {
     await expect(
-      pinecone.Assistant('nonexistent').context({
+      pinecone.Assistant({ name: 'nonexistent' }).context({
         query: 'What is in the file?',
       })
     ).rejects.toThrow(/404/);

@@ -1,6 +1,7 @@
 import {
   ManageIndexesApi,
   BackupList,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
@@ -29,9 +30,14 @@ export const listBackups = (api: ManageIndexesApi) => {
     if (!indexName) {
       return await api.listProjectBackups({
         ...rest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     } else {
-      return await api.listIndexBackups({ indexName, ...rest });
+      return await api.listIndexBackups({
+        indexName,
+        ...rest,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+      });
     }
   };
 };

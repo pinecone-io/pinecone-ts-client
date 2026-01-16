@@ -54,6 +54,7 @@ describe('SearchRecordsCommand', () => {
     expect(fakeSearchRecords).toHaveBeenCalledWith({
       namespace: mockNamespace,
       searchRecordsRequest: mockSearchRequest,
+      xPineconeApiVersion: '2025-10',
     });
   });
 

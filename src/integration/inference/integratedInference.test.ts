@@ -78,14 +78,14 @@ describe('Integrated Inference API tests', () => {
       },
     ];
 
-    await pinecone.index(indexName).upsertRecords(upsertRecords);
+    await pinecone.index({ name: indexName }).upsertRecords(upsertRecords);
 
     // wait for records to become available
     await sleep(25000);
 
     await assertWithRetries(
       () =>
-        pinecone.index(indexName).searchRecords({
+        pinecone.index({ name: indexName }).searchRecords({
           query: { topK: 3, inputs: { text: 'apple corporation' } },
         }),
       (results: SearchRecordsResponse) => {

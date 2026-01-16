@@ -1,4 +1,7 @@
-import { ManageIndexesApi } from '../pinecone-generated-ts-fetch/db_control';
+import {
+  X_PINECONE_API_VERSION,
+  ManageIndexesApi,
+} from '../pinecone-generated-ts-fetch/db_control';
 import type { BackupId } from './types';
 import { PineconeArgumentError } from '../errors';
 
@@ -15,6 +18,9 @@ export const deleteBackup = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.deleteBackup({ backupId: backupId });
+    return await api.deleteBackup({
+      backupId: backupId,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

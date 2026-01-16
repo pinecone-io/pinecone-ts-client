@@ -1,6 +1,7 @@
 import {
-  RerankResult,
   InferenceApi,
+  RerankResult,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/inference';
 import { PineconeArgumentError } from '../errors';
 
@@ -67,7 +68,7 @@ export const rerank = (infApi: InferenceApi) => {
       rankFields = options.rankFields;
     }
 
-    const req = {
+    return await infApi.rerank({
       rerankRequest: {
         model: model,
         query: query,
@@ -77,8 +78,7 @@ export const rerank = (infApi: InferenceApi) => {
         rankFields: rankFields,
         parameters: parameters,
       },
-    };
-
-    return await infApi.rerank(req);
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

@@ -43,7 +43,7 @@ async function createServerlessIndex(client: Pinecone) {
   let serverlessIndexName = randomIndexName('serverless-integration');
   const indexes = await client.listIndexes();
   const serverlessIndex = indexes.indexes?.find(
-    (index) => index.spec.serverless
+    (index) => (index.spec as any).serverless
   );
   serverlessIndexName = serverlessIndex?.name || serverlessIndexName;
 
@@ -85,12 +85,11 @@ async function createServerlessIndex(client: Pinecone) {
 
     // upsert records into namespace
     await client
-      .index(newIndexName)
-      .namespace(globalNamespaceOne)
+      .index({ name: newIndexName, namespace: globalNamespaceOne })
       .upsert(allRecords);
 
     // wait for records to become available
-    await sleep(25000);
+    await sleep(45000);
   };
 
   // if there's not an existing serverlessIndex, create one
@@ -119,7 +118,7 @@ async function createAssistant(client: Pinecone) {
     console.log('Error getting assistant:', e);
   }
 
-  const assistant = client.Assistant(assistantName);
+  const assistant = client.Assistant({ name: assistantName });
 
   // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
   console.log(`ASSISTANT_NAME=${assistantName}`);

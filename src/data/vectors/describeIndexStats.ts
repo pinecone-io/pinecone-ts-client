@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
@@ -76,6 +77,7 @@ export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
 
     const api = await apiProvider.provide();
     const results = await api.describeIndexStats({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       describeIndexStatsRequest: { ...options },
     });
 

@@ -174,7 +174,7 @@ describe('Pinecone', () => {
       };
 
       const p = new Pinecone({ apiKey: 'foo' });
-      const i = p.index<ProductMetadata>('product-embeddings');
+      const i = p.index<ProductMetadata>({ name: 'product-embeddings' });
 
       const result = await i.fetch(['1']);
       if (result && result.records) {

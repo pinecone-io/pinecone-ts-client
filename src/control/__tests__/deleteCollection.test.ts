@@ -4,6 +4,7 @@ import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type {
   DeleteCollectionRequest,
   CollectionList,
+  ListCollectionsRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
 const setupMocks = (
@@ -12,14 +13,16 @@ const setupMocks = (
 ) => {
   const fakeDeleteCollection: (req: DeleteCollectionRequest) => Promise<void> =
     jest.fn().mockImplementation(deleteResponse);
-  const fakeListCollections: () => Promise<CollectionList> = jest
+  const fakeListCollections: (
+    req: ListCollectionsRequest
+  ) => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
   const IOA = {
     deleteCollection: fakeDeleteCollection,
     listCollections: fakeListCollections,
-  };
-  return IOA as ManageIndexesApi;
+  } as ManageIndexesApi;
+  return IOA;
 };
 
 describe('deleteCollection', () => {

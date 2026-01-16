@@ -26,9 +26,11 @@ describe('listBackups', () => {
       limit: 10,
       paginationToken: 'pagination-token',
     });
-    expect(MIA.listRestoreJobs).toHaveBeenCalledWith({
-      limit: 10,
-      paginationToken: 'pagination-token',
-    });
+    expect(MIA.listRestoreJobs).toHaveBeenCalledWith(
+      expect.objectContaining({
+        limit: 10,
+        paginationToken: 'pagination-token',
+      })
+    );
   });
 });

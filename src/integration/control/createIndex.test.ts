@@ -37,33 +37,63 @@ describe('create index', () => {
         expect(description.tags).toEqual({
           project: 'pinecone-integration-tests',
         });
+        // defaults to OnDemand read capacity
+        expect('serverless' in description.spec).toBe(true);
+        if ('serverless' in description.spec) {
+          expect(description.spec.serverless?.readCapacity.mode).toEqual(
+            'OnDemand'
+          );
+        }
 
         await pinecone.deleteIndex(indexName);
       });
 
-      test('create dense euclidean index', async () => {
-        const indexName = randomIndexName('serverless-create');
-
+      test('create serverless index with Dedicated read capacity', async () => {
+        const indexName = randomIndexName('svrlss-dedicated');
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
-          metric: 'euclidean',
           spec: {
             serverless: {
               cloud: 'aws',
-              region: 'us-west-2',
+              region: 'us-east-1',
+              readCapacity: {
+                mode: 'Dedicated',
+                nodeType: 'b1',
+                manual: {
+                  replicas: 2,
+                  shards: 1,
+                },
+              },
             },
           },
-          vectorType: 'dense',
           waitUntilReady: true,
+          tags: { project: 'pinecone-integration-tests' },
         });
-
         const description = await pinecone.describeIndex(indexName);
         expect(description.name).toEqual(indexName);
         expect(description.dimension).toEqual(5);
-        expect(description.metric).toEqual('euclidean');
-        expect(description.vectorType).toEqual('dense');
+        // defaults to 'cosine'
+        expect(description.metric).toEqual('cosine');
         expect(description.host).toBeDefined();
+        // defaults to 'dense'
+        expect(description.vectorType).toEqual('dense');
+        expect(description.tags).toEqual({
+          project: 'pinecone-integration-tests',
+        });
+
+        // Dedicated read capacity
+        expect('serverless' in description.spec).toBe(true);
+        if ('serverless' in description.spec) {
+          const readCapacity = description.spec.serverless?.readCapacity;
+          expect(readCapacity.mode).toEqual('Dedicated');
+
+          if (readCapacity.mode === 'Dedicated') {
+            expect(readCapacity.dedicated?.nodeType).toEqual('b1');
+            expect(readCapacity.dedicated?.manual?.replicas).toEqual(2);
+            expect(readCapacity.dedicated?.manual?.shards).toEqual(1);
+          }
+        }
 
         await pinecone.deleteIndex(indexName);
       });
@@ -87,43 +117,6 @@ describe('create index', () => {
         expect(description.vectorType).toEqual('sparse');
         expect(description.host).toBeDefined();
         expect(description.metric).toEqual('dotproduct');
-
-        await pinecone.deleteIndex(indexName);
-      });
-
-      test('create with utility prop: suppressConflicts', async () => {
-        const indexName = randomIndexName('serverless-create');
-
-        await pinecone.createIndex({
-          name: indexName,
-          dimension: 5,
-          metric: 'cosine',
-          spec: {
-            serverless: {
-              cloud: 'aws',
-              region: 'us-west-2',
-            },
-          },
-          waitUntilReady: true,
-        });
-
-        // call again with suppressConflicts: true - this would throw normally throw a server error
-        await pinecone.createIndex({
-          name: indexName,
-          dimension: 5,
-          metric: 'cosine',
-          spec: {
-            serverless: {
-              cloud: 'aws',
-              region: 'us-west-2',
-            },
-          },
-          waitUntilReady: true,
-          suppressConflicts: true,
-        });
-
-        const description = await pinecone.describeIndex(indexName);
-        expect(description.name).toEqual(indexName);
 
         await pinecone.deleteIndex(indexName);
       });

@@ -17,14 +17,14 @@ import { middleware } from '../../utils/middleware';
 
 export class NamespaceOperationsProvider {
   private readonly config: PineconeConfiguration;
-  private readonly indexName: string;
+  private readonly indexName?: string;
   private indexHostUrl?: string;
   private namespaceOperations?: NamespaceOperationsApi;
   private readonly additionalHeaders?: HTTPHeaders;
 
   constructor(
     config: PineconeConfiguration,
-    indexName: string,
+    indexName?: string,
     indexHostUrl?: string,
     additionalHeaders?: HTTPHeaders
   ) {
@@ -44,6 +44,11 @@ export class NamespaceOperationsProvider {
     if (this.indexHostUrl) {
       this.namespaceOperations = this.buildNamespaceOperationsConfig();
     } else {
+      if (!this.indexName) {
+        throw new Error(
+          'Either indexName or indexHostUrl must be provided to NamespaceOperationsProvider'
+        );
+      }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
         this.indexName

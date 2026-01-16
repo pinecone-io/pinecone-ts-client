@@ -1,4 +1,7 @@
-import { ListNamespacesResponse } from '../../pinecone-generated-ts-fetch/db_data';
+import {
+  ListNamespacesResponse,
+  X_PINECONE_API_VERSION,
+} from '../../pinecone-generated-ts-fetch/db_data';
 import { NamespaceOperationsProvider } from '../namespaces/namespacesOperationsProvider';
 
 export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
@@ -7,6 +10,10 @@ export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
     paginationToken?: string
   ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
-    return await api.listNamespacesOperation({ limit, paginationToken });
+    return await api.listNamespacesOperation({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      limit,
+      paginationToken,
+    });
   };
 };

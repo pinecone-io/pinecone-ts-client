@@ -37,6 +37,12 @@ export class AsstDataOperationsProvider {
   async provideData() {
     if (this.asstDataOperations) {
       return this.asstDataOperations;
+    }
+
+    // If a host url has been manually passed we use that,
+    // otherwise we rely on resolving the host from the AssistantHostSingleton
+    if (this.asstHostUrl) {
+      this.asstDataOperations = this.buildAsstDataOperationsConfig();
     } else {
       this.asstHostUrl = await AssistantHostSingleton.getHostUrl(
         this.config,
@@ -44,6 +50,7 @@ export class AsstDataOperationsProvider {
       );
       this.asstDataOperations = this.buildAsstDataOperationsConfig();
     }
+
     return this.asstDataOperations;
   }
 
@@ -51,12 +58,11 @@ export class AsstDataOperationsProvider {
     if (this.asstHostUrl) {
       return this.asstHostUrl;
     } else {
-      this.asstHostUrl = await AssistantHostSingleton.getHostUrl(
+      return await AssistantHostSingleton.getHostUrl(
         this.config,
         this.asstName
       );
     }
-    return this.asstHostUrl;
   }
 
   buildAsstDataOperationsConfig() {

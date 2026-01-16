@@ -1,21 +1,23 @@
 import {
-  CreateAssistantRequestRegionEnum,
+  CreateAssistantOperationRequest,
   ManageAssistantsApi as ManageAssistantsControlApi,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import type { CreateAssistantOptions, AssistantModel } from './types';
 import { CreateAssistantOptionsType } from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_control';
 
 export const createAssistant = (api: ManageAssistantsControlApi) => {
   return async (options: CreateAssistantOptions): Promise<AssistantModel> => {
     validateCreateAssistantOptions(options);
     return (await api.createAssistant({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       createAssistantRequest: {
         name: options.name,
         instructions: options?.instructions,
         metadata: options?.metadata,
-        region: options?.region as CreateAssistantRequestRegionEnum,
+        region: options?.region,
       },
     })) as AssistantModel;
   };
@@ -31,19 +33,12 @@ const validateCreateAssistantOptions = (options: CreateAssistantOptions) => {
   ValidateObjectProperties(options, CreateAssistantOptionsType);
 
   if (options.region) {
-    let region: CreateAssistantRequestRegionEnum =
-      CreateAssistantRequestRegionEnum.Us;
-    if (
-      !Object.values(CreateAssistantRequestRegionEnum)
-        .toString()
-        .includes(options.region.toLowerCase())
-    ) {
+    const normalizedRegion = options.region.toLowerCase();
+    if (normalizedRegion !== 'us' && normalizedRegion !== 'eu') {
       throw new PineconeArgumentError(
         'Invalid region specified. Must be one of "us" or "eu"'
       );
-    } else {
-      region = options.region.toLowerCase() as CreateAssistantRequestRegionEnum;
     }
-    options.region = region;
+    options.region = normalizedRegion;
   }
 };

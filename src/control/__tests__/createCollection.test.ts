@@ -5,6 +5,7 @@ import type {
   CollectionModel,
   CreateCollectionOperationRequest,
   IndexList,
+  ListIndexesRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
@@ -13,7 +14,7 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(fakeCreateCollectionResponse);
-  const fakeListIndexes: () => Promise<IndexList> = jest
+  const fakeListIndexes: (req: ListIndexesRequest) => Promise<IndexList> = jest
     .fn()
     .mockImplementation(() =>
       Promise.resolve({
@@ -187,6 +188,7 @@ describe('createCollection', () => {
         name: 'collection-name',
         source: 'index-name',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 });

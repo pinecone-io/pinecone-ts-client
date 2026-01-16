@@ -1,6 +1,7 @@
 import {
   IndexModel,
   ManageIndexesApi,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import type { IndexName } from './types';
 import { PineconeArgumentError } from '../errors';
@@ -25,7 +26,10 @@ export const describeIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `name` in order to describe an index'
       );
     }
-    const result = await api.describeIndex({ indexName });
+    const result = await api.describeIndex({
+      indexName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
     removeDeprecatedFields(result);
     return result;
   };

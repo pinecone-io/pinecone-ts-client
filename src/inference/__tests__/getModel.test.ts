@@ -31,6 +31,9 @@ describe('getModel', () => {
     const modelName = 'test-model';
     const IA = setupGetModelResponse();
     await getModel(IA)(modelName);
-    expect(IA.getModel).toHaveBeenCalledWith({ modelName });
+    expect(IA.getModel).toHaveBeenCalledWith({
+      modelName,
+      xPineconeApiVersion: '2025-10',
+    });
   });
 });

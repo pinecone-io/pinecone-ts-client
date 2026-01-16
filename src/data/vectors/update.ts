@@ -1,4 +1,5 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type {
   RecordId,
   RecordValues,
@@ -80,6 +81,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     );
 
     await retryWrapper.execute({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       updateRequest: { ...requestOptions, namespace: this.namespace },
     });
     return;

@@ -31,11 +31,12 @@ describe('Index', () => {
       const indexHostUrl = 'https://test-api-pinecone.io';
       const additionalHeaders = { 'x-custom-header': 'custom-value' };
       new Index(
-        'index-name',
-        config,
-        undefined,
-        indexHostUrl,
-        additionalHeaders
+        {
+          name: 'index-name',
+          host: indexHostUrl,
+          additionalHeaders,
+        },
+        config
       );
       expect(VectorOperationsProvider).toHaveBeenCalledTimes(1);
       expect(VectorOperationsProvider).toHaveBeenCalledWith(
@@ -69,7 +70,10 @@ describe('Index', () => {
     });
 
     test('can be used without generic types param', async () => {
-      const index = new Index('index-name', config, 'namespace');
+      const index = new Index(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
 
       // You can use the index class without passing the generic type for metadata,
       // but you lose type safety in that case.
@@ -85,16 +89,24 @@ describe('Index', () => {
       await index.upsert([{ id: '2', values: [0.1, 0.2], metadata: 2 }]);
     });
 
-    test('preserves metadata typing through chained namespace calls', async () => {
-      const index = new Index<MovieMetadata>('index-name', config, 'namespace');
-      const ns1 = index.namespace('ns1');
+    test('preserves metadata typing through passing namespace in options', async () => {
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
 
-      // @ts-expect-error because MovieMetadata metadata still expected after chained namespace call
-      await ns1.update({ id: '1', metadata: { title: 'Vertigo', rating: 5 } });
+      await index.update({
+        id: '1',
+        // @ts-expect-error because MovieMetadata metadata still expected when namespace is passed in options
+        metadata: { title: 'Vertigo', rating: 5 },
+      });
     });
 
     test('upsert: has type errors when passing malformed metadata', async () => {
-      const index = new Index<MovieMetadata>('index-name', config, 'namespace');
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
       expect(UpsertCommand).toHaveBeenCalledTimes(1);
 
       // No ts errors when upserting with proper MovieMetadata
@@ -131,7 +143,10 @@ describe('Index', () => {
     });
 
     test('fetch: response is typed with generic metadata type', async () => {
-      const index = new Index<MovieMetadata>('index-name', config, 'namespace');
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
       expect(FetchCommand).toHaveBeenCalledTimes(1);
 
       const response = await index.fetch(['1']);
@@ -149,7 +164,10 @@ describe('Index', () => {
     });
 
     test('query: returns typed results', async () => {
-      const index = new Index<MovieMetadata>('index-name', config, 'namespace');
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
       expect(QueryCommand).toHaveBeenCalledTimes(1);
 
       const results = await index.query({ id: '1', topK: 5 });
@@ -171,7 +189,10 @@ describe('Index', () => {
     });
 
     test('update: has typed arguments', async () => {
-      const index = new Index<MovieMetadata>('index-name', config, 'namespace');
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: 'namespace' },
+        config
+      );
       expect(UpdateCommand).toHaveBeenCalledTimes(1);
 
       // Can update metadata only without ts errors

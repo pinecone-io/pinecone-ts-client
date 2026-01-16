@@ -17,7 +17,7 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: '18.20.3'
+        node-version: '20.9.0'
 
     - name: Build pinecone-ts-client code
       run: npm install && npm run build
@@ -52,10 +52,10 @@ runs:
       run: |
         cd ts-client-test-external-app
         npm install --global vercel@latest
-        vercel --token ${{ inputs.vercel-token }} --yes
-        vercel pull --yes --token ${{ inputs.vercel-token }}
-        vercel build --token ${{ inputs.vercel-token }}
-        vercel --token ${{ inputs.vercel-token }} --prod
+        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --yes
+        vercel pull --yes --token ${{ inputs.vercel-token }} --scope pinecone-io
+        vercel build --token ${{ inputs.vercel-token }} --scope pinecone-io
+        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --prod
       shell: bash
 
     - name: Run end-to-end tests against the deployed Vercel app with assertResponse.ts

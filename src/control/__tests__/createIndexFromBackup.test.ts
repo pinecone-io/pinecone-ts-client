@@ -45,6 +45,7 @@ describe('createIndexFromBackup', () => {
         tags: { test: 'test-tag' },
         deletionProtection: 'enabled',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

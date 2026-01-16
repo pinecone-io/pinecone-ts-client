@@ -18,9 +18,10 @@ describe('describe index; serverless', () => {
     expect(description.dimension).toEqual(2);
     expect(description.metric).toEqual('dotproduct');
     expect(description.host).toBeDefined();
-    expect(description.spec.serverless).toBeDefined();
-    expect(description.spec.serverless?.cloud).toEqual('aws');
-    expect(description.spec.serverless?.region).toEqual('us-west-2');
+    const spec = description.spec as any;
+    expect(spec.serverless).toBeDefined();
+    expect(spec.serverless?.cloud).toEqual('aws');
+    expect(spec.serverless?.region).toEqual('us-west-2');
     expect(description.status.ready).toEqual(true);
     expect(description.status.state).toEqual('Ready');
     expect(description.tags).toEqual({

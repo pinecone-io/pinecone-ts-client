@@ -32,6 +32,7 @@ describe('fetch', () => {
     expect(VOA.fetchVectors).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',
+      xPineconeApiVersion: '2025-10',
     });
   });
 

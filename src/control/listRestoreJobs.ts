@@ -1,6 +1,7 @@
 import {
   ManageIndexesApi,
   RestoreJobList,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
@@ -21,6 +22,9 @@ export const listRestoreJobs = (api: ManageIndexesApi) => {
   return async (
     listBackupOptions: ListRestoreJobsOptions
   ): Promise<RestoreJobList> => {
-    return await api.listRestoreJobs(listBackupOptions);
+    return await api.listRestoreJobs({
+      ...listBackupOptions,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

@@ -1,6 +1,7 @@
 import {
   ManageIndexesApi,
   RestoreJobModel,
+  X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
 import type { RestoreJobId } from './types';
 import { PineconeArgumentError } from '../errors';
@@ -20,6 +21,9 @@ export const describeRestoreJob = (api: ManageIndexesApi) => {
       );
     }
 
-    return await api.describeRestoreJob({ jobId: restoreJobId });
+    return await api.describeRestoreJob({
+      jobId: restoreJobId,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

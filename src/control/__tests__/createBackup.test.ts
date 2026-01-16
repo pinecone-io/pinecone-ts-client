@@ -42,6 +42,7 @@ describe('createBackup', () => {
         name: 'backup-name',
         description: 'backup-description',
       },
+      xPineconeApiVersion: '2025-10',
     });
   });
 

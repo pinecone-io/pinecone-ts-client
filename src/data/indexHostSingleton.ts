@@ -17,6 +17,7 @@ export const IndexHostSingleton = (function () {
     const indexOperationsApi = indexOperationsBuilder(config);
     const describeResponse = await describeIndex(indexOperationsApi)(indexName);
     const host = describeResponse.host;
+    const privateHost = describeResponse.privateHost;
 
     if (!host) {
       // Generally, middleware will handle most errors from the call itself such as index not found, etc
@@ -25,7 +26,7 @@ export const IndexHostSingleton = (function () {
         'The HTTP call succeeded but the host URL could not be resolved. Please make sure the index exists and is in a ready state.'
       );
     } else {
-      return host;
+      return privateHost || host;
     }
   };
 

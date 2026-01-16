@@ -1,9 +1,14 @@
 import {
   ContextModel,
-  ContextAssistantRequest,
+  MessageModel,
+  X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import { ContextOptionsType, type ContextOptions } from './types';
+import {
+  ContextOptionsType,
+  type ContextOptions,
+  type MessagesModel,
+} from './types';
 import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
 
@@ -16,7 +21,7 @@ import { PineconeArgumentError } from '../../errors';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
+ * const assistant = pc.assistant({ name: assistantName });
  * const response = await assistant.context({query: "What is the capital of France?"});
  * console.log(response);
  * // {
@@ -45,17 +50,17 @@ export const context = (
     validateContextOptions(options);
 
     const api = await apiProvider.provideData();
-    const request = {
+    return await api.contextAssistant({
       assistantName: assistantName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       contextRequest: {
         query: options.query,
         filter: options.filter,
-        messages: options.messages,
+        messages: toMessageModel(options.messages),
         topK: options.topK,
         snippetSize: options.snippetSize,
       },
-    } as ContextAssistantRequest;
-    return await api.contextAssistant(request);
+    });
   };
 };
 
@@ -67,4 +72,22 @@ const validateContextOptions = (options: ContextOptions) => {
   }
 
   ValidateObjectProperties(options, ContextOptionsType);
+};
+
+const toMessageModel = (
+  messages?: MessagesModel
+): MessageModel[] | undefined => {
+  if (!messages) {
+    return undefined;
+  }
+  if (Array.isArray(messages) && typeof messages[0] === 'string') {
+    return messages.map((message) => {
+      return { role: 'user', content: message };
+    });
+  }
+  if (Array.isArray(messages) && typeof messages[0] === 'object') {
+    return messages as MessageModel[];
+  }
+
+  return undefined;
 };

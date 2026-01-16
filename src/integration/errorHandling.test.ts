@@ -27,7 +27,7 @@ describe('Error handling', () => {
 
       expect.assertions(2);
       try {
-        await p.index('foo-index').query({ topK: 10, id: '1' });
+        await p.index({ name: 'foo-index' }).query({ topK: 10, id: '1' });
       } catch (e) {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeAuthorizationError');
@@ -67,7 +67,7 @@ describe('Error handling', () => {
 
       test('calling data plane', async () => {
         try {
-          await p.index('foo-index').query({ topK: 10, id: '1' });
+          await p.index({ name: 'foo-index' }).query({ topK: 10, id: '1' });
         } catch (e) {
           const err = e as PineconeConnectionError;
           expect(err.name).toEqual('PineconeConnectionError');

@@ -81,6 +81,7 @@ export const PineconeConfigurationProperties: PineconeConfigurationType[] = [
   'sourceTag',
   'caller',
   'maxRetries',
+  'assistantRegion',
 ];
 
 /** The id of the record */

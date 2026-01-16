@@ -1,4 +1,4 @@
-import { DeleteFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 
@@ -10,7 +10,7 @@ import { PineconeArgumentError } from '../../errors';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
- * const assistant = pc.Assistant(assistantName);
+ * const assistant = pc.assistant({ name: assistantName });
  * const files = await assistant.listFiles();
  * let fileId: string;
  * if (files.files) {
@@ -33,10 +33,10 @@ export const deleteFile = (
       );
     }
     const api = await apiProvider.provideData();
-    const request = {
+    return await api.deleteFile({
       assistantName: assistantName,
       assistantFileId: fileId,
-    } as DeleteFileRequest;
-    return await api.deleteFile(request);
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   };
 };

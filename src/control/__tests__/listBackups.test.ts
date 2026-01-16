@@ -2,6 +2,7 @@ import { listBackups } from '../listBackups';
 import {
   BackupList,
   ListIndexBackupsRequest,
+  ListProjectBackupsRequest,
   ManageIndexesApi,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
@@ -13,7 +14,9 @@ describe('listBackups', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
 
-    const fakeListProjectBackups: () => Promise<BackupList> = jest
+    const fakeListProjectBackups: (
+      req: ListProjectBackupsRequest
+    ) => Promise<BackupList> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
 
@@ -32,11 +35,13 @@ describe('listBackups', () => {
       limit: 10,
       paginationToken: 'pagination-token',
     });
-    expect(MIA.listIndexBackups).toHaveBeenCalledWith({
-      indexName: 'my-index',
-      limit: 10,
-      paginationToken: 'pagination-token',
-    });
+    expect(MIA.listIndexBackups).toHaveBeenCalledWith(
+      expect.objectContaining({
+        indexName: 'my-index',
+        limit: 10,
+        paginationToken: 'pagination-token',
+      })
+    );
   });
 
   test('calls the openapi describe project backup endpoint when indexName is not provided', async () => {
