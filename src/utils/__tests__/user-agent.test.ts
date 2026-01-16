@@ -116,7 +116,7 @@ describe('user-agent', () => {
       expect(userAgent).toContain('caller=claude_code_version');
     });
 
-    test('removes colons from caller values', () => {
+    test('replaces colons with underscores in caller values', () => {
       const config = {
         apiKey: 'test-api-key',
         caller: {
@@ -125,7 +125,33 @@ describe('user-agent', () => {
         },
       };
       const userAgent = buildUserAgent(config);
-      expect(userAgent).toContain('caller=openai:gpt4');
+      expect(userAgent).toContain('caller=open_ai:gpt_4');
+    });
+
+    test('replaces colons with underscores in provider and model to prevent parsing ambiguity', () => {
+      const config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'open:ai',
+          model: 'gpt-4',
+        },
+      };
+      const userAgent = buildUserAgent(config);
+      // Colons should be replaced with underscores in provider, so "open:ai" becomes "open_ai"
+      expect(userAgent).toContain('caller=open_ai:gpt-4');
+      expect(userAgent).not.toContain('caller=open:ai:gpt-4');
+
+      const config2 = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'google',
+          model: 'gemini:2.0',
+        },
+      };
+      const userAgent2 = buildUserAgent(config2);
+      // Colons should be replaced with underscores in model
+      expect(userAgent2).toContain('caller=google:gemini_2.0');
+      expect(userAgent2).not.toContain('caller=google:gemini:2.0');
     });
 
     test('handles empty or invalid caller values gracefully', () => {

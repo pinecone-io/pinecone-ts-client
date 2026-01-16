@@ -84,12 +84,14 @@ const normalizeCallerString = (str: string): string | undefined => {
   /**
    * normalize caller string
    * 1. Lowercase
-   * 2. Limit charset to [a-z0-9_ \-.] (allowing hyphens, periods, and spaces)
-   * 3. Trim left/right spaces
-   * 4. Condense multiple spaces to one, and replace with underscore
+   * 2. Replace colons with underscores (colons are used as the delimiter between provider and model)
+   * 3. Limit charset to [a-z0-9_ \-.] (allowing hyphens, periods, and spaces)
+   * 4. Trim left/right spaces
+   * 5. Condense multiple spaces to one, and replace with underscore
    */
   return str
     .toLowerCase()
+    .replace(/:/g, '_')
     .replace(/[^a-z0-9_ \-.]/g, '')
     .trim()
     .replace(/[ ]+/g, '_');
