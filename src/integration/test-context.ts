@@ -9,6 +9,8 @@ export interface IntegrationFixtures {
     name: string;
     dimension: number;
     metric: string;
+    metadataFields: string[];
+    recordIds: string[];
   };
   assistant: {
     name: string;
@@ -86,6 +88,16 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
     throw new Error('PINECONE_API_KEY environment variable not set');
   }
 
+  const metadataFields = data.serverlessIndex.metadataFields || [];
+  if (metadataFields.length === 0) {
+    throw new Error('FIXTURES_JSON missing serverlessIndex.metadataFields');
+  }
+
+  const recordIds = data.serverlessIndex.recordIds || [];
+  if (recordIds.length === 0) {
+    throw new Error('FIXTURES_JSON missing serverlessIndex.recordIds');
+  }
+
   // Create Pinecone client
   const client = new Pinecone({ apiKey });
 
@@ -95,6 +107,8 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
       name: data.serverlessIndex.name,
       dimension: data.serverlessIndex.dimension || 2,
       metric: data.serverlessIndex.metric || 'dotproduct',
+      metadataFields,
+      recordIds,
     },
     assistant: {
       name: data.assistant.name,

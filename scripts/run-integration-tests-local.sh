@@ -15,14 +15,11 @@ if [[ "$1" == "edge" ]] || [[ "$1" == "--edge" ]]; then
   TEST_ENV="edge"
 fi
 
-echo "🚀 Running local integration tests (${TEST_ENV} environment)..."
-echo ""
-
 # Run setup and capture output
 echo "📦 Setting up test resources..."
 SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
 
-# Show setup logs (everything except the FIXTURES_JSON line)
+# Show setup logs
 echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
 # Extract and export FIXTURES_JSON
@@ -51,7 +48,7 @@ npx ts-node ./src/integration/teardown.ts
 # Exit with test exit code
 if [ $TEST_EXIT_CODE -eq 0 ]; then
   echo ""
-  echo "✅ All tests passed!"
+  echo "✅ All tests passed"
   exit 0
 else
   echo ""

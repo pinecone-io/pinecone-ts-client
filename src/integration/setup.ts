@@ -40,6 +40,8 @@ export const setup = async () => {
   const indexName = randomIndexName(prefix);
   console.error(`📦 Creating serverless index: ${indexName}`);
 
+  const metadataFields = ['genre', 'year'];
+
   await pc.createIndex({
     name: indexName,
     dimension: 2,
@@ -48,6 +50,11 @@ export const setup = async () => {
       serverless: {
         cloud: 'aws',
         region: 'us-west-2',
+        schema: {
+          fields: Object.fromEntries(
+            metadataFields.map((field) => [field, { filterable: true }])
+          ),
+        },
       },
     },
     waitUntilReady: true,
@@ -73,6 +80,7 @@ export const setup = async () => {
   });
 
   const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
+  const recordIds = allRecords.map((record) => record.id);
 
   await pc
     .index({ name: indexName, namespace: globalNamespaceOne })
@@ -119,6 +127,8 @@ export const setup = async () => {
       name: indexName,
       dimension: 2,
       metric: 'dotproduct',
+      metadataFields,
+      recordIds,
     },
     assistant: {
       name: assistantName,
