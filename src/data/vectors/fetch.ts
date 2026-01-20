@@ -7,6 +7,7 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /** The list of record ids you would like to fetch using { @link Index.fetch } */
 export type FetchOptions = Array<RecordId>;
@@ -43,18 +44,21 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(ids: FetchOptions): Promise<FetchResponse<T>> {
+  async run(ids: FetchOptions, maxRetries?: number): Promise<FetchResponse<T>> {
     this.validator(ids);
     const api = await this.apiProvider.provide();
-    const response = await api.fetchVectors({
+
+    const retryWrapper = new RetryOnServerFailure(
+      api.fetchVectors.bind(api),
+      maxRetries
+    );
+    const response = await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ids: ids,
       namespace: this.namespace,
     });
 
-    // My testing shows that in reality vectors and namespace are
-    // never undefined even when there are no records returned. So these
-    // default values are needed only to satisfy the typescript compiler.
+    // Vectors and Namespace should never actually be undefined, but we need to satisfy the typescript compiler.
     return {
       records: response.vectors ? response.vectors : {},
       namespace: response.namespace ? response.namespace : '',

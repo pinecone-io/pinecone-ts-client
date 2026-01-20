@@ -6,6 +6,7 @@ import {
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { RecordMetadata, PineconeRecord, OperationUsage } from './types';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /**
  * The options that may be passed to {@link Index.fetchByMetadata}
@@ -59,10 +60,15 @@ export class FetchByMetadataCommand<T extends RecordMetadata = RecordMetadata> {
   };
 
   async run(
-    options: FetchByMetadataOptions
+    options: FetchByMetadataOptions,
+    maxRetries?: number
   ): Promise<FetchByMetadataResponse<T>> {
     this.validator(options);
     const api = await this.apiProvider.provide();
+    const retryWrapper = new RetryOnServerFailure(
+      api.fetchVectorsByMetadata.bind(api),
+      maxRetries
+    );
     const request: FetchVectorsByMetadataRequest = {
       fetchByMetadataRequest: {
         namespace: this.namespace,
@@ -72,7 +78,7 @@ export class FetchByMetadataCommand<T extends RecordMetadata = RecordMetadata> {
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     };
-    const response = await api.fetchVectorsByMetadata(request);
+    const response = await retryWrapper.execute(request);
     return {
       records: response.vectors ? response.vectors : {},
       namespace: response.namespace ? response.namespace : '',

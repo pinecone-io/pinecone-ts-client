@@ -3,6 +3,7 @@ import type { PineconeRecord, RecordMetadata } from './types';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -161,13 +162,22 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(query: QueryOptions): Promise<QueryResponse<T>> {
+  async run(
+    query: QueryOptions,
+    maxRetries?: number
+  ): Promise<QueryResponse<T>> {
     this.validator(query);
     const api = await this.apiProvider.provide();
-    const results = await api.queryVectors({
+
+    const retryWrapper = new RetryOnServerFailure(
+      api.queryVectors.bind(api),
+      maxRetries
+    );
+    const results = await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       queryRequest: { ...query, namespace: this.namespace },
     });
+
     const matches = results.matches ? results.matches : [];
 
     return {

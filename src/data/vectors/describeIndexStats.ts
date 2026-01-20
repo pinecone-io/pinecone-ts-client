@@ -1,6 +1,7 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /**
  * A count of the number of records found inside a namespace
@@ -65,14 +66,19 @@ export const describeIndexStats = (apiProvider: VectorOperationsProvider) => {
   };
 
   return async (
-    options?: DescribeIndexStatsOptions
+    options?: DescribeIndexStatsOptions,
+    maxRetries?: number
   ): Promise<IndexStatsDescription> => {
     if (options) {
       validator(options);
     }
 
     const api = await apiProvider.provide();
-    const results = await api.describeIndexStats({
+    const retryWrapper = new RetryOnServerFailure(
+      api.describeIndexStats.bind(api),
+      maxRetries
+    );
+    const results = await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       describeIndexStatsRequest: { ...options },
     });

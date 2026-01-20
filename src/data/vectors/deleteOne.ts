@@ -2,6 +2,7 @@ import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /**
  * The id of the record to delete from the index.
@@ -21,10 +22,17 @@ export const deleteOne = (
       );
     }
   };
-  return async (options: DeleteOneOptions): Promise<void> => {
+  return async (
+    options: DeleteOneOptions,
+    maxRetries?: number
+  ): Promise<void> => {
     validator(options);
     const api = await apiProvider.provide();
-    await api.deleteVectors({
+    const retryWrapper = new RetryOnServerFailure(
+      api.deleteVectors.bind(api),
+      maxRetries
+    );
+    await retryWrapper.execute({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       deleteRequest: { ids: [options], namespace },
     });
