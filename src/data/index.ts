@@ -767,7 +767,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * "Abort" to stop the import operation if any records fail to import.
    */
   async startImport(uri: string, errorMode?: string, integration?: string) {
-    return await this._startImportCommand.run(uri, errorMode, integration);
+    return await this._startImportCommand.run(
+      uri,
+      errorMode,
+      integration,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -801,7 +806,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    */
   async listImports(limit?: number, paginationToken?: string) {
-    return await this._listImportsCommand.run(limit, paginationToken);
+    return await this._listImportsCommand.run(
+      limit,
+      paginationToken,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -829,7 +838,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param id - The id of the import operation to describe.
    */
   async describeImport(id: string) {
-    return await this._describeImportCommand.run(id);
+    return await this._describeImportCommand.run(id, this.config.maxRetries);
   }
 
   /**
@@ -848,7 +857,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param id - The id of the import operation to cancel.
    */
   async cancelImport(id: string) {
-    return await this._cancelImportCommand.run(id);
+    return await this._cancelImportCommand.run(id, this.config.maxRetries);
   }
 
   /**
@@ -876,7 +885,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * when a schema is present, only fields which are present in the `fields` object with `filterable: true` are indexed.
    */
   async createNamespace(options: CreateNamespaceOptions) {
-    return await this._createNamespaceCommand(options);
+    return await this._createNamespaceCommand(options, this.config.maxRetries);
   }
 
   /**
@@ -907,7 +916,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     paginationToken?: string,
     prefix?: string
   ) {
-    return await this._listNamespacesCommand(limit, paginationToken, prefix);
+    return await this._listNamespacesCommand(
+      limit,
+      paginationToken,
+      prefix,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -926,7 +940,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param namespace - The namespace to describe.
    */
   async describeNamespace(namespace: string) {
-    return await this._describeNamespaceCommand(namespace);
+    return await this._describeNamespaceCommand(
+      namespace,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -943,6 +960,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param namespace - The namespace to delete.
    */
   async deleteNamespace(namespace: string) {
-    return await this._deleteNamespaceCommand(namespace);
+    return await this._deleteNamespaceCommand(
+      namespace,
+      this.config.maxRetries
+    );
   }
 }

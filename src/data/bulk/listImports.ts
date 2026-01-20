@@ -4,6 +4,7 @@ import {
   ListBulkImportsRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/db_data';
+import { RetryOnServerFailure } from '../../utils';
 
 export class ListImportsCommand {
   apiProvider: BulkOperationsProvider;
@@ -16,7 +17,8 @@ export class ListImportsCommand {
 
   async run(
     limit?: number,
-    paginationToken?: string
+    paginationToken?: string,
+    maxRetries?: number
   ): Promise<ListImportsResponse> {
     const req: ListBulkImportsRequest = {
       xPineconeApiVersion: X_PINECONE_API_VERSION,
@@ -24,6 +26,10 @@ export class ListImportsCommand {
       paginationToken: paginationToken,
     };
     const api = await this.apiProvider.provide();
-    return await api.listBulkImports(req);
+    const retryWrapper = new RetryOnServerFailure(
+      api.listBulkImports.bind(api),
+      maxRetries
+    );
+    return await retryWrapper.execute(req);
   }
 }

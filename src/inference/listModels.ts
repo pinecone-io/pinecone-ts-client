@@ -3,6 +3,7 @@ import {
   InferenceApi,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/inference';
+import { RetryOnServerFailure } from '../utils';
 
 /**
  * The options for listing models.
@@ -19,8 +20,16 @@ export interface ListModelsOptions {
 }
 
 export const listModels = (infApi: InferenceApi) => {
-  return async (options?: ListModelsOptions): Promise<ModelInfoList> => {
-    return await infApi.listModels({
+  return async (
+    options?: ListModelsOptions,
+    maxRetries?: number
+  ): Promise<ModelInfoList> => {
+    const retryWrapper = new RetryOnServerFailure(
+      infApi.listModels.bind(infApi),
+      maxRetries
+    );
+
+    return await retryWrapper.execute({
       ...options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

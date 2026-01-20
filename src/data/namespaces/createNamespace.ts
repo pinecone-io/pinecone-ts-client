@@ -5,6 +5,7 @@ import {
 import type { MetadataSchema } from '../../pinecone-generated-ts-fetch/db_control';
 import { NamespaceOperationsProvider } from './namespacesOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 /** Options for creating a namespace. */
 export interface CreateNamespaceOptions {
@@ -16,7 +17,8 @@ export interface CreateNamespaceOptions {
 
 export const createNamespace = (apiProvider: NamespaceOperationsProvider) => {
   return async (
-    options: CreateNamespaceOptions
+    options: CreateNamespaceOptions,
+    maxRetries?: number
   ): Promise<NamespaceDescription> => {
     const api = await apiProvider.provide();
 
@@ -26,7 +28,12 @@ export const createNamespace = (apiProvider: NamespaceOperationsProvider) => {
       );
     }
 
-    return await api.createNamespace({
+    const retryWrapper = new RetryOnServerFailure(
+      api.createNamespace.bind(api),
+      maxRetries
+    );
+
+    return await retryWrapper.execute({
       createNamespaceRequest: options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

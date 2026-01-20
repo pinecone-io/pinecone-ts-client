@@ -4,6 +4,7 @@ import {
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/inference';
 import { PineconeArgumentError } from '../errors';
+import { RetryOnServerFailure } from '../utils';
 
 /** Options one can send with a request to {@link rerank} *
  *
@@ -26,7 +27,8 @@ export const rerank = (infApi: InferenceApi) => {
     model: string,
     query: string,
     documents: Array<{ [key: string]: string } | string>,
-    options: RerankOptions = {}
+    options: RerankOptions = {},
+    maxRetries?: number
   ): Promise<RerankResult> => {
     if (documents.length == 0) {
       throw new PineconeArgumentError(
@@ -68,7 +70,12 @@ export const rerank = (infApi: InferenceApi) => {
       rankFields = options.rankFields;
     }
 
-    return await infApi.rerank({
+    const retryWrapper = new RetryOnServerFailure(
+      infApi.rerank.bind(infApi),
+      maxRetries
+    );
+
+    return await retryWrapper.execute({
       rerankRequest: {
         model: model,
         query: query,

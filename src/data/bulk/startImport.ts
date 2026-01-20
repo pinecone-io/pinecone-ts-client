@@ -6,6 +6,7 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
+import { RetryOnServerFailure } from '../../utils';
 
 export class StartImportCommand {
   apiProvider: BulkOperationsProvider;
@@ -19,7 +20,8 @@ export class StartImportCommand {
   async run(
     uri: string,
     errorMode?: string | undefined,
-    integrationId?: string | undefined
+    integrationId?: string | undefined,
+    maxRetries?: number
   ): Promise<StartImportResponse> {
     if (!uri) {
       throw new PineconeArgumentError(
@@ -53,6 +55,10 @@ export class StartImportCommand {
     };
 
     const api = await this.apiProvider.provide();
-    return await api.startBulkImport(req);
+    const retryWrapper = new RetryOnServerFailure(
+      api.startBulkImport.bind(api),
+      maxRetries
+    );
+    return await retryWrapper.execute(req);
   }
 }

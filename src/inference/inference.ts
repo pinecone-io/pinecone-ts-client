@@ -68,7 +68,7 @@ export class Inference {
     inputs: Array<string>,
     params?: Record<string, string>
   ): Promise<EmbeddingsList> {
-    return this._embed(model, inputs, params);
+    return this._embed(model, inputs, params, this.config.maxRetries);
   }
 
   /**
@@ -168,7 +168,13 @@ export class Inference {
     documents: Array<{ [key: string]: string } | string>,
     options?: RerankOptions
   ): Promise<RerankResult> {
-    return this._rerank(model, query, documents, options);
+    return this._rerank(
+      model,
+      query,
+      documents,
+      options,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -220,7 +226,7 @@ export class Inference {
    * @returns A promise that resolves to {@link ModelInfoList}.
    * */
   async listModels(options?: ListModelsOptions): Promise<ModelInfoList> {
-    return this._listModels(options);
+    return this._listModels(options, this.config.maxRetries);
   }
 
   /**
@@ -284,6 +290,6 @@ export class Inference {
    * @returns A promise that resolves to {@link ModelInfo}.
    * */
   async getModel(modelName: string): Promise<ModelInfo> {
-    return this._getModel(modelName);
+    return this._getModel(modelName, this.config.maxRetries);
   }
 }
