@@ -10,7 +10,6 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../../utils';
 
 /**
@@ -46,16 +45,6 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   filter?: object;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type UpdateOptionsType = keyof UpdateOptions;
-const UpdateOptionsProperties: UpdateOptionsType[] = [
-  'id',
-  'values',
-  'sparseValues',
-  'metadata',
-  'filter',
-];
-
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
@@ -66,9 +55,6 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (options: UpdateOptions<T>) => {
-    if (options) {
-      ValidateObjectProperties(options, UpdateOptionsProperties);
-    }
     if (options && !options.id && !options.filter) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'

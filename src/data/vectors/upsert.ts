@@ -1,13 +1,8 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
-import {
-  PineconeRecord,
-  PineconeRecordsProperties,
-  RecordMetadata,
-} from './types';
+import { PineconeRecord, RecordMetadata } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../../utils';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
@@ -20,9 +15,6 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (records: Array<PineconeRecord<T>>) => {
-    for (const record of records) {
-      ValidateObjectProperties(record, PineconeRecordsProperties);
-    }
     if (records.length === 0) {
       throw new PineconeArgumentError(
         'Must pass in at least 1 record to upsert.'

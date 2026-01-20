@@ -8,7 +8,6 @@ import {
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
-import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 import { RetryOnServerFailure } from '../utils';
 import {
   CreateIndexReadCapacity,
@@ -51,23 +50,8 @@ export type ConfigureIndexOptions = {
   readCapacity?: CreateIndexReadCapacity;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type ConfigureIndexOptionsType = keyof ConfigureIndexOptions;
-export const ConfigureIndexOptionsProperties: ConfigureIndexOptionsType[] = [
-  'deletionProtection',
-  'tags',
-  'embed',
-  'podReplicas',
-  'podType',
-  'readCapacity',
-];
-
 export const configureIndex = (api: ManageIndexesApi) => {
   const validator = (indexName: IndexName, options: ConfigureIndexOptions) => {
-    if (options) {
-      ValidateObjectProperties(options, ConfigureIndexOptionsProperties);
-    }
-
     if (!indexName) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `indexName` to configureIndex.'

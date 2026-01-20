@@ -23,23 +23,6 @@ const setupResponse = (response, isSuccess) => {
 };
 
 describe('Query command tests', () => {
-  test('should throw error when known property is misspelled', async () => {
-    const { cmd } = setupResponse({ matches: [] }, false);
-
-    await expect(
-      // @ts-ignore - Testing invalid property
-      cmd.run({ id: 'abc', topK: 2, includeMetadataaaaa: true })
-    ).rejects.toThrow(PineconeArgumentError);
-
-    await expect(
-      // @ts-ignore - Testing invalid property
-      cmd.run({ id: 'abc', topK: 2, includeMetadataaaaa: true })
-    ).rejects.toThrow(
-      'Object contained invalid properties: includeMetadataaaaa. Valid properties include id, vector, sparseVector,' +
-        ' includeValues, includeMetadata, filter, topK.'
-    );
-  });
-
   test('should throw error when no options obj is passed', async () => {
     const { cmd } = setupResponse({ matches: [] }, false);
     // @ts-ignore

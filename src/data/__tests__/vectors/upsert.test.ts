@@ -38,17 +38,6 @@ describe('upsert', () => {
     });
   });
 
-  test('throw error if known property is misspelled', async () => {
-    const { cmd } = setupSuccess('');
-    const toThrow = async () => {
-      // @ts-ignore
-      await cmd.run([{ id: '1', valuess: [1, 2, 3] }]);
-    };
-    await expect(toThrow()).rejects.toThrowError(
-      'Object contained invalid properties: valuess. Valid properties include id, values, sparseValues, metadata.'
-    );
-  });
-
   test('throw error if records array is empty', async () => {
     const { cmd } = setupSuccess('');
     const toThrow = async () => {

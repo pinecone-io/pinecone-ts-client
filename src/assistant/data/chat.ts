@@ -6,8 +6,7 @@ import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { RetryOnServerFailure } from '../../utils';
 import type { ChatOptions } from './types';
-import { ChatModelEnum, ChatOptionsType } from './types';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { ChatModelEnum } from './types';
 import { PineconeArgumentError } from '../../errors';
 
 export const chat = (
@@ -51,8 +50,6 @@ export const validateChatOptions = (options: ChatOptions) => {
       'You must pass an object with required properties (`messages`) to chat with an assistant.'
     );
   }
-
-  ValidateObjectProperties(options, ChatOptionsType);
 
   if (options.model) {
     if (

@@ -3,8 +3,6 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import type { CreateAssistantOptions, AssistantModel } from './types';
-import { CreateAssistantOptionsType } from './types';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
 
 export const createAssistant = (api: ManageAssistantsControlApi) => {
@@ -28,8 +26,6 @@ const validateCreateAssistantOptions = (options: CreateAssistantOptions) => {
       'You must pass an object with required properties (`name`) to create an Assistant.'
     );
   }
-
-  ValidateObjectProperties(options, CreateAssistantOptionsType);
 
   if (options.region) {
     const normalizedRegion = options.region.toLowerCase();

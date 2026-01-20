@@ -10,10 +10,6 @@ export interface ListFilesOptions {
   filter?: object;
 }
 
-// Properties for validation to ensure no unkonwn/invalid properties are passed.
-type ListFilesOptionsType = keyof ListFilesOptions;
-export const ListFilesOptionsType: ListFilesOptionsType[] = ['filter'];
-
 /**
  * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
  */
@@ -165,19 +161,6 @@ export interface ChatOptions {
   contextOptions?: ChatContextOptions;
 }
 
-// Properties for validation to ensure no unkonwn/invalid properties are passed.
-type ChatOptionsType = keyof ChatOptions;
-export const ChatOptionsType: ChatOptionsType[] = [
-  'messages',
-  'model',
-  'temperature',
-  'filter',
-  'jsonResponse',
-  'includeHighlights',
-  'topK',
-  'contextOptions',
-];
-
 /**
  * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
  */
@@ -202,15 +185,6 @@ export interface ChatCompletionOptions {
    */
   filter?: object;
 }
-
-// Properties for validation to ensure no unkonwn/invalid properties are passed.
-type ChatCompletionOptionsType = keyof ChatCompletionOptions;
-export const ChatCompletionOptionsType: ChatCompletionOptionsType[] = [
-  'messages',
-  'model',
-  'temperature',
-  'filter',
-];
 
 /**
  * The `ContextOptions` interface describes the query and optional filter to retrieve context snippets from an Assistant.
@@ -238,14 +212,6 @@ export interface ContextOptions {
   snippetSize?: number;
 }
 
-type ContextOptionsType = keyof ContextOptions;
-export const ContextOptionsType: ContextOptionsType[] = [
-  'query',
-  'filter',
-  'messages',
-  'topK',
-];
-
 /**
  * The `UploadFileOptions` interface describes the file path for uploading a file to an Assistant and optional metadata.
  */
@@ -259,13 +225,6 @@ export interface UploadFileOptions {
    */
   metadata?: Record<string, string | number>;
 }
-
-// Properties for validation to ensure no unkonwn/invalid properties are passed.
-type UploadFileOptionsType = keyof UploadFileOptions;
-export const UploadFileOptionsType: UploadFileOptionsType[] = [
-  'path',
-  'metadata',
-];
 
 /**
  * A discriminated union representing a chunked response in a streamed chat.

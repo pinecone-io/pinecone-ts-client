@@ -3,7 +3,6 @@ import type { PineconeRecord, RecordMetadata } from './types';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
 /**
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
@@ -71,18 +70,6 @@ export type QueryByVectorValues = QueryShared & {
  */
 export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type QueryOptionsType = keyof QueryByRecordId | keyof QueryByVectorValues;
-const QueryOptionsProperties: QueryOptionsType[] = [
-  'id',
-  'vector',
-  'sparseVector',
-  'includeValues',
-  'includeMetadata',
-  'filter',
-  'topK',
-];
-
 /**
  * A {@link PineconeRecord} with a similarity score.
  */
@@ -124,9 +111,6 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (options: QueryOptions) => {
-    if (options) {
-      ValidateObjectProperties(options, QueryOptionsProperties);
-    }
     if (!options) {
       throw new PineconeArgumentError(
         'You must enter a query configuration object to query the index.'

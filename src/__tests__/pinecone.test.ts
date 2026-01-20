@@ -88,20 +88,6 @@ describe('Pinecone', () => {
       });
     });
 
-    describe('unknown properties', () => {
-      test('should throw an error if unknown property provided', () => {
-        expect(() => {
-          new Pinecone({
-            apiKey: 'test-key',
-            unknownProp: 'banana',
-          } as PineconeConfiguration);
-        }).toThrow(
-          'Object contained invalid properties: unknownProp. Valid properties include apiKey, controllerHostUrl,' +
-            ' fetchApi, additionalHeaders, sourceTag, maxRetries, assistantRegion.'
-        );
-      });
-    });
-
     describe('optional properties', () => {
       test('should not throw when optional properties provided: fetchAPI, controllerHostUrl, sourceTag', () => {
         expect(() => {
