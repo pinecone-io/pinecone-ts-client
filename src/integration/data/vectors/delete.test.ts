@@ -4,7 +4,7 @@ import {
   waitUntilRecordsReady,
   globalNamespaceOne,
   randomIndexName,
-  waitUntilReady,
+  waitUntilIndexReady,
 } from '../../test-helpers';
 
 let pinecone: Pinecone,
@@ -42,7 +42,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await waitUntilReady(serverlessIndexName);
+  await waitUntilIndexReady(serverlessIndexName);
   await pinecone.deleteIndex(serverlessIndexName);
 });
 

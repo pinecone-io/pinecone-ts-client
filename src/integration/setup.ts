@@ -1,159 +1,177 @@
-import { Pinecone } from '../index';
+import { Pinecone } from '../pinecone';
 import {
-  diffPrefix,
   generateRecords,
   globalNamespaceOne,
   prefix,
-  randomString,
+  diffPrefix,
   randomIndexName,
-  sleep,
+  waitUntilAssistantReady,
+  waitUntilAssistantFileReady,
+  waitUntilRecordsReady,
 } from './test-helpers';
-
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-const setup = async () => {
-  let apiKey: string;
+/**
+ * Integration Test Setup Script
+ *
+ * Creates shared resources for integration tests and outputs a single
+ * FIXTURES_JSON environment variable containing all resource information.
+ *
+ * This script runs:
+ * - Once in CI (shared across all matrix jobs)
+ * - Once locally (then run tests multiple times)
+ *
+ * Output format: FIXTURES_JSON={"serverlessIndex": {...}, "assistant": {...}}
+ */
 
-  if (process.env['PINECONE_API_KEY'] === undefined) {
+export const setup = async () => {
+  const apiKey = process.env.PINECONE_API_KEY;
+  if (!apiKey) {
     throw new Error('PINECONE_API_KEY environment variable not set');
-  } else {
-    apiKey = process.env['PINECONE_API_KEY'];
   }
 
-  const client = new Pinecone({ apiKey: apiKey });
+  const pc = new Pinecone({ apiKey });
 
-  // both of these processes create the external resources, and then store the names in the GITHUB_OUTPUT env var
-  await Promise.all([createServerlessIndex(client), createAssistant(client)]);
-};
+  console.error('🎛️ Setting up integration test resources...');
 
-// main entrypoint
-setup()
-  .then(() => {
-    console.log('Setup script completed successfully.');
-    process.exit(0); // optional, but ensures clean exit
-  })
-  .catch((error) => {
-    console.error('Setup script failed:', error);
-    process.exit(1);
+  // Create serverless index
+  const indexName = randomIndexName(prefix);
+  console.error(`📦 Creating serverless index: ${indexName}`);
+
+  // Generate test data first to extract metadata for schema
+  console.error(`\tGenerating test data...`);
+  const recordsToUpsert = generateRecords({
+    prefix: prefix,
+    dimension: 2,
+    quantity: 10,
+    withSparseValues: false,
+    withMetadata: true,
   });
 
-async function createServerlessIndex(client: Pinecone) {
-  let serverlessIndexName = randomIndexName('serverless-integration');
-  const indexes = await client.listIndexes();
-  const serverlessIndex = indexes.indexes?.find(
-    (index) => (index.spec as any).serverless
-  );
-  serverlessIndexName = serverlessIndex?.name || serverlessIndexName;
+  const oneRecordWithDiffPrefix = generateRecords({
+    prefix: diffPrefix,
+    dimension: 2,
+    quantity: 1,
+    withSparseValues: false,
+    withMetadata: true,
+  });
 
-  const createAndSeedNewServerlessIndex = async (newIndexName: string) => {
-    // Create serverless index for data plane tests
-    await client.createIndex({
-      name: newIndexName,
-      dimension: 2,
-      metric: 'dotproduct',
-      spec: {
-        serverless: {
-          cloud: 'aws',
-          region: 'us-west-2',
+  const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
+  const recordIds = allRecords.map((record) => record.id);
+
+  // Extract a metadata key-value pair from the first record for filtering tests
+  const firstRecordMetadata = allRecords[0].metadata || {};
+  const metadataKeys = Object.keys(firstRecordMetadata);
+  if (metadataKeys.length === 0) {
+    throw new Error('Generated records have no metadata');
+  }
+  const metadataFilterKey = metadataKeys[0];
+  const metadataFilterValue = firstRecordMetadata[metadataFilterKey];
+
+  console.error(
+    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`
+  );
+
+  await pc.createIndex({
+    name: indexName,
+    dimension: 2,
+    metric: 'dotproduct',
+    spec: {
+      serverless: {
+        cloud: 'aws',
+        region: 'us-west-2',
+        schema: {
+          fields: Object.fromEntries(
+            metadataKeys.map((key) => [key, { filterable: true }])
+          ),
         },
       },
-      waitUntilReady: true,
-      tags: { project: 'pinecone-integration-tests-serverless' },
-    });
+    },
+    waitUntilReady: true,
+    tags: { project: 'pinecone-integration-tests' },
+  });
 
-    // Seed index with data
-    const recordsToUpsert = generateRecords({
-      prefix: prefix,
+  // Seed with test data
+  console.error(`\tSeeding index ${indexName} with test data...`);
+
+  await pc
+    .index({ name: indexName, namespace: globalNamespaceOne })
+    .upsert(allRecords);
+
+  // Wait for data to be indexed
+  console.error('\tWaiting for data to be indexed...');
+  await waitUntilRecordsReady(
+    pc.index({ name: indexName, namespace: globalNamespaceOne }),
+    globalNamespaceOne,
+    allRecords.map((record) => record.id)
+  );
+
+  // Create assistant
+  const assistantName = `test-assistant-${Date.now()}`;
+  console.error(`🤖 Creating assistant: ${assistantName}`);
+
+  await pc.createAssistant({
+    name: assistantName,
+    metadata: {
+      test: 'integration-test',
+    },
+  });
+
+  await waitUntilAssistantReady(assistantName);
+
+  const assistant = pc.Assistant({ name: assistantName });
+
+  // Upload test file
+  const testFilePath = path.join(os.tmpdir(), `test-file-${Date.now()}.txt`);
+  fs.writeFileSync(testFilePath, 'Sample content for assistant file testing');
+
+  console.error(`\tUploading test file: ${testFilePath}`);
+  const file = await assistant.uploadFile({
+    path: testFilePath,
+    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
+  });
+
+  await waitUntilAssistantFileReady(assistantName, file.id);
+
+  // Build fixtures object
+  const fixtures = {
+    serverlessIndex: {
+      name: indexName,
       dimension: 2,
-      quantity: 10,
-      withSparseValues: false,
-      withMetadata: true,
-    });
-
-    // (Upsert 1 record with a different prefix, so can test prefix filtering)
-    const oneRecordWithDiffPrefix = generateRecords({
-      prefix: diffPrefix,
-      dimension: 2,
-      quantity: 1,
-      withSparseValues: false,
-      withMetadata: true,
-    });
-
-    const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-
-    // upsert records into namespace
-    await client
-      .index({ name: newIndexName, namespace: globalNamespaceOne })
-      .upsert(allRecords);
-
-    // wait for records to become available
-    await sleep(45000);
+      metric: 'dotproduct',
+      metadataFilter: {
+        key: metadataFilterKey,
+        value: metadataFilterValue,
+      },
+      recordIds,
+    },
+    assistant: {
+      name: assistantName,
+      testFilePath: testFilePath,
+    },
   };
 
-  // if there's not an existing serverlessIndex, create one
-  if (!serverlessIndex) {
-    await createAndSeedNewServerlessIndex(serverlessIndexName);
-  }
+  // Output as single JSON (use stdout for capture, stderr for logs)
+  console.log(`FIXTURES_JSON=${JSON.stringify(fixtures)}`);
 
-  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
-  console.log(`SERVERLESS_INDEX_NAME=${serverlessIndexName}`);
-}
+  console.error('✅ Integration setup complete');
+  console.error('');
+  console.error('To use these fixtures, set the environment variable:');
+  console.error(`  export FIXTURES_JSON='${JSON.stringify(fixtures)}'`);
 
-async function createAssistant(client: Pinecone) {
-  // Set up an Assistant and upload a file to it
-  const assistantName = randomString(5);
-  await client.createAssistant({
-    name: assistantName,
-    instructions: 'test-instructions',
-    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
-    region: 'us',
-  });
-  await sleep(5000);
+  return fixtures;
+};
 
-  try {
-    await client.describeAssistant(assistantName);
-  } catch (e) {
-    console.log('Error getting assistant:', e);
-  }
-
-  const assistant = client.Assistant({ name: assistantName });
-
-  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
-  console.log(`ASSISTANT_NAME=${assistantName}`);
-
-  const tempFileName = path.join(os.tmpdir(), `tempfile-${Date.now()}.txt`);
-
-  // Capture output in GITHUB_OUTPUT env var when run in CI; necessary to pass across tests
-  console.log(`TEST_FILE=${tempFileName}`);
-
-  try {
-    const data = 'This is some temporary data';
-    fs.writeFileSync(tempFileName, data);
-    console.log(`Temporary file created: ${tempFileName}`);
-  } catch (err) {
-    console.error('Error writing file:', err);
-  }
-  // Add a small delay to ensure file system sync
-  await sleep(1000);
-
-  // Upload file to assistant so chat works
-  const file = await assistant.uploadFile({
-    path: tempFileName,
-    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
-  });
-
-  console.log('File uploaded:', file);
-
-  // Another sleep b/c it currently takes a *long* time for a file to be available
-  await sleep(30000);
-
-  // Delete file from local file system
-  try {
-    fs.unlinkSync(path.resolve(process.cwd(), tempFileName));
-    console.log(`Temporary file deleted: ${tempFileName}`);
-  } catch (err) {
-    console.error('Error deleting file:', err);
-  }
+// Run setup when executed directly
+if (require.main === module) {
+  setup()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('❌ Setup script failed:', err);
+      process.exit(1);
+    });
 }

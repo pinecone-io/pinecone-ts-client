@@ -3,48 +3,42 @@ name: Testing
 on:
   workflow_call: {}
 
+permissions:
+  contents: read
+
 jobs:
   setup:
-    name: Setup
+    name: Setup shared resources
     runs-on: ubuntu-latest
-    if: always()
     outputs:
-      serverlessIndexName: ${{ steps.step3.outputs.SERVERLESS_INDEX_NAME }}
-      assistantName: ${{ steps.step3.outputs.ASSISTANT_NAME }}
-      testFile: ${{ steps.step3.outputs.TEST_FILE }}
+      fixturesJson: ${{ steps.setup.outputs.FIXTURES_JSON }}
     steps:
       - name: Checkout code
-        id: step1
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        id: step2
         run: npm ci
 
       - name: Run setup script
-        id: step3
+        id: setup
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
-          SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts)
-          SERVERLESS_INDEX_NAME=$(echo "$SETUP_OUTPUT" | grep "SERVERLESS_INDEX_NAME=" | cut -d'=' -f2)
-          ASSISTANT_NAME=$(echo "$SETUP_OUTPUT" | grep "ASSISTANT_NAME=" | cut -d'=' -f2)
-          TEST_FILE=$(echo "$SETUP_OUTPUT" | grep "TEST_FILE=" | cut -d'=' -f2)
-          echo "SERVERLESS_INDEX_NAME=$SERVERLESS_INDEX_NAME" >> $GITHUB_OUTPUT
-          echo "ASSISTANT_NAME=$ASSISTANT_NAME" >> $GITHUB_OUTPUT
-          echo "TEST_FILE=$TEST_FILE" >> $GITHUB_OUTPUT
+          SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
+          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
+          # Show setup logs (not the JSON line)
+          echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
   integration-tests:
     needs: [setup]
     name: Run integration tests
     runs-on: ubuntu-latest
     outputs:
-      serverlessIndexName: ${{ steps.runTests1.outputs.SERVERLESS_INDEX_NAME }}
-      assistantName: ${{ steps.runTests1.outputs.ASSISTANT_NAME }}
-      testFile: ${{ steps.runTests1.outputs.TEST_FILE }}
+      fixturesJson: ${{ needs.setup.outputs.fixturesJson }}
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 3
       matrix:
         pinecone_env:
           - prod
@@ -73,19 +67,12 @@ jobs:
           bun-version: ${{ matrix.config.bun_version }}
 
       - name: Run integration tests (Prod)
-        id: runTests1
         if: matrix.pinecone_env == 'prod'
         env:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ needs.setup.outputs.serverlessIndexName}}
-          ASSISTANT_NAME: ${{ needs.setup.outputs.assistantName}}
-          TEST_FILE: ${{ needs.setup.outputs.testFile}}
-        run: |
-          ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
-          echo "SERVERLESS_INDEX_NAME=${{ needs.setup.outputs.serverlessIndexName}}" >> $GITHUB_OUTPUT
-          echo "ASSISTANT_NAME=${{ needs.setup.outputs.assistantName}}" >> $GITHUB_OUTPUT
-            echo "TEST_FILE=${{ needs.setup.outputs.testFile}}" >> $GITHUB_OUTPUT
+          FIXTURES_JSON: ${{ needs.setup.outputs.fixturesJson }}
+        run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
       - name: Run integration tests (Staging)
         if: matrix.pinecone_env == 'staging'
@@ -93,12 +80,13 @@ jobs:
           CI: true
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_CONTROLLER_HOST: 'https://api-staging.pinecone.io'
+          FIXTURES_JSON: ${{ needs.setup.outputs.fixturesJson }}
         run: ${{ matrix.config.runner }} run test:integration:${{ matrix.config.jest_env }}
 
   teardown:
-    name: Teardown
-    needs: [integration-tests] # Ensure teardown only runs after test jobs
-    if: success()
+    name: Teardown shared resources
+    needs: [integration-tests]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -110,11 +98,8 @@ jobs:
       - name: Run teardown script
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          SERVERLESS_INDEX_NAME: ${{ needs.integration-tests.outputs.serverlessIndexName}}
-          ASSISTANT_NAME: ${{ needs.integration-tests.outputs.assistantName}}
-          TEST_FILE: ${{ needs.integration-tests.outputs.testFile}}
-        run: |
-          npx ts-node ./src/integration/teardown.ts
+          FIXTURES_JSON: ${{ needs.integration-tests.outputs.fixturesJson }}
+        run: npx ts-node ./src/integration/teardown.ts
 
   unit-tests:
     name: Run unit tests

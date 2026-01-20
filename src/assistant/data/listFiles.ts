@@ -1,6 +1,5 @@
 import {
   AssistantFileModel as GeneratedAssistantFileModel,
-  ListFilesRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';

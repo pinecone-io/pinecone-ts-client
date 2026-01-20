@@ -18,10 +18,18 @@ export type {
   ModelInfoList,
 } from './pinecone-generated-ts-fetch/inference';
 export type {
+  HTTPHeaders,
+  Hit,
   ImportModel,
+  ImportErrorMode,
+  ListImportsResponse,
   ListResponse,
   ListNamespacesResponse,
+  Pagination,
   NamespaceDescription,
+  CreateNamespaceRequestSchema,
+  CreateNamespaceRequestSchemaFieldsValue,
+  NamespaceDescriptionIndexedFields,
   SearchRecordsResponse,
   SearchRecordsResponseResult,
   SearchUsage,
@@ -53,6 +61,7 @@ export type {
   CreateAssistantOptions,
   UpdateAssistantOptions,
   UpdateAssistantResponse,
+  MessagesModel,
 } from './assistant';
 export type {
   ChatModel,
@@ -60,8 +69,22 @@ export type {
   CitationModel,
   ContextModel,
   HighlightModel,
+  ImageModel,
   MessageModel,
+  MultiModalContentBlocksModel,
+  MultiModalContentImageBlockModel,
+  MultiModalContentTextBlockModel,
+  MultiModalSnippetModel,
+  ReferenceModel,
+  SnippetModel,
+  TextReferenceModel,
+  TextSnippetModel,
+  TypedReferenceModel,
   UsageModel,
+  PdfReferenceModel,
+  DocxReferenceModel,
+  JsonReferenceModel,
+  MarkdownReferenceModel,
 } from './pinecone-generated-ts-fetch/assistant_data';
 
 // Type exports
@@ -97,6 +120,7 @@ export type {
 } from './control';
 export type { IndexOptions, AssistantOptions } from './types';
 export type {
+  CreateNamespaceOptions,
   DeleteManyByFilterOptions,
   DeleteManyByRecordIdOptions,
   DeleteManyOptions,
@@ -104,9 +128,13 @@ export type {
   DescribeIndexStatsOptions,
   FetchOptions,
   FetchResponse,
+  FetchByMetadataOptions,
+  FetchByMetadataResponse,
   IndexStatsDescription,
   IndexStatsNamespaceSummary,
   IntegratedRecord,
+  ListOptions,
+  OperationUsage,
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
@@ -121,6 +149,10 @@ export type {
   RecordSparseValues,
   RecordValues,
   ScoredPineconeRecord,
+  SearchRecordsOptions,
+  SearchRecordsQuery,
+  SearchRecordsRerank,
+  SearchRecordsVector,
 } from './data';
 export type {
   BackupList,

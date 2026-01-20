@@ -26,6 +26,9 @@ concurrency:
   group: npm-release
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   # integration-tests:
   #   if: ${{ github.event.inputs.runTests == 'true' }}

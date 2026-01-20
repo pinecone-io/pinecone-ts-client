@@ -1,5 +1,4 @@
 import {
-  ChatAssistantRequest,
   MessageModel,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';

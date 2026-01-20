@@ -1,18 +1,15 @@
 import { Pinecone } from '../../pinecone';
 import { Assistant } from '../../assistant';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
 let assistantName: string;
 
-if (!process.env.ASSISTANT_NAME) {
-  throw new Error('ASSISTANT_NAME environment variable is not set');
-} else {
-  assistantName = process.env.ASSISTANT_NAME;
-}
-
 beforeAll(async () => {
-  pinecone = new Pinecone();
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 });
 

@@ -3,7 +3,11 @@ import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { assertWithRetries, sleep } from '../test-helpers';
+import {
+  assertWithRetries,
+  waitUntilAssistantFileReady,
+} from '../test-helpers';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -14,13 +18,9 @@ let tempFileWithMetadata: string;
 let tempFileWithMetadataPath: string;
 
 beforeAll(async () => {
-  if (!process.env.ASSISTANT_NAME) {
-    throw new Error('ASSISTANT_NAME environment variable is not set');
-  } else {
-    assistantName = process.env.ASSISTANT_NAME;
-  }
-
-  pinecone = new Pinecone();
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 
   // Create two temporary test files
@@ -45,9 +45,6 @@ beforeAll(async () => {
   } catch (err) {
     console.error('Error writing file:', err);
   }
-
-  // Add a small delay to ensure file system sync
-  await sleep(5000);
 
   if (!fs.existsSync(tempFilePath)) {
     throw new Error(`Temporary file was not created: ${tempFilePath}`);
@@ -82,7 +79,8 @@ describe('Upload file happy path', () => {
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await sleep(10000);
+    // Wait for file to be ready before attempting delete
+    await waitUntilAssistantFileReady(assistantName, response.id);
 
     // Delete file happy path test:
     assertWithRetries(
@@ -114,7 +112,8 @@ describe('Upload file happy path', () => {
       expect(response.metadata['category']).toEqual('integration-test');
     }
 
-    await sleep(10000);
+    // Wait for file to be ready before attempting delete
+    await waitUntilAssistantFileReady(assistantName, response.id);
 
     // Delete file happy path test:
     assertWithRetries(

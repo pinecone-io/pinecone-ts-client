@@ -4,19 +4,18 @@ import {
   getRecordIds,
   assertWithRetries,
 } from '../../test-helpers';
+import { getTestContext } from '../../test-context';
 
 let pinecone: Pinecone,
   serverlessIndex: Index,
   recordIds: Array<string> | undefined;
 
 beforeAll(async () => {
-  pinecone = new Pinecone();
-  if (!process.env.SERVERLESS_INDEX_NAME) {
-    throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-  }
-  const serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+
   serverlessIndex = pinecone.index({
-    name: serverlessIndexName,
+    name: fixtures.serverlessIndex.name,
     namespace: globalNamespaceOne,
   });
   recordIds = await getRecordIds(serverlessIndex);
@@ -45,7 +44,7 @@ describe('query tests on serverless index', () => {
   });
 
   test('query when topK is greater than number of records', async () => {
-    const topK = 11; // in setup.ts, we seed the serverless index w/11 records
+    const topK = 11; // in shared-fixtures-singleton.ts, we seed the serverless index w/11 records
     if (recordIds) {
       const idForQuerying = recordIds[1];
 

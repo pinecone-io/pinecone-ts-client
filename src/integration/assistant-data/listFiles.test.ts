@@ -3,7 +3,8 @@ import { Assistant } from '../../assistant';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { sleep } from '../test-helpers';
+import { waitUntilAssistantFileReady } from '../test-helpers';
+import { getTestContext } from '../test-context';
 
 let pinecone: Pinecone;
 let assistant: Assistant;
@@ -13,14 +14,10 @@ let tempFilePath: string;
 const uploadedFileIds: string[] = [];
 const testRunId = Date.now();
 
-if (!process.env.ASSISTANT_NAME) {
-  throw new Error('ASSISTANT_NAME environment variable is not set');
-} else {
-  assistantName = process.env.ASSISTANT_NAME;
-}
-
 beforeAll(async () => {
-  pinecone = new Pinecone();
+  const fixtures = await getTestContext();
+  pinecone = fixtures.client;
+  assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 
   // Upload few more files with metadata to the assistant
@@ -33,8 +30,6 @@ beforeAll(async () => {
   } catch (err) {
     console.error('Error writing file:', err);
   }
-  // Add a small delay to ensure file system sync
-  await sleep(5000);
 
   if (!fs.existsSync(tempFilePath)) {
     throw new Error(`Temporary file was not created: ${tempFilePath}`);
@@ -51,6 +46,8 @@ beforeAll(async () => {
     });
     console.log('File uploaded:', file);
     uploadedFileIds.push(file.id);
+    // Wait for file to be ready instead of fixed delay
+    await waitUntilAssistantFileReady(assistantName, file.id);
   }
 
   // Clean up local temp file

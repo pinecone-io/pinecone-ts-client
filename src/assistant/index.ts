@@ -47,6 +47,7 @@ export type {
   AssistantFileModel,
   AssistantFileStatusEnum,
   AssistantFilesList,
+  MessagesModel,
 } from './data/types';
 export { ChatStream } from './chatStream';
 

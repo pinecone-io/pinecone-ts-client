@@ -11,6 +11,9 @@ on:
       PINECONE_API_KEY:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   basic-hygiene:
     name: Linting, formatting, documentation, etc

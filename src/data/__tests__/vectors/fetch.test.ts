@@ -24,7 +24,7 @@ const setupSuccess = (response) => {
 };
 
 describe('fetch', () => {
-  test('calls the openapi fetch endpoint, passing target namespace', async () => {
+  test('calls the openapi fetch endpoint, passing target namespace, and properly maps the response', async () => {
     const { VOA, cmd } = setupSuccess({ vectors: [] });
     const returned = await cmd.run(['1', '2']);
 

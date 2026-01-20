@@ -1,4 +1,3 @@
-import { DescribeFileRequest } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { AssistantFileModel } from './types';
 import { PineconeArgumentError } from '../../errors';

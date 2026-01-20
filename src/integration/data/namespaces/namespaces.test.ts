@@ -1,17 +1,18 @@
 import { ListNamespacesResponse, Pinecone } from '../../../index';
 import { assertWithRetries, generateRecords, sleep } from '../../test-helpers';
+import { getTestContext } from '../../test-context';
 
 const namespaceOne = 'namespace-one';
 const namespaceTwo = 'namespace-two';
+const namespaceThree = 'namespace-three';
 let pinecone: Pinecone, serverlessIndexName: string;
 
 describe('namespaces operations', () => {
   beforeAll(async () => {
-    pinecone = new Pinecone();
-    if (!process.env.SERVERLESS_INDEX_NAME) {
-      throw new Error('SERVERLESS_INDEX_NAME environment variable is not set');
-    }
-    serverlessIndexName = process.env.SERVERLESS_INDEX_NAME;
+    const fixtures = await getTestContext();
+    pinecone = fixtures.client;
+    serverlessIndexName = fixtures.serverlessIndex.name;
+
     const serverlessIndexNsOne = pinecone.index({
       name: serverlessIndexName,
       namespace: namespaceOne,
@@ -33,7 +34,7 @@ describe('namespaces operations', () => {
   afterAll(async () => {
     await pinecone
       .index({ name: serverlessIndexName })
-      .deleteNamespace(namespaceTwo);
+      .deleteNamespace(namespaceThree);
 
     await assertWithRetries(
       () => pinecone.index({ name: serverlessIndexName }).listNamespaces(),
@@ -43,14 +44,31 @@ describe('namespaces operations', () => {
             expect.objectContaining({ name: namespaceOne }),
           ])
         );
-        expect(response.namespaces).not.toEqual(
+        expect(response.namespaces).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ name: namespaceTwo }),
+          ])
+        );
+        expect(response.namespaces).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: namespaceThree }),
           ])
         );
       },
       240000
     );
+  });
+
+  test('create namespace', async () => {
+    const response = await pinecone
+      .index({ name: serverlessIndexName })
+      .createNamespace({
+        name: namespaceThree,
+        schema: { fields: { test: { filterable: true } } },
+      });
+
+    expect(response.name).toEqual(namespaceThree);
+    expect(response.schema?.fields.test.filterable).toBe(true);
   });
 
   test('list namespaces', async () => {

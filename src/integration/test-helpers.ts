@@ -107,7 +107,7 @@ export const sleep = async (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const waitUntilReady = async (indexName: string) => {
+export const waitUntilIndexReady = async (indexName: string) => {
   const p = new Pinecone();
   const sleepIntervalMs = 1000;
   let isReady = false;
@@ -129,12 +129,59 @@ export const waitUntilReady = async (indexName: string) => {
   }
 };
 
+export const waitUntilAssistantReady = async (assistantName: string) => {
+  const p = new Pinecone();
+  const sleepIntervalMs = 1000;
+  let isReady = false;
+
+  while (!isReady) {
+    try {
+      const description = await p.describeAssistant(assistantName);
+      if (description.status === 'Ready') {
+        isReady = true;
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      throw new Error(
+        `Error while waiting for assistant to be ready: ${error}`
+      );
+    }
+  }
+};
+
+export const waitUntilAssistantFileReady = async (
+  assistantName: string,
+  fileId: string
+) => {
+  const p = new Pinecone();
+  const sleepIntervalMs = 1000;
+  let isReady = false;
+
+  while (!isReady) {
+    try {
+      const description = await p
+        .Assistant({ name: assistantName })
+        .describeFile(fileId, true);
+      if (description.status === 'Available') {
+        isReady = true;
+      } else {
+        await sleep(sleepIntervalMs);
+      }
+    } catch (error) {
+      throw new Error(
+        `Error while waiting for assistant file to be ready: ${error}`
+      );
+    }
+  }
+};
+
 export const waitUntilRecordsReady = async (
   index: Index,
   namespace: string,
   recordIds: string[]
 ): Promise<IndexStatsDescription> => {
-  const sleepIntervalMs = 3000;
+  const sleepIntervalMs = 1000; // Reduced from 3000ms for faster polling
   let indexStats = await index.describeIndexStats();
 
   // if namespace is empty or the record count is not equal to the number of records we expect
@@ -147,9 +194,7 @@ export const waitUntilRecordsReady = async (
     indexStats = await index.describeIndexStats();
   }
 
-  // Sleeping one final time before returning for a bit more breathing room for freshness
-  await sleep(sleepIntervalMs);
-
+  // Records are ready, return immediately
   return indexStats;
 };
 

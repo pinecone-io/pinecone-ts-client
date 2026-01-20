@@ -7,13 +7,15 @@ import { NamespaceOperationsProvider } from '../namespaces/namespacesOperationsP
 export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
   return async (
     limit?: number,
-    paginationToken?: string
+    paginationToken?: string,
+    prefix?: string
   ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
     return await api.listNamespacesOperation({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       limit,
       paginationToken,
+      prefix,
     });
   };
 };

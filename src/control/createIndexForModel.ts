@@ -3,6 +3,7 @@ import {
   CreateIndexForModelRequest,
   IndexModel,
   ManageIndexesApi,
+  MetadataSchema,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import {
@@ -43,6 +44,10 @@ export type CreateIndexForModelOptions = {
    */
   readCapacity?: CreateIndexReadCapacity;
   /**
+   * Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported.
+   */
+  schema?: MetadataSchema;
+  /**
    * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
    */
   tags?: { [key: string]: string };
@@ -65,6 +70,7 @@ const CreateIndexForModelOptionsProperties: CreateIndexForModelOptionsType[] = [
   'embed',
   'deletionProtection',
   'readCapacity',
+  'schema',
   'tags',
   'waitUntilReady',
   'suppressConflicts',

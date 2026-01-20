@@ -1,16 +1,25 @@
-import { Index, Pinecone } from '../../../index';
+import { Index, Pinecone, RecordMetadata } from '../../../index';
 import {
+  assertWithRetries,
   generateRecords,
   globalNamespaceOne,
   randomIndexName,
+  waitUntilRecordsReady,
 } from '../../test-helpers';
+import type { FetchResponse } from '../../../data/vectors/fetch';
+import type { FetchByMetadataResponse } from '../../../data/vectors/fetchByMetadata';
 
 let pinecone: Pinecone;
 let srvrlssIndexDense: Index;
 let srvrlssIndexDenseName: string;
 let srvrlssIndexSparse: Index;
 let srvrlssIndexSparseName: string;
+let denseRecordIds: string[];
+let sparseRecordIds: string[];
+let denseMetadata: RecordMetadata;
+let sparseMetadata: RecordMetadata;
 
+// upserts against two indexes (dense & sparse) and seeds them with test data
 beforeAll(async () => {
   pinecone = new Pinecone();
   srvrlssIndexDenseName = randomIndexName('test-srvrlss-dense-upsert-update');
@@ -51,11 +60,50 @@ beforeAll(async () => {
     name: srvrlssIndexDenseName,
     namespace: globalNamespaceOne,
   });
-
   srvrlssIndexSparse = pinecone.index({
     name: srvrlssIndexSparseName,
     namespace: globalNamespaceOne,
   });
+
+  // Seed indexes
+  const sparseRecords = generateRecords({
+    dimension: 2,
+    quantity: 1,
+    withSparseValues: true,
+    withValues: false,
+    withMetadata: true,
+  });
+  const denseRecords = generateRecords({
+    dimension: 2,
+    quantity: 1,
+    withSparseValues: false,
+    withMetadata: true,
+  });
+
+  denseMetadata = denseRecords[0].metadata || {};
+  sparseMetadata = sparseRecords[0].metadata || {};
+
+  // test upserts
+  await Promise.all([
+    srvrlssIndexSparse.upsert(sparseRecords),
+    srvrlssIndexDense.upsert(denseRecords),
+  ]);
+
+  sparseRecordIds = sparseRecords.map((record) => record.id);
+  denseRecordIds = denseRecords.map((record) => record.id);
+
+  await Promise.all([
+    waitUntilRecordsReady(
+      srvrlssIndexSparse,
+      globalNamespaceOne,
+      sparseRecordIds
+    ),
+    waitUntilRecordsReady(
+      srvrlssIndexDense,
+      globalNamespaceOne,
+      denseRecordIds
+    ),
+  ]);
 });
 
 afterAll(async () => {
@@ -65,51 +113,56 @@ afterAll(async () => {
   await Promise.all([deleteDense, deleteSparse]);
 });
 
-describe('upsert and update', () => {
+describe('update', () => {
   describe('dense indexes', () => {
-    test('verify upsert and update', async () => {
-      const recordToUpsert = generateRecords({
-        dimension: 2,
-        quantity: 1,
-        withSparseValues: false,
-        withMetadata: true,
-      });
-      await srvrlssIndexDense.upsert(recordToUpsert);
-
+    test('verify update by id', async () => {
+      const recordId = denseRecordIds[0];
       const newValues = [0.5, 0.4];
       const newMetadata = { flavor: 'chocolate' };
 
-      const updateSpy = jest
-        .spyOn(srvrlssIndexDense, 'update')
-        .mockResolvedValue(undefined);
+      await srvrlssIndexDense.update({
+        id: recordId,
+        values: newValues,
+        metadata: newMetadata,
+      });
+
+      await assertWithRetries(
+        () => srvrlssIndexDense.fetch([recordId]),
+        (result: FetchResponse) => {
+          expect(result.records[recordId]).toBeDefined();
+          expect(result.records[recordId].values).toEqual(newValues);
+          expect(result.records[recordId].metadata).toMatchObject(newMetadata);
+        }
+      );
+    });
+
+    test('verify update by metadata (filter)', async () => {
+      const metadataKey = Object.keys(denseMetadata)[0];
+      const metadataValue = denseMetadata[metadataKey];
+      const newMetadata = { flavor: 'vanilla' };
 
       await srvrlssIndexDense.update({
-        id: '0',
-        values: newValues,
+        filter: { [metadataKey]: { $eq: metadataValue } },
         metadata: newMetadata,
       });
 
-      expect(updateSpy).toHaveBeenCalledWith({
-        id: '0',
-        values: newValues,
-        metadata: newMetadata,
-      });
-
-      updateSpy.mockRestore();
+      await assertWithRetries(
+        () =>
+          srvrlssIndexDense.fetchByMetadata({
+            filter: { [metadataKey]: { $eq: metadataValue } },
+          }),
+        (result: FetchByMetadataResponse) => {
+          const record = Object.values(result.records)[0];
+          expect(record).toBeDefined();
+          expect(record.metadata).toMatchObject(newMetadata);
+        }
+      );
     });
   });
 
   describe('sparse indexes', () => {
-    test('verify upsert and update', async () => {
-      const recordToUpsert = generateRecords({
-        dimension: 2,
-        quantity: 1,
-        withSparseValues: true,
-        withValues: false,
-        withMetadata: true,
-      });
-      await srvrlssIndexSparse.upsert(recordToUpsert);
-
+    test('verify update by id', async () => {
+      const recordId = sparseRecordIds[0];
       const newSparseValues = [0.5, 0.4];
       const newSparseIndices = [0, 1];
       const sparseValues = {
@@ -118,23 +171,43 @@ describe('upsert and update', () => {
       };
       const newMetadata = { flavor: 'chocolate' };
 
-      const updateSpy = jest
-        .spyOn(srvrlssIndexSparse, 'update')
-        .mockResolvedValue(undefined);
+      await srvrlssIndexSparse.update({
+        id: recordId,
+        sparseValues: sparseValues,
+        metadata: newMetadata,
+      });
+
+      await assertWithRetries(
+        () => srvrlssIndexSparse.fetch([recordId]),
+        (result: FetchResponse) => {
+          expect(result.records[recordId]).toBeDefined();
+          expect(result.records[recordId].sparseValues).toEqual(sparseValues);
+          expect(result.records[recordId].metadata).toMatchObject(newMetadata);
+        }
+      );
+    });
+
+    test('verify update by metadata (filter)', async () => {
+      const metadataKey = Object.keys(sparseMetadata)[0];
+      const metadataValue = sparseMetadata[metadataKey];
+      const newMetadata = { flavor: 'vanilla' };
 
       await srvrlssIndexSparse.update({
-        id: '0',
-        sparseValues: sparseValues,
+        filter: { [metadataKey]: { $eq: metadataValue } },
         metadata: newMetadata,
       });
 
-      expect(updateSpy).toHaveBeenCalledWith({
-        id: '0',
-        sparseValues: sparseValues,
-        metadata: newMetadata,
-      });
-
-      updateSpy.mockRestore();
+      await assertWithRetries(
+        () =>
+          srvrlssIndexSparse.fetchByMetadata({
+            filter: { [metadataKey]: { $eq: metadataValue } },
+          }),
+        (result: FetchByMetadataResponse) => {
+          const record = Object.values(result.records)[0];
+          expect(record).toBeDefined();
+          expect(record.metadata).toMatchObject(newMetadata);
+        }
+      );
     });
   });
 });
