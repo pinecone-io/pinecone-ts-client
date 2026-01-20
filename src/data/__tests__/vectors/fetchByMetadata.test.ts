@@ -52,6 +52,7 @@ describe('fetchByMetadata', () => {
   test('throws error if no filter is provided', async () => {
     const { cmd } = setupResponse({ vectors: [] }, true);
     const toThrow = async () => {
+      // @ts-expect-error when filter is missing
       await cmd.run({});
     };
     await expect(toThrow()).rejects.toThrowError(

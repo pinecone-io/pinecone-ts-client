@@ -7,9 +7,23 @@ import {
 import { RecordMetadata, PineconeRecord, OperationUsage } from './types';
 import { PineconeArgumentError } from '../../errors';
 
+/**
+ * The options that may be passed to {@link Index.fetchByMetadata}
+ *
+ * @see [Fetch records by metadata](https://docs.pinecone.io/guides/manage-data/fetch-data#fetch-records-by-metadata)
+ */
 export type FetchByMetadataOptions = {
-  filter?: object;
+  /**
+   * The metadata filter to apply when fetching records. Only records matching this filter will be returned.
+   *
+   * @see [Metadata filtering](https://docs.pinecone.io/docs/metadata-filtering)
+   */
+  filter: object;
+
+  /** The maximum number of records to return. If unspecified, the server will use a default value. */
   limit?: number;
+
+  /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;
 };
 
