@@ -85,7 +85,7 @@ export interface CreateIndexServerlessSpec {
   /** The name of the collection to be used as the source for the index. NOTE: Collections can only be created from pods-based indexes. */
   sourceCollection?: string;
 
-  /** The metadata schema for the index. */
+  /** Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported. */
   schema?: MetadataSchema;
 }
 
