@@ -86,7 +86,7 @@ jobs:
   teardown:
     name: Teardown shared resources
     needs: [integration-tests]
-    if: always()
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
