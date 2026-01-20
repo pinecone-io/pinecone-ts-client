@@ -14,7 +14,10 @@ import { deleteOne } from './vectors/deleteOne';
 import type { DeleteManyOptions } from './vectors/deleteMany';
 import { deleteMany } from './vectors/deleteMany';
 import { deleteAll } from './vectors/deleteAll';
-import { describeIndexStats } from './vectors/describeIndexStats';
+import {
+  describeIndexStats,
+  DescribeIndexStatsOptions,
+} from './vectors/describeIndexStats';
 import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
@@ -366,7 +369,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteAll() {
-    return this._deleteAll();
+    return this._deleteAll(this.config.maxRetries);
   }
 
   /**
@@ -391,7 +394,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteMany(options: DeleteManyOptions) {
-    return this._deleteMany(options);
+    return this._deleteMany(options, this.config.maxRetries);
   }
 
   /**
@@ -411,7 +414,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteOne(id: DeleteOneOptions) {
-    return this._deleteOne(id);
+    return this._deleteOne(id, this.config.maxRetries);
   }
 
   /**
@@ -435,11 +438,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
+   * @param options - The {@link DescribeIndexStatsOptions} for the operation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
-  describeIndexStats() {
-    return this._describeIndexStats();
+  describeIndexStats(options?: DescribeIndexStatsOptions) {
+    return this._describeIndexStats(options, this.config.maxRetries);
   }
 
   /**
@@ -485,7 +489,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   listPaginated(options?: ListOptions) {
-    return this._listPaginated(options);
+    return this._listPaginated(options, this.config.maxRetries);
   }
 
   /**
@@ -532,7 +536,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link FetchResponse} when the fetch is completed.
    */
   async fetch(options: FetchOptions) {
-    return await this._fetchCommand.run(options);
+    return await this._fetchCommand.run(options, this.config.maxRetries);
   }
 
   /**
@@ -553,7 +557,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link FetchByMetadataResponse} when the fetch is completed.
    */
   async fetchByMetadata(options: FetchByMetadataOptions) {
-    return await this._fetchByMetadataCommand.run(options);
+    return await this._fetchByMetadataCommand.run(
+      options,
+      this.config.maxRetries
+    );
   }
 
   /**
@@ -579,7 +586,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link QueryResponse} when the query is completed.
    */
   async query(options: QueryOptions) {
-    return await this._queryCommand.run(options);
+    return await this._queryCommand.run(options, this.config.maxRetries);
   }
 
   /**
@@ -732,7 +739,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns a promise that resolves to {@link SearchRecordsResponse} when the operation is complete.
    */
   async searchRecords(options: SearchRecordsOptions) {
-    return await this._searchRecordsCommand.run(options);
+    return await this._searchRecordsCommand.run(
+      options,
+      this.config.maxRetries
+    );
   }
 
   /**

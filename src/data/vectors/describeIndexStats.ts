@@ -48,7 +48,9 @@ export type IndexStatsDescription = {
  */
 export type DescribeIndexStatsOptions = {
   /**
-   * @see [Metadata filtering](https://docs.pinecone.io/docs/metadata-filtering)
+   * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter.
+   *
+   * @see [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
    */
   filter: object;
 };
