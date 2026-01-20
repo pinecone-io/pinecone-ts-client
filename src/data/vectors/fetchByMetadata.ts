@@ -37,9 +37,9 @@ export class FetchByMetadataCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (options: FetchByMetadataOptions) => {
-    if (options && !options.filter) {
+    if (!options || !options.filter) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty object for the `filter` field in order to fetch vectors by metadata.'
+        'You must pass a non-empty object for the `filter` field in order to fetch by metadata.'
       );
     }
   };

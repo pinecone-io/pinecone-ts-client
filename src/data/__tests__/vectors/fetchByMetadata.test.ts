@@ -55,7 +55,7 @@ describe('fetchByMetadata', () => {
       await cmd.run({});
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must pass a non-empty object for the `filter` field in order to fetch vectors by metadata.'
+      'You must pass a non-empty object for the `filter` field in order to fetch by metadata.'
     );
   });
 });

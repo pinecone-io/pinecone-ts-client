@@ -17,7 +17,7 @@ export const createNamespace = (apiProvider: NamespaceOperationsProvider) => {
   ): Promise<NamespaceDescription> => {
     const api = await apiProvider.provide();
 
-    if (!options.name) {
+    if (!options || !options.name) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for `name` in order to create a namespace.'
       );
