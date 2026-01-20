@@ -21,7 +21,7 @@ import { RetryOnServerFailure } from '../../utils';
  */
 export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   /** The id of the record you would like to update */
-  id: RecordId;
+  id?: RecordId;
 
   /** The vector values you would like to store with this record */
   values?: RecordValues;

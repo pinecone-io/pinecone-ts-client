@@ -40,29 +40,8 @@ export const setup = async () => {
   const indexName = randomIndexName(prefix);
   console.error(`📦 Creating serverless index: ${indexName}`);
 
-  const metadataFields = ['genre', 'year'];
-
-  await pc.createIndex({
-    name: indexName,
-    dimension: 2,
-    metric: 'dotproduct',
-    spec: {
-      serverless: {
-        cloud: 'aws',
-        region: 'us-west-2',
-        schema: {
-          fields: Object.fromEntries(
-            metadataFields.map((field) => [field, { filterable: true }])
-          ),
-        },
-      },
-    },
-    waitUntilReady: true,
-    tags: { project: 'pinecone-integration-tests' },
-  });
-
-  // Seed with test data
-  console.error(`\tSeeding index ${indexName} with test data...`);
+  // Generate test data first to extract metadata for schema
+  console.error(`\tGenerating test data...`);
   const recordsToUpsert = generateRecords({
     prefix: prefix,
     dimension: 2,
@@ -81,6 +60,41 @@ export const setup = async () => {
 
   const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
   const recordIds = allRecords.map((record) => record.id);
+
+  // Extract a metadata key-value pair from the first record for filtering tests
+  const firstRecordMetadata = allRecords[0].metadata || {};
+  const metadataKeys = Object.keys(firstRecordMetadata);
+  if (metadataKeys.length === 0) {
+    throw new Error('Generated records have no metadata');
+  }
+  const metadataFilterKey = metadataKeys[0];
+  const metadataFilterValue = firstRecordMetadata[metadataFilterKey];
+
+  console.error(
+    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`
+  );
+
+  await pc.createIndex({
+    name: indexName,
+    dimension: 2,
+    metric: 'dotproduct',
+    spec: {
+      serverless: {
+        cloud: 'aws',
+        region: 'us-west-2',
+        schema: {
+          fields: Object.fromEntries(
+            metadataKeys.map((key) => [key, { filterable: true }])
+          ),
+        },
+      },
+    },
+    waitUntilReady: true,
+    tags: { project: 'pinecone-integration-tests' },
+  });
+
+  // Seed with test data
+  console.error(`\tSeeding index ${indexName} with test data...`);
 
   await pc
     .index({ name: indexName, namespace: globalNamespaceOne })
@@ -127,7 +141,10 @@ export const setup = async () => {
       name: indexName,
       dimension: 2,
       metric: 'dotproduct',
-      metadataFields,
+      metadataFilter: {
+        key: metadataFilterKey,
+        value: metadataFilterValue,
+      },
       recordIds,
     },
     assistant: {

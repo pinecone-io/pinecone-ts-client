@@ -218,9 +218,6 @@ describe('Index', () => {
         metadata: { genre: 'horror', runtime: 10 },
       });
 
-      // @ts-expect-error when id is missing
-      await index.update({ metadata: { genre: 'drama', runtime: 97 } });
-
       // @ts-expect-error when metadata has unexpected fields
       await index.update({ id: '5', metadata: { title: 'Vertigo' } });
 
