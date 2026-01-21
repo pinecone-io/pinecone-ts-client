@@ -1,0 +1,155 @@
+name: 'Release: NPM Package'
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseMode:
+        description: 'Release mode'
+        required: true
+        type: choice
+        default: 'prod'
+        options:
+          - 'prod' # Production release with @latest tag
+          - 'rc' # Release candidate with @RC tag
+          - 'dev' # Dev release with @dev tag
+      releaseType:
+        description: 'Semver release type (prod only)'
+        required: false
+        type: choice
+        default: 'patch'
+        options:
+          - 'patch' # bug fixes
+          - 'minor' # new features, backwards compatible
+          - 'major' # breaking changes
+      rc_name:
+        description: 'RC identifier (rc mode only)'
+        required: false
+        type: string
+        default: '2024-07'
+      runTests:
+        description: 'Run tests before releasing'
+        required: true
+        type: choice
+        default: 'true'
+        options:
+          - 'true'
+          - 'false'
+
+# allow parallel releases of different modes, queue releases of the same mode
+concurrency:
+  group: npm-release-${{ github.event.inputs.releaseMode }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write # Required for OIDC authentication with npm trusted publishing
+
+jobs:
+  integration-tests:
+    if: ${{ github.event.inputs.runTests == 'true' }}
+    uses: ./.github/workflows/pr.yml
+    secrets: inherit
+
+  version-and-release:
+    name: Release to NPM
+    needs: integration-tests
+    if: ${{ !cancelled() && (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      ##### VERSION BUMP #####
+      - name: 'Bump version for production release'
+        if: inputs.releaseMode == 'prod'
+        shell: bash
+        id: version-bump-prod
+        run: |
+          npm version ${{ inputs.releaseType }} --no-git-tag-version
+          newVersion=$(jq -r '.version' package.json)
+          echo "version=$newVersion" >> $GITHUB_OUTPUT
+          echo "Bumped version to $newVersion (prod release)"
+      - name: 'Bump version for RC release'
+        if: inputs.releaseMode == 'rc'
+        shell: bash
+        id: version-bump-rc
+        run: |
+          if [ -z "${{ inputs.rc_name }}" ]; then
+            echo "Error: rc_name is required for RC releases"
+            exit 1
+          fi
+          npm version prerelease --preid=rc.${{ inputs.rc_name }} --no-git-tag-version
+          newVersion=$(jq -r '.version' package.json)
+          echo "version=$newVersion" >> $GITHUB_OUTPUT
+          echo "Bumped version to $newVersion (RC release)"
+      - name: 'Bump version for dev release'
+        if: inputs.releaseMode == 'dev'
+        shell: bash
+        id: version-bump-dev
+        run: |
+          currentVersion=$(jq -r '.version' package.json)
+          timestamp=$(date +%Y%m%d%H%M%S)
+          devVersion="$currentVersion-dev.$timestamp"
+
+          # Update package.json
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
+
+          # Update package-lock.json version
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+
+          # Update package-lock.json packages[""].version
+          jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+
+          # Create version.json file
+          versionFile="src/version.json"
+          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > "$versionFile"
+
+          echo "version=$devVersion" >> $GITHUB_OUTPUT
+          echo "version_file=$versionFile" >> $GITHUB_OUTPUT
+          echo "Bumped version to $devVersion (dev release)"
+
+      ##### COMMIT AND TAG VERSION CHANGES (prod) #####
+      - name: Configure git CLI
+        if: github.event.inputs.releaseMode == 'prod'
+        shell: bash
+        run: |
+          git config --global user.email "clients@pinecone.io"
+          git config --global user.name "${{ github.actor }}"
+      - name: Commit and tag version changes for prod
+        if: github.event.inputs.releaseMode == 'prod'
+        shell: bash
+        run: |
+          git add . # commit version.json changes
+          newVersion="${{ steps.version-bump-prod.outputs.version }}"
+          git commit -m "[skip ci] Publish release v$newVersion"
+          git tag "v$newVersion"
+
+      ##### NPM PUBLISH #####
+      - name: Publish to npm (prod)
+        if: github.event.inputs.releaseMode == 'prod'
+        run: npm publish --provenance --tag latest
+        shell: bash
+      - name: Publish to npm (RC)
+        if: github.event.inputs.releaseMode == 'rc'
+        run: npm publish --provenance --tag RC
+        shell: bash
+      - name: Publish to npm (dev)
+        if: github.event.inputs.releaseMode == 'dev'
+        run: npm publish --provenance --tag dev
+        shell: bash
+
+      ##### GIT PUSH COMMIT AND TAG (prod) #####
+      - name: Push commit and tag (prod)
+        if: github.event.inputs.releaseMode == 'prod'
+        run: git push --follow-tags
+        shell: bash
+
+  build-and-publish-docs:
+    name: Build and publish docs to sdk-docs
+    needs: version-and-release
+    if: github.event.inputs.releaseMode == 'prod'
+    uses: ./.github/workflows/build-and-publish-docs.yml
+    secrets: inherit

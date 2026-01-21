@@ -3,6 +3,7 @@
 Create a Linear issue for this work in the "SDK Maintenance" project.
 
 Give the issue these labels:
+
 - sdk:ts
 - Improvement
 
@@ -29,3 +30,4 @@ When the planned code changes are complete, the agent should take the following 
      - Examples showing how to use the code that was changed
      - A summary of the value and approach taken in the work (without overwhelming detail - reviewers can read the code for specifics)
 ```
+
