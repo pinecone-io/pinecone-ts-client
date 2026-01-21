@@ -53,6 +53,7 @@ jobs:
   version-and-release:
     name: Release to NPM
     needs: integration-tests
+    if: ${{ !cancelled() && (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -133,7 +134,7 @@ jobs:
         shell: bash
       - name: Publish to npm (RC)
         if: github.event.inputs.releaseMode == 'rc'
-        run: npm publish --provenance --tag rc
+        run: npm publish --provenance --tag RC
         shell: bash
       - name: Publish to npm (dev)
         if: github.event.inputs.releaseMode == 'dev'
