@@ -3,10 +3,7 @@ import {
   ResponseError,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { handleApiError } from '../errors';
-import {
-  createRetryMiddleware,
-  RetryMiddlewareConfig,
-} from './retryMiddleware';
+import { createRetryMiddleware, RetryConfig } from './retryMiddleware';
 
 /**
  * Creates the middleware array with debug, retry, and error handling middleware.
@@ -15,7 +12,7 @@ import {
  * @returns Array of middleware objects
  */
 export const createMiddlewareArray = (
-  retryConfig?: RetryMiddlewareConfig
+  retryConfig?: RetryConfig
 ): Middleware[] => {
   const debugMiddleware: Middleware[] = [];
 

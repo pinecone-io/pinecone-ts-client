@@ -3,7 +3,7 @@ import { normalizeUrl } from './normalizeUrl';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
 import { getFetch } from './fetch';
-import { RetryOnServerFailure } from './retries';
+import { fetchWithRetries, RetryConfig } from './retries';
 import { ChatStream } from '../assistant/chatStream';
 import { convertKeysToCamelCase } from './convertKeys';
 import { createRetryMiddleware, PineconeMiddleware } from './retryMiddleware';
@@ -15,8 +15,9 @@ export {
   buildUserAgent,
   getFetch,
   convertKeysToCamelCase,
-  RetryOnServerFailure,
   ChatStream,
   createRetryMiddleware,
   PineconeMiddleware,
+  fetchWithRetries,
+  RetryConfig,
 };

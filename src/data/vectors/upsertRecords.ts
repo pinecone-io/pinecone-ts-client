@@ -5,7 +5,7 @@ import {
   RecordMetadata,
 } from './types';
 import { handleApiError, PineconeArgumentError } from '../../errors';
-import { buildUserAgent, getFetch, RetryOnServerFailure } from '../../utils';
+import { buildUserAgent, getFetch, fetchWithRetries } from '../../utils';
 import {
   ResponseError,
   X_PINECONE_API_VERSION,
@@ -53,17 +53,17 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     // Note: This operation uses direct fetch() with NDJSON format,
-    // so it bypasses middleware and requires the RetryOnServerFailure wrapper
-    const retryWrapper = new RetryOnServerFailure(
-      () =>
-        fetch(upsertRecordsUrl, {
-          method: 'POST',
-          headers: requestHeaders,
-          body: toNdJson(records),
-        }),
-      maxRetries
+    // so it bypasses middleware and uses fetchWithRetries directly
+    const response = await fetchWithRetries(
+      upsertRecordsUrl,
+      {
+        method: 'POST',
+        headers: requestHeaders,
+        body: toNdJson(records),
+      },
+      { maxRetries: maxRetries ?? this.config.maxRetries },
+      fetch
     );
-    const response = await retryWrapper.execute();
 
     if (response.ok) {
       return;

@@ -11,7 +11,6 @@ import {
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
-import { RetryOnServerFailure } from '../utils';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)

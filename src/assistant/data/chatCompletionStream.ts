@@ -7,7 +7,7 @@ import {
   buildUserAgent,
   getFetch,
   ChatStream,
-  RetryOnServerFailure,
+  fetchWithRetries,
 } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type {
@@ -45,22 +45,22 @@ export const chatCompletionStream = (
     };
 
     // Note: This operation uses direct fetch() for streaming support.
-    // It bypasses middleware and requires the RetryOnServerFailure wrapper.
-    const retryWrapper = new RetryOnServerFailure(
-      () =>
-        fetch(chatUrl, {
-          method: 'POST',
-          headers: requestHeaders,
-          body: JSON.stringify({
-            messages: messagesValidation(options),
-            stream: true,
-            model: modelValidation(options),
-            filter: options.filter,
-          }),
+    // It bypasses middleware and uses fetchWithRetries directly.
+    const response = await fetchWithRetries(
+      chatUrl,
+      {
+        method: 'POST',
+        headers: requestHeaders,
+        body: JSON.stringify({
+          messages: messagesValidation(options),
+          stream: true,
+          model: modelValidation(options),
+          filter: options.filter,
         }),
-      maxRetries
+      },
+      { maxRetries: maxRetries ?? config.maxRetries },
+      fetch
     );
-    const response = await retryWrapper.execute();
 
     if (response.ok && response.body) {
       const nodeReadable = Readable.fromWeb(response.body as ReadableStream);
