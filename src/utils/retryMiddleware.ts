@@ -1,5 +1,5 @@
 import { RetryConfig } from './retries';
-import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
+import { PineconeMaxRetriesExceededError, handleApiError } from '../errors';
 
 /**
  * Context interfaces for middleware hooks.
@@ -80,13 +80,20 @@ interface RetryState {
 }
 
 /**
- * Creates a combined retry + error handling middleware.
+ * Creates retry middleware for handling automatic retries of failed requests.
  *
- * This middleware:
- * 1. Attaches retry metadata to each request (pre hook)
- * 2. Checks responses for retryable errors and retries if needed (post hook)
- * 3. Handles thrown errors and retries if appropriate (onError hook)
- * 4. Converts errors to proper Pinecone error types when retries are exhausted
+ * This middleware handles both retry logic AND error conversion:
+ *
+ * 1. **PRE hook**: Attaches retry metadata to each request
+ * 2. **POST hook**: Detects 5xx responses and retries with exponential backoff
+ * 3. **ON_ERROR hook**: Handles errors thrown during fetch:
+ *    - Retries 5xx errors with exponential backoff
+ *    - Throws PineconeMaxRetriesExceededError when retries are exhausted
+ *    - Converts all other errors to proper Pinecone types (via handleApiError)
+ *
+ * Note: The onError hook must convert errors because throwing in onError exits
+ * the middleware chain immediately, preventing subsequent middleware from running.
+ * The error handling middleware is only needed for POST hook error conversion.
  *
  * @param config - Configuration options for retry behavior
  * @returns A middleware object compatible with all Pinecone API clients
@@ -178,13 +185,16 @@ export const createRetryMiddleware = (
 
     /**
      * ON_ERROR HOOK: Handle errors thrown during fetch and retry if appropriate
+     *
+     * Note: When an onError hook throws, it exits the middleware chain immediately,
+     * so we must convert errors to proper Pinecone types here before throwing.
      */
     onError: async (context: ErrorContext): Promise<Response | void> => {
       const state = (context.init as any)[RETRY_STATE] as
         | RetryState
         | undefined;
 
-      // If no state, convert to proper error and re-throw
+      // If no state, convert error and re-throw
       if (!state) {
         const err = await handleApiError(context.error, undefined, context.url);
         throw err;
@@ -213,7 +223,7 @@ export const createRetryMiddleware = (
         return retryResponse;
       }
 
-      // Non-retryable error - convert and throw
+      // Non-retryable error - convert to proper Pinecone error type and throw
       const err = await handleApiError(context.error, undefined, context.url);
       throw err;
     },

@@ -1,9 +1,31 @@
-import { Middleware } from '../pinecone-generated-ts-fetch/db_control';
+import {
+  Middleware,
+  ResponseError,
+} from '../pinecone-generated-ts-fetch/db_control';
 import { createRetryMiddleware } from './retryMiddleware';
 import { RetryConfig } from './retries';
+import { handleApiError } from '../errors';
 
 /**
  * Creates the middleware array with debug, retry, and error handling middleware.
+ *
+ * Middleware execution order and responsibilities:
+ *
+ * 1. **Debug middleware** (if enabled) - logs requests/responses
+ *
+ * 2. **Retry middleware** - handles retries and error conversion:
+ *    - POST hook: Detects 5xx responses and retries with exponential backoff
+ *    - ON_ERROR hook: Retries 5xx errors AND converts all errors to proper types
+ *      (must convert in onError because throwing exits the middleware chain)
+ *
+ * 3. **Error handling middleware** - converts ResponseError to proper Pinecone types:
+ *    - POST hook: Converts non-2xx responses that weren't handled by retry middleware
+ *    - ON_ERROR hook: Backup error conversion (rarely reached since retry middleware
+ *      handles most errors in its onError hook)
+ *
+ * Why two middleware for errors?
+ * - onError hooks: Throwing exits the chain, so retry middleware must convert errors
+ * - POST hooks: Don't exit the chain, so error handling middleware can run after retry
  *
  * @param retryConfig - Configuration for retry behavior
  * @returns Array of middleware objects
@@ -95,8 +117,37 @@ export const createMiddlewareArray = (
 
   return [
     ...debugMiddleware,
-    // Combined retry + error handling middleware
+    // Retry middleware - handles retrying 5xx errors
     createRetryMiddleware(retryConfig),
+    // Error handling middleware - converts ResponseErrors to proper Pinecone error types
+    // This runs AFTER retry middleware, so it only sees non-retryable errors (4xx)
+    // or errors that have exhausted retries
+    {
+      onError: async (context) => {
+        // Convert any error to proper Pinecone error type
+        const err = await handleApiError(context.error, undefined, context.url);
+        throw err;
+      },
+
+      post: async (context) => {
+        const { response } = context;
+
+        // Success: return 2xx responses as-is
+        if (response.status >= 200 && response.status < 300) {
+          return response;
+        }
+
+        // Non-2xx responses: convert to proper Pinecone error
+        // Note: 5xx errors should have been handled by retry middleware already,
+        // so if we see them here, retries were exhausted
+        const err = await handleApiError(
+          new ResponseError(response, 'Response returned an error'),
+          undefined,
+          context.url
+        );
+        throw err;
+      },
+    },
   ];
 };
 
