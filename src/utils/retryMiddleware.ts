@@ -1,7 +1,5 @@
-import { fetchWithRetries, RetryConfig } from './retries';
-
-// Re-export RetryConfig for convenience
-export type { RetryConfig };
+import { RetryConfig } from './retries';
+import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
 
 /**
  * Context interfaces for middleware hooks.
@@ -49,14 +47,46 @@ export interface PineconeMiddleware {
 }
 
 /**
- * Creates a middleware that automatically retries failed requests with exponential backoff.
+ * Helper functions
+ */
+function isRetryableStatusCode(status: number): boolean {
+  return status >= 500 && status < 600;
+}
+
+function calculateRetryDelay(
+  attempt: number,
+  baseDelay: number,
+  maxDelay: number,
+  jitterFactor: number
+): number {
+  const exponentialDelay = baseDelay * Math.pow(2, attempt);
+  const jitter = exponentialDelay * jitterFactor * (Math.random() * 2 - 1);
+  return Math.min(exponentialDelay + jitter, maxDelay);
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Symbol to store retry state on RequestInit
+const RETRY_STATE = Symbol('retryState');
+
+interface RetryState {
+  attempt: number;
+  maxRetries: number;
+  baseDelay: number;
+  maxDelay: number;
+  jitterFactor: number;
+}
+
+/**
+ * Creates a combined retry + error handling middleware.
  *
- * This middleware wraps the fetch function to use fetchWithRetries, which handles:
- * - Retrying on 5xx errors with exponential backoff
- * - Throwing PineconeMaxRetriesExceededError when retries are exhausted
- *
- * The middleware operates in the `pre` hook to intercept and wrap the fetch function
- * before any requests are made.
+ * This middleware:
+ * 1. Attaches retry metadata to each request (pre hook)
+ * 2. Checks responses for retryable errors and retries if needed (post hook)
+ * 3. Handles thrown errors and retries if appropriate (onError hook)
+ * 4. Converts errors to proper Pinecone error types when retries are exhausted
  *
  * @param config - Configuration options for retry behavior
  * @returns A middleware object compatible with all Pinecone API clients
@@ -64,26 +94,128 @@ export interface PineconeMiddleware {
 export const createRetryMiddleware = (
   config: RetryConfig = {}
 ): PineconeMiddleware => {
-  const middleware: PineconeMiddleware = {
+  const maxRetries = Math.min(config.maxRetries ?? 3, 10);
+  const baseDelay = config.baseDelay ?? 200;
+  const maxDelay = config.maxDelay ?? 20000;
+  const jitterFactor = config.jitterFactor ?? 0.25;
+
+  return {
     /**
-     * PRE HOOK: Called before fetch() is invoked.
-     *
-     * This hook wraps the fetch function to add retry logic.
-     * All subsequent middleware and the actual API call will use this wrapped fetch.
-     *
-     * Flow:
-     * 1. Store reference to original fetch function from context
-     * 2. Replace context.fetch with a wrapped version that calls fetchWithRetries
-     * 3. The wrapped fetch will handle all retry logic automatically
+     * PRE HOOK: Initialize retry state for this request (if not already present)
      */
     pre: async (context: RequestContext): Promise<void> => {
-      const originalFetch = context.fetch;
+      // Check if retry state already exists (e.g., from a retry attempt)
+      const existingState = (context.init as any)[RETRY_STATE] as
+        | RetryState
+        | undefined;
 
-      // Replace the fetch function with one that includes retry logic
-      context.fetch = (url: string, init: RequestInit) =>
-        fetchWithRetries(url, init, config, originalFetch);
+      // Only create new state if it doesn't exist
+      if (!existingState) {
+        const state: RetryState = {
+          attempt: 0,
+          maxRetries,
+          baseDelay,
+          maxDelay,
+          jitterFactor,
+        };
+        (context.init as any)[RETRY_STATE] = state;
+      }
+    },
+
+    /**
+     * POST HOOK: Check for retryable responses and retry if needed
+     * This runs after a successful fetch (no exception thrown)
+     */
+    post: async (context: ResponseContext): Promise<Response> => {
+      const { response } = context;
+      const state = (context.init as any)[RETRY_STATE] as
+        | RetryState
+        | undefined;
+
+      // If no state, just return the response
+      if (!state) {
+        return response;
+      }
+
+      // Success: return 2xx responses as-is
+      if (response.status >= 200 && response.status < 300) {
+        return response;
+      }
+
+      // Check if this is a retryable 5xx error
+      if (!isRetryableStatusCode(response.status)) {
+        // Not retryable (4xx, etc.) - let it pass through
+        // The generated code will throw ResponseError for this
+        return response;
+      }
+
+      // Retryable 5xx error
+      // Check if we've exhausted retries (attempt is 0-indexed, maxRetries is total attempts)
+      // E.g., with maxRetries=3: attempts 0, 1, 2 are allowed. After attempt 2, we check if attempt+1 >= 3
+      if (state.attempt + 1 >= state.maxRetries) {
+        // Exhausted retries - throw PineconeMaxRetriesExceededError
+        throw new PineconeMaxRetriesExceededError(state.maxRetries);
+      }
+
+      // Retry: Wait with exponential backoff
+      await delay(
+        calculateRetryDelay(
+          state.attempt,
+          state.baseDelay,
+          state.maxDelay,
+          state.jitterFactor
+        )
+      );
+
+      // Increment attempt counter
+      state.attempt++;
+
+      // Make the retry request
+      // Note: This will go through middleware again (including this post hook)
+      const retryResponse = await context.fetch(context.url, context.init);
+      return retryResponse;
+    },
+
+    /**
+     * ON_ERROR HOOK: Handle errors thrown during fetch and retry if appropriate
+     */
+    onError: async (context: ErrorContext): Promise<Response | void> => {
+      const state = (context.init as any)[RETRY_STATE] as
+        | RetryState
+        | undefined;
+
+      // If no state, convert to proper error and re-throw
+      if (!state) {
+        const err = await handleApiError(context.error, undefined, context.url);
+        throw err;
+      }
+
+      // If we have a response and it's a 5xx error, handle it like the post hook
+      if (context.response && isRetryableStatusCode(context.response.status)) {
+        // Check if we've exhausted retries
+        if (state.attempt + 1 >= state.maxRetries) {
+          // Exhausted retries - throw PineconeMaxRetriesExceededError
+          throw new PineconeMaxRetriesExceededError(state.maxRetries);
+        }
+
+        // Retry
+        await delay(
+          calculateRetryDelay(
+            state.attempt,
+            state.baseDelay,
+            state.maxDelay,
+            state.jitterFactor
+          )
+        );
+
+        state.attempt++;
+        const retryResponse = await context.fetch(context.url, context.init);
+        return retryResponse;
+      }
+
+      // Non-retryable error - convert and throw
+      const err = await handleApiError(context.error, undefined, context.url);
+      throw err;
     },
   };
-
-  return middleware;
 };

@@ -1,9 +1,6 @@
-import {
-  Middleware,
-  ResponseError,
-} from '../pinecone-generated-ts-fetch/db_control';
-import { handleApiError } from '../errors';
-import { createRetryMiddleware, RetryConfig } from './retryMiddleware';
+import { Middleware } from '../pinecone-generated-ts-fetch/db_control';
+import { createRetryMiddleware } from './retryMiddleware';
+import { RetryConfig } from './retries';
 
 /**
  * Creates the middleware array with debug, retry, and error handling middleware.
@@ -98,30 +95,7 @@ export const createMiddlewareArray = (
 
   return [
     ...debugMiddleware,
-    // Error handling middleware - transforms errors into proper types
-    {
-      onError: async (context) => {
-        const err = await handleApiError(context.error, undefined, context.url);
-        throw err;
-      },
-
-      post: async (context) => {
-        const { response } = context;
-
-        if (response.status >= 200 && response.status < 300) {
-          return response;
-        } else {
-          const err = await handleApiError(
-            new ResponseError(response, 'Response returned an error'),
-            undefined,
-            context.url
-          );
-          throw err;
-        }
-      },
-    },
-    // Retry middleware - must come AFTER error handling middleware
-    // so it can catch and retry the transformed errors
+    // Combined retry + error handling middleware
     createRetryMiddleware(retryConfig),
   ];
 };
