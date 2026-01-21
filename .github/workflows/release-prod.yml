@@ -90,7 +90,7 @@ jobs:
 
       - name: Publish RC to npm
         if: github.event.inputs.releaseMode == 'rc'
-        run: npm publish --tag=RC
+        run: npm publish --tag=RC --provenance
 
       # Dev release - inline logic
       - name: Bump version for dev
@@ -106,7 +106,7 @@ jobs:
 
       - name: Publish dev to npm
         if: github.event.inputs.releaseMode == 'dev'
-        run: npm publish --tag dev
+        run: npm publish --tag dev --provenance
 
   build-and-publish-docs:
     name: Build and publish docs to sdk-docs
