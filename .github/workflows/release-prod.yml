@@ -52,7 +52,7 @@ jobs:
 
   version-and-release:
     name: Release to NPM
-    # needs: integration-tests
+    needs: integration-tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
