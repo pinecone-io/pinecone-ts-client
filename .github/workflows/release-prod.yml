@@ -11,6 +11,7 @@ on:
         options:
           - 'prod' # Production release with @latest tag
           - 'rc' # Release candidate with @RC tag
+          - 'dev' # Dev release with @dev tag
       releaseType:
         description: 'Semver release type (prod only)'
         required: false
@@ -90,6 +91,22 @@ jobs:
       - name: Publish RC to npm
         if: github.event.inputs.releaseMode == 'rc'
         run: npm publish --tag=RC
+
+      # Dev release - inline logic
+      - name: Bump version for dev
+        if: github.event.inputs.releaseMode == 'dev'
+        run: |
+          currentVersion=$(jq -r '.version' package.json)
+          timestamp=$(date +%Y%m%d%H%M%S)
+          devVersion="$currentVersion-dev.$timestamp"
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
+          jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+          jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
+          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > src/version.json
+
+      - name: Publish dev to npm
+        if: github.event.inputs.releaseMode == 'dev'
+        run: npm publish --tag dev
 
   build-and-publish-docs:
     name: Build and publish docs to sdk-docs
