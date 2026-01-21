@@ -63,7 +63,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-
       ##### VERSION BUMP #####
       - name: 'Bump version for production release'
         if: inputs.releaseMode == 'prod'
@@ -95,24 +94,23 @@ jobs:
           currentVersion=$(jq -r '.version' package.json)
           timestamp=$(date +%Y%m%d%H%M%S)
           devVersion="$currentVersion-dev.$timestamp"
-          
+
           # Update package.json
           jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
-          
+
           # Update package-lock.json version
           jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          
+
           # Update package-lock.json packages[""].version
           jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          
+
           # Create version.json file
           versionFile="src/version.json"
           jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > "$versionFile"
-          
+
           echo "version=$devVersion" >> $GITHUB_OUTPUT
           echo "version_file=$versionFile" >> $GITHUB_OUTPUT
           echo "Bumped version to $devVersion (dev release)"
-
 
       ##### COMMIT AND TAG VERSION CHANGES (prod) #####
       - name: Configure git CLI
@@ -129,7 +127,6 @@ jobs:
           newVersion="${{ steps.version-bump-prod.outputs.version }}"
           git commit -m "[skip ci] Publish release v$newVersion"
           git tag "v$newVersion"
-
 
       ##### NPM PUBLISH #####
       - name: Publish to npm (prod)
