@@ -14,3 +14,6 @@ Make sure the plan includes:
   - Use unit tests for the bulk of testing, including errors and edge cases.
   - Use integration tests sparingly to confirm a feature is working end-to-end but without delving into all edge cases.
 - All interfaces need high-quality JSDoc comments
+    - Use unit tests for the bulk of testing, including errors and edge cases. 
+    - Use integration tests sparingly to confirm a feature is working end-to-end but without delving into all edge cases.
+- All interfaces need high-quality JSDoc comments
