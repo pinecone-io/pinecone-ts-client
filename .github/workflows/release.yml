@@ -34,6 +34,11 @@ on:
         options:
           - 'true'
           - 'false'
+      ref:
+        description: 'Branch name or SHA to release from (defaults to current branch)'
+        required: false
+        type: string
+        default: ''
 
 # allow parallel releases of different modes, queue releases of the same mode
 concurrency:
@@ -49,6 +54,8 @@ jobs:
     if: ${{ github.event.inputs.runTests == 'true' }}
     uses: ./.github/workflows/pr.yml
     secrets: inherit
+    with:
+      ref: ${{ inputs.ref }}
 
   version-and-release:
     name: Release to NPM
@@ -58,6 +65,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Validate ref is a branch for prod releases
+        if: inputs.releaseMode == 'prod' && inputs.ref != ''
+        shell: bash
+        run: |
+          if ! git symbolic-ref --short HEAD > /dev/null 2>&1; then
+            echo "Error: For prod releases, ref must be a valid branch name, not a SHA. Provided ref: ${{ inputs.ref }}. Current HEAD is detached."
+            exit 1
+          fi
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -144,8 +162,13 @@ jobs:
       ##### GIT PUSH COMMIT AND TAG (prod) #####
       - name: Push commit and tag (prod)
         if: github.event.inputs.releaseMode == 'prod'
-        run: git push --follow-tags
         shell: bash
+        run: |
+          if [ -n "${{ inputs.ref }}" ]; then
+            git push origin "${{ inputs.ref }}" --follow-tags
+          else
+            git push --follow-tags
+          fi
 
   build-and-publish-docs:
     name: Build and publish docs to sdk-docs
@@ -153,3 +176,5 @@ jobs:
     if: github.event.inputs.releaseMode == 'prod'
     uses: ./.github/workflows/build-and-publish-docs.yml
     secrets: inherit
+    with:
+      ref: ${{ inputs.ref }}
