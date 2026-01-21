@@ -62,6 +62,7 @@ jobs:
     needs: integration-tests
     if: ${{ !cancelled() && (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped') }}
     runs-on: ubuntu-latest
+    environment: npm-publish
     steps:
       - name: Checkout
         uses: actions/checkout@v4
