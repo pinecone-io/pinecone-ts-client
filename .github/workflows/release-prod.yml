@@ -35,10 +35,10 @@ on:
           - 'true'
           - 'false'
 
-# prevent concurrent releases
+# allow parallel releases of different modes, queue releases of the same mode
 concurrency:
   group: npm-release-${{ github.event.inputs.releaseMode }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: write
