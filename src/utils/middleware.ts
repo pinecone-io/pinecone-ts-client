@@ -98,9 +98,6 @@ export const createMiddlewareArray = (
 
   return [
     ...debugMiddleware,
-    // Retry middleware - must come before error handling middleware
-    // so retries happen before errors are transformed
-    createRetryMiddleware(retryConfig),
     // Error handling middleware - transforms errors into proper types
     {
       onError: async (context) => {
@@ -123,6 +120,9 @@ export const createMiddlewareArray = (
         }
       },
     },
+    // Retry middleware - must come AFTER error handling middleware
+    // so it can catch and retry the transformed errors
+    createRetryMiddleware(retryConfig),
   ];
 };
 
