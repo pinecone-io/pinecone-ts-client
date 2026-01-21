@@ -3,7 +3,12 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { PineconeConfiguration } from '../../data';
-import { buildUserAgent, getFetch, ChatStream } from '../../utils';
+import {
+  buildUserAgent,
+  getFetch,
+  ChatStream,
+  RetryOnServerFailure,
+} from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type {
   ChatCompletionOptions,
@@ -24,7 +29,8 @@ export const chatCompletionStream = (
   config: PineconeConfiguration
 ) => {
   return async (
-    options: ChatCompletionOptions
+    options: ChatCompletionOptions,
+    maxRetries?: number
   ): Promise<ChatStream<StreamedChatCompletionResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -38,16 +44,23 @@ export const chatCompletionStream = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
-    const response = await fetch(chatUrl, {
-      method: 'POST',
-      headers: requestHeaders,
-      body: JSON.stringify({
-        messages: messagesValidation(options),
-        stream: true,
-        model: modelValidation(options),
-        filter: options.filter,
-      }),
-    });
+    // Note: This operation uses direct fetch() for streaming support.
+    // It bypasses middleware and requires the RetryOnServerFailure wrapper.
+    const retryWrapper = new RetryOnServerFailure(
+      () =>
+        fetch(chatUrl, {
+          method: 'POST',
+          headers: requestHeaders,
+          body: JSON.stringify({
+            messages: messagesValidation(options),
+            stream: true,
+            model: modelValidation(options),
+            filter: options.filter,
+          }),
+        }),
+      maxRetries
+    );
+    const response = await retryWrapper.execute();
 
     if (response.ok && response.body) {
       const nodeReadable = Readable.fromWeb(response.body as ReadableStream);

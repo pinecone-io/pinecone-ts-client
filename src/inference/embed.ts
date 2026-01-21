@@ -4,14 +4,12 @@ import {
   EmbedRequestInputsInner,
   InferenceApi,
 } from '../pinecone-generated-ts-fetch/inference';
-import { RetryOnServerFailure } from '../utils';
 
 export const embed = (infApi: InferenceApi) => {
   return async (
     model: string,
     inputs: Array<string>,
-    params?: Record<string, string>,
-    maxRetries?: number
+    params?: Record<string, string>
   ): Promise<EmbeddingsList> => {
     const typedAndFormattedInputs: Array<EmbedRequestInputsInner> = inputs.map(
       (str) => {
@@ -24,11 +22,7 @@ export const embed = (infApi: InferenceApi) => {
       delete params.inputType;
     }
 
-    const retryWrapper = new RetryOnServerFailure(
-      infApi.embed.bind(infApi),
-      maxRetries
-    );
-    return await retryWrapper.execute({
+    return await infApi.embed({
       embedRequest: {
         model: model,
         inputs: typedAndFormattedInputs,

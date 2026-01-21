@@ -369,7 +369,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteAll() {
-    return this._deleteAll(this.config.maxRetries);
+    return this._deleteAll();
   }
 
   /**
@@ -394,7 +394,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteMany(options: DeleteManyOptions) {
-    return this._deleteMany(options, this.config.maxRetries);
+    return this._deleteMany(options);
   }
 
   /**
@@ -414,7 +414,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the delete is completed.
    */
   deleteOne(id: DeleteOneOptions) {
-    return this._deleteOne(id, this.config.maxRetries);
+    return this._deleteOne(id);
   }
 
   /**
@@ -443,7 +443,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats(options?: DescribeIndexStatsOptions) {
-    return this._describeIndexStats(options, this.config.maxRetries);
+    return this._describeIndexStats(options);
   }
 
   /**
@@ -489,7 +489,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
    */
   listPaginated(options?: ListOptions) {
-    return this._listPaginated(options, this.config.maxRetries);
+    return this._listPaginated(options);
   }
 
   /**
@@ -516,7 +516,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the upsert is completed.
    */
   async upsert(data: Array<PineconeRecord<T>>) {
-    return await this._upsertCommand.run(data, this.config.maxRetries);
+    return await this._upsertCommand.run(data);
   }
 
   /**
@@ -536,7 +536,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link FetchResponse} when the fetch is completed.
    */
   async fetch(options: FetchOptions) {
-    return await this._fetchCommand.run(options, this.config.maxRetries);
+    return await this._fetchCommand.run(options);
   }
 
   /**
@@ -557,10 +557,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link FetchByMetadataResponse} when the fetch is completed.
    */
   async fetchByMetadata(options: FetchByMetadataOptions) {
-    return await this._fetchByMetadataCommand.run(
-      options,
-      this.config.maxRetries
-    );
+    return await this._fetchByMetadataCommand.run(options);
   }
 
   /**
@@ -586,7 +583,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves with the {@link QueryResponse} when the query is completed.
    */
   async query(options: QueryOptions) {
-    return await this._queryCommand.run(options, this.config.maxRetries);
+    return await this._queryCommand.run(options);
   }
 
   /**
@@ -610,7 +607,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the update is completed.
    */
   async update(options: UpdateOptions<T>) {
-    return await this._updateCommand.run(options, this.config.maxRetries);
+    return await this._updateCommand.run(options);
   }
 
   /**
@@ -739,10 +736,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns a promise that resolves to {@link SearchRecordsResponse} when the operation is complete.
    */
   async searchRecords(options: SearchRecordsOptions) {
-    return await this._searchRecordsCommand.run(
-      options,
-      this.config.maxRetries
-    );
+    return await this._searchRecordsCommand.run(options);
   }
 
   /**
@@ -767,12 +761,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * "Abort" to stop the import operation if any records fail to import.
    */
   async startImport(uri: string, errorMode?: string, integration?: string) {
-    return await this._startImportCommand.run(
-      uri,
-      errorMode,
-      integration,
-      this.config.maxRetries
-    );
+    return await this._startImportCommand.run(uri, errorMode, integration);
   }
 
   /**
@@ -806,11 +795,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    */
   async listImports(limit?: number, paginationToken?: string) {
-    return await this._listImportsCommand.run(
-      limit,
-      paginationToken,
-      this.config.maxRetries
-    );
+    return await this._listImportsCommand.run(limit, paginationToken);
   }
 
   /**
@@ -838,7 +823,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param id - The id of the import operation to describe.
    */
   async describeImport(id: string) {
-    return await this._describeImportCommand.run(id, this.config.maxRetries);
+    return await this._describeImportCommand.run(id);
   }
 
   /**
@@ -857,7 +842,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param id - The id of the import operation to cancel.
    */
   async cancelImport(id: string) {
-    return await this._cancelImportCommand.run(id, this.config.maxRetries);
+    return await this._cancelImportCommand.run(id);
   }
 
   /**
@@ -885,7 +870,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * when a schema is present, only fields which are present in the `fields` object with `filterable: true` are indexed.
    */
   async createNamespace(options: CreateNamespaceOptions) {
-    return await this._createNamespaceCommand(options, this.config.maxRetries);
+    return await this._createNamespaceCommand(options);
   }
 
   /**
@@ -916,12 +901,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     paginationToken?: string,
     prefix?: string
   ) {
-    return await this._listNamespacesCommand(
-      limit,
-      paginationToken,
-      prefix,
-      this.config.maxRetries
-    );
+    return await this._listNamespacesCommand(limit, paginationToken, prefix);
   }
 
   /**
@@ -940,10 +920,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param namespace - The namespace to describe.
    */
   async describeNamespace(namespace: string) {
-    return await this._describeNamespaceCommand(
-      namespace,
-      this.config.maxRetries
-    );
+    return await this._describeNamespaceCommand(namespace);
   }
 
   /**
@@ -960,9 +937,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param namespace - The namespace to delete.
    */
   async deleteNamespace(namespace: string) {
-    return await this._deleteNamespaceCommand(
-      namespace,
-      this.config.maxRetries
-    );
+    return await this._deleteNamespaceCommand(namespace);
   }
 }

@@ -8,7 +8,6 @@ import {
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
-import { RetryOnServerFailure } from '../utils';
 import {
   CreateIndexReadCapacity,
   toApiReadCapacity,
@@ -80,15 +79,9 @@ export const configureIndex = (api: ManageIndexesApi) => {
 
   return async (
     indexName: IndexName,
-    options: ConfigureIndexOptions,
-    maxRetries?: number
+    options: ConfigureIndexOptions
   ): Promise<IndexModel> => {
     validator(indexName, options);
-
-    const retryWrapper = new RetryOnServerFailure(
-      api.configureIndex.bind(api),
-      maxRetries
-    );
 
     const spec = buildConfigureSpec(options);
     const request: ConfigureIndexRequest = {
@@ -98,7 +91,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
       spec,
     };
 
-    return await retryWrapper.execute({
+    return await api.configureIndex({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       indexName,
       configureIndexRequest: request,

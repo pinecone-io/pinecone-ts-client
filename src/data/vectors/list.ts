@@ -4,7 +4,6 @@ import type {
   ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
-import { RetryOnServerFailure } from '../../utils';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -29,10 +28,7 @@ export const listPaginated = (
     }
   };
 
-  return async (
-    options?: ListOptions,
-    maxRetries?: number
-  ): Promise<ListResponse> => {
+  return async (options?: ListOptions): Promise<ListResponse> => {
     if (options) {
       validator(options);
     }
@@ -43,10 +39,6 @@ export const listPaginated = (
       namespace,
     };
     const api = await apiProvider.provide();
-    const retryWrapper = new RetryOnServerFailure(
-      api.listVectors.bind(api),
-      maxRetries
-    );
-    return await retryWrapper.execute(listRequest);
+    return await api.listVectors(listRequest);
   };
 };

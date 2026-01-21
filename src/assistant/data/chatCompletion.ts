@@ -9,7 +9,6 @@ import {
   validateChatOptions,
 } from './chat';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import { RetryOnServerFailure } from '../../utils';
 import type { ChatCompletionOptions } from './types';
 
 export const chatCompletion = (
@@ -24,19 +23,16 @@ export const chatCompletion = (
     const api = await apiProvider.provideData();
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
-    const retryWrapper = new RetryOnServerFailure(() =>
-      api.chatCompletionAssistant({
-        xPineconeApiVersion: X_PINECONE_API_VERSION,
-        assistantName: assistantName,
-        searchCompletions: {
-          messages: messages,
-          stream: false,
-          model: model,
-          filter: options.filter,
-        },
-      })
-    );
 
-    return await retryWrapper.execute();
+    return await api.chatCompletionAssistant({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      assistantName: assistantName,
+      searchCompletions: {
+        messages: messages,
+        stream: false,
+        model: model,
+        filter: options.filter,
+      },
+    });
   };
 };

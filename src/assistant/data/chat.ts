@@ -4,7 +4,6 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import { RetryOnServerFailure } from '../../utils';
 import type { ChatOptions } from './types';
 import { ChatModelEnum } from './types';
 import { PineconeArgumentError } from '../../errors';
@@ -20,27 +19,23 @@ export const chat = (
     const messages = messagesValidation(options) as MessageModel[];
     const model = modelValidation(options);
 
-    const retryWrapper = new RetryOnServerFailure(() =>
-      api.chatAssistant({
-        xPineconeApiVersion: X_PINECONE_API_VERSION,
-        assistantName: assistantName,
-        chatRequest: {
-          messages: messages,
-          stream: false,
-          model: model,
-          filter: options.filter,
-          jsonResponse: options.jsonResponse,
-          includeHighlights: options.includeHighlights,
-          contextOptions: {
-            // use topK from contextOptions if provided, otherwise use topK from options
-            topK: options.contextOptions?.topK || options.topK,
-            snippetSize: options.contextOptions?.snippetSize,
-          },
+    return await api.chatAssistant({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      assistantName: assistantName,
+      chatRequest: {
+        messages: messages,
+        stream: false,
+        model: model,
+        filter: options.filter,
+        jsonResponse: options.jsonResponse,
+        includeHighlights: options.includeHighlights,
+        contextOptions: {
+          // use topK from contextOptions if provided, otherwise use topK from options
+          topK: options.contextOptions?.topK || options.topK,
+          snippetSize: options.contextOptions?.snippetSize,
         },
-      })
-    );
-
-    return await retryWrapper.execute();
+      },
+    });
   };
 };
 

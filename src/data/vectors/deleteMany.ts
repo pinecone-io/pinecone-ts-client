@@ -3,7 +3,6 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_dat
 import type { DeleteRequest } from '../../pinecone-generated-ts-fetch/db_data';
 import type { RecordId } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { RetryOnServerFailure } from '../../utils';
 
 /**
  * A list of record ids to delete from the index.
@@ -46,10 +45,7 @@ export const deleteMany = (
     }
   };
 
-  return async (
-    options: DeleteManyOptions,
-    maxRetries?: number
-  ): Promise<void> => {
+  return async (options: DeleteManyOptions): Promise<void> => {
     validator(options);
 
     const requestOptions: DeleteRequest = {};
@@ -61,13 +57,10 @@ export const deleteMany = (
     }
 
     const api = await apiProvider.provide();
-    const retryWrapper = new RetryOnServerFailure(
-      api.deleteVectors.bind(api),
-      maxRetries
-    );
-    await retryWrapper.execute({
+    await api.deleteVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       deleteRequest: { ...requestOptions, namespace },
     });
+    return;
   };
 };

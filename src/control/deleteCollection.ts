@@ -17,6 +17,7 @@ export const deleteCollection = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `collectionName`'
       );
     }
+
     await api.deleteCollection({
       collectionName,
       xPineconeApiVersion: X_PINECONE_API_VERSION,

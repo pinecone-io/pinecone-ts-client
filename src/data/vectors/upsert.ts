@@ -3,7 +3,6 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_dat
 import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeRecord, RecordMetadata } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { RetryOnServerFailure } from '../../utils';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
@@ -34,20 +33,11 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     });
   };
 
-  async run(
-    records: Array<PineconeRecord<T>>,
-    maxRetries?: number
-  ): Promise<void> {
+  async run(records: Array<PineconeRecord<T>>): Promise<void> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
-
-    const retryWrapper = new RetryOnServerFailure(
-      api.upsertVectors.bind(api),
-      maxRetries
-    );
-
-    await retryWrapper.execute({
+    await api.upsertVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       upsertRequest: {
         vectors: records as Array<Vector>,

@@ -45,7 +45,8 @@ export const describeFile = (
 ) => {
   return async (
     fileId: string,
-    includeUrl: boolean
+    includeUrl: boolean,
+    maxRetries?: number
   ): Promise<AssistantFileModel> => {
     if (!fileId) {
       throw new PineconeArgumentError(

@@ -52,6 +52,8 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
+    // Note: This operation uses direct fetch() with NDJSON format,
+    // so it bypasses middleware and requires the RetryOnServerFailure wrapper
     const retryWrapper = new RetryOnServerFailure(
       () =>
         fetch(upsertRecordsUrl, {

@@ -6,6 +6,7 @@ import { getFetch } from './fetch';
 import { RetryOnServerFailure } from './retries';
 import { ChatStream } from '../assistant/chatStream';
 import { convertKeysToCamelCase } from './convertKeys';
+import { createRetryMiddleware, PineconeMiddleware } from './retryMiddleware';
 
 export {
   debugLog,
@@ -16,4 +17,6 @@ export {
   convertKeysToCamelCase,
   RetryOnServerFailure,
   ChatStream,
+  createRetryMiddleware,
+  PineconeMiddleware,
 };

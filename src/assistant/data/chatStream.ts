@@ -3,7 +3,12 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { PineconeConfiguration } from '../../data';
-import { buildUserAgent, getFetch, ChatStream } from '../../utils';
+import {
+  buildUserAgent,
+  getFetch,
+  ChatStream,
+  RetryOnServerFailure,
+} from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { ChatOptions, StreamedChatResponse } from './types';
 import { handleApiError } from '../../errors';
@@ -21,7 +26,8 @@ export const chatStream = (
   config: PineconeConfiguration
 ) => {
   return async (
-    options: ChatOptions
+    options: ChatOptions,
+    maxRetries?: number
   ): Promise<ChatStream<StreamedChatResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -48,20 +54,26 @@ export const chatStream = (
       };
     }
 
-    // we call the API directly via fetch, so we need to snake_case the keys (normally generated code handles this)
-    const response = await fetch(chatUrl, {
-      method: 'POST',
-      headers: requestHeaders,
-      body: JSON.stringify({
-        messages: messagesValidation(options),
-        stream: true,
-        model: modelValidation(options),
-        filter: options.filter,
-        json_response: options.jsonResponse,
-        include_highlights: options.includeHighlights,
-        context_options: contextOptions,
-      }),
-    });
+    // Note: This operation uses direct fetch() for streaming support.
+    // It bypasses middleware and requires the RetryOnServerFailure wrapper.
+    const retryWrapper = new RetryOnServerFailure(
+      () =>
+        fetch(chatUrl, {
+          method: 'POST',
+          headers: requestHeaders,
+          body: JSON.stringify({
+            messages: messagesValidation(options),
+            stream: true,
+            model: modelValidation(options),
+            filter: options.filter,
+            json_response: options.jsonResponse,
+            include_highlights: options.includeHighlights,
+            context_options: contextOptions,
+          }),
+        }),
+      maxRetries
+    );
+    const response = await retryWrapper.execute();
 
     if (response.ok && response.body) {
       const nodeReadable = Readable.fromWeb(response.body as ReadableStream);

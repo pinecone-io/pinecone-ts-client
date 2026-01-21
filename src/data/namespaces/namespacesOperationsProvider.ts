@@ -13,7 +13,7 @@ import {
   queryParamsStringify,
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export class NamespaceOperationsProvider {
   private readonly config: PineconeConfiguration;
@@ -73,7 +73,7 @@ export class NamespaceOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware,
+      middleware: createMiddlewareArray({ maxRetries: this.config.maxRetries }),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

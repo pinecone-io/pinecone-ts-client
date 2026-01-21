@@ -7,7 +7,6 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { RetryOnServerFailure } from '../../utils';
 
 /** The list of record ids you would like to fetch using { @link Index.fetch } */
 export type FetchOptions = Array<RecordId>;
@@ -44,15 +43,11 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(ids: FetchOptions, maxRetries?: number): Promise<FetchResponse<T>> {
+  async run(ids: FetchOptions): Promise<FetchResponse<T>> {
     this.validator(ids);
     const api = await this.apiProvider.provide();
 
-    const retryWrapper = new RetryOnServerFailure(
-      api.fetchVectors.bind(api),
-      maxRetries
-    );
-    const response = await retryWrapper.execute({
+    const response = await api.fetchVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ids: ids,
       namespace: this.namespace,

@@ -3,6 +3,7 @@ import {
   ManageIndexesApi,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
+import { RetryOnServerFailure } from '../utils';
 
 /**
  * The options for creating an index backup.

@@ -569,7 +569,7 @@ export class Pinecone {
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
   configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options, this.config.maxRetries);
+    return this._configureIndex(indexName, options);
   }
 
   /**
@@ -740,7 +740,10 @@ export class Pinecone {
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async describeAssistant(assistantName: string) {
-    const assistant = await this._describeAssistant(assistantName);
+    const assistant = await this._describeAssistant(
+      assistantName,
+      this.config.maxRetries
+    );
 
     if (assistant.host) {
       AssistantHostSingleton._set(this.config, assistantName, assistant.host);

@@ -5,7 +5,6 @@ import {
   SearchMatchTerms,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
-import { RetryOnServerFailure } from '../../utils';
 
 /**
  * Options for searching records within a specific namespace.
@@ -129,19 +128,11 @@ export class SearchRecordsCommand {
   };
 
   async run(
-    searchOptions: SearchRecordsOptions,
-    maxRetries?: number
+    searchOptions: SearchRecordsOptions
   ): Promise<SearchRecordsResponse> {
     this.validator(searchOptions);
-
     const api = await this.apiProvider.provide();
-
-    const retryWrapper = new RetryOnServerFailure(
-      api.searchRecordsNamespace.bind(api),
-      maxRetries
-    );
-
-    return await retryWrapper.execute({
+    return await api.searchRecordsNamespace({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       searchRecordsRequest: searchOptions,
       namespace: this.namespace,

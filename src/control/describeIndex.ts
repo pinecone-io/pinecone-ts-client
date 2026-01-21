@@ -26,6 +26,7 @@ export const describeIndex = (api: ManageIndexesApi) => {
         'You must pass a non-empty string for `name` in order to describe an index'
       );
     }
+
     const result = await api.describeIndex({
       indexName,
       xPineconeApiVersion: X_PINECONE_API_VERSION,

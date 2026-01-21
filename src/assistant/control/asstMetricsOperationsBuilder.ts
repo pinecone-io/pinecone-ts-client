@@ -6,12 +6,12 @@ import {
   MetricsApi,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export const asstMetricsOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {
-  const { apiKey } = config;
+  const { apiKey, maxRetries } = config;
   let hostUrl = 'https://prod-1-data.ke.pinecone.io/assistant';
   // If 'eu' is specified use that, otherwise default to 'us'
   if (config.assistantRegion && config.assistantRegion.toLowerCase() === 'eu') {
@@ -29,7 +29,7 @@ export const asstMetricsOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware,
+    middleware: createMiddlewareArray({ maxRetries }),
   };
 
   return new MetricsApi(new Configuration(apiConfig));
