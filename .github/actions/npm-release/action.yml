@@ -23,13 +23,16 @@ runs:
         git config --global user.email "${{ inputs.git_email }}"
         git config --global user.name "${{ inputs.git_username }}"
     - name: 'Bump version'
-      shell: bash
-      run: npm version ${{ inputs.releaseType }} --no-git-tag-version
+      id: version-bump
+      uses: ./.github/actions/version-bump
+      with:
+        releaseMode: prod
+        releaseType: ${{ inputs.releaseType }}
     - name: 'Commit and tag version changes'
       shell: bash
       run: |
         git add .
-        newVersion=$(jq -r '.version' package.json)
+        newVersion="${{ steps.version-bump.outputs.version }}"
         git commit -m "[skip ci] Publish release v$newVersion"
         git tag "v$newVersion"
     - name: 'Output release tag'

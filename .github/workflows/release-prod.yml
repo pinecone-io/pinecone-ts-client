@@ -77,32 +77,26 @@ jobs:
         if: github.event.inputs.releaseMode == 'prod'
         run: echo "${{ steps.npm-release.outputs.release_tag }} was published"
 
-      # RC release - inline logic
-      - name: Configure git for RC release
-        if: github.event.inputs.releaseMode == 'rc'
-        run: |
-          git config --global user.email "clients@pinecone.io"
-          git config --global user.name "${{ github.actor }}"
-
+      # RC release using unified version-bump action
       - name: Bump version for RC
         if: github.event.inputs.releaseMode == 'rc'
-        run: npm version prerelease --preid=rc.${{ github.event.inputs.rc_name }} --no-git-tag-version
+        id: version-bump-rc
+        uses: ./.github/actions/version-bump
+        with:
+          releaseMode: rc
+          rc_name: ${{ github.event.inputs.rc_name }}
 
       - name: Publish RC to npm
         if: github.event.inputs.releaseMode == 'rc'
         run: npm publish --tag=RC --provenance
 
-      # Dev release - inline logic
+      # Dev release using unified version-bump action
       - name: Bump version for dev
         if: github.event.inputs.releaseMode == 'dev'
-        run: |
-          currentVersion=$(jq -r '.version' package.json)
-          timestamp=$(date +%Y%m%d%H%M%S)
-          devVersion="$currentVersion-dev.$timestamp"
-          jq --arg newVersion "$devVersion" '.version = $newVersion' package.json > package.tmp && mv package.tmp package.json
-          jq --arg newVersion "$devVersion" '.version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          jq --arg newVersion "$devVersion" '.packages[""].version = $newVersion' package-lock.json > package-lock.tmp && mv package-lock.tmp package-lock.json
-          jq --null-input --arg version "$devVersion" '{"name": "@pinecone-database/pinecone", "version": $version}' > src/version.json
+        id: version-bump-dev
+        uses: ./.github/actions/version-bump
+        with:
+          releaseMode: dev
 
       - name: Publish dev to npm
         if: github.event.inputs.releaseMode == 'dev'
