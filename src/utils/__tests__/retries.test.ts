@@ -1,5 +1,6 @@
 import { RetryOnServerFailure } from '../retries';
 import {
+  PineconeConnectionError,
   PineconeInternalServerError,
   PineconeMaxRetriesExceededError,
   PineconeUnavailableError,
@@ -20,6 +21,16 @@ describe('RetryOnServerFailure', () => {
     const fakeAsyncFn: () => Promise<object> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(PineconeUnavailableError));
+    const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
+    await expect(retryWrapper.execute()).rejects.toThrowError(
+      PineconeMaxRetriesExceededError
+    );
+  });
+
+  test('Should throw max retries error for PineconeConnectionError after maxRetries is reached', async () => {
+    const fakeAsyncFn: () => Promise<object> = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(PineconeConnectionError));
     const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
     await expect(retryWrapper.execute()).rejects.toThrowError(
       PineconeMaxRetriesExceededError
@@ -59,6 +70,19 @@ describe('RetryOnServerFailure', () => {
     const result = await retryWrapper.execute();
     expect(result.status).toBe(200);
   });
+
+  test('Should retry PineconeConnectionError and succeed on subsequent attempt', async () => {
+    // Mock the async function to fail once with connection error, then succeed
+    const fakeAsyncFn: () => Promise<{ name?: string; status: number }> = jest
+      .fn()
+      .mockImplementationOnce(() =>
+        Promise.resolve({ name: 'PineconeConnectionError', status: 0 })
+      ) // 1x failure to trigger a retry
+      .mockImplementationOnce(() => Promise.resolve({ status: 200 })); // 1x success
+    const retryWrapper = new RetryOnServerFailure(fakeAsyncFn, 2);
+    const result = await retryWrapper.execute();
+    expect(result.status).toBe(200);
+  });
 });
 
 describe('calculateRetryDelay', () => {
@@ -86,6 +110,16 @@ describe('isRetryError', () => {
     );
     const result = retryWrapper.isRetryError({
       name: 'PineconeUnavailableError',
+    });
+    expect(result).toBe(true);
+  });
+
+  test('Should return true if response is PineconeConnectionError', () => {
+    const retryWrapper = new RetryOnServerFailure(() =>
+      Promise.resolve({ name: 'PineconeConnectionError' })
+    );
+    const result = retryWrapper.isRetryError({
+      name: 'PineconeConnectionError',
     });
     expect(result).toBe(true);
   });
@@ -134,6 +168,14 @@ describe('shouldStopRetrying', () => {
     const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
     const result = retryWrapper['shouldStopRetrying']({
       name: 'PineconeInternalServerError',
+    });
+    expect(result).toBe(false);
+  });
+
+  test('Should return false for retryable error name PineconeConnectionError', () => {
+    const retryWrapper = new RetryOnServerFailure(() => Promise.resolve({}));
+    const result = retryWrapper['shouldStopRetrying']({
+      name: 'PineconeConnectionError',
     });
     expect(result).toBe(false);
   });
