@@ -4,7 +4,7 @@ import {
   globalNamespaceOne,
   prefix,
   diffPrefix,
-  randomIndexName,
+  randomName,
   waitUntilAssistantReady,
   waitUntilAssistantFileReady,
   waitUntilRecordsReady,
@@ -37,7 +37,7 @@ export const setup = async () => {
   console.error('🎛️ Setting up integration test resources...');
 
   // Create serverless index
-  const indexName = randomIndexName(prefix);
+  const indexName = randomName(prefix);
   console.error(`📦 Creating serverless index: ${indexName}`);
 
   // Generate test data first to extract metadata for schema

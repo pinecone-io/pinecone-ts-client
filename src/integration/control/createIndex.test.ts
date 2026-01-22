@@ -1,6 +1,6 @@
 import { PineconeArgumentError, PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomIndexName } from '../test-helpers';
+import { randomName } from '../test-helpers';
 
 let pinecone: Pinecone;
 
@@ -12,7 +12,7 @@ describe('create index', () => {
   describe('serverless index tests', () => {
     describe('happy path', () => {
       test('create dense index', async () => {
-        const indexName = randomIndexName('serverless-create');
+        const indexName = randomName('serverless-create');
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
@@ -49,7 +49,7 @@ describe('create index', () => {
       });
 
       test('create serverless index with Dedicated read capacity', async () => {
-        const indexName = randomIndexName('svrlss-dedicated');
+        const indexName = randomName('svrlss-dedicated');
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
@@ -99,7 +99,7 @@ describe('create index', () => {
       });
 
       test('create sparse index', async () => {
-        const indexName = randomIndexName('svrlss-sparse-create');
+        const indexName = randomName('svrlss-sparse-create');
 
         await pinecone.createIndex({
           name: indexName,
@@ -125,7 +125,7 @@ describe('create index', () => {
     describe('error cases', () => {
       test('create index with invalid index name', async () => {
         try {
-          const indexName = randomIndexName('serverless-create');
+          const indexName = randomName('serverless-create');
 
           await pinecone.createIndex({
             name: indexName + '-',
@@ -147,7 +147,7 @@ describe('create index', () => {
 
       test('create sparse index with invalid metric', async () => {
         try {
-          const indexName = randomIndexName('sparse-error');
+          const indexName = randomName('sparse-error');
           await pinecone.createIndex({
             name: indexName,
             metric: 'cosine',
@@ -170,7 +170,7 @@ describe('create index', () => {
 
       test('create sparse index with invalid dimension', async () => {
         try {
-          const indexName = randomIndexName('sparse-error');
+          const indexName = randomName('sparse-error');
           await pinecone.createIndex({
             name: indexName,
             dimension: 5,
@@ -196,7 +196,7 @@ describe('create index', () => {
   describe('pod index tests', () => {
     describe('happy path', () => {
       test('create pod index', async () => {
-        const indexName = randomIndexName('test-pod-create');
+        const indexName = randomName('test-pod-create');
         await pinecone.createIndex({
           name: indexName,
           dimension: 5,
@@ -223,7 +223,7 @@ describe('create index', () => {
 
     describe('error cases', () => {
       test('create from non-existent collection', async () => {
-        const indexName = randomIndexName('collection-error');
+        const indexName = randomName('collection-error');
 
         try {
           await pinecone.createIndex({
@@ -250,7 +250,7 @@ describe('create index', () => {
 
       test('create sparse pod index', async () => {
         try {
-          const indexName = randomIndexName('sparse-error');
+          const indexName = randomName('sparse-error');
           await pinecone.createIndex({
             name: indexName,
             dimension: 5,

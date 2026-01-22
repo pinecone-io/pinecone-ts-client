@@ -3,7 +3,7 @@ import {
   generateRecords,
   waitUntilRecordsReady,
   globalNamespaceOne,
-  randomIndexName,
+  randomName,
   waitUntilIndexReady,
 } from '../../test-helpers';
 
@@ -14,7 +14,7 @@ let pinecone: Pinecone,
 
 beforeAll(async () => {
   pinecone = new Pinecone();
-  serverlessIndexName = randomIndexName('integration-test-serverless-delete');
+  serverlessIndexName = randomName('integration-test-serverless-delete');
 
   await pinecone.createIndex({
     name: serverlessIndexName,

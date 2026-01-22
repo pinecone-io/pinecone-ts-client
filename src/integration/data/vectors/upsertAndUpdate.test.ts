@@ -3,7 +3,7 @@ import {
   assertWithRetries,
   generateRecords,
   globalNamespaceOne,
-  randomIndexName,
+  randomName,
   waitUntilRecordsReady,
 } from '../../test-helpers';
 import type { FetchResponse } from '../../../data/vectors/fetch';
@@ -22,8 +22,8 @@ let sparseMetadata: RecordMetadata;
 // upserts against two indexes (dense & sparse) and seeds them with test data
 beforeAll(async () => {
   pinecone = new Pinecone();
-  srvrlssIndexDenseName = randomIndexName('test-srvrlss-dense-upsert-update');
-  srvrlssIndexSparseName = randomIndexName('test-srvrlss-sparse-upsert-update');
+  srvrlssIndexDenseName = randomName('test-srvrlss-dense-upsert-update');
+  srvrlssIndexSparseName = randomName('test-srvrlss-sparse-upsert-update');
 
   const densePromise = pinecone.createIndex({
     name: srvrlssIndexDenseName,
