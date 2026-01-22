@@ -167,10 +167,13 @@ jobs:
         if: github.event.inputs.releaseMode == 'prod'
         shell: bash
         run: |
-          if [ -n "${{ inputs.ref }}" ]; then
-            git push origin "${{ inputs.ref }}" --follow-tags
+          newVersion="${{ steps.version-bump-prod.outputs.version }}"
+          if [ -n "${{ github.event.inputs.ref }}" ]; then
+            git push origin "${{ github.event.inputs.ref }}" --follow-tags
+            git push origin "v$newVersion"
           else
             git push --follow-tags
+            git push origin "v$newVersion"
           fi
 
   build-and-publish-docs:
