@@ -1,5 +1,8 @@
 import { getFetch } from '../fetch';
-import { PineconeConfigurationError } from '../../errors';
+import {
+  PineconeConfigurationError,
+  PineconeMaxRetriesExceededError,
+} from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 
 describe('getFetch', () => {
@@ -60,5 +63,63 @@ describe('getFetch', () => {
     expect(() => getFetch(config)).toThrow(
       'No global or user-provided fetch implementations found. Please supply a fetch implementation.'
     );
+  });
+
+  describe('retry logic with maxRetries = 0', () => {
+    test('should make exactly 1 attempt when maxRetries is 0 and request succeeds', async () => {
+      const customFetch = jest.fn().mockResolvedValue({
+        status: 200,
+        ok: true,
+      });
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+        maxRetries: 0,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+      const response = await fetchFn('https://example.com', {});
+
+      expect(customFetch).toHaveBeenCalledTimes(1);
+      expect(response.status).toBe(200);
+    });
+
+    test('should make exactly 1 attempt when maxRetries is 0 and request returns 5xx', async () => {
+      const customFetch = jest.fn().mockResolvedValue({
+        status: 503,
+        ok: false,
+      });
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+        maxRetries: 0,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+
+      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
+        PineconeMaxRetriesExceededError
+      );
+      expect(customFetch).toHaveBeenCalledTimes(1);
+    });
+
+    test('should make exactly 1 attempt when maxRetries is 0 and request throws retryable error', async () => {
+      const retryableError = new Error('Network error');
+      (retryableError as any).name = 'PineconeUnavailableError';
+
+      const customFetch = jest.fn().mockRejectedValue(retryableError);
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+        maxRetries: 0,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+
+      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
+        PineconeMaxRetriesExceededError
+      );
+      expect(customFetch).toHaveBeenCalledTimes(1);
+    });
   });
 });

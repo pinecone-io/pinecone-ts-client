@@ -61,6 +61,13 @@ function getBaseFetch(
  * - Retry on 5xx status codes with exponential backoff
  * - Throw PineconeMaxRetriesExceededError when retries are exhausted
  * - Pass through 2xx and 4xx responses without retrying
+ *
+ * @param fetchFn - The base fetch function to wrap
+ * @param config - Retry configuration where `maxRetries` represents total attempts (initial + retries)
+ *                 When maxRetries is 0, exactly 1 attempt is made (no retries)
+ *                 When maxRetries is 1, exactly 1 attempt is made (no retries)
+ *                 When maxRetries is 2, up to 2 attempts are made (1 initial + 1 retry)
+ *                 When maxRetries is 3, up to 3 attempts are made (1 initial + 2 retries)
  */
 function createRetryingFetch(
   fetchFn: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
@@ -75,9 +82,12 @@ function createRetryingFetch(
     url: RequestInfo | URL,
     init?: RequestInit
   ): Promise<Response> => {
-    let attempt = 1; // Start at 1 since this is the first attempt
+    let attempt = 0; // Start at 0 for zero-indexed attempts
 
-    while (attempt <= maxRetries) {
+    // Ensure at least 1 attempt is made even when maxRetries is 0
+    const totalAttempts = Math.max(maxRetries, 1);
+
+    while (attempt < totalAttempts) {
       try {
         // Execute the fetch request
         const response = await fetchFn(url, init);
@@ -93,14 +103,13 @@ function createRetryingFetch(
         }
 
         // Retryable 5xx error - check if we can retry
-        if (attempt > maxRetries) {
+        if (attempt >= totalAttempts - 1) {
           throw new PineconeMaxRetriesExceededError(maxRetries);
         }
 
         // Wait before retrying (exponential backoff with jitter)
-        // Use attempt - 1 for 0-indexed delay calculation
         await delay(
-          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor)
+          calculateRetryDelay(attempt, baseDelay, maxDelay, jitterFactor)
         );
 
         attempt++;
@@ -117,13 +126,13 @@ function createRetryingFetch(
         }
 
         // Retryable error - check if we can retry
-        if (attempt > maxRetries) {
+        if (attempt >= totalAttempts - 1) {
           throw new PineconeMaxRetriesExceededError(maxRetries);
         }
 
         // Wait before retrying
         await delay(
-          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor)
+          calculateRetryDelay(attempt, baseDelay, maxDelay, jitterFactor)
         );
 
         attempt++;

@@ -5,6 +5,19 @@ export interface RetryConfig {
   /**
    * Maximum number of total attempts (initial + retries). Defaults to 3.
    * Cannot exceed 10.
+   *
+   * - 0 or 1: Makes exactly 1 attempt with no retries
+   * - 2: Makes up to 2 attempts (1 initial + 1 retry)
+   * - 3: Makes up to 3 attempts (1 initial + 2 retries)
+   *
+   * @example
+   * ```typescript
+   * // Disable retries - make only 1 attempt
+   * const pinecone = new Pinecone({ maxRetries: 0 });
+   *
+   * // Allow 1 retry after initial failure
+   * const pinecone = new Pinecone({ maxRetries: 2 });
+   * ```
    */
   maxRetries?: number;
 

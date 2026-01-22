@@ -15,18 +15,44 @@ if [[ "$1" == "edge" ]] || [[ "$1" == "--edge" ]]; then
   TEST_ENV="edge"
 fi
 
-# Run setup and capture output
+# Run setup and capture output and exit code
 echo "📦 Setting up test resources..."
+set +e  # Don't exit immediately on setup failure
 SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
+SETUP_EXIT_CODE=$?
+set -e
 
-# Show setup logs
+# Check if setup failed
+if [ $SETUP_EXIT_CODE -ne 0 ]; then
+  echo ""
+  echo "❌ Setup failed with exit code $SETUP_EXIT_CODE"
+  echo ""
+  echo "Setup output:"
+  echo "----------------------------------------"
+  echo "$SETUP_OUTPUT"
+  echo "----------------------------------------"
+  exit $SETUP_EXIT_CODE
+fi
+
+# Show setup logs (excluding FIXTURES_JSON line)
 echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
 # Extract and export FIXTURES_JSON
 export FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
 
 if [ -z "$FIXTURES_JSON" ]; then
+  echo ""
   echo "❌ Failed to extract FIXTURES_JSON from setup output"
+  echo ""
+  echo "Setup output:"
+  echo "----------------------------------------"
+  echo "$SETUP_OUTPUT"
+  echo "----------------------------------------"
+  echo ""
+  echo "This usually means:"
+  echo "  1. PINECONE_API_KEY environment variable is not set"
+  echo "  2. Setup script failed before outputting FIXTURES_JSON"
+  echo "  3. Setup script didn't complete successfully"
   exit 1
 fi
 
@@ -43,15 +69,30 @@ echo ""
 echo "🧹 Cleaning up resources..."
 
 # Always run teardown, even if tests failed
-npx ts-node ./src/integration/teardown.ts
+set +e  # Don't exit on teardown failure
+TEARDOWN_OUTPUT=$(npx ts-node ./src/integration/teardown.ts 2>&1)
+TEARDOWN_EXIT_CODE=$?
+set -e
+
+if [ $TEARDOWN_EXIT_CODE -ne 0 ]; then
+  echo "⚠️  Teardown encountered errors (exit code $TEARDOWN_EXIT_CODE)"
+  echo ""
+  echo "Teardown output:"
+  echo "----------------------------------------"
+  echo "$TEARDOWN_OUTPUT"
+  echo "----------------------------------------"
+  echo ""
+  echo "Note: You may need to manually clean up test resources"
+else
+  echo "$TEARDOWN_OUTPUT"
+fi
 
 # Exit with test exit code
+echo ""
 if [ $TEST_EXIT_CODE -eq 0 ]; then
-  echo ""
   echo "✅ All tests passed"
   exit 0
 else
-  echo ""
-  echo "❌ Some tests failed"
+  echo "❌ Some tests failed (exit code $TEST_EXIT_CODE)"
   exit $TEST_EXIT_CODE
 fi
