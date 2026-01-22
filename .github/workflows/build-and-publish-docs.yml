@@ -3,6 +3,11 @@ name: 'Build and publish documentation to sdk-docs'
 on:
   workflow_dispatch: {}
   workflow_call:
+    inputs:
+      ref:
+        description: 'Branch name or SHA to checkout'
+        required: false
+        type: string
     secrets:
       SSH_DEPLOY_KEY:
         required: true
@@ -16,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
       - name: Setup
         uses: ./.github/actions/setup
       - name: Generate TypeDoc documentation

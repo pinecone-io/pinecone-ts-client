@@ -1,5 +1,6 @@
 import { buildUserAgent } from '../user-agent';
 import * as EnvironmentModule from '../environment';
+import type { PineconeConfiguration } from '../../data';
 
 describe('user-agent', () => {
   describe('buildUserAgent', () => {
@@ -19,6 +20,40 @@ describe('user-agent', () => {
 
       const userAgent = buildUserAgent(config);
       expect(userAgent).toContain('source_tag=test_source_tag');
+    });
+
+    test('applies caller when provided via PineconeConfiguration with provider and model', () => {
+      const config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'google',
+          model: 'gemini',
+        },
+      };
+
+      const userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=google:gemini');
+    });
+
+    test('applies caller when provided via PineconeConfiguration with only model', () => {
+      const config = {
+        apiKey: 'test-api-key',
+        caller: {
+          model: 'claude-code',
+        },
+      };
+
+      const userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=claude-code');
+    });
+
+    test('does not include caller when not provided via PineconeConfiguration', () => {
+      const config = {
+        apiKey: 'test-api-key',
+      };
+
+      const userAgent = buildUserAgent(config);
+      expect(userAgent).not.toContain('caller=');
     });
   });
 
@@ -46,6 +81,137 @@ describe('user-agent', () => {
       config.sourceTag = ' MY SOURCE TAG :1234-ABCD';
       userAgent = buildUserAgent(config);
       expect(userAgent).toContain('source_tag=my_source_tag_:1234abcd');
+    });
+  });
+
+  describe('caller formatting', () => {
+    test('normalizes caller strings with special characters', () => {
+      let config: PineconeConfiguration = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'Google',
+          model: 'Gemini 2.5',
+        },
+      };
+      let userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=google:gemini_2.5');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: '  My   Provider  ',
+          model: 'Model-Name!!!',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=my_provider:model-name');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          model: 'Claude Code Version',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=claude_code_version');
+    });
+
+    test('replaces colons with underscores in caller values', () => {
+      const config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'open:ai',
+          model: 'gpt:4',
+        },
+      };
+      const userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=open_ai:gpt_4');
+    });
+
+    test('replaces colons with underscores in provider and model to prevent parsing ambiguity', () => {
+      const config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'open:ai',
+          model: 'gpt-4',
+        },
+      };
+      const userAgent = buildUserAgent(config);
+      // Colons should be replaced with underscores in provider, so "open:ai" becomes "open_ai"
+      expect(userAgent).toContain('caller=open_ai:gpt-4');
+      expect(userAgent).not.toContain('caller=open:ai:gpt-4');
+
+      const config2 = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'google',
+          model: 'gemini:2.0',
+        },
+      };
+      const userAgent2 = buildUserAgent(config2);
+      // Colons should be replaced with underscores in model
+      expect(userAgent2).toContain('caller=google:gemini_2.0');
+      expect(userAgent2).not.toContain('caller=google:gemini:2.0');
+    });
+
+    test('handles empty or invalid caller values gracefully', () => {
+      let config: PineconeConfiguration = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: '',
+          model: 'valid-model',
+        },
+      };
+      let userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=valid-model');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          model: '',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).not.toContain('caller=');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: '   ',
+          model: 'valid-model',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).toContain('caller=valid-model');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'valid-provider',
+          model: '!!!',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).not.toContain('caller=');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          model: '   ',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).not.toContain('caller=');
+
+      config = {
+        apiKey: 'test-api-key',
+        caller: {
+          provider: 'valid-provider',
+          model: '   ',
+        },
+      };
+      userAgent = buildUserAgent(config);
+      expect(userAgent).not.toContain('caller=');
     });
   });
 });

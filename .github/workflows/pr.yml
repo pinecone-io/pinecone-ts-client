@@ -7,6 +7,11 @@ on:
       - main
   workflow_dispatch: {}
   workflow_call:
+    inputs:
+      ref:
+        description: 'Branch name or SHA to checkout'
+        required: false
+        type: string
     secrets:
       PINECONE_API_KEY:
         required: true
@@ -21,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
       - name: Setup
         uses: ./.github/actions/setup
       - name: Prettier
@@ -43,3 +50,5 @@ jobs:
   testing:
     uses: './.github/workflows/testing.yml'
     secrets: inherit
+    with:
+      ref: ${{ inputs.ref }}
