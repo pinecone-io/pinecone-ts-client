@@ -73,7 +73,7 @@ export class NamespaceOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray({ maxRetries: this.config.maxRetries }),
+      middleware: createMiddlewareArray(),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

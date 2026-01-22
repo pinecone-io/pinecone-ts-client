@@ -678,7 +678,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns a promise that resolves when the operation is complete.
    */
   async upsertRecords(data: Array<IntegratedRecord<T>>) {
-    return await this._upsertRecordsCommand.run(data, this.config.maxRetries);
+    return await this._upsertRecordsCommand.run(data);
   }
 
   /**

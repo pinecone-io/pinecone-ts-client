@@ -5,7 +5,7 @@ import {
   RecordMetadata,
 } from './types';
 import { handleApiError, PineconeArgumentError } from '../../errors';
-import { buildUserAgent, getFetch, fetchWithRetries } from '../../utils';
+import { buildUserAgent, getFetch } from '../../utils';
 import {
   ResponseError,
   X_PINECONE_API_VERSION,
@@ -36,10 +36,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(
-    records: Array<IntegratedRecord<T>>,
-    maxRetries?: number
-  ): Promise<void> {
+  async run(records: Array<IntegratedRecord<T>>): Promise<void> {
     const fetch = getFetch(this.config);
     this.validator(records);
 
@@ -53,17 +50,12 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     // Note: This operation uses direct fetch() with NDJSON format,
-    // so it bypasses middleware and uses fetchWithRetries directly
-    const response = await fetchWithRetries(
-      upsertRecordsUrl,
-      {
-        method: 'POST',
-        headers: requestHeaders,
-        body: toNdJson(records),
-      },
-      { maxRetries: maxRetries ?? this.config.maxRetries },
-      fetch
-    );
+    // Retries are handled by the wrapped fetch from getFetch()
+    const response = await fetch(upsertRecordsUrl, {
+      method: 'POST',
+      headers: requestHeaders,
+      body: toNdJson(records),
+    });
 
     if (response.ok) {
       return;

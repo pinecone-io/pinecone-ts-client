@@ -8,8 +8,11 @@ describe('getFetch', () => {
     delete (global as any).fetch;
   });
 
-  test('should return the user-provided fetch implementation if provided', () => {
-    const customFetch = jest.fn();
+  test('should wrap the user-provided fetch implementation if provided', async () => {
+    const customFetch = jest.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+    });
     const config = {
       apiKey: 'some-api-key',
       fetchApi: customFetch,
@@ -17,11 +20,19 @@ describe('getFetch', () => {
 
     const fetchFn = getFetch(config);
 
-    expect(fetchFn).toBe(customFetch);
+    // The returned function should be a wrapper, not the original
+    expect(fetchFn).not.toBe(customFetch);
+
+    // But it should call the underlying fetch
+    await fetchFn('https://example.com', {});
+    expect(customFetch).toHaveBeenCalledWith('https://example.com', {});
   });
 
-  test('should return the global fetch implementation if user-provided fetch is not present', () => {
-    const globalFetch = jest.fn();
+  test('should wrap the global fetch implementation if user-provided fetch is not present', async () => {
+    const globalFetch = jest.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+    });
     (global as any).fetch = globalFetch;
 
     const config = {
@@ -31,7 +42,12 @@ describe('getFetch', () => {
 
     const fetchFn = getFetch(config);
 
-    expect(fetchFn).toBe(globalFetch);
+    // The returned function should be a wrapper, not the original
+    expect(fetchFn).not.toBe(globalFetch);
+
+    // But it should call the underlying fetch
+    await fetchFn('https://example.com', {});
+    expect(globalFetch).toHaveBeenCalledWith('https://example.com', {});
   });
 
   test('should throw a PineconeConfigurationError if no fetch implementation is found', () => {

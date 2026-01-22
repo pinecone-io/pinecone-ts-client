@@ -16,7 +16,7 @@ import { createMiddlewareArray } from '../utils/middleware';
 export const inferenceOperationsBuilder = (
   config: PineconeConfiguration
 ): InferenceApi => {
-  const { apiKey, maxRetries } = config;
+  const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io';
   const headers = config.additionalHeaders || null;
@@ -30,7 +30,7 @@ export const inferenceOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray({ maxRetries }),
+    middleware: createMiddlewareArray(),
   };
 
   return new InferenceApi(new Configuration(apiConfig));

@@ -3,12 +3,7 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { PineconeConfiguration } from '../../data';
-import {
-  buildUserAgent,
-  getFetch,
-  ChatStream,
-  fetchWithRetries,
-} from '../../utils';
+import { buildUserAgent, getFetch, ChatStream } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { ChatOptions, StreamedChatResponse } from './types';
 import { handleApiError } from '../../errors';
@@ -26,8 +21,7 @@ export const chatStream = (
   config: PineconeConfiguration
 ) => {
   return async (
-    options: ChatOptions,
-    maxRetries?: number
+    options: ChatOptions
   ): Promise<ChatStream<StreamedChatResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -55,25 +49,19 @@ export const chatStream = (
     }
 
     // Note: This operation uses direct fetch() for streaming support.
-    // It bypasses middleware and uses fetchWithRetries directly.
-    const response = await fetchWithRetries(
-      chatUrl,
-      {
-        method: 'POST',
-        headers: requestHeaders,
-        body: JSON.stringify({
-          messages: messagesValidation(options),
-          stream: true,
-          model: modelValidation(options),
-          filter: options.filter,
-          json_response: options.jsonResponse,
-          include_highlights: options.includeHighlights,
-          context_options: contextOptions,
-        }),
-      },
-      { maxRetries: maxRetries ?? config.maxRetries },
-      fetch
-    );
+    const response = await fetch(chatUrl, {
+      method: 'POST',
+      headers: requestHeaders,
+      body: JSON.stringify({
+        messages: messagesValidation(options),
+        stream: true,
+        model: modelValidation(options),
+        filter: options.filter,
+        json_response: options.jsonResponse,
+        include_highlights: options.includeHighlights,
+        context_options: contextOptions,
+      }),
+    });
 
     if (response.ok && response.body) {
       const nodeReadable = Readable.fromWeb(response.body as ReadableStream);

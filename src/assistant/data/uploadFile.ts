@@ -7,7 +7,7 @@ import {
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { handleApiError, PineconeArgumentError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
-import { buildUserAgent, getFetch, fetchWithRetries } from '../../utils';
+import { buildUserAgent, getFetch } from '../../utils';
 import type { AssistantFileModel, UploadFileOptions } from './types';
 import fs from 'fs';
 import path from 'path';
@@ -18,10 +18,7 @@ export const uploadFile = (
   apiProvider: AsstDataOperationsProvider,
   config: PineconeConfiguration
 ) => {
-  return async (
-    options: UploadFileOptions,
-    maxRetries?: number
-  ): Promise<AssistantFileModel> => {
+  return async (options: UploadFileOptions): Promise<AssistantFileModel> => {
     const fetch = getFetch(config);
     validateUploadFileOptions(options);
 
@@ -48,17 +45,11 @@ export const uploadFile = (
     }
 
     // Note: This operation uses direct fetch() with FormData for file uploads,
-    // so it bypasses middleware and uses fetchWithRetries directly
-    const response = await fetchWithRetries(
-      filesUrl,
-      {
-        method: 'POST',
-        headers: requestHeaders,
-        body: formData,
-      },
-      { maxRetries: maxRetries ?? config.maxRetries },
-      fetch
-    );
+    const response = await fetch(filesUrl, {
+      method: 'POST',
+      headers: requestHeaders,
+      body: formData,
+    });
 
     if (response.ok) {
       const assistantFileModel = await new JSONApiResponse(

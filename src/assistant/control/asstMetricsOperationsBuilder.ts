@@ -11,7 +11,7 @@ import { createMiddlewareArray } from '../../utils/middleware';
 export const asstMetricsOperationsBuilder = (
   config: PineconeConfiguration
 ): MetricsApi => {
-  const { apiKey, maxRetries } = config;
+  const { apiKey } = config;
   let hostUrl = 'https://prod-1-data.ke.pinecone.io/assistant';
   // If 'eu' is specified use that, otherwise default to 'us'
   if (config.assistantRegion && config.assistantRegion.toLowerCase() === 'eu') {
@@ -29,7 +29,7 @@ export const asstMetricsOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray({ maxRetries }),
+    middleware: createMiddlewareArray(),
   };
 
   return new MetricsApi(new Configuration(apiConfig));

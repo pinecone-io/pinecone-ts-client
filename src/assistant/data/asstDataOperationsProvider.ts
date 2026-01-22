@@ -66,7 +66,7 @@ export class AsstDataOperationsProvider {
   }
 
   buildAsstDataOperationsConfig() {
-    const { apiKey, maxRetries } = this.config;
+    const { apiKey } = this.config;
     const hostUrl = this.asstHostUrl;
     const headers = this.additionalHeaders || null;
     const apiConfig: AssistantOperationsApiConfigurationParameters = {
@@ -79,7 +79,7 @@ export class AsstDataOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray({ maxRetries }),
+      middleware: createMiddlewareArray(),
     };
 
     return new ManageAssistantsDataApi(new DataConfiguration(apiConfig));

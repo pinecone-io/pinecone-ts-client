@@ -16,7 +16,7 @@ import { createMiddlewareArray } from '../../utils/middleware';
 export const asstControlOperationsBuilder = (
   config: PineconeConfiguration
 ): ManageAssistantsControlApi => {
-  const { apiKey, maxRetries } = config;
+  const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) ||
     'https://api.pinecone.io/assistant';
@@ -31,7 +31,7 @@ export const asstControlOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray({ maxRetries }),
+    middleware: createMiddlewareArray(),
   };
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };

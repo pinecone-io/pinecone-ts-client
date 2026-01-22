@@ -16,7 +16,7 @@ import type { ConfigurationParameters as IndexOperationsApiConfigurationParamete
 export const indexOperationsBuilder = (
   config: PineconeConfiguration
 ): ManageIndexesApi => {
-  const { apiKey, maxRetries } = config;
+  const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io';
   const headers = config.additionalHeaders || null;
@@ -30,7 +30,7 @@ export const indexOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray({ maxRetries }),
+    middleware: createMiddlewareArray(),
   };
 
   return new ManageIndexesApi(new Configuration(apiConfig));
