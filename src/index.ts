@@ -140,6 +140,7 @@ export type {
   UpdateOptions,
   QueryByRecordId,
   QueryByVectorValues,
+  QueryBySparseVector,
   QueryOptions,
   QueryResponse,
   QueryShared,
