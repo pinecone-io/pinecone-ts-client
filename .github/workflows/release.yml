@@ -176,6 +176,16 @@ jobs:
             git push origin "v$newVersion"
           fi
 
+      ##### CREATE DRAFT RELEASE (prod) #####
+      - name: Create draft release with notes (prod)
+        if: github.event.inputs.releaseMode == 'prod'
+        shell: bash
+        run: |
+          gh release create "v${{ steps.version-bump-prod.outputs.version }}" \
+            --draft \
+            --generate-notes \
+            --title "Release v${{ steps.version-bump-prod.outputs.version }}"
+
   build-and-publish-docs:
     name: Build and publish docs to sdk-docs
     needs: version-and-release
