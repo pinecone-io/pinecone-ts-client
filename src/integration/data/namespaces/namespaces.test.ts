@@ -1,7 +1,11 @@
 import { ListNamespacesResponse, Pinecone } from '../../../index';
-import { assertWithRetries, generateRecords, sleep } from '../../test-helpers';
+import {
+  assertWithRetries,
+  generateRecords,
+  sleep,
+  randomName,
+} from '../../test-helpers';
 import { getTestContext } from '../../test-context';
-import { randomName } from '../../test-helpers';
 
 const namespaceOne = randomName('namespace-one');
 const namespaceTwo = randomName('namespace-two');

@@ -740,10 +740,7 @@ export class Pinecone {
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async describeAssistant(assistantName: string) {
-    const assistant = await this._describeAssistant(
-      assistantName,
-      this.config.maxRetries
-    );
+    const assistant = await this._describeAssistant(assistantName);
 
     if (assistant.host) {
       AssistantHostSingleton._set(this.config, assistantName, assistant.host);

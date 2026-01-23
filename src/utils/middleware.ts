@@ -5,10 +5,7 @@ import {
 import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
 
 /**
- * Creates the middleware array with debug and error handling middleware.
- *
- * Note: Retry logic is now handled by wrapping fetch in getFetch(), not via middleware.
- * This middleware only handles error type conversion.
+ * Creates the middleware array with debug and error handling.
  *
  * Middleware execution order:
  * 1. Debug middleware (if enabled) - logs requests/responses
@@ -123,8 +120,6 @@ export const createMiddlewareArray = (): Middleware[] => {
         }
 
         // Non-2xx responses: convert to proper Pinecone error
-        // Note: Retries are already handled by wrapped fetch, so any non-2xx here
-        // is either non-retryable (4xx) or retries were exhausted (5xx)
         const err = await handleApiError(
           new ResponseError(response, 'Response returned an error'),
           undefined,
@@ -135,6 +130,3 @@ export const createMiddlewareArray = (): Middleware[] => {
     },
   ];
 };
-
-// Default middleware for backward compatibility
-export const middleware = createMiddlewareArray();

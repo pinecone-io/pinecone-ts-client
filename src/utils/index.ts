@@ -2,8 +2,7 @@ import { debugLog } from './debugLog';
 import { normalizeUrl } from './normalizeUrl';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
-import { getFetch } from './fetch';
-import { RetryConfig } from './retries';
+import { getFetch, RetryConfig } from './fetch';
 import { ChatStream } from '../assistant/chatStream';
 import { convertKeysToCamelCase } from './convertKeys';
 

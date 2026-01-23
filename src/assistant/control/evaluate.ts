@@ -5,7 +5,7 @@ import {
 import type { AssistantEval } from './types';
 
 export const evaluate = (metricsApi: MetricsApi) => {
-  return async (options: AssistantEval, maxRetries?: number) => {
+  return async (options: AssistantEval) => {
     if (
       options.question == '' ||
       options.answer == '' ||
@@ -15,6 +15,7 @@ export const evaluate = (metricsApi: MetricsApi) => {
         'Invalid input. Question, answer, and groundTruth must be non-empty strings.'
       );
     }
+
     return await metricsApi.metricsAlignment({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       alignmentRequest: {

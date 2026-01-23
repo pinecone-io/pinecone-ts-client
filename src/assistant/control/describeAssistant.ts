@@ -6,10 +6,7 @@ import type { AssistantModel } from './types';
 import { PineconeArgumentError } from '../../errors';
 
 export const describeAssistant = (api: ManageAssistantsControlApi) => {
-  return async (
-    assistantName: string,
-    maxRetries?: number
-  ): Promise<AssistantModel> => {
+  return async (assistantName: string): Promise<AssistantModel> => {
     if (!assistantName) {
       throw new PineconeArgumentError(
         'You must pass the name of an assistant to update.'

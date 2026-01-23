@@ -60,7 +60,11 @@ export type PineconeConfiguration = {
   };
 
   /**
-   * Optional configuration field for specifying the maximum number of retries for a request. Defaults to 3.
+   * Optional configuration field for specifying the maximum number of retries after the initial request. Defaults to 3.
+   *
+   * - 0: Makes only the initial request (no retries)
+   * - 1: Makes up to 2 attempts (1 initial + 1 retry)
+   * - 3 (default): Makes up to 4 attempts (1 initial + 3 retries)
    */
   maxRetries?: number;
 
