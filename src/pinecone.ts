@@ -50,8 +50,6 @@ import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
-import { ValidateObjectProperties } from './utils/validateObjectProperties';
-import { PineconeConfigurationProperties } from './data/vectors/types';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
@@ -170,8 +168,6 @@ export class Pinecone {
         'The client configuration must have required property: apiKey.'
       );
     }
-
-    ValidateObjectProperties(options, PineconeConfigurationProperties);
 
     this.config = options;
 
@@ -573,7 +569,7 @@ export class Pinecone {
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
   configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options, this.config.maxRetries);
+    return this._configureIndex(indexName, options);
   }
 
   /**

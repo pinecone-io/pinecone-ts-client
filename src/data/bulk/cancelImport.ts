@@ -15,6 +15,7 @@ export class CancelImportCommand {
       id: id,
     };
     const api = await this.apiProvider.provide();
+
     return await api.cancelBulkImport({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ...req,

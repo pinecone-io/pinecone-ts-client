@@ -4,12 +4,7 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import {
-  ContextOptionsType,
-  type ContextOptions,
-  type MessagesModel,
-} from './types';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
+import { type ContextOptions, type MessagesModel } from './types';
 import { PineconeArgumentError } from '../../errors';
 
 /**
@@ -70,8 +65,6 @@ const validateContextOptions = (options: ContextOptions) => {
       'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
     );
   }
-
-  ValidateObjectProperties(options, ContextOptionsType);
 };
 
 const toMessageModel = (

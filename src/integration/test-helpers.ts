@@ -30,8 +30,8 @@ export const randomString = (length) => {
   return result;
 };
 
-export const randomIndexName = (testName: string): string => {
-  return `${testName}-${randomString(8)}`.toLowerCase().slice(0, 45);
+export const randomName = (name: string): string => {
+  return `${name}-${randomString(8)}`.toLowerCase().slice(0, 45);
 };
 
 export const generateRecords = ({

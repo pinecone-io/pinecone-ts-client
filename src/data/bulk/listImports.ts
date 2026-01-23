@@ -24,6 +24,7 @@ export class ListImportsCommand {
       paginationToken: paginationToken,
     };
     const api = await this.apiProvider.provide();
+
     return await api.listBulkImports(req);
   }
 }

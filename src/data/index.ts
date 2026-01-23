@@ -14,7 +14,10 @@ import { deleteOne } from './vectors/deleteOne';
 import type { DeleteManyOptions } from './vectors/deleteMany';
 import { deleteMany } from './vectors/deleteMany';
 import { deleteAll } from './vectors/deleteAll';
-import { describeIndexStats } from './vectors/describeIndexStats';
+import {
+  describeIndexStats,
+  DescribeIndexStatsOptions,
+} from './vectors/describeIndexStats';
 import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
@@ -435,11 +438,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   totalRecordCount: 4010
    * // }
    * ```
+   * @param options - The {@link DescribeIndexStatsOptions} for the operation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
-  describeIndexStats() {
-    return this._describeIndexStats();
+  describeIndexStats(options?: DescribeIndexStatsOptions) {
+    return this._describeIndexStats(options);
   }
 
   /**
@@ -512,7 +516,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the upsert is completed.
    */
   async upsert(data: Array<PineconeRecord<T>>) {
-    return await this._upsertCommand.run(data, this.config.maxRetries);
+    return await this._upsertCommand.run(data);
   }
 
   /**
@@ -603,7 +607,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns A promise that resolves when the update is completed.
    */
   async update(options: UpdateOptions<T>) {
-    return await this._updateCommand.run(options, this.config.maxRetries);
+    return await this._updateCommand.run(options);
   }
 
   /**
@@ -674,7 +678,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @returns a promise that resolves when the operation is complete.
    */
   async upsertRecords(data: Array<IntegratedRecord<T>>) {
-    return await this._upsertRecordsCommand.run(data, this.config.maxRetries);
+    return await this._upsertRecordsCommand.run(data);
   }
 
   /**

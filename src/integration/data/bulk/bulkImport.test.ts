@@ -1,10 +1,10 @@
 import { Pinecone, Index } from '../../../index';
-import { randomIndexName, retryDeletes } from '../../test-helpers';
+import { randomName, retryDeletes } from '../../test-helpers';
 
 describe('bulk import', () => {
   let pinecone: Pinecone, index: Index;
 
-  const indexName = randomIndexName('bulk-import-integration-test');
+  const indexName = randomName('bulk-import-integration-test');
   const testURI = 's3://dev-bulk-import-datasets-pub/10-records-dim-10/';
 
   beforeAll(async () => {

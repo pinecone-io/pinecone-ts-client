@@ -1,17 +1,13 @@
 import { PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
-import {
-  randomIndexName,
-  retryDeletes,
-  waitUntilIndexReady,
-} from '../test-helpers';
+import { randomName, retryDeletes, waitUntilIndexReady } from '../test-helpers';
 
 let serverlessIndexName: string, pinecone: Pinecone;
 
 describe('configure index', () => {
   beforeAll(async () => {
     pinecone = new Pinecone();
-    serverlessIndexName = randomIndexName('serverless-configure');
+    serverlessIndexName = randomName('serverless-configure');
 
     // Create serverless index (removed unused pod index)
     await pinecone.createIndex({

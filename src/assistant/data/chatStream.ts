@@ -48,7 +48,7 @@ export const chatStream = (
       };
     }
 
-    // we call the API directly via fetch, so we need to snake_case the keys (normally generated code handles this)
+    // Note: This operation uses direct fetch() for streaming support.
     const response = await fetch(chatUrl, {
       method: 'POST',
       headers: requestHeaders,

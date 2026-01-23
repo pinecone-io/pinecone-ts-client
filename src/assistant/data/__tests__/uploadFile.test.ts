@@ -6,10 +6,14 @@ import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 const mockFetch = jest.fn();
 jest.mock('fs');
 jest.mock('path');
-jest.mock('../../../utils', () => ({
-  getFetch: () => mockFetch,
-  buildUserAgent: () => 'TestUserAgent',
-}));
+jest.mock('../../../utils', () => {
+  const actual = jest.requireActual('../../../utils');
+  return {
+    ...actual,
+    getFetch: () => mockFetch,
+    buildUserAgent: () => 'TestUserAgent',
+  };
+});
 
 const buildMockFetchResponse = (
   isSuccess: boolean,

@@ -61,5 +61,6 @@ export const deleteMany = (
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       deleteRequest: { ...requestOptions, namespace },
     });
+    return;
   };
 };

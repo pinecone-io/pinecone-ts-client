@@ -6,7 +6,7 @@ import {
   MetricsApi,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
 import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export const asstMetricsOperationsBuilder = (
   config: PineconeConfiguration
@@ -29,7 +29,7 @@ export const asstMetricsOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware,
+    middleware: createMiddlewareArray(),
   };
 
   return new MetricsApi(new Configuration(apiConfig));

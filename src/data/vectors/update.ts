@@ -10,8 +10,6 @@ import type {
   RecordMetadata,
 } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
-import { RetryOnServerFailure } from '../../utils';
 
 /**
  * This type is very similar to { @link PineconeRecord }, but differs because the
@@ -46,16 +44,6 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
   filter?: object;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type UpdateOptionsType = keyof UpdateOptions;
-const UpdateOptionsProperties: UpdateOptionsType[] = [
-  'id',
-  'values',
-  'sparseValues',
-  'metadata',
-  'filter',
-];
-
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   namespace: string;
@@ -66,9 +54,6 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (options: UpdateOptions<T>) => {
-    if (options) {
-      ValidateObjectProperties(options, UpdateOptionsProperties);
-    }
     if (options && !options.id && !options.filter) {
       throw new PineconeArgumentError(
         'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
@@ -81,7 +66,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     }
   };
 
-  async run(options: UpdateOptions<T>, maxRetries?: number): Promise<void> {
+  async run(options: UpdateOptions<T>): Promise<void> {
     this.validator(options);
 
     const request: UpdateRequest = {
@@ -94,12 +79,7 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
     };
 
     const api = await this.apiProvider.provide();
-    const retryWrapper = new RetryOnServerFailure(
-      api.updateVector.bind(api),
-      maxRetries
-    );
-
-    await retryWrapper.execute({
+    await api.updateVector({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       updateRequest: request,
     });

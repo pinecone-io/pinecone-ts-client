@@ -11,7 +11,6 @@ import {
 import { debugLog } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
-import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
@@ -26,20 +25,6 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
   /** This option tells the client not to throw if you attempt to create an index that already exists. */
   suppressConflicts?: boolean;
 }
-
-// Properties for validation to ensure no unknown/invalid properties are passed
-type CreateIndexOptionsType = keyof CreateIndexOptions;
-const CreateIndexOptionsProperties: CreateIndexOptionsType[] = [
-  'spec',
-  'name',
-  'dimension',
-  'metric',
-  'deletionProtection',
-  'waitUntilReady',
-  'suppressConflicts',
-  'tags',
-  'vectorType',
-];
 
 /**
  * The spec object defines how the index should be deployed.
@@ -58,14 +43,6 @@ export interface CreateIndexSpec {
   /** The byoc object allows you to configure a BYOC index. */
   byoc?: CreateIndexByocSpec;
 }
-
-// Properties for validation to ensure no unknown/invalid properties are passed
-type CreateIndexSpecType = keyof CreateIndexSpec;
-const CreateIndexSpecProperties: CreateIndexSpecType[] = [
-  'serverless',
-  'pod',
-  'byoc',
-];
 
 /**
  * Configuration needed to deploy a serverless index.
@@ -88,16 +65,6 @@ export interface CreateIndexServerlessSpec {
   /** Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported. */
   schema?: MetadataSchema;
 }
-
-// Properties for validation to ensure no unknown/invalid properties are passed
-type CreateIndexServerlessSpecType = keyof CreateIndexServerlessSpec;
-const CreateIndexServerlessSpecProperties: CreateIndexServerlessSpecType[] = [
-  'cloud',
-  'region',
-  'sourceCollection',
-  'schema',
-  'readCapacity',
-];
 
 /**
  * Configuration needed to deploy a serverless index.
@@ -131,18 +98,6 @@ export interface CreateIndexPodSpec {
   sourceCollection?: string;
 }
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type CreateIndexPodSpecType = keyof CreateIndexPodSpec;
-const CreateIndexPodSpecProperties: CreateIndexPodSpecType[] = [
-  'environment',
-  'replicas',
-  'shards',
-  'podType',
-  'pods',
-  'metadataConfig',
-  'sourceCollection',
-];
-
 /**
  * Configuration needed to deploy a BYOC index.
  *
@@ -155,11 +110,6 @@ export interface CreateIndexByocSpec {
   /** The metadata schema for the index. */
   schema?: MetadataSchema;
 }
-
-type CreateIndexByocSpecType = keyof CreateIndexByocSpec;
-const CreateIndexByocSpecProperties: CreateIndexByocSpecType[] = [
-  'environment',
-];
 
 /**
  * The allowed node types for dedicated read capacity determining the type of machines to use: `b1` or `t1`.
@@ -293,9 +243,6 @@ export const waitUntilIndexIsReady = async (
 
 const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   // validate options properties
-  if (options) {
-    ValidateObjectProperties(options, CreateIndexOptionsProperties);
-  }
   if (!options.name) {
     throw new PineconeArgumentError(
       'You must pass a non-empty string for `name` in order to create an index.'
@@ -312,9 +259,6 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     throw new PineconeArgumentError(
       'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
     );
-  }
-  if (options.spec) {
-    ValidateObjectProperties(options.spec, CreateIndexSpecProperties);
   }
 
   // validate options.metric
@@ -333,11 +277,6 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
 
   // validate options.spec.serverless properties if serverless spec is passed
   if (options.spec.serverless) {
-    ValidateObjectProperties(
-      options.spec.serverless,
-      CreateIndexServerlessSpecProperties
-    );
-
     // extract and default vectorType to 'dense' if not specified
     const vectorType = options.vectorType
       ? options.vectorType.toLowerCase()
@@ -398,7 +337,6 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     }
   } else if (options.spec.pod) {
     // validate options.spec.pod properties if pod spec is passed
-    ValidateObjectProperties(options.spec.pod, CreateIndexPodSpecProperties);
     if (!options.spec.pod.environment) {
       throw new PineconeArgumentError(
         'You must pass an `environment` for the pod `spec` object in order to create an index.'
@@ -443,7 +381,6 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
       );
     }
   } else if (options.spec.byoc) {
-    ValidateObjectProperties(options.spec.byoc, CreateIndexByocSpecProperties);
     // Validate that environment is passed
     if (!options.spec.byoc.environment) {
       throw new PineconeArgumentError(

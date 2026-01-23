@@ -13,7 +13,7 @@ import {
   queryParamsStringify,
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export class BulkOperationsProvider {
   private readonly config: PineconeConfiguration;
@@ -73,7 +73,7 @@ export class BulkOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware,
+      middleware: createMiddlewareArray(),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

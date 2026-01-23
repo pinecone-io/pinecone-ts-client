@@ -44,6 +44,7 @@ export const uploadFile = (
       filesUrl += `?metadata=${encodedMetadata}`;
     }
 
+    // Note: This operation uses direct fetch() with FormData for file uploads,
     const response = await fetch(filesUrl, {
       method: 'POST',
       headers: requestHeaders,

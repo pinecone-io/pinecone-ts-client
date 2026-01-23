@@ -71,47 +71,4 @@ describe('describeIndexStats', () => {
       '`filter` property cannot be empty'
     );
   });
-
-  test('Throws error if known property is misspelled', async () => {
-    const { DataProvider } = setupSuccess({
-      namespaces: {
-        '': { vectorCount: 50 },
-      },
-      dimension: 1586,
-      indexFullness: 0,
-      totalVectorCount: 50,
-    });
-    const describeIndexStatsFn = describeIndexStats(DataProvider);
-    const toThrow = async () => {
-      // @ts-ignore
-      await describeIndexStatsFn({ filterasdga: { someKey: '' } });
-    };
-    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: filterasdga. Valid properties include filter.'
-    );
-  });
-
-  test('Throws error if unknown property is passed', async () => {
-    const { DataProvider } = setupSuccess({
-      namespaces: {
-        '': { vectorCount: 50 },
-      },
-      dimension: 1586,
-      indexFullness: 0,
-      totalVectorCount: 50,
-    });
-    const describeIndexStatsFn = describeIndexStats(DataProvider);
-    const toThrow = async () => {
-      await describeIndexStatsFn({
-        filter: { someKey: 'some-value' },
-        // @ts-ignore
-        test: 'test',
-      });
-    };
-    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow).rejects.toThrowError(
-      'Object contained invalid properties: test. Valid properties include filter.'
-    );
-  });
 });

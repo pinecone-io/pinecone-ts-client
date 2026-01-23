@@ -11,7 +11,7 @@ import {
   normalizeUrl,
   queryParamsStringify,
 } from '../utils';
-import { middleware } from '../utils/middleware';
+import { createMiddlewareArray } from '../utils/middleware';
 
 export const inferenceOperationsBuilder = (
   config: PineconeConfiguration
@@ -30,7 +30,7 @@ export const inferenceOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware,
+    middleware: createMiddlewareArray(),
   };
 
   return new InferenceApi(new Configuration(apiConfig));

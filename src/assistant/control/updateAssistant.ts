@@ -3,8 +3,6 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
 import type { UpdateAssistantOptions, UpdateAssistantResponse } from './types';
-import { UpdateAssistantOptionsType } from './types';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 import { PineconeArgumentError } from '../../errors';
 
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
@@ -41,5 +39,4 @@ const validateUpdateAssistantOptions = (options: UpdateAssistantOptions) => {
       'You must pass an object with at least one property to update an assistant.'
     );
   }
-  ValidateObjectProperties(options, UpdateAssistantOptionsType);
 };

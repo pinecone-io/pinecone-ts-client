@@ -12,7 +12,6 @@ import {
   validateReadCapacity,
   toApiReadCapacity,
 } from './createIndex';
-import { ValidateObjectProperties } from '../utils/validateObjectProperties';
 
 /**
  * Options for creating an index for a specific model.
@@ -61,21 +60,6 @@ export type CreateIndexForModelOptions = {
   suppressConflicts?: boolean;
 };
 
-// Properties for validation to ensure no unknown properties are passed
-type CreateIndexForModelOptionsType = keyof CreateIndexForModelOptions;
-const CreateIndexForModelOptionsProperties: CreateIndexForModelOptionsType[] = [
-  'name',
-  'cloud',
-  'region',
-  'embed',
-  'deletionProtection',
-  'readCapacity',
-  'schema',
-  'tags',
-  'waitUntilReady',
-  'suppressConflicts',
-];
-
 /**
  * Specifies the integrated inference embedding configuration for the index.
  * Once set the model cannot be changed, but you can later update the embedding configuration for an integrated inference index including field map, read parameters, or write parameters.
@@ -105,16 +89,6 @@ export type CreateIndexForModelEmbed = {
    */
   writeParameters?: object;
 };
-
-// Properties for validation to ensure no unknown properties are passed
-type CreateIndexForModelEmbedType = keyof CreateIndexForModelEmbed;
-const CreateIndexForModelEmbedProperties: CreateIndexForModelEmbedType[] = [
-  'model',
-  'metric',
-  'fieldMap',
-  'readParameters',
-  'writeParameters',
-];
 
 export const createIndexForModel = (api: ManageIndexesApi) => {
   return async (
@@ -158,10 +132,6 @@ const validateCreateIndexForModelRequest = (
   options: CreateIndexForModelOptions
 ) => {
   // validate options properties
-  if (options) {
-    ValidateObjectProperties(options, CreateIndexForModelOptionsProperties);
-  }
-
   if (!options.name) {
     throw new PineconeArgumentError(
       'You must pass a non-empty string for `name` in order to create an index.'
@@ -198,9 +168,6 @@ const validateCreateIndexForModelRequest = (
   }
 
   // validate embed properties
-  if (options.embed) {
-    ValidateObjectProperties(options.embed, CreateIndexForModelEmbedProperties);
-  }
   if (
     options.embed.metric &&
     !['cosine', 'euclidean', 'dotproduct'].includes(

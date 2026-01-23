@@ -1,13 +1,13 @@
 import { Pinecone } from '../../pinecone';
 import { SearchRecordsResponse } from '../../pinecone-generated-ts-fetch/db_data';
-import { assertWithRetries, randomIndexName } from '../test-helpers';
+import { assertWithRetries, randomName } from '../test-helpers';
 
 describe('Integrated Inference API tests', () => {
   let pinecone: Pinecone;
   let indexName: string;
   beforeAll(async () => {
     pinecone = new Pinecone();
-    indexName = randomIndexName('int-inf');
+    indexName = randomName('int-inf');
 
     // create integrated inference index for testing
     await pinecone.createIndexForModel({

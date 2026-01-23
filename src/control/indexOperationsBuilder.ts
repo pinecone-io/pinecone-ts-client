@@ -9,7 +9,7 @@ import {
   getFetch,
   normalizeUrl,
 } from '../utils';
-import { middleware } from '../utils/middleware';
+import { createMiddlewareArray } from '../utils/middleware';
 import type { PineconeConfiguration } from '../data/vectors/types';
 import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch/db_control';
 
@@ -30,7 +30,7 @@ export const indexOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware,
+    middleware: createMiddlewareArray(),
   };
 
   return new ManageIndexesApi(new Configuration(apiConfig));

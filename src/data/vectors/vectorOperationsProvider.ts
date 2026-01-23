@@ -13,7 +13,7 @@ import {
   queryParamsStringify,
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export class VectorOperationsProvider {
   private config: PineconeConfiguration;
@@ -86,7 +86,7 @@ export class VectorOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware,
+      middleware: createMiddlewareArray(),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

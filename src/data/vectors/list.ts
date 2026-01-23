@@ -4,7 +4,6 @@ import type {
   ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -18,22 +17,11 @@ export type ListOptions = {
   paginationToken?: string;
 };
 
-// Properties for validation to ensure no unknown/invalid properties are passed
-type ListOptionsType = keyof ListOptions;
-const ListOptionsProperties: ListOptionsType[] = [
-  'prefix',
-  'limit',
-  'paginationToken',
-];
-
 export const listPaginated = (
   apiProvider: VectorOperationsProvider,
   namespace: string
 ) => {
   const validator = (options: ListOptions) => {
-    if (options) {
-      ValidateObjectProperties(options, ListOptionsProperties);
-    }
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {
       throw new Error('`limit` property must be greater than 0');
@@ -50,7 +38,6 @@ export const listPaginated = (
       ...options,
       namespace,
     };
-
     const api = await apiProvider.provide();
     return await api.listVectors(listRequest);
   };

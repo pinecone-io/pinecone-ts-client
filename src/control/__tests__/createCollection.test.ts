@@ -90,39 +90,6 @@ describe('createCollection', () => {
       );
     });
 
-    test('throws if unknown property is added', async () => {
-      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-      const toThrow = async () => {
-        await createCollection(IOA)({
-          name: 'collection-name',
-          source: 'index-name',
-          // @ts-ignore
-          unknown: 'property',
-        });
-      };
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: unknown. Valid properties include source, name.'
-      );
-    });
-
-    test('throws if known property is misspelled', async () => {
-      const IOA = setOpenAPIResponse(() => Promise.resolve(''));
-      const toThrow = async () => {
-        await createCollection(IOA)({
-          name: 'collection-name',
-          // @ts-ignore
-          sourceeeee: 'index-name',
-        });
-      };
-
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
-        'Object contained invalid properties: sourceeeee. Valid properties include source, name.'
-      );
-    });
-
     test('throws if name is not provided', async () => {
       const IOA = setOpenAPIResponse(() => Promise.resolve(''));
       const toThrow = async () => {

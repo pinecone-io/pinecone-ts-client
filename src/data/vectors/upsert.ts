@@ -1,14 +1,8 @@
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import type { Vector } from '../../pinecone-generated-ts-fetch/db_data';
-import {
-  PineconeRecord,
-  PineconeRecordsProperties,
-  RecordMetadata,
-} from './types';
+import { PineconeRecord, RecordMetadata } from './types';
 import { PineconeArgumentError } from '../../errors';
-import { ValidateObjectProperties } from '../../utils/validateObjectProperties';
-import { RetryOnServerFailure } from '../../utils';
 
 export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
@@ -20,9 +14,6 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (records: Array<PineconeRecord<T>>) => {
-    for (const record of records) {
-      ValidateObjectProperties(record, PineconeRecordsProperties);
-    }
     if (records.length === 0) {
       throw new PineconeArgumentError(
         'Must pass in at least 1 record to upsert.'
@@ -42,20 +33,11 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
     });
   };
 
-  async run(
-    records: Array<PineconeRecord<T>>,
-    maxRetries?: number
-  ): Promise<void> {
+  async run(records: Array<PineconeRecord<T>>): Promise<void> {
     this.validator(records);
 
     const api = await this.apiProvider.provide();
-
-    const retryWrapper = new RetryOnServerFailure(
-      api.upsertVectors.bind(api),
-      maxRetries
-    );
-
-    await retryWrapper.execute({
+    await api.upsertVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       upsertRequest: {
         vectors: records as Array<Vector>,

@@ -77,21 +77,4 @@ describe('update', () => {
       'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
     );
   });
-
-  test('throws error if unknown property is passed', async () => {
-    const { cmd } = setupSuccess('');
-    const toThrow = async () => {
-      await cmd.run({
-        id: 'abc',
-        values: [1, 2, 3, 4, 5],
-        sparseValues: { indices: [15, 30, 25], values: [0.5, 0.5, 0.2] },
-        metadata: { genre: 'ambient' },
-        // @ts-ignore
-        unknown: 'property',
-      });
-    };
-    await expect(toThrow()).rejects.toThrowError(
-      'Object contained invalid properties: unknown. Valid properties include id, values, sparseValues, metadata, filter.'
-    );
-  });
 });

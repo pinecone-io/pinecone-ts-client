@@ -38,6 +38,7 @@ export const chatCompletionStream = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
+    // Retries are handled by the wrapped fetch from getFetch()
     const response = await fetch(chatUrl, {
       method: 'POST',
       headers: requestHeaders,

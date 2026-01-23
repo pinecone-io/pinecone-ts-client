@@ -11,7 +11,7 @@ import {
   normalizeUrl,
   queryParamsStringify,
 } from '../../utils';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 
 export const asstControlOperationsBuilder = (
   config: PineconeConfiguration
@@ -31,7 +31,7 @@ export const asstControlOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware,
+    middleware: createMiddlewareArray(),
   };
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };

@@ -12,7 +12,7 @@ import {
   queryParamsStringify,
   normalizeUrl,
 } from '../../utils';
-import { middleware } from '../../utils/middleware';
+import { createMiddlewareArray } from '../../utils/middleware';
 import { AssistantHostSingleton } from '../assistantHostSingleton';
 
 export class AsstDataOperationsProvider {
@@ -79,7 +79,7 @@ export class AsstDataOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware,
+      middleware: createMiddlewareArray(),
     };
 
     return new ManageAssistantsDataApi(new DataConfiguration(apiConfig));

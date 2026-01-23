@@ -16,6 +16,7 @@ export class DescribeImportCommand {
       id: id,
     };
     const api = await this.apiProvider.provide();
+
     return await api.describeBulkImport({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ...req,

@@ -11,6 +11,7 @@ export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
     prefix?: string
   ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
+
     return await api.listNamespacesOperation({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       limit,
