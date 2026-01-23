@@ -10,7 +10,7 @@ const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteVectorsRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { deleteVectors: fakeDelete } as VectorOperationsApi;
   const VectorProvider = {
@@ -44,7 +44,7 @@ describe('deleteOne', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'You must pass a non-empty string for `options` in order to delete a record.'
+      'You must pass a non-empty string for `options` in order to delete a record.',
     );
   });
 });

@@ -12,12 +12,12 @@ export type DeleteOneOptions = RecordId;
 
 export const deleteOne = (
   apiProvider: VectorOperationsProvider,
-  namespace: string
+  namespace: string,
 ) => {
   const validator = (options: DeleteOneOptions) => {
     if (!options) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `options` in order to delete a record.'
+        'You must pass a non-empty string for `options` in order to delete a record.',
       );
     }
   };

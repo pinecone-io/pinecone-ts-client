@@ -18,7 +18,7 @@ jest.mock('../../../utils', () => {
 const buildMockFetchResponse = (
   isSuccess: boolean,
   status: number,
-  body: string
+  body: string,
 ) =>
   mockFetch.mockResolvedValue({
     ok: isSuccess ? true : false,
@@ -58,7 +58,7 @@ describe('uploadFileInternal', () => {
   test('throws error when file path is not provided', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await expect(upload({ path: '' })).rejects.toThrow(
-      'You must pass an object with required properties (`path`) to upload a file.'
+      'You must pass an object with required properties (`path`) to upload a file.',
     );
   });
 
@@ -77,7 +77,7 @@ describe('uploadFileInternal', () => {
           'User-Agent': 'TestUserAgent',
           'X-Pinecone-Api-Version': expect.any(String),
         }),
-      })
+      }),
     );
   });
 
@@ -98,7 +98,7 @@ describe('uploadFileInternal', () => {
           'User-Agent': 'TestUserAgent',
           'X-Pinecone-Api-Version': expect.any(String),
         }),
-      })
+      }),
     );
   });
 
@@ -117,7 +117,7 @@ describe('uploadFileInternal', () => {
           'User-Agent': 'TestUserAgent',
           'X-Pinecone-Api-Version': expect.any(String),
         }),
-      })
+      }),
     );
   });
 

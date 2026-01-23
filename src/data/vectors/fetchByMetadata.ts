@@ -53,13 +53,13 @@ export class FetchByMetadataCommand<T extends RecordMetadata = RecordMetadata> {
   validator = (options: FetchByMetadataOptions) => {
     if (!options || !options.filter) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty object for the `filter` field in order to fetch by metadata.'
+        'You must pass a non-empty object for the `filter` field in order to fetch by metadata.',
       );
     }
   };
 
   async run(
-    options: FetchByMetadataOptions
+    options: FetchByMetadataOptions,
   ): Promise<FetchByMetadataResponse<T>> {
     this.validator(options);
     const api = await this.apiProvider.provide();

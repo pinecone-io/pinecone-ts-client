@@ -87,7 +87,7 @@ describe('Integrated Inference API tests', () => {
         expect(stats.totalRecordCount).toBeGreaterThanOrEqual(8);
       },
       30000, // max wait 30s
-      2000 // check every 2s instead of waiting fixed 25s
+      2000, // check every 2s instead of waiting fixed 25s
     );
 
     await assertWithRetries(
@@ -98,7 +98,7 @@ describe('Integrated Inference API tests', () => {
       (results: SearchRecordsResponse) => {
         expect(results.result.hits).toBeDefined();
         expect(results.result.hits.length).toEqual(3);
-      }
+      },
     );
   });
 });

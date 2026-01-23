@@ -24,12 +24,12 @@ import { PineconeArgumentError } from '../../errors';
  */
 export const deleteFile = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (fileId: string): Promise<void> => {
     if (!fileId) {
       throw new PineconeArgumentError(
-        'You must pass the fileId of a file to delete.'
+        'You must pass the fileId of a file to delete.',
       );
     }
     const api = await apiProvider.provideData();

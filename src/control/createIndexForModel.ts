@@ -92,11 +92,11 @@ export type CreateIndexForModelEmbed = {
 
 export const createIndexForModel = (api: ManageIndexesApi) => {
   return async (
-    options: CreateIndexForModelOptions
+    options: CreateIndexForModelOptions,
   ): Promise<IndexModel | void> => {
     if (!options) {
       throw new PineconeArgumentError(
-        'You must pass an object with required properties (`name`, `cloud`, `region`, and an `embed`)'
+        'You must pass an object with required properties (`name`, `cloud`, `region`, and an `embed`)',
       );
     }
 
@@ -129,17 +129,17 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
 };
 
 const validateCreateIndexForModelRequest = (
-  options: CreateIndexForModelOptions
+  options: CreateIndexForModelOptions,
 ) => {
   // validate options properties
   if (!options.name) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `name` in order to create an index.'
+      'You must pass a non-empty string for `name` in order to create an index.',
     );
   }
   if (!options.cloud) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `cloud` in order to create an index.'
+      'You must pass a non-empty string for `cloud` in order to create an index.',
     );
   }
   if (
@@ -147,13 +147,13 @@ const validateCreateIndexForModelRequest = (
     !['aws', 'gcp', 'azure'].includes(options.cloud.toLowerCase())
   ) {
     throw new PineconeArgumentError(
-      `Invalid cloud value: ${options.cloud}. Valid values are: aws, gcp, or azure.`
+      `Invalid cloud value: ${options.cloud}. Valid values are: aws, gcp, or azure.`,
     );
   }
 
   if (!options.region) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `region` in order to create an index.'
+      'You must pass a non-empty string for `region` in order to create an index.',
     );
   }
 
@@ -163,7 +163,7 @@ const validateCreateIndexForModelRequest = (
 
   if (!options.embed) {
     throw new PineconeArgumentError(
-      'You must pass an `embed` object in order to create an index.'
+      'You must pass an `embed` object in order to create an index.',
     );
   }
 
@@ -171,12 +171,12 @@ const validateCreateIndexForModelRequest = (
   if (
     options.embed.metric &&
     !['cosine', 'euclidean', 'dotproduct'].includes(
-      options.embed.metric.toLowerCase()
+      options.embed.metric.toLowerCase(),
     )
   ) {
     {
       throw new PineconeArgumentError(
-        `Invalid metric value: ${options.embed.metric}. Valid values are: cosine, euclidean, or dotproduct.`
+        `Invalid metric value: ${options.embed.metric}. Valid values are: cosine, euclidean, or dotproduct.`,
       );
     }
   }

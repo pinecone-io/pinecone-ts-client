@@ -41,15 +41,15 @@ import { mapAssistantFileStatus } from './fileStatus';
  */
 export const describeFile = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (
     fileId: string,
-    includeUrl: boolean
+    includeUrl: boolean,
   ): Promise<AssistantFileModel> => {
     if (!fileId) {
       throw new PineconeArgumentError(
-        'You must pass the fileId of a file to describe.'
+        'You must pass the fileId of a file to describe.',
       );
     }
     const api = await apiProvider.provideData();

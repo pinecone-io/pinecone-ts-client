@@ -42,7 +42,7 @@ import { mapAssistantFileStatus } from './fileStatus';
  */
 export const listFiles = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ListFilesOptions): Promise<AssistantFilesList> => {
     const api = await apiProvider.provideData();
@@ -58,7 +58,7 @@ export const listFiles = (
 };
 
 const mapAssistantFileModel = (
-  file: GeneratedAssistantFileModel
+  file: GeneratedAssistantFileModel,
 ): AssistantFileModel => {
   return {
     ...file,

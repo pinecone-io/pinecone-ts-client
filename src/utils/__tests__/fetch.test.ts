@@ -61,7 +61,7 @@ describe('getFetch', () => {
 
     expect(() => getFetch(config)).toThrow(PineconeConfigurationError);
     expect(() => getFetch(config)).toThrow(
-      'No global or user-provided fetch implementations found. Please supply a fetch implementation.'
+      'No global or user-provided fetch implementations found. Please supply a fetch implementation.',
     );
   });
 
@@ -98,7 +98,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
@@ -117,7 +117,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
@@ -156,7 +156,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(2);
     });
@@ -213,7 +213,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(4);
     });
@@ -347,7 +347,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        'Connection refused'
+        'Connection refused',
       );
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
@@ -365,7 +365,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(4);
     });
@@ -386,7 +386,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(3);
     });
@@ -405,7 +405,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(6);
     });
@@ -424,7 +424,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(11);
     });
@@ -586,7 +586,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       // Should use default of 3 retries (4 total attempts)
       expect(customFetch).toHaveBeenCalledTimes(4);
@@ -647,7 +647,7 @@ describe('getFetch', () => {
 
       expect(customFetch).toHaveBeenCalledWith(
         'https://example.com',
-        requestInit
+        requestInit,
       );
     });
 

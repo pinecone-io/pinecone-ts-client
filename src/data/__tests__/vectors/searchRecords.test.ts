@@ -11,11 +11,11 @@ const mockNamespace = 'mock-namespace';
 
 const setupResponse = (response, isSuccess) => {
   const fakeSearchRecords: (
-    req: SearchRecordsNamespaceRequest
+    req: SearchRecordsNamespaceRequest,
   ) => Promise<SearchRecordsResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = {
     searchRecordsNamespace: fakeSearchRecords,
@@ -69,7 +69,7 @@ describe('SearchRecordsCommand', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass a `query` object to search.'
+        'You must pass a `query` object to search.',
       );
     }
   });

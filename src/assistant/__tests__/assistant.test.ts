@@ -35,7 +35,7 @@ describe('Assistant constructor validation', () => {
     expect(() => {
       new Assistant(
         { name: 'valid-assistant-name', host: 'https://test-host.com' },
-        mockConfig
+        mockConfig,
       );
     }).not.toThrow();
   });

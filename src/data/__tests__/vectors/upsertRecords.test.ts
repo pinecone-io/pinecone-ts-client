@@ -45,7 +45,7 @@ describe('upsertRecords', () => {
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
         method: 'POST',
-      })
+      }),
     );
   });
 
@@ -61,7 +61,7 @@ describe('upsertRecords', () => {
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
         body: records.map((record) => JSON.stringify(record)).join('\n'),
-      })
+      }),
     );
   });
 
@@ -79,7 +79,7 @@ describe('upsertRecords', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toContain(
-        'Every record must include an `id` or `_id` property in order to upsert.'
+        'Every record must include an `id` or `_id` property in order to upsert.',
       );
     }
   });

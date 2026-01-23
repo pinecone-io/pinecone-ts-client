@@ -87,7 +87,7 @@ describe('List files', () => {
       expect(files.files[0].metadata).toBeDefined();
       if (files.files[0].metadata) {
         expect(files.files[0].metadata[`test_key_${testRunId}`]).toBe(
-          'test_value_0'
+          'test_value_0',
         );
         expect(files.files[0].metadata[`test_int_${testRunId}`]).toBe(0);
       }

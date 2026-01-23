@@ -16,7 +16,7 @@ for (const envVar of ['PINECONE_API_KEY']) {
 async function safeDelete(
   deleteOperation: () => Promise<any>,
   resourceType: string,
-  resourceName: string
+  resourceName: string,
 ): Promise<void> {
   try {
     await deleteOperation();
@@ -24,7 +24,7 @@ async function safeDelete(
   } catch (error) {
     console.error(
       `✗ Failed to delete ${resourceType} ${resourceName}:`,
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
   }
 }
@@ -41,7 +41,7 @@ async function safeDelete(
       await safeDelete(
         () => p.deleteCollection(collection.name),
         'collection',
-        collection.name
+        collection.name,
       );
     }
   } else {
@@ -57,25 +57,25 @@ async function safeDelete(
 
       if (index.deletionProtection === 'enabled') {
         console.log(
-          `Changing deletionProtection status for index ${index.name}...`
+          `Changing deletionProtection status for index ${index.name}...`,
         );
         try {
           await p.configureIndex(index.name, {
             deletionProtection: 'disabled',
           });
           console.log(
-            `✓ Successfully disabled deletion protection for index ${index.name}`
+            `✓ Successfully disabled deletion protection for index ${index.name}`,
           );
 
           // Wait for the configuration change to take effect
           console.log(
-            'Waiting 5 seconds for deletion protection change to take effect...'
+            'Waiting 5 seconds for deletion protection change to take effect...',
           );
           await new Promise((resolve) => setTimeout(resolve, 5000));
         } catch (error) {
           console.error(
             `✗ Failed to disable deletion protection for index ${index.name}:`,
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
           continue; // Skip this index if we can't disable deletion protection
         }
@@ -96,7 +96,7 @@ async function safeDelete(
       await safeDelete(
         () => p.deleteAssistant(assistant.name),
         'assistant',
-        assistant.name
+        assistant.name,
       );
     }
   } else {
@@ -109,12 +109,12 @@ async function safeDelete(
   if (backups.data.length > 0) {
     for (const backup of backups.data) {
       console.log(
-        `Attempting to delete backup ${backup.name} (ID: ${backup.backupId})...`
+        `Attempting to delete backup ${backup.name} (ID: ${backup.backupId})...`,
       );
       await safeDelete(
         () => p.deleteBackup(backup.backupId),
         'backup',
-        `${backup.name} (ID: ${backup.backupId})`
+        `${backup.name} (ID: ${backup.backupId})`,
       );
     }
   } else {
@@ -126,7 +126,7 @@ async function safeDelete(
 })().catch((error) => {
   console.error(
     'Fatal error during cleanup process:',
-    error instanceof Error ? error.message : String(error)
+    error instanceof Error ? error.message : String(error),
   );
   process.exit(1);
 });

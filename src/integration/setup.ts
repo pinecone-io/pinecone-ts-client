@@ -71,7 +71,7 @@ export const setup = async () => {
   const metadataFilterValue = firstRecordMetadata[metadataFilterKey];
 
   console.error(
-    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`
+    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
   );
 
   await pc.createIndex({
@@ -84,7 +84,7 @@ export const setup = async () => {
         region: 'us-west-2',
         schema: {
           fields: Object.fromEntries(
-            metadataKeys.map((key) => [key, { filterable: true }])
+            metadataKeys.map((key) => [key, { filterable: true }]),
           ),
         },
       },
@@ -105,7 +105,7 @@ export const setup = async () => {
   await waitUntilRecordsReady(
     pc.index({ name: indexName, namespace: globalNamespaceOne }),
     globalNamespaceOne,
-    allRecords.map((record) => record.id)
+    allRecords.map((record) => record.id),
   );
 
   // Create assistant

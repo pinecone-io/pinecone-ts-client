@@ -26,7 +26,7 @@ export class VectorOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -46,12 +46,12 @@ export class VectorOperationsProvider {
     } else {
       if (!this.indexName) {
         throw new Error(
-          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.vectorOperations = this.buildDataOperationsConfig();
@@ -66,7 +66,7 @@ export class VectorOperationsProvider {
     } else {
       if (!this.indexName) {
         throw new Error(
-          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider',
         );
       }
       return await IndexHostSingleton.getHostUrl(this.config, this.indexName);

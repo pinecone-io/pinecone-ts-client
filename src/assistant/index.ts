@@ -91,7 +91,7 @@ export class Assistant {
   constructor(options: AssistantOptions, config: PineconeConfiguration) {
     if (!options.name || options.name.trim() === '') {
       throw new PineconeArgumentError(
-        'Assistant name is required and cannot be empty.'
+        'Assistant name is required and cannot be empty.',
       );
     }
 
@@ -100,7 +100,7 @@ export class Assistant {
       this.config,
       options.name,
       options.host,
-      options.additionalHeaders
+      options.additionalHeaders,
     );
     this.assistantName = options.name;
 
@@ -108,30 +108,30 @@ export class Assistant {
     this._chatStream = chatStream(
       this.assistantName,
       asstDataOperationsProvider,
-      this.config
+      this.config,
     );
     this._chatCompletion = chatCompletion(
       this.assistantName,
-      asstDataOperationsProvider
+      asstDataOperationsProvider,
     );
     this._chatCompletionStream = chatCompletionStream(
       this.assistantName,
       asstDataOperationsProvider,
-      this.config
+      this.config,
     );
     this._listFiles = listFiles(this.assistantName, asstDataOperationsProvider);
     this._describeFile = describeFile(
       this.assistantName,
-      asstDataOperationsProvider
+      asstDataOperationsProvider,
     );
     this._uploadFile = uploadFile(
       this.assistantName,
       asstDataOperationsProvider,
-      this.config
+      this.config,
     );
     this._deleteFile = deleteFile(
       this.assistantName,
-      asstDataOperationsProvider
+      asstDataOperationsProvider,
     );
     this._context = context(this.assistantName, asstDataOperationsProvider);
   }

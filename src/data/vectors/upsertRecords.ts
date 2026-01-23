@@ -19,7 +19,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
   constructor(
     apiProvider: VectorOperationsProvider,
     namespace: string,
-    config: PineconeConfiguration
+    config: PineconeConfiguration,
   ) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
@@ -30,7 +30,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
     for (const record of records) {
       if (!record.id && !record._id) {
         throw new PineconeArgumentError(
-          'Every record must include an `id` or `_id` property in order to upsert.'
+          'Every record must include an `id` or `_id` property in order to upsert.',
         );
       }
     }
@@ -63,7 +63,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        upsertRecordsUrl
+        upsertRecordsUrl,
       );
       throw err;
     }

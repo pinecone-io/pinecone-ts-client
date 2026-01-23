@@ -37,7 +37,7 @@ describe('deleteMany', () => {
     };
     await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow()).rejects.toThrowError(
-      '`filter` property cannot be empty'
+      '`filter` property cannot be empty',
     );
   });
 
@@ -49,7 +49,7 @@ describe('deleteMany', () => {
     };
     await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 record ID.'
+      'Must pass in at least 1 record ID.',
     );
   });
 });

@@ -36,7 +36,7 @@ describe('non-streaming chat success paths', () => {
       if (errorResponse.name == 'PineconeBadRequestError') {
         console.log(
           'Assistant not ready to chat yet, trying again ',
-          errorResponse.message
+          errorResponse.message,
         );
         response = await assistant.chat({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -65,7 +65,7 @@ describe('non-streaming chat success paths', () => {
       if (errorResponse.name == 'PineconeBadRequestError') {
         console.log(
           'Assistant not ready to chat yet, trying again ',
-          errorResponse.message
+          errorResponse.message,
         );
         response = await assistant.chatCompletion({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -95,7 +95,7 @@ describe('streaming chat success paths', () => {
       if (errorResponse.name == 'PineconeBadRequestError') {
         console.log(
           'Assistant not ready to chat yet, trying again ',
-          errorResponse.message
+          errorResponse.message,
         );
         response = await assistant.chatStream({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -138,7 +138,7 @@ describe('streaming chat success paths', () => {
       if (errorResponse.name == 'PineconeBadRequestError') {
         console.log(
           'Assistant not ready to chat yet, trying again ',
-          errorResponse.message
+          errorResponse.message,
         );
         response = await assistant.chatCompletionStream({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -169,7 +169,7 @@ describe('Chat error paths', () => {
 
   test.each(chatMethods)('%s with empty messages', async (method) => {
     await expect(assistant[method]({ messages: [] })).rejects.toThrow(
-      'Must have at least 1 message'
+      'Must have at least 1 message',
     );
   });
 
@@ -177,9 +177,9 @@ describe('Chat error paths', () => {
     await expect(
       assistant[method]({
         messages: [{ role: 'invalid', content: 'Hello' }],
-      })
+      }),
     ).rejects.toThrow(
-      'No role specified in message object. Must be one of "user" or "assistant"'
+      'No role specified in message object. Must be one of "user" or "assistant"',
     );
   });
 
@@ -187,9 +187,9 @@ describe('Chat error paths', () => {
     await expect(
       assistant[method]({
         messages: [{}],
-      })
+      }),
     ).rejects.toThrow(
-      'Message object must have exactly two keys: "role" and "content"'
+      'Message object must have exactly two keys: "role" and "content"',
     );
   });
 
@@ -198,9 +198,9 @@ describe('Chat error paths', () => {
       assistant[method]({
         messages: [{ role: 'user', content: 'Hello' }],
         model: 'invalid',
-      })
+      }),
     ).rejects.toThrow(
-      'Invalid model: "invalid". Must be one of: "gpt-4o", "gpt-4.1", "o4-mini", "claude-3-5-sonnet", "claude-3-7-sonnet", "gemini-2.5-pro"'
+      'Invalid model: "invalid". Must be one of: "gpt-4o", "gpt-4.1", "o4-mini", "claude-3-5-sonnet", "claude-3-7-sonnet", "gemini-2.5-pro"',
     );
   });
 
@@ -208,9 +208,9 @@ describe('Chat error paths', () => {
     await expect(
       pinecone.Assistant({ name: 'nonexistent' })[method]({
         messages: [{ role: 'user', content: 'Hello' }],
-      })
+      }),
     ).rejects.toThrow(
-      'A call to https://api.pinecone.io/assistant/assistants/nonexistent returned HTTP status 404.'
+      'A call to https://api.pinecone.io/assistant/assistants/nonexistent returned HTTP status 404.',
     );
   });
 });

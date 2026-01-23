@@ -9,7 +9,7 @@ const setupGetModelResponse = (response = {}, isSuccessful = true) => {
   const fakeGetModel: (req: GetModelRequest) => Promise<ModelInfo> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccessful ? Promise.resolve(response) : Promise.reject(response)
+      isSuccessful ? Promise.resolve(response) : Promise.reject(response),
     );
 
   const IA = { getModel: fakeGetModel } as InferenceApi;
@@ -22,8 +22,8 @@ describe('getModel', () => {
     const getModelCmd = getModel(IA);
     await expect(getModelCmd('')).rejects.toThrow(
       new Error(
-        'You must pass a non-empty string for `modelName` in order to get a model'
-      )
+        'You must pass a non-empty string for `modelName` in order to get a model',
+      ),
     );
   });
 

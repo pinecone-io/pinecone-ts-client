@@ -16,7 +16,7 @@ import { mapAssistantFileStatus } from './fileStatus';
 export const uploadFile = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider,
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ) => {
   return async (options: UploadFileOptions): Promise<AssistantFileModel> => {
     const fetch = getFetch(config);
@@ -39,7 +39,7 @@ export const uploadFile = (
 
     if (options.metadata) {
       const encodedMetadata = encodeURIComponent(
-        JSON.stringify(options.metadata)
+        JSON.stringify(options.metadata),
       );
       filesUrl += `?metadata=${encodedMetadata}`;
     }
@@ -54,7 +54,7 @@ export const uploadFile = (
     if (response.ok) {
       const assistantFileModel = await new JSONApiResponse(
         response,
-        (jsonValue) => AssistantFileModelFromJSON(jsonValue)
+        (jsonValue) => AssistantFileModelFromJSON(jsonValue),
       ).value();
       return {
         ...assistantFileModel,
@@ -64,7 +64,7 @@ export const uploadFile = (
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        filesUrl
+        filesUrl,
       );
       throw err;
     }
@@ -74,7 +74,7 @@ export const uploadFile = (
 const validateUploadFileOptions = (options: UploadFileOptions) => {
   if (!options || !options.path) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`path`) to upload a file.'
+      'You must pass an object with required properties (`path`) to upload a file.',
     );
   }
 };

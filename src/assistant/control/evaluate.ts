@@ -12,7 +12,7 @@ export const evaluate = (metricsApi: MetricsApi) => {
       options.groundTruth == ''
     ) {
       throw new Error(
-        'Invalid input. Question, answer, and groundTruth must be non-empty strings.'
+        'Invalid input. Question, answer, and groundTruth must be non-empty strings.',
       );
     }
 

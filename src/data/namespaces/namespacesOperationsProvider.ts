@@ -26,7 +26,7 @@ export class NamespaceOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -46,12 +46,12 @@ export class NamespaceOperationsProvider {
     } else {
       if (!this.indexName) {
         throw new Error(
-          'Either indexName or indexHostUrl must be provided to NamespaceOperationsProvider'
+          'Either indexName or indexHostUrl must be provided to NamespaceOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.namespaceOperations = this.buildNamespaceOperationsConfig();

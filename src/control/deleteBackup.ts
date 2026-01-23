@@ -14,7 +14,7 @@ export const deleteBackup = (api: ManageIndexesApi) => {
   return async (backupId: DeleteBackupOptions): Promise<void> => {
     if (!backupId) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `backupId` in order to delete a backup'
+        'You must pass a non-empty string for `backupId` in order to delete a backup',
       );
     }
 

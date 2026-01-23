@@ -9,13 +9,13 @@ import {
 describe('listBackups', () => {
   const setupSuccessResponse = (responseData = {}) => {
     const fakeListIndexBackups: (
-      req: ListIndexBackupsRequest
+      req: ListIndexBackupsRequest,
     ) => Promise<BackupList> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
 
     const fakeListProjectBackups: (
-      req: ListProjectBackupsRequest
+      req: ListProjectBackupsRequest,
     ) => Promise<BackupList> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
@@ -40,7 +40,7 @@ describe('listBackups', () => {
         indexName: 'my-index',
         limit: 10,
         paginationToken: 'pagination-token',
-      })
+      }),
     );
   });
 

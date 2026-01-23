@@ -8,16 +8,16 @@ import { PineconeArgumentError } from '../../errors';
 
 const setupCreateBackupResponse = (
   createBackupResponse = {} as BackupModel,
-  isCreateBackupSuccess = true
+  isCreateBackupSuccess = true,
 ) => {
   const fakeCreateBackup: (
-    req: CreateBackupOperationRequest
+    req: CreateBackupOperationRequest,
   ) => Promise<BackupModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateBackupSuccess
         ? Promise.resolve(createBackupResponse)
-        : Promise.reject(createBackupResponse)
+        : Promise.reject(createBackupResponse),
     );
 
   const MIA = {
@@ -53,11 +53,11 @@ describe('createBackup', () => {
         indexName: '',
         name: 'backup-name',
         description: 'backup-description',
-      })
+      }),
     ).rejects.toThrow(
       new PineconeArgumentError(
-        'You must pass a non-empty string for `indexName` in order to create a backup'
-      )
+        'You must pass a non-empty string for `indexName` in order to create a backup',
+      ),
     );
   });
 });

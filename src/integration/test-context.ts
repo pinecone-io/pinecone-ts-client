@@ -64,7 +64,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
         'Run the setup script first:\n' +
         '  npm run integration:setup\n\n' +
         'Then export the FIXTURES_JSON value from the output, or use:\n' +
-        '  npm run test:integration:local\n'
+        '  npm run test:integration:local\n',
     );
   }
 
@@ -74,7 +74,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
   } catch (error) {
     throw new Error(
       `Failed to parse FIXTURES_JSON: ${error}\n` +
-        `Value: ${fixturesJson.substring(0, 100)}...`
+        `Value: ${fixturesJson.substring(0, 100)}...`,
     );
   }
 
@@ -94,7 +94,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
   const metadataFilter = data.serverlessIndex.metadataFilter;
   if (!metadataFilter?.key || metadataFilter?.value === undefined) {
     throw new Error(
-      'FIXTURES_JSON missing serverlessIndex.metadataFilter with key and value'
+      'FIXTURES_JSON missing serverlessIndex.metadataFilter with key and value',
     );
   }
 

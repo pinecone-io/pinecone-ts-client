@@ -36,11 +36,11 @@ export class PineconeAuthorizationError extends BasePineconeError {
     const { url } = failedRequest;
     if (url) {
       super(
-        `The API key you provided was rejected while calling ${url}. Please check your configuration values and try again. ${CONFIG_HELP}`
+        `The API key you provided was rejected while calling ${url}. Please check your configuration values and try again. ${CONFIG_HELP}`,
       );
     } else {
       super(
-        `The API key you provided was rejected. Please check your configuration values and try again. ${CONFIG_HELP}`
+        `The API key you provided was rejected. Please check your configuration values and try again. ${CONFIG_HELP}`,
       );
     }
     this.name = 'PineconeAuthorizationError';
@@ -73,7 +73,7 @@ export class PineconeConflictError extends BasePineconeError {
     const { url, message } = failedRequest;
     if (url) {
       super(
-        `A call to ${url} returned HTTP status 409. ${message ? message : ''}`
+        `A call to ${url} returned HTTP status 409. ${message ? message : ''}`,
       );
     } else {
       super('The resource you are attempting to create already exists.');
@@ -154,7 +154,7 @@ export class PineconeNotImplementedError extends BasePineconeError {
     const { url, message } = requestInfo;
     if (url) {
       super(
-        `A call to ${url} returned HTTP status 501. ${message ? message : ''}`
+        `A call to ${url} returned HTTP status 501. ${message ? message : ''}`,
       );
     } else {
       super();

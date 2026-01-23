@@ -41,7 +41,7 @@ describe('Describe file happy path', () => {
 describe('Describe file error paths', () => {
   test('Describe with nonexistent fileId', async () => {
     await expect(assistant.describeFile('nonexistent-file-id')).rejects.toThrow(
-      /404/
+      /404/,
     );
   });
 
@@ -51,7 +51,7 @@ describe('Describe file error paths', () => {
 
   test('Describe file with nonexistent assistant', async () => {
     await expect(
-      pinecone.Assistant({ name: 'nonexistent' }).describeFile(fileId)
+      pinecone.Assistant({ name: 'nonexistent' }).describeFile(fileId),
     ).rejects.toThrow(/404/);
   });
 });

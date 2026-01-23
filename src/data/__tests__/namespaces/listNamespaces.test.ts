@@ -9,11 +9,11 @@ import { listNamespaces } from '../../namespaces/listNamespaces';
 
 const setupResponse = (response, isSuccess) => {
   const fakeListNamespaces: (
-    req: ListNamespacesOperationRequest
+    req: ListNamespacesOperationRequest,
   ) => Promise<ListNamespacesResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
 
   const NOA = {

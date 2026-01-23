@@ -165,7 +165,7 @@ export class Pinecone {
 
     if (!options.apiKey) {
       throw new PineconeConfigurationError(
-        'The client configuration must have required property: apiKey.'
+        'The client configuration must have required property: apiKey.',
       );
     }
 
@@ -218,7 +218,7 @@ export class Pinecone {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a' +
-          ' configuration object is required when calling new Pinecone().'
+          ' configuration object is required when calling new Pinecone().',
       );
     }
 
@@ -237,8 +237,8 @@ export class Pinecone {
     if (missingVars.length > 0) {
       throw new PineconeConfigurationError(
         `Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: ${missingVars.join(
-          ', '
-        )}.`
+          ', ',
+        )}.`,
       );
     }
 
@@ -788,7 +788,7 @@ export class Pinecone {
           AssistantHostSingleton._set(
             this.config,
             assistant.name,
-            assistant.host
+            assistant.host,
           );
         }
       }
@@ -826,7 +826,7 @@ export class Pinecone {
   _checkForBrowser() {
     if (isBrowser()) {
       console.warn(
-        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.',
       );
     }
   }
@@ -1194,7 +1194,7 @@ export class Pinecone {
    * @returns An {@link Index} object that can be used to perform data operations.
    */
   index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions
+    options: IndexOptions,
   ): Index<T>;
   /**
    * @deprecated Use the options object pattern instead: `pc.index({ name: 'index-name' })`.
@@ -1203,12 +1203,12 @@ export class Pinecone {
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T>;
   index<T extends RecordMetadata = RecordMetadata>(
     optionsOrName: IndexOptions | string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T> {
     // Handle legacy string-based API
     if (typeof optionsOrName === 'string') {
@@ -1218,7 +1218,7 @@ export class Pinecone {
           host: indexHostUrl,
           additionalHeaders: additionalHeaders,
         },
-        this.config
+        this.config,
       );
     }
 
@@ -1230,7 +1230,7 @@ export class Pinecone {
         host: optionsOrName.host,
         additionalHeaders: optionsOrName.additionalHeaders,
       },
-      this.config
+      this.config,
     );
   }
 
@@ -1239,7 +1239,7 @@ export class Pinecone {
    */
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions
+    options: IndexOptions,
   ): Index<T>;
   /**
    * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
@@ -1248,12 +1248,12 @@ export class Pinecone {
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T>;
   Index<T extends RecordMetadata = RecordMetadata>(
     optionsOrName: IndexOptions | string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T> {
     return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
   }
@@ -1320,7 +1320,7 @@ export class Pinecone {
   assistant(name: string, host?: string): Assistant;
   assistant(
     optionsOrName: AssistantOptions | string,
-    host?: string
+    host?: string,
   ): Assistant {
     // Handle legacy string-based API
     if (typeof optionsOrName === 'string') {
@@ -1329,7 +1329,7 @@ export class Pinecone {
           name: optionsOrName,
           host: host,
         },
-        this.config
+        this.config,
       );
     }
 
@@ -1349,7 +1349,7 @@ export class Pinecone {
   Assistant(name: string, host?: string): Assistant;
   Assistant(
     optionsOrName: AssistantOptions | string,
-    host?: string
+    host?: string,
   ): Assistant {
     return this.assistant(optionsOrName as any, host);
   }

@@ -10,7 +10,7 @@ import { PineconeArgumentError } from '../../errors';
 
 export const chat = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ChatOptions): Promise<ChatModel> => {
     validateChatOptions(options);
@@ -42,7 +42,7 @@ export const chat = (
 export const validateChatOptions = (options: ChatOptions) => {
   if (!options || !options.messages) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`messages`) to chat with an assistant.'
+      'You must pass an object with required properties (`messages`) to chat with an assistant.',
     );
   }
 
@@ -53,10 +53,10 @@ export const validateChatOptions = (options: ChatOptions) => {
     ) {
       throw new PineconeArgumentError(
         `Invalid model: "${options.model}". Must be one of: ${Object.values(
-          ChatModelEnum
+          ChatModelEnum,
         )
           .map((model) => `"${model}"`)
-          .join(', ')}.`
+          .join(', ')}.`,
       );
     }
   }
@@ -91,19 +91,19 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
         options.messages[0]['role'].toLowerCase() !== 'assistant'
       ) {
         throw new Error(
-          'No role specified in message object. Must be one of "user" or "assistant"'
+          'No role specified in message object. Must be one of "user" or "assistant"',
         );
       }
     }
 
     // Extract unique keys from all messages
     const keys: string[] = Array.from(
-      new Set(options.messages.flatMap((message) => Object.keys(message)))
+      new Set(options.messages.flatMap((message) => Object.keys(message))),
     );
 
     if (keys.length !== 2) {
       throw new Error(
-        'Message object must have exactly two keys: "role" and "content"'
+        'Message object must have exactly two keys: "role" and "content"',
       );
     }
 
@@ -129,7 +129,7 @@ export const modelValidation = (options: ChatOptions) => {
       throw new Error(
         `Invalid model specified. Must be one of ${allowedModels
           .map((m) => `"${m}"`)
-          .join(', ')}:`
+          .join(', ')}:`,
       );
     } else {
       model = options.model as ChatModelEnum;

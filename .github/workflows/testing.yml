@@ -50,7 +50,7 @@ jobs:
         pinecone_env:
           - prod
           # - staging
-        node_version: [18.x, 20.x]
+        node_version: [22.x, 24.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },
@@ -135,23 +135,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tsVersion: [
-            '~4.5.0',
-            '~4.6.0',
-            '~4.7.0',
-            '~4.8.0',
-            '~4.9.0',
-            '~5.0.0',
-            '~5.1.0',
-            '~5.2.0',
-            '~5.3.0',
-            '~5.4.0',
-            '~5.5.0',
-            '~5.6.0',
-            '~5.7.0',
-            '~5.8.0',
-            # 'latest', # TODO: Add back in when bumping node and other dependencies for next major release
-          ]
+        tsVersion: ['~5.6.0', '~5.7.0', '~5.8.0', 'latest']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -160,7 +144,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
       - name: Install npm packages
         run: |

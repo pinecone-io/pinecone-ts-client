@@ -16,18 +16,18 @@ export class UpsertCommand<T extends RecordMetadata = RecordMetadata> {
   validator = (records: Array<PineconeRecord<T>>) => {
     if (records.length === 0) {
       throw new PineconeArgumentError(
-        'Must pass in at least 1 record to upsert.'
+        'Must pass in at least 1 record to upsert.',
       );
     }
     records.forEach((record) => {
       if (!record.id) {
         throw new PineconeArgumentError(
-          'Every record must include an `id` property in order to upsert.'
+          'Every record must include an `id` property in order to upsert.',
         );
       }
       if (!record.values && !record.sparseValues) {
         throw new PineconeArgumentError(
-          'Every record must include either `values` or `sparseValues` in order to upsert.'
+          'Every record must include either `values` or `sparseValues` in order to upsert.',
         );
       }
     });

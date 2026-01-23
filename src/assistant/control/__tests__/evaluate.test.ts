@@ -7,7 +7,7 @@ import {
 
 const setupMetricsApi = () => {
   const fakeMetricsAlignment: (
-    req: MetricsAlignmentRequest
+    req: MetricsAlignmentRequest,
   ) => Promise<AlignmentResponse> = jest
     .fn()
     .mockImplementation(() => Promise.resolve({}));
@@ -47,7 +47,7 @@ describe('AssistantCtrlPlane', () => {
 
       for (const request of emptyRequests) {
         await expect(evaluate(metricsApi)(request)).rejects.toThrow(
-          'Invalid input. Question, answer, and groundTruth must be non-empty strings.'
+          'Invalid input. Question, answer, and groundTruth must be non-empty strings.',
         );
       }
     });

@@ -51,7 +51,7 @@ beforeAll(async () => {
   }
   if (!fs.existsSync(tempFileWithMetadataPath)) {
     throw new Error(
-      `Temporary file was not created: ${tempFileWithMetadataPath}`
+      `Temporary file was not created: ${tempFileWithMetadataPath}`,
     );
   }
 });
@@ -87,7 +87,7 @@ describe('Upload file happy path', () => {
       () => assistant.deleteFile(response.id),
       () => {
         return;
-      }
+      },
     );
   });
 
@@ -120,7 +120,7 @@ describe('Upload file happy path', () => {
       () => assistant.deleteFile(response.id),
       () => {
         return;
-      }
+      },
     );
   });
 });
@@ -130,7 +130,7 @@ describe('Upload file error paths', () => {
     await expect(
       assistant.uploadFile({
         path: 'nonexistent-file.txt',
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -138,7 +138,7 @@ describe('Upload file error paths', () => {
     await expect(
       pinecone.Assistant({ name: 'nonexistent' }).uploadFile({
         path: tempFileWithMetadataPath,
-      })
+      }),
     ).rejects.toThrow(/404/);
   });
 
@@ -146,9 +146,9 @@ describe('Upload file error paths', () => {
     await expect(
       assistant.uploadFile({
         path: '',
-      })
+      }),
     ).rejects.toThrow(
-      'You must pass an object with required properties (`path`) to upload a file.'
+      'You must pass an object with required properties (`path`) to upload a file.',
     );
   });
 });
@@ -156,7 +156,7 @@ describe('Upload file error paths', () => {
 describe('Delete file error paths', () => {
   test('Delete non-existent file', async () => {
     await expect(assistant.deleteFile('nonexistent-file-id')).rejects.toThrow(
-      /404/
+      /404/,
     );
   });
 });

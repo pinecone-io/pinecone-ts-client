@@ -144,7 +144,7 @@ export const waitUntilAssistantReady = async (assistantName: string) => {
       }
     } catch (error) {
       throw new Error(
-        `Error while waiting for assistant to be ready: ${error}`
+        `Error while waiting for assistant to be ready: ${error}`,
       );
     }
   }
@@ -152,7 +152,7 @@ export const waitUntilAssistantReady = async (assistantName: string) => {
 
 export const waitUntilAssistantFileReady = async (
   assistantName: string,
-  fileId: string
+  fileId: string,
 ) => {
   const p = new Pinecone();
   const sleepIntervalMs = 1000;
@@ -170,7 +170,7 @@ export const waitUntilAssistantFileReady = async (
       }
     } catch (error) {
       throw new Error(
-        `Error while waiting for assistant file to be ready: ${error}`
+        `Error while waiting for assistant file to be ready: ${error}`,
       );
     }
   }
@@ -179,7 +179,7 @@ export const waitUntilAssistantFileReady = async (
 export const waitUntilRecordsReady = async (
   index: Index,
   namespace: string,
-  recordIds: string[]
+  recordIds: string[],
 ): Promise<IndexStatsDescription> => {
   const sleepIntervalMs = 1000; // Reduced from 3000ms for faster polling
   let indexStats = await index.describeIndexStats();
@@ -204,7 +204,7 @@ export const assertWithRetries = async (
   asyncFn: () => Promise<any>,
   assertionsFn: Assertions,
   totalMsWait: number = 180000,
-  delay: number = 3000
+  delay: number = 3000,
 ) => {
   let lastError: any = null;
 
@@ -248,7 +248,7 @@ export const retryDeletes = async (pc: Pinecone, indexName: string) => {
   } catch (e) {
     console.log(
       `Encountered error when trying to delete index: ${e}`,
-      '\n\nSleeping for 1s and retrying...\n\n'
+      '\n\nSleeping for 1s and retrying...\n\n',
     );
     await sleep(1000);
     await retryDeletes(pc, indexName);
