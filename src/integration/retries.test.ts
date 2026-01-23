@@ -141,7 +141,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       mockServerlessIndex.upsert(recordsToUpsert)
     ).rejects.toThrowError(PineconeMaxRetriesExceededError);
 
-    // 3 total tries: 1 initial call + 2 retries
-    expect(callCount).toBe(3);
+    // 4 total tries: 1 initial call + 3 retries
+    expect(callCount).toBe(4);
   });
 });
