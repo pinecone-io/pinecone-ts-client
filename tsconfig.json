@@ -14,7 +14,6 @@
     "types": ["node", "jest", "@edge-runtime/types"],
     "noImplicitAny": false,
     "resolveJsonModule": true,
-    "experimentalDecorators": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

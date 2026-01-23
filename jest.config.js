@@ -7,7 +7,15 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['./scripts/globalUnitTestSetup.ts'],
   transform: {
-    '^.+\\.ts?$': 'ts-jest',
+    '^.+\\.ts?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          target: 'es2022',
+          module: 'commonjs',
+        },
+      },
+    ],
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   testPathIgnorePatterns: ['src/integration', 'dist/'],
