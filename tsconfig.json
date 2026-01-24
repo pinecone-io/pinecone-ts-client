@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest", "@edge-runtime/types"],
     "noImplicitAny": false,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

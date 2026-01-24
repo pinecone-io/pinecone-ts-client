@@ -6,7 +6,8 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2022"
+    "target": "es2022",
+    "types": ["node"]
   },
   "compileOnSave": true,
   "include": ["src"]

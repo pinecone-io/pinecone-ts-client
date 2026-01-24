@@ -50,7 +50,7 @@ jobs:
         pinecone_env:
           - prod
           # - staging
-        node_version: [22.x, 24.x]
+        node_version: [20.x, 22.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },
@@ -144,7 +144,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
       - name: Install npm packages
         run: |
