@@ -86,7 +86,7 @@ If your network setup requires you to interact with Pinecone via a proxy, you ca
 the [`undici` library](https://undici.nodejs.org/#/). Below is an example of how to
 construct an `undici` `ProxyAgent` that routes network traffic through a [`mitm` proxy server](https://mitmproxy.org/) while hitting Pinecone's `/indexes` endpoint.
 
-**Note:** The following strategy relies on Node's native `fetch` implementation, which is fully stable in Node v22+.
+**Note:** The following strategy relies on Node's native `fetch` implementation.
 
 ```typescript
 import {
