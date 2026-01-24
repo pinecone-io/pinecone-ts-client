@@ -30,7 +30,7 @@ when configuring an index has changed to include `deletionProtection`. The `podT
 
 ## Prerequisites
 
-The Pinecone TypeScript SDK is compatible with TypeScript >=5.6 and Node >=22.x.
+The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node >=20.x.
 
 ## Installation
 
