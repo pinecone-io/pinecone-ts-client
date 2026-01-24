@@ -32,6 +32,12 @@ when configuring an index has changed to include `deletionProtection`. The `podT
 
 The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node >=20.x.
 
+**Note for TypeScript users:** This SDK uses Node.js built-in modules in its type definitions. If you're using TypeScript, ensure you have `@types/node` installed in your project:
+
+```
+npm install --save-dev @types/node
+```
+
 ## Installation
 
 ```
