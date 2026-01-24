@@ -163,6 +163,7 @@ jobs:
           cp -r pinecone-ts-client/ts-compilation-test ts-compilation-test
           cd ts-compilation-test
           npm install typescript@${{ matrix.tsVersion }} --no-cache
+          npm install @types/node --no-cache
           npm install '../pinecone-ts-client' --no-cache
           cat package.json
           cat package-lock.json
