@@ -23,13 +23,13 @@ export type DeleteManyOptions =
 
 export const deleteMany = (
   apiProvider: VectorOperationsProvider,
-  namespace: string
+  namespace: string,
 ) => {
   const FilterValidator = (options: DeleteManyByFilterOptions) => {
     for (const key in options) {
       if (!options[key]) {
         throw new PineconeArgumentError(
-          `\`filter\` property cannot be empty for key ${key}`
+          `\`filter\` property cannot be empty for key ${key}`,
         );
       }
     }

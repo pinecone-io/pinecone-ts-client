@@ -53,7 +53,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
   const validator = (indexName: IndexName, options: ConfigureIndexOptions) => {
     if (!indexName) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `indexName` to configureIndex.'
+        'You must pass a non-empty string for `indexName` to configureIndex.',
       );
     }
 
@@ -68,7 +68,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
       options.readCapacity === undefined
     ) {
       throw new PineconeArgumentError(
-        'You must pass at least one configuration option to configureIndex.'
+        'You must pass at least one configuration option to configureIndex.',
       );
     }
 
@@ -79,7 +79,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
 
   return async (
     indexName: IndexName,
-    options: ConfigureIndexOptions
+    options: ConfigureIndexOptions,
   ): Promise<IndexModel> => {
     validator(indexName, options);
 
@@ -100,7 +100,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
 };
 
 const buildConfigureSpec = (
-  options: ConfigureIndexOptions
+  options: ConfigureIndexOptions,
 ): ConfigureIndexRequestSpec | undefined => {
   const hasPod =
     options.podReplicas !== undefined || options.podType !== undefined;
@@ -108,7 +108,7 @@ const buildConfigureSpec = (
 
   if (hasPod && hasServerless) {
     throw new PineconeArgumentError(
-      'Cannot configure both serverless (readCapacity) and pod (podReplicas/podType)index values.'
+      'Cannot configure both serverless (readCapacity) and pod (podReplicas/podType)index values.',
     );
   }
 

@@ -12,7 +12,7 @@ export const deleteIndex = (api: ManageIndexesApi) => {
   return async (indexName: DeleteIndexOptions): Promise<void> => {
     if (!indexName) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `indexName` in order to delete an index'
+        'You must pass a non-empty string for `indexName` in order to delete an index',
       );
     }
     await api.deleteIndex({

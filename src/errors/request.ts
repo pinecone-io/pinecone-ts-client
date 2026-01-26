@@ -36,7 +36,7 @@ export class PineconeConnectionError extends BasePineconeError {
 
     super(
       `Request failed to reach Pinecone${urlMessage}. This can occur for reasons such as network problems that prevent the request from being completed, or a Pinecone API outage. Check your network connection, and visit https://status.pinecone.io/ to see whether any outages are ongoing.`,
-      e
+      e,
     );
     this.name = 'PineconeConnectionError';
   }
@@ -52,12 +52,12 @@ export class PineconeRequestError extends BasePineconeError {
     if (context.response) {
       super(
         `Request failed during a call to ${context.init.method} ${context.url} with status ${context.response.status}`,
-        context.error as Error
+        context.error as Error,
       );
     } else {
       super(
         `Request failed during a call to ${context.init.method} ${context.url}`,
-        context.error as Error
+        context.error as Error,
       );
     }
   }

@@ -10,7 +10,7 @@ const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListVectorsRequest) => Promise<ListResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { listVectors: fakeList } as VectorOperationsApi;
   const VectorProvider = {
@@ -51,7 +51,7 @@ describe('list', () => {
       await listPaginatedFn({ limit: -3 });
     };
     await expect(toThrow()).rejects.toThrow(
-      '`limit` property must be greater than 0'
+      '`limit` property must be greater than 0',
     );
   });
 });

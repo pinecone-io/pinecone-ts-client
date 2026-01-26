@@ -43,7 +43,7 @@ describe('configure index', () => {
         const err = e as PineconeBadRequestError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
-          'Deletion protection is enabled for this index'
+          'Deletion protection is enabled for this index',
         );
       });
 
@@ -77,7 +77,7 @@ describe('configure index', () => {
       if (description3.tags != null) {
         expect(description3.tags['testTag']).toBeUndefined();
         expect(description3.tags['project']).toEqual(
-          'pinecone-integration-tests'
+          'pinecone-integration-tests',
         );
       }
 
@@ -89,7 +89,7 @@ describe('configure index', () => {
       if (description4.tags != null) {
         expect(description4.tags['testTag']).toBeUndefined();
         expect(description4.tags['project']).toEqual(
-          'pinecone-integration-tests'
+          'pinecone-integration-tests',
         );
       }
 

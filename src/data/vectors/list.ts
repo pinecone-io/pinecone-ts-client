@@ -19,7 +19,7 @@ export type ListOptions = {
 
 export const listPaginated = (
   apiProvider: VectorOperationsProvider,
-  namespace: string
+  namespace: string,
 ) => {
   const validator = (options: ListOptions) => {
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false

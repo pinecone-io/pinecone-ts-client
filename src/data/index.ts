@@ -234,7 +234,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   constructor(options: IndexOptions, config: PineconeConfiguration) {
     if (!options.name && !options.host) {
       throw new PineconeArgumentError(
-        'Either name or host must be provided in IndexOptions'
+        'Either name or host must be provided in IndexOptions',
       );
     }
 
@@ -250,47 +250,47 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders
+      options.additionalHeaders,
     );
     this._deleteAll = deleteAll(dataOperationsProvider, this.target.namespace);
     this._deleteMany = deleteMany(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._deleteOne = deleteOne(dataOperationsProvider, this.target.namespace);
     this._describeIndexStats = describeIndexStats(dataOperationsProvider);
     this._listPaginated = listPaginated(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._fetchCommand = new FetchCommand<T>(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._fetchByMetadataCommand = new FetchByMetadataCommand<T>(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._queryCommand = new QueryCommand<T>(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._updateCommand = new UpdateCommand<T>(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._upsertCommand = new UpsertCommand<T>(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._upsertRecordsCommand = new UpsertRecordsCommand<T>(
       dataOperationsProvider,
       this.target.namespace,
-      config
+      config,
     );
     this._searchRecordsCommand = new SearchRecordsCommand(
       dataOperationsProvider,
-      this.target.namespace
+      this.target.namespace,
     );
 
     // bulk operations
@@ -298,23 +298,23 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders
+      options.additionalHeaders,
     );
     this._startImportCommand = new StartImportCommand(
       bulkApiProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._listImportsCommand = new ListImportsCommand(
       bulkApiProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._describeImportCommand = new DescribeImportCommand(
       bulkApiProvider,
-      this.target.namespace
+      this.target.namespace,
     );
     this._cancelImportCommand = new CancelImportCommand(
       bulkApiProvider,
-      this.target.namespace
+      this.target.namespace,
     );
 
     // namespace operations
@@ -322,7 +322,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders
+      options.additionalHeaders,
     );
     this._createNamespaceCommand = createNamespace(namespaceApiProvider);
     this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
@@ -899,7 +899,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   async listNamespaces(
     limit?: number,
     paginationToken?: string,
-    prefix?: string
+    prefix?: string,
   ) {
     return await this._listNamespacesCommand(limit, paginationToken, prefix);
   }

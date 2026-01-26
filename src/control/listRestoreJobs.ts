@@ -20,7 +20,7 @@ export interface ListRestoreJobsOptions {
 
 export const listRestoreJobs = (api: ManageIndexesApi) => {
   return async (
-    listBackupOptions: ListRestoreJobsOptions
+    listBackupOptions: ListRestoreJobsOptions,
   ): Promise<RestoreJobList> => {
     return await api.listRestoreJobs({
       ...listBackupOptions,

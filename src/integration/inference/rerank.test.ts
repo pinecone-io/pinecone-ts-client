@@ -40,13 +40,13 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     const rankFields = ['customField'];
 
     await expect(
-      pinecone.inference.rerank(model, query, myDocuments, { rankFields })
+      pinecone.inference.rerank(model, query, myDocuments, { rankFields }),
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "field 'customField' not found in document at index 0"
+          "field 'customField' not found in document at index 0",
         ),
-      })
+      }),
     );
   });
 
@@ -83,13 +83,13 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
       { customField2: 'bye', customField: 'doc2' },
     ];
     await expect(
-      pinecone.inference.rerank(model, query, myDocuments)
+      pinecone.inference.rerank(model, query, myDocuments),
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          'Documents must be a list of strings or objects containing the "text" field'
+          'Documents must be a list of strings or objects containing the "text" field',
         ),
-      })
+      }),
     );
   });
 
@@ -102,13 +102,13 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     await expect(
       pinecone.inference.rerank(model, query, myDocuments, {
         rankFields: rankFields,
-      })
+      }),
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          "field 'NonExistentRankField' not found in document at index"
+          "field 'NonExistentRankField' not found in document at index",
         ),
-      })
+      }),
     );
   });
 
@@ -121,13 +121,13 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     await expect(
       pinecone.inference.rerank(model, query, myDocuments, {
         rankFields: rankFields,
-      })
+      }),
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          '"Only one rank field is supported for model'
+          '"Only one rank field is supported for model',
         ),
-      })
+      }),
     );
   });
 });

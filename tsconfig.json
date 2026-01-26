@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2022",
     "module": "commonjs",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2022", "dom"],
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
@@ -13,8 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest", "@edge-runtime/types"],
     "noImplicitAny": false,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

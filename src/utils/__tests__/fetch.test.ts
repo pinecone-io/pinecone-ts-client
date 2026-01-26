@@ -6,8 +6,14 @@ import {
 import type { PineconeConfiguration } from '../../data';
 
 describe('getFetch', () => {
+  // Use fake timers for all retry tests to avoid real delays
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
-    // Reset global.fetch after each test to avoid affecting other tests
+    // Reset timers and global.fetch after each test
+    jest.useRealTimers();
     delete (global as any).fetch;
   });
 
@@ -61,7 +67,7 @@ describe('getFetch', () => {
 
     expect(() => getFetch(config)).toThrow(PineconeConfigurationError);
     expect(() => getFetch(config)).toThrow(
-      'No global or user-provided fetch implementations found. Please supply a fetch implementation.'
+      'No global or user-provided fetch implementations found. Please supply a fetch implementation.',
     );
   });
 
@@ -98,7 +104,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
@@ -117,7 +123,7 @@ describe('getFetch', () => {
       const fetchFn = getFetch(config);
 
       await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
+        PineconeMaxRetriesExceededError,
       );
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
@@ -155,9 +161,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(2);
     });
 
@@ -174,7 +183,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -212,9 +223,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(4);
     });
 
@@ -231,7 +245,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(3);
       expect(response.status).toBe(200);
@@ -287,7 +303,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(3);
       expect(response.status).toBe(200);
@@ -308,7 +326,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -329,7 +349,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -346,9 +368,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        'Connection refused'
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow('Connection refused');
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
 
@@ -364,9 +389,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(4);
     });
   });
@@ -385,9 +413,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(3);
     });
 
@@ -404,9 +435,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(6);
     });
 
@@ -423,9 +457,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       expect(customFetch).toHaveBeenCalledTimes(11);
     });
   });
@@ -443,7 +480,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -461,7 +500,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -479,7 +520,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -497,7 +540,9 @@ describe('getFetch', () => {
       } as PineconeConfiguration;
 
       const fetchFn = getFetch(config);
-      const response = await fetchFn('https://example.com', {});
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
 
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(response.status).toBe(200);
@@ -585,9 +630,12 @@ describe('getFetch', () => {
 
       const fetchFn = getFetch(config);
 
-      await expect(fetchFn('https://example.com', {})).rejects.toThrow(
-        PineconeMaxRetriesExceededError
-      );
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow(PineconeMaxRetriesExceededError);
+      await jest.runAllTimersAsync();
+      await promise;
+
       // Should use default of 3 retries (4 total attempts)
       expect(customFetch).toHaveBeenCalledTimes(4);
     });
@@ -647,7 +695,7 @@ describe('getFetch', () => {
 
       expect(customFetch).toHaveBeenCalledWith(
         'https://example.com',
-        requestInit
+        requestInit,
       );
     });
 

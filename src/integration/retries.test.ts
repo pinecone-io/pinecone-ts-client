@@ -31,7 +31,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
         if (shouldSucceedOnSecondCall && callCount === 1) {
           res.writeHead(503, { 'Content-Type': 'application/json' });
           res.end(
-            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 })
+            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 }),
           );
         } else if (shouldSucceedOnSecondCall && callCount === 2) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -39,7 +39,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
         } else {
           res.writeHead(503, { 'Content-Type': 'application/json' });
           res.end(
-            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 })
+            JSON.stringify({ name: 'PineconeUnavailableError', status: 503 }),
           );
         }
       } else {
@@ -138,7 +138,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
 
     // Catch expected error from Upsert operation
     await expect(
-      mockServerlessIndex.upsert(recordsToUpsert)
+      mockServerlessIndex.upsert(recordsToUpsert),
     ).rejects.toThrowError(PineconeMaxRetriesExceededError);
 
     // 4 total tries: 1 initial call + 3 retries

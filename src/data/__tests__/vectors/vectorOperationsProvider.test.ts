@@ -54,7 +54,7 @@ describe('DataOperationsProvider', () => {
     const provider = new VectorOperationsProvider(
       config,
       'index-name',
-      indexHostUrl
+      indexHostUrl,
     );
 
     jest.spyOn(provider, 'buildDataOperationsConfig');
@@ -71,14 +71,14 @@ describe('DataOperationsProvider', () => {
       config,
       'index-name',
       undefined,
-      additionalHeaders
+      additionalHeaders,
     );
 
     await provider.provide();
     expect(Configuration).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expect.objectContaining(additionalHeaders),
-      })
+      }),
     );
   });
 });

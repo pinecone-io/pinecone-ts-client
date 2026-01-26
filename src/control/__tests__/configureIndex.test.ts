@@ -33,7 +33,7 @@ describe('configureIndex', () => {
 
   test('calls the openapi configure endpoint with pod index configuration', async () => {
     const fakeConfigure: (
-      req: ConfigureIndexOperationRequest
+      req: ConfigureIndexOperationRequest,
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(indexModel);
     const IOA = {
       configureIndex: fakeConfigure,

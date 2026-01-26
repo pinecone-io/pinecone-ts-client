@@ -30,7 +30,13 @@ when configuring an index has changed to include `deletionProtection`. The `podT
 
 ## Prerequisites
 
-The Pinecone TypeScript SDK is compatible with TypeScript >=4.1 and Node >=18.x.
+The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node >=20.x.
+
+**Note for TypeScript users:** This SDK uses Node.js built-in modules in its type definitions. If you're using TypeScript, ensure you have `@types/node` installed in your project:
+
+```
+npm install --save-dev @types/node
+```
 
 ## Installation
 
@@ -86,10 +92,7 @@ If your network setup requires you to interact with Pinecone via a proxy, you ca
 the [`undici` library](https://undici.nodejs.org/#/). Below is an example of how to
 construct an `undici` `ProxyAgent` that routes network traffic through a [`mitm` proxy server](https://mitmproxy.org/) while hitting Pinecone's `/indexes` endpoint.
 
-**Note:** The following strategy relies on Node's native `fetch` implementation, [released in Node v16 and
-stabilized in Node v21](https://nodejs.org/docs/latest/api/globals.html#fetch). If you are running Node versions
-18-21, you may experience issues stemming from the instability of the feature. There are currently no known issues
-related to proxying in Node v18+.
+**Note:** The following strategy relies on Node's native `fetch` implementation.
 
 ```typescript
 import {
@@ -789,7 +792,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 const restoreJob = await pc.describeRestoreJob(
-  '4d4c8693-10fd-4204-a57b-1e3e626fca07'
+  '4d4c8693-10fd-4204-a57b-1e3e626fca07',
 );
 console.log(restoreJob);
 //     {
@@ -1486,7 +1489,7 @@ async function generateDocEmbeddings() {
     return await client.inference.embed(
       embeddingModel,
       documents,
-      docParameters
+      docParameters,
     );
   } catch (error) {
     console.error('Error generating embeddings:', error);
@@ -1510,7 +1513,7 @@ async function generateQueryEmbeddings() {
     return await client.inference.embed(
       embeddingModel,
       userQuery,
-      queryParameters
+      queryParameters,
     );
   } catch (error) {
     console.error('Error generating embeddings:', error);
@@ -1551,7 +1554,7 @@ const myDocsStrings = [
 const response = await pc.inference.rerank(
   rerankingModel,
   myQuery,
-  myDocsStrings
+  myDocsStrings,
 );
 console.log(response);
 // {
@@ -1602,7 +1605,7 @@ const response = await pc.inference.rerank(
   rerankingModel,
   myQuery,
   myDocsObjs,
-  rerankOptions
+  rerankOptions,
 );
 console.log(response);
 // {

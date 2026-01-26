@@ -9,7 +9,7 @@ import { buildUserAgent, getFetch, queryParamsStringify } from '../../utils';
 import { createMiddlewareArray } from '../../utils/middleware';
 
 export const asstMetricsOperationsBuilder = (
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ): MetricsApi => {
   const { apiKey } = config;
   let hostUrl = 'https://prod-1-data.ke.pinecone.io/assistant';

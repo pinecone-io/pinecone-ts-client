@@ -12,16 +12,16 @@ const setupCreateIndexResponse = (
   createIndexResponse,
   describeIndexResponse,
   isCreateIndexSuccess = true,
-  isDescribeIndexSuccess = true
+  isDescribeIndexSuccess = true,
 ) => {
   const fakeCreateIndex: (
-    req: CreateIndexOperationRequest
+    req: CreateIndexOperationRequest,
   ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
         ? Promise.resolve(createIndexResponse)
-        : Promise.reject(createIndexResponse)
+        : Promise.reject(createIndexResponse),
     );
 
   // unfold describeIndexResponse
@@ -34,7 +34,7 @@ const setupCreateIndexResponse = (
     describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
         ? Promise.resolve(response)
-        : Promise.reject({ response })
+        : Promise.reject({ response }),
     );
   });
 
@@ -140,7 +140,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a non-empty string for `name` in order to create an index.'
+      'You must pass a non-empty string for `name` in order to create an index.',
     );
 
     // Missing spec
@@ -153,7 +153,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
+      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.',
     );
 
     // Missing dimension
@@ -172,7 +172,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a positive `dimension` when creating a dense index.'
+      'You must pass a positive `dimension` when creating a dense index.',
     );
   });
 
@@ -459,7 +459,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.'
+        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.',
       );
     });
   });
@@ -484,7 +484,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid read capacity mode.*Valid values are.*OnDemand.*Dedicated/i
+        /Invalid read capacity mode.*Valid values are.*OnDemand.*Dedicated/i,
       );
     });
 
@@ -510,7 +510,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid node type.*Valid values are.*b1.*t1/i
+        /Invalid node type.*Valid values are.*b1.*t1/i,
       );
     });
 
@@ -534,7 +534,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /manual is required for dedicated mode/i
+        /manual is required for dedicated mode/i,
       );
     });
 
@@ -558,7 +558,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /replicas must be 0 or a positive integer/i
+        /replicas must be 0 or a positive integer/i,
       );
     });
 
@@ -582,7 +582,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /shards must be a positive integer/i
+        /shards must be a positive integer/i,
       );
     });
 
@@ -669,7 +669,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid node type.*Valid values are.*b1.*t1/i
+        /Invalid node type.*Valid values are.*b1.*t1/i,
       );
     });
 
@@ -693,7 +693,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /manual is required for dedicated mode/i
+        /manual is required for dedicated mode/i,
       );
     });
 

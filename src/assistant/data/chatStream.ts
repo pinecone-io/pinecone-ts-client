@@ -18,10 +18,10 @@ import {
 export const chatStream = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider,
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ) => {
   return async (
-    options: ChatOptions
+    options: ChatOptions,
   ): Promise<ChatStream<StreamedChatResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -70,7 +70,7 @@ export const chatStream = (
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        chatUrl
+        chatUrl,
       );
       throw err;
     }

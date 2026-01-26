@@ -7,7 +7,7 @@ const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertVectorsRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { upsertVectors: fakeUpsert } as VectorOperationsApi;
   const VectorProvider = {
@@ -45,7 +45,7 @@ describe('upsert', () => {
       await cmd.run([]);
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 record to upsert.'
+      'Must pass in at least 1 record to upsert.',
     );
   });
 
@@ -58,7 +58,7 @@ describe('upsert', () => {
       await cmd.run([{ values: [1, 2, 3] }]);
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Every record must include an `id` property in order to upsert.'
+      'Every record must include an `id` property in order to upsert.',
     );
   });
 
@@ -69,7 +69,7 @@ describe('upsert', () => {
       await cmd.run([{ id: '1' }]);
     };
     expect(toThrow()).rejects.toThrowError(
-      'Every record must include either `values` or `sparseValues` in order to upsert.'
+      'Every record must include either `values` or `sparseValues` in order to upsert.',
     );
   });
 });

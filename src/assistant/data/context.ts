@@ -39,7 +39,7 @@ import { PineconeArgumentError } from '../../errors';
  */
 export const context = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ContextOptions): Promise<ContextModel> => {
     validateContextOptions(options);
@@ -62,13 +62,13 @@ export const context = (
 const validateContextOptions = (options: ContextOptions) => {
   if (!options || (!options.query && !options.messages)) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.',
     );
   }
 };
 
 const toMessageModel = (
-  messages?: MessagesModel
+  messages?: MessagesModel,
 ): MessageModel[] | undefined => {
   if (!messages) {
     return undefined;

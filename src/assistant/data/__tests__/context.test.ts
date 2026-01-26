@@ -9,7 +9,7 @@ import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
 const setupApiProvider = () => {
   const fakeContextAssistant: (
-    req: ContextAssistantRequest
+    req: ContextAssistantRequest,
   ) => Promise<ContextModel> = jest
     .fn()
     .mockImplementation(() => Promise.resolve({}));
@@ -61,7 +61,7 @@ describe('contextClosed', () => {
     const contextFn = context('test-assistant', asstOperationsProvider);
 
     await expect(contextFn({ query: '' })).rejects.toThrow(
-      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.',
     );
   });
 

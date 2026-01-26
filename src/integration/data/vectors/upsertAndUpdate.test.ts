@@ -96,12 +96,12 @@ beforeAll(async () => {
     waitUntilRecordsReady(
       srvrlssIndexSparse,
       globalNamespaceOne,
-      sparseRecordIds
+      sparseRecordIds,
     ),
     waitUntilRecordsReady(
       srvrlssIndexDense,
       globalNamespaceOne,
-      denseRecordIds
+      denseRecordIds,
     ),
   ]);
 });
@@ -132,7 +132,7 @@ describe('update', () => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].values).toEqual(newValues);
           expect(result.records[recordId].metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
 
@@ -155,7 +155,7 @@ describe('update', () => {
           const record = Object.values(result.records)[0];
           expect(record).toBeDefined();
           expect(record.metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
   });
@@ -183,7 +183,7 @@ describe('update', () => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].sparseValues).toEqual(sparseValues);
           expect(result.records[recordId].metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
 
@@ -206,7 +206,7 @@ describe('update', () => {
           const record = Object.values(result.records)[0];
           expect(record).toBeDefined();
           expect(record.metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
   });

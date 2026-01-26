@@ -122,13 +122,13 @@ export class SearchRecordsCommand {
   validator = (options: SearchRecordsOptions) => {
     if (!options.query) {
       throw new PineconeArgumentError(
-        'You must pass a `query` object to search.'
+        'You must pass a `query` object to search.',
       );
     }
   };
 
   async run(
-    searchOptions: SearchRecordsOptions
+    searchOptions: SearchRecordsOptions,
   ): Promise<SearchRecordsResponse> {
     this.validator(searchOptions);
     const api = await this.apiProvider.provide();

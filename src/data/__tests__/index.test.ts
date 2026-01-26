@@ -36,14 +36,14 @@ describe('Index', () => {
           host: indexHostUrl,
           additionalHeaders,
         },
-        config
+        config,
       );
       expect(VectorOperationsProvider).toHaveBeenCalledTimes(1);
       expect(VectorOperationsProvider).toHaveBeenCalledWith(
         config,
         'index-name',
         indexHostUrl,
-        additionalHeaders
+        additionalHeaders,
       );
     });
   });
@@ -72,7 +72,7 @@ describe('Index', () => {
     test('can be used without generic types param', async () => {
       const index = new Index(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
 
       // You can use the index class without passing the generic type for metadata,
@@ -92,7 +92,7 @@ describe('Index', () => {
     test('preserves metadata typing through passing namespace in options', async () => {
       const index = new Index<MovieMetadata>(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
 
       await index.update({
@@ -105,7 +105,7 @@ describe('Index', () => {
     test('upsert: has type errors when passing malformed metadata', async () => {
       const index = new Index<MovieMetadata>(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
       expect(UpsertCommand).toHaveBeenCalledTimes(1);
 
@@ -145,7 +145,7 @@ describe('Index', () => {
     test('fetch: response is typed with generic metadata type', async () => {
       const index = new Index<MovieMetadata>(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
       expect(FetchCommand).toHaveBeenCalledTimes(1);
 
@@ -166,7 +166,7 @@ describe('Index', () => {
     test('query: returns typed results', async () => {
       const index = new Index<MovieMetadata>(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
       expect(QueryCommand).toHaveBeenCalledTimes(1);
 
@@ -191,7 +191,7 @@ describe('Index', () => {
     test('update: has typed arguments', async () => {
       const index = new Index<MovieMetadata>(
         { name: 'index-name', namespace: 'namespace' },
-        config
+        config,
       );
       expect(UpdateCommand).toHaveBeenCalledTimes(1);
 

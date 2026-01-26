@@ -14,7 +14,7 @@ import type { PineconeConfiguration } from '../data/vectors/types';
 import type { ConfigurationParameters as IndexOperationsApiConfigurationParameters } from '../pinecone-generated-ts-fetch/db_control';
 
 export const indexOperationsBuilder = (
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ): ManageIndexesApi => {
   const { apiKey } = config;
   const controllerPath =

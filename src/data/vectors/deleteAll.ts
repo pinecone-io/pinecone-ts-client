@@ -3,7 +3,7 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_dat
 
 export const deleteAll = (
   apiProvider: VectorOperationsProvider,
-  namespace: string
+  namespace: string,
 ) => {
   return async (): Promise<void> => {
     const api = await apiProvider.provide();

@@ -38,7 +38,7 @@ describe(`chat validation tests`, () => {
       };
 
       expect(() => messagesValidation(input)).toThrow(
-        'Message object must have exactly two keys: "role" and "content"'
+        'Message object must have exactly two keys: "role" and "content"',
       );
     });
 
@@ -87,17 +87,17 @@ describe(`chat validation tests`, () => {
       const chatFn = chat('test-assistant', AsstDataOperationsProvider);
       const chatCompletionFn = chatCompletion(
         'test-assistant',
-        AsstDataOperationsProvider
+        AsstDataOperationsProvider,
       );
 
       const input = {} as ChatOptions;
       const inputCompletion = {} as ChatOptions;
 
       await expect(chatFn(input)).rejects.toThrow(
-        'You must pass an object with required properties (`messages`) to chat with an assistant.'
+        'You must pass an object with required properties (`messages`) to chat with an assistant.',
       );
       await expect(chatCompletionFn(inputCompletion)).rejects.toThrow(
-        'You must pass an object with required properties (`messages`) to chat with an assistant.'
+        'You must pass an object with required properties (`messages`) to chat with an assistant.',
       );
     });
   });

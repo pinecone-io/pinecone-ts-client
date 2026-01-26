@@ -16,7 +16,7 @@ export class ListImportsCommand {
 
   async run(
     limit?: number,
-    paginationToken?: string
+    paginationToken?: string,
   ): Promise<ListImportsResponse> {
     const req: ListBulkImportsRequest = {
       xPineconeApiVersion: X_PINECONE_API_VERSION,

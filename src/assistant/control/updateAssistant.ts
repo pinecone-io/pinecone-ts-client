@@ -8,11 +8,11 @@ import { PineconeArgumentError } from '../../errors';
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
     name: string,
-    options: UpdateAssistantOptions
+    options: UpdateAssistantOptions,
   ): Promise<UpdateAssistantResponse> => {
     if (!name) {
       throw new PineconeArgumentError(
-        'You must pass the name of an assistant to update.'
+        'You must pass the name of an assistant to update.',
       );
     }
 
@@ -36,7 +36,7 @@ export const updateAssistant = (api: ManageAssistantsControlApi) => {
 const validateUpdateAssistantOptions = (options: UpdateAssistantOptions) => {
   if (!options) {
     throw new PineconeArgumentError(
-      'You must pass an object with at least one property to update an assistant.'
+      'You must pass an object with at least one property to update an assistant.',
     );
   }
 };

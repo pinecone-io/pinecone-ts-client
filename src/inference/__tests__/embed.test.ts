@@ -10,7 +10,7 @@ const setupEmbedResponse = (isSuccess) => {
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccess ? Promise.resolve({}) : Promise.reject({})
+        isSuccess ? Promise.resolve({}) : Promise.reject({}),
       );
   const IA = { embed: fakeEmbed } as InferenceApi;
   return IA;
@@ -28,7 +28,7 @@ describe('embed', () => {
     expect(IA.embed).toHaveBeenCalledWith(
       expect.objectContaining({
         embedRequest: expect.objectContaining({ inputs: expectedInputs }),
-      })
+      }),
     );
   });
 });

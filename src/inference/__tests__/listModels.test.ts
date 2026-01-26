@@ -10,7 +10,7 @@ const setupListModelsResponse = (response = {}, isSuccessful = true) => {
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccessful ? Promise.resolve(response) : Promise.reject(response)
+        isSuccessful ? Promise.resolve(response) : Promise.reject(response),
       );
 
   const IA = { listModels: fakeListModels } as InferenceApi;

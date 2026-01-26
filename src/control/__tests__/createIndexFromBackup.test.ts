@@ -9,16 +9,16 @@ import { PineconeArgumentError } from '../../errors';
 
 const setupCreateIndexFromBackupResponse = (
   createIndexFromBackupResponse = {} as BackupModel,
-  isCreateIndexFromBackupSuccess = true
+  isCreateIndexFromBackupSuccess = true,
 ) => {
   const fakeCreateIndexFromBackup: (
-    req: CreateIndexFromBackupOperationRequest
+    req: CreateIndexFromBackupOperationRequest,
   ) => Promise<CreateIndexFromBackupResponse> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexFromBackupSuccess
         ? Promise.resolve(createIndexFromBackupResponse)
-        : Promise.reject(createIndexFromBackupResponse)
+        : Promise.reject(createIndexFromBackupResponse),
     );
 
   const MIA = {
@@ -55,21 +55,21 @@ describe('createIndexFromBackup', () => {
       createIndexFromBackup(MIA)({
         backupId: '',
         name: 'my-restored-index',
-      })
+      }),
     ).rejects.toThrow(
       new PineconeArgumentError(
-        'You must pass a non-empty string for `backupId` in order to create an index from backup'
-      )
+        'You must pass a non-empty string for `backupId` in order to create an index from backup',
+      ),
     );
     await expect(
       createIndexFromBackup(MIA)({
         backupId: '123-123-123-123',
         name: '',
-      })
+      }),
     ).rejects.toThrow(
       new PineconeArgumentError(
-        'You must pass a non-empty string for `name` in order to create an index from backup'
-      )
+        'You must pass a non-empty string for `name` in order to create an index from backup',
+      ),
     );
   });
 });

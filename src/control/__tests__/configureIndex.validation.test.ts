@@ -16,7 +16,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` to configureIndex.'
+        'You must pass a non-empty string for `indexName` to configureIndex.',
       );
     });
 
@@ -26,7 +26,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` to configureIndex.'
+        'You must pass a non-empty string for `indexName` to configureIndex.',
       );
     });
 
@@ -36,7 +36,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrowSpec).rejects.toThrowError(
-        'You must pass at least one configuration option to configureIndex.'
+        'You must pass at least one configuration option to configureIndex.',
       );
     });
 
@@ -45,7 +45,7 @@ describe('configureIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass at least one configuration option to configureIndex.'
+        'You must pass at least one configuration option to configureIndex.',
       );
     });
   });

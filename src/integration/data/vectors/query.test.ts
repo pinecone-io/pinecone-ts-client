@@ -37,7 +37,7 @@ describe('query tests on serverless index', () => {
             if (results.usage) {
               expect(results.usage.readUnits).toBeDefined();
             }
-          }
+          },
         );
       }
     }
@@ -57,7 +57,7 @@ describe('query tests on serverless index', () => {
           if (results.usage) {
             expect(results.usage.readUnits).toBeDefined();
           }
-        }
+        },
       );
     }
   });
@@ -69,7 +69,7 @@ describe('query tests on serverless index', () => {
       (results: QueryResponse) => {
         expect(results.matches).toBeDefined();
         expect(results.matches?.length).toEqual(0);
-      }
+      },
     );
   });
 
@@ -89,7 +89,7 @@ describe('query tests on serverless index', () => {
           expect(results.usage.readUnits).toBeDefined();
         }
       },
-      240000
+      240000,
     );
   });
 
@@ -112,7 +112,7 @@ describe('query tests on serverless index', () => {
           expect(results.usage.readUnits).toBeDefined();
         }
       },
-      240000
+      240000,
     );
   });
 });

@@ -47,20 +47,20 @@ describe('namespaces operations', () => {
         expect(response.namespaces).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ name: namespaceOne }),
-          ])
+          ]),
         );
         expect(response.namespaces).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ name: namespaceTwo }),
-          ])
+          ]),
         );
         expect(response.namespaces).not.toEqual(
           expect.arrayContaining([
             expect.objectContaining({ name: namespaceThree }),
-          ])
+          ]),
         );
       },
-      240000
+      240000,
     );
   });
 
@@ -85,7 +85,7 @@ describe('namespaces operations', () => {
       expect.arrayContaining([
         expect.objectContaining({ name: namespaceOne }),
         expect.objectContaining({ name: namespaceTwo }),
-      ])
+      ]),
     );
   });
 

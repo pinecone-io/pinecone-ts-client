@@ -26,7 +26,7 @@ export class BulkOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -46,12 +46,12 @@ export class BulkOperationsProvider {
     } else {
       if (!this.indexName) {
         throw new Error(
-          'Either indexName or indexHostUrl must be provided to BulkOperationsProvider'
+          'Either indexName or indexHostUrl must be provided to BulkOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.bulkOperations = this.buildBulkOperationsConfig();

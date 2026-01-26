@@ -66,7 +66,7 @@ export class Inference {
   embed(
     model: string,
     inputs: Array<string>,
-    params?: Record<string, string>
+    params?: Record<string, string>,
   ): Promise<EmbeddingsList> {
     return this._embed(model, inputs, params);
   }
@@ -166,7 +166,7 @@ export class Inference {
     model: string,
     query: string,
     documents: Array<{ [key: string]: string } | string>,
-    options?: RerankOptions
+    options?: RerankOptions,
   ): Promise<RerankResult> {
     return this._rerank(model, query, documents, options);
   }

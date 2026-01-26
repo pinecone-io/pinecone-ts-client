@@ -73,8 +73,9 @@ export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 /**
  * A {@link PineconeRecord} with a similarity score.
  */
-export interface ScoredPineconeRecord<T extends RecordMetadata = RecordMetadata>
-  extends PineconeRecord<T> {
+export interface ScoredPineconeRecord<
+  T extends RecordMetadata = RecordMetadata,
+> extends PineconeRecord<T> {
   /**
    * The similarity score of the record. The interpretation of this score will be different
    * depending on the distance metric configured on the index.
@@ -113,38 +114,38 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   validator = (options: QueryOptions) => {
     if (!options) {
       throw new PineconeArgumentError(
-        'You must enter a query configuration object to query the index.'
+        'You must enter a query configuration object to query the index.',
       );
     }
     if (options && !options.topK) {
       throw new PineconeArgumentError(
-        'You must enter an integer for the `topK` search results to be returned.'
+        'You must enter an integer for the `topK` search results to be returned.',
       );
     }
     if (options && options.topK && options.topK < 1) {
       throw new PineconeArgumentError(
-        '`topK` property must be greater than 0.'
+        '`topK` property must be greater than 0.',
       );
     }
     if (options && options.filter) {
       const keys = Object.keys(options.filter);
       if (keys.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter a `filter` object with at least one key-value pair.'
+          'You must enter a `filter` object with at least one key-value pair.',
         );
       }
     }
     if ('id' in options) {
       if (!options.id) {
         throw new PineconeArgumentError(
-          'You must enter non-empty string for `id` to query by record ID.'
+          'You must enter non-empty string for `id` to query by record ID.',
         );
       }
     }
     if ('vector' in options) {
       if (options.vector.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter an array of `RecordValues` in order to query by vector values.'
+          'You must enter an array of `RecordValues` in order to query by vector values.',
         );
       }
     }
@@ -155,7 +156,7 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
       ) {
         throw new PineconeArgumentError(
           'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
-            ' sparse vector values.'
+            ' sparse vector values.',
         );
       }
     }

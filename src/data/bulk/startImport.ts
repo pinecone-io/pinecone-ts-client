@@ -19,11 +19,11 @@ export class StartImportCommand {
   async run(
     uri: string,
     errorMode?: string | undefined,
-    integrationId?: string | undefined
+    integrationId?: string | undefined,
   ): Promise<StartImportResponse> {
     if (!uri) {
       throw new PineconeArgumentError(
-        '`uri` field is required and must start with the scheme of a supported storage provider.'
+        '`uri` field is required and must start with the scheme of a supported storage provider.',
       );
     }
 
@@ -35,7 +35,7 @@ export class StartImportCommand {
         errorMode.toLowerCase() !== 'abort'
       ) {
         throw new PineconeArgumentError(
-          '`errorMode` must be one of "Continue" or "Abort"'
+          '`errorMode` must be one of "Continue" or "Abort"',
         );
       }
       if (errorMode?.toLowerCase() == 'abort') {

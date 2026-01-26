@@ -9,7 +9,7 @@ import {
 describe('describeRestoreJob', () => {
   const setupSuccessResponse = (responseData) => {
     const fakeDescribeRestoreJob: (
-      req: DescribeRestoreJobRequest
+      req: DescribeRestoreJobRequest,
     ) => Promise<RestoreJobModel> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
@@ -27,7 +27,7 @@ describe('describeRestoreJob', () => {
     expect(MIA.describeRestoreJob).toHaveBeenCalledWith(
       expect.objectContaining({
         jobId: 'restore-job-id',
-      })
+      }),
     );
   });
 
@@ -35,10 +35,10 @@ describe('describeRestoreJob', () => {
     const MIA = setupSuccessResponse('');
     // @ts-ignore
     await expect(describeRestoreJob(MIA)()).rejects.toThrow(
-      'You must pass a non-empty string for `restoreJobId` in order to describe a restore job'
+      'You must pass a non-empty string for `restoreJobId` in order to describe a restore job',
     );
     await expect(describeRestoreJob(MIA)('')).rejects.toThrow(
-      PineconeArgumentError
+      PineconeArgumentError,
     );
   });
 });

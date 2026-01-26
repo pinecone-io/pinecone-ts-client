@@ -66,7 +66,7 @@ const isRetryableError = (error: any): boolean => {
   if (error?.name) {
     if (
       ['PineconeUnavailableError', 'PineconeInternalServerError'].includes(
-        error.name
+        error.name,
       )
     ) {
       return true;
@@ -111,7 +111,7 @@ const calculateRetryDelay = (
   attempt: number,
   baseDelay: number,
   maxDelay: number,
-  jitterFactor: number
+  jitterFactor: number,
 ): number => {
   let delayMs = baseDelay * 2 ** attempt; // Exponential backoff
   const jitter = delayMs * jitterFactor * (Math.random() - 0.5);
@@ -147,7 +147,7 @@ export const getFetch = (config: PineconeConfiguration) => {
  * Gets the base fetch implementation without retry wrapping.
  */
 function getBaseFetch(
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ): (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> {
   if (config.fetchApi) {
     // User-provided fetch implementation, if any, takes precedence.
@@ -161,7 +161,7 @@ function getBaseFetch(
   } else {
     // If no fetch implementation is found, throw an error.
     throw new PineconeConfigurationError(
-      'No global or user-provided fetch implementations found. Please supply a fetch implementation.'
+      'No global or user-provided fetch implementations found. Please supply a fetch implementation.',
     );
   }
 }
@@ -182,7 +182,7 @@ function getBaseFetch(
  */
 function createRetryingFetch(
   fetchFn: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-  config: RetryConfig = {}
+  config: RetryConfig = {},
 ): (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> {
   const maxRetries = Math.min(config.maxRetries ?? 3, 10);
   const baseDelay = config.baseDelay ?? 200;
@@ -191,7 +191,7 @@ function createRetryingFetch(
 
   return async (
     url: RequestInfo | URL,
-    init?: RequestInit
+    init?: RequestInit,
   ): Promise<Response> => {
     let attempt = 1; // Start at 1 for human-readable attempt numbers
 
@@ -221,7 +221,7 @@ function createRetryingFetch(
         // Wait before retrying (exponential backoff with jitter)
         // Use attempt - 1 for delay calculation since first retry should have baseDelay
         await delay(
-          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor)
+          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor),
         );
 
         attempt++;
@@ -245,7 +245,7 @@ function createRetryingFetch(
         // Wait before retrying
         // Use attempt - 1 for delay calculation since first retry should have baseDelay
         await delay(
-          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor)
+          calculateRetryDelay(attempt - 1, baseDelay, maxDelay, jitterFactor),
         );
 
         attempt++;

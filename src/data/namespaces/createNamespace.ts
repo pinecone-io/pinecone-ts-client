@@ -16,13 +16,13 @@ export interface CreateNamespaceOptions {
 
 export const createNamespace = (apiProvider: NamespaceOperationsProvider) => {
   return async (
-    options: CreateNamespaceOptions
+    options: CreateNamespaceOptions,
   ): Promise<NamespaceDescription> => {
     const api = await apiProvider.provide();
 
     if (!options || !options.name) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `name` in order to create a namespace.'
+        'You must pass a non-empty string for `name` in order to create a namespace.',
       );
     }
 

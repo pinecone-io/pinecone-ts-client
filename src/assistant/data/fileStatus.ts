@@ -1,7 +1,7 @@
 import type { AssistantFileStatusEnum } from './types';
 
 export const mapAssistantFileStatus = (
-  status?: string
+  status?: string,
 ): AssistantFileStatusEnum | undefined => {
   if (!status) {
     return undefined;

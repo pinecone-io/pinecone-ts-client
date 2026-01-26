@@ -14,7 +14,7 @@ export const deleteCollection = (api: ManageIndexesApi) => {
   return async (collectionName: DeleteCollectionOptions): Promise<void> => {
     if (!collectionName) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `collectionName`'
+        'You must pass a non-empty string for `collectionName`',
       );
     }
 

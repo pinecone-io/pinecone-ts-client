@@ -8,7 +8,7 @@ export const listNamespaces = (apiProvider: NamespaceOperationsProvider) => {
   return async (
     limit?: number,
     paginationToken?: string,
-    prefix?: string
+    prefix?: string,
   ): Promise<ListNamespacesResponse> => {
     const api = await apiProvider.provide();
 

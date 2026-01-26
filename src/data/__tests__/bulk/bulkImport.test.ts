@@ -18,31 +18,31 @@ import { PineconeArgumentError } from '../../../errors';
 
 const setupResponse = (response, isSuccess) => {
   const fakeStartImport: (
-    req: StartBulkImportRequest
+    req: StartBulkImportRequest,
   ) => Promise<StartImportResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeListImports: (
-    req: ListBulkImportsRequest
+    req: ListBulkImportsRequest,
   ) => Promise<ListImportsResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeDescribeImport: (
-    req: DescribeBulkImportRequest
+    req: DescribeBulkImportRequest,
   ) => Promise<ImportModel> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeCancelImport: (req: CancelBulkImportRequest) => Promise<object> =
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccess ? Promise.resolve(response) : Promise.reject(response)
+        isSuccess ? Promise.resolve(response) : Promise.reject(response),
       );
 
   const BOA = {
@@ -60,11 +60,11 @@ const setupResponse = (response, isSuccess) => {
   const listCmd = new ListImportsCommand(BulkOperationsProvider, 'namespace');
   const describeCmd = new DescribeImportCommand(
     BulkOperationsProvider,
-    'namespace'
+    'namespace',
   );
   const cancelCmd = new CancelImportCommand(
     BulkOperationsProvider,
-    'namespace'
+    'namespace',
   );
 
   return {
@@ -97,7 +97,7 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'continue' },
         },
-      })
+      }),
     );
   });
 
@@ -116,7 +116,7 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'abort' },
         },
-      })
+      }),
     );
   });
 
@@ -127,7 +127,7 @@ describe('StartImportCommand', () => {
     const errorMode = 'invalid';
 
     await expect(startCmd.run(uri, errorMode)).rejects.toThrow(
-      PineconeArgumentError
+      PineconeArgumentError,
     );
   });
 
@@ -145,7 +145,7 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'continue' },
         },
-      })
+      }),
     );
   });
 
@@ -154,7 +154,7 @@ describe('StartImportCommand', () => {
 
     await expect(startCmd.run('')).rejects.toThrow(PineconeArgumentError);
     await expect(startCmd.run('')).rejects.toThrow(
-      '`uri` field is required and must start with the scheme of a supported storage provider.'
+      '`uri` field is required and must start with the scheme of a supported storage provider.',
     );
   });
 
@@ -169,14 +169,14 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         limit,
-      })
+      }),
     );
   });
 
   test('should call describeImport with correct request', async () => {
     const { describeCmd, fakeDescribeImport } = setupResponse(
       { id: '1' },
-      true
+      true,
     );
 
     const importId = 'import-id';
@@ -187,7 +187,7 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         id: importId,
-      })
+      }),
     );
   });
 
@@ -202,7 +202,7 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         id: importId,
-      })
+      }),
     );
   });
 });

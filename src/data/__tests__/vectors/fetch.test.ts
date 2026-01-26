@@ -10,7 +10,7 @@ const setupResponse = (response, isSuccess) => {
   const fakeFetch: (req: FetchVectorsRequest) => Promise<FetchResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { fetchVectors: fakeFetch } as VectorOperationsApi;
   const VectorProvider = {
@@ -42,7 +42,7 @@ describe('fetch', () => {
       await cmd.run([]);
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 recordID.'
+      'Must pass in at least 1 recordID.',
     );
   });
 });

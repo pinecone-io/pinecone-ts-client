@@ -25,7 +25,7 @@ async function request(path: string, options: RequestOptions): Promise<any> {
 
     if (!response.ok) {
       throw new Error(
-        `Request to ${url} failed with status ${response.status}: ${response.statusText}`
+        `Request to ${url} failed with status ${response.status}: ${response.statusText}`,
       );
     }
 
@@ -35,7 +35,7 @@ async function request(path: string, options: RequestOptions): Promise<any> {
       return JSON.parse(text);
     } catch (error) {
       throw new Error(
-        `Failed to parse JSON response from ${url}: ${error.message}`
+        `Failed to parse JSON response from ${url}: ${error.message}`,
       );
     }
   } catch (error) {
@@ -101,7 +101,7 @@ async function run() {
     const description = await retry(
       () => describeIndexDetails(apiKey),
       4,
-      3000
+      3000,
     );
     console.log('Index description:', description);
     console.log(`Test passed using index: ${INDEX_NAME}`);
@@ -116,7 +116,7 @@ async function run() {
 async function retry<T>(
   fn: () => Promise<T>,
   retries: number = 3,
-  delayMs: number = 2000
+  delayMs: number = 2000,
 ) {
   let attempt = 0;
   while (attempt < retries) {

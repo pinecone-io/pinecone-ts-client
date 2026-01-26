@@ -14,7 +14,7 @@ const setupRerankResponse = (response = {}, isSuccess = true) => {
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccess ? Promise.resolve(response) : Promise.reject(response)
+        isSuccess ? Promise.resolve(response) : Promise.reject(response),
       );
   const IA = { rerank: fakeRerank } as InferenceApi;
   return IA;
@@ -25,7 +25,9 @@ describe('rerank', () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
     await expect(rerankCmd(rerankModel, myQuery, [], {})).rejects.toThrow(
-      new PineconeArgumentError('You must pass at least one document to rerank')
+      new PineconeArgumentError(
+        'You must pass at least one document to rerank',
+      ),
     );
   });
 
@@ -50,7 +52,7 @@ describe('rerank', () => {
       topN: 2,
     };
     expect(IA.rerank).toHaveBeenCalledWith(
-      expect.objectContaining({ rerankRequest: expectedReq })
+      expect.objectContaining({ rerankRequest: expectedReq }),
     );
   });
 
@@ -76,7 +78,7 @@ describe('rerank', () => {
       topN: 2,
     };
     expect(IA.rerank).toHaveBeenCalledWith(
-      expect.objectContaining({ rerankRequest: expectedReq })
+      expect.objectContaining({ rerankRequest: expectedReq }),
     );
   });
 
@@ -86,9 +88,9 @@ describe('rerank', () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
     await expect(
-      rerankCmd(rerankModel, myQuery, myDocuments, {})
+      rerankCmd(rerankModel, myQuery, myDocuments, {}),
     ).rejects.toThrow(
-      new PineconeArgumentError('You must pass a query to rerank')
+      new PineconeArgumentError('You must pass a query to rerank'),
     );
   });
 
@@ -98,12 +100,12 @@ describe('rerank', () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
     await expect(
-      rerankCmd(rerankModel, myQuery, myDocuments, {})
+      rerankCmd(rerankModel, myQuery, myDocuments, {}),
     ).rejects.toThrow(
       new PineconeArgumentError(
         'You must pass the name of a supported reranking model in order to rerank' +
-          ' documents. See https://docs.pinecone.io/models for supported models.'
-      )
+          ' documents. See https://docs.pinecone.io/models for supported models.',
+      ),
     );
   });
 });

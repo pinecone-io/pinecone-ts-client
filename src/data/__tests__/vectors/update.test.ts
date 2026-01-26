@@ -7,7 +7,7 @@ const setupResponse = (response, isSuccess) => {
   const fakeUpdate: (req: UpdateVectorRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { updateVector: fakeUpdate } as VectorOperationsApi;
   const VectorProvider = {
@@ -61,7 +61,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
+      'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.',
     );
   });
 
@@ -74,7 +74,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
+      'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.',
     );
   });
 });

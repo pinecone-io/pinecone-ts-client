@@ -6,11 +6,11 @@ import { PineconeArgumentError } from '../../../errors';
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (
-    req: DescribeIndexStatsOperationRequest
+    req: DescribeIndexStatsOperationRequest,
   ) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const DPA = {
     describeIndexStats: fakeDescribeIndexStats,
@@ -68,7 +68,7 @@ describe('describeIndexStats', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      '`filter` property cannot be empty'
+      '`filter` property cannot be empty',
     );
   });
 });
