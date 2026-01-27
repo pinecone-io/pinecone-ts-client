@@ -942,4 +942,43 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   async deleteNamespace(namespace: string) {
     return await this._deleteNamespaceCommand(namespace);
   }
+
+  /**
+   * Returns an {@link Index} targeting the specified namespace.
+   * By default if no namespace is provided, all operations take place inside the default namespace `'__default__'`.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * // Create an Index client instance scoped to operate on a
+   * // single namespace
+   * const ns = pc.index('my-index').namespace('my-namespace');
+   *
+   * // Now operations against this intance only affect records in
+   * // the targeted namespace
+   * ns.upsert([
+   *   // ... records to upsert in namespace 'my-namespace'
+   * ])
+   *
+   * ns.query({
+   *   // ... query records in namespace 'my-namespace'
+   * })
+   * ```
+   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
+   *
+   * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
+   * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
+   */
+  namespace(namespace: string): Index<T> {
+    return new Index<T>(
+      {
+        name: this.target.indexName,
+        namespace,
+        host: this.target.indexHostUrl,
+      },
+      this.config,
+    );
+  }
 }

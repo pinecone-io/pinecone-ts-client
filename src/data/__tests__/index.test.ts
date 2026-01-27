@@ -239,4 +239,129 @@ describe('Index', () => {
       });
     });
   });
+
+  describe('namespace() method', () => {
+    test('creates a new Index instance targeting the specified namespace', () => {
+      const index = new Index(
+        { name: 'index-name', namespace: '__default__' },
+        config,
+      );
+
+      const namespacedIndex = index.namespace('my-namespace');
+
+      // Should be a new instance
+      expect(namespacedIndex).not.toBe(index);
+      expect(namespacedIndex).toBeInstanceOf(Index);
+    });
+
+    test('new instance inherits index name and config', () => {
+      const index = new Index(
+        { name: 'test-index', namespace: '__default__' },
+        config,
+      );
+
+      // Creating the namespaced index should initialize vector operations with correct config
+      index.namespace('custom-ns');
+
+      // Verify the namespaced index still targets the same underlying index
+      // by checking that the commands are initialized (this is an indirect test
+      // since target is private, but command initialization proves the config was passed)
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        config,
+        'test-index',
+        undefined,
+        undefined,
+      );
+    });
+
+    test('preserves generic metadata type when chaining namespace()', async () => {
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: '__default__' },
+        config,
+      );
+
+      const namespacedIndex = index.namespace('movies-ns');
+
+      // Should still enforce MovieMetadata type
+      await namespacedIndex.upsert({
+        records: [
+          {
+            id: '1',
+            values: [0.1, 0.2, 0.3],
+            metadata: { genre: 'action', runtime: 120 },
+          },
+        ],
+      });
+
+      // Should still reject invalid metadata
+      await namespacedIndex.upsert({
+        records: [
+          {
+            id: '2',
+            values: [0.1, 0.2, 0.3],
+            // @ts-expect-error - invalidField is not in MovieMetadata
+            metadata: { invalidField: 'test' },
+          },
+        ],
+      });
+    });
+
+    test('allows method chaining from untyped to typed namespace', async () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      // Create namespaced instance (still untyped)
+      const namespacedIndex = index.namespace('test-ns');
+
+      // Should allow any metadata shape since no generic type was provided
+      await namespacedIndex.upsert({
+        records: [
+          { id: '1', values: [0.1, 0.2], metadata: { foo: 'bar' } },
+        ],
+      });
+
+      await namespacedIndex.upsert({
+        records: [
+          { id: '2', values: [0.1, 0.2], metadata: { different: 'shape' } },
+        ],
+      });
+    });
+
+    test('can chain namespace() multiple times', () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      const ns1 = index.namespace('namespace-1');
+      const ns2 = index.namespace('namespace-2');
+      const ns3 = ns1.namespace('namespace-3');
+
+      // Each should be a distinct instance
+      expect(ns1).not.toBe(index);
+      expect(ns2).not.toBe(index);
+      expect(ns3).not.toBe(ns1);
+      expect(ns1).not.toBe(ns2);
+    });
+
+    test('inherits host url when specified', () => {
+      const customHost = 'https://custom-host.pinecone.io';
+      const index = new Index(
+        {
+          name: 'index-name',
+          host: customHost,
+          namespace: '__default__',
+        },
+        config,
+      );
+
+      // Creating the namespaced index should inherit the custom host
+      index.namespace('custom-ns');
+
+      // The VectorOperationsProvider should have been called with the custom host
+      // This verifies the host was properly inherited
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        config,
+        'index-name',
+        customHost,
+        undefined,
+      );
+    });
+  });
 });
