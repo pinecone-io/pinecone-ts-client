@@ -297,9 +297,8 @@ export class Pinecone {
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    if (indexModel.host) {
-      IndexHostSingleton._set(this.config, indexName, indexModel.host);
-    }
+    const host = indexModel.privateHost || indexModel.host;
+    IndexHostSingleton._set(this.config, indexName, host);
 
     return Promise.resolve(indexModel);
   }
@@ -364,7 +363,8 @@ export class Pinecone {
     if (indexList.indexes && indexList.indexes.length > 0) {
       for (let i = 0; i < indexList.indexes.length; i++) {
         const index = indexList.indexes[i];
-        IndexHostSingleton._set(this.config, index.name, index.host);
+        const host = index.privateHost || index.host;
+        IndexHostSingleton._set(this.config, index.name, host);
       }
     }
 
