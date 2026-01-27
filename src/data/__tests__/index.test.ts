@@ -314,9 +314,7 @@ describe('Index', () => {
 
       // Should allow any metadata shape since no generic type was provided
       await namespacedIndex.upsert({
-        records: [
-          { id: '1', values: [0.1, 0.2], metadata: { foo: 'bar' } },
-        ],
+        records: [{ id: '1', values: [0.1, 0.2], metadata: { foo: 'bar' } }],
       });
 
       await namespacedIndex.upsert({
