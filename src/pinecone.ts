@@ -449,7 +449,7 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index({ name: 'my-index' }).upsert(records)
+   * await pc.index({ name: 'my-index' }).upsert({ records })
    * ```
    *
    * @example
@@ -1157,20 +1157,22 @@ export class Pinecone {
    * const index = pc.index<MovieMetadata>({ name: 'test-index' });
    *
    * // Now you get type errors if upserting malformed metadata
-   * await index.upsert([{
-   *   id: '1234',
-   *   values: [
-   *     .... // embedding values
-   *   ],
-   *   metadata: {
-   *     genre: 'Gone with the Wind',
-   *     runtime: 238,
-   *     genre: 'drama',
+   * await index.upsert({
+   *   records: [{
+   *     id: '1234',
+   *     values: [
+   *       .... // embedding values
+   *     ],
+   *     metadata: {
+   *       title: 'Gone with the Wind',
+   *       runtime: 238,
+   *       genre: 'drama',
    *
-   *     // @ts-expect-error because category property not in MovieMetadata
-   *     category: 'classic'
-   *   }
-   * }])
+   *       // @ts-expect-error because category property not in MovieMetadata
+   *       category: 'classic'
+   *     }
+   *   }]
+   * })
    *
    * const results = await index.query({
    *    vector: [

@@ -880,7 +880,7 @@ const pc = new Pinecone();
 const index = pc.index({ name: 'test-index' });
 
 // Now perform index operations
-await index.fetch(['1']);
+await index.fetch({ ids: ['1'] });
 ```
 
 #### Targeting by host
@@ -893,7 +893,7 @@ const pc = new Pinecone();
 const index = pc.index({ host: 'my-index-host-1532-svc.io' });
 
 // Now perform index operations against: https://my-index-host-1532-svc.io
-await index.fetch(['1']);
+await index.fetch({ ids: ['1'] });
 ```
 
 ### Targeting an index, with metadata typing
@@ -914,19 +914,21 @@ type MovieMetadata = {
 const index = pc.index<MovieMetadata>('test-index');
 
 // Now you get type errors if upserting malformed metadata
-await index.upsert([{
-        id: '1234',
-        values: [
-            .... // embedding values
+await index.upsert({
+  records: [{
+    id: '1234',
+    values: [
+      .... // embedding values
     ],
     metadata: {
-    genre: 'Gone with the Wind',
-        runtime: 238,
-        genre: 'drama',
-        // @ts-expect-error because category property not in MovieMetadata
-        category: 'classic'
-}
-}])
+      title: 'Gone with the Wind',
+      runtime: 238,
+      genre: 'drama',
+      // @ts-expect-error because category property not in MovieMetadata
+      category: 'classic'
+    }
+  }]
+})
 
 const results = await index.query({
     vector: [
@@ -955,7 +957,7 @@ const pc = new Pinecone();
 const index = pc.index({ name: 'test-index', namespace: 'ns1' });
 
 // Now perform index operations in the targeted index and namespace
-await index.fetch(['1']);
+await index.fetch({ ids: ['1'] });
 ```
 
 See [Use namespaces](https://docs.pinecone.io/guides/indexes/use-namespaces) for more information.
@@ -1018,7 +1020,7 @@ const vectors = [
 ];
 
 // Upsert the data into your index
-await index.upsert(vectors);
+await index.upsert({ records: vectors });
 ```
 
 ### Import vectors from object storage
@@ -1218,7 +1220,7 @@ const hybridRecords = [
   },
 ];
 
-await index.upsert(hybridRecords);
+await index.upsert({ records: hybridRecords });
 
 const query = 'What is the most popular red dress?';
 // ... send query to dense vector embedding model and save those values in `denseQueryVector`
@@ -1310,7 +1312,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const index = pc.index({ name: 'my-index' });
 
-const fetchResult = await index.fetch(['id-1', 'id-2']);
+const fetchResult = await index.fetch({ ids: ['id-1', 'id-2'] });
 ```
 
 ### Delete records
@@ -1324,7 +1326,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const index = pc.index({ name: 'my-index' });
 
-await index.deleteOne('id-to-delete');
+await index.deleteOne({ id: 'id-to-delete' });
 ```
 
 #### Delete many by ID
@@ -1334,7 +1336,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const index = pc.index({ name: 'my-index' });
 
-await index.deleteMany(['id-1', 'id-2', 'id-3']);
+await index.deleteMany({ ids: ['id-1', 'id-2', 'id-3'] });
 ```
 
 ### Delete many by metadata filter
@@ -1346,7 +1348,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const index = pc.index({ name: 'albums-database' });
 
-await index.deleteMany({ genre: 'rock' });
+await index.deleteMany({ filter: { genre: 'rock' } });
 ```
 
 #### Delete all records in a namespace
@@ -1697,7 +1699,7 @@ const records = [
 ];
 
 // Upsert the data into your index
-await namespace.upsertRecords(records);
+await namespace.upsertRecords({ records });
 ```
 
 ### Search integrated records

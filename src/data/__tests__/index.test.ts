@@ -88,7 +88,7 @@ describe('Index', () => {
       });
 
       // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
-      await index.upsert([{ id: '2', values: [0.1, 0.2], metadata: 2 }]);
+      await index.upsert({ records: [{ id: '2', values: [0.1, 0.2], metadata: 2 }] });
     });
 
     test('preserves metadata typing through passing namespace in options', async () => {

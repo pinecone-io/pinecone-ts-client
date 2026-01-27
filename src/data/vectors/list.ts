@@ -15,9 +15,7 @@ export type ListOptions = {
   limit?: number;
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;
-  /**
-   * The namespace to list from. If not specified, uses the namespace configured on the Index.
-   */
+  /** The namespace to list from. If not specified, uses the namespace configured on the Index. */
   namespace?: string;
 };
 

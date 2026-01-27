@@ -121,6 +121,7 @@ export type {
 export type { IndexOptions, AssistantOptions } from './types';
 export type {
   CreateNamespaceOptions,
+  DeleteAllOptions,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
@@ -136,6 +137,8 @@ export type {
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
+  UpsertOptions,
+  UpsertRecordsOptions,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,

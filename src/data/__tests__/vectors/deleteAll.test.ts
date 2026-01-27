@@ -14,4 +14,16 @@ describe('deleteAll', () => {
       xPineconeApiVersion: '2025-10',
     });
   });
+
+  test('uses namespace from options when provided', async () => {
+    const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
+
+    const deleteAllFn = deleteAll(VectorProvider, 'namespace');
+    await deleteAllFn({ namespace: 'custom-namespace' });
+
+    expect(VOA.deleteVectors).toHaveBeenCalledWith({
+      deleteRequest: { deleteAll: true, namespace: 'custom-namespace' },
+      xPineconeApiVersion: '2025-10',
+    });
+  });
 });
