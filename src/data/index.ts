@@ -977,6 +977,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
         name: this.target.indexName,
         namespace,
         host: this.target.indexHostUrl,
+        additionalHeaders: this.config.additionalHeaders,
       },
       this.config,
     );
