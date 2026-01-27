@@ -87,8 +87,9 @@ describe('Index', () => {
         ],
       });
 
-      // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
+      // Even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
       await index.upsert({
+        // @ts-expect-error - metadata must be an object, not a primitive
         records: [{ id: '2', values: [0.1, 0.2], metadata: 2 }],
       });
     });
