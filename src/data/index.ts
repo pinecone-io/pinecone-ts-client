@@ -38,7 +38,10 @@ import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
 import { createNamespace } from './namespaces/createNamespace';
 import type { CreateNamespaceOptions } from './namespaces/createNamespace';
-import { listNamespaces } from './namespaces/listNamespaces';
+import {
+  listNamespaces,
+  ListNamespacesOptions,
+} from './namespaces/listNamespaces';
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
 import { IndexOptions } from '../types';
@@ -87,6 +90,7 @@ export type {
   SearchRecordsVector,
 } from './vectors/searchRecords';
 export type { CreateNamespaceOptions } from './namespaces/createNamespace';
+export type { ListNamespacesOptions } from './namespaces/listNamespaces';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -899,12 +903,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
    * @param prefix - (Optional) Prefix of the namespaces to list. Acts as a filter to return only namespaces that start with this prefix.
    */
-  async listNamespaces(
-    limit?: number,
-    paginationToken?: string,
-    prefix?: string,
-  ) {
-    return await this._listNamespacesCommand(limit, paginationToken, prefix);
+  async listNamespaces(options?: ListNamespacesOptions) {
+    return await this._listNamespacesCommand(options);
   }
 
   /**

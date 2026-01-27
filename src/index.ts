@@ -133,6 +133,7 @@ export type {
   IndexStatsNamespaceSummary,
   IntegratedRecord,
   ListOptions,
+  ListNamespacesOptions,
   OperationUsage,
   PineconeConfiguration,
   PineconeRecord,

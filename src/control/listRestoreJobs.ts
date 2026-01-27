@@ -20,10 +20,10 @@ export interface ListRestoreJobsOptions {
 
 export const listRestoreJobs = (api: ManageIndexesApi) => {
   return async (
-    listBackupOptions: ListRestoreJobsOptions,
+    listRestoreJobsOptions: ListRestoreJobsOptions,
   ): Promise<RestoreJobList> => {
     return await api.listRestoreJobs({
-      ...listBackupOptions,
+      ...listRestoreJobsOptions,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   };
