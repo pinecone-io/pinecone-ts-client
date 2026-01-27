@@ -91,10 +91,16 @@ describe('deleteMany', () => {
   test('uses namespace from options when provided with filter', async () => {
     const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
     const deleteManyFn = deleteMany(VectorProvider, 'namespace');
-    await deleteManyFn({ filter: { genre: 'ambient' }, namespace: 'custom-namespace' });
+    await deleteManyFn({
+      filter: { genre: 'ambient' },
+      namespace: 'custom-namespace',
+    });
 
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
-      deleteRequest: { filter: { genre: 'ambient' }, namespace: 'custom-namespace' },
+      deleteRequest: {
+        filter: { genre: 'ambient' },
+        namespace: 'custom-namespace',
+      },
       xPineconeApiVersion: '2025-10',
     });
   });

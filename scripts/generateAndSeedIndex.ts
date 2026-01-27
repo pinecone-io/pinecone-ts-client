@@ -40,8 +40,14 @@ for (const envVar of ['PINECONE_API_KEY']) {
   const recordsToUpsert = generateRecords({ dimension: 5, quantity: 100 });
 
   console.time('seed-index-duration');
-  await index.upsert({ records: recordsToUpsert, namespace: 'first-namespace' });
-  await index.upsert({ records: recordsToUpsert, namespace: 'second-namespace' });
+  await index.upsert({
+    records: recordsToUpsert,
+    namespace: 'first-namespace',
+  });
+  await index.upsert({
+    records: recordsToUpsert,
+    namespace: 'second-namespace',
+  });
   console.log(
     `Index namespaces seeded in ${console.timeEnd('seed-index-duration')}ms`,
   );

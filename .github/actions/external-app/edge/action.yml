@@ -47,7 +47,7 @@ runs:
         cd ts-client-test-external-app
         npm install pinecone-database-pinecone-*.tgz
       shell: bash
-    
+
     - name: Verify installation and show package info
       run: |
         cd ts-client-test-external-app
@@ -61,20 +61,20 @@ runs:
       run: |
         cd ts-client-test-external-app
         npm install --global vercel@latest
-        
+
         # Link to existing project without deploying
         echo "Linking to Vercel project..."
         vercel link --token ${{ inputs.vercel-token }} --scope pinecone-io --yes --project ts-client-test-external-app
-        
+
         # Pull environment variables and build settings
         echo "Pulling project configuration..."
         vercel pull --yes --environment=production --token ${{ inputs.vercel-token }} --scope pinecone-io
       shell: bash
-    
+
     - name: Build locally with error handling
       run: |
         cd ts-client-test-external-app
-        
+
         # Run build locally with explicit error handling
         echo "Starting local Vercel build..."
         if ! vercel build --prod --token ${{ inputs.vercel-token }} --scope pinecone-io --debug 2>&1; then
@@ -122,10 +122,10 @@ runs:
           echo "❌ Build failed - see logs above for details"
           exit 1
         fi
-        
+
         echo "✅ Build successful!"
       shell: bash
-    
+
     - name: Deploy prebuilt output to production
       run: |
         cd ts-client-test-external-app
