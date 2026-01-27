@@ -15,11 +15,15 @@ export type ListOptions = {
   limit?: number;
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;
+  /**
+   * The namespace to list from. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 export const listPaginated = (
   apiProvider: VectorOperationsProvider,
-  namespace: string,
+  targetNamespace: string,
 ) => {
   const validator = (options: ListOptions) => {
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
@@ -33,6 +37,7 @@ export const listPaginated = (
       validator(options);
     }
 
+    const namespace = options?.namespace ?? targetNamespace;
     const listRequest: ListVectorsRequest = {
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ...options,

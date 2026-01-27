@@ -81,9 +81,11 @@ describe('Index', () => {
       await index.update({ id: '1', metadata: { baz: 'quux' } });
 
       // Same thing with upsert. You can upsert anything in metadata field without type.
-      await index.upsert([
-        { id: '2', values: [0.1, 0.2], metadata: { hello: 'world' } },
-      ]);
+      await index.upsert({
+        records: [
+          { id: '2', values: [0.1, 0.2], metadata: { hello: 'world' } },
+        ],
+      });
 
       // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
       await index.upsert([{ id: '2', values: [0.1, 0.2], metadata: 2 }]);
@@ -110,36 +112,42 @@ describe('Index', () => {
       expect(UpsertCommand).toHaveBeenCalledTimes(1);
 
       // No ts errors when upserting with proper MovieMetadata
-      await index.upsert([
-        {
-          id: '1',
-          values: [0.1, 0.1, 0.1],
-          metadata: {
-            genre: 'romance',
-            runtime: 120,
+      await index.upsert({
+        records: [
+          {
+            id: '1',
+            values: [0.1, 0.1, 0.1],
+            metadata: {
+              genre: 'romance',
+              runtime: 120,
+            },
           },
-        },
-      ]);
+        ],
+      });
 
       // No ts errors when upserting with no metadata
-      await index.upsert([
-        {
-          id: '2',
-          values: [0.1, 0.1, 0.1],
-        },
-      ]);
+      await index.upsert({
+        records: [
+          {
+            id: '2',
+            values: [0.1, 0.1, 0.1],
+          },
+        ],
+      });
 
       // ts error expected when passing metadata that doesn't match MovieMetadata
-      await index.upsert([
-        {
-          id: '3',
-          values: [0.1, 0.1, 0.1],
-          metadata: {
-            // @ts-expect-error
-            somethingElse: 'foo',
+      await index.upsert({
+        records: [
+          {
+            id: '3',
+            values: [0.1, 0.1, 0.1],
+            metadata: {
+              // @ts-expect-error
+              somethingElse: 'foo',
+            },
           },
-        },
-      ]);
+        ],
+      });
     });
 
     test('fetch: response is typed with generic metadata type', async () => {
@@ -149,7 +157,7 @@ describe('Index', () => {
       );
       expect(FetchCommand).toHaveBeenCalledTimes(1);
 
-      const response = await index.fetch(['1']);
+      const response = await index.fetch({ ids: ['1'] });
       if (response && response.records) {
         // eslint-disable-next-line
         Object.entries(response.records).forEach(([key, value]) => {

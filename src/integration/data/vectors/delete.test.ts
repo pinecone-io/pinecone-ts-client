@@ -38,7 +38,7 @@ beforeAll(async () => {
   // Seed index
   const recordsToUpsert = generateRecords({ dimension: 5, quantity: 5 });
   recordIds = recordsToUpsert.map((r) => r.id);
-  await serverlessIndex.upsert(recordsToUpsert);
+  await serverlessIndex.upsert({ records: recordsToUpsert });
 });
 
 afterAll(async () => {
@@ -54,7 +54,7 @@ describe('delete', () => {
     const deleteSpy = jest
       .spyOn(serverlessIndex, 'deleteOne')
       .mockResolvedValue(undefined);
-    await serverlessIndex.deleteOne(recordIds[0]);
+    await serverlessIndex.deleteOne({ id: recordIds[0] });
     expect(deleteSpy).toHaveBeenCalledWith(recordIds[0]);
     expect(deleteSpy).toHaveBeenCalledTimes(1);
   });

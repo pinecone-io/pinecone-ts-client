@@ -98,7 +98,7 @@ export const setup = async () => {
 
   await pc
     .index({ name: indexName, namespace: globalNamespaceOne })
-    .upsert(allRecords);
+    .upsert({ records: allRecords });
 
   // Wait for data to be indexed
   console.error('\tWaiting for data to be indexed...');

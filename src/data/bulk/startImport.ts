@@ -9,11 +9,9 @@ import { PineconeArgumentError } from '../../errors';
 
 export class StartImportCommand {
   apiProvider: BulkOperationsProvider;
-  namespace: string;
 
-  constructor(apiProvider: BulkOperationsProvider, namespace: string) {
+  constructor(apiProvider: BulkOperationsProvider) {
     this.apiProvider = apiProvider;
-    this.namespace = namespace;
   }
 
   async run(

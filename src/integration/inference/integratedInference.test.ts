@@ -78,7 +78,9 @@ describe('Integrated Inference API tests', () => {
       },
     ];
 
-    await pinecone.index({ name: indexName }).upsertRecords(upsertRecords);
+    await pinecone
+      .index({ name: indexName })
+      .upsertRecords({ records: upsertRecords });
 
     // Wait for records to become available using polling instead of fixed wait
     await assertWithRetries(

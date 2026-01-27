@@ -27,7 +27,7 @@ describe('deleteOne', () => {
     const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
 
     const deleteOneFn = deleteOne(VectorProvider, 'namespace');
-    const returned = await deleteOneFn('123');
+    const returned = await deleteOneFn({ id: '123' });
 
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
@@ -40,11 +40,22 @@ describe('deleteOne', () => {
     const { VectorProvider } = setupDeleteSuccess(undefined);
     const deleteOneFn = deleteOne(VectorProvider, 'namespace');
     const toThrow = async () => {
-      await deleteOneFn('');
+      await deleteOneFn({ id: '' });
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'You must pass a non-empty string for `options` in order to delete a record.',
+      'You must pass a non-empty string for `id` in order to delete a record.',
     );
+  });
+
+  test('Uses namespace from options when provided', async () => {
+    const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
+    const deleteOneFn = deleteOne(VectorProvider, 'namespace');
+    await deleteOneFn({ id: '123', namespace: 'custom-namespace' });
+
+    expect(VOA.deleteVectors).toHaveBeenCalledWith({
+      deleteRequest: { ids: ['123'], namespace: 'custom-namespace' },
+      xPineconeApiVersion: '2025-10',
+    });
   });
 });

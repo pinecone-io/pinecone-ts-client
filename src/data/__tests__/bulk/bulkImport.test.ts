@@ -56,16 +56,10 @@ const setupResponse = (response, isSuccess) => {
     provide: async () => BOA,
   } as BulkOperationsProvider;
 
-  const startCmd = new StartImportCommand(BulkOperationsProvider, 'namespace');
-  const listCmd = new ListImportsCommand(BulkOperationsProvider, 'namespace');
-  const describeCmd = new DescribeImportCommand(
-    BulkOperationsProvider,
-    'namespace',
-  );
-  const cancelCmd = new CancelImportCommand(
-    BulkOperationsProvider,
-    'namespace',
-  );
+  const startCmd = new StartImportCommand(BulkOperationsProvider);
+  const listCmd = new ListImportsCommand(BulkOperationsProvider);
+  const describeCmd = new DescribeImportCommand(BulkOperationsProvider);
+  const cancelCmd = new CancelImportCommand(BulkOperationsProvider);
 
   return {
     fakeStartImport,

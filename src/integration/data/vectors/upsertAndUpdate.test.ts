@@ -85,8 +85,8 @@ beforeAll(async () => {
 
   // test upserts
   await Promise.all([
-    srvrlssIndexSparse.upsert(sparseRecords),
-    srvrlssIndexDense.upsert(denseRecords),
+    srvrlssIndexSparse.upsert({ records: sparseRecords }),
+    srvrlssIndexDense.upsert({ records: denseRecords }),
   ]);
 
   sparseRecordIds = sparseRecords.map((record) => record.id);
@@ -127,7 +127,7 @@ describe('update', () => {
       });
 
       await assertWithRetries(
-        () => srvrlssIndexDense.fetch([recordId]),
+        () => srvrlssIndexDense.fetch({ ids: [recordId] }),
         (result: FetchResponse) => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].values).toEqual(newValues);
@@ -178,7 +178,7 @@ describe('update', () => {
       });
 
       await assertWithRetries(
-        () => srvrlssIndexSparse.fetch([recordId]),
+        () => srvrlssIndexSparse.fetch({ ids: [recordId] }),
         (result: FetchResponse) => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].sparseValues).toEqual(sparseValues);

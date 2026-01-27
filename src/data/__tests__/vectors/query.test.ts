@@ -144,4 +144,24 @@ describe('Query command tests', () => {
       }),
     ).rejects.toThrow(PineconeArgumentError);
   });
+
+  test('uses target namespace when namespace not provided in options', async () => {
+    const { VOA, cmd } = setupResponse({ matches: [] }, true);
+    await cmd.run({ id: 'test-id', topK: 3 });
+
+    expect(VOA.queryVectors).toHaveBeenCalledWith({
+      xPineconeApiVersion: '2025-10',
+      queryRequest: { id: 'test-id', topK: 3, namespace: 'namespace' },
+    });
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { VOA, cmd } = setupResponse({ matches: [] }, true);
+    await cmd.run({ id: 'test-id', topK: 3, namespace: 'custom-namespace' });
+
+    expect(VOA.queryVectors).toHaveBeenCalledWith({
+      xPineconeApiVersion: '2025-10',
+      queryRequest: { id: 'test-id', topK: 3, namespace: 'custom-namespace' },
+    });
+  });
 });
