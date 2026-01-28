@@ -48,19 +48,100 @@ runs:
         npm install pinecone-database-pinecone-*.tgz
       shell: bash
 
-    - name: Install Vercel CLI and (re)deploy the app
+    - name: Verify installation and show package info
+      run: |
+        cd ts-client-test-external-app
+        echo "=== Installed @pinecone-database/pinecone version ==="
+        npm list @pinecone-database/pinecone || true
+        echo "=== package.json dependencies ==="
+        cat package.json | grep -A 10 '"dependencies"' || true
+      shell: bash
+
+    - name: Install Vercel CLI and link project
       run: |
         cd ts-client-test-external-app
         npm install --global vercel@latest
-        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --yes
-        vercel pull --yes --token ${{ inputs.vercel-token }} --scope pinecone-io
-        vercel build --token ${{ inputs.vercel-token }} --scope pinecone-io
-        vercel --token ${{ inputs.vercel-token }} --scope pinecone-io --prod
+
+        # Link to existing project without deploying
+        echo "Linking to Vercel project..."
+        vercel link --token ${{ inputs.vercel-token }} --scope pinecone-io --yes --project ts-client-test-external-app
+
+        # Pull environment variables and build settings
+        echo "Pulling project configuration..."
+        vercel pull --yes --environment=production --token ${{ inputs.vercel-token }} --scope pinecone-io
+      shell: bash
+
+    - name: Build locally with error handling
+      run: |
+        cd ts-client-test-external-app
+
+        # Run build locally with explicit error handling
+        echo "Starting local Vercel build..."
+        if ! vercel build --prod --token ${{ inputs.vercel-token }} --scope pinecone-io --debug 2>&1; then
+          echo ""
+          echo "❌ ================================"
+          echo "❌ Vercel build failed!"
+          echo "❌ ================================"
+          echo ""
+          echo "Checking for build logs..."
+          
+          # Try to find and display Next.js build logs
+          if [ -f ".vercel/output/static/_logs/build.log" ]; then
+            echo ""
+            echo "=== Build Log ==="
+            cat .vercel/output/static/_logs/build.log
+          fi
+          
+          # Display any error logs in .next
+          if [ -d ".next" ]; then
+            echo ""
+            echo "=== .next directory contents ==="
+            ls -la .next/ || true
+            if [ -f ".next/trace" ]; then
+              echo ""
+              echo "=== Next.js trace ==="
+              cat .next/trace || true
+            fi
+          fi
+          
+          # Try to find TypeScript errors in build output
+          if [ -d ".vercel/output" ]; then
+            echo ""
+            echo "=== Vercel output directory ==="
+            find .vercel/output -name "*.log" -exec echo "File: {}" \; -exec cat {} \; 2>/dev/null || true
+          fi
+          
+          # Display npm logs if they exist
+          if [ -f "npm-debug.log" ]; then
+            echo ""
+            echo "=== NPM Debug Log ==="
+            cat npm-debug.log
+          fi
+          
+          echo ""
+          echo "❌ Build failed - see logs above for details"
+          exit 1
+        fi
+
+        echo "✅ Build successful!"
+      shell: bash
+
+    - name: Deploy prebuilt output to production
+      run: |
+        cd ts-client-test-external-app
+        echo "Deploying prebuilt output to production..."
+        vercel deploy --prebuilt --prod --token ${{ inputs.vercel-token }} --scope pinecone-io
       shell: bash
 
     - name: Run end-to-end tests against the deployed Vercel app with assertResponse.ts
       run: |
-        npx tsx ts-external-app-test/assertResponse.ts
+        echo "=== Running end-to-end tests ==="
+        if ! npx tsx ts-external-app-test/assertResponse.ts; then
+          echo "❌ End-to-end tests failed!"
+          echo "Deployment URL should be accessible at the Vercel preview/production URL shown above"
+          exit 1
+        fi
+        echo "✅ End-to-end tests passed!"
       env:
         PINECONE_API_KEY: ${{ inputs.PINECONE_API_KEY }}
       shell: bash

@@ -59,4 +59,22 @@ describe('fetchByMetadata', () => {
       'You must pass a non-empty object for the `filter` field in order to fetch by metadata.',
     );
   });
+
+  test('uses namespace from options when provided', async () => {
+    const { VOA, cmd } = setupResponse({ vectors: [] }, true);
+    await cmd.run({
+      filter: { genre: 'classical' },
+      namespace: 'custom-namespace',
+    });
+
+    expect(VOA.fetchVectorsByMetadata).toHaveBeenCalledWith({
+      fetchByMetadataRequest: {
+        filter: { genre: 'classical' },
+        namespace: 'custom-namespace',
+        limit: undefined,
+        paginationToken: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
 });

@@ -6,7 +6,11 @@ export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
 
 // Interface exports
-export type { RerankOptions, ListModelsOptions } from './inference';
+export type {
+  RerankOptions,
+  ListModelsOptions,
+  EmbedOptions,
+} from './inference';
 export type {
   RerankResult,
   RerankResultUsage,
@@ -121,8 +125,7 @@ export type {
 export type { IndexOptions, AssistantOptions } from './types';
 export type {
   CreateNamespaceOptions,
-  DeleteManyByFilterOptions,
-  DeleteManyByRecordIdOptions,
+  DeleteAllOptions,
   DeleteManyOptions,
   DeleteOneOptions,
   DescribeIndexStatsOptions,
@@ -134,10 +137,13 @@ export type {
   IndexStatsNamespaceSummary,
   IntegratedRecord,
   ListOptions,
+  ListNamespacesOptions,
   OperationUsage,
   PineconeConfiguration,
   PineconeRecord,
   UpdateOptions,
+  UpsertOptions,
+  UpsertRecordsOptions,
   QueryByRecordId,
   QueryByVectorValues,
   QueryOptions,
@@ -153,6 +159,7 @@ export type {
   SearchRecordsQuery,
   SearchRecordsRerank,
   SearchRecordsVector,
+  StartImportOptions,
 } from './data';
 export type {
   BackupList,

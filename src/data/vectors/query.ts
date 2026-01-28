@@ -31,6 +31,11 @@ export type QueryShared = {
    * @see [Metadata filtering](https://docs.pinecone.io/docs/metadata-filtering)
    */
   filter?: object;
+
+  /**
+   * The namespace to query. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 /**
@@ -164,17 +169,18 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     this.validator(query);
+    const namespace = query.namespace ?? this.namespace;
     const api = await this.apiProvider.provide();
     const results = await api.queryVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      queryRequest: { ...query, namespace: this.namespace },
+      queryRequest: { ...query, namespace },
     });
 
     const matches = results.matches ? results.matches : [];
 
     return {
       matches: matches as Array<ScoredPineconeRecord<T>>,
-      namespace: this.namespace,
+      namespace,
       ...(results.usage && { usage: results.usage }),
     };
   }

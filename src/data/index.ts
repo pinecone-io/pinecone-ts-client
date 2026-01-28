@@ -1,4 +1,4 @@
-import { UpsertCommand } from './vectors/upsert';
+import { UpsertCommand, UpsertOptions } from './vectors/upsert';
 import type { FetchOptions } from './vectors/fetch';
 import { FetchCommand } from './vectors/fetch';
 import {
@@ -13,7 +13,7 @@ import type { DeleteOneOptions } from './vectors/deleteOne';
 import { deleteOne } from './vectors/deleteOne';
 import type { DeleteManyOptions } from './vectors/deleteMany';
 import { deleteMany } from './vectors/deleteMany';
-import { deleteAll } from './vectors/deleteAll';
+import { deleteAll, DeleteAllOptions } from './vectors/deleteAll';
 import {
   describeIndexStats,
   DescribeIndexStatsOptions,
@@ -21,18 +21,16 @@ import {
 import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
-import { UpsertRecordsCommand } from './vectors/upsertRecords';
+import {
+  UpsertRecordsCommand,
+  UpsertRecordsOptions,
+} from './vectors/upsertRecords';
 import {
   SearchRecordsCommand,
   SearchRecordsOptions,
 } from './vectors/searchRecords';
-import type {
-  PineconeConfiguration,
-  PineconeRecord,
-  RecordMetadata,
-  IntegratedRecord,
-} from './vectors/types';
-import { StartImportCommand } from './bulk/startImport';
+import type { PineconeConfiguration, RecordMetadata } from './vectors/types';
+import { StartImportCommand, StartImportOptions } from './bulk/startImport';
 import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
@@ -40,7 +38,10 @@ import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
 import { createNamespace } from './namespaces/createNamespace';
 import type { CreateNamespaceOptions } from './namespaces/createNamespace';
-import { listNamespaces } from './namespaces/listNamespaces';
+import {
+  listNamespaces,
+  ListNamespacesOptions,
+} from './namespaces/listNamespaces';
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
 import { IndexOptions } from '../types';
@@ -57,12 +58,9 @@ export type {
   RecordMetadataValue,
   IntegratedRecord,
 } from './vectors/types';
-export type {
-  DeleteManyOptions,
-  DeleteManyByFilterOptions,
-  DeleteManyByRecordIdOptions,
-} from './vectors/deleteMany';
+export type { DeleteManyOptions } from './vectors/deleteMany';
 export type { DeleteOneOptions } from './vectors/deleteOne';
+export type { DeleteAllOptions } from './vectors/deleteAll';
 export type {
   DescribeIndexStatsOptions,
   IndexStatsDescription,
@@ -74,6 +72,8 @@ export type {
   FetchByMetadataResponse,
 } from './vectors/fetchByMetadata';
 export type { UpdateOptions } from './vectors/update';
+export type { UpsertOptions } from './vectors/upsert';
+export type { UpsertRecordsOptions } from './vectors/upsertRecords';
 export type {
   ScoredPineconeRecord,
   QueryByRecordId,
@@ -90,6 +90,8 @@ export type {
   SearchRecordsVector,
 } from './vectors/searchRecords';
 export type { CreateNamespaceOptions } from './namespaces/createNamespace';
+export type { ListNamespacesOptions } from './namespaces/listNamespaces';
+export type { StartImportOptions } from './bulk/startImport';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -122,20 +124,22 @@ export type { CreateNamespaceOptions } from './namespaces/createNamespace';
  * const index = pc.index<MovieMetadata>({ name: 'test-index' });
  *
  * // Now you get type errors if upserting malformed metadata
- * await index.upsert([{
- *   id: '1234',
- *   values: [
- *     .... // embedding values
- *   ],
- *   metadata: {
- *     genre: 'Gone with the Wind',
- *     runtime: 238,
- *     genre: 'drama',
+ * await index.upsert({
+ *   records: [{
+ *     id: '1234',
+ *     values: [
+ *       .... // embedding values
+ *     ],
+ *     metadata: {
+ *       title: 'Gone with the Wind',
+ *       runtime: 238,
+ *       genre: 'drama',
  *
- *     // @ts-expect-error because category property not in MovieMetadata
- *     category: 'classic'
- *   }
- * }])
+ *       // @ts-expect-error because category property not in MovieMetadata
+ *       category: 'classic'
+ *     }
+ *   }]
+ * })
  *
  * const results = await index.query({
  *    vector: [
@@ -300,22 +304,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       this.target.indexHostUrl,
       options.additionalHeaders,
     );
-    this._startImportCommand = new StartImportCommand(
-      bulkApiProvider,
-      this.target.namespace,
-    );
-    this._listImportsCommand = new ListImportsCommand(
-      bulkApiProvider,
-      this.target.namespace,
-    );
-    this._describeImportCommand = new DescribeImportCommand(
-      bulkApiProvider,
-      this.target.namespace,
-    );
-    this._cancelImportCommand = new CancelImportCommand(
-      bulkApiProvider,
-      this.target.namespace,
-    );
+    this._startImportCommand = new StartImportCommand(bulkApiProvider);
+    this._listImportsCommand = new ListImportsCommand(bulkApiProvider);
+    this._describeImportCommand = new DescribeImportCommand(bulkApiProvider);
+    this._cancelImportCommand = new CancelImportCommand(bulkApiProvider);
 
     // namespace operations
     const namespaceApiProvider = new NamespaceOperationsProvider(
@@ -350,26 +342,20 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * //   indexFullness: 0,
    * //   totalRecordCount: 11
    * // }
-   *
+   * // Deletes all records from the default namespace '__default__'. Records in other namespaces are not modified.
    * await index.deleteAll();
    *
-   * // Records from the default namespace '' are now deleted. Records in other namespaces are not modified.
+   * // Deletes all records from the namespace 'foo'. Records in other namespaces are not modified.
+   * await index.deleteAll({ namespace: 'foo' });
    *
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //   foo: { recordCount: 1 }
-   * //   },
-   * //   dimension: 8,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 1
-   * // }
+
    * ```
+   * @param options - Optional {@link DeleteAllOptions} for the operation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteAll() {
-    return this._deleteAll();
+  deleteAll(options?: DeleteAllOptions) {
+    return this._deleteAll(options);
   }
 
   /**
@@ -383,12 +369,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-index' });
    *
-   * await index.deleteMany(['record-1', 'record-2']);
+   * await index.deleteMany({ ids: ['record-1', 'record-2'] });
    *
    * // or
-   * await index.deleteMany({ genre: 'classical' });
+   * await index.deleteMany({ filter: { genre: 'classical' } });
    * ```
-   * @param options - An array of record id values or a filter object.
+   * @param options - The {@link DeleteManyOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
@@ -406,15 +392,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-index' });
    *
-   * await index.deleteOne('record-1');
+   * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
    * ```
-   * @param id - The id of the record to delete.
+   * @param options - The {@link DeleteOneOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
    */
-  deleteOne(id: DeleteOneOptions) {
-    return this._deleteOne(id);
+  deleteOne(options: DeleteOneOptions) {
+    return this._deleteOne(options);
   }
 
   /**
@@ -501,22 +487,34 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-index' });
    *
-   * await index.upsert([{
-   *  id: 'record-1',
-   *  values: [0.176, 0.345, 0.263],
-   * },{
-   *  id: 'record-2',
-   *  values: [0.176, 0.345, 0.263],
-   * }])
+   * // Upsert to default namespace
+   * await index.upsert({
+   *   records: [{
+   *     id: 'record-1',
+   *     values: [0.176, 0.345, 0.263],
+   *   },{
+   *     id: 'record-2',
+   *     values: [0.176, 0.345, 0.263],
+   *   }]
+   * })
+   *
+   * // Upsert to a different namespace
+   * await index.upsert({
+   *   records: [{
+   *     id: 'record-3',
+   *     values: [0.176, 0.345, 0.263],
+   *   }],
+   *   namespace: 'my-namespace'
+   * })
    * ```
    *
-   * @param data - An array of {@link PineconeRecord} objects to upsert.
+   * @param options - The {@link UpsertOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the upsert is completed.
    */
-  async upsert(data: Array<PineconeRecord<T>>) {
-    return await this._upsertCommand.run(data);
+  async upsert(options: UpsertOptions<T>) {
+    return await this._upsertCommand.run(options);
   }
 
   /**
@@ -528,7 +526,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-index' });
    *
-   * await index.fetch(['record-1', 'record-2']);
+   * // Fetch from default namespace
+   * await index.fetch({ ids: ['record-1', 'record-2'] });
+   *
+   * // Override namespace for this operation
+   * await index.fetch({ ids: ['record-1', 'record-2'], namespace: 'my-namespace' });
    * ```
    * @param options - The {@link FetchOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -571,10 +573,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-index' });
    *
+   * // Query by id
    * await index.query({ topK: 3, id: 'record-1'});
    *
-   * // or
+   * // Query by vector
    * await index.query({ topK: 3, vector: [0.176, 0.345, 0.263] });
+   *
+   * // Query a different namespace
+   * await index.query({ topK: 3, id: 'record-1', namespace: 'custom-namespace' });
    * ```
    *
    * @param options - The {@link QueryOptions} for the operation.
@@ -620,65 +626,67 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * const namespace = pc.index({ name: 'integrated-index', namespace: 'my-namespace' });
    *
-   * await namespace.upsertRecords([
-   *   {
-   *     id: 'rec1',
-   *     chunk_text:
-   *       "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
-   *     category: 'product',
-   *   },
-   *   {
-   *     id: 'rec2',
-   *     chunk_text:
-   *       'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
-   *     category: 'nutrition',
-   *   },
-   *   {
-   *     id: 'rec3',
-   *     chunk_text:
-   *       'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
-   *     category: 'cultivation',
-   *   },
-   *   {
-   *     id: 'rec4',
-   *     chunk_text:
-   *       'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
-   *     category: 'product',
-   *   },
-   *   {
-   *     id: 'rec5',
-   *     chunk_text:
-   *       'Apple went public in 1980, making history with one of the largest IPOs at that time.',
-   *     category: 'milestone',
-   *   },
-   *   {
-   *     id: 'rec6',
-   *     chunk_text:
-   *       'Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases.',
-   *     category: 'nutrition',
-   *   },
-   *   {
-   *     id: 'rec7',
-   *     chunk_text:
-   *       "Known for its design-forward products, Apple's branding and market strategy have greatly influenced the technology sector and popularized minimalist design worldwide.",
-   *     category: 'influence',
-   *   },
-   *   {
-   *     id: 'rec8',
-   *     chunk_text:
-   *       'The high fiber content in apples can also help regulate blood sugar levels, making them a favorable snack for people with diabetes.',
-   *     category: 'nutrition',
-   *   },
-   * ]);
+   * await namespace.upsertRecords({
+   *   records: [
+   *     {
+   *       id: 'rec1',
+   *       chunk_text:
+   *         "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
+   *       category: 'product',
+   *     },
+   *     {
+   *       id: 'rec2',
+   *       chunk_text:
+   *         'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
+   *       category: 'nutrition',
+   *     },
+   *     {
+   *       id: 'rec3',
+   *       chunk_text:
+   *         'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
+   *       category: 'cultivation',
+   *     },
+   *     {
+   *       id: 'rec4',
+   *       chunk_text:
+   *         'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
+   *       category: 'product',
+   *     },
+   *     {
+   *       id: 'rec5',
+   *       chunk_text:
+   *         'Apple went public in 1980, making history with one of the largest IPOs at that time.',
+   *       category: 'milestone',
+   *     },
+   *     {
+   *       id: 'rec6',
+   *       chunk_text:
+   *         'Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases.',
+   *       category: 'nutrition',
+   *     },
+   *     {
+   *       id: 'rec7',
+   *       chunk_text:
+   *         "Known for its design-forward products, Apple's branding and market strategy have greatly influenced the technology sector and popularized minimalist design worldwide.",
+   *       category: 'influence',
+   *     },
+   *     {
+   *       id: 'rec8',
+   *       chunk_text:
+   *         'The high fiber content in apples can also help regulate blood sugar levels, making them a favorable snack for people with diabetes.',
+   *       category: 'nutrition',
+   *     },
+   *   ]
+   * });
    * ```
    *
-   * @param data - An array of {@link IntegratedRecord} objects to upsert.
+   * @param options - The {@link UpsertRecordsOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns a promise that resolves when the operation is complete.
    */
-  async upsertRecords(data: Array<IntegratedRecord<T>>) {
-    return await this._upsertRecordsCommand.run(data);
+  async upsertRecords(options: UpsertRecordsOptions<T>) {
+    return await this._upsertRecordsCommand.run(options);
   }
 
   /**
@@ -747,21 +755,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.startImport('s3://my-bucket/my-data'));
+   * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
    *
    * // {"id":"1"}
    * ```
    *
-   * @param uri - (Required) The URI prefix under which the data to import is available. All data within this prefix
-   * will be listed then imported into the target index. Currently only `s3://` URIs are supported.
-   * @param integration - (Optional) The name of the storage integration that should be used to access the data.
-   * Defaults to None.
-   * @param errorMode - (Optional) Defaults to "Continue". If set to "Continue", the import operation will continue
-   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
-   * "Abort" to stop the import operation if any records fail to import.
+   * @param options - The {@link StartImportOptions} for the import operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to {@link StartImportResponse} when the import operation is started.
    */
-  async startImport(uri: string, errorMode?: string, integration?: string) {
-    return await this._startImportCommand.run(uri, errorMode, integration);
+  async startImport(options: StartImportOptions) {
+    return await this._startImportCommand.run(options);
   }
 
   /**
@@ -772,7 +777,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.listImports());
+   * console.log(await index.listImports(10));
    *
    * // {
    * //  data: [
@@ -793,6 +798,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param limit - (Optional) Max number of import operations to return per page.
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link ListImportsResponse} when the operation is complete.
    */
   async listImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
@@ -881,7 +888,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.listNamespaces(10));
+   * console.log(await index.listNamespaces({ limit: 10 }));
    *
    * // {
    * //   namespaces: [
@@ -892,16 +899,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * // }
    * ```
    *
-   * @param limit - (Optional) Max number of import operations to return per page.
-   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
-   * @param prefix - (Optional) Prefix of the namespaces to list. Acts as a filter to return only namespaces that start with this prefix.
+   * @param options - The {@link ListNamespacesOptions} for the operation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link ListNamespacesResponse} when the operation is complete.
    */
-  async listNamespaces(
-    limit?: number,
-    paginationToken?: string,
-    prefix?: string,
-  ) {
-    return await this._listNamespacesCommand(limit, paginationToken, prefix);
+  async listNamespaces(options?: ListNamespacesOptions) {
+    return await this._listNamespacesCommand(options);
   }
 
   /**
@@ -938,5 +941,45 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    */
   async deleteNamespace(namespace: string) {
     return await this._deleteNamespaceCommand(namespace);
+  }
+
+  /**
+   * Returns an {@link Index} targeting the specified namespace.
+   * By default if no namespace is provided, all operations take place inside the default namespace `'__default__'`.
+   *
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * // Create an Index client instance scoped to operate on a
+   * // single namespace
+   * const ns = pc.index('my-index').namespace('my-namespace');
+   *
+   * // Now operations against this intance only affect records in
+   * // the targeted namespace
+   * ns.upsert([
+   *   // ... records to upsert in namespace 'my-namespace'
+   * ])
+   *
+   * ns.query({
+   *   // ... query records in namespace 'my-namespace'
+   * })
+   * ```
+   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
+   *
+   * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
+   * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
+   */
+  namespace(namespace: string): Index<T> {
+    return new Index<T>(
+      {
+        name: this.target.indexName,
+        namespace,
+        host: this.target.indexHostUrl,
+        additionalHeaders: this.config.additionalHeaders,
+      },
+      this.config,
+    );
   }
 }

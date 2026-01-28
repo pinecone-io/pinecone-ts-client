@@ -39,7 +39,8 @@ describe('configureIndex', () => {
       configureIndex: fakeConfigure,
     } as ManageIndexesApi;
 
-    const returned = await configureIndex(IOA)('index-name', {
+    const returned = await configureIndex(IOA)({
+      name: 'index-name',
       podReplicas: 4,
       podType: 'p2.x2',
       deletionProtection: 'disabled',

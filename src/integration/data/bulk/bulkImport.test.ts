@@ -30,7 +30,7 @@ describe('bulk import', () => {
   });
 
   test('verify bulk import', async () => {
-    const response = await index.startImport(testURI);
+    const response = await index.startImport({ uri: testURI });
     expect(response).toBeDefined();
     expect(response.id).toBeDefined();
   });

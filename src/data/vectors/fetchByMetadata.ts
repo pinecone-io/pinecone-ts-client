@@ -25,6 +25,11 @@ export type FetchByMetadataOptions = {
 
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;
+
+  /**
+   * The namespace to fetch from. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 /**
@@ -62,10 +67,11 @@ export class FetchByMetadataCommand<T extends RecordMetadata = RecordMetadata> {
     options: FetchByMetadataOptions,
   ): Promise<FetchByMetadataResponse<T>> {
     this.validator(options);
+    const namespace = options.namespace ?? this.namespace;
     const api = await this.apiProvider.provide();
     const request: FetchVectorsByMetadataRequest = {
       fetchByMetadataRequest: {
-        namespace: this.namespace,
+        namespace,
         filter: options.filter,
         limit: options.limit,
         paginationToken: options.paginationToken,

@@ -40,7 +40,7 @@ describe('upsertRecords', () => {
       { id: '2', chunk_text: 'test2', category: 'test' },
     ];
 
-    await cmd.run(records);
+    await cmd.run({ records });
     expect(mockFetch).toHaveBeenCalledWith(
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
@@ -56,7 +56,7 @@ describe('upsertRecords', () => {
       { id: '2', chunk_text: 'test2', category: 'test' },
     ];
 
-    await cmd.run(records);
+    await cmd.run({ records });
     expect(mockFetch).toHaveBeenCalledWith(
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
@@ -75,7 +75,7 @@ describe('upsertRecords', () => {
     ];
 
     try {
-      await cmd.run(records);
+      await cmd.run({ records });
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toContain(

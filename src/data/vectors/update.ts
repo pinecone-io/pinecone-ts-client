@@ -42,6 +42,11 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
    * @see [Metadata filtering](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
    */
   filter?: object;
+
+  /**
+   * The namespace to update in. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
@@ -69,13 +74,14 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   async run(options: UpdateOptions<T>): Promise<void> {
     this.validator(options);
 
+    const namespace = options.namespace ?? this.namespace;
     const request: UpdateRequest = {
       id: options['id'],
       values: options['values'],
       sparseValues: options['sparseValues'],
       setMetadata: options['metadata'],
       filter: options['filter'],
-      namespace: this.namespace,
+      namespace,
     };
 
     const api = await this.apiProvider.provide();

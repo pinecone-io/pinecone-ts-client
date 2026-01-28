@@ -81,12 +81,17 @@ describe('Index', () => {
       await index.update({ id: '1', metadata: { baz: 'quux' } });
 
       // Same thing with upsert. You can upsert anything in metadata field without type.
-      await index.upsert([
-        { id: '2', values: [0.1, 0.2], metadata: { hello: 'world' } },
-      ]);
+      await index.upsert({
+        records: [
+          { id: '2', values: [0.1, 0.2], metadata: { hello: 'world' } },
+        ],
+      });
 
-      // @ts-expect-error even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
-      await index.upsert([{ id: '2', values: [0.1, 0.2], metadata: 2 }]);
+      // Even when you haven't passed a generic type, it enforces the expected shape of RecordMetadata
+      await index.upsert({
+        // @ts-expect-error - metadata must be an object, not a primitive
+        records: [{ id: '2', values: [0.1, 0.2], metadata: 2 }],
+      });
     });
 
     test('preserves metadata typing through passing namespace in options', async () => {
@@ -110,36 +115,42 @@ describe('Index', () => {
       expect(UpsertCommand).toHaveBeenCalledTimes(1);
 
       // No ts errors when upserting with proper MovieMetadata
-      await index.upsert([
-        {
-          id: '1',
-          values: [0.1, 0.1, 0.1],
-          metadata: {
-            genre: 'romance',
-            runtime: 120,
+      await index.upsert({
+        records: [
+          {
+            id: '1',
+            values: [0.1, 0.1, 0.1],
+            metadata: {
+              genre: 'romance',
+              runtime: 120,
+            },
           },
-        },
-      ]);
+        ],
+      });
 
       // No ts errors when upserting with no metadata
-      await index.upsert([
-        {
-          id: '2',
-          values: [0.1, 0.1, 0.1],
-        },
-      ]);
+      await index.upsert({
+        records: [
+          {
+            id: '2',
+            values: [0.1, 0.1, 0.1],
+          },
+        ],
+      });
 
       // ts error expected when passing metadata that doesn't match MovieMetadata
-      await index.upsert([
-        {
-          id: '3',
-          values: [0.1, 0.1, 0.1],
-          metadata: {
-            // @ts-expect-error
-            somethingElse: 'foo',
+      await index.upsert({
+        records: [
+          {
+            id: '3',
+            values: [0.1, 0.1, 0.1],
+            metadata: {
+              // @ts-expect-error
+              somethingElse: 'foo',
+            },
           },
-        },
-      ]);
+        ],
+      });
     });
 
     test('fetch: response is typed with generic metadata type', async () => {
@@ -149,7 +160,7 @@ describe('Index', () => {
       );
       expect(FetchCommand).toHaveBeenCalledTimes(1);
 
-      const response = await index.fetch(['1']);
+      const response = await index.fetch({ ids: ['1'] });
       if (response && response.records) {
         // eslint-disable-next-line
         Object.entries(response.records).forEach(([key, value]) => {
@@ -226,6 +237,129 @@ describe('Index', () => {
         // @ts-expect-error when metadata has extra properties
         metadata: { genre: 'comedy', runtime: 80, title: 'Miss Congeniality' },
       });
+    });
+  });
+
+  describe('namespace() method', () => {
+    test('creates a new Index instance targeting the specified namespace', () => {
+      const index = new Index(
+        { name: 'index-name', namespace: '__default__' },
+        config,
+      );
+
+      const namespacedIndex = index.namespace('my-namespace');
+
+      // Should be a new instance
+      expect(namespacedIndex).not.toBe(index);
+      expect(namespacedIndex).toBeInstanceOf(Index);
+    });
+
+    test('new instance inherits index name and config', () => {
+      const index = new Index(
+        { name: 'test-index', namespace: '__default__' },
+        config,
+      );
+
+      // Creating the namespaced index should initialize vector operations with correct config
+      index.namespace('custom-ns');
+
+      // Verify the namespaced index still targets the same underlying index
+      // by checking that the commands are initialized (this is an indirect test
+      // since target is private, but command initialization proves the config was passed)
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        config,
+        'test-index',
+        undefined,
+        undefined,
+      );
+    });
+
+    test('preserves generic metadata type when chaining namespace()', async () => {
+      const index = new Index<MovieMetadata>(
+        { name: 'index-name', namespace: '__default__' },
+        config,
+      );
+
+      const namespacedIndex = index.namespace('movies-ns');
+
+      // Should still enforce MovieMetadata type
+      await namespacedIndex.upsert({
+        records: [
+          {
+            id: '1',
+            values: [0.1, 0.2, 0.3],
+            metadata: { genre: 'action', runtime: 120 },
+          },
+        ],
+      });
+
+      // Should still reject invalid metadata
+      await namespacedIndex.upsert({
+        records: [
+          {
+            id: '2',
+            values: [0.1, 0.2, 0.3],
+            // @ts-expect-error - invalidField is not in MovieMetadata
+            metadata: { invalidField: 'test' },
+          },
+        ],
+      });
+    });
+
+    test('allows method chaining from untyped to typed namespace', async () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      // Create namespaced instance (still untyped)
+      const namespacedIndex = index.namespace('test-ns');
+
+      // Should allow any metadata shape since no generic type was provided
+      await namespacedIndex.upsert({
+        records: [{ id: '1', values: [0.1, 0.2], metadata: { foo: 'bar' } }],
+      });
+
+      await namespacedIndex.upsert({
+        records: [
+          { id: '2', values: [0.1, 0.2], metadata: { different: 'shape' } },
+        ],
+      });
+    });
+
+    test('can chain namespace() multiple times', () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      const ns1 = index.namespace('namespace-1');
+      const ns2 = index.namespace('namespace-2');
+      const ns3 = ns1.namespace('namespace-3');
+
+      // Each should be a distinct instance
+      expect(ns1).not.toBe(index);
+      expect(ns2).not.toBe(index);
+      expect(ns3).not.toBe(ns1);
+      expect(ns1).not.toBe(ns2);
+    });
+
+    test('inherits host url when specified', () => {
+      const customHost = 'https://custom-host.pinecone.io';
+      const index = new Index(
+        {
+          name: 'index-name',
+          host: customHost,
+          namespace: '__default__',
+        },
+        config,
+      );
+
+      // Creating the namespaced index should inherit the custom host
+      index.namespace('custom-ns');
+
+      // The VectorOperationsProvider should have been called with the custom host
+      // This verifies the host was properly inherited
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        config,
+        'index-name',
+        customHost,
+        undefined,
+      );
     });
   });
 });

@@ -7,11 +7,9 @@ import {
 
 export class ListImportsCommand {
   apiProvider: BulkOperationsProvider;
-  namespace: string;
 
-  constructor(apiProvider: BulkOperationsProvider, namespace: string) {
+  constructor(apiProvider: BulkOperationsProvider) {
     this.apiProvider = apiProvider;
-    this.namespace = namespace;
   }
 
   async run(

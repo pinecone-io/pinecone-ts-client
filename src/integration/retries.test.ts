@@ -81,7 +81,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
     startMockServer(true);
 
     // Call Upsert operation
-    await mockServerlessIndex.upsert(recordsToUpsert);
+    await mockServerlessIndex.upsert({ records: recordsToUpsert });
 
     // 2 total tries: 1 initial call, 1 retry
     expect(callCount).toBe(2);
@@ -138,7 +138,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
 
     // Catch expected error from Upsert operation
     await expect(
-      mockServerlessIndex.upsert(recordsToUpsert),
+      mockServerlessIndex.upsert({ records: recordsToUpsert }),
     ).rejects.toThrowError(PineconeMaxRetriesExceededError);
 
     // 4 total tries: 1 initial call + 3 retries

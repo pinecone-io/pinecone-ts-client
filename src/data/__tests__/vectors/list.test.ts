@@ -54,4 +54,22 @@ describe('list', () => {
       '`limit` property must be greater than 0',
     );
   });
+
+  test('uses namespace from options when provided', async () => {
+    const listResponse = {
+      vectors: [{ id: 'prefix-1', values: [0.2, 0.4] }],
+      namespace: 'custom-namespace',
+      usage: { readUnits: 1 },
+    };
+    const { VectorProvider, VOA } = setupListResponse(listResponse);
+
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
+    await listPaginatedFn({ prefix: 'prefix-', namespace: 'custom-namespace' });
+
+    expect(VOA.listVectors).toHaveBeenCalledWith({
+      prefix: 'prefix-',
+      namespace: 'custom-namespace',
+      xPineconeApiVersion: '2025-10',
+    });
+  });
 });

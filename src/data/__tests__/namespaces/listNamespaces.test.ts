@@ -37,7 +37,7 @@ describe('listNamespaces', () => {
     const paginationToken = 'fake-pagination-token-123123123';
     const prefix = 'fake-prefix-123123123';
 
-    await cmd(limit, paginationToken, prefix);
+    await cmd({ limit, paginationToken, prefix });
 
     expect(fakeListNamespaces).toHaveBeenCalledWith({
       xPineconeApiVersion: X_PINECONE_API_VERSION,

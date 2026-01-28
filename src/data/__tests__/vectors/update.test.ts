@@ -77,4 +77,25 @@ describe('update', () => {
       'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.',
     );
   });
+
+  test('uses namespace from options when provided', async () => {
+    const { fakeUpdate, cmd } = setupSuccess('');
+    await cmd.run({
+      id: 'fake-vector',
+      values: [1, 2, 3],
+      namespace: 'custom-namespace',
+    });
+
+    expect(fakeUpdate).toHaveBeenCalledWith({
+      updateRequest: {
+        namespace: 'custom-namespace',
+        id: 'fake-vector',
+        values: [1, 2, 3],
+        sparseValues: undefined,
+        setMetadata: undefined,
+        filter: undefined,
+      },
+      xPineconeApiVersion: '2025-10',
+    });
+  });
 });

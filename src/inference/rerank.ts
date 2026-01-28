@@ -5,57 +5,74 @@ import {
 } from '../pinecone-generated-ts-fetch/inference';
 import { PineconeArgumentError } from '../errors';
 
-/** Options one can send with a request to {@link rerank} *
- *
- * @param topN - The number of documents to return in the response. Default is the number of documents passed in the
- * request.
- * @param returnDocuments - Whether to return the documents in the response. Default is `true`.
- * @param rankFields - The fields by which to rank the documents. If no field is passed, default is `['text']`.
- * Note: some models only support 1 reranking field. See the [model documentation](https://docs.pinecone.io/guides/inference/understanding-inference#rerank) for more information.
- * @param parameters - Additional model-specific parameters to send with the request, e.g. {truncate: "END"}.
- * */
+/**
+ * Options for reranking documents against a query.
+ */
 export interface RerankOptions {
+  /**
+   * The [model](https://docs.pinecone.io/guides/search/rerank-results#reranking-models) to use for reranking.
+   */
+  model: string;
+
+  /**
+   * The query to rerank documents against.
+   */
+  query: string;
+
+  /**
+   * The documents to rerank.
+   */
+  documents: Array<{ [key: string]: string } | string>;
+
+  /**
+   * The number of results to return sorted by relevance. Defaults to the number of inputs.
+   */
   topN?: number;
+
+  /**
+   * Whether to return the documents in the response.
+   */
   returnDocuments?: boolean;
+
+  /**
+   * The field(s) to consider for reranking. If not provided, the default is `["text"]`.
+   *
+   * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/search/rerank-results#reranking-models).
+   */
   rankFields?: Array<string>;
+
+  /**
+   * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/search/rerank-results#reranking-models) for available model parameters.
+   */
   parameters?: { [key: string]: string };
 }
 
 export const rerank = (infApi: InferenceApi) => {
-  return async (
-    model: string,
-    query: string,
-    documents: Array<{ [key: string]: string } | string>,
-    options: RerankOptions = {},
-  ): Promise<RerankResult> => {
-    if (documents.length == 0) {
+  return async (options: RerankOptions): Promise<RerankResult> => {
+    if (!options.documents || options.documents.length == 0) {
       throw new PineconeArgumentError(
         'You must pass at least one document to rerank',
       );
     }
-    if (query.length == 0) {
+    if (!options.query || options.query.length == 0) {
       throw new PineconeArgumentError('You must pass a query to rerank');
     }
-    if (model.length == 0) {
+    if (!options.model || options.model.length == 0) {
       throw new PineconeArgumentError(
         'You must pass the name of a supported reranking model in order to rerank' +
           ' documents. See https://docs.pinecone.io/models for supported models.',
       );
     }
 
-    const {
-      topN = documents.length,
-      returnDocuments = true,
-      parameters = {},
-    } = options;
-
-    let { rankFields = ['text'] } = options;
+    const topN = options.topN ?? options.documents.length;
+    const returnDocuments = options.returnDocuments ?? true;
+    const parameters = options.parameters ?? {};
+    const rankFields = options.rankFields ?? ['text'];
 
     // Validate and standardize documents to ensure they are in object format
-    const newDocuments = documents.map((doc) =>
+    const newDocuments = options.documents.map((doc) =>
       typeof doc === 'string' ? { text: doc } : doc,
     );
-
     if (!options.rankFields) {
       if (!newDocuments.every((doc) => typeof doc === 'object' && doc.text)) {
         throw new PineconeArgumentError(
@@ -64,18 +81,14 @@ export const rerank = (infApi: InferenceApi) => {
       }
     }
 
-    if (options.rankFields) {
-      rankFields = options.rankFields;
-    }
-
     return await infApi.rerank({
       rerankRequest: {
-        model: model,
-        query: query,
+        model: options.model,
+        query: options.query,
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: rankFields,
+        rankFields,
         parameters: parameters,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,

@@ -162,7 +162,7 @@ describe('Pinecone', () => {
       const p = new Pinecone({ apiKey: 'foo' });
       const i = p.index<ProductMetadata>({ name: 'product-embeddings' });
 
-      const result = await i.fetch(['1']);
+      const result = await i.fetch({ ids: ['1'] });
       if (result && result.records) {
         // No ts error
         console.log(result.records['1'].metadata?.color);
@@ -172,22 +172,26 @@ describe('Pinecone', () => {
       }
 
       // No ts errors when passing ProductMetadata
-      await i.upsert([
-        {
-          id: 'party-shirt',
-          values: [0.1, 0.1, 0.1],
-          metadata: { color: 'black', description: 'sexy black dress' },
-        },
-      ]);
+      await i.upsert({
+        records: [
+          {
+            id: 'party-shirt',
+            values: [0.1, 0.1, 0.1],
+            metadata: { color: 'black', description: 'sexy black dress' },
+          },
+        ],
+      });
 
-      await i.upsert([
-        {
-          id: 'pink-shirt',
-          values: [0.1, 0.1, 0.1],
-          // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
-          metadata: { color: 'pink', description: 'pink shirt' },
-        },
-      ]);
+      await i.upsert({
+        records: [
+          {
+            id: 'pink-shirt',
+            values: [0.1, 0.1, 0.1],
+            // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
+            metadata: { color: 'pink', description: 'pink shirt' },
+          },
+        ],
+      });
     });
   });
 

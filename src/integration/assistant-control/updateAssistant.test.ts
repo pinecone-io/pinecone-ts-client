@@ -18,7 +18,8 @@ describe('updateAssistant inplace updates, happy path', () => {
       region: 'us',
     });
 
-    await pinecone.updateAssistant(assistantName, {
+    await pinecone.updateAssistant({
+      name: assistantName,
       instructions: 'new-instructions',
       metadata: { key: 'newValue', keyTwo: 'newValueTwo' },
     });
@@ -40,7 +41,8 @@ describe('updateAssistant inplace updates, happy path', () => {
       metadata: { key: 'value', keyTwo: 'valueTwo' },
     });
 
-    await pinecone.updateAssistant(assistantName, {
+    await pinecone.updateAssistant({
+      name: assistantName,
       metadata: { keyThree: 'valueThree' },
     });
 
@@ -54,7 +56,7 @@ describe('updateAssistant inplace updates, happy path', () => {
 describe('updateAssistant error paths', () => {
   test('Update non-existent assistant', async () => {
     await expect(
-      pinecone.updateAssistant('non-existent-assistant', {}),
+      pinecone.updateAssistant({ name: 'non-existent-assistant' }),
     ).rejects.toThrow(PineconeNotFoundError);
   });
 });

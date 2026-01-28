@@ -73,4 +73,20 @@ describe('SearchRecordsCommand', () => {
       );
     }
   });
+
+  test('uses namespace from options when provided', async () => {
+    const { fakeSearchRecords, cmd } = setupResponse('', true);
+    const mockSearchRequest = {
+      query: { topK: 2, inputs: { text: 'test' } },
+      namespace: 'custom-namespace',
+    };
+
+    await cmd.run(mockSearchRequest);
+
+    expect(fakeSearchRecords).toHaveBeenCalledWith({
+      namespace: 'custom-namespace',
+      searchRecordsRequest: mockSearchRequest,
+      xPineconeApiVersion: '2025-10',
+    });
+  });
 });

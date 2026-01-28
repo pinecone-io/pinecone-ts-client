@@ -21,10 +21,10 @@ describe('embed', () => {
     const model = 'test-model';
     const inputs = ['input1', 'input2'];
     const expectedInputs = [{ text: 'input1' }, { text: 'input2' }];
-    const params = { inputType: 'text', truncate: 'END' };
+    const parameters = { inputType: 'text', truncate: 'END' };
 
     const IA = setupEmbedResponse(true);
-    await embed(IA)(model, inputs, params);
+    await embed(IA)({ model, inputs, parameters });
     expect(IA.embed).toHaveBeenCalledWith(
       expect.objectContaining({
         embedRequest: expect.objectContaining({ inputs: expectedInputs }),

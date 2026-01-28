@@ -4,11 +4,9 @@ import type { ImportModel } from '../../pinecone-generated-ts-fetch/db_data';
 
 export class DescribeImportCommand {
   apiProvider: BulkOperationsProvider;
-  namespace: string;
 
-  constructor(apiProvider: BulkOperationsProvider, namespace: string) {
+  constructor(apiProvider: BulkOperationsProvider) {
     this.apiProvider = apiProvider;
-    this.namespace = namespace;
   }
 
   async run(id: string): Promise<ImportModel> {

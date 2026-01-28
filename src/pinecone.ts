@@ -297,9 +297,8 @@ export class Pinecone {
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    if (indexModel.host) {
-      IndexHostSingleton._set(this.config, indexName, indexModel.host);
-    }
+    const host = indexModel.privateHost || indexModel.host;
+    IndexHostSingleton._set(this.config, indexName, host);
 
     return Promise.resolve(indexModel);
   }
@@ -364,7 +363,8 @@ export class Pinecone {
     if (indexList.indexes && indexList.indexes.length > 0) {
       for (let i = 0; i < indexList.indexes.length; i++) {
         const index = indexList.indexes[i];
-        IndexHostSingleton._set(this.config, index.name, index.host);
+        const host = index.privateHost || index.host;
+        IndexHostSingleton._set(this.config, index.name, host);
       }
     }
 
@@ -449,7 +449,7 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index({ name: 'my-index' }).upsert(records)
+   * await pc.index({ name: 'my-index' }).upsert({ records })
    * ```
    *
    * @example
@@ -556,20 +556,21 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.configureIndex('my-index', {
+   * await pc.configureIndex({
+   *   name: 'my-index',
    *   deletionProtection: 'enabled',
-   *   spec:{ pod:{ replicas: 2, podType: 'p1.x2' }},
+   *   podReplicas: 2,
+   *   podType: 'p1.x2'
    * });
    * ```
    *
-   * @param indexName - The name of the index to configure.
-   * @param options - The configuration properties you would like to update
+   * @param options - The {@link ConfigureIndexOptions} for configuring the index.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options);
+  configureIndex(options: ConfigureIndexOptions) {
+    return this._configureIndex(options);
   }
 
   /**
@@ -804,7 +805,7 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.updateAssistant('test1', { instructions: 'some new  instructions!'});
+   * await pc.updateAssistant({ name: 'test1', instructions: 'some new instructions!'});
    * // {
    * //  assistantName: test1,
    * //  instructions: 'some new instructions!',
@@ -812,14 +813,13 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param assistantName - The name of the assistant being updated.
    * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
-  updateAssistant(assistantName: string, options: UpdateAssistantOptions) {
-    return this._updateAssistant(assistantName, options);
+  updateAssistant(options: UpdateAssistantOptions) {
+    return this._updateAssistant(options);
   }
 
   /** @internal */
@@ -1157,20 +1157,22 @@ export class Pinecone {
    * const index = pc.index<MovieMetadata>({ name: 'test-index' });
    *
    * // Now you get type errors if upserting malformed metadata
-   * await index.upsert([{
-   *   id: '1234',
-   *   values: [
-   *     .... // embedding values
-   *   ],
-   *   metadata: {
-   *     genre: 'Gone with the Wind',
-   *     runtime: 238,
-   *     genre: 'drama',
+   * await index.upsert({
+   *   records: [{
+   *     id: '1234',
+   *     values: [
+   *       .... // embedding values
+   *     ],
+   *     metadata: {
+   *       title: 'Gone with the Wind',
+   *       runtime: 238,
+   *       genre: 'drama',
    *
-   *     // @ts-expect-error because category property not in MovieMetadata
-   *     category: 'classic'
-   *   }
-   * }])
+   *       // @ts-expect-error because category property not in MovieMetadata
+   *       category: 'classic'
+   *     }
+   *   }]
+   * })
    *
    * const results = await index.query({
    *    vector: [
