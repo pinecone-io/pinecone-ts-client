@@ -67,23 +67,18 @@ export const rerank = (infApi: InferenceApi) => {
     const topN = options.topN ?? options.documents.length;
     const returnDocuments = options.returnDocuments ?? true;
     const parameters = options.parameters ?? {};
-    let rankFields = options.rankFields ?? ['text'];
+    const rankFields = options.rankFields ?? ['text'];
 
     // Validate and standardize documents to ensure they are in object format
     const newDocuments = options.documents.map((doc) =>
       typeof doc === 'string' ? { text: doc } : doc,
     );
-
     if (!options.rankFields) {
       if (!newDocuments.every((doc) => typeof doc === 'object' && doc.text)) {
         throw new PineconeArgumentError(
           'Documents must be a list of strings or objects containing the "text" field',
         );
       }
-    }
-
-    if (options.rankFields) {
-      rankFields = options.rankFields;
     }
 
     return await infApi.rerank({
@@ -93,7 +88,7 @@ export const rerank = (infApi: InferenceApi) => {
         documents: newDocuments,
         topN: topN,
         returnDocuments: returnDocuments,
-        rankFields: rankFields,
+        rankFields,
         parameters: parameters,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
