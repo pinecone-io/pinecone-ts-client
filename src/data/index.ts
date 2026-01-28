@@ -777,7 +777,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.listImports());
+   * console.log(await index.listImports(10));
    *
    * // {
    * //  data: [
@@ -798,6 +798,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param limit - (Optional) Max number of import operations to return per page.
    * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link ListImportsResponse} when the operation is complete.
    */
   async listImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
@@ -886,7 +888,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.listNamespaces(10));
+   * console.log(await index.listNamespaces({ limit: 10 }));
    *
    * // {
    * //   namespaces: [
@@ -897,9 +899,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * // }
    * ```
    *
-   * @param limit - (Optional) Max number of import operations to return per page.
-   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
-   * @param prefix - (Optional) Prefix of the namespaces to list. Acts as a filter to return only namespaces that start with this prefix.
+   * @param options - The {@link ListNamespacesOptions} for the operation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link ListNamespacesResponse} when the operation is complete.
    */
   async listNamespaces(options?: ListNamespacesOptions) {
     return await this._listNamespacesCommand(options);
