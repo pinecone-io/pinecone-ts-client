@@ -124,9 +124,9 @@ export interface AssistantList {
 }
 
 /**
- * The `AssistantEval` interface defines the structure of the input object for the `evaluate` method.
+ * The `EvaluateOptions` interface defines the structure of the input object for the `evaluate` method.
  */
-export interface AssistantEval {
+export interface EvaluateOptions {
   /**
    * The question to evaluate.
    */

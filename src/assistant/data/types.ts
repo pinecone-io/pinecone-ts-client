@@ -74,6 +74,10 @@ export interface AssistantFileModel {
    * A message describing any error during file processing, provided only if an error occurs.
    */
   errorMessage?: string | null;
+  /**
+   * Indicates whether the file was processed as multimodal.
+   */
+  multimodal?: boolean;
 }
 
 /**
@@ -115,6 +119,14 @@ export interface ChatContextOptions {
    * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
    */
   snippetSize?: number;
+  /**
+   * Whether or not to send image-related context snippets to the LLM. If `false`, only text context snippets are sent.
+   */
+  multimodal?: boolean;
+  /**
+   * If image-related context snippets are sent to the LLM, this field determines whether or not they should include base64 image data. If `false`, only the image caption is sent. Only available when `multimodal=true`.
+   */
+  includeBinaryContent?: boolean;
 }
 
 /**
@@ -201,7 +213,7 @@ export interface ContextOptions {
   /**
    * Optional filter to apply to the context snippets.
    */
-  filter?: Record<string, string>;
+  filter?: object;
   /**
    * The maximum number of context snippets to return. Default is 16. Maximum is 64.
    */
@@ -210,6 +222,14 @@ export interface ContextOptions {
    * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
    */
   snippetSize?: number;
+  /**
+   * Whether or not to retrieve image-related context snippets. If `false`, only text snippets are returned.
+   */
+  multimodal?: boolean;
+  /**
+   * If image-related context snippets are returned, this field determines whether or not they should include base64 image data. If `false`, only the image captions are returned. Only available when `multimodal=true`.
+   */
+  includeBinaryContent?: boolean;
 }
 
 /**
@@ -224,6 +244,10 @@ export interface UploadFileOptions {
    * Optional metadata to attach to the file.
    */
   metadata?: Record<string, string | number>;
+  /**
+   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   */
+  multimodal?: boolean;
 }
 
 /**

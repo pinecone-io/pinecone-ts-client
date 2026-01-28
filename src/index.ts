@@ -66,6 +66,7 @@ export type {
   UpdateAssistantOptions,
   UpdateAssistantResponse,
   MessagesModel,
+  EvaluateOptions,
 } from './assistant';
 export type {
   ChatModel,
@@ -90,6 +91,14 @@ export type {
   JsonReferenceModel,
   MarkdownReferenceModel,
 } from './pinecone-generated-ts-fetch/assistant_data';
+export type {
+  AlignmentResponse,
+  Metrics,
+  Reasoning,
+  EvaluatedFact,
+  Fact,
+  TokenCounts,
+} from './pinecone-generated-ts-fetch/assistant_evaluation';
 
 // Type exports
 export type {

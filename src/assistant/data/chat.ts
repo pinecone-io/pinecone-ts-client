@@ -33,6 +33,8 @@ export const chat = (
           // use topK from contextOptions if provided, otherwise use topK from options
           topK: options.contextOptions?.topK || options.topK,
           snippetSize: options.contextOptions?.snippetSize,
+          multimodal: options.contextOptions?.multimodal,
+          includeBinaryContent: options.contextOptions?.includeBinaryContent,
         },
       },
     });

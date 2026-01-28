@@ -44,6 +44,11 @@ export const uploadFile = (
       filesUrl += `?metadata=${encodedMetadata}`;
     }
 
+    if (options.multimodal !== undefined) {
+      const separator = filesUrl.includes('?') ? '&' : '?';
+      filesUrl += `${separator}multimodal=${options.multimodal}`;
+    }
+
     // Note: This operation uses direct fetch() with FormData for file uploads,
     const response = await fetch(filesUrl, {
       method: 'POST',
