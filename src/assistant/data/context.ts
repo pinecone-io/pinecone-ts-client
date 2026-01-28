@@ -54,6 +54,8 @@ export const context = (
         messages: toMessageModel(options.messages),
         topK: options.topK,
         snippetSize: options.snippetSize,
+        multimodal: options.multimodal,
+        includeBinaryContent: options.includeBinaryContent,
       },
     });
   };

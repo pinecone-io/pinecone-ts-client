@@ -2,10 +2,10 @@ import {
   MetricsApi,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/assistant_evaluation';
-import type { AssistantEval } from './types';
+import type { EvaluateOptions } from './types';
 
 export const evaluate = (metricsApi: MetricsApi) => {
-  return async (options: AssistantEval) => {
+  return async (options: EvaluateOptions) => {
     if (
       options.question == '' ||
       options.answer == '' ||

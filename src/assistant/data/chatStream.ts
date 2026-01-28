@@ -37,10 +37,17 @@ export const chatStream = (
 
     // format context options
     let contextOptions: object | void = undefined;
-    if (options.contextOptions?.topK || options.contextOptions?.snippetSize) {
+    if (
+      options.contextOptions?.topK ||
+      options.contextOptions?.snippetSize ||
+      options.contextOptions?.multimodal !== undefined ||
+      options.contextOptions?.includeBinaryContent !== undefined
+    ) {
       contextOptions = {
         top_k: options.contextOptions?.topK || options.topK,
         snippet_size: options.contextOptions?.snippetSize,
+        multimodal: options.contextOptions?.multimodal,
+        include_binary_content: options.contextOptions?.includeBinaryContent,
       };
     } else if (options.topK) {
       contextOptions = {

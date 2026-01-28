@@ -3,6 +3,7 @@ export { deleteAssistant } from './deleteAssistant';
 export { describeAssistant } from './describeAssistant';
 export { listAssistants } from './listAssistants';
 export { updateAssistant } from './updateAssistant';
+export { evaluate } from './evaluate';
 export { asstControlOperationsBuilder } from './asstControlOperationsBuilder';
 export { asstMetricsOperationsBuilder } from './asstMetricsOperationsBuilder';
 
@@ -13,4 +14,5 @@ export type {
   AssistantStatusEnum,
   AssistantModel,
   AssistantList,
+  EvaluateOptions,
 } from './types';
