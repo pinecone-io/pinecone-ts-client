@@ -7,10 +7,9 @@ import { PineconeArgumentError } from '../../errors';
 
 export const updateAssistant = (api: ManageAssistantsControlApi) => {
   return async (
-    name: string,
     options: UpdateAssistantOptions,
   ): Promise<UpdateAssistantResponse> => {
-    if (!name) {
+    if (!options.name) {
       throw new PineconeArgumentError(
         'You must pass the name of an assistant to update.',
       );
@@ -26,7 +25,7 @@ export const updateAssistant = (api: ManageAssistantsControlApi) => {
     }
 
     return await api.updateAssistant({
-      assistantName: name,
+      assistantName: options.name,
       updateAssistantRequest: updateAssistantRequest,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

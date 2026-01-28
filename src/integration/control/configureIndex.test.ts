@@ -33,7 +33,8 @@ describe('configure index', () => {
 
   describe('serverless index', () => {
     test('enable and disable deletionProtection', async () => {
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         deletionProtection: 'enabled',
       });
       await waitUntilIndexReady(serverlessIndexName);
@@ -48,7 +49,8 @@ describe('configure index', () => {
       });
 
       // disable so we can clean the index up
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         deletionProtection: 'disabled',
       });
     });
@@ -60,7 +62,8 @@ describe('configure index', () => {
       });
 
       // Add a tag
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         tags: { testTag: 'testValue' },
       });
       const description2 = await pinecone.describeIndex(serverlessIndexName);
@@ -70,7 +73,8 @@ describe('configure index', () => {
       });
 
       // Remove that tag
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         tags: { testTag: '' }, // Passing null/undefined here is not allowed due to type safety (must eval to string)
       });
       const description3 = await pinecone.describeIndex(serverlessIndexName);
@@ -82,7 +86,8 @@ describe('configure index', () => {
       }
 
       // Confirm when config'ing other things about the index, tags are not changed
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         deletionProtection: 'enabled',
       });
       const description4 = await pinecone.describeIndex(serverlessIndexName);
@@ -94,7 +99,8 @@ describe('configure index', () => {
       }
 
       // (Cleanup) Disable deletion protection
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         deletionProtection: 'disabled',
       });
     });
@@ -105,7 +111,8 @@ describe('configure index', () => {
         project: 'pinecone-integration-tests',
       });
 
-      await pinecone.configureIndex(serverlessIndexName, {
+      await pinecone.configureIndex({
+        name: serverlessIndexName,
         tags: { project: 'updated-project' },
       });
       const description2 = await pinecone.describeIndex(serverlessIndexName);

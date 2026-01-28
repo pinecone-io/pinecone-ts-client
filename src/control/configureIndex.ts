@@ -20,6 +20,10 @@ import {
  */
 export type ConfigureIndexOptions = {
   /**
+   * The name of the index to configure.
+   */
+  name: IndexName;
+  /**
    * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
    * Possible values: `disabled` or `enabled`.
    */
@@ -50,10 +54,10 @@ export type ConfigureIndexOptions = {
 };
 
 export const configureIndex = (api: ManageIndexesApi) => {
-  const validator = (indexName: IndexName, options: ConfigureIndexOptions) => {
-    if (!indexName) {
+  const validator = (options: ConfigureIndexOptions) => {
+    if (!options.name) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `indexName` to configureIndex.',
+        'You must pass a non-empty string for `name` to configureIndex.',
       );
     }
 
@@ -77,11 +81,8 @@ export const configureIndex = (api: ManageIndexesApi) => {
     }
   };
 
-  return async (
-    indexName: IndexName,
-    options: ConfigureIndexOptions,
-  ): Promise<IndexModel> => {
-    validator(indexName, options);
+  return async (options: ConfigureIndexOptions): Promise<IndexModel> => {
+    validator(options);
 
     const spec = buildConfigureSpec(options);
     const request: ConfigureIndexRequest = {
@@ -93,7 +94,7 @@ export const configureIndex = (api: ManageIndexesApi) => {
 
     return await api.configureIndex({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      indexName,
+      indexName: options.name,
       configureIndexRequest: request,
     });
   };

@@ -30,7 +30,7 @@ import {
   SearchRecordsOptions,
 } from './vectors/searchRecords';
 import type { PineconeConfiguration, RecordMetadata } from './vectors/types';
-import { StartImportCommand } from './bulk/startImport';
+import { StartImportCommand, StartImportOptions } from './bulk/startImport';
 import { ListImportsCommand } from './bulk/listImports';
 import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
@@ -91,6 +91,7 @@ export type {
 } from './vectors/searchRecords';
 export type { CreateNamespaceOptions } from './namespaces/createNamespace';
 export type { ListNamespacesOptions } from './namespaces/listNamespaces';
+export type { StartImportOptions } from './bulk/startImport';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -754,21 +755,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const index = pc.index({ name: 'my-serverless-index' });
-   * console.log(await index.startImport('s3://my-bucket/my-data'));
+   * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
    *
    * // {"id":"1"}
    * ```
    *
-   * @param uri - (Required) The URI prefix under which the data to import is available. All data within this prefix
-   * will be listed then imported into the target index. Currently only `s3://` URIs are supported.
-   * @param integration - (Optional) The name of the storage integration that should be used to access the data.
-   * Defaults to None.
-   * @param errorMode - (Optional) Defaults to "Continue". If set to "Continue", the import operation will continue
-   * even if some records fail to import. To inspect failures in "Continue" mode, send a request to {@link listImports}. Pass
-   * "Abort" to stop the import operation if any records fail to import.
+   * @param options - The {@link StartImportOptions} for the import operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to {@link StartImportResponse} when the import operation is started.
    */
-  async startImport(uri: string, errorMode?: string, integration?: string) {
-    return await this._startImportCommand.run(uri, errorMode, integration);
+  async startImport(options: StartImportOptions) {
+    return await this._startImportCommand.run(options);
   }
 
   /**

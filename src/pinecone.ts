@@ -556,20 +556,21 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.configureIndex('my-index', {
+   * await pc.configureIndex({
+   *   name: 'my-index',
    *   deletionProtection: 'enabled',
-   *   spec:{ pod:{ replicas: 2, podType: 'p1.x2' }},
+   *   podReplicas: 2,
+   *   podType: 'p1.x2'
    * });
    * ```
    *
-   * @param indexName - The name of the index to configure.
-   * @param options - The configuration properties you would like to update
+   * @param options - The {@link ConfigureIndexOptions} for configuring the index.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options);
+  configureIndex(options: ConfigureIndexOptions) {
+    return this._configureIndex(options);
   }
 
   /**
@@ -804,7 +805,7 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.updateAssistant('test1', { instructions: 'some new  instructions!'});
+   * await pc.updateAssistant({ name: 'test1', instructions: 'some new instructions!'});
    * // {
    * //  assistantName: test1,
    * //  instructions: 'some new instructions!',
@@ -812,14 +813,13 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param assistantName - The name of the assistant being updated.
    * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
    * @throws Error if the Assistant API is not initialized.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
-  updateAssistant(assistantName: string, options: UpdateAssistantOptions) {
-    return this._updateAssistant(assistantName, options);
+  updateAssistant(options: UpdateAssistantOptions) {
+    return this._updateAssistant(options);
   }
 
   /** @internal */

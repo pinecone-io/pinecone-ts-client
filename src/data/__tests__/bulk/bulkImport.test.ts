@@ -82,7 +82,7 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'continue';
 
-    await startCmd.run(uri, errorMode);
+    await startCmd.run({ uri, errorMode });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -101,7 +101,7 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'abort';
 
-    await startCmd.run(uri, errorMode);
+    await startCmd.run({ uri, errorMode });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -120,7 +120,8 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'invalid';
 
-    await expect(startCmd.run(uri, errorMode)).rejects.toThrow(
+    // @ts-expect-error - invalid errorMode
+    await expect(startCmd.run({ uri, errorMode })).rejects.toThrow(
       PineconeArgumentError,
     );
   });
@@ -130,7 +131,7 @@ describe('StartImportCommand', () => {
 
     const uri = 's3://my-bucket/my-file.csv';
 
-    await startCmd.run(uri, undefined);
+    await startCmd.run({ uri });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -146,8 +147,10 @@ describe('StartImportCommand', () => {
   test('should throw error when URI/1st arg is missing', async () => {
     const { startCmd } = setupResponse(undefined, false);
 
-    await expect(startCmd.run('')).rejects.toThrow(PineconeArgumentError);
-    await expect(startCmd.run('')).rejects.toThrow(
+    // @ts-expect-error - invalid URI
+    await expect(startCmd.run({})).rejects.toThrow(PineconeArgumentError);
+    // @ts-expect-error - invalid URI
+    await expect(startCmd.run({})).rejects.toThrow(
       '`uri` field is required and must start with the scheme of a supported storage provider.',
     );
   });

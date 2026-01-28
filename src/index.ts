@@ -6,7 +6,11 @@ export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
 
 // Interface exports
-export type { RerankOptions, ListModelsOptions } from './inference';
+export type {
+  RerankOptions,
+  ListModelsOptions,
+  EmbedOptions,
+} from './inference';
 export type {
   RerankResult,
   RerankResultUsage,
@@ -155,6 +159,7 @@ export type {
   SearchRecordsQuery,
   SearchRecordsRerank,
   SearchRecordsVector,
+  StartImportOptions,
 } from './data';
 export type {
   BackupList,

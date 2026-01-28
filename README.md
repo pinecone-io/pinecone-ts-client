@@ -387,7 +387,8 @@ To disable deletion protection, you can use the `configureIndex` operation.
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-await pc.configureIndex('deletion-protected-index', {
+await pc.configureIndex({
+  name: 'deletion-protected-index',
   deletionProtection: 'disabled',
 });
 ```
@@ -417,12 +418,14 @@ await pc.createIndex({
 });
 
 // Configure index with a new tag
-await pc.configureIndex('tag-index', {
+await pc.configureIndex({
+  name: 'tag-index',
   tags: { project: 'recommendation' }, // new index tag
 });
 
 // Delete an existing tag
-await pc.configureIndex('tag-index', {
+await pc.configureIndex({
+  name: 'tag-index',
   tags: { project: '' }, // Pass an empty string to an existing key to delete a tag; this will delete the `project` tag
 });
 ```
@@ -466,13 +469,10 @@ You can adjust the number of replicas or scale to a larger pod size (specified w
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.configureIndex('pod-index', {
-  spec: {
-    pod: {
-      replicas: 2,
-      podType: 'p1.x4',
-    },
-  },
+await pc.configureIndex({
+  name: 'pod-index',
+  podReplicas: 2,
+  podType: 'p1.x4',
 });
 const config = await pc.describeIndex('pod-index');
 // {
@@ -1056,7 +1056,10 @@ const index = pc.index({ name: indexName });
 
 const storageURI = 's3://my-bucket/my-directory/';
 
-await index.startImport(storageURI, 'continue'); // "Continue" will avoid aborting the operation if errors are encountered.
+await index.startImport({
+  uri: storageURI,
+  errorMode: 'continue', // "continue" will avoid aborting the operation if errors are encountered.
+});
 
 // {
 //   "id": "import-id"
@@ -1482,17 +1485,17 @@ const documents = [
   'Turkey is a classic meat to eat at American Thanksgiving.',
   'Many people enjoy the beautiful mosques in Turkey.',
 ];
-const docParameters = {
-  inputType: 'passage',
-  truncate: 'END',
-};
+
 async function generateDocEmbeddings() {
   try {
-    return await client.inference.embed(
-      embeddingModel,
-      documents,
-      docParameters,
-    );
+    return await client.inference.embed({
+      model: embeddingModel,
+      inputs: documents,
+      parameters: {
+        inputType: 'passage',
+        truncate: 'END',
+      },
+    });
   } catch (error) {
     console.error('Error generating embeddings:', error);
   }
@@ -1506,17 +1509,17 @@ generateDocEmbeddings().then((embeddingsResponse) => {
 // << Upsert documents into Pinecone >>
 
 const userQuery = ['How should I prepare my turkey?'];
-const queryParameters = {
-  inputType: 'query',
-  truncate: 'END',
-};
+
 async function generateQueryEmbeddings() {
   try {
-    return await client.inference.embed(
-      embeddingModel,
-      userQuery,
-      queryParameters,
-    );
+    return await client.inference.embed({
+      model: embeddingModel,
+      inputs: userQuery,
+      parameters: {
+        inputType: 'query',
+        truncate: 'END',
+      },
+    });
   } catch (error) {
     console.error('Error generating embeddings:', error);
   }
@@ -1553,11 +1556,11 @@ const myDocsStrings = [
 ];
 
 // Option 1 response
-const response = await pc.inference.rerank(
-  rerankingModel,
-  myQuery,
-  myDocsStrings,
-);
+const response = await pc.inference.rerank({
+  model: rerankingModel,
+  query: myQuery,
+  documents: myDocsStrings,
+});
 console.log(response);
 // {
 // model: 'bge-reranker-v2-m3',
@@ -1590,9 +1593,12 @@ const myDocsObjs = [
   },
 ];
 
-// Option 2: Options object declaring which custom key to rerank on
+// Option 2: Specify custom options
 // Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as the default)
-const rerankOptions = {
+const response = await pc.inference.rerank({
+  model: rerankingModel,
+  query: myQuery,
+  documents: myDocsObjs,
   topN: 3,
   returnDocuments: false,
   rankFields: ['body'],
@@ -1600,15 +1606,7 @@ const rerankOptions = {
     inputType: 'passage',
     truncate: 'END',
   },
-};
-
-// Option 2 response
-const response = await pc.inference.rerank(
-  rerankingModel,
-  myQuery,
-  myDocsObjs,
-  rerankOptions,
-);
+});
 console.log(response);
 // {
 // model: 'bge-reranker-v2-m3',
@@ -1805,8 +1803,9 @@ console.log(test);
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
-await pc.updateAssistant('test1', {
-  instructions: 'some new  instructions!',
+await pc.updateAssistant({
+  name: 'test1',
+  instructions: 'some new instructions!',
 });
 ```
 

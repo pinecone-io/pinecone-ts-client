@@ -24,7 +24,10 @@ describe('rerank', () => {
   test('Confirm throws error if no documents are passed', async () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
-    await expect(rerankCmd(rerankModel, myQuery, [], {})).rejects.toThrow(
+    await expect(
+      // @ts-expect-error - invalid documents
+      rerankCmd({ model: rerankModel, query: myQuery }),
+    ).rejects.toThrow(
       new PineconeArgumentError(
         'You must pass at least one document to rerank',
       ),
@@ -40,7 +43,11 @@ describe('rerank', () => {
       data: [{}],
       usage: { rerankUnits: 1 },
     });
-    await rerank(IA)(rerankModel, myQuery, myDocuments, {});
+    await rerank(IA)({
+      model: rerankModel,
+      query: myQuery,
+      documents: myDocuments,
+    });
 
     const expectedReq = {
       model: rerankModel,
@@ -64,8 +71,11 @@ describe('rerank', () => {
     const rankFields = ['title'];
 
     const IA = setupRerankResponse({ rerankResponse: {} });
-    await rerank(IA)(rerankModel, myQuery, myDocuments, {
-      rankFields,
+    await rerank(IA)({
+      model: rerankModel,
+      query: myQuery,
+      documents: myDocuments,
+      rankFields: rankFields,
     });
 
     const expectedReq = {
@@ -88,7 +98,7 @@ describe('rerank', () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
     await expect(
-      rerankCmd(rerankModel, myQuery, myDocuments, {}),
+      rerankCmd({ model: rerankModel, query: myQuery, documents: myDocuments }),
     ).rejects.toThrow(
       new PineconeArgumentError('You must pass a query to rerank'),
     );
@@ -100,7 +110,7 @@ describe('rerank', () => {
     const IA = setupRerankResponse();
     const rerankCmd = rerank(IA);
     await expect(
-      rerankCmd(rerankModel, myQuery, myDocuments, {}),
+      rerankCmd({ model: rerankModel, query: myQuery, documents: myDocuments }),
     ).rejects.toThrow(
       new PineconeArgumentError(
         'You must pass the name of a supported reranking model in order to rerank' +

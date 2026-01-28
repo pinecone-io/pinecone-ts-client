@@ -11,28 +11,28 @@ describe('configureIndex argument validations', () => {
 
   describe('required configurations', () => {
     test('should throw if index name is not provided', async () => {
-      // @ts-ignore
-      const toThrow = async () => await configureIndex(MIA)();
+      // @ts-expect-error - invalid options
+      const toThrow = async () => await configureIndex(MIA)({});
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` to configureIndex.',
+        'You must pass a non-empty string for `name` to configureIndex.',
       );
     });
 
     test('should throw if index name is empty string', async () => {
       const toThrow = async () =>
-        await configureIndex(MIA)('', { podReplicas: 2 });
+        await configureIndex(MIA)({ name: '', podReplicas: 2 });
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` to configureIndex.',
+        'You must pass a non-empty string for `name` to configureIndex.',
       );
     });
 
     test('should throw if spec or deletionProtection are not provided', async () => {
       const toThrowSpec = async () =>
-        await configureIndex(MIA)('index-name', {});
+        await configureIndex(MIA)({ name: 'index-name' });
 
       await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrowSpec).rejects.toThrowError(
@@ -41,7 +41,8 @@ describe('configureIndex argument validations', () => {
     });
 
     test('should throw if no configuration options are provided', async () => {
-      const toThrow = async () => await configureIndex(MIA)('index-name', {});
+      const toThrow = async () =>
+        await configureIndex(MIA)({ name: 'index-name' });
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(

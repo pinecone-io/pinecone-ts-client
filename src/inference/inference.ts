@@ -6,7 +6,7 @@ import {
 } from '../pinecone-generated-ts-fetch/inference';
 import { inferenceOperationsBuilder } from './inferenceOperationsBuilder';
 import { PineconeConfiguration } from '../data';
-import { embed } from './embed';
+import { embed, EmbedOptions } from './embed';
 import type { RerankOptions } from './rerank';
 import { rerank } from './rerank';
 import { getModel } from './getModel';
@@ -42,13 +42,14 @@ export class Inference {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const inputs = ['Who created the first computer?'];
-   * const model = 'multilingual-e5-large';
-   * const parameters = {
-   *   inputType: 'passage',
-   *   truncate: 'END',
-   * };
-   * const embeddings = await pc.inference.embed(model, inputs, parameters);
+   * const embeddings = await pc.inference.embed({
+   *   model: 'multilingual-e5-large',
+   *   inputs: ['Who created the first computer?'],
+   *   parameters: {
+   *     inputType: 'passage',
+   *     truncate: 'END',
+   *   }
+   * });
    * console.log(embeddings);
    * // {
    * //   model: 'multilingual-e5-large',
@@ -58,17 +59,11 @@ export class Inference {
    * // }
    * ```
    *
-   * @param model - The model to use for generating embeddings.
-   * @param inputs - A list of items to generate embeddings for.
-   * @param params - A dictionary of parameters to use when generating embeddings.
+   * @param options - The {@link EmbedOptions} for generating embeddings.
    * @returns A promise that resolves to {@link EmbeddingsList}.
    * */
-  embed(
-    model: string,
-    inputs: Array<string>,
-    params?: Record<string, string>,
-  ): Promise<EmbeddingsList> {
-    return this._embed(model, inputs, params);
+  embed(options: EmbedOptions): Promise<EmbeddingsList> {
+    return this._embed(options);
   }
 
   /**
@@ -79,7 +74,6 @@ export class Inference {
    * ````typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const rerankingModel = 'bge-reranker-v2-m3';
    * const myQuery = 'What are some good Turkey dishes for Thanksgiving?';
    *
    * // Option 1: Documents as an array of strings
@@ -91,11 +85,11 @@ export class Inference {
    * ];
    *
    * // Option 1 response
-   * const response = await pc.inference.rerank(
-   *   rerankingModel,
-   *   myQuery,
-   *   myDocsStrings
-   * );
+   * const response = await pc.inference.rerank({
+   *   model: 'bge-reranker-v2-m3',
+   *   query: myQuery,
+   *   documents: myDocsStrings
+   * });
    * console.log(response);
    * // {
    * // model: 'bge-reranker-v2-m3',
@@ -127,7 +121,10 @@ export class Inference {
    *
    * // Option 2: Options object declaring which custom key to rerank on
    * // Note: If no custom key is passed via `rankFields`, each doc must contain a `text` key, and that will act as the default)
-   * const rerankOptions = {
+   * const response = await pc.inference.rerank({
+   *   model: 'bge-reranker-v2-m3',
+   *   query: myQuery,
+   *   documents: myDocsObjs,
    *   topN: 3,
    *   returnDocuments: false,
    *   rankFields: ['body'],
@@ -135,15 +132,7 @@ export class Inference {
    *     inputType: 'passage',
    *     truncate: 'END',
    *   },
-   * };
-   *
-   * // Option 2 response
-   * const response = await pc.inference.rerank(
-   *   rerankingModel,
-   *   myQuery,
-   *   myDocsObjs,
-   *   rerankOptions
-   * );
+   * });
    * console.log(response);
    * // {
    * // model: 'bge-reranker-v2-m3',
@@ -156,19 +145,12 @@ export class Inference {
    * //}
    * ```
    *
-   * @param model - (Required) The model to use for reranking. Currently, the only available model is "[bge-reranker-v2-m3](https://docs.pinecone.io/models/bge-reranker-v2-m3)"}.
-   * @param query - (Required) The query to rerank documents against.
-   * @param documents - (Required) An array of documents to rerank. The array can either be an array of strings or
-   * an array of objects.
-   * @param options - (Optional) Additional options to send with the reranking request. See {@link RerankOptions} for more details.
+   * @param options - The {@link RerankOptions} for the reranking operation.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @returns A promise that resolves to {@link RerankResult}.
    * */
-  async rerank(
-    model: string,
-    query: string,
-    documents: Array<{ [key: string]: string } | string>,
-    options?: RerankOptions,
-  ): Promise<RerankResult> {
-    return this._rerank(model, query, documents, options);
+  async rerank(options: RerankOptions): Promise<RerankResult> {
+    return this._rerank(options);
   }
 
   /**

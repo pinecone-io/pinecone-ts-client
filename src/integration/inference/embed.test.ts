@@ -2,13 +2,13 @@ import { Pinecone } from '../../pinecone';
 
 describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
   let inputs: Array<string>;
-  let params: Record<string, string>;
+  let parameters: Record<string, string>;
   let model: string;
   let pinecone: Pinecone;
 
   beforeAll(() => {
     inputs = ['hello', 'world'];
-    params = {
+    parameters = {
       input_type: 'passage',
       truncate: 'END',
     };
@@ -18,7 +18,11 @@ describe('Integration Test: Pinecone Inference API embeddings endpoint', () => {
   });
 
   test('Confirm output types', async () => {
-    const response = await pinecone.inference.embed(model, inputs, params);
+    const response = await pinecone.inference.embed({
+      model,
+      inputs,
+      parameters,
+    });
     expect(response.model).toBeDefined();
     expect(response.data).toBeDefined();
     expect(response.usage).toBeDefined();
