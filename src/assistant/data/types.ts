@@ -1,17 +1,17 @@
 import type { UsageModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 /**
- * The `ListFilesOptions` interface describes the options (a single filter) that can be passed to the `listFiles` method.
+ * Options for filtering files in the list operation.
  */
 export interface ListFilesOptions {
   /**
-   * A filter object to filter the files returned by the `listFiles` method.
+   * Optionally filter which files can be retrieved using the following metadata fields.
    */
   filter?: object;
 }
 
 /**
- * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
+ * Response for listing files uploaded to an assistant.
  */
 export interface AssistantFilesList {
   files?: Array<AssistantFileModel>;
@@ -23,7 +23,7 @@ export interface AssistantFilesList {
  * - `Processing`: The file is currently being processed and is not yet available.
  * - `Available`: The file has been processed and is ready for use.
  * - `Deleting`: The file is in the process of being deleted.
- * - `ProcessingFailed`: There was an error encountered will processing.
+ * - `ProcessingFailed`: There was an error encountered during processing.
  */
 export const AssistantFileStatusEnum = {
   Processing: 'Processing',
@@ -35,7 +35,7 @@ export type AssistantFileStatusEnum =
   (typeof AssistantFileStatusEnum)[keyof typeof AssistantFileStatusEnum];
 
 /**
- * Represents a file associated with an assistant.
+ * The response format for a successful file upload request.
  */
 export interface AssistantFileModel {
   /**
@@ -47,7 +47,7 @@ export interface AssistantFileModel {
    */
   id: string;
   /**
-   * Optional metadata associated with the file.
+   * Metadata associated with the file.
    */
   metadata?: object | null;
   /**
@@ -67,11 +67,11 @@ export interface AssistantFileModel {
    */
   percentDone?: number | null;
   /**
-   * A signed url that gives you access to the underlying file
+   * A [signed URL](https://cloud.google.com/storage/docs/access-control/signed-urls) that provides temporary, read-only access to the underlying file. Anyone with the link can access the file, so treat it as sensitive data. Expires after a short time.
    */
   signedUrl?: string | null;
   /**
-   * A message describing any error during file processing, provided only if an error occurs.
+   * A message describing any error during file processing. Provided only if an error occurs.
    */
   errorMessage?: string | null;
   /**
@@ -130,7 +130,7 @@ export interface ChatContextOptions {
 }
 
 /**
- * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
+ * The list of queries / chats to chat an assistant
  */
 export interface ChatOptions {
   /**
@@ -139,22 +139,20 @@ export interface ChatOptions {
    */
   messages: MessagesModel;
   /**
-   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
-   * If empty, the assistant will default to using 'gpt-4o' model.
+   * The large language model to use for answer generation
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic,
-   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
    */
   temperature?: number;
 
   /**
-   * A filter against which documents can be retrieved.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
   filter?: object;
   /**
-   * If true, the assistant will be instructed to return a JSON response.
+   * If true, the assistant will be instructed to return a JSON response. Cannot be used with streaming.
    */
   jsonResponse?: boolean;
   /**
@@ -174,7 +172,7 @@ export interface ChatOptions {
 }
 
 /**
- * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
+ * Request format for sending a chat completion request to an assistant.
  */
 export interface ChatCompletionOptions {
   /**
@@ -183,35 +181,33 @@ export interface ChatCompletionOptions {
    */
   messages: MessagesModel;
   /**
-   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
-   * If empty, the assistant will default to using 'gpt-4o' model.
+   * The large language model to use for answer generation
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic,
-   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
    */
   temperature?: number;
   /**
-   * A filter against which documents can be retrieved.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
   filter?: object;
 }
 
 /**
- * The `ContextOptions` interface describes the query and optional filter to retrieve context snippets from an Assistant.
+ * Parameters to retrieve context from an assistant.
  */
 export interface ContextOptions {
   /**
-   * The query to retrieve context snippets for. Either `query` or `messages` should be provided.
+   * The query that is used to generate the context. Exactly one of query or messages should be provided.
    */
   query?: string;
   /**
-   * The list of {@link MessageModel} to use for generating the context. Either `query` or `messages` should be provided.
+   * The list of messages to use for generating the context. Exactly one of query or messages should be provided.
    */
   messages?: MessagesModel;
   /**
-   * Optional filter to apply to the context snippets.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
   filter?: object;
   /**
@@ -233,7 +229,7 @@ export interface ContextOptions {
 }
 
 /**
- * The `UploadFileOptions` interface describes the file path for uploading a file to an Assistant and optional metadata.
+ * Options for uploading a file to an assistant.
  */
 export interface UploadFileOptions {
   /**
@@ -241,7 +237,7 @@ export interface UploadFileOptions {
    */
   path: string;
   /**
-   * Optional metadata to attach to the file.
+   * Metadata to attach to the file.
    */
   metadata?: Record<string, string | number>;
   /**

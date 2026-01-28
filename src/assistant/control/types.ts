@@ -1,30 +1,27 @@
 /**
- * The `CreateAssistantOptions` interface describes the name and optional configurations that can be
- * passed when creating an Assistant.
+ * The configuration needed to create an assistant.
  */
 export interface CreateAssistantOptions {
   /**
-   * The name of the assistant. Resource name must be 1-45 characters long, start and end with an alphanumeric character,
-   * and consist only of lower case alphanumeric characters or '-'.
+   * The name of the assistant. Resource name must be 1-63 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
    */
   name: string;
   /**
-   * Optional instructions for the Assistant. Instructions can [customize tone, role, and focus]https://www.pinecone.io/learn/assistant-api-deep-dive/#Custom-Instructions.
+   * Description or directive for the assistant to apply to all responses.
    */
   instructions?: string;
   /**
-   * Optional metadata for the Assistant.
+   * Metadata associated with the assistant.
    */
   metadata?: Record<string, string>;
   /**
-   * Optional region for the Assistant. The region is where the Assistant is deployed. The default region is 'us'.
-   * The other option is 'eu'.
+   * The region to deploy the assistant in. Our current options are either us or eu. Defaults to us.
    */
   region?: string;
 }
 
 /**
- * Options for updating an assistant's properties.
+ * The configuration updates for the assistant.
  */
 export interface UpdateAssistantOptions {
   /**
@@ -33,18 +30,18 @@ export interface UpdateAssistantOptions {
   name: string;
 
   /**
-   * Optional instructions for the assistant to apply to all responses.
+   * Description or directive for the assistant to apply to all responses.
    */
   instructions?: string;
 
   /**
-   * Optional metadata associated with the assistant.
+   * Metadata associated with the assistant.
    */
   metadata?: Record<string, string>;
 }
 
 /**
- * The `UpdateAssistantResponse` interface describes the response object returned when updating an Assistant.
+ * Response from updating an assistant.
  */
 export interface UpdateAssistantResponse {
   /**
@@ -79,12 +76,11 @@ export type AssistantStatusEnum =
   (typeof AssistantStatusEnum)[keyof typeof AssistantStatusEnum];
 
 /**
- * The `AssistantModel` interface describes the configuration and status of a Pinecone Assistant.
+ * Describes the configuration and status of a Pinecone Assistant.
  */
 export interface AssistantModel {
   /**
-   * The name of the assistant. Resource name must be 1-45 characters long, start and end with an alphanumeric character,
-   * and consist only of lower case alphanumeric characters or '-'.
+   * The name of the assistant.
    */
   name: string;
   /**
@@ -92,11 +88,11 @@ export interface AssistantModel {
    */
   status: AssistantStatusEnum;
   /**
-   * Optional description or directive for the assistant to apply to all responses.
+   * Description or directive for the assistant to apply to all responses.
    */
   instructions?: string | null;
   /**
-   * Optional metadata associated with the assistant.
+   * Metadata associated with the assistant.
    */
   metadata?: object | null;
   /**
@@ -114,7 +110,7 @@ export interface AssistantModel {
 }
 
 /**
- * Represents a list of `AssistantModel` objects.
+ * Response from listing assistants.
  */
 export interface AssistantList {
   /**
@@ -124,19 +120,19 @@ export interface AssistantList {
 }
 
 /**
- * The `EvaluateOptions` interface defines the structure of the input object for the `evaluate` method.
+ * The request for the alignment evaluation.
  */
 export interface EvaluateOptions {
   /**
-   * The question to evaluate.
+   * The question for which the answer was generated.
    */
   question: string;
   /**
-   * The answer to evaluate.
+   * The generated answer.
    */
   answer: string;
   /**
-   * The ground truth answer against which evaluate the question-answer pair.
+   * The ground truth answer to the question.
    */
   groundTruth: string;
 }
