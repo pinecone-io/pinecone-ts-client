@@ -53,7 +53,7 @@ export class StartImportCommand {
           '`errorMode` must be one of "continue" or "abort"',
         );
       }
-      if (options.errorMode?.toLowerCase() == 'abort') {
+      if (options.errorMode.toLowerCase() == 'abort') {
         error = 'abort';
       }
     }
