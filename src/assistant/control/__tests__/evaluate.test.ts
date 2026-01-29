@@ -26,6 +26,22 @@ describe('AssistantCtrlPlane', () => {
   });
 
   describe('evaluate', () => {
+    test('throws error when options is null or undefined', async () => {
+      await expect(
+        // @ts-expect-error - invalid options
+        evaluate(metricsApi)(null),
+      ).rejects.toThrow(
+        'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+      );
+
+      await expect(
+        // @ts-expect-error - invalid options
+        evaluate(metricsApi)(undefined),
+      ).rejects.toThrow(
+        'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+      );
+    });
+
     test('throws error when empty strings are provided', async () => {
       const emptyRequests = [
         {

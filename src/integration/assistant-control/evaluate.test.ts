@@ -66,6 +66,20 @@ describe('evaluate happy path', () => {
 });
 
 describe('evaluate error paths', () => {
+  test('evaluate with null options', async () => {
+    // @ts-expect-error - invalid options
+    await expect(pinecone.evaluate(null)).rejects.toThrow(
+      'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+    );
+  });
+
+  test('evaluate with undefined options', async () => {
+    // @ts-expect-error - invalid options
+    await expect(pinecone.evaluate(undefined)).rejects.toThrow(
+      'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+    );
+  });
+
   test('evaluate with empty question', async () => {
     await expect(
       pinecone.evaluate({
