@@ -30,8 +30,7 @@ export const chat = (
         jsonResponse: options.jsonResponse,
         includeHighlights: options.includeHighlights,
         contextOptions: {
-          // use topK from contextOptions if provided, otherwise use topK from options
-          topK: options.contextOptions?.topK || options.topK,
+          topK: options.contextOptions?.topK,
           snippetSize: options.contextOptions?.snippetSize,
           multimodal: options.contextOptions?.multimodal,
           includeBinaryContent: options.contextOptions?.includeBinaryContent,

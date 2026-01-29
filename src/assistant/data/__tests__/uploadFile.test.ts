@@ -102,6 +102,65 @@ describe('uploadFileInternal', () => {
     );
   });
 
+  test('correctly builds URL with multimodal flag set to true', async () => {
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt', multimodal: true });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=true',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          'Api-Key': 'test-api-key',
+          'User-Agent': 'TestUserAgent',
+          'X-Pinecone-Api-Version': expect.any(String),
+        }),
+      }),
+    );
+  });
+
+  test('correctly builds URL with multimodal flag set to false', async () => {
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt', multimodal: false });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=false',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          'Api-Key': 'test-api-key',
+          'User-Agent': 'TestUserAgent',
+          'X-Pinecone-Api-Version': expect.any(String),
+        }),
+      }),
+    );
+  });
+
+  test('correctly builds URL with both metadata and multimodal', async () => {
+    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+    const metadata = { key: 'value' };
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt', metadata, multimodal: true });
+
+    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
+    expect(mockFetch).toHaveBeenCalledWith(
+      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}&multimodal=true`,
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          'Api-Key': 'test-api-key',
+          'User-Agent': 'TestUserAgent',
+          'X-Pinecone-Api-Version': expect.any(String),
+        }),
+      }),
+    );
+  });
+
   test('includes correct headers in request', async () => {
     buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);

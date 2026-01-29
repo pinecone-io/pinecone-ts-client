@@ -1,4 +1,7 @@
-import type { UsageModel } from '../../pinecone-generated-ts-fetch/assistant_data';
+import type {
+  AssistantFileModel,
+  UsageModel,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 
 /**
  * Options for filtering files in the list operation.
@@ -14,70 +17,10 @@ export interface ListFilesOptions {
  * Response for listing files uploaded to an assistant.
  */
 export interface AssistantFilesList {
+  /**
+   * The list of files associated with the assistant.
+   */
   files?: Array<AssistantFileModel>;
-}
-
-/**
- * Enum representing the possible statuses of an assistant file.
- *
- * - `Processing`: The file is currently being processed and is not yet available.
- * - `Available`: The file has been processed and is ready for use.
- * - `Deleting`: The file is in the process of being deleted.
- * - `ProcessingFailed`: There was an error encountered during processing.
- */
-export const AssistantFileStatusEnum = {
-  Processing: 'Processing',
-  Available: 'Available',
-  Deleting: 'Deleting',
-  ProcessingFailed: 'ProcessingFailed',
-} as const;
-export type AssistantFileStatusEnum =
-  (typeof AssistantFileStatusEnum)[keyof typeof AssistantFileStatusEnum];
-
-/**
- * The response format for a successful file upload request.
- */
-export interface AssistantFileModel {
-  /**
-   * The name of the file.
-   */
-  name: string;
-  /**
-   * The unique identifier for the file.
-   */
-  id: string;
-  /**
-   * Metadata associated with the file.
-   */
-  metadata?: object | null;
-  /**
-   * The date and time the file was created.
-   */
-  createdOn?: Date;
-  /**
-   * The date and time the file was last updated.
-   */
-  updatedOn?: Date;
-  /**
-   * The current status of the file.
-   */
-  status?: AssistantFileStatusEnum;
-  /**
-   * The percentage of the file that has been processed
-   */
-  percentDone?: number | null;
-  /**
-   * A [signed URL](https://cloud.google.com/storage/docs/access-control/signed-urls) that provides temporary, read-only access to the underlying file. Anyone with the link can access the file, so treat it as sensitive data. Expires after a short time.
-   */
-  signedUrl?: string | null;
-  /**
-   * A message describing any error during file processing. Provided only if an error occurs.
-   */
-  errorMessage?: string | null;
-  /**
-   * Indicates whether the file was processed as multimodal.
-   */
-  multimodal?: boolean;
 }
 
 /**
@@ -160,12 +103,6 @@ export interface ChatOptions {
    */
   includeHighlights?: boolean;
   /**
-   * The maximum number of context snippets to use. Default is 16. Maximum is 64.
-   * `topK` can also be passed through `contextOptions`. If both are passed, `contextOptions.topK` will be used.
-   * @deprecated Use `contextOptions.topK` instead.
-   */
-  topK?: number;
-  /**
    * Controls the context snippets sent to the LLM.
    */
   contextOptions?: ChatContextOptions;
@@ -245,6 +182,23 @@ export interface UploadFileOptions {
    */
   multimodal?: boolean;
 }
+
+/**
+ * Enum representing the reasons why a response generation may finish.
+ *
+ * - `Stop`: The response was completed normally.
+ * - `Length`: The response was truncated due to length constraints.
+ * - `ContentFilter`: The response was stopped by a content filter.
+ * - `FunctionCall`: The response generation was interrupted by a function call.
+ */
+export const FinishReasonEnum = {
+  Stop: 'stop',
+  Length: 'length',
+  ContentFilter: 'content_filter',
+  FunctionCall: 'function_call',
+} as const;
+export type FinishReasonEnum =
+  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];
 
 /**
  * A discriminated union representing a chunked response in a streamed chat.
@@ -401,20 +355,3 @@ export interface ChoiceModel {
     content?: string;
   };
 }
-
-/**
- * Enum representing the reasons why a response generation may finish.
- *
- * - `Stop`: The response was completed normally.
- * - `Length`: The response was truncated due to length constraints.
- * - `ContentFilter`: The response was stopped by a content filter.
- * - `FunctionCall`: The response generation was interrupted by a function call.
- */
-export const FinishReasonEnum = {
-  Stop: 'stop',
-  Length: 'length',
-  ContentFilter: 'content_filter',
-  FunctionCall: 'function_call',
-} as const;
-export type FinishReasonEnum =
-  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];

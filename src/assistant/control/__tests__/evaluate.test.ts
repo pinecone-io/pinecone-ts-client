@@ -51,5 +51,24 @@ describe('AssistantCtrlPlane', () => {
         );
       }
     });
+
+    test('calls metricsAlignment with correct parameters', async () => {
+      const request = {
+        question: 'What is the capital of France?',
+        answer: 'Paris',
+        groundTruth: 'The capital of France is Paris.',
+      };
+
+      await evaluate(metricsApi)(request);
+
+      expect(metricsApi.metricsAlignment).toHaveBeenCalledWith({
+        xPineconeApiVersion: expect.any(String),
+        alignmentRequest: {
+          question: request.question,
+          answer: request.answer,
+          groundTruthAnswer: request.groundTruth,
+        },
+      });
+    });
   });
 });

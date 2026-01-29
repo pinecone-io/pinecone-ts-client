@@ -11,8 +11,7 @@ export type {
   CreateAssistantOptions,
   UpdateAssistantOptions,
   UpdateAssistantResponse,
-  AssistantStatusEnum,
-  AssistantModel,
   AssistantList,
+  AssistantModel,
   EvaluateOptions,
 } from './types';

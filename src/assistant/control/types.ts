@@ -1,3 +1,8 @@
+import type { Assistant as AssistantModel } from '../../pinecone-generated-ts-fetch/assistant_control';
+
+// Re-export the generated Assistant type as AssistantModel for consistency
+export type { AssistantModel };
+
 /**
  * The configuration needed to create an assistant.
  */
@@ -56,57 +61,6 @@ export interface UpdateAssistantResponse {
    * Metadata associated with the assistant.
    */
   metadata?: object;
-}
-
-/**
- * Enum representing the possible statuses of an assistant.
- *
- * - `Initializing`: The assistant is initializing and is not yet ready to handle requests.
- * - `Failed`: The assistant encountered an error and cannot proceed.
- * - `Ready`: The assistant is ready to handle requests.
- * - `Terminating`: The assistant is shutting down and will soon be unavailable.
- */
-export const AssistantStatusEnum = {
-  Initializing: 'Initializing',
-  Failed: 'Failed',
-  Ready: 'Ready',
-  Terminating: 'Terminating',
-} as const;
-export type AssistantStatusEnum =
-  (typeof AssistantStatusEnum)[keyof typeof AssistantStatusEnum];
-
-/**
- * Describes the configuration and status of a Pinecone Assistant.
- */
-export interface AssistantModel {
-  /**
-   * The name of the assistant.
-   */
-  name: string;
-  /**
-   * The current status of the assistant. Can be one of 'Initializing', 'Failed', 'Ready', or 'Terminating'.
-   */
-  status: AssistantStatusEnum;
-  /**
-   * Description or directive for the assistant to apply to all responses.
-   */
-  instructions?: string | null;
-  /**
-   * Metadata associated with the assistant.
-   */
-  metadata?: object | null;
-  /**
-   * The host where the assistant is deployed.
-   */
-  host?: string;
-  /**
-   * The date and time the assistant was created.
-   */
-  createdAt?: Date;
-  /**
-   * The date and time the assistant was last updated.
-   */
-  updatedAt?: Date;
 }
 
 /**

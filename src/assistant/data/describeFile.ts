@@ -1,8 +1,7 @@
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type { AssistantFileModel } from './types';
+import type { AssistantFileModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { PineconeArgumentError } from '../../errors';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_data';
-import { mapAssistantFileStatus } from './fileStatus';
 
 /**
  * Describes a file uploaded to an Assistant.
@@ -37,7 +36,7 @@ import { mapAssistantFileStatus } from './fileStatus';
  *
  * @param assistantName - The name of the Assistant that the file is uploaded to.
  * @param api - The API object to use to send the request.
- * @returns A promise that resolves to a {@link AssistantFile} object containing the file details.
+ * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
  */
 export const describeFile = (
   assistantName: string,
@@ -53,15 +52,11 @@ export const describeFile = (
       );
     }
     const api = await apiProvider.provideData();
-    const response = await api.describeFile({
+    return await api.describeFile({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       assistantName: assistantName,
       assistantFileId: fileId,
       includeUrl: includeUrl.toString(),
     });
-    return {
-      ...response,
-      status: mapAssistantFileStatus(response.status),
-    };
   };
 };

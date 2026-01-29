@@ -1,4 +1,5 @@
 import {
+  AssistantFileModel,
   AssistantFileModelFromJSON,
   X_PINECONE_API_VERSION,
   JSONApiResponse,
@@ -8,10 +9,9 @@ import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { handleApiError, PineconeArgumentError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch } from '../../utils';
-import type { AssistantFileModel, UploadFileOptions } from './types';
+import type { UploadFileOptions } from './types';
 import fs from 'fs';
 import path from 'path';
-import { mapAssistantFileStatus } from './fileStatus';
 
 export const uploadFile = (
   assistantName: string,
@@ -57,14 +57,9 @@ export const uploadFile = (
     });
 
     if (response.ok) {
-      const assistantFileModel = await new JSONApiResponse(
-        response,
-        (jsonValue) => AssistantFileModelFromJSON(jsonValue),
+      return await new JSONApiResponse(response, (jsonValue) =>
+        AssistantFileModelFromJSON(jsonValue),
       ).value();
-      return {
-        ...assistantFileModel,
-        status: mapAssistantFileStatus(assistantFileModel.status),
-      };
     } else {
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),

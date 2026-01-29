@@ -8,7 +8,7 @@ export const deleteAssistant = (api: ManageAssistantsControlApi) => {
   return async (assistantName: string): Promise<void> => {
     if (!assistantName) {
       throw new PineconeArgumentError(
-        'You must pass the name of an assistant to update.',
+        'You must pass the name of an assistant to delete.',
       );
     }
     return await api.deleteAssistant({

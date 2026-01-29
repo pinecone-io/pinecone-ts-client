@@ -19,22 +19,28 @@ import { context } from './data/context';
 import { AssistantOptions } from '../types';
 import { PineconeArgumentError } from '../errors';
 
+// Export input option types
 export type {
   CreateAssistantOptions,
   UpdateAssistantOptions,
   UpdateAssistantResponse,
-  AssistantStatusEnum,
-  AssistantModel,
   AssistantList,
+  AssistantModel,
   EvaluateOptions,
 } from './control/types';
+
+// Export input option types for data operations
 export type {
   ChatOptions,
   ChatContextOptions,
   ChatCompletionOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+  AssistantFilesList,
+  MessagesModel,
+  MessageModel,
   ChatModelEnum,
-  ChoiceModel,
-  FinishReasonEnum,
   StreamedChatResponse,
   StreamedChatCompletionResponse,
   BaseChunk,
@@ -42,14 +48,25 @@ export type {
   ContentChunk,
   CitationChunk,
   MessageEndChunk,
-  ContextOptions,
-  ListFilesOptions,
-  UploadFileOptions,
-  AssistantFileModel,
-  AssistantFileStatusEnum,
-  AssistantFilesList,
-  MessagesModel,
+  ChoiceModel,
+  FinishReasonEnum,
 } from './data/types';
+
+// Export generated data response types
+export type {
+  AssistantFileModel,
+  ChatModel,
+  ChatCompletionModel,
+  ContextModel,
+  UsageModel,
+  CitationModel,
+  SnippetModel,
+  TextSnippetModel,
+  MultiModalSnippetModel,
+  ReferenceModel,
+  HighlightModel,
+} from '../pinecone-generated-ts-fetch/assistant_data';
+
 export { ChatStream } from './chatStream';
 
 /**
