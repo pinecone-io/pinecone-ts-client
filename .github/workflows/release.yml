@@ -191,6 +191,7 @@ jobs:
     needs: version-and-release
     if: ${{ github.event.inputs.releaseMode == 'prod' && needs.version-and-release.result == 'success' }}
     uses: ./.github/workflows/build-and-publish-docs.yml
-    secrets: inherit
+    secrets:
+      SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
     with:
       ref: ${{ github.event.inputs.ref }}
