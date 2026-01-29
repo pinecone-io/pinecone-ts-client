@@ -1,14 +1,15 @@
 import {
   ManageAssistantsApi as ManageAssistantsControlApi,
   X_PINECONE_API_VERSION,
+  Assistant as AssistantModel,
 } from '../../pinecone-generated-ts-fetch/assistant_control';
-import type { CreateAssistantOptions, AssistantModel } from './types';
+import type { CreateAssistantOptions } from './types';
 import { PineconeArgumentError } from '../../errors';
 
 export const createAssistant = (api: ManageAssistantsControlApi) => {
   return async (options: CreateAssistantOptions): Promise<AssistantModel> => {
     validateCreateAssistantOptions(options);
-    return (await api.createAssistant({
+    return await api.createAssistant({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       createAssistantRequest: {
         name: options.name,
@@ -16,7 +17,7 @@ export const createAssistant = (api: ManageAssistantsControlApi) => {
         metadata: options?.metadata,
         region: options?.region,
       },
-    })) as AssistantModel;
+    });
   };
 };
 

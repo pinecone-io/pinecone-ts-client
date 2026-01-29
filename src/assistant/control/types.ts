@@ -1,30 +1,32 @@
+import type { Assistant as AssistantModel } from '../../pinecone-generated-ts-fetch/assistant_control';
+
+// Re-export the generated Assistant type as AssistantModel for consistency
+export type { AssistantModel };
+
 /**
- * The `CreateAssistantOptions` interface describes the name and optional configurations that can be
- * passed when creating an Assistant.
+ * The configuration needed to create an assistant.
  */
 export interface CreateAssistantOptions {
   /**
-   * The name of the assistant. Resource name must be 1-45 characters long, start and end with an alphanumeric character,
-   * and consist only of lower case alphanumeric characters or '-'.
+   * The name of the assistant. Resource name must be 1-63 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
    */
   name: string;
   /**
-   * Optional instructions for the Assistant. Instructions can [customize tone, role, and focus]https://www.pinecone.io/learn/assistant-api-deep-dive/#Custom-Instructions.
+   * Description or directive for the assistant to apply to all responses.
    */
   instructions?: string;
   /**
-   * Optional metadata for the Assistant.
+   * Metadata associated with the assistant.
    */
   metadata?: Record<string, string>;
   /**
-   * Optional region for the Assistant. The region is where the Assistant is deployed. The default region is 'us'.
-   * The other option is 'eu'.
+   * The region to deploy the assistant in. Our current options are either us or eu. Defaults to us.
    */
   region?: string;
 }
 
 /**
- * Options for updating an assistant's properties.
+ * The configuration updates for the assistant.
  */
 export interface UpdateAssistantOptions {
   /**
@@ -33,18 +35,18 @@ export interface UpdateAssistantOptions {
   name: string;
 
   /**
-   * Optional instructions for the assistant to apply to all responses.
+   * Description or directive for the assistant to apply to all responses.
    */
   instructions?: string;
 
   /**
-   * Optional metadata associated with the assistant.
+   * Metadata associated with the assistant.
    */
   metadata?: Record<string, string>;
 }
 
 /**
- * The `UpdateAssistantResponse` interface describes the response object returned when updating an Assistant.
+ * Response from updating an assistant.
  */
 export interface UpdateAssistantResponse {
   /**
@@ -62,59 +64,7 @@ export interface UpdateAssistantResponse {
 }
 
 /**
- * Enum representing the possible statuses of an assistant.
- *
- * - `Initializing`: The assistant is initializing and is not yet ready to handle requests.
- * - `Failed`: The assistant encountered an error and cannot proceed.
- * - `Ready`: The assistant is ready to handle requests.
- * - `Terminating`: The assistant is shutting down and will soon be unavailable.
- */
-export const AssistantStatusEnum = {
-  Initializing: 'Initializing',
-  Failed: 'Failed',
-  Ready: 'Ready',
-  Terminating: 'Terminating',
-} as const;
-export type AssistantStatusEnum =
-  (typeof AssistantStatusEnum)[keyof typeof AssistantStatusEnum];
-
-/**
- * The `AssistantModel` interface describes the configuration and status of a Pinecone Assistant.
- */
-export interface AssistantModel {
-  /**
-   * The name of the assistant. Resource name must be 1-45 characters long, start and end with an alphanumeric character,
-   * and consist only of lower case alphanumeric characters or '-'.
-   */
-  name: string;
-  /**
-   * The current status of the assistant. Can be one of 'Initializing', 'Failed', 'Ready', or 'Terminating'.
-   */
-  status: AssistantStatusEnum;
-  /**
-   * Optional description or directive for the assistant to apply to all responses.
-   */
-  instructions?: string | null;
-  /**
-   * Optional metadata associated with the assistant.
-   */
-  metadata?: object | null;
-  /**
-   * The host where the assistant is deployed.
-   */
-  host?: string;
-  /**
-   * The date and time the assistant was created.
-   */
-  createdAt?: Date;
-  /**
-   * The date and time the assistant was last updated.
-   */
-  updatedAt?: Date;
-}
-
-/**
- * Represents a list of `AssistantModel` objects.
+ * Response from listing assistants.
  */
 export interface AssistantList {
   /**
@@ -124,19 +74,19 @@ export interface AssistantList {
 }
 
 /**
- * The `AssistantEval` interface defines the structure of the input object for the `evaluate` method.
+ * The request for the alignment evaluation.
  */
-export interface AssistantEval {
+export interface EvaluateOptions {
   /**
-   * The question to evaluate.
+   * The question for which the answer was generated.
    */
   question: string;
   /**
-   * The answer to evaluate.
+   * The generated answer.
    */
   answer: string;
   /**
-   * The ground truth answer against which evaluate the question-answer pair.
+   * The ground truth answer to the question.
    */
   groundTruth: string;
 }

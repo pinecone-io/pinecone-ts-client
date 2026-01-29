@@ -26,6 +26,22 @@ describe('AssistantCtrlPlane', () => {
   });
 
   describe('evaluate', () => {
+    test('throws error when options is null or undefined', async () => {
+      await expect(
+        // @ts-expect-error - invalid options
+        evaluate(metricsApi)(null),
+      ).rejects.toThrow(
+        'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+      );
+
+      await expect(
+        // @ts-expect-error - invalid options
+        evaluate(metricsApi)(undefined),
+      ).rejects.toThrow(
+        'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
+      );
+    });
+
     test('throws error when empty strings are provided', async () => {
       const emptyRequests = [
         {
@@ -50,6 +66,25 @@ describe('AssistantCtrlPlane', () => {
           'Invalid input. Question, answer, and groundTruth must be non-empty strings.',
         );
       }
+    });
+
+    test('calls metricsAlignment with correct parameters', async () => {
+      const request = {
+        question: 'What is the capital of France?',
+        answer: 'Paris',
+        groundTruth: 'The capital of France is Paris.',
+      };
+
+      await evaluate(metricsApi)(request);
+
+      expect(metricsApi.metricsAlignment).toHaveBeenCalledWith({
+        xPineconeApiVersion: expect.any(String),
+        alignmentRequest: {
+          question: request.question,
+          answer: request.answer,
+          groundTruthAnswer: request.groundTruth,
+        },
+      });
     });
   });
 });

@@ -4,6 +4,7 @@ import type {
   ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -26,7 +27,9 @@ export const listPaginated = (
   const validator = (options: ListOptions) => {
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {
-      throw new Error('`limit` property must be greater than 0');
+      throw new PineconeArgumentError(
+        '`limit` property must be greater than 0',
+      );
     }
   };
 

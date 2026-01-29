@@ -35,16 +35,14 @@ export const chatStream = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
-    // format context options
+    // Format context options if any are provided
     let contextOptions: object | void = undefined;
-    if (options.contextOptions?.topK || options.contextOptions?.snippetSize) {
+    if (options.contextOptions) {
       contextOptions = {
-        top_k: options.contextOptions?.topK || options.topK,
-        snippet_size: options.contextOptions?.snippetSize,
-      };
-    } else if (options.topK) {
-      contextOptions = {
-        top_k: options.topK,
+        top_k: options.contextOptions.topK,
+        snippet_size: options.contextOptions.snippetSize,
+        multimodal: options.contextOptions.multimodal,
+        include_binary_content: options.contextOptions.includeBinaryContent,
       };
     }
 

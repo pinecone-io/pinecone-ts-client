@@ -52,6 +52,62 @@ describe('contextClosed', () => {
         messages: undefined,
         topK: undefined,
         snippetSize: undefined,
+        multimodal: undefined,
+        includeBinaryContent: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
+
+  test('passes multimodal parameters correctly', async () => {
+    const assistantName = 'test-assistant';
+    const contextFn = context(assistantName, asstOperationsProvider);
+
+    const options = {
+      query: 'test query',
+      multimodal: true,
+      includeBinaryContent: true,
+    };
+
+    await contextFn(options);
+
+    expect(mockApi.contextAssistant).toHaveBeenCalledWith({
+      assistantName,
+      contextRequest: {
+        query: options.query,
+        filter: undefined,
+        messages: undefined,
+        topK: undefined,
+        snippetSize: undefined,
+        multimodal: true,
+        includeBinaryContent: true,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
+
+  test('passes multimodal false and includeBinaryContent false correctly', async () => {
+    const assistantName = 'test-assistant';
+    const contextFn = context(assistantName, asstOperationsProvider);
+
+    const options = {
+      query: 'test query',
+      multimodal: false,
+      includeBinaryContent: false,
+    };
+
+    await contextFn(options);
+
+    expect(mockApi.contextAssistant).toHaveBeenCalledWith({
+      assistantName,
+      contextRequest: {
+        query: options.query,
+        filter: undefined,
+        messages: undefined,
+        topK: undefined,
+        snippetSize: undefined,
+        multimodal: false,
+        includeBinaryContent: false,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
@@ -83,6 +139,38 @@ describe('contextClosed', () => {
         messages: undefined,
         topK: undefined,
         snippetSize: undefined,
+        multimodal: undefined,
+        includeBinaryContent: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
+
+  test('passes all optional parameters correctly', async () => {
+    const assistantName = 'test-assistant';
+    const contextFn = context(assistantName, asstOperationsProvider);
+
+    const options = {
+      query: 'test query',
+      topK: 20,
+      snippetSize: 1024,
+      filter: { category: 'docs' },
+      multimodal: true,
+      includeBinaryContent: false,
+    };
+
+    await contextFn(options);
+
+    expect(mockApi.contextAssistant).toHaveBeenCalledWith({
+      assistantName,
+      contextRequest: {
+        query: options.query,
+        filter: options.filter,
+        messages: undefined,
+        topK: 20,
+        snippetSize: 1024,
+        multimodal: true,
+        includeBinaryContent: false,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

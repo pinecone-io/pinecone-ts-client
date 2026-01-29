@@ -37,6 +37,7 @@ import {
   updateAssistant,
   UpdateAssistantOptions,
   listAssistants,
+  evaluate,
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
@@ -51,6 +52,7 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
+import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
@@ -129,6 +131,8 @@ export class Pinecone {
   /** @hidden */
   private _listAssistants: ReturnType<typeof listAssistants>;
   /** @hidden */
+  private _evaluate: ReturnType<typeof evaluate>;
+  /** @hidden */
   private _createBackup: ReturnType<typeof createBackup>;
   /** @hidden */
   private _createIndexFromBackup: ReturnType<typeof createIndexFromBackup>;
@@ -175,6 +179,7 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const asstControlApi = asstControlOperationsBuilder(this.config);
+    const asstMetricsApi = asstMetricsOperationsBuilder(this.config);
 
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
@@ -192,6 +197,7 @@ export class Pinecone {
     this._updateAssistant = updateAssistant(asstControlApi);
     this._describeAssistant = describeAssistant(asstControlApi);
     this._listAssistants = listAssistants(asstControlApi);
+    this._evaluate = evaluate(asstMetricsApi);
 
     this._createBackup = createBackup(api);
     this._createIndexFromBackup = createIndexFromBackup(api);
@@ -683,8 +689,8 @@ export class Pinecone {
    * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
    * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
    * and determines where the Assistant will be hosted.
-   * @throws Error if the Assistant API is not initialized.
-   * @throws Error if an invalid region is provided.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async createAssistant(options: CreateAssistantOptions) {
@@ -708,7 +714,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to be deleted.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    */
   async deleteAssistant(assistantName: string) {
     await this._deleteAssistant(assistantName);
@@ -737,7 +744,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to retrieve.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async describeAssistant(assistantName: string) {
@@ -774,7 +782,7 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
    */
   async listAssistants() {
@@ -815,11 +823,46 @@ export class Pinecone {
    *
    * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
   updateAssistant(options: UpdateAssistantOptions) {
     return this._updateAssistant(options);
+  }
+
+  /**
+   * Evaluates the alignment of a generated answer against a ground truth answer.
+   * Returns metrics for correctness (precision), completeness (recall), and alignment (harmonic mean).
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const result = await pc.evaluate({
+   *   question: "What is the capital of France?",
+   *   answer: "The capital of France is Paris.",
+   *   groundTruth: "Paris is the capital and most populous city of France."
+   * });
+   * console.log(result);
+   * // {
+   * //   metrics: {
+   * //     correctness: 0.95,
+   * //     completeness: 0.90,
+   * //     alignment: 0.92
+   * //   },
+   * //   reasoning: { evaluatedFacts: [...] },
+   * //   usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 }
+   * // }
+   * ```
+   *
+   * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
+   */
+  evaluate(options: { question: string; answer: string; groundTruth: string }) {
+    return this._evaluate(options);
   }
 
   /** @internal */

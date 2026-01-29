@@ -40,12 +40,21 @@ export type {
   StartImportResponse,
 } from './pinecone-generated-ts-fetch/db_data';
 export type {
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+  UpdateAssistantResponse,
   AssistantList,
   AssistantModel,
-  AssistantStatusEnum,
+  EvaluateOptions,
   ChatOptions,
   ChatContextOptions,
   ChatCompletionOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+  AssistantFilesList,
+  MessagesModel,
+  MessageModel,
   ChatModelEnum,
   ChoiceModel,
   FinishReasonEnum,
@@ -56,16 +65,6 @@ export type {
   ContentChunk,
   CitationChunk,
   MessageEndChunk,
-  ContextOptions,
-  AssistantFileModel,
-  AssistantFileStatusEnum,
-  AssistantFilesList,
-  ListFilesOptions,
-  UploadFileOptions,
-  CreateAssistantOptions,
-  UpdateAssistantOptions,
-  UpdateAssistantResponse,
-  MessagesModel,
 } from './assistant';
 export type {
   ChatModel,
@@ -74,7 +73,6 @@ export type {
   ContextModel,
   HighlightModel,
   ImageModel,
-  MessageModel,
   MultiModalContentBlocksModel,
   MultiModalContentImageBlockModel,
   MultiModalContentTextBlockModel,
@@ -89,7 +87,16 @@ export type {
   DocxReferenceModel,
   JsonReferenceModel,
   MarkdownReferenceModel,
+  AssistantFileModel,
 } from './pinecone-generated-ts-fetch/assistant_data';
+export type {
+  AlignmentResponse,
+  Metrics,
+  Reasoning,
+  EvaluatedFact,
+  Fact,
+  TokenCounts,
+} from './pinecone-generated-ts-fetch/assistant_evaluation';
 
 // Type exports
 export type {

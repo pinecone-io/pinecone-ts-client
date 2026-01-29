@@ -1,92 +1,48 @@
-import type { UsageModel } from '../../pinecone-generated-ts-fetch/assistant_data';
+import type {
+  AssistantFileModel,
+  UsageModel,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 
 /**
- * The `ListFilesOptions` interface describes the options (a single filter) that can be passed to the `listFiles` method.
+ * Options for filtering files in the list operation.
  */
 export interface ListFilesOptions {
   /**
-   * A filter object to filter the files returned by the `listFiles` method.
+   * Optionally filter which files can be retrieved using the following metadata fields.
    */
   filter?: object;
 }
 
 /**
- * The `AssistantFilesList` interface describes the response for listing files uploaded to an assistant.
+ * Response for listing files uploaded to an assistant.
  */
 export interface AssistantFilesList {
+  /**
+   * The list of files associated with the assistant.
+   */
   files?: Array<AssistantFileModel>;
 }
 
 /**
- * Enum representing the possible statuses of an assistant file.
+ * An enum constant representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
  *
- * - `Processing`: The file is currently being processed and is not yet available.
- * - `Available`: The file has been processed and is ready for use.
- * - `Deleting`: The file is in the process of being deleted.
- * - `ProcessingFailed`: There was an error encountered will processing.
- */
-export const AssistantFileStatusEnum = {
-  Processing: 'Processing',
-  Available: 'Available',
-  Deleting: 'Deleting',
-  ProcessingFailed: 'ProcessingFailed',
-} as const;
-export type AssistantFileStatusEnum =
-  (typeof AssistantFileStatusEnum)[keyof typeof AssistantFileStatusEnum];
-
-/**
- * Represents a file associated with an assistant.
- */
-export interface AssistantFileModel {
-  /**
-   * The name of the file.
-   */
-  name: string;
-  /**
-   * The unique identifier for the file.
-   */
-  id: string;
-  /**
-   * Optional metadata associated with the file.
-   */
-  metadata?: object | null;
-  /**
-   * The date and time the file was created.
-   */
-  createdOn?: Date;
-  /**
-   * The date and time the file was last updated.
-   */
-  updatedOn?: Date;
-  /**
-   * The current status of the file.
-   */
-  status?: AssistantFileStatusEnum;
-  /**
-   * The percentage of the file that has been processed
-   */
-  percentDone?: number | null;
-  /**
-   * A signed url that gives you access to the underlying file
-   */
-  signedUrl?: string | null;
-  /**
-   * A message describing any error during file processing, provided only if an error occurs.
-   */
-  errorMessage?: string | null;
-}
-
-/**
- * An enum representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
+ * This enum is provided for convenience but is not enforced. You can pass any string value
+ * as the model parameter. New models may be added by without requiring an SDK update.
+ * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
  */
 export const ChatModelEnum = {
   Gpt4o: 'gpt-4o',
   Gpt41: 'gpt-4.1',
   O4Mini: 'o4-mini',
-  Claude35Sonnet: 'claude-3-5-sonnet',
-  Claude37Sonnet: 'claude-3-7-sonnet',
+  ClaudeSonnet45: 'claude-sonnet-4-5',
   Gemini25Pro: 'gemini-2.5-pro',
-} as const;
+};
+
+/**
+ * This enum type is provided for convenience but is not enforced. You can pass any string value
+ * as the model parameter. New models may be added by without requiring an SDK update.
+ * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
+ */
 export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
 
 /**
@@ -115,10 +71,18 @@ export interface ChatContextOptions {
    * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
    */
   snippetSize?: number;
+  /**
+   * Whether or not to send image-related context snippets to the LLM. If `false`, only text context snippets are sent.
+   */
+  multimodal?: boolean;
+  /**
+   * If image-related context snippets are sent to the LLM, this field determines whether or not they should include base64 image data. If `false`, only the image caption is sent. Only available when `multimodal=true`.
+   */
+  includeBinaryContent?: boolean;
 }
 
 /**
- * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
+ * The list of queries / chats to chat an assistant
  */
 export interface ChatOptions {
   /**
@@ -127,22 +91,20 @@ export interface ChatOptions {
    */
   messages: MessagesModel;
   /**
-   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
-   * If empty, the assistant will default to using 'gpt-4o' model.
+   * The large language model to use for answer generation
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic,
-   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
    */
   temperature?: number;
 
   /**
-   * A filter against which documents can be retrieved.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
   filter?: object;
   /**
-   * If true, the assistant will be instructed to return a JSON response.
+   * If true, the assistant will be instructed to return a JSON response. Cannot be used with streaming.
    */
   jsonResponse?: boolean;
   /**
@@ -150,19 +112,13 @@ export interface ChatOptions {
    */
   includeHighlights?: boolean;
   /**
-   * The maximum number of context snippets to use. Default is 16. Maximum is 64.
-   * `topK` can also be passed through `contextOptions`. If both are passed, `contextOptions.topK` will be used.
-   * @deprecated Use `contextOptions.topK` instead.
-   */
-  topK?: number;
-  /**
    * Controls the context snippets sent to the LLM.
    */
   contextOptions?: ChatContextOptions;
 }
 
 /**
- * Describes the request format for sending a `chat` or `chatStream` request to an assistant.
+ * Request format for sending a chat completion request to an assistant.
  */
 export interface ChatCompletionOptions {
   /**
@@ -171,37 +127,35 @@ export interface ChatCompletionOptions {
    */
   messages: MessagesModel;
   /**
-   * The large language model to use for answer generation. Must be one of the models defined in {@link ChatModelEnum}.
-   * If empty, the assistant will default to using 'gpt-4o' model.
+   * The large language model to use for answer generation
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic,
-   * while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
    */
   temperature?: number;
   /**
-   * A filter against which documents can be retrieved.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
   filter?: object;
 }
 
 /**
- * The `ContextOptions` interface describes the query and optional filter to retrieve context snippets from an Assistant.
+ * Parameters to retrieve context from an assistant.
  */
 export interface ContextOptions {
   /**
-   * The query to retrieve context snippets for. Either `query` or `messages` should be provided.
+   * The query that is used to generate the context. Exactly one of query or messages should be provided.
    */
   query?: string;
   /**
-   * The list of {@link MessageModel} to use for generating the context. Either `query` or `messages` should be provided.
+   * The list of messages to use for generating the context. Exactly one of query or messages should be provided.
    */
   messages?: MessagesModel;
   /**
-   * Optional filter to apply to the context snippets.
+   * Optionally filter which documents can be retrieved using the following metadata fields.
    */
-  filter?: Record<string, string>;
+  filter?: object;
   /**
    * The maximum number of context snippets to return. Default is 16. Maximum is 64.
    */
@@ -210,10 +164,18 @@ export interface ContextOptions {
    * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
    */
   snippetSize?: number;
+  /**
+   * Whether or not to retrieve image-related context snippets. If `false`, only text snippets are returned.
+   */
+  multimodal?: boolean;
+  /**
+   * If image-related context snippets are returned, this field determines whether or not they should include base64 image data. If `false`, only the image captions are returned. Only available when `multimodal=true`.
+   */
+  includeBinaryContent?: boolean;
 }
 
 /**
- * The `UploadFileOptions` interface describes the file path for uploading a file to an Assistant and optional metadata.
+ * Options for uploading a file to an assistant.
  */
 export interface UploadFileOptions {
   /**
@@ -221,10 +183,43 @@ export interface UploadFileOptions {
    */
   path: string;
   /**
-   * Optional metadata to attach to the file.
+   * Metadata to attach to the file.
    */
   metadata?: Record<string, string | number>;
+  /**
+   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   */
+  multimodal?: boolean;
 }
+
+/**
+ * Indicates why the chat response generation stopped. This signals the end of the response.
+ *
+ * - `stop`: The model finished generating the response.
+ *
+ * - `length`: Generation was cut off because the maximum number of tokens allowed was reached.
+ *
+ * - `content_filter`: Generation stopped because content was blocked by content filtering rules
+ *   (for example, content that contains hate speech or violent material).
+ *
+ * - `tool_calls`: Generation stopped because a tool call was triggered.
+ *
+ * - `function_call`: Generation stopped because a function call was triggered.
+ *
+ * This enum is provided for convenience but is not enforced.
+ */
+export const FinishReasonEnum = {
+  Stop: 'stop',
+  Length: 'length',
+  ContentFilter: 'content_filter',
+  ToolCalls: 'tool_calls',
+  FunctionCall: 'function_call',
+} as const;
+/**
+ * This type is provided for convenience but is not enforced.
+ */
+export type FinishReasonEnum =
+  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];
 
 /**
  * A discriminated union representing a chunked response in a streamed chat.
@@ -329,7 +324,7 @@ export interface MessageEndChunk extends BaseChunk {
   /**
    * The reason why the message generation finished.
    */
-  finishReason: FinishReasonEnum;
+  finishReason: string;
   /**
    * The usage details associated with the streamed response.
    */
@@ -362,7 +357,7 @@ export interface ChoiceModel {
   /**
    * The reason why the response generation finished, if applicable.
    */
-  finishReason?: FinishReasonEnum;
+  finishReason?: string;
   /**
    * The index of the choice in the response.
    */
@@ -381,20 +376,3 @@ export interface ChoiceModel {
     content?: string;
   };
 }
-
-/**
- * Enum representing the reasons why a response generation may finish.
- *
- * - `Stop`: The response was completed normally.
- * - `Length`: The response was truncated due to length constraints.
- * - `ContentFilter`: The response was stopped by a content filter.
- * - `FunctionCall`: The response generation was interrupted by a function call.
- */
-export const FinishReasonEnum = {
-  Stop: 'stop',
-  Length: 'length',
-  ContentFilter: 'content_filter',
-  FunctionCall: 'function_call',
-} as const;
-export type FinishReasonEnum =
-  (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];

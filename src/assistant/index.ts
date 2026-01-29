@@ -19,21 +19,28 @@ import { context } from './data/context';
 import { AssistantOptions } from '../types';
 import { PineconeArgumentError } from '../errors';
 
+// Export input option types
 export type {
   CreateAssistantOptions,
   UpdateAssistantOptions,
   UpdateAssistantResponse,
-  AssistantStatusEnum,
-  AssistantModel,
   AssistantList,
+  AssistantModel,
+  EvaluateOptions,
 } from './control/types';
+
+// Export input option types for data operations
 export type {
   ChatOptions,
   ChatContextOptions,
   ChatCompletionOptions,
+  ContextOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+  AssistantFilesList,
+  MessagesModel,
+  MessageModel,
   ChatModelEnum,
-  ChoiceModel,
-  FinishReasonEnum,
   StreamedChatResponse,
   StreamedChatCompletionResponse,
   BaseChunk,
@@ -41,14 +48,25 @@ export type {
   ContentChunk,
   CitationChunk,
   MessageEndChunk,
-  ContextOptions,
-  ListFilesOptions,
-  UploadFileOptions,
-  AssistantFileModel,
-  AssistantFileStatusEnum,
-  AssistantFilesList,
-  MessagesModel,
+  ChoiceModel,
+  FinishReasonEnum,
 } from './data/types';
+
+// Export generated data response types
+export type {
+  AssistantFileModel,
+  ChatModel,
+  ChatCompletionModel,
+  ContextModel,
+  UsageModel,
+  CitationModel,
+  SnippetModel,
+  TextSnippetModel,
+  MultiModalSnippetModel,
+  ReferenceModel,
+  HighlightModel,
+} from '../pinecone-generated-ts-fetch/assistant_data';
+
 export { ChatStream } from './chatStream';
 
 /**
@@ -161,8 +179,20 @@ export class Assistant {
    * // }
    * ```
    *
+   * @example
+   * Chat with multimodal context enabled:
+   * ```typescript
+   * const chatResp = await assistant.chat({
+   *   messages: [{role: 'user', content: "What do the charts show?"}],
+   *   contextOptions: {
+   *     multimodal: true,
+   *     includeBinaryContent: true
+   *   }
+   * });
+   * ```
+   *
    * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
-   * assistant.
+   * assistant, including contextOptions for controlling multimodal content.
    * @returns A promise that resolves to a {@link ChatModel} object containing the response from the assistant.
    */
   chat(options: ChatOptions) {
@@ -376,7 +406,17 @@ export class Assistant {
    * // }
    * ```
    *
-   * @param options - A {@link UploadFile} object containing the file path and optional metadata.
+   * @example
+   * Upload a file with multimodal processing enabled:
+   * ```typescript
+   * await assistant.uploadFile({
+   *   path: "document-with-images.pdf",
+   *   metadata: {"category": "reports"},
+   *   multimodal: true
+   * });
+   * ```
+   *
+   * @param options - A {@link UploadFileOptions} object containing the file path, optional metadata, and optional multimodal flag.
    * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
    */
   uploadFile(options: UploadFileOptions) {
@@ -432,8 +472,18 @@ export class Assistant {
    * // }
    * ```
    *
-   * @param options
-   * @returns A promise that resolves to a {@link Context} object containing the context snippets.
+   * @example
+   * Retrieve multimodal context snippets with image data:
+   * ```typescript
+   * const response = await assistant.context({
+   *   query: "Show me charts about revenue",
+   *   multimodal: true,
+   *   includeBinaryContent: true
+   * });
+   * ```
+   *
+   * @param options - A {@link ContextOptions} object containing the query or messages, optional filter, and optional multimodal parameters.
+   * @returns A promise that resolves to a {@link ContextModel} object containing the context snippets.
    */
   context(options: ContextOptions) {
     return this._context(options);
