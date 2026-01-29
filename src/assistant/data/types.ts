@@ -24,16 +24,25 @@ export interface AssistantFilesList {
 }
 
 /**
- * An enum representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
+ * An enum constant representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
+ *
+ * This enum is provided for convenience but is not enforced. You can pass any string value
+ * as the model parameter. New models may be added by without requiring an SDK update.
+ * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
  */
 export const ChatModelEnum = {
   Gpt4o: 'gpt-4o',
   Gpt41: 'gpt-4.1',
   O4Mini: 'o4-mini',
-  Claude35Sonnet: 'claude-3-5-sonnet',
-  Claude37Sonnet: 'claude-3-7-sonnet',
+  ClaudeSonnet45: 'claude-sonnet-4-5',
   Gemini25Pro: 'gemini-2.5-pro',
-} as const;
+};
+
+/**
+ * This enum type is provided for convenience but is not enforced. You can pass any string value
+ * as the model parameter. New models may be added by without requiring an SDK update.
+ * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
+ */
 export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
 
 /**
@@ -184,19 +193,31 @@ export interface UploadFileOptions {
 }
 
 /**
- * Enum representing the reasons why a response generation may finish.
+ * Indicates why the chat response generation stopped. This signals the end of the response.
  *
- * - `Stop`: The response was completed normally.
- * - `Length`: The response was truncated due to length constraints.
- * - `ContentFilter`: The response was stopped by a content filter.
- * - `FunctionCall`: The response generation was interrupted by a function call.
+ * - `stop`: The model finished generating the response.
+ *
+ * - `length`: Generation was cut off because the maximum number of tokens allowed was reached.
+ *
+ * - `content_filter`: Generation stopped because content was blocked by content filtering rules
+ *   (for example, content that contains hate speech or violent material).
+ *
+ * - `tool_calls`: Generation stopped because a tool call was triggered.
+ *
+ * - `function_call`: Generation stopped because a function call was triggered.
+ *
+ * This enum is provided for convenience but is not enforced.
  */
 export const FinishReasonEnum = {
   Stop: 'stop',
   Length: 'length',
   ContentFilter: 'content_filter',
+  ToolCalls: 'tool_calls',
   FunctionCall: 'function_call',
 } as const;
+/**
+ * This type is provided for convenience but is not enforced.
+ */
 export type FinishReasonEnum =
   (typeof FinishReasonEnum)[keyof typeof FinishReasonEnum];
 
@@ -303,7 +324,7 @@ export interface MessageEndChunk extends BaseChunk {
   /**
    * The reason why the message generation finished.
    */
-  finishReason: FinishReasonEnum;
+  finishReason: string;
   /**
    * The usage details associated with the streamed response.
    */
@@ -336,7 +357,7 @@ export interface ChoiceModel {
   /**
    * The reason why the response generation finished, if applicable.
    */
-  finishReason?: FinishReasonEnum;
+  finishReason?: string;
   /**
    * The index of the choice in the response.
    */

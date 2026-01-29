@@ -1,11 +1,37 @@
-import { messagesValidation, modelValidation, chat } from '../chat';
+import {
+  messagesValidation,
+  modelValidation,
+  validateChatOptions,
+  chat,
+} from '../chat';
 import type { ChatOptions } from '../types';
 import { chatCompletion } from '../chatCompletion';
-import { ChatModelEnum } from '../types';
 import { ManageAssistantsApi } from '../../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
 describe(`chat validation tests`, () => {
+  describe('validateChatOptions', () => {
+    test('accepts any string model', () => {
+      const input: ChatOptions = {
+        messages: ['Hello'],
+        model: 'any-future-model',
+      };
+
+      expect(() => validateChatOptions(input)).not.toThrow();
+    });
+
+    test('throws error when model is not a string', () => {
+      const input = {
+        messages: ['Hello'],
+        model: 123, // Invalid type
+      } as unknown as ChatOptions;
+
+      expect(() => validateChatOptions(input)).toThrow(
+        'Invalid model: "123". Must be a string.',
+      );
+    });
+  });
+
   describe('messagesValidation', () => {
     test('converts string array to MessageModel array', () => {
       const input: ChatOptions = {
@@ -53,30 +79,30 @@ describe(`chat validation tests`, () => {
   });
 
   describe('modelValidation', () => {
-    test('returns default GPT-4 model when no model specified', () => {
+    test('returns default gpt-4o model when no model specified', () => {
       const input: ChatOptions = {
         messages: ['Hello'],
       };
 
-      expect(modelValidation(input)).toBe(ChatModelEnum.Gpt4o);
+      expect(modelValidation(input)).toBe('gpt-4o');
     });
 
-    test('validates correct model string', () => {
+    test('returns the specified model string', () => {
       const input: ChatOptions = {
         messages: ['Hello'],
         model: 'gpt-4o',
       };
 
-      expect(modelValidation(input)).toBe(ChatModelEnum.Gpt4o);
+      expect(modelValidation(input)).toBe('gpt-4o');
     });
 
-    test('throws error for invalid model', () => {
+    test('accepts any model string without validation', () => {
       const input: ChatOptions = {
         messages: ['Hello'],
-        model: 'invalid-model',
+        model: 'future-model-xyz',
       };
 
-      expect(() => modelValidation(input)).toThrow('Invalid model specified');
+      expect(modelValidation(input)).toBe('future-model-xyz');
     });
 
     test('throws error when no messages provided', async () => {
