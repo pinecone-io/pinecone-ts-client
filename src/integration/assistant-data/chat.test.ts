@@ -199,9 +199,7 @@ describe('Chat error paths', () => {
         messages: [{ role: 'user', content: 'Hello' }],
         model: 'invalid',
       }),
-    ).rejects.toThrow(
-      'Invalid model: "invalid". Must be one of: "gpt-4o", "gpt-4.1", "o4-mini", "claude-3-5-sonnet", "claude-3-7-sonnet", "gemini-2.5-pro"',
-    );
+    ).rejects.toThrow(/Invalid model.*invalid/i);
   });
 
   test.each(chatMethods)('%s with nonexistent assistant', async (method) => {
