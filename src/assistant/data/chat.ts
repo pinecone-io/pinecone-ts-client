@@ -81,7 +81,7 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
         options.messages[0]['role'].toLowerCase() !== 'user' &&
         options.messages[0]['role'].toLowerCase() !== 'assistant'
       ) {
-        throw new Error(
+        throw new PineconeArgumentError(
           'No role specified in message object. Must be one of "user" or "assistant"',
         );
       }
@@ -93,7 +93,7 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
     );
 
     if (keys.length !== 2) {
-      throw new Error(
+      throw new PineconeArgumentError(
         'Message object must have exactly two keys: "role" and "content"',
       );
     }

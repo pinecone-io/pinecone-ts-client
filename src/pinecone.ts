@@ -689,8 +689,8 @@ export class Pinecone {
    * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
    * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
    * and determines where the Assistant will be hosted.
-   * @throws Error if the Assistant API is not initialized.
-   * @throws Error if an invalid region is provided.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async createAssistant(options: CreateAssistantOptions) {
@@ -714,7 +714,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to be deleted.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    */
   async deleteAssistant(assistantName: string) {
     await this._deleteAssistant(assistantName);
@@ -743,7 +744,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to retrieve.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async describeAssistant(assistantName: string) {
@@ -780,7 +782,7 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
    */
   async listAssistants() {
@@ -821,7 +823,8 @@ export class Pinecone {
    *
    * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
    */
   updateAssistant(options: UpdateAssistantOptions) {
@@ -854,6 +857,8 @@ export class Pinecone {
    * ```
    *
    * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
    */
   evaluate(options: { question: string; answer: string; groundTruth: string }) {
