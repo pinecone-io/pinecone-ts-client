@@ -35,9 +35,8 @@ Pinecone is a vector database that makes it easy to add vector search to product
 
 > [!NOTE]
 > For notes on changes between major versions, see the migration guides:
->
-> - [v2 Migration Guide](./v2-migration.md) - Upgrading from v1.x to v2.x
-> - [v1 Migration Guide](./v1-migration.md) - Upgrading from v0.x to v1.x
+> - [v2 Migration Guide](./guides/upgrading/v2-migration.md) - Upgrading from v1.x to v2.x
+> - [v1 Migration Guide](./guides/upgrading/v1-migration.md) - Upgrading from v0.x to v1.x
 
 ## Prerequisites
 
@@ -231,26 +230,43 @@ For more information on Pinecone Assistant, see the [Pinecone Assistant document
 
 ## More information on usage
 
-Detailed information on specific ways of using the SDK are covered in the official documentation:
+Detailed information on specific ways of using the SDK are covered in these guides:
 
 **Index Management:**
 
-- [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index) - Learn about creating serverless and pod-based indexes
-- [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes) - Understand serverless and pod-based indexes
-- [Collections](https://docs.pinecone.io/guides/indexes/pods/understanding-collections) - Static copies of pod-based indexes
+- [Serverless Indexes](./guides/index-management/serverless-indexes.md) - Create and manage auto-scaling serverless indexes
+- [Pod Indexes](./guides/index-management/pod-indexes.md) - Create and manage dedicated pod-based indexes
+- [Collections](./guides/index-management/collections.md) - Static copies of pod-based indexes
+- [Backups](./guides/index-management/backups.md) - Create and restore from serverless index backups
+- [Common Operations](./guides/index-management/shared-operations.md) - List, describe, delete, and configure indexes
 
 **Data Operations:**
 
-- [Upsert data](https://docs.pinecone.io/guides/data/upsert-data) - Insert and update vectors
-- [Query data](https://docs.pinecone.io/guides/data/query-data) - Search for similar vectors
-- [Filter by metadata](https://docs.pinecone.io/guides/search/filter-by-metadata) - Filter results using metadata
-- [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces) - Organize vectors within an index
+- [Working with Vectors](./guides/data-operations/working-with-vectors.md) - Upsert, query, fetch, update, and delete vectors
+- [Namespaces](./guides/data-operations/namespaces.md) - Organize vectors within an index
+- [Metadata Filtering](./guides/data-operations/metadata-filtering.md) - Advanced filtering with operators
+- [Bulk Import](./guides/data-operations/bulk-import.md) - Import large datasets from object storage
 
-**Advanced Features:**
+**Inference:**
 
-- [Inference API](https://docs.pinecone.io/guides/inference/understanding-inference) - Use Pinecone's integrated embedding and reranking models
-- [Backups](https://docs.pinecone.io/guides/indexes/understanding-backups) - Create and restore from index backups
-- [Import data](https://docs.pinecone.io/guides/data/understanding-imports) - Bulk import vectors from object storage
+- [Inference API](./guides/inference/inference-api.md) - Use standalone embedding and reranking models
+- [Integrated Inference](./guides/inference/integrated-inference.md) - Index-integrated embedding and reranking
+
+**Assistant:**
+
+- [Getting Started](./guides/assistant/getting-started.md) - Quick start guide for Pinecone Assistant
+- [Chat Operations](./guides/assistant/chat.md) - Chat, streaming, and context retrieval
+- [File Management](./guides/assistant/file-management.md) - Upload, list, and manage files
+
+**TypeScript Features:**
+
+- [Type Safety](./guides/typescript-features/type-safety.md) - Generic metadata types and type-safe operations
+- [Async Patterns](./guides/typescript-features/async-patterns.md) - Best practices for async/await
+- [Error Handling](./guides/typescript-features/error-handling.md) - Error types and recovery strategies
+
+**Additional Resources:**
+
+- [FAQ](./guides/faq.md) - Frequently asked questions and troubleshooting
 
 # Issues & Bugs
 
