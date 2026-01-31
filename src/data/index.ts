@@ -220,23 +220,23 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Instantiation of Index is handled by {@link Pinecone}
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  *
-  * // Get host from describeIndex
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * // Or get host from createIndex response
-  * const indexModel = await pc.createIndex({
-  *   name: 'my-index',
-  *   dimension: 1536,
-  *   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } }
-  * });
-  * const index = pc.index({ host: indexModel.host });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * // Get host from describeIndex
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * // Or get host from createIndex response
+   * const indexModel = await pc.createIndex({
+   *   name: 'my-index',
+   *   dimension: 1536,
+   *   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } }
+   * });
+   * const index = pc.index({ host: indexModel.host });
+   * ```
    *
    * @constructor
    * @param options - The {@link IndexOptions} for targeting the index.
@@ -371,18 +371,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
    * for more on deleting records with filters.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.deleteMany({ ids: ['record-1', 'record-2'] });
-  *
-  * // or
-  * await index.deleteMany({ filter: { genre: 'classical' } });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * await index.deleteMany({ ids: ['record-1', 'record-2'] });
+   *
+   * // or
+   * await index.deleteMany({ filter: { genre: 'classical' } });
+   * ```
    * @param options - The {@link DeleteManyOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
@@ -395,15 +395,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Delete a record from the index by id.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
+   * ```
    * @param options - The {@link DeleteOneOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
@@ -416,25 +416,25 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.describeIndexStats();
-  * // {
-  * //  namespaces: {
-  * //    '': { recordCount: 10 }
-  * //    foo: { recordCount: 2000 },
-  * //    bar: { recordCount: 2000 }
-  * //   },
-  * //   dimension: 1536,
-  * //   indexFullness: 0,
-  * //   totalRecordCount: 4010
-  * // }
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * await index.describeIndexStats();
+   * // {
+   * //  namespaces: {
+   * //    '': { recordCount: 10 }
+   * //    foo: { recordCount: 2000 },
+   * //    bar: { recordCount: 2000 }
+   * //   },
+   * //   dimension: 1536,
+   * //   indexFullness: 0,
+   * //   totalRecordCount: 4010
+   * // }
+   * ```
    * @param options - The {@link DescribeIndexStatsOptions} for the operation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
@@ -449,21 +449,21 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * This id list can then be passed to fetch or delete options to perform operations on the matching records.
    * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  *
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
-  *
-  * const results = await index.listPaginated({ prefix: 'doc1#' });
-  * console.log(results);
-  * // {
-  * //   vectors: [
-  * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
-  * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
-  * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
+   *
+   * const results = await index.listPaginated({ prefix: 'doc1#' });
+   * console.log(results);
+   * // {
+   * //   vectors: [
+   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
+   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
+   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
    * //     ...
    * //   ],
    * //   pagination: {
@@ -493,33 +493,33 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Upsert records to the index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * // Upsert to default namespace
-  * await index.upsert({
-  *   records: [{
-  *     id: 'record-1',
-  *     values: [0.176, 0.345, 0.263],
-  *   },{
-  *     id: 'record-2',
-  *     values: [0.176, 0.345, 0.263],
-  *   }]
-  * })
-  *
-  * // Upsert to a different namespace
-  * await index.upsert({
-  *   records: [{
-  *     id: 'record-3',
-  *     values: [0.176, 0.345, 0.263],
-  *   }],
-  *   namespace: 'my-namespace'
-  * })
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * // Upsert to default namespace
+   * await index.upsert({
+   *   records: [{
+   *     id: 'record-1',
+   *     values: [0.176, 0.345, 0.263],
+   *   },{
+   *     id: 'record-2',
+   *     values: [0.176, 0.345, 0.263],
+   *   }]
+   * })
+   *
+   * // Upsert to a different namespace
+   * await index.upsert({
+   *   records: [{
+   *     id: 'record-3',
+   *     values: [0.176, 0.345, 0.263],
+   *   }],
+   *   namespace: 'my-namespace'
+   * })
+   * ```
    *
    * @param options - The {@link UpsertOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -533,19 +533,19 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Fetch records from the index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * // Fetch from default namespace
-  * await index.fetch({ ids: ['record-1', 'record-2'] });
-  *
-  * // Override namespace for this operation
-  * await index.fetch({ ids: ['record-1', 'record-2'], namespace: 'my-namespace' });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * // Fetch from default namespace
+   * await index.fetch({ ids: ['record-1', 'record-2'] });
+   *
+   * // Override namespace for this operation
+   * await index.fetch({ ids: ['record-1', 'record-2'], namespace: 'my-namespace' });
+   * ```
    * @param options - The {@link FetchOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
@@ -558,15 +558,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Fetch records from the index by metadata filter.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.fetchByMetadata({ filter: { genre: 'classical' } });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * await index.fetchByMetadata({ filter: { genre: 'classical' } });
+   * ```
    *
    * @param options - The {@link FetchByMetadataOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -582,17 +582,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * similar to the vector values of the query according to the distance metric you have configured for your index.
    * See [Query data](https://docs.pinecone.io/docs/query-data) for more on querying.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * // Query by id
-  * await index.query({ topK: 3, id: 'record-1'});
-  *
-  * // Query by vector
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * // Query by id
+   * await index.query({ topK: 3, id: 'record-1'});
+   *
+   * // Query by vector
    * await index.query({ topK: 3, vector: [0.176, 0.345, 0.263] });
    *
    * // Query a different namespace
@@ -611,18 +611,18 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Update a record in the index by id.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('imdb-movies');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.update({
-  *   id: '18593',
-  *   metadata: { genre: 'romance' },
-  * });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('imdb-movies');
+   * const index = pc.index({ host: indexModel.host });
+   *
+   * await index.update({
+   *   id: '18593',
+   *   metadata: { genre: 'romance' },
+   * });
+   * ```
    *
    * @param options - The {@link UpdateOptions} for the operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -636,30 +636,30 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Upsert integrated records into a specific namespace within an index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  *
-  * const indexModel = await pc.describeIndex('integrated-index');
-  * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
-  *
-  * await namespace.upsertRecords({
-  *   records: [
-  *     {
-  *       id: 'rec1',
-  *       chunk_text:
-  *         "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
-  *       category: 'product',
-  *     },
-  *     {
-  *       id: 'rec2',
-  *       chunk_text:
-  *         'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
-  *       category: 'nutrition',
-  *     },
-  *     {
-  *       id: 'rec3',
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const indexModel = await pc.describeIndex('integrated-index');
+   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
+   *
+   * await namespace.upsertRecords({
+   *   records: [
+   *     {
+   *       id: 'rec1',
+   *       chunk_text:
+   *         "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
+   *       category: 'product',
+   *     },
+   *     {
+   *       id: 'rec2',
+   *       chunk_text:
+   *         'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
+   *       category: 'nutrition',
+   *     },
+   *     {
+   *       id: 'rec3',
    *       chunk_text:
    *         'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
    *       category: 'cultivation',
@@ -710,23 +710,23 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Search a specific namespace for records within an index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('integrated-index');
-  * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
-  *
-  * const response = await namespace.searchRecords({
-  *   query: {
-  *     inputs: { text: 'disease prevention' }, topK: 4 },
-  *     rerank: {
-  *       model: 'bge-reranker-v2-m3',
-  *       topN: 2,
-  *       rankFields: ['chunk_text'],
-  *     },
-  *   fields: ['category', 'chunk_text'],
-  * });
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('integrated-index');
+   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
+   *
+   * const response = await namespace.searchRecords({
+   *   query: {
+   *     inputs: { text: 'disease prevention' }, topK: 4 },
+   *     rerank: {
+   *       model: 'bge-reranker-v2-m3',
+   *       topN: 2,
+   *       rankFields: ['chunk_text'],
+   *     },
+   *   fields: ['category', 'chunk_text'],
+   * });
    * console.log(response);
    * // {
    * //   "result": {
@@ -769,16 +769,16 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Start an asynchronous import of vectors from object storage into a Pinecone Serverless index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
-  *
-  * // {"id":"1"}
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
+   *
+   * // {"id":"1"}
+   * ```
    *
    * @param options - The {@link StartImportOptions} for the import operation.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
@@ -792,13 +792,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * List all recent and ongoing import operations.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.listImports(10));
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.listImports(10));
    *
    * // {
    * //  data: [
@@ -829,13 +829,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Return details of a specific import operation.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.describeImport('import-id'));
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.describeImport('import-id'));
    *
    * // {
    * //  id: '1',
@@ -858,13 +858,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Cancel a specific import operation.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.cancelImport('import-id'));
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.cancelImport('import-id'));
    *
    * // {}
    * ```
@@ -878,22 +878,22 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Creates a new namespace within the index with an optional metadata schema.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * await index.createNamespace({
-  *   name: 'my-namespace',
-  *   schema: {
-  *     fields: {
-  *       genre: { filterable: true },
-  *       year: { filterable: true }
-  *     }
-  *   }
-  * });
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * await index.createNamespace({
+   *   name: 'my-namespace',
+   *   schema: {
+   *     fields: {
+   *       genre: { filterable: true },
+   *       year: { filterable: true }
+   *     }
+   *   }
+   * });
+   * ```
    *
    * @param options - Configuration options for creating the namespace.
    * @param options.name - (Required) The name of the namespace to create.
@@ -907,13 +907,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Returns a list of namespaces within the index.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.listNamespaces({ limit: 10 }));
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.listNamespaces({ limit: 10 }));
    *
    * // {
    * //   namespaces: [
@@ -935,13 +935,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Returns the details of a specific namespace.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * console.log(await index.describeNamespace('ns-1'));
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * console.log(await index.describeNamespace('ns-1'));
    *
    * // { name: 'ns-1', recordCount: '1' }
    * ```
@@ -955,14 +955,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /**
    * Deletes a specific namespace from the index, including all records within it.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-serverless-index');
-  * const index = pc.index({ host: indexModel.host });
-  * await index.deleteNamespace('ns-1');
-  * ```
+   * @example
+   * ```js
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
+   * await index.deleteNamespace('ns-1');
+   * ```
    *
    * @param namespace - The namespace to delete.
    */
