@@ -308,7 +308,7 @@ await pc.createIndexForModel({
   waitUntilReady: true,
 });
 
-const index = pc.index({ name: 'articles' });
+const index = pc.index<ArticleMetadata>({ name: 'articles' });
 
 const articles: ArticleRecord[] = [
   {

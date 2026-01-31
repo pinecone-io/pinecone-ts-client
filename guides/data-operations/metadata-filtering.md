@@ -25,7 +25,9 @@ Pinecone supports the following filter operators:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -42,7 +44,9 @@ const results = await index.query({
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -59,7 +63,9 @@ const results = await index.query({
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -80,7 +86,9 @@ By default, multiple filter conditions are combined with AND:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -117,7 +125,9 @@ Use `$or` to match vectors that satisfy any of multiple conditions:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -142,7 +152,9 @@ You can nest `$and` and `$or` operators to create complex filters:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -167,7 +179,9 @@ Combine different field types and operators:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
@@ -189,6 +203,8 @@ When you use typed metadata, TypeScript will help you construct valid filters:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+
+const indexModel = await pc.describeIndex('my-index');
 
 type MovieMetadata = {
   genre: 'comedy' | 'horror' | 'drama' | 'action';

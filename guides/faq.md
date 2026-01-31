@@ -17,19 +17,22 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 async function query1() {
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.1, 0.2], topK: 10 });
 }
 
 async function query2() {
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.2, 0.3], topK: 10 });
 }
 
 // ❌ Bad: Creating new client for each operation
 async function badQuery() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' }); // Don't do this repeatedly!
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.1, 0.2], topK: 10 });
 }
 ```
@@ -66,23 +69,34 @@ const pc = new Pinecone({
 
 ## Should I target an index by name or host?
 
-**By name** (convenient for development):
+**Best practice for production:** Always target indexes by host to avoid an additional network call and potential point of failure.
+
+When you target an index by name, the SDK automatically calls `describeIndex()` to resolve the host URL. This is convenient for testing but should be avoided in production:
 
 ```typescript
+// Testing: convenient but makes extra API call
 const index = pc.index({ name: 'my-index' });
-// SDK will call describeIndex to resolve the host
 ```
 
-**By host** (better for production):
+For production, get the index host from `describeIndex()` or from the create response, then target by host directly:
 
 ```typescript
-const index = pc.index({
-  host: 'my-index-abc123.svc.us-east-1-aws.pinecone.io',
-});
-// Avoids extra API call to resolve host
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 ```
 
-For production, look up the host once (via `describeIndex` or the console) and store it as an environment variable to remove the runtime dependency on control plane calls.
+Or get the host when creating an index:
+
+```typescript
+const indexModel = await pc.createIndex({
+  name: 'my-index',
+  dimension: 1536,
+  spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+});
+const index = pc.index({ host: indexModel.host });
+```
+
+For more details, see [Target an index](https://docs.pinecone.io/guides/manage-data/target-an-index).
 
 ## How do I verify my API key is valid?
 
@@ -170,7 +184,8 @@ import { Pinecone, PineconeRecord } from '@pinecone-database/pinecone';
 
 async function batchUpsert(records: PineconeRecord[], batchSize: number = 100) {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
 
   for (let i = 0; i < records.length; i += batchSize) {
     const batch = records.slice(i, i + batchSize);
@@ -203,7 +218,8 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 async function concurrentQueries() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
 
   const queries = [
     [0.1, 0.2, 0.3],

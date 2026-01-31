@@ -77,7 +77,7 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 // const pc = new Pinecone();
 
 // 2. Create a serverless index
-await pc.createIndex({
+const indexModel = await pc.createIndex({
   name: 'example-index',
   dimension: 1536,
   metric: 'cosine',
@@ -90,7 +90,7 @@ await pc.createIndex({
 });
 
 // 3. Target the index
-const index = pc.index({ name: 'example-index' });
+const index = pc.index({ host: indexModel.host });
 
 // 4. Upsert vectors with metadata
 await index.upsert({
@@ -193,7 +193,7 @@ console.log(searchResponse);
 
 ## Pinecone Assistant
 
-The [Pinecone Assistant API](https://docs.pinecone.io/guides/assistant/understanding-assistant) enables you to create and manage AI assistants powered by Pinecone's vector database capabilities. These Assistants can be customized with specific instructions and metadata, and can interact with files and engage in chat conversations.
+The [Pinecone Assistant API](https://docs.pinecone.io/guides/assistant) enables you to create and manage AI assistants powered by Pinecone's vector database capabilities. These Assistants can be customized with specific instructions and metadata, and can interact with files and engage in chat conversations.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';

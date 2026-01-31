@@ -111,7 +111,9 @@ const embeddings = await pc.inference.embed({
 });
 
 // Upsert into index
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 await index.upsert({
   records: embeddings.data.map((embedding, i) => ({
     id: `doc-${i}`,
@@ -229,7 +231,8 @@ const docEmbeddings = await pc.inference.embed({
   parameters: { inputType: 'passage' },
 });
 
-const index = pc.index({ name: 'my-index' });
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 await index.upsert({
   records: docEmbeddings.data.map((embedding, i) => ({
     id: `doc-${i}`,

@@ -64,7 +64,7 @@ This create command will block for a few moments (seconds to minutes) while pods
 
 Pod indexes support many optional configuration fields through the spec object. For example, if your workload requires a more powerful pod type or additional replicas, those would be indicated using properties in the `pod` object.
 
-Also, if you have [high-cardinality metadata](https://docs.pinecone.io/guides/data/understanding-metadata#manage-high-cardinality-in-pod-based-indexes) stored with your vectors, you can significantly improve your memory performance by telling Pinecone which fields you plan to use for filtering. These settings are conveyed with an optional `metadataConfig` property.
+Also, if you have [high-cardinality metadata](https://docs.pinecone.io/guides/indexes/pods/manage-pod-based-indexes#high-cardinality-metadata-and-over-provisioning) stored with your vectors, you can significantly improve your memory performance by telling Pinecone which fields you plan to use for filtering. These settings are conveyed with an optional `metadataConfig` property.
 
 The following example creates an index that only indexes the "color" metadata field for queries with filtering; with this metadata configuration, queries against the index cannot filter based on any other metadata field.
 

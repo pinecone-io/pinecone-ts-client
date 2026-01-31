@@ -1,6 +1,6 @@
 # Bulk Import
 
-You can [import vectors en masse](https://docs.pinecone.io/guides/index-data/import-data) from object storage. `Import` is a long-running, asynchronous operation that imports large numbers of records into a Pinecone serverless index.
+You can [import vectors in bulk](https://docs.pinecone.io/guides/index-data/import-data) from object storage. `Import` is a long-running, asynchronous operation that imports large numbers of records into a Pinecone serverless index.
 
 > **Note:**
 >
@@ -24,7 +24,7 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const indexName = 'sample-index';
 
 // Ensure you have a serverless index
-await pc.createIndex({
+const indexModel = await pc.createIndex({
   name: indexName,
   dimension: 10,
   spec: {
@@ -35,7 +35,8 @@ await pc.createIndex({
   },
 });
 
-const index = pc.index({ name: indexName });
+// Get the host from the create response
+const index = pc.index({ host: indexModel.host });
 
 const storageURI = 's3://my-bucket/my-directory/';
 
@@ -58,7 +59,9 @@ You can check the status of an import operation using `describeImport`:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'sample-index' });
+
+const indexModel = await pc.describeIndex('sample-index');
+const index = pc.index({ host: indexModel.host });
 
 const importStatus = await index.describeImport('import-id');
 console.log(importStatus);
@@ -81,7 +84,9 @@ You can list all import operations for an index:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'sample-index' });
+
+const indexModel = await pc.describeIndex('sample-index');
+const index = pc.index({ host: indexModel.host });
 
 const imports = await index.listImports();
 console.log(imports);
@@ -124,7 +129,9 @@ You can cancel an ongoing import operation:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'sample-index' });
+
+const indexModel = await pc.describeIndex('sample-index');
+const index = pc.index({ host: indexModel.host });
 
 await index.cancelImport('import-id');
 ```
@@ -139,7 +146,9 @@ When starting an import, you can specify how errors should be handled:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'sample-index' });
+
+const indexModel = await pc.describeIndex('sample-index');
+const index = pc.index({ host: indexModel.host });
 
 // Continue on errors
 await index.startImport({
@@ -162,7 +171,9 @@ Here's a complete example of monitoring an import until completion:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'sample-index' });
+
+const indexModel = await pc.describeIndex('sample-index');
+const index = pc.index({ host: indexModel.host });
 
 // Start the import
 const { id } = await index.startImport({

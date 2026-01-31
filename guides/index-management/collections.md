@@ -106,7 +106,8 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const index = pc.index({ name: 'product-description-p1x1' });
+const indexModel = await pc.describeIndex('product-description-p1x1');
+const index = pc.index({ host: indexModel.host });
 const stats = await index.describeIndexStats();
 console.log(stats);
 // {

@@ -102,7 +102,7 @@ await pc.deleteIndex('sample-index');
 
 ### Configure serverless indexes
 
-For serverless indexes, you can configure deletion protection and tags:
+For serverless indexes, you can configure deletion protection, tags:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -130,7 +130,7 @@ await pc.configureIndex({
 
 ### Configure pod-based indexes
 
-> **Note:** This section applies to [pod-based indexes](https://docs.pinecone.io/guides/indexes/pods/understanding-pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources. Instead, serverless indexes scale automatically based on usage.
+> **Note:** This section applies to [pod-based indexes](https://docs.pinecone.io/guides/indexes/pods/understanding-pod-based-indexes) only. With serverless indexes, you don't configure any compute or storage resources.
 
 You can adjust the number of replicas or scale to a larger pod size (specified with `podType`). See [Scale pod-based indexes](https://docs.pinecone.io/guides/indexes/pods/scale-pod-based-indexes). You cannot downgrade pod size or change the base pod type.
 

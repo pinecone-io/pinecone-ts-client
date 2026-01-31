@@ -42,11 +42,11 @@ await pc.createIndex({
 
 ## Available clouds
 
-See the [available cloud regions](https://docs.pinecone.io/troubleshooting/available-cloud-regions) page for the most up-to-date information on which cloud regions are available.
+See the [available cloud regions](https://docs.pinecone.io/guides/index-data/create-an-index#cloud-regions) page for the most up-to-date information on which cloud regions are available.
 
 ### Create a serverless index on Amazon Web Services (AWS)
 
-The following example creates a serverless index in the `us-west-2` region of AWS. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
+The following example creates a serverless index in the `us-west-2` region of AWS. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -69,7 +69,7 @@ await pc.createIndex({
 
 ### Create a serverless index on Google Cloud Platform
 
-The following example creates a serverless index in the `us-central1` region of GCP. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
+The following example creates a serverless index in the `us-central1` region of GCP. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -91,7 +91,7 @@ await pc.createIndex({
 
 ### Create a serverless index on Azure
 
-The following example creates a serverless index on Azure. For more information on serverless and regional availability, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes#serverless-indexes).
+The following example creates a serverless index on Azure. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -253,7 +253,8 @@ await pc.createIndex({
 });
 
 // The index is now ready to use
-const index = pc.index({ name: 'my-index' });
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 ```
 
 ## Configuring, listing, describing, and deleting

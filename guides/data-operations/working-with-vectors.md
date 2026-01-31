@@ -4,11 +4,48 @@ This guide covers operations for upserting, querying, fetching, updating, and de
 
 ## Targeting an index
 
-To perform data operations on an index, you target it using the `index` method. You can target an index by providing its `name`, its `host`, or both.
+To perform data operations on an index, you target it using the `index` method. You can target an index by providing its `name`, or its `host`.
 
-### Targeting by name
+### Targeting by host (recommended for production)
 
-When you provide only a name, the SDK will automatically call `describeIndex` to resolve the index host URL:
+**Best practice:** In production, always target indexes by host to avoid the additional network call and potential point of failure from `describeIndex()`. Get the host from the index response when you create it, or by calling `describeIndex()` once and caching it:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+
+// Get the host from the describe response
+const indexModel = await pc.describeIndex('example-index');
+const index = pc.index({ host: indexModel.host });
+
+// Now perform index operations
+await index.upsert({
+  records: [{ id: 'vec1', values: [0.1, 0.2, 0.3, 0.4] }],
+});
+```
+
+Or get the host when creating an index:
+
+```typescript
+const indexModel = await pc.createIndex({
+  name: 'example-index',
+  dimension: 1536,
+  spec: {
+    serverless: {
+      cloud: 'aws',
+      region: 'us-east-1',
+    },
+  },
+});
+
+// Use the host from the create response
+const index = pc.index({ host: indexModel.host });
+```
+
+### Targeting by name (convenient for testing)
+
+When you provide only a name, the SDK will automatically call `describeIndex` to resolve the index host URL. This is convenient for testing but should be avoided in production:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -16,21 +53,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const index = pc.index({ name: 'test-index' });
 
-// Now perform index operations
-await index.fetch({ ids: ['1'] });
-```
-
-### Targeting by host
-
-You can also provide a host URL to bypass the SDK's default behavior of resolving your index host via the provided index name. You can find your index host in the [Pinecone console](https://app.pinecone.io), or by using the `describeIndex` or `listIndexes` operations.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ host: 'my-index-host-1532-svc.io' });
-
-// Now perform index operations
+// The SDK calls describeIndex() automatically to get the host
 await index.fetch({ ids: ['1'] });
 ```
 
@@ -78,7 +101,9 @@ The following example returns statistics about the index:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'example-index' });
+
+const indexModel = await pc.describeIndex('example-index');
+const index = pc.index({ host: indexModel.host });
 
 const indexStats = await index.describeIndexStats();
 console.log(indexStats);
@@ -113,7 +138,9 @@ The following example upserts vectors with metadata:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'example-index' });
+
+const indexModel = await pc.describeIndex('example-index');
+const index = pc.index({ host: indexModel.host });
 
 const upsertResponse = await index.upsert({
   records: [
@@ -145,7 +172,9 @@ The query method accepts a large number of options. The dimension of the query v
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const queryResponse = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4], // ... query vector
@@ -183,7 +212,9 @@ You can query using the vector values of an existing record in the index by pass
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
   id: 'vec1',
@@ -199,7 +230,9 @@ The following example fetches vectors by ID:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 const fetchResponse = await index.fetch({
   ids: ['vec1', 'vec2'],
@@ -232,7 +265,9 @@ The following example updates vectors by ID:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 await index.update({
   id: 'vec1',
@@ -252,7 +287,9 @@ The following example deletes vectors by ID:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 
 await index.deleteMany({
   ids: ['vec1', 'vec2', 'vec3'],
@@ -289,12 +326,14 @@ To delete all vectors in a namespace, use the `deleteAll` method:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index', namespace: 'foo-namespace' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host, namespace: 'foo-namespace' });
 
 await index.deleteAll();
 ```
 
-If you do not specify a namespace, the records in the default namespace `''` will be deleted.
+If you do not specify a namespace, the records in the default namespace `'__default__'` will be deleted.
 
 ## List vector IDs
 
@@ -304,7 +343,9 @@ The `listPaginated` method can be used to list record IDs matching a particular 
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'my-index', namespace: 'my-namespace' });
+
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
 
 // Fetch the first 3 vector IDs matching prefix 'doc1#'
 const results = await index.listPaginated({

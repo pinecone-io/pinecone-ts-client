@@ -52,7 +52,8 @@ async function handleSpecificErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   try {
-    const index = pc.index({ name: 'my-index' });
+    const indexModel = await pc.describeIndex('my-index');
+    const index = pc.index({ host: indexModel.host });
     const results = await index.query({
       vector: [0.1, 0.2, 0.3],
       topK: 10,
@@ -156,7 +157,8 @@ async function retryableOperation<T>(
 // Usage
 async function queryWithRetry() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
 
   const results = await retryableOperation(() =>
     index.query({
@@ -184,7 +186,8 @@ const pc = new Pinecone({
 });
 
 // Operations like upsert, update, and configureIndex will automatically retry
-const index = pc.index({ name: 'my-index' });
+const indexModel = await pc.describeIndex('my-index');
+const index = pc.index({ host: indexModel.host });
 await index.upsert({
   records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
 });
@@ -199,7 +202,8 @@ import { Pinecone, PineconeArgumentError } from '@pinecone-database/pinecone';
 
 async function handleValidationErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
 
   try {
     // Missing required 'id' field
@@ -254,7 +258,8 @@ async function robustIndexOperation() {
       suppressConflicts: true, // Don't throw if index exists
     });
 
-    const index = pc.index({ name: 'my-index' });
+    const indexModel = await pc.describeIndex('my-index');
+    const index = pc.index({ host: indexModel.host });
 
     // Perform operations with proper error handling
     const results = await index.query({
@@ -355,7 +360,7 @@ async function createOrUseExisting(name: string) {
     }
   }
 
-  return pc.index({ name });
+  return pc.index({ host });
 }
 ```
 
@@ -366,7 +371,8 @@ import { Pinecone, PineconeConnectionError } from '@pinecone-database/pinecone';
 
 async function queryWithFallback() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const index = pc.index({ name: 'my-index' });
+  const indexModel = await pc.describeIndex('my-index');
+  const index = pc.index({ host: indexModel.host });
 
   try {
     const results = await index.query({

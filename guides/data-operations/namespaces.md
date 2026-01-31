@@ -2,29 +2,33 @@
 
 Namespaces allow you to partition vectors within an index. This is useful for organizing different types of data, implementing multitenancy, or isolating test data from production data.
 
-For more information, see [Use namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).
+For more information, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).
 
 ## Working with namespaces
 
-By default, all data operations take place inside the default namespace of `''`. If you are working with other non-default namespaces, you can specify the namespace when targeting an index:
+By default, all data operations take place inside the default namespace of `'__default__'`. If you are working with other non-default namespaces, you can specify the namespace when targeting an index:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'test-index', namespace: 'ns1' });
+
+const indexModel = await pc.describeIndex('test-index');
+const index = pc.index({ host: indexModel.host, namespace: 'ns1' });
 
 // Now all operations will use the 'ns1' namespace
 await index.fetch({ ids: ['1'] });
 ```
 
-Alternatively, you can specify the namespace for individual operations:
+Alternatively, you can specify the namespace for individual operations. Note that this will override any namespace set on the `Index` class:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'test-index' });
+
+const indexModel = await pc.describeIndex('test-index');
+const index = pc.index({ host: indexModel.host });
 
 // Query in a specific namespace
 await index.query({
@@ -42,7 +46,9 @@ The following example lists all namespaces in an index:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'test-index' });
+
+const indexModel = await pc.describeIndex('test-index');
+const index = pc.index({ host: indexModel.host });
 
 const namespaces = await index.listNamespaces();
 console.log(namespaces);
@@ -59,7 +65,9 @@ The following example describes a specific namespace:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'test-index' });
+
+const indexModel = await pc.describeIndex('test-index');
+const index = pc.index({ host: indexModel.host });
 
 const namespace = await index.describeNamespace('ns1');
 console.log(namespace);
@@ -77,7 +85,9 @@ The following example deletes a namespace and all its vectors:
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-const index = pc.index({ name: 'test-index' });
+
+const indexModel = await pc.describeIndex('test-index');
+const index = pc.index({ host: indexModel.host });
 
 await index.deleteNamespace('ns1');
 ```
@@ -86,10 +96,9 @@ await index.deleteNamespace('ns1');
 
 ## Namespace best practices
 
-1. **Multitenancy**: Use namespaces to isolate data for different customers or tenants
+1. **Multitenancy**: Use namespaces to isolate data for different purposes
 2. **Environment separation**: Keep dev, staging, and production data separate
 3. **Data organization**: Group related vectors together (e.g., by document, user, or time period)
 4. **Prefix naming**: Consider using ID prefixes in combination with namespaces for hierarchical organization
-5. **Query performance**: Querying within a namespace is faster than querying across the entire index
 
 For more information on implementing multitenancy, see [Implement multitenancy](https://docs.pinecone.io/guides/index-data/implement-multitenancy).
