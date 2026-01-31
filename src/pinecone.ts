@@ -434,29 +434,30 @@ export class Pinecone {
    * })
    * ```
    *
-   * @example
-   * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndex({
-   *  name: 'my-index',
-   *   spec: {
-   *     serverless: {
-   *       cloud: 'aws',
-   *       region: 'us-west-2'
-   *     }
-   *   },
-   *  waitUntilReady: true,
-   *  tags: { 'team': 'data-science' }
-   * });
-   *
-   * const records = [
-   *   // PineconeRecord objects with your embedding values
-   * ]
-   * await pc.index({ name: 'my-index' }).upsert({ records })
-   * ```
+  * @example
+  * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
+  * ```js
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  * const pc = new Pinecone();
+  *
+  * const indexModel = await pc.createIndex({
+  *  name: 'my-index',
+  *   spec: {
+  *     serverless: {
+  *       cloud: 'aws',
+  *       region: 'us-west-2'
+  *     }
+  *   },
+  *  waitUntilReady: true,
+  *  tags: { 'team': 'data-science' }
+  * });
+  *
+  * const records = [
+  *   // PineconeRecord objects with your embedding values
+  * ]
+  * const index = pc.index({ host: indexModel.host });
+  * await index.upsert({ records })
+  * ```
    *
    * @example
    * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
@@ -1152,14 +1153,25 @@ export class Pinecone {
    * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
    * perform data operations directly against that host.
    *
-   * #### Targeting an index by name (options object - recommended)
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * const index = pc.index({ name: 'index-name' })
-   * ```
+  * #### Targeting an index by host (recommended for production)
+  *
+  * ```typescript
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  * const pc = new Pinecone()
+  *
+  * // Get the host from describeIndex
+  * const indexModel = await pc.describeIndex('index-name');
+  * const index = pc.index({ host: indexModel.host })
+  * ```
+  *
+  * #### Targeting an index by name
+  *
+  * ```typescript
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  * const pc = new Pinecone()
+  *
+  * const index = pc.index({ name: 'index-name' })
+  * ```
    *
    * #### Targeting an index by name (legacy string syntax - deprecated)
    *
@@ -1171,46 +1183,46 @@ export class Pinecone {
    * const index = pc.index('index-name')
    * ```
    *
-   * #### Targeting an index by host
+  * #### Targeting an index by host
+  *
+  * ```typescript
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  * const pc = new Pinecone()
+  *
+  * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
+  * ```
    *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * // You can find the host URL in the Pinecone console or via describeIndex()
-   * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
-   * ```
-   *
-   * #### Targeting an index, with user-defined Metadata types
-   *
-   * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const pc = new Pinecone();
-   *
-   * type MovieMetadata = {
-   *   title: string,
-   *   runtime: numbers,
-   *   genre: 'comedy' | 'horror' | 'drama' | 'action'
-   * }
-   *
-   * // Specify a custom metadata type while targeting the index
-   * const index = pc.index<MovieMetadata>({ name: 'test-index' });
-   *
-   * // Now you get type errors if upserting malformed metadata
-   * await index.upsert({
-   *   records: [{
-   *     id: '1234',
-   *     values: [
-   *       .... // embedding values
-   *     ],
-   *     metadata: {
-   *       title: 'Gone with the Wind',
-   *       runtime: 238,
-   *       genre: 'drama',
-   *
+  * #### Targeting an index, with user-defined Metadata types
+  *
+  * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
+  *
+  * ```typescript
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  *
+  * const pc = new Pinecone();
+  *
+  * type MovieMetadata = {
+  *   title: string,
+  *   runtime: numbers,
+  *   genre: 'comedy' | 'horror' | 'drama' | 'action'
+  * }
+  *
+  * // Specify a custom metadata type while targeting the index
+  * const indexModel = await pc.describeIndex('test-index');
+  * const index = pc.index<MovieMetadata>({ host: indexModel.host });
+  *
+  * // Now you get type errors if upserting malformed metadata
+  * await index.upsert({
+  *   records: [{
+  *     id: '1234',
+  *     values: [
+  *       .... // embedding values
+  *     ],
+  *     metadata: {
+  *       title: 'Gone with the Wind',
+  *       runtime: 238,
+  *       genre: 'drama',
+  *
    *       // @ts-expect-error because category property not in MovieMetadata
    *       category: 'classic'
    *     }
