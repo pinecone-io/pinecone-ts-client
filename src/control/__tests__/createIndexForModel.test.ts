@@ -9,6 +9,7 @@ import type {
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexForModelResponse = (
@@ -79,7 +80,7 @@ describe('createIndexForModel', () => {
 
     expect(MIA.createIndexForModel).toHaveBeenCalledWith({
       createIndexForModelRequest: mockCreateReq,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -192,7 +193,7 @@ describe('createIndexForModel', () => {
           },
           readCapacity: undefined,
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -224,7 +225,7 @@ describe('createIndexForModel', () => {
           },
           readCapacity: { mode: 'OnDemand' },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -267,7 +268,7 @@ describe('createIndexForModel', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -309,7 +310,7 @@ describe('createIndexForModel', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });
@@ -419,7 +420,7 @@ describe('createIndexForModel', () => {
       expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
       expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'test-index',
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });

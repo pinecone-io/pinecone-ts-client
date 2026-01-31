@@ -6,6 +6,7 @@ import type {
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexResponse = (
@@ -85,7 +86,7 @@ describe('createIndex', () => {
           example: 'tag',
         },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -117,7 +118,7 @@ describe('createIndex', () => {
           },
         },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -220,11 +221,11 @@ describe('createIndex', () => {
           },
           waitUntilReady: true,
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -264,7 +265,7 @@ describe('createIndex', () => {
         expect(result).toEqual({ status: { ready: true, state: 'Ready' } });
         expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
-          xPineconeApiVersion: '2025-10',
+          xPineconeApiVersion: X_PINECONE_API_VERSION,
         });
       });
     });
@@ -297,7 +298,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -328,7 +329,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -370,7 +371,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -411,7 +412,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });
@@ -440,7 +441,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -645,7 +646,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -726,7 +727,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });

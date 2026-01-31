@@ -4,6 +4,7 @@ import type {
   ModelInfo,
 } from '../../pinecone-generated-ts-fetch/inference';
 import { getModel } from '../getModel';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/inference/api_version';
 
 const setupGetModelResponse = (response = {}, isSuccessful = true) => {
   const fakeGetModel: (req: GetModelRequest) => Promise<ModelInfo> = jest
@@ -33,7 +34,7 @@ describe('getModel', () => {
     await getModel(IA)(modelName);
     expect(IA.getModel).toHaveBeenCalledWith({
       modelName,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

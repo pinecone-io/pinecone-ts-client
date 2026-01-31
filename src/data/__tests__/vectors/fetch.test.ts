@@ -5,6 +5,7 @@ import type {
   FetchVectorsRequest,
   FetchResponse,
 } from '../../../pinecone-generated-ts-fetch/db_data';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeFetch: (req: FetchVectorsRequest) => Promise<FetchResponse> = jest
@@ -32,7 +33,7 @@ describe('fetch', () => {
     expect(VOA.fetchVectors).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -57,7 +58,7 @@ describe('fetch', () => {
     expect(VOA.fetchVectors).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'custom-namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

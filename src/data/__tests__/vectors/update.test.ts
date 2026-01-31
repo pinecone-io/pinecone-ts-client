@@ -2,6 +2,7 @@ import { UpdateCommand } from '../../vectors/update';
 import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type { UpdateVectorRequest } from '../../../pinecone-generated-ts-fetch/db_data';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpdate: (req: UpdateVectorRequest) => Promise<object> = jest
@@ -46,7 +47,7 @@ describe('update', () => {
         },
         setMetadata: { genre: 'ambient' },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -95,7 +96,7 @@ describe('update', () => {
         setMetadata: undefined,
         filter: undefined,
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

@@ -2,6 +2,7 @@ import { UpsertCommand } from '../../vectors/upsert';
 import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
 import type { UpsertVectorsRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertVectorsRequest) => Promise<object> = jest
@@ -36,7 +37,7 @@ describe('upsert', () => {
         namespace: 'namespace',
         vectors: [{ id: '1', values: [1, 2, 3] }],
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -87,7 +88,7 @@ describe('upsert', () => {
         namespace: 'custom-namespace',
         vectors: [{ id: '1', values: [1, 2, 3] }],
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

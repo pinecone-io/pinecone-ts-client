@@ -1,6 +1,7 @@
 import { deleteMany } from '../../vectors/deleteMany';
 import { setupDeleteSuccess } from './deleteOne.test';
 import { PineconeArgumentError } from '../../../errors';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 describe('deleteMany', () => {
   test('calls the openapi delete endpoint, passing ids with target namespace', async () => {
@@ -12,7 +13,7 @@ describe('deleteMany', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123', '456', '789'], namespace: 'namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -25,7 +26,7 @@ describe('deleteMany', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { filter: { genre: 'ambient' }, namespace: 'namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -84,7 +85,7 @@ describe('deleteMany', () => {
 
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123', '456'], namespace: 'custom-namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -101,7 +102,7 @@ describe('deleteMany', () => {
         filter: { genre: 'ambient' },
         namespace: 'custom-namespace',
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

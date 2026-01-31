@@ -3,6 +3,7 @@ import {
   AlignmentResponse,
   MetricsAlignmentRequest,
   MetricsApi,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_evaluation';
 
 const setupMetricsApi = () => {
@@ -78,7 +79,7 @@ describe('AssistantCtrlPlane', () => {
       await evaluate(metricsApi)(request);
 
       expect(metricsApi.metricsAlignment).toHaveBeenCalledWith({
-        xPineconeApiVersion: expect.any(String),
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
         alignmentRequest: {
           question: request.question,
           answer: request.answer,
