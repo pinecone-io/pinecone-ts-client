@@ -253,7 +253,9 @@ const searchResults = await index.query({
 });
 
 // 3. Rerank the results
-const docsToRerank = searchResults.matches.map((match) => match.metadata?.text as string);
+const docsToRerank = searchResults.matches.map(
+  (match) => match.metadata?.text as string,
+);
 
 const reranked = await pc.inference.rerank({
   model: rerankModel,

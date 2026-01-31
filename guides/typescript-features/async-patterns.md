@@ -139,9 +139,7 @@ async function sequentialOperations() {
   const index = pc.index({ name: 'new-index' });
 
   await index.upsert({
-    records: [
-      { id: '1', values: [0.1, 0.2, 0.3] },
-    ],
+    records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
   });
 
   // Query the data we just upserted
@@ -176,8 +174,13 @@ async function retryOperation<T>(
     } catch (error) {
       lastError = error as Error;
 
-      if (error instanceof PineconeConnectionError && attempt < maxRetries - 1) {
-        console.log(`Attempt ${attempt + 1} failed, retrying in ${delayMs}ms...`);
+      if (
+        error instanceof PineconeConnectionError &&
+        attempt < maxRetries - 1
+      ) {
+        console.log(
+          `Attempt ${attempt + 1} failed, retrying in ${delayMs}ms...`,
+        );
         await new Promise((resolve) => setTimeout(resolve, delayMs));
         delayMs *= 2; // Exponential backoff
       } else {

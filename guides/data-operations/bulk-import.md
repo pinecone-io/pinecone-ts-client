@@ -2,7 +2,8 @@
 
 You can [import vectors en masse](https://docs.pinecone.io/guides/index-data/import-data) from object storage. `Import` is a long-running, asynchronous operation that imports large numbers of records into a Pinecone serverless index.
 
-> **Note:** 
+> **Note:**
+>
 > - `Import` only works with serverless indexes
 > - `Import` is in [public preview](https://docs.pinecone.io/release-notes/feature-availability)
 > - Supported object storage providers: [Amazon S3](https://docs.pinecone.io/guides/operations/integrations/integrate-with-amazon-s3), [Google Cloud Storage](https://docs.pinecone.io/guides/operations/integrations/integrate-with-google-cloud-storage), and [Azure Blob Storage](https://docs.pinecone.io/guides/operations/integrations/integrate-with-azure-blob-storage)
@@ -174,9 +175,11 @@ let status = 'InProgress';
 while (status === 'InProgress' || status === 'Pending') {
   const importStatus = await index.describeImport(id);
   status = importStatus.status;
-  
-  console.log(`Import ${id}: ${status} - ${importStatus.percentComplete}% complete`);
-  
+
+  console.log(
+    `Import ${id}: ${status} - ${importStatus.percentComplete}% complete`,
+  );
+
   if (status === 'InProgress' || status === 'Pending') {
     // Wait before polling again
     await new Promise((resolve) => setTimeout(resolve, 30000)); // 30 seconds

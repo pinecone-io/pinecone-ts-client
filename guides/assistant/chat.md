@@ -174,6 +174,7 @@ const response = await assistant.chat({
 ```
 
 Context options:
+
 - **`topK`**: Maximum number of context snippets to retrieve (default: 16, max: 64)
 - **`snippetSize`**: Maximum token size per snippet (default: 2048, min: 512, max: 8192)
 - **`multimodal`**: Whether to retrieve image-related context (default: true)

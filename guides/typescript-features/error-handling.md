@@ -186,9 +186,7 @@ const pc = new Pinecone({
 // Operations like upsert, update, and configureIndex will automatically retry
 const index = pc.index({ name: 'my-index' });
 await index.upsert({
-  records: [
-    { id: '1', values: [0.1, 0.2, 0.3] },
-  ],
+  records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
 });
 ```
 

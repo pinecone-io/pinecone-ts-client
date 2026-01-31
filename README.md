@@ -35,6 +35,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 
 > [!NOTE]
 > For notes on changes between major versions, see the migration guides:
+>
 > - [v2 Migration Guide](./guides/upgrading/v2-migration.md) - Upgrading from v1.x to v2.x
 > - [v1 Migration Guide](./guides/upgrading/v1-migration.md) - Upgrading from v0.x to v1.x
 

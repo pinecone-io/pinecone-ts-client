@@ -32,6 +32,7 @@ The `fieldMap` specifies which field in your records contains the text to be emb
 Once you have an index configured for a specific embedding model, use the `upsertRecords` operation to convert your source data to embeddings and upsert them into a namespace.
 
 Each record must contain:
+
 - A unique `id` (or `_id`) field
 - A field matching the `fieldMap` specified when creating the index (e.g., `chunk_text`)
 - Any additional fields will be stored as metadata

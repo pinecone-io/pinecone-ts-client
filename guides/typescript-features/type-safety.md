@@ -365,7 +365,11 @@ await index.update({
 Create helper functions with proper typing:
 
 ```typescript
-import { Pinecone, PineconeRecord, QueryResponse } from '@pinecone-database/pinecone';
+import {
+  Pinecone,
+  PineconeRecord,
+  QueryResponse,
+} from '@pinecone-database/pinecone';
 
 type ProductMetadata = {
   name: string;

@@ -62,6 +62,7 @@ const uploadResponse = await assistant.uploadFile({
 ```
 
 When `multimodal: true`, the assistant will:
+
 - Extract images, charts, and diagrams from the PDF
 - Generate captions for visual content
 - Enable the assistant to answer questions about visual elements
@@ -225,6 +226,7 @@ fileManagementWorkflow();
 ## Supported file types
 
 The SDK explicitly supports the following file types with proper MIME type handling:
+
 - `.pdf` - PDF documents
 - `.txt` - Plain text files
 - `.md` - Markdown files

@@ -5,6 +5,7 @@
 You should create a single `Pinecone` client instance and reuse it throughout your application rather than creating a new instance for every operation.
 
 **Benefits of reusing the client:**
+
 - Avoids unnecessary object instantiation overhead
 - Maintains consistent configuration (API key, retry settings, etc.)
 - Better code organization
@@ -75,7 +76,9 @@ const index = pc.index({ name: 'my-index' });
 **By host** (better for production):
 
 ```typescript
-const index = pc.index({ host: 'my-index-abc123.svc.us-east-1-aws.pinecone.io' });
+const index = pc.index({
+  host: 'my-index-abc123.svc.us-east-1-aws.pinecone.io',
+});
 // Avoids extra API call to resolve host
 ```
 
@@ -153,6 +156,7 @@ Enable strict null checking in `tsconfig.json`:
 **No.** The Pinecone TypeScript SDK is intended for server-side use only. Using the SDK in a browser can expose your API key.
 
 Supported environments:
+
 - ✅ Node.js (>=20.0.0)
 - ✅ Edge runtimes (Vercel Edge Functions, Cloudflare Workers)
 - ❌ Browser (client-side)
@@ -236,17 +240,13 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 // Use upsert when you have vectors
 const index1 = pc.index({ name: 'byov-index' });
 await index1.upsert({
-  records: [
-    { id: '1', values: [0.1, 0.2, 0.3] },
-  ],
+  records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
 });
 
 // Use upsertRecords with integrated inference indexes
 const index2 = pc.index({ name: 'integrated-index' });
 await index2.upsertRecords({
-  records: [
-    { id: '1', text: 'This text will be embedded automatically' },
-  ],
+  records: [{ id: '1', text: 'This text will be embedded automatically' }],
 });
 ```
 

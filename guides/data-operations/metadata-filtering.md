@@ -219,5 +219,6 @@ const results = await index.query({
 4. **Avoid negation**: Filters like `$ne` and `$nin` may be less efficient than positive filters
 
 For more details on metadata configuration, see:
+
 - [Serverless metadata schema](../index-management/serverless-indexes.md#metadata-schema-configuration)
 - [Pod metadata configuration](../index-management/pod-indexes.md#optional-spec-configurations-when-creating-pod-indexes)

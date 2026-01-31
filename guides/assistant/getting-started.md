@@ -128,7 +128,8 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 await pc.updateAssistant({
   name: 'product-assistant',
-  instructions: 'You are a helpful product recommendation assistant. Be concise and friendly.',
+  instructions:
+    'You are a helpful product recommendation assistant. Be concise and friendly.',
   metadata: { version: '2.0' },
 });
 ```
