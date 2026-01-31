@@ -129,7 +129,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 // 2. Create an index configured for use with a particular embedding model
-await pc.createIndexForModel({
+const indexModel = await pc.createIndexForModel({
   name: 'example-index',
   cloud: 'aws',
   region: 'us-east-1',
@@ -141,7 +141,7 @@ await pc.createIndexForModel({
 });
 
 // 3. Target the index
-const index = pc.index({ name: 'example-index' });
+const index = pc.index({ host: indexModel.host });
 
 // 4. Upsert records with raw text data
 // Pinecone will automatically generate embeddings using the configured model
