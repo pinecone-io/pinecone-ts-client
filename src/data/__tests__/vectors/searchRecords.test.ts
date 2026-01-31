@@ -6,6 +6,7 @@ import {
   SearchRecordsResponse,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const mockNamespace = 'mock-namespace';
 
@@ -56,7 +57,7 @@ describe('SearchRecordsCommand', () => {
     expect(fakeSearchRecords).toHaveBeenCalledWith({
       namespace: mockNamespace,
       searchRecordsRequest: mockSearchRequest,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -86,7 +87,7 @@ describe('SearchRecordsCommand', () => {
     expect(fakeSearchRecords).toHaveBeenCalledWith({
       namespace: 'custom-namespace',
       searchRecordsRequest: mockSearchRequest,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

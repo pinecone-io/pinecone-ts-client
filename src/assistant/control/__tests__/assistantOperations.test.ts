@@ -5,6 +5,7 @@ import {
   DeleteAssistantRequest,
   ListAssistantsRequest,
   ListAssistants200Response,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_control';
 import { describeAssistant } from '../describeAssistant';
 import { deleteAssistant } from '../deleteAssistant';
@@ -76,7 +77,7 @@ describe('describeAssistant', () => {
 
     expect(manageAssistantsApi.getAssistant).toHaveBeenCalledWith({
       assistantName: 'test-assistant',
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });
@@ -99,7 +100,7 @@ describe('deleteAssistant', () => {
 
     expect(manageAssistantsApi.deleteAssistant).toHaveBeenCalledWith({
       assistantName: 'test-assistant',
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -121,7 +122,7 @@ describe('listAssistants', () => {
     await listAssistants(manageAssistantsApi)();
 
     expect(manageAssistantsApi.listAssistants).toHaveBeenCalledWith({
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

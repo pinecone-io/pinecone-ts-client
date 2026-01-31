@@ -5,6 +5,7 @@ import type {
   VectorOperationsApi,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListVectorsRequest) => Promise<ListResponse> = jest
@@ -40,7 +41,7 @@ describe('list', () => {
     expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -69,7 +70,7 @@ describe('list', () => {
     expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'custom-namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

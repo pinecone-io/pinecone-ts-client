@@ -6,6 +6,7 @@ import {
   VectorOperationsApi,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeQuery: (req: QueryVectorsRequest) => Promise<QueryResponse> = jest
@@ -150,7 +151,7 @@ describe('Query command tests', () => {
     await cmd.run({ id: 'test-id', topK: 3 });
 
     expect(VOA.queryVectors).toHaveBeenCalledWith({
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       queryRequest: { id: 'test-id', topK: 3, namespace: 'namespace' },
     });
   });
@@ -160,7 +161,7 @@ describe('Query command tests', () => {
     await cmd.run({ id: 'test-id', topK: 3, namespace: 'custom-namespace' });
 
     expect(VOA.queryVectors).toHaveBeenCalledWith({
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       queryRequest: { id: 'test-id', topK: 3, namespace: 'custom-namespace' },
     });
   });

@@ -440,7 +440,7 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.createIndex({
+   * const indexModel = await pc.createIndex({
    *  name: 'my-index',
    *   spec: {
    *     serverless: {
@@ -455,7 +455,8 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index({ name: 'my-index' }).upsert({ records })
+   * const index = pc.index({ host: indexModel.host });
+   * await index.upsert({ records })
    * ```
    *
    * @example
@@ -1152,7 +1153,18 @@ export class Pinecone {
    * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
    * perform data operations directly against that host.
    *
-   * #### Targeting an index by name (options object - recommended)
+   * #### Targeting an index by host (recommended for production)
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // Get the host from describeIndex
+   * const indexModel = await pc.describeIndex('index-name');
+   * const index = pc.index({ host: indexModel.host })
+   * ```
+   *
+   * #### Targeting an index by name
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
@@ -1177,7 +1189,6 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
-   * // You can find the host URL in the Pinecone console or via describeIndex()
    * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
    * ```
    *
@@ -1197,7 +1208,8 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const index = pc.index<MovieMetadata>({ name: 'test-index' });
+   * const indexModel = await pc.describeIndex('test-index');
+   * const index = pc.index<MovieMetadata>({ host: indexModel.host });
    *
    * // Now you get type errors if upserting malformed metadata
    * await index.upsert({

@@ -2,6 +2,7 @@ import {
   ManageAssistantsApi,
   UpdateAssistantOperationRequest,
   UpdateAssistant200Response,
+  X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_control';
 import { updateAssistant } from '../updateAssistant';
 
@@ -49,7 +50,7 @@ describe('updateAssistant', () => {
 
     expect(manageAssistantsApi.updateAssistant).toHaveBeenCalledWith({
       assistantName: 'test-assistant',
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       updateAssistantRequest: {
         instructions: 'new instructions',
         metadata: { key: 'value' },
@@ -67,7 +68,7 @@ describe('updateAssistant', () => {
 
     expect(manageAssistantsApi.updateAssistant).toHaveBeenCalledWith({
       assistantName: 'test-assistant',
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       updateAssistantRequest: {
         instructions: 'new instructions',
         metadata: undefined,
@@ -85,7 +86,7 @@ describe('updateAssistant', () => {
 
     expect(manageAssistantsApi.updateAssistant).toHaveBeenCalledWith({
       assistantName: 'test-assistant',
-      xPineconeApiVersion: expect.any(String),
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
       updateAssistantRequest: {
         instructions: undefined,
         metadata: { key: 'new-value' },

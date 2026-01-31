@@ -53,7 +53,9 @@ jobs:
   integration-tests:
     if: ${{ github.event.inputs.runTests == 'true' }}
     uses: ./.github/workflows/pr.yml
-    secrets: inherit
+    secrets:
+      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     with:
       ref: ${{ inputs.ref }}
 
@@ -191,6 +193,7 @@ jobs:
     needs: version-and-release
     if: ${{ github.event.inputs.releaseMode == 'prod' && needs.version-and-release.result == 'success' }}
     uses: ./.github/workflows/build-and-publish-docs.yml
-    secrets: inherit
+    secrets:
+      SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
     with:
       ref: ${{ github.event.inputs.ref }}

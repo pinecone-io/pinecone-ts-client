@@ -5,6 +5,7 @@ import type {
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import { PineconeArgumentError } from '../../../errors';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteVectorsRequest) => Promise<object> = jest
@@ -32,7 +33,7 @@ describe('deleteOne', () => {
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -55,7 +56,7 @@ describe('deleteOne', () => {
 
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'custom-namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

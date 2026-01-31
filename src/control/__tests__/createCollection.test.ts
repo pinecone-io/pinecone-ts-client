@@ -7,6 +7,7 @@ import type {
   IndexList,
   ListIndexesRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const fakeCreateCollection: (
@@ -155,7 +156,7 @@ describe('createCollection', () => {
         name: 'collection-name',
         source: 'index-name',
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

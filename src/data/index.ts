@@ -103,7 +103,8 @@ export type { StartImportOptions } from './bulk/startImport';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone()
  *
- * const index = pc.index({ name: 'index-name' })
+ * const indexModel = await pc.describeIndex('index-name');
+ * const index = pc.index({ host: indexModel.host })
  * ```
  *
  * ### Targeting an index, with user-defined Metadata types
@@ -224,11 +225,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * // Target by name
-   * const index = pc.index({ name: 'my-index' });
+   * // Get host from describeIndex
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
-   * // Target by host (bypasses describeIndex call)
-   * const index = pc.index({ host: 'my-index-abc123.svc.pinecone.io' });
+   * // Or get host from createIndex response
+   * const indexModel = await pc.createIndex({
+   *   name: 'my-index',
+   *   dimension: 1536,
+   *   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } }
+   * });
+   * const index = pc.index({ host: indexModel.host });
    * ```
    *
    * @constructor
@@ -326,30 +333,31 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * Delete all records from the targeted namespace. To delete all records from across all namespaces,
    * delete the index using {@link Pinecone.deleteIndex} and create a new one using {@link Pinecone.createIndex}.
    *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
-   *
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //    '': { recordCount: 10 },
-   * //   foo: { recordCount: 1 }
-   * //   },
-   * //   dimension: 8,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 11
-   * // }
-   * // Deletes all records from the default namespace '__default__'. Records in other namespaces are not modified.
-   * await index.deleteAll();
-   *
-   * // Deletes all records from the namespace 'foo'. Records in other namespaces are not modified.
-   * await index.deleteAll({ namespace: 'foo' });
-   *
+  * @example
+  * ```js
+  * import { Pinecone } from '@pinecone-database/pinecone';
+  * const pc = new Pinecone();
+  * const indexModel = await pc.describeIndex('my-index');
+  * const index = pc.index({ host: indexModel.host });
+  *
+  * await index.describeIndexStats();
+  * // {
+  * //  namespaces: {
+  * //    '': { recordCount: 10 },
+  * //   foo: { recordCount: 1 }
+  * //   },
+  * //   dimension: 8,
+  * //   indexFullness: 0,
+  * //   totalRecordCount: 11
+  * // }
+  * // Deletes all records from the default namespace '__default__'. Records in other namespaces are not modified.
+  * await index.deleteAll();
+  *
+  * // Deletes all records from the namespace 'foo'. Records in other namespaces are not modified.
+  * await index.deleteAll({ namespace: 'foo' });
+  *
 
-   * ```
+  * ```
    * @param options - Optional {@link DeleteAllOptions} for the operation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the delete is completed.
@@ -367,7 +375,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * await index.deleteMany({ ids: ['record-1', 'record-2'] });
    *
@@ -390,7 +399,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
    * ```
@@ -410,7 +420,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * await index.describeIndexStats();
    * // {
@@ -443,7 +454,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const index = pc.index({ name: 'my-index', namespace: 'my-namespace' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * const results = await index.listPaginated({ prefix: 'doc1#' });
    * console.log(results);
@@ -485,7 +497,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * // Upsert to default namespace
    * await index.upsert({
@@ -524,7 +537,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * // Fetch from default namespace
    * await index.fetch({ ids: ['record-1', 'record-2'] });
@@ -548,7 +562,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * await index.fetchByMetadata({ filter: { genre: 'classical' } });
    * ```
@@ -571,7 +586,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-index' });
+   * const indexModel = await pc.describeIndex('my-index');
+   * const index = pc.index({ host: indexModel.host });
    *
    * // Query by id
    * await index.query({ topK: 3, id: 'record-1'});
@@ -599,7 +615,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'imdb-movies' });
+   * const indexModel = await pc.describeIndex('imdb-movies');
+   * const index = pc.index({ host: indexModel.host });
    *
    * await index.update({
    *   id: '18593',
@@ -624,7 +641,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const namespace = pc.index({ name: 'integrated-index', namespace: 'my-namespace' });
+   * const indexModel = await pc.describeIndex('integrated-index');
+   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * await namespace.upsertRecords({
    *   records: [
@@ -696,7 +714,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const namespace = pc.index({ name: 'integrated-index', namespace: 'my-namespace' });
+   * const indexModel = await pc.describeIndex('integrated-index');
+   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * const response = await namespace.searchRecords({
    *   query: {
@@ -754,7 +773,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
    *
    * // {"id":"1"}
@@ -776,7 +796,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.listImports(10));
    *
    * // {
@@ -812,7 +833,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.describeImport('import-id'));
    *
    * // {
@@ -840,7 +862,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.cancelImport('import-id'));
    *
    * // {}
@@ -859,7 +882,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * await index.createNamespace({
    *   name: 'my-namespace',
    *   schema: {
@@ -887,7 +911,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.listNamespaces({ limit: 10 }));
    *
    * // {
@@ -914,7 +939,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * console.log(await index.describeNamespace('ns-1'));
    *
    * // { name: 'ns-1', recordCount: '1' }
@@ -933,7 +959,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const index = pc.index({ name: 'my-serverless-index' });
+   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const index = pc.index({ host: indexModel.host });
    * await index.deleteNamespace('ns-1');
    * ```
    *

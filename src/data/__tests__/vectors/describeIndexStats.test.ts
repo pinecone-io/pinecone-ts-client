@@ -3,6 +3,7 @@ import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../../errors';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (
@@ -49,7 +50,7 @@ describe('describeIndexStats', () => {
     });
     expect(DPA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 

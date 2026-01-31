@@ -6,6 +6,7 @@ import type {
   CreateIndexFromBackupResponse,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 const setupCreateIndexFromBackupResponse = (
   createIndexFromBackupResponse = {} as BackupModel,
@@ -45,7 +46,7 @@ describe('createIndexFromBackup', () => {
         tags: { test: 'test-tag' },
         deletionProtection: 'enabled',
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
