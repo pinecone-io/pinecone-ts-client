@@ -3,3 +3,4 @@ node_modules
 codegen
 src/pinecone-generated-ts-fetch
 .cursor
+package-lock.json
