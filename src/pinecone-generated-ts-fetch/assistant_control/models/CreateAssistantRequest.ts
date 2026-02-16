@@ -26,13 +26,13 @@ export interface CreateAssistantRequest {
      */
     name: string;
     /**
-     * Description or directive for the assistant to apply to all responses.
+     * Description or directive for the assistant to apply to all responses. Maximum 16 KB.
      * @type {string}
      * @memberof CreateAssistantRequest
      */
     instructions?: string | null;
     /**
-     * 
+     * Optional metadata associated with the assistant. Metadata is a JSON object that can store custom organizational data, tags, and attributes. Maximum size is 16KB.
      * @type {object}
      * @memberof CreateAssistantRequest
      */

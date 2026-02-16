@@ -13,6 +13,13 @@
  */
 
 import {
+    BYOC1,
+    instanceOfBYOC1,
+    BYOC1FromJSON,
+    BYOC1FromJSONTyped,
+    BYOC1ToJSON,
+} from './BYOC1';
+import {
     PodBased1,
     instanceOfPodBased1,
     PodBased1FromJSON,
@@ -32,7 +39,7 @@ import {
  * The spec object defines how the index should be deployed.  Only some attributes of an index's spec may be updated.  In general, you can modify settings related to scaling and  configuration but you cannot change the cloud or region  where the index is hosted.
  * @export
  */
-export type ConfigureIndexRequestSpec = PodBased1 | Serverless1;
+export type ConfigureIndexRequestSpec = BYOC1 | PodBased1 | Serverless1;
 
 export function ConfigureIndexRequestSpecFromJSON(json: any): ConfigureIndexRequestSpec {
     return ConfigureIndexRequestSpecFromJSONTyped(json, false);
@@ -42,7 +49,7 @@ export function ConfigureIndexRequestSpecFromJSONTyped(json: any, ignoreDiscrimi
     if ((json === undefined) || (json === null)) {
         return json;
     }
-    return { ...PodBased1FromJSONTyped(json, true), ...Serverless1FromJSONTyped(json, true) };
+    return { ...BYOC1FromJSONTyped(json, true), ...PodBased1FromJSONTyped(json, true), ...Serverless1FromJSONTyped(json, true) };
 }
 
 export function ConfigureIndexRequestSpecToJSON(value?: ConfigureIndexRequestSpec | null): any {
@@ -53,6 +60,9 @@ export function ConfigureIndexRequestSpecToJSON(value?: ConfigureIndexRequestSpe
         return null;
     }
 
+    if (instanceOfBYOC1(value)) {
+        return BYOC1ToJSON(value as BYOC1);
+    }
     if (instanceOfPodBased1(value)) {
         return PodBased1ToJSON(value as PodBased1);
     }

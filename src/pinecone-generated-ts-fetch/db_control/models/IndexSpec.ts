@@ -13,12 +13,12 @@
  */
 
 import {
-    BYOC,
-    instanceOfBYOC,
-    BYOCFromJSON,
-    BYOCFromJSONTyped,
-    BYOCToJSON,
-} from './BYOC';
+    BYOC2,
+    instanceOfBYOC2,
+    BYOC2FromJSON,
+    BYOC2FromJSONTyped,
+    BYOC2ToJSON,
+} from './BYOC2';
 import {
     PodBased,
     instanceOfPodBased,
@@ -41,7 +41,7 @@ import {
  * For serverless indexes, you define only the [cloud and region](http://docs.pinecone.io/guides/index-data/create-an-index#cloud-regions) where the index should be hosted. For pod-based indexes, you define the [environment](http://docs.pinecone.io/guides/indexes/pods/understanding-pod-based-indexes#pod-environments) where the index should be hosted, the [pod type and size](http://docs.pinecone.io/guides/indexes/pods/understanding-pod-based-indexes#pod-types) to use, and other index characteristics.
  * @export
  */
-export type IndexSpec = BYOC | PodBased | Serverless2;
+export type IndexSpec = BYOC2 | PodBased | Serverless2;
 
 export function IndexSpecFromJSON(json: any): IndexSpec {
     return IndexSpecFromJSONTyped(json, false);
@@ -51,7 +51,7 @@ export function IndexSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     if ((json === undefined) || (json === null)) {
         return json;
     }
-    return { ...BYOCFromJSONTyped(json, true), ...PodBasedFromJSONTyped(json, true), ...Serverless2FromJSONTyped(json, true) };
+    return { ...BYOC2FromJSONTyped(json, true), ...PodBasedFromJSONTyped(json, true), ...Serverless2FromJSONTyped(json, true) };
 }
 
 export function IndexSpecToJSON(value?: IndexSpec | null): any {
@@ -62,8 +62,8 @@ export function IndexSpecToJSON(value?: IndexSpec | null): any {
         return null;
     }
 
-    if (instanceOfBYOC(value)) {
-        return BYOCToJSON(value as BYOC);
+    if (instanceOfBYOC2(value)) {
+        return BYOC2ToJSON(value as BYOC2);
     }
     if (instanceOfPodBased(value)) {
         return PodBasedToJSON(value as PodBased);

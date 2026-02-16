@@ -109,6 +109,9 @@ export interface CreateIndexByocSpec {
 
   /** The metadata schema for the index. */
   schema?: MetadataSchema;
+
+  /** The read capacity configuration for the index. Defaults to OnDemand if not provided. */
+  readCapacity?: CreateIndexReadCapacity;
 }
 
 /**

@@ -50,7 +50,13 @@ export interface AssistantFileModel {
      */
     updatedOn?: Date;
     /**
+     * The current state of the uploaded file. Possible values:
+     * - `Processing`: File is being processed (parsed, chunked, embedded)
+     * - `Available`: Processing completed successfully; file is ready for use
+     * - `Deleting`: Deletion has been initiated but not yet completed
+     * - `ProcessingFailed`: Processing failed with an error
      * 
+     * Note: Once a file is deleted, the API returns 404 Not Found instead of a file object.
      * @type {string}
      * @memberof AssistantFileModel
      */

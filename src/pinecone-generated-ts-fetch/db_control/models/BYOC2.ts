@@ -13,52 +13,52 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ByocSpecResponse } from './ByocSpecResponse';
+import type { ByocSpec } from './ByocSpec';
 import {
-    ByocSpecResponseFromJSON,
-    ByocSpecResponseFromJSONTyped,
-    ByocSpecResponseToJSON,
-} from './ByocSpecResponse';
+    ByocSpecFromJSON,
+    ByocSpecFromJSONTyped,
+    ByocSpecToJSON,
+} from './ByocSpec';
 
 /**
  * 
  * @export
- * @interface BYOC
+ * @interface BYOC2
  */
-export interface BYOC {
+export interface BYOC2 {
     /**
      * 
-     * @type {ByocSpecResponse}
-     * @memberof BYOC
+     * @type {ByocSpec}
+     * @memberof BYOC2
      */
-    byoc: ByocSpecResponse;
+    byoc: ByocSpec;
 }
 
 /**
- * Check if a given object implements the BYOC interface.
+ * Check if a given object implements the BYOC2 interface.
  */
-export function instanceOfBYOC(value: object): boolean {
+export function instanceOfBYOC2(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "byoc" in value;
 
     return isInstance;
 }
 
-export function BYOCFromJSON(json: any): BYOC {
-    return BYOCFromJSONTyped(json, false);
+export function BYOC2FromJSON(json: any): BYOC2 {
+    return BYOC2FromJSONTyped(json, false);
 }
 
-export function BYOCFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC {
+export function BYOC2FromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC2 {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'byoc': ByocSpecResponseFromJSON(json['byoc']),
+        'byoc': ByocSpecFromJSON(json['byoc']),
     };
 }
 
-export function BYOCToJSON(value?: BYOC | null): any {
+export function BYOC2ToJSON(value?: BYOC2 | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,7 +67,7 @@ export function BYOCToJSON(value?: BYOC | null): any {
     }
     return {
         
-        'byoc': ByocSpecResponseToJSON(value.byoc),
+        'byoc': ByocSpecToJSON(value.byoc),
     };
 }
 
