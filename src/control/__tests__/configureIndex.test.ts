@@ -291,9 +291,9 @@ describe('getIndexSpecType', () => {
       },
       byoc: undefined,
     };
-    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
-      'serverless',
-    );
+    expect(
+      getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0]),
+    ).toBe('serverless');
   });
 
   test('returns pod when only pod has a defined value (merged FromJSON shape)', () => {
@@ -308,9 +308,9 @@ describe('getIndexSpecType', () => {
       serverless: undefined,
       byoc: undefined,
     };
-    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
-      'pod',
-    );
+    expect(
+      getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0]),
+    ).toBe('pod');
   });
 
   test('returns byoc when only byoc has a defined value (merged FromJSON shape)', () => {
@@ -322,14 +322,16 @@ describe('getIndexSpecType', () => {
         readCapacity: { mode: 'OnDemand', status: { state: 'Ready' } },
       },
     };
-    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
-      'byoc',
-    );
+    expect(
+      getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0]),
+    ).toBe('byoc');
   });
 
   test('returns unknown for null or non-object', () => {
     expect(
-      getIndexSpecType(null as unknown as Parameters<typeof getIndexSpecType>[0]),
+      getIndexSpecType(
+        null as unknown as Parameters<typeof getIndexSpecType>[0],
+      ),
     ).toBe('unknown');
     expect(
       getIndexSpecType(

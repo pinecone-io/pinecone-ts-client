@@ -1,7 +1,7 @@
 import {
   ManageIndexesApi,
   IndexModel,
-  type IndexModelSpec,
+  IndexModelSpec,
   ConfigureIndexRequest,
   ConfigureIndexRequestEmbed,
   ConfigureIndexRequestSpec,
@@ -144,11 +144,7 @@ export const getIndexSpecType = (
   ) {
     return 'serverless';
   }
-  if (
-    'byoc' in spec &&
-    spec.byoc != null &&
-    typeof spec.byoc === 'object'
-  ) {
+  if ('byoc' in spec && spec.byoc != null && typeof spec.byoc === 'object') {
     return 'byoc';
   }
   if ('pod' in spec && spec.pod != null && typeof spec.pod === 'object') {
@@ -167,7 +163,7 @@ const buildConfigureSpec = (
 
   if (hasPod && hasReadCapacity) {
     throw new PineconeArgumentError(
-      'Cannot configure both readCapacity values for a pod index.',
+      'Cannot configure both pod (podReplicas/podType) and readCapacity in the same request; these parameters are mutually exclusive.',
     );
   }
 
