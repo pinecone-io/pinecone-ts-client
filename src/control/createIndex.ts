@@ -180,19 +180,32 @@ export const createIndex = (api: ManageIndexesApi) => {
     validateCreateIndexRequest(options);
 
     try {
+      // Build the spec based on which type is provided
+      let spec: IndexSpec;
+      if (options.spec.serverless) {
+        spec = {
+          serverless: {
+            ...options.spec.serverless,
+            readCapacity: toApiReadCapacity(
+              options.spec.serverless.readCapacity,
+            ),
+          },
+        };
+      } else if (options.spec.byoc) {
+        spec = {
+          byoc: {
+            ...options.spec.byoc,
+            readCapacity: toApiReadCapacity(options.spec.byoc.readCapacity),
+          },
+        };
+      } else {
+        // pod spec - no readCapacity transformation needed
+        spec = { pod: options.spec.pod! };
+      }
+
       const createRequest: CreateIndexRequest = {
         ...options,
-        spec: {
-          ...options.spec,
-          serverless: options.spec.serverless
-            ? {
-                ...options.spec.serverless,
-                readCapacity: toApiReadCapacity(
-                  options.spec.serverless?.readCapacity,
-                ),
-              }
-            : undefined,
-        } as IndexSpec,
+        spec,
       };
 
       const createResponse = await api.createIndex({
@@ -389,6 +402,11 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
       throw new PineconeArgumentError(
         'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.',
       );
+    }
+
+    // validate readCapacity if provided
+    if (options.spec.byoc.readCapacity) {
+      validateReadCapacity(options.spec.byoc.readCapacity);
     }
   }
 };

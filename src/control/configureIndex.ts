@@ -5,6 +5,9 @@ import {
   ConfigureIndexRequestEmbed,
   ConfigureIndexRequestSpec,
   X_PINECONE_API_VERSION,
+  instanceOfBYOC,
+  instanceOfPodBased,
+  instanceOfServerless,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
@@ -13,6 +16,7 @@ import {
   toApiReadCapacity,
   validateReadCapacity,
 } from './createIndex';
+import { describeIndex } from './describeIndex';
 
 /**
  * Options for configuring an index.
@@ -46,7 +50,8 @@ export type ConfigureIndexOptions = {
    */
   podType?: string;
   /**
-   * The read capacity configuration for dedicated read nodes.
+   * The read capacity configuration for serverless and BYOC indexes.
+   * Configures whether the index uses on-demand or dedicated read capacity.
    *
    * @see [Dedicated Read Nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
    */
@@ -84,7 +89,26 @@ export const configureIndex = (api: ManageIndexesApi) => {
   return async (options: ConfigureIndexOptions): Promise<IndexModel> => {
     validator(options);
 
-    const spec = buildConfigureSpec(options);
+    // Describe the index to determine its spec type
+    const indexDescription = await describeIndex(api)(options.name);
+    const specType = getIndexSpecType(indexDescription.spec);
+
+    // Validate that spec-specific parameters match the index type
+    if (specType === 'pod' && options.readCapacity !== undefined) {
+      throw new PineconeArgumentError(
+        'Cannot configure readCapacity on a pod index; readCapacity is only supported for serverless and BYOC indexes.',
+      );
+    }
+    if (
+      (specType === 'serverless' || specType === 'byoc') &&
+      (options.podReplicas !== undefined || options.podType !== undefined)
+    ) {
+      throw new PineconeArgumentError(
+        `Cannot configure podReplicas or podType on a ${specType} index; these parameters are only supported for pod indexes.`,
+      );
+    }
+
+    const spec = buildConfigureSpec(options, specType);
     const request: ConfigureIndexRequest = {
       deletionProtection: options.deletionProtection,
       tags: options.tags,
@@ -100,20 +124,42 @@ export const configureIndex = (api: ManageIndexesApi) => {
   };
 };
 
+/**
+ * Helper function to determine the spec type of an index using generated helper functions.
+ * @param spec - The IndexModelSpec from describeIndex
+ * @returns The spec type: 'pod', 'serverless', or 'byoc'
+ */
+const getIndexSpecType = (
+  spec: any,
+): 'pod' | 'serverless' | 'byoc' | 'unknown' => {
+  if (instanceOfPodBased(spec)) {
+    return 'pod';
+  }
+  if (instanceOfServerless(spec)) {
+    return 'serverless';
+  }
+  if (instanceOfBYOC(spec)) {
+    return 'byoc';
+  }
+  return 'unknown';
+};
+
 const buildConfigureSpec = (
   options: ConfigureIndexOptions,
+  specType: 'pod' | 'serverless' | 'byoc' | 'unknown',
 ): ConfigureIndexRequestSpec | undefined => {
   const hasPod =
     options.podReplicas !== undefined || options.podType !== undefined;
-  const hasServerless = options.readCapacity !== undefined;
+  const hasReadCapacity = options.readCapacity !== undefined;
 
-  if (hasPod && hasServerless) {
+  if (hasPod && hasReadCapacity) {
     throw new PineconeArgumentError(
-      'Cannot configure both serverless (readCapacity) and pod (podReplicas/podType)index values.',
+      'Cannot configure both readCapacity values for a pod index.',
     );
   }
 
-  if (hasPod) {
+  // Handle pod configuration
+  if (hasPod && specType === 'pod') {
     return {
       pod: {
         replicas: options.podReplicas,
@@ -122,9 +168,19 @@ const buildConfigureSpec = (
     };
   }
 
-  if (hasServerless) {
+  // Handle serverless configuration
+  if (hasReadCapacity && specType === 'serverless') {
     return {
       serverless: {
+        readCapacity: toApiReadCapacity(options.readCapacity),
+      },
+    };
+  }
+
+  // Handle BYOC configuration
+  if (hasReadCapacity && specType === 'byoc') {
+    return {
+      byoc: {
         readCapacity: toApiReadCapacity(options.readCapacity),
       },
     };
