@@ -1,4 +1,4 @@
-import { configureIndex } from '../configureIndex';
+import { configureIndex, getIndexSpecType } from '../configureIndex';
 import { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type {
   ConfigureIndexOperationRequest,
@@ -273,5 +273,68 @@ describe('configureIndex', () => {
 
     expect(IOA.describeIndex).toHaveBeenCalled();
     expect(IOA.configureIndex).not.toHaveBeenCalled();
+  });
+});
+
+describe('getIndexSpecType', () => {
+  // IndexModelSpecFromJSON merges BYOC, PodBased, Serverless FromJSON results,
+  // so spec can have pod/serverless/byoc all present with some undefined.
+  // getIndexSpecType must classify by defined value, not key presence.
+
+  test('returns serverless when only serverless has a defined value (merged FromJSON shape)', () => {
+    const spec = {
+      pod: undefined,
+      serverless: {
+        cloud: 'aws',
+        region: 'us-east-1',
+        readCapacity: { mode: 'OnDemand', status: { state: 'Ready' } },
+      },
+      byoc: undefined,
+    };
+    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
+      'serverless',
+    );
+  });
+
+  test('returns pod when only pod has a defined value (merged FromJSON shape)', () => {
+    const spec = {
+      pod: {
+        environment: 'us-east1-gcp',
+        replicas: 4,
+        shards: 1,
+        pods: 4,
+        podType: 'p2.x2',
+      },
+      serverless: undefined,
+      byoc: undefined,
+    };
+    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
+      'pod',
+    );
+  });
+
+  test('returns byoc when only byoc has a defined value (merged FromJSON shape)', () => {
+    const spec = {
+      pod: undefined,
+      serverless: undefined,
+      byoc: {
+        environment: 'my-env',
+        readCapacity: { mode: 'OnDemand', status: { state: 'Ready' } },
+      },
+    };
+    expect(getIndexSpecType(spec as Parameters<typeof getIndexSpecType>[0])).toBe(
+      'byoc',
+    );
+  });
+
+  test('returns unknown for null or non-object', () => {
+    expect(
+      getIndexSpecType(null as unknown as Parameters<typeof getIndexSpecType>[0]),
+    ).toBe('unknown');
+    expect(
+      getIndexSpecType(
+        undefined as unknown as Parameters<typeof getIndexSpecType>[0],
+      ),
+    ).toBe('unknown');
   });
 });

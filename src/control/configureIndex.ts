@@ -1,13 +1,11 @@
 import {
   ManageIndexesApi,
   IndexModel,
+  type IndexModelSpec,
   ConfigureIndexRequest,
   ConfigureIndexRequestEmbed,
   ConfigureIndexRequestSpec,
   X_PINECONE_API_VERSION,
-  instanceOfBYOC,
-  instanceOfPodBased,
-  instanceOfServerless,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../errors';
 import type { IndexName } from './types';
@@ -125,21 +123,36 @@ export const configureIndex = (api: ManageIndexesApi) => {
 };
 
 /**
- * Helper function to determine the spec type of an index using generated helper functions.
- * @param spec - The IndexModelSpec from describeIndex
+ * Determines the spec type of an index by which spec key has a defined value.
+ *
+ * @param spec - The IndexModelSpec from describeIndex (may have multiple keys, only one defined)
  * @returns The spec type: 'pod', 'serverless', or 'byoc'
+ * @internal Exported for testing
  */
-const getIndexSpecType = (
-  spec: any,
+export const getIndexSpecType = (
+  spec: IndexModelSpec,
 ): 'pod' | 'serverless' | 'byoc' | 'unknown' => {
-  if (instanceOfPodBased(spec)) {
-    return 'pod';
+  if (spec == null || typeof spec !== 'object') {
+    return 'unknown';
   }
-  if (instanceOfServerless(spec)) {
+  // Classify by which key has a defined object value (order is arbitrary but deterministic).
+  // Use 'in' to narrow the union before reading the property.
+  if (
+    'serverless' in spec &&
+    spec.serverless != null &&
+    typeof spec.serverless === 'object'
+  ) {
     return 'serverless';
   }
-  if (instanceOfBYOC(spec)) {
+  if (
+    'byoc' in spec &&
+    spec.byoc != null &&
+    typeof spec.byoc === 'object'
+  ) {
     return 'byoc';
+  }
+  if ('pod' in spec && spec.pod != null && typeof spec.pod === 'object') {
+    return 'pod';
   }
   return 'unknown';
 };
