@@ -83,9 +83,8 @@ describe('configureIndex', () => {
   };
 
   test('calls the openapi configure endpoint with pod index configuration', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(podIndexModel);
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest,
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
@@ -123,12 +122,13 @@ describe('configureIndex', () => {
   });
 
   test('calls the openapi configure endpoint with serverless index configuration', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(serverlessIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(serverlessIndexModel);
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(serverlessIndexModel);
+    ) => Promise<IndexModel> = jest
+      .fn()
+      .mockResolvedValue(serverlessIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
       configureIndex: fakeConfigure,
@@ -175,9 +175,8 @@ describe('configureIndex', () => {
   });
 
   test('calls the openapi configure endpoint with BYOC index configuration', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(byocIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(byocIndexModel);
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest,
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(byocIndexModel);
@@ -214,9 +213,8 @@ describe('configureIndex', () => {
   });
 
   test('throws error when trying to configure readCapacity on pod index', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(podIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
       configureIndex: jest.fn(),
@@ -236,9 +234,8 @@ describe('configureIndex', () => {
   });
 
   test('throws error when trying to configure podReplicas on serverless index', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(serverlessIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(serverlessIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
       configureIndex: jest.fn(),
@@ -258,9 +255,8 @@ describe('configureIndex', () => {
   });
 
   test('throws error when trying to configure podType on BYOC index', async () => {
-    const fakeDescribe: (
-      req: DescribeIndexRequest,
-    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(byocIndexModel);
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(byocIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
       configureIndex: jest.fn(),
