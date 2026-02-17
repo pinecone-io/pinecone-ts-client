@@ -274,6 +274,62 @@ describe('configureIndex', () => {
     expect(IOA.describeIndex).toHaveBeenCalled();
     expect(IOA.configureIndex).not.toHaveBeenCalled();
   });
+
+  test('skips describeIndex when only non-spec params are updated', async () => {
+    const fakeConfigure: (
+      req: ConfigureIndexOperationRequest,
+    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
+    const IOA = {
+      describeIndex: jest.fn(),
+      configureIndex: fakeConfigure,
+    } as unknown as ManageIndexesApi;
+
+    const returned = await configureIndex(IOA)({
+      name: 'pod-index',
+      deletionProtection: 'enabled',
+      tags: { env: 'prod' },
+    });
+
+    expect(returned).toBe(podIndexModel);
+    // describeIndex must NOT be called — no spec params were supplied
+    expect(IOA.describeIndex).not.toHaveBeenCalled();
+    expect(IOA.configureIndex).toHaveBeenCalledWith({
+      indexName: 'pod-index',
+      configureIndexRequest: {
+        spec: undefined,
+        deletionProtection: 'enabled',
+        tags: { env: 'prod' },
+        embed: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
+
+  test('throws error when spec type cannot be determined and spec params are supplied', async () => {
+    // Return an IndexModel whose spec has no recognisable type
+    const unknownSpecModel = {
+      ...podIndexModel,
+      spec: {},
+    } as unknown as IndexModel;
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(unknownSpecModel);
+    const IOA = {
+      describeIndex: fakeDescribe,
+      configureIndex: jest.fn(),
+    } as unknown as ManageIndexesApi;
+
+    await expect(
+      configureIndex(IOA)({
+        name: 'pod-index',
+        podReplicas: 2,
+      }),
+    ).rejects.toThrow(
+      'Could not determine the index spec type. Verify the index exists and try again.',
+    );
+
+    expect(IOA.describeIndex).toHaveBeenCalled();
+    expect(IOA.configureIndex).not.toHaveBeenCalled();
+  });
 });
 
 describe('getIndexSpecType', () => {

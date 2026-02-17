@@ -87,9 +87,18 @@ export const configureIndex = (api: ManageIndexesApi) => {
   return async (options: ConfigureIndexOptions): Promise<IndexModel> => {
     validator(options);
 
-    // Describe the index to determine its spec type
-    const indexDescription = await describeIndex(api)(options.name);
-    const specType = getIndexSpecType(indexDescription.spec);
+    // Only fetch the index description when spec-type-dependent params are present,
+    // avoiding an extra network round-trip for common updates (deletionProtection, tags, embed).
+    const needsSpecType =
+      options.podReplicas !== undefined ||
+      options.podType !== undefined ||
+      options.readCapacity !== undefined;
+
+    let specType: 'pod' | 'serverless' | 'byoc' | 'unknown' = 'unknown';
+    if (needsSpecType) {
+      const indexDescription = await describeIndex(api)(options.name);
+      specType = getIndexSpecType(indexDescription.spec);
+    }
 
     // Validate that spec-specific parameters match the index type
     if (specType === 'pod' && options.readCapacity !== undefined) {
@@ -103,6 +112,12 @@ export const configureIndex = (api: ManageIndexesApi) => {
     ) {
       throw new PineconeArgumentError(
         `Cannot configure podReplicas or podType on a ${specType} index; these parameters are only supported for pod indexes.`,
+      );
+    }
+    // Guard against silently discarding spec params when the index type could not be determined.
+    if (needsSpecType && specType === 'unknown') {
+      throw new PineconeArgumentError(
+        'Could not determine the index spec type. Verify the index exists and try again.',
       );
     }
 
