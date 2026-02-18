@@ -27,75 +27,59 @@ import {
 } from './ReadCapacityResponse';
 
 /**
- * Configuration of a serverless index.
+ * Configuration of a BYOC index.
  * @export
- * @interface ServerlessSpecResponse
+ * @interface ByocSpecResponse
  */
-export interface ServerlessSpecResponse {
+export interface ByocSpecResponse {
     /**
-     * The public cloud where you would like your index hosted.
-     * Possible values: `gcp`, `aws`, or `azure`.
+     * The environment where the index is hosted.
      * @type {string}
-     * @memberof ServerlessSpecResponse
+     * @memberof ByocSpecResponse
      */
-    cloud: string;
-    /**
-     * The region where you would like your index to be created.
-     * @type {string}
-     * @memberof ServerlessSpecResponse
-     */
-    region: string;
+    environment: string;
     /**
      * 
      * @type {ReadCapacityResponse}
-     * @memberof ServerlessSpecResponse
+     * @memberof ByocSpecResponse
      */
     readCapacity: ReadCapacityResponse;
     /**
-     * The name of the collection to be used as the source for the index.
-     * @type {string}
-     * @memberof ServerlessSpecResponse
-     */
-    sourceCollection?: string;
-    /**
      * 
      * @type {MetadataSchema}
-     * @memberof ServerlessSpecResponse
+     * @memberof ByocSpecResponse
      */
     schema?: MetadataSchema;
 }
 
 /**
- * Check if a given object implements the ServerlessSpecResponse interface.
+ * Check if a given object implements the ByocSpecResponse interface.
  */
-export function instanceOfServerlessSpecResponse(value: object): boolean {
+export function instanceOfByocSpecResponse(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "cloud" in value;
-    isInstance = isInstance && "region" in value;
+    isInstance = isInstance && "environment" in value;
     isInstance = isInstance && "readCapacity" in value;
 
     return isInstance;
 }
 
-export function ServerlessSpecResponseFromJSON(json: any): ServerlessSpecResponse {
-    return ServerlessSpecResponseFromJSONTyped(json, false);
+export function ByocSpecResponseFromJSON(json: any): ByocSpecResponse {
+    return ByocSpecResponseFromJSONTyped(json, false);
 }
 
-export function ServerlessSpecResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServerlessSpecResponse {
+export function ByocSpecResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ByocSpecResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'cloud': json['cloud'],
-        'region': json['region'],
+        'environment': json['environment'],
         'readCapacity': ReadCapacityResponseFromJSON(json['read_capacity']),
-        'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
         'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
     };
 }
 
-export function ServerlessSpecResponseToJSON(value?: ServerlessSpecResponse | null): any {
+export function ByocSpecResponseToJSON(value?: ByocSpecResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -104,10 +88,8 @@ export function ServerlessSpecResponseToJSON(value?: ServerlessSpecResponse | nu
     }
     return {
         
-        'cloud': value.cloud,
-        'region': value.region,
+        'environment': value.environment,
         'read_capacity': ReadCapacityResponseToJSON(value.readCapacity),
-        'source_collection': value.sourceCollection,
         'schema': MetadataSchemaToJSON(value.schema),
     };
 }

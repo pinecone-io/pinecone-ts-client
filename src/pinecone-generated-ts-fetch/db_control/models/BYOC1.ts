@@ -13,52 +13,52 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ByocSpecResponse } from './ByocSpecResponse';
+import type { BYOC1Byoc } from './BYOC1Byoc';
 import {
-    ByocSpecResponseFromJSON,
-    ByocSpecResponseFromJSONTyped,
-    ByocSpecResponseToJSON,
-} from './ByocSpecResponse';
+    BYOC1ByocFromJSON,
+    BYOC1ByocFromJSONTyped,
+    BYOC1ByocToJSON,
+} from './BYOC1Byoc';
 
 /**
  * 
  * @export
- * @interface BYOC
+ * @interface BYOC1
  */
-export interface BYOC {
+export interface BYOC1 {
     /**
      * 
-     * @type {ByocSpecResponse}
-     * @memberof BYOC
+     * @type {BYOC1Byoc}
+     * @memberof BYOC1
      */
-    byoc: ByocSpecResponse;
+    byoc: BYOC1Byoc;
 }
 
 /**
- * Check if a given object implements the BYOC interface.
+ * Check if a given object implements the BYOC1 interface.
  */
-export function instanceOfBYOC(value: object): boolean {
+export function instanceOfBYOC1(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "byoc" in value;
 
     return isInstance;
 }
 
-export function BYOCFromJSON(json: any): BYOC {
-    return BYOCFromJSONTyped(json, false);
+export function BYOC1FromJSON(json: any): BYOC1 {
+    return BYOC1FromJSONTyped(json, false);
 }
 
-export function BYOCFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC {
+export function BYOC1FromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC1 {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'byoc': ByocSpecResponseFromJSON(json['byoc']),
+        'byoc': BYOC1ByocFromJSON(json['byoc']),
     };
 }
 
-export function BYOCToJSON(value?: BYOC | null): any {
+export function BYOC1ToJSON(value?: BYOC1 | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,7 +67,7 @@ export function BYOCToJSON(value?: BYOC | null): any {
     }
     return {
         
-        'byoc': ByocSpecResponseToJSON(value.byoc),
+        'byoc': BYOC1ByocToJSON(value.byoc),
     };
 }
 

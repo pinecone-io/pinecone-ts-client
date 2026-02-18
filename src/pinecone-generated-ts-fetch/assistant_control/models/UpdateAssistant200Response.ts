@@ -32,7 +32,7 @@ export interface UpdateAssistant200Response {
      */
     instructions?: string;
     /**
-     * 
+     * Optional metadata associated with the assistant. Metadata is a JSON object that can store custom organizational data, tags, and attributes.
      * @type {object}
      * @memberof UpdateAssistant200Response
      */

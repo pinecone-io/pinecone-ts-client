@@ -13,12 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { MetadataSchema } from './MetadataSchema';
-import {
-    MetadataSchemaFromJSON,
-    MetadataSchemaFromJSONTyped,
-    MetadataSchemaToJSON,
-} from './MetadataSchema';
 import type { ReadCapacity } from './ReadCapacity';
 import {
     ReadCapacityFromJSON,
@@ -27,58 +21,43 @@ import {
 } from './ReadCapacity';
 
 /**
- * Configuration needed to deploy an index in a BYOC environment.
+ * Updated configuration for a BYOC index
  * @export
- * @interface ByocSpec
+ * @interface BYOC1Byoc
  */
-export interface ByocSpec {
-    /**
-     * The environment where the index is hosted.
-     * @type {string}
-     * @memberof ByocSpec
-     */
-    environment: string;
+export interface BYOC1Byoc {
     /**
      * 
      * @type {ReadCapacity}
-     * @memberof ByocSpec
+     * @memberof BYOC1Byoc
      */
     readCapacity?: ReadCapacity;
-    /**
-     * 
-     * @type {MetadataSchema}
-     * @memberof ByocSpec
-     */
-    schema?: MetadataSchema;
 }
 
 /**
- * Check if a given object implements the ByocSpec interface.
+ * Check if a given object implements the BYOC1Byoc interface.
  */
-export function instanceOfByocSpec(value: object): boolean {
+export function instanceOfBYOC1Byoc(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "environment" in value;
 
     return isInstance;
 }
 
-export function ByocSpecFromJSON(json: any): ByocSpec {
-    return ByocSpecFromJSONTyped(json, false);
+export function BYOC1ByocFromJSON(json: any): BYOC1Byoc {
+    return BYOC1ByocFromJSONTyped(json, false);
 }
 
-export function ByocSpecFromJSONTyped(json: any, ignoreDiscriminator: boolean): ByocSpec {
+export function BYOC1ByocFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC1Byoc {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'environment': json['environment'],
         'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
-        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
     };
 }
 
-export function ByocSpecToJSON(value?: ByocSpec | null): any {
+export function BYOC1ByocToJSON(value?: BYOC1Byoc | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -87,9 +66,7 @@ export function ByocSpecToJSON(value?: ByocSpec | null): any {
     }
     return {
         
-        'environment': value.environment,
         'read_capacity': ReadCapacityToJSON(value.readCapacity),
-        'schema': MetadataSchemaToJSON(value.schema),
     };
 }
 
