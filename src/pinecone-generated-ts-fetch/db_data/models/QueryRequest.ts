@@ -87,6 +87,20 @@ export interface QueryRequest {
      * @memberof QueryRequest
      */
     id?: string;
+    /**
+     * An optimization parameter for IVF dense indexes in dedicated read node indexes. It adjusts how much of the index is scanned to find vector candidates. Range: 0.5 – 4 (default).
+     * Keep the default (4.0) for the best search results. If query latency is too high, try lowering this value incrementally (minimum 0.5) to speed up the search at the cost of slightly lower accuracy. This parameter is only supported for dedicated (DRN) dense indexes. 
+     * @type {number}
+     * @memberof QueryRequest
+     */
+    scanFactor?: number;
+    /**
+     * An optimization parameter that controls the maximum number of candidate dense vectors to rerank. Reranking computes exact distances to improve recall but increases query latency. Range: top_k – 100000.
+     * Keep the default for a balance of recall and latency. Increase this value if recall is too low, or decrease it to reduce latency at the cost of accuracy. This parameter is only supported for dedicated (DRN) dense indexes.
+     * @type {number}
+     * @memberof QueryRequest
+     */
+    maxCandidates?: number;
 }
 
 /**
@@ -118,6 +132,8 @@ export function QueryRequestFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'vector': !exists(json, 'vector') ? undefined : json['vector'],
         'sparseVector': !exists(json, 'sparseVector') ? undefined : SparseValuesFromJSON(json['sparseVector']),
         'id': !exists(json, 'id') ? undefined : json['id'],
+        'scanFactor': !exists(json, 'scanFactor') ? undefined : json['scanFactor'],
+        'maxCandidates': !exists(json, 'maxCandidates') ? undefined : json['maxCandidates'],
     };
 }
 
@@ -139,6 +155,8 @@ export function QueryRequestToJSON(value?: QueryRequest | null): any {
         'vector': value.vector,
         'sparseVector': SparseValuesToJSON(value.sparseVector),
         'id': value.id,
+        'scanFactor': value.scanFactor,
+        'maxCandidates': value.maxCandidates,
     };
 }
 

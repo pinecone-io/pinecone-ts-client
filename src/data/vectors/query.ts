@@ -36,6 +36,27 @@ export type QueryShared = {
    * The namespace to query. If not specified, uses the namespace configured on the Index.
    */
   namespace?: string;
+
+  /**
+   * An optimization parameter for IVF dense indexes in dedicated read node (DRN) indexes. It adjusts
+   * how much of the index is scanned to find vector candidates. Range: `0.5` – `4` (default).
+   *
+   * Keep the default (`4.0`) for the best search results. If query latency is too high, try lowering
+   * this value incrementally (minimum `0.5`) to speed up the search at the cost of slightly lower
+   * accuracy. This parameter is only supported for dedicated (DRN) dense indexes.
+   */
+  scanFactor?: number;
+
+  /**
+   * An optimization parameter that controls the maximum number of candidate dense vectors to rerank.
+   * Reranking computes exact distances to improve recall but increases query latency.
+   * Range: `topK` – `100000`.
+   *
+   * Keep the default for a balance of recall and latency. Increase this value if recall is too low,
+   * or decrease it to reduce latency at the cost of accuracy. This parameter is only supported for
+   * dedicated (DRN) dense indexes.
+   */
+  maxCandidates?: number;
 };
 
 /**
@@ -162,6 +183,25 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
         throw new PineconeArgumentError(
           'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
             ' sparse vector values.',
+        );
+      }
+    }
+    if (options.scanFactor !== undefined) {
+      if (options.scanFactor < 0.5 || options.scanFactor > 4) {
+        throw new PineconeArgumentError(
+          '`scanFactor` must be between 0.5 and 4 (inclusive).',
+        );
+      }
+    }
+    if (options.maxCandidates !== undefined) {
+      if (options.maxCandidates < options.topK) {
+        throw new PineconeArgumentError(
+          '`maxCandidates` must be greater than or equal to `topK`.',
+        );
+      }
+      if (options.maxCandidates > 100000) {
+        throw new PineconeArgumentError(
+          '`maxCandidates` must be less than or equal to 100000.',
         );
       }
     }
