@@ -165,4 +165,67 @@ describe('Query command tests', () => {
       queryRequest: { id: 'test-id', topK: 3, namespace: 'custom-namespace' },
     });
   });
+
+  test('passes scanFactor and maxCandidates through to the request', async () => {
+    const { VOA, cmd } = setupResponse({ matches: [] }, true);
+    await cmd.run({
+      id: 'test-id',
+      topK: 3,
+      scanFactor: 2.5,
+      maxCandidates: 500,
+    });
+
+    expect(VOA.queryVectors).toHaveBeenCalledWith({
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      queryRequest: {
+        id: 'test-id',
+        topK: 3,
+        namespace: 'namespace',
+        scanFactor: 2.5,
+        maxCandidates: 500,
+      },
+    });
+  });
+
+  test('should throw error when scanFactor is below 0.5', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, scanFactor: 0.4 }),
+    ).rejects.toThrow('`scanFactor` must be between 0.5 and 4 (inclusive).');
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, scanFactor: 0.4 }),
+    ).rejects.toThrow(PineconeArgumentError);
+  });
+
+  test('should throw error when scanFactor is above 4', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, scanFactor: 4.1 }),
+    ).rejects.toThrow('`scanFactor` must be between 0.5 and 4 (inclusive).');
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, scanFactor: 4.1 }),
+    ).rejects.toThrow(PineconeArgumentError);
+  });
+
+  test('should throw error when maxCandidates is less than topK', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(
+      cmd.run({ id: 'test-id', topK: 10, maxCandidates: 5 }),
+    ).rejects.toThrow(
+      '`maxCandidates` must be greater than or equal to `topK`.',
+    );
+    await expect(
+      cmd.run({ id: 'test-id', topK: 10, maxCandidates: 5 }),
+    ).rejects.toThrow(PineconeArgumentError);
+  });
+
+  test('should throw error when maxCandidates exceeds 100000', async () => {
+    const { cmd } = setupResponse({ matches: [] }, false);
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, maxCandidates: 100001 }),
+    ).rejects.toThrow('`maxCandidates` must be less than or equal to 100000.');
+    await expect(
+      cmd.run({ id: 'test-id', topK: 3, maxCandidates: 100001 }),
+    ).rejects.toThrow(PineconeArgumentError);
+  });
 });
