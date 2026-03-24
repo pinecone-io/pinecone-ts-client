@@ -53,9 +53,9 @@ await assistant.uploadFile({
 //   metadata: { source: 'catalog', version: '2025-01' },
 //   createdOn: '2025-01-06T19:14:21.969Z',
 //   updatedOn: '2025-01-06T19:14:21.969Z',
-//   status: 'Processing'
+//   status: 'Processing',
+//   percentDone: null
 // }
-// Upload returns an operation; use listOperations / describeOperation to track progress.
 ```
 
 ## Chat with an Assistant
