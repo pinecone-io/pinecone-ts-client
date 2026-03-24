@@ -4,13 +4,6 @@ This guide covers operations for managing files within a Pinecone Assistant, inc
 
 For more information, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files).
 
-### File identifiers
-
-Each file in an assistant has a unique identifier. File IDs can be:
-
-- **System-generated**: When you upload a file using `uploadFile`, the system assigns a UUID as the file ID.
-- **User-provided**: When you [upsert a file](#upsert-a-file-create-or-replace-by-id) using `upsertFile`, you provide a custom file ID. User-provided IDs must be 1–128 characters long and can contain alphanumeric characters, hyphens, and underscores.
-
 ## Upload a file
 
 Upload a local file to an Assistant. You can attach metadata to the file for organization and filtering purposes.
@@ -38,7 +31,9 @@ console.log(uploadResponse);
 //   createdOn: '2025-01-06T19:14:21.969Z',
 //   updatedOn: '2025-01-06T19:14:21.969Z',
 //   status: 'Processing',
-//   signedUrl: null
+//   percentDone: null,
+//   signedUrl: null,
+//   errorMessage: null
 // }
 ```
 
@@ -73,21 +68,6 @@ When `multimodal: true`, the assistant will:
 - Enable the assistant to answer questions about visual elements
 - Allow you to retrieve image-related context snippets
 
-## Upsert a file (create or replace by ID)
-
-Create or replace a file by providing a custom file ID. If a file with the given ID already exists, it is replaced; otherwise a new file is created. Use this for idempotent uploads (for example, pipelines that re-run).
-
-```typescript
-const upsertResponse = await assistant.upsertFile({
-  fileId: 'my-custom-file-id',
-  path: 'product-catalog.txt',
-  metadata: { source: 'catalog', version: '2025-01' },
-});
-
-console.log(upsertResponse);
-// Returns an operation. See [Track file operations](#track-file-operations).
-```
-
 ## File processing states
 
 After uploading, files go through several states:
@@ -95,8 +75,6 @@ After uploading, files go through several states:
 - `Processing` - File is being processed
 - `Available` - File is ready to be used in chats
 - `Failed` - File processing failed
-
-For progress and failure details, see [Track file operations](#track-file-operations).
 
 ## List files
 
@@ -119,7 +97,8 @@ console.log(allFiles);
 //       metadata: { source: 'catalog', version: '2025-01' },
 //       createdOn: '2025-01-06T19:14:21.969Z',
 //       updatedOn: '2025-01-06T19:14:36.925Z',
-//       status: 'Available'
+//       status: 'Available',
+//       percentDone: 1
 //     },
 //     // ... more files
 //   ]
@@ -153,31 +132,15 @@ console.log(fileInfo);
 //   createdOn: '2025-01-06T19:14:21.969Z',
 //   updatedOn: '2025-01-06T19:14:36.925Z',
 //   status: 'Available',
-//   signedUrl: undefined
+//   percentDone: 1,
+//   signedUrl: undefined,
+//   errorMessage: undefined
 // }
 ```
 
-## Track file operations
-
-Upload, upsert, and delete are asynchronous and return an **operation** object. Use list and describe operation to poll for status and progress.
-
-```typescript
-// List operations for the assistant
-const { operations } = await assistant.listOperations();
-// operations: { id, operation_type, file_id, status, percent_complete, error_message?, ... }
-
-// Describe a specific operation
-const op = await assistant.describeOperation({ operationId: 'op-1234-abcd' });
-console.log(op.status);   // 'Processing' | 'Completed' | 'Failed'
-console.log(op.percent_complete);
-if (op.status === 'Failed') console.log(op.error_message);
-```
-
-Operation status values: **Processing** (in progress; use `percent_complete`), **Completed**, **Failed** (check `error_message` on the operation). Progress and errors for file processing are on the operation, not on the file model.
-
 ## Delete a file
 
-Delete a file from an Assistant by ID. Deletion is **asynchronous** and returns an operation. See [Track file operations](#track-file-operations).
+Delete a file from an Assistant by ID:
 
 > **Warning:** Deleting files is a PERMANENT operation. Deleted files cannot be recovered.
 
@@ -280,7 +243,7 @@ For file size limits and additional restrictions, see [Pinecone Assistant limits
 
 1. **Descriptive metadata**: Add meaningful metadata to files for easy filtering and organization
 2. **Check status**: Always verify files are `Available` before chatting
-3. **Handle errors**: Use list/describe operation to track progress and check `error_message` on the operation when status is `Failed`
+3. **Handle errors**: Check for `errorMessage` when file status is `Failed`
 4. **Clean up**: Delete obsolete files to manage storage
 5. **Organize by source**: Use metadata to track file sources and versions
 
