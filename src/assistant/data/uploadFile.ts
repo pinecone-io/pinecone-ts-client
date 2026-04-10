@@ -84,7 +84,12 @@ async function uploadFromFile(
     // ArrayBufferView<ArrayBuffer> constraint (Buffer uses ArrayBufferLike).
     const fetch = getFetch(config);
     const fileBlob = new Blob(
-      [file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength) as ArrayBuffer],
+      [
+        file.buffer.slice(
+          file.byteOffset,
+          file.byteOffset + file.byteLength,
+        ) as ArrayBuffer,
+      ],
       { type: mimeType },
     );
     const formData = new FormData();
@@ -173,7 +178,7 @@ function buildMultipartBody(
 
   const header = encoder.encode(
     `--${boundary}\r\n` +
-      `Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n` +
+      `Content-Disposition: form-data; name="file"; filename="${escapeFilename(fileName)}"\r\n` +
       `Content-Type: ${mimeType}\r\n` +
       `\r\n`,
   );
@@ -278,6 +283,16 @@ const validateUploadFileOptions = (options: UploadFileOptions) => {
     }
   }
 };
+
+// Per RFC 7578 §2 (https://www.rfc-editor.org/rfc/rfc7578#section-2),
+// double quotes, carriage returns, and newlines must be percent-encoded
+// in the filename parameter of a Content-Disposition header.
+function escapeFilename(fileName: string): string {
+  return fileName
+    .replace(/"/g, '%22')
+    .replace(/\r/g, '%0D')
+    .replace(/\n/g, '%0A');
+}
 
 // get mime types for accepted file types
 function getMimeType(filePath: string) {

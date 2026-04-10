@@ -334,6 +334,25 @@ describe('ReadableStream input', () => {
     );
   });
 
+  test('escapes special characters in fileName for Content-Disposition header', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from([Buffer.from('pdf content')]);
+    await upload({ file: stream, fileName: 'file "name"\r\n.pdf' });
+
+    const [, init] = mockNonRetryingFetch.mock.calls[0];
+    const body: ReadableStream<Uint8Array> = init.body;
+    const reader = body.getReader();
+    let raw = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      raw += new TextDecoder().decode(value);
+    }
+    // Unescaped chars would break the header line; verify they are encoded
+    expect(raw).toContain('filename="file %22name%22%0D%0A.pdf"');
+    expect(raw).not.toContain('"name"');
+  });
+
   test('builds URL with metadata', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     const stream = Readable.from(['data']);
