@@ -75,6 +75,20 @@ describe('validation', () => {
     );
   });
 
+  test('throws when neither path nor file is provided', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(upload({} as any)).rejects.toThrow(
+      'You must pass an object with required properties',
+    );
+  });
+
+  test('throws when only metadata is provided', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(upload({ metadata: { key: 'value' } } as any)).rejects.toThrow(
+      'You must pass an object with required properties',
+    );
+  });
+
   test('throws when path is empty string', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await expect(upload({ path: '' })).rejects.toThrow(

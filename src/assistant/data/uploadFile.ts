@@ -247,6 +247,11 @@ const validateUploadFileOptions = (options: UploadFileOptions) => {
       'You must pass an object with required properties (`path` or `file` + `fileName`) to upload a file.',
     );
   }
+  if (!('path' in options) && !('file' in options)) {
+    throw new PineconeArgumentError(
+      'You must pass an object with required properties (`path` or `file` + `fileName`) to upload a file.',
+    );
+  }
   if ('path' in options && !options.path) {
     throw new PineconeArgumentError(
       'You must pass an object with required properties (`path` or `file` + `fileName`) to upload a file.',
