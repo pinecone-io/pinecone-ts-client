@@ -184,23 +184,31 @@ function buildMultipartBody(
     stream instanceof Readable ? stream : Readable.from(stream),
   ) as ReadableStream<Uint8Array>;
 
-  const body = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      controller.enqueue(header);
+  const reader = webStream.getReader();
+  let phase: 'header' | 'body' | 'done' = 'header';
 
-      const reader = webStream.getReader();
-      try {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          controller.enqueue(value);
-        }
-      } finally {
-        reader.releaseLock();
+  // Use pull (not start) so chunks are read on demand as fetch consumes the
+  // body. start runs eagerly and enqueue() ignores backpressure, which would
+  // buffer the entire stream in the internal queue before upload begins.
+  const body = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      if (phase === 'header') {
+        controller.enqueue(header);
+        phase = 'body';
+        return;
       }
 
-      controller.enqueue(footer);
-      controller.close();
+      const { done, value } = await reader.read();
+      if (done) {
+        controller.enqueue(footer);
+        controller.close();
+        phase = 'done';
+      } else {
+        controller.enqueue(value);
+      }
+    },
+    cancel(reason) {
+      return reader.cancel(reason);
     },
   });
 
