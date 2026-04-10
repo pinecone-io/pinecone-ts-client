@@ -175,13 +175,25 @@ export interface ContextOptions {
 }
 
 /**
- * Options for uploading a file to an assistant.
+ * An uploadable file value. Can be a Node.js `Buffer`, a `Blob`, or a Node.js
+ * `ReadableStream`. Pass a `ReadableStream` to avoid loading the file into
+ * memory — for example, when forwarding an incoming HTTP upload directly to
+ * the assistant without buffering on disk.
+ *
+ * Note: `ReadableStream` inputs are sent in a single attempt. Automatic
+ * retries are not supported because the stream is consumed after the first
+ * read and cannot be replayed.
  */
-export interface UploadFileOptions {
-  /**
-   * The (local) path to the file to upload.
-   */
-  path: string;
+export type Uploadable = Buffer | Blob | NodeJS.ReadableStream;
+
+/**
+ * Options for uploading a file to an assistant.
+ *
+ * Provide either `path` (a local file path) or `file` + `fileName` (an
+ * in-memory buffer, blob, or readable stream). The two forms are mutually
+ * exclusive.
+ */
+export type UploadFileOptions = {
   /**
    * Metadata to attach to the file.
    */
@@ -190,7 +202,30 @@ export interface UploadFileOptions {
    * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
    */
   multimodal?: boolean;
-}
+} & (
+  | {
+      /**
+       * The local path to the file to upload. The file is read asynchronously.
+       */
+      path: string;
+      file?: never;
+      fileName?: never;
+    }
+  | {
+      /**
+       * The file data to upload. Accepts a `Buffer`, `Blob`, or Node.js
+       * `ReadableStream`. When passing a stream, `fileName` is required so
+       * the server receives a meaningful filename.
+       */
+      file: Uploadable;
+      /**
+       * The filename to use in the multipart upload (e.g. `"report.pdf"`).
+       * Required when using `file`.
+       */
+      fileName: string;
+      path?: never;
+    }
+);
 
 /**
  * Indicates why the chat response generation stopped. This signals the end of the response.

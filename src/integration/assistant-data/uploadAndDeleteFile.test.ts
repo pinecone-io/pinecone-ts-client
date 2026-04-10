@@ -12,10 +12,10 @@ import { getTestContext } from '../test-context';
 let pinecone: Pinecone;
 let assistant: Assistant;
 let assistantName: string;
-let tempFile: string;
 let tempFilePath: string;
-let tempFileWithMetadata: string;
+let tempFile: string;
 let tempFileWithMetadataPath: string;
+let tempFileWithMetadata: string;
 
 beforeAll(async () => {
   const fixtures = await getTestContext();
@@ -23,9 +23,9 @@ beforeAll(async () => {
   assistantName = fixtures.assistant.name;
   assistant = pinecone.Assistant({ name: assistantName });
 
-  // Create two temporary test files
   const content = 'This is test content for file upload';
-  // 1: file without metadata
+
+  // file without metadata
   tempFile = `test-upload-${Date.now()}.txt`;
   tempFilePath = path.join(os.tmpdir(), tempFile);
   try {
@@ -35,10 +35,9 @@ beforeAll(async () => {
     console.error('Error writing file:', err);
   }
 
-  // 2: file with metadata
+  // file with metadata
   tempFileWithMetadata = `test-upload-metadata-${Date.now()}.txt`;
   tempFileWithMetadataPath = path.join(os.tmpdir(), tempFileWithMetadata);
-
   try {
     fs.writeFileSync(tempFileWithMetadataPath, content);
     console.log('File written:', tempFileWithMetadataPath);
@@ -57,14 +56,14 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  // Cleanup: remove temporary test files
-  if (fs.existsSync(tempFilePath)) {
-    fs.unlinkSync(tempFilePath);
-  }
-  if (fs.existsSync(tempFileWithMetadataPath)) {
+  if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+  if (fs.existsSync(tempFileWithMetadataPath))
     fs.unlinkSync(tempFileWithMetadataPath);
-  }
 });
+
+// ---------------------------------------------------------------------------
+// path input (existing behaviour)
+// ---------------------------------------------------------------------------
 
 describe('Upload file happy path', () => {
   test('Upload file without metadata', async () => {
@@ -79,10 +78,7 @@ describe('Upload file happy path', () => {
     expect(response.updatedOn).toBeDefined();
     expect(response.status).toBeDefined();
 
-    // Wait for file to be ready before attempting delete
     await waitUntilAssistantFileReady(assistantName, response.id);
-
-    // Delete file happy path test:
     assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
@@ -112,10 +108,7 @@ describe('Upload file happy path', () => {
       expect(response.metadata['category']).toEqual('integration-test');
     }
 
-    // Wait for file to be ready before attempting delete
     await waitUntilAssistantFileReady(assistantName, response.id);
-
-    // Delete file happy path test:
     assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
@@ -124,6 +117,116 @@ describe('Upload file happy path', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// Buffer input
+// ---------------------------------------------------------------------------
+
+describe('Upload via Buffer', () => {
+  test('Upload Buffer without metadata', async () => {
+    const buffer = fs.readFileSync(tempFilePath);
+    const fileName = `buffer-upload-${Date.now()}.txt`;
+
+    const response = await assistant.uploadFile({
+      file: buffer,
+      fileName,
+    });
+
+    expect(response).toBeDefined();
+    expect(response.name).toEqual(fileName);
+    expect(response.id).toBeDefined();
+    expect(response.status).toBeDefined();
+
+    await waitUntilAssistantFileReady(assistantName, response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      },
+    );
+  });
+
+  test('Upload Buffer with metadata', async () => {
+    const buffer = fs.readFileSync(tempFilePath);
+    const fileName = `buffer-upload-meta-${Date.now()}.txt`;
+
+    const response = await assistant.uploadFile({
+      file: buffer,
+      fileName,
+      metadata: { source: 'buffer' },
+    });
+
+    expect(response).toBeDefined();
+    expect(response.name).toEqual(fileName);
+    if (response.metadata) {
+      expect(response.metadata['source']).toEqual('buffer');
+    }
+
+    await waitUntilAssistantFileReady(assistantName, response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      },
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ReadableStream input
+// ---------------------------------------------------------------------------
+
+describe('Upload via ReadableStream', () => {
+  test('Upload ReadableStream without metadata', async () => {
+    const fileName = `stream-upload-${Date.now()}.txt`;
+
+    const response = await assistant.uploadFile({
+      file: fs.createReadStream(tempFilePath),
+      fileName,
+    });
+
+    expect(response).toBeDefined();
+    expect(response.name).toEqual(fileName);
+    expect(response.id).toBeDefined();
+    expect(response.status).toBeDefined();
+
+    await waitUntilAssistantFileReady(assistantName, response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      },
+    );
+  });
+
+  test('Upload ReadableStream with metadata', async () => {
+    const fileName = `stream-upload-meta-${Date.now()}.txt`;
+
+    const response = await assistant.uploadFile({
+      file: fs.createReadStream(tempFilePath),
+      fileName,
+      metadata: { source: 'stream' },
+    });
+
+    expect(response).toBeDefined();
+    expect(response.name).toEqual(fileName);
+    if (response.metadata) {
+      expect(response.metadata['source']).toEqual('stream');
+    }
+
+    await waitUntilAssistantFileReady(assistantName, response.id);
+    assertWithRetries(
+      () => assistant.deleteFile(response.id),
+      () => {
+        return;
+      },
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Error paths
+// ---------------------------------------------------------------------------
 
 describe('Upload file error paths', () => {
   test('Upload with nonexistent file path', async () => {
@@ -148,7 +251,7 @@ describe('Upload file error paths', () => {
         path: '',
       }),
     ).rejects.toThrow(
-      'You must pass an object with required properties (`path`) to upload a file.',
+      'You must pass an object with required properties (`path` or `file` + `fileName`) to upload a file.',
     );
   });
 });

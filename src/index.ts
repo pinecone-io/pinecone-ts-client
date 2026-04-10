@@ -52,6 +52,7 @@ export type {
   ContextOptions,
   ListFilesOptions,
   UploadFileOptions,
+  Uploadable,
   AssistantFilesList,
   MessagesModel,
   MessageModel,

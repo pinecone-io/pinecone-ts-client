@@ -145,6 +145,17 @@ export const getFetch = (config: PineconeConfiguration) => {
 
 /**
  * Gets the base fetch implementation without retry wrapping.
+ *
+ * Use this for operations where the request body cannot be replayed on retry,
+ * such as streaming uploads where the ReadableStream is consumed after the
+ * first read.
+ */
+export const getNonRetryingFetch = (config: PineconeConfiguration) => {
+  return getBaseFetch(config);
+};
+
+/**
+ * Gets the base fetch implementation without retry wrapping.
  */
 function getBaseFetch(
   config: PineconeConfiguration,
