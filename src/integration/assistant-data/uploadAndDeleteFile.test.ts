@@ -79,7 +79,7 @@ describe('Upload file happy path', () => {
     expect(response.status).toBeDefined();
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
@@ -109,7 +109,7 @@ describe('Upload file happy path', () => {
     }
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
@@ -138,7 +138,7 @@ describe('Upload via Buffer', () => {
     expect(response.status).toBeDefined();
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
@@ -163,7 +163,7 @@ describe('Upload via Buffer', () => {
     }
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
@@ -191,7 +191,7 @@ describe('Upload via ReadableStream', () => {
     expect(response.status).toBeDefined();
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
@@ -215,7 +215,7 @@ describe('Upload via ReadableStream', () => {
     }
 
     await waitUntilAssistantFileReady(assistantName, response.id);
-    assertWithRetries(
+    await assertWithRetries(
       () => assistant.deleteFile(response.id),
       () => {
         return;
