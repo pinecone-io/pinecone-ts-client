@@ -84,7 +84,7 @@ async function uploadFromFile(
     // ArrayBufferView<ArrayBuffer> constraint (Buffer uses ArrayBufferLike).
     const fetch = getFetch(config);
     const fileBlob = new Blob(
-      [file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength)],
+      [file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength) as ArrayBuffer],
       { type: mimeType },
     );
     const formData = new FormData();
