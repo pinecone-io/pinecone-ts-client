@@ -37,6 +37,7 @@ export type {
   ContextOptions,
   ListFilesOptions,
   UploadFileOptions,
+  Uploadable,
   AssistantFilesList,
   MessagesModel,
   MessageModel,
@@ -384,40 +385,58 @@ export class Assistant {
   /**
    * Uploads a file to an assistant.
    *
+   * Accepts either a local file path or an in-memory `Buffer`, `Blob`, or
+   * Node.js `ReadableStream`. Use the `file` + `fileName` form to forward an
+   * incoming HTTP upload stream directly to the assistant without writing it
+   * to disk or buffering the entire file in memory.
+   *
    * Note: This method does *not* use the generated code from the OpenAPI spec.
    *
    * @example
+   * Upload from a local path:
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * await assistant.uploadFile({path: "test-file.txt", metadata: {"test-key": "test-value"}})
-   * // {
-   * //  name: 'test-file.txt',
-   * //  id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
-   * //  metadata: { 'test-key': 'test-value' },
-   * //  createdOn: Invalid Date,  // Note: these dates resolve in seconds
-   * //  updatedOn: Invalid Date,
-   * //  status: 'Processing',
-   * //  percentDone: null,
-   * //  signedUrl: null,
-   * //  errorMessage: null
-   * // }
+   * const assistant = pc.Assistant({ name: 'my-assistant' });
+   * await assistant.uploadFile({ path: 'report.pdf', metadata: { category: 'reports' } });
+   * ```
+   *
+   * @example
+   * Upload from a Buffer (e.g. from multer memory storage):
+   * ```typescript
+   * // req.file.buffer is a Buffer provided by multer
+   * await assistant.uploadFile({
+   *   file: req.file.buffer,
+   *   fileName: req.file.originalname,
+   * });
+   * ```
+   *
+   * @example
+   * Upload from a ReadableStream (zero server-side buffering):
+   * ```typescript
+   * // Forward an incoming upload stream directly — no disk write, no memory spike.
+   * // Note: automatic retries are disabled for stream inputs because the stream
+   * // is consumed after the first read and cannot be replayed.
+   * await assistant.uploadFile({
+   *   file: req.file.stream,   // e.g. from busboy / @fastify/multipart
+   *   fileName: req.file.filename,
+   * });
    * ```
    *
    * @example
    * Upload a file with multimodal processing enabled:
    * ```typescript
    * await assistant.uploadFile({
-   *   path: "document-with-images.pdf",
-   *   metadata: {"category": "reports"},
-   *   multimodal: true
+   *   path: 'document-with-images.pdf',
+   *   metadata: { category: 'reports' },
+   *   multimodal: true,
    * });
    * ```
    *
-   * @param options - A {@link UploadFileOptions} object containing the file path, optional metadata, and optional multimodal flag.
-   * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+   * @param options - A {@link UploadFileOptions} object. Provide either
+   *   `path` (local file path) or `file` ({@link Uploadable}) + `fileName`,
+   *   along with optional `metadata` and `multimodal` flags.
+   * @returns A promise that resolves to an {@link AssistantFileModel} object containing the file details.
    */
   uploadFile(options: UploadFileOptions) {
     return this._uploadFile(options);
