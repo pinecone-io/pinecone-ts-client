@@ -90,7 +90,13 @@ async function uploadFromFile(
   // Node.js ReadableStream — stream is consumed on first read, no retries
   const fetch = getNonRetryingFetch(config);
   const { body, contentType } = buildMultipartBody(file, fileName, mimeType);
-  return executeStreamUpload(fetch, filesUrl, requestHeaders, body, contentType);
+  return executeStreamUpload(
+    fetch,
+    filesUrl,
+    requestHeaders,
+    body,
+    contentType,
+  );
 }
 
 // --- Shared response handling ---
@@ -110,10 +116,7 @@ async function executeUpload(
 }
 
 async function executeStreamUpload(
-  fetch: (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ) => Promise<Response>,
+  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   filesUrl: string,
   requestHeaders: Record<string, string>,
   body: ReadableStream<Uint8Array>,
@@ -125,7 +128,7 @@ async function executeStreamUpload(
     body,
     // undici (Node.js built-in fetch) requires duplex: 'half' for streaming
     // request bodies. The RequestInit type doesn't include this field yet.
-    ...(({ duplex: 'half' } as unknown) as RequestInit),
+    ...({ duplex: 'half' } as unknown as RequestInit),
   });
   return parseResponse(response, filesUrl);
 }
@@ -209,7 +212,9 @@ function buildFilesUrl(
   let filesUrl = `${hostUrl}/files/${assistantName}`;
 
   if (options.metadata) {
-    const encodedMetadata = encodeURIComponent(JSON.stringify(options.metadata));
+    const encodedMetadata = encodeURIComponent(
+      JSON.stringify(options.metadata),
+    );
     filesUrl += `?metadata=${encodedMetadata}`;
   }
 
