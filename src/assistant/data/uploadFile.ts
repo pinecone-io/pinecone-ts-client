@@ -79,9 +79,14 @@ async function uploadFromFile(
   }
 
   if (Buffer.isBuffer(file)) {
-    // Buffer is replayable — wrap in Blob and use retrying fetch
+    // Buffer is replayable — wrap in Blob and use retrying fetch.
+    // Extract the exact ArrayBuffer slice to satisfy BlobPart's
+    // ArrayBufferView<ArrayBuffer> constraint (Buffer uses ArrayBufferLike).
     const fetch = getFetch(config);
-    const fileBlob = new Blob([file], { type: mimeType });
+    const fileBlob = new Blob(
+      [file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength)],
+      { type: mimeType },
+    );
     const formData = new FormData();
     formData.append('file', fileBlob, fileName);
     return executeUpload(fetch, filesUrl, requestHeaders, formData);
@@ -185,7 +190,7 @@ function buildMultipartBody(
 
       const reader = webStream.getReader();
       try {
-        while (true) {
+        for (;;) {
           const { done, value } = await reader.read();
           if (done) break;
           controller.enqueue(value);
