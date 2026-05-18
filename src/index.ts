@@ -209,4 +209,10 @@ export type {
 // --- Alpha / Preview exports (202601-alpha) ---
 // Not covered by the SDK's backward compatibility guarantee.
 export { PreviewIndexes } from './preview';
-export type { AlphaIndexList, AlphaIndexModel } from './preview';
+export type {
+  AlphaIndexList,
+  AlphaIndexModel,
+  PreviewCreateIndexOptions,
+  IndexSchema,
+  IndexSchemaField,
+} from './preview';
