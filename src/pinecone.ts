@@ -56,6 +56,7 @@ import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOpe
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
+import { PreviewIndexes } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -1409,5 +1410,21 @@ export class Pinecone {
     host?: string,
   ): Assistant {
     return this.assistant(optionsOrName as any, host);
+  }
+
+  /**
+   * Provides access to alpha preview operations using the 202601-alpha API.
+   *
+   * **Alpha notice:** This accessor and all returned objects are not covered by the
+   * SDK's backward compatibility guarantee.
+   *
+   * @example
+   * ```typescript
+   * const list = await pc.preview.indexes.listIndexes();
+   * ```
+   * @alpha
+   */
+  get preview(): { indexes: PreviewIndexes } {
+    return { indexes: new PreviewIndexes(this.config) };
   }
 }

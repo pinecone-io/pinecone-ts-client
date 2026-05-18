@@ -30,5 +30,17 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-inferrable-types": "off",
     "import/no-cycle": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/preview/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/explicit-function-return-type": [
+          "error",
+          { "allowExpressions": true }
+        ]
+      }
+    }
+  ]
 }
