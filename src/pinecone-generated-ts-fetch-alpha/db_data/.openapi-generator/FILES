@@ -1,0 +1,9 @@
+.openapi-generator-ignore
+apis/BulkOperationsApi.ts
+apis/DocumentOperationsApi.ts
+apis/NamespaceOperationsApi.ts
+apis/VectorOperationsApi.ts
+apis/index.ts
+index.ts
+models/index.ts
+runtime.ts
