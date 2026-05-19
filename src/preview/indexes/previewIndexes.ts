@@ -9,6 +9,10 @@ import { listPreviewIndexes } from './listIndexes';
 import { createPreviewIndex, PreviewCreateIndexOptions } from './createIndex';
 import { describePreviewIndex } from './describeIndex';
 import { deletePreviewIndex } from './deleteIndex';
+import {
+  configurePreviewIndex,
+  PreviewConfigureIndexOptions,
+} from './configureIndex';
 
 /**
  * Provides access to alpha control-plane index operations using the 202601-alpha API.
@@ -80,5 +84,23 @@ export class PreviewIndexes {
    */
   async deleteIndex(name: string): Promise<void> {
     return deletePreviewIndex(this._api, name);
+  }
+
+  /**
+   * Configures an alpha index by name.
+   *
+   * Only the fields present in `options` are updated; omit a field to leave it unchanged.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
+   * @alpha
+   */
+  async configureIndex(
+    name: string,
+    options: PreviewConfigureIndexOptions,
+  ): Promise<IndexModel> {
+    return configurePreviewIndex(this._api, name, options);
   }
 }

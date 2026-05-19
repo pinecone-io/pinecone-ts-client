@@ -213,6 +213,7 @@ export type {
   AlphaIndexList,
   AlphaIndexModel,
   PreviewCreateIndexOptions,
+  PreviewConfigureIndexOptions,
   IndexSchema,
   IndexSchemaField,
 } from './preview';

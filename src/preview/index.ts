@@ -6,3 +6,4 @@ export type {
   IndexSchema,
   IndexSchemaField,
 } from './indexes/createIndex';
+export type { PreviewConfigureIndexOptions } from './indexes/configureIndex';
