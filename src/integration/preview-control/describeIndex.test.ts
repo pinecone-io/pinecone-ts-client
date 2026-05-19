@@ -17,7 +17,6 @@ describe('preview describeIndex', () => {
         schema: {
           fields: {
             chunk_text: { type: 'string', full_text_search: {} },
-            genre: { type: 'string', filterable: true },
           },
         },
         waitUntilReady: true,

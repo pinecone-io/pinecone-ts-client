@@ -141,10 +141,10 @@ export interface DocumentRecord {
  * A scoring method that defines how documents are scored against a query.
  * 
  * The `type` field determines which other fields are used:
- * - `dense_vector`: Score by dense vector similarity. Requires `field` and a `values` array.
- * - `sparse_vector`: Score by sparse vector similarity. Requires `field` and `sparse_values`.
- * - `text`: Score by BM25 text similarity against a single field. Requires `field` and `query`.
- * - `query_string`: Score using a query string against all full-text-searchable fields. Requires `query`. Optionally restrict the query to a single full-text-searchable field using `field`.
+ * - `dense_vector`: Score by dense vector similarity. Requires `field` or `fields`, and a `values` array.
+ * - `sparse_vector`: Score by sparse vector similarity. Requires `field` or `fields`, and `sparse_values`.
+ * - `text`: Score by BM25 text similarity against a single field. Requires `field` or `fields`, and `query`.
+ * - `query_string`: Score using a Lucene query string. Use field qualifiers (`field:(clause)`) to target a field, or omit field qualifiers to search against all text-searchable fields. Errors if `field` or `fields` is provided.
  * @export
  * @interface DocumentScoringMethod
  */
@@ -159,7 +159,7 @@ export interface DocumentScoringMethod {
     /**
      * The field to score against.
      * 
-     * Required for `dense_vector`, `sparse_vector`, and `text` scoring types. For `query_string`, optionally restricts the query to this field; when omitted, the query runs against all full-text-searchable fields.
+     * Required for `dense_vector`, `sparse_vector`, and `text` scoring types. Must not be provided for `query_string`.
      * @type {string}
      * @memberof DocumentScoringMethod
      */

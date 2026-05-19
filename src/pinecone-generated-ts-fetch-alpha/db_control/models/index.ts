@@ -111,7 +111,7 @@ export interface BackupModel {
     created_at?: string;
 }
 /**
- * A boolean field configuration. Can be indexed for use in metadata filter expressions.
+ * A boolean field configuration. Boolean values are not declared in the index schema; include them as document metadata instead — they are indexed automatically at upsert time.
  * @export
  * @interface BooleanField
  */
@@ -128,12 +128,6 @@ export interface BooleanField {
      * @memberof BooleanField
      */
     description?: string;
-    /**
-     * Whether this field should be indexed for use in filter expressions.
-     * @type {boolean}
-     * @memberof BooleanField
-     */
-    filterable?: boolean;
 }
 
 
@@ -518,7 +512,7 @@ export interface CreateIndexSchema {
  * Supported field types:
  * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search (use `full_text_search` object)
  * 
- *   or metadata filtering (use `filterable`).
+ *   or metadata filtering.
  * - `string_list`: String array field for metadata filtering. - `float`: Numeric field for metadata filtering. Also accepts `"number"` as the type value. - `boolean`: Boolean field for metadata filtering.
  * Schema constraints enforced at creation time:
  * - At most one `dense_vector` field. - At most one `sparse_vector` field. - At most one `semantic_text` field; `semantic_text` cannot be combined with
@@ -527,6 +521,12 @@ export interface CreateIndexSchema {
  * - At least one primary field (`dense_vector`, `sparse_vector`, `semantic_text`,
  * 
  *   or a `string` field with `full_text_search`) must be present.
+ * - Only `dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
+ * 
+ *   `full_text_search` are accepted. The types `float`, `boolean`,
+ *   `string_list`, and `string` without `full_text_search` are not supported
+ *   and will be rejected. Include those values as document metadata instead —
+ *   they are indexed automatically at upsert time.
  * @export
  */
 export type CreateIndexSchemaField = { type: 'boolean' } & BooleanField | { type: 'dense_vector' } & DenseVectorField | { type: 'float' } & FloatField | { type: 'semantic_text' } & SemanticTextField | { type: 'sparse_vector' } & SparseVectorField | { type: 'string' } & StringField | { type: 'string_list' } & StringListField;
@@ -618,7 +618,7 @@ export interface ErrorResponseError {
     details?: object;
 }
 /**
- * A numeric (floating-point) field configuration. Can be indexed for use in metadata filter expressions.
+ * A numeric (floating-point) field configuration. Numeric values are not declared in the index schema; include them as document metadata instead — they are indexed automatically at upsert time.
  * @export
  * @interface FloatField
  */
@@ -635,12 +635,6 @@ export interface FloatField {
      * @memberof FloatField
      */
     description?: string;
-    /**
-     * Whether this field should be indexed for use in filter expressions.
-     * @type {boolean}
-     * @memberof FloatField
-     */
-    filterable?: boolean;
 }
 
 
@@ -805,7 +799,7 @@ export interface IndexSchema {
  * @type IndexSchemaField
  * The configuration of a single field in the index schema. The `type` property determines how the field is stored and searched.
  * Supported field types:
- * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search or metadata filtering. - `string_list`: String array field for metadata filtering. - `float`: Numeric field for metadata filtering. - `boolean`: Boolean field for metadata filtering.
+ * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search. - `string_list`: String array field. - `float`: Numeric field. - `boolean`: Boolean field.
  * @export
  */
 export type IndexSchemaField = { type: 'boolean' } & BooleanField | { type: 'dense_vector' } & DenseVectorField | { type: 'float' } & FloatField | { type: 'semantic_text' } & SemanticTextField | { type: 'sparse_vector' } & SparseVectorField | { type: 'string' } & StringField | { type: 'string_list' } & StringListField;
@@ -1294,15 +1288,7 @@ export const SparseVectorFieldTypeEnum = {
 export type SparseVectorFieldTypeEnum = typeof SparseVectorFieldTypeEnum[keyof typeof SparseVectorFieldTypeEnum];
 
 /**
- * A string field configuration. A string field operates in one of two mutually exclusive modes:
- * - **Full-text search mode**: Include a `full_text_search` object. The field
- * 
- *   is indexed for full-text search using the specified text-analysis settings.
- * - **Metadata filtering mode**: Set `filterable: true` (or omit `full_text_search`).
- * 
- *   The field is indexed for use in filter expressions.
- * 
- * Providing both `full_text_search` and `filterable` in the same field definition is not allowed and will be rejected.
+ * A string field configuration for full-text search. The `full_text_search` object is required; a string field without it will be rejected.
  * @export
  * @interface StringField
  */
@@ -1325,12 +1311,6 @@ export interface StringField {
      * @memberof StringField
      */
     full_text_search?: StringFieldFullTextSearch;
-    /**
-     * Whether this field should be indexed for use in filter expressions. Mutually exclusive with `full_text_search`.
-     * @type {boolean}
-     * @memberof StringField
-     */
-    filterable?: boolean;
 }
 
 
@@ -1343,7 +1323,7 @@ export const StringFieldTypeEnum = {
 export type StringFieldTypeEnum = typeof StringFieldTypeEnum[keyof typeof StringFieldTypeEnum];
 
 /**
- * Full-text search configuration. When present, the field is indexed for full-text search. Mutually exclusive with `filterable`.
+ * Full-text search configuration. When present, the field is indexed for full-text search.
  * `stop_words` requires `stemming: true`.
  * @export
  * @interface StringFieldFullTextSearch
@@ -1381,7 +1361,7 @@ export interface StringFieldFullTextSearch {
     readonly max_term_len?: number;
 }
 /**
- * A string array field configuration. Stores arrays of strings and can be indexed for use in metadata filter expressions.
+ * A string array field configuration. String array values are not declared in the index schema; include them as document metadata instead — they are indexed automatically at upsert time.
  * @export
  * @interface StringListField
  */
@@ -1398,12 +1378,6 @@ export interface StringListField {
      * @memberof StringListField
      */
     description?: string;
-    /**
-     * Whether this field should be indexed for use in filter expressions.
-     * @type {boolean}
-     * @memberof StringListField
-     */
-    filterable?: boolean;
 }
 
 

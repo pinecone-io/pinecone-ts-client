@@ -1,6 +1,0 @@
-.openapi-generator-ignore
-apis/ManageIndexesApi.ts
-apis/index.ts
-index.ts
-models/index.ts
-runtime.ts
