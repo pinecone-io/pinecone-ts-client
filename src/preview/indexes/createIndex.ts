@@ -14,7 +14,7 @@ export type {
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
- * Options for creating a schema-based index using the 202601-alpha API.
+ * Options for creating a schema-based index using the 2026-01.alpha API.
  *
  * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
  *
@@ -35,7 +35,7 @@ export interface PreviewCreateIndexOptions extends Omit<
 }
 
 /**
- * Creates a schema-based index using the 202601-alpha API.
+ * Creates a schema-based index using the 2026-01.alpha API.
  *
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.

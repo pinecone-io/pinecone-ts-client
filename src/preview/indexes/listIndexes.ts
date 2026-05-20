@@ -6,7 +6,7 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Lists all indexes in the project using the 202601-alpha API.
+ * Lists all indexes in the project using the 2026-01.alpha API.
  *
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.

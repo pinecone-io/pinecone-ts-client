@@ -8,7 +8,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for configuring an alpha index using the 202601-alpha API.
+ * Options for configuring an alpha index using the 2026-01.alpha API.
  *
  * All fields are optional — send only those you want to change.
  *
@@ -20,7 +20,7 @@ import { handleApiError } from '../../errors/handling';
 export type PreviewConfigureIndexOptions = ConfigureIndexRequest;
 
 /**
- * Configures an alpha index using the 202601-alpha API.
+ * Configures an alpha index using the 2026-01.alpha API.
  *
  * Only the fields present in `options` are updated; omit a field to leave it unchanged.
  *

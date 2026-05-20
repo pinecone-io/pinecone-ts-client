@@ -206,7 +206,7 @@ export type {
   ServerlessSpecResponse,
 } from './pinecone-generated-ts-fetch/db_control';
 
-// --- Alpha / Preview exports (202601-alpha) ---
+// --- Alpha / Preview exports (2026-01.alpha) ---
 // Not covered by the SDK's backward compatibility guarantee.
 export { PreviewIndexes } from './preview';
 export type {

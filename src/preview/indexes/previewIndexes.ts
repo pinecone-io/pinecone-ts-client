@@ -15,7 +15,7 @@ import {
 } from './configureIndex';
 
 /**
- * Provides access to alpha control-plane index operations using the 202601-alpha API.
+ * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
  *
  * Access via `pc.preview.indexes`.
  *
@@ -46,7 +46,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Creates a schema-based index using the 202601-alpha API.
+   * Creates a schema-based index using the 2026-01.alpha API.
    *
    * **Alpha notice:** This method is not covered by the SDK's backward compatibility guarantee.
    *
@@ -58,7 +58,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Describes an index by name using the 202601-alpha API.
+   * Describes an index by name using the 2026-01.alpha API.
    *
    * **Alpha notice:** This method is not covered by the SDK's backward compatibility guarantee.
    *
