@@ -247,4 +247,6 @@ export type {
   // List index backups
   PreviewListIndexBackupsOptions,
   PreviewBackupList,
+  // List project backups
+  PreviewListProjectBackupsOptions,
 } from './preview';

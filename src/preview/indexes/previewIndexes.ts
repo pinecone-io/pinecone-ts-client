@@ -27,6 +27,10 @@ import {
   listPreviewIndexBackups,
   PreviewListIndexBackupsOptions,
 } from './listIndexBackups';
+import {
+  listPreviewProjectBackups,
+  PreviewListProjectBackupsOptions,
+} from './listProjectBackups';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -167,5 +171,21 @@ export class PreviewIndexes {
     options?: PreviewListIndexBackupsOptions,
   ): Promise<BackupList> {
     return listPreviewIndexBackups(this._api, indexName, options);
+  }
+
+  /**
+   * Lists all backups across every index in the project using the 2026-01.alpha API.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param options - Optional pagination parameters (limit, paginationToken).
+   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+   * @alpha
+   */
+  async listProjectBackups(
+    options?: PreviewListProjectBackupsOptions,
+  ): Promise<BackupList> {
+    return listPreviewProjectBackups(this._api, options);
   }
 }
