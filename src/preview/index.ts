@@ -48,3 +48,7 @@ export type {
   PatchIndexSchema as PreviewPatchIndexSchema,
   PatchSemanticTextField as PreviewPatchSemanticTextField,
 } from '../pinecone-generated-ts-fetch-alpha/db_control';
+
+// Create backup
+export type { PreviewCreateBackupOptions } from './indexes/createBackup';
+export type { BackupModel as PreviewBackupModel } from '../pinecone-generated-ts-fetch-alpha/db_control';

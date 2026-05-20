@@ -2,6 +2,7 @@ import type {
   ManageIndexesApi,
   IndexList,
   IndexModel,
+  BackupModel,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { alphaIndexOperationsBuilder } from './alphaIndexOperationsBuilder';
@@ -17,6 +18,10 @@ import {
   createIndexForModel,
   PreviewCreateIndexForModelOptions,
 } from './createIndexForModel';
+import {
+  createPreviewBackup,
+  PreviewCreateBackupOptions,
+} from './createBackup';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -121,5 +126,23 @@ export class PreviewIndexes {
     options: PreviewCreateIndexForModelOptions,
   ): Promise<IndexModel> {
     return createIndexForModel(this._api, options);
+  }
+
+  /**
+   * Creates a backup of an alpha index.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param indexName - Name of the index to back up.
+   * @param options - Optional backup configuration (name, description).
+   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+   * @alpha
+   */
+  async createBackup(
+    indexName: string,
+    options?: PreviewCreateBackupOptions,
+  ): Promise<BackupModel> {
+    return createPreviewBackup(this._api, indexName, options);
   }
 }

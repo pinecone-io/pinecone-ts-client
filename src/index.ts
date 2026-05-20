@@ -241,4 +241,7 @@ export type {
   PreviewPatchSemanticTextField,
   // Create index for model
   PreviewCreateIndexForModelOptions,
+  // Backup
+  PreviewCreateBackupOptions,
+  PreviewBackupModel,
 } from './preview';
