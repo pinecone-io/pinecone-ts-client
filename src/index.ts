@@ -251,4 +251,8 @@ export type {
   PreviewListProjectBackupsOptions,
   // Create index from backup
   PreviewCreateIndexFromBackupOptions,
+  // List restore jobs
+  PreviewListRestoreJobsOptions,
+  PreviewRestoreJobList,
+  PreviewRestoreJobModel,
 } from './preview';

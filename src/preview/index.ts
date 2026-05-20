@@ -62,3 +62,10 @@ export type { PreviewListProjectBackupsOptions } from './indexes/listProjectBack
 
 // Create index from backup
 export type { PreviewCreateIndexFromBackupOptions } from './indexes/createIndexFromBackup';
+
+// List restore jobs
+export type { PreviewListRestoreJobsOptions } from './indexes/listRestoreJobs';
+export type {
+  RestoreJobList as PreviewRestoreJobList,
+  RestoreJobModel as PreviewRestoreJobModel,
+} from '../pinecone-generated-ts-fetch-alpha/db_control';
