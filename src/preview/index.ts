@@ -59,3 +59,6 @@ export type { BackupList as PreviewBackupList } from '../pinecone-generated-ts-f
 
 // List project backups
 export type { PreviewListProjectBackupsOptions } from './indexes/listProjectBackups';
+
+// Create index from backup
+export type { PreviewCreateIndexFromBackupOptions } from './indexes/createIndexFromBackup';

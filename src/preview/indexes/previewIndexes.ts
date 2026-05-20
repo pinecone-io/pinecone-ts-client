@@ -4,6 +4,7 @@ import type {
   IndexModel,
   BackupModel,
   BackupList,
+  CreateIndexFromBackupResponse,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { alphaIndexOperationsBuilder } from './alphaIndexOperationsBuilder';
@@ -33,6 +34,10 @@ import {
 } from './listProjectBackups';
 import { describePreviewBackup } from './describeBackup';
 import { deletePreviewBackup } from './deleteBackup';
+import {
+  createIndexFromBackup,
+  PreviewCreateIndexFromBackupOptions,
+} from './createIndexFromBackup';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -217,5 +222,25 @@ export class PreviewIndexes {
    */
   async deleteBackup(backupId: string): Promise<void> {
     return deletePreviewBackup(this._api, backupId);
+  }
+
+  /**
+   * Creates an index from a backup. The creation is accepted asynchronously;
+   * use the returned `restore_job_id` to poll for completion.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param backupId - The ID of the backup to create an index from.
+   * @param options - Configuration for the new index (name required; tags and
+   *   deletionProtection optional).
+   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+   * @alpha
+   */
+  async createIndexFromBackup(
+    backupId: string,
+    options: PreviewCreateIndexFromBackupOptions,
+  ): Promise<CreateIndexFromBackupResponse> {
+    return createIndexFromBackup(this._api, backupId, options);
   }
 }
