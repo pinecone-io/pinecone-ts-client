@@ -239,4 +239,6 @@ export type {
   PreviewPatchIndexDeploymentRequest,
   PreviewPatchIndexSchema,
   PreviewPatchSemanticTextField,
+  // Create index for model
+  PreviewCreateIndexForModelOptions,
 } from './preview';

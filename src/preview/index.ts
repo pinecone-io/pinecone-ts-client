@@ -36,12 +36,13 @@ export type {
 } from '../pinecone-generated-ts-fetch-alpha/db_control';
 
 // Read capacity
-export type {
-  ReadCapacity as PreviewReadCapacity,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
+export type { ReadCapacity as PreviewReadCapacity } from '../pinecone-generated-ts-fetch-alpha/db_control';
 
 // Configure index
 export type { PreviewConfigureIndexOptions } from './indexes/configureIndex';
+
+// Create index for model
+export type { PreviewCreateIndexForModelOptions } from './indexes/createIndexForModel';
 export type {
   PatchIndexDeploymentRequest as PreviewPatchIndexDeploymentRequest,
   PatchIndexSchema as PreviewPatchIndexSchema,
