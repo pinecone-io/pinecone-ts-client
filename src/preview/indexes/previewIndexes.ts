@@ -48,8 +48,6 @@ export class PreviewIndexes {
   /**
    * Creates a schema-based index using the 2026-01.alpha API.
    *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility guarantee.
-   *
    * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
@@ -59,8 +57,6 @@ export class PreviewIndexes {
 
   /**
    * Describes an index by name using the 2026-01.alpha API.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility guarantee.
    *
    * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha

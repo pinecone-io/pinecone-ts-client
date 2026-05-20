@@ -1415,9 +1415,6 @@ export class Pinecone {
   /**
    * Provides access to alpha preview operations using the 2026-01.alpha API.
    *
-   * **Alpha notice:** This accessor and all returned objects are not covered by the
-   * SDK's backward compatibility guarantee.
-   *
    * @example
    * ```typescript
    * const list = await pc.preview.indexes.listIndexes();

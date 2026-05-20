@@ -207,13 +207,36 @@ export type {
 } from './pinecone-generated-ts-fetch/db_control';
 
 // --- Alpha / Preview exports (2026-01.alpha) ---
-// Not covered by the SDK's backward compatibility guarantee.
 export { PreviewIndexes } from './preview';
 export type {
-  AlphaIndexList,
-  AlphaIndexModel,
+  // Index list / model
+  PreviewIndexList,
+  PreviewIndexModel,
+  PreviewIndexModelStatus,
+  // Create index
   PreviewCreateIndexOptions,
+  PreviewCreateIndexSchema,
+  PreviewCreateIndexSchemaField,
+  // Deployment
+  PreviewIndexDeploymentRequest,
+  PreviewIndexDeployment,
+  PreviewManagedDeployment,
+  PreviewByocDeployment,
+  PreviewPodDeployment,
+  // Schema field types
+  PreviewBooleanField,
+  PreviewDenseVectorField,
+  PreviewFloatField,
+  PreviewSemanticTextField,
+  PreviewSparseVectorField,
+  PreviewStringField,
+  PreviewStringListField,
+  PreviewStringFieldFullTextSearch,
+  // Read capacity
+  PreviewReadCapacity,
+  // Configure index
   PreviewConfigureIndexOptions,
-  IndexSchema,
-  IndexSchemaField,
+  PreviewPatchIndexDeploymentRequest,
+  PreviewPatchIndexSchema,
+  PreviewPatchSemanticTextField,
 } from './preview';

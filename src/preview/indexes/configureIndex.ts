@@ -12,8 +12,6 @@ import { handleApiError } from '../../errors/handling';
  *
  * All fields are optional — send only those you want to change.
  *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
- *
  * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */

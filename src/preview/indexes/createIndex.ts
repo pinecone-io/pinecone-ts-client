@@ -9,14 +9,12 @@ import { handleApiError } from '../../errors/handling';
 import { debugLog } from '../../utils';
 
 export type {
-  CreateIndexSchema as IndexSchema,
-  CreateIndexSchemaField as IndexSchemaField,
+  CreateIndexSchema as PreviewCreateIndexSchema,
+  CreateIndexSchemaField as PreviewCreateIndexSchemaField,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
  * Options for creating a schema-based index using the 2026-01.alpha API.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
  *
  * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
