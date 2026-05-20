@@ -244,4 +244,7 @@ export type {
   // Backup
   PreviewCreateBackupOptions,
   PreviewBackupModel,
+  // List index backups
+  PreviewListIndexBackupsOptions,
+  PreviewBackupList,
 } from './preview';

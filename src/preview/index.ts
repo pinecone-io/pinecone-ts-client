@@ -52,3 +52,7 @@ export type {
 // Create backup
 export type { PreviewCreateBackupOptions } from './indexes/createBackup';
 export type { BackupModel as PreviewBackupModel } from '../pinecone-generated-ts-fetch-alpha/db_control';
+
+// List index backups
+export type { PreviewListIndexBackupsOptions } from './indexes/listIndexBackups';
+export type { BackupList as PreviewBackupList } from '../pinecone-generated-ts-fetch-alpha/db_control';
