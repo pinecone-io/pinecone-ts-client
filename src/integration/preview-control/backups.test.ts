@@ -9,17 +9,15 @@ describe('preview backups', () => {
   beforeAll(async () => {
     pc = new Pinecone();
 
-    // You cannot create backups with FTS / schema indexes yet, so we use a standard
-    // serverless index to test backups integration
+    // Create an index with a single full text searchable field (this is what backups supports currently)
     const indexName = randomName('preview-backup-src');
     index = await pc.preview.indexes.createIndex({
       name: indexName,
       schema: {
         fields: {
-          embedding: {
-            type: 'dense_vector',
-            dimension: 3,
-            metric: 'cosine',
+          text: {
+            type: 'string',
+            full_text_search: {},
           },
         },
       },
