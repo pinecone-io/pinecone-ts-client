@@ -164,6 +164,27 @@ export class PineconeNotImplementedError extends BasePineconeError {
 }
 
 /**
+ * This error is thrown when an API endpoint does not support the HTTP method
+ * used in the request. This typically indicates the operation is not available
+ * for the targeted resource.
+ */
+export class PineconeMethodNotAllowedError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 405 (Method Not Allowed). ${message ? message : ''}`.trim(),
+      );
+    } else {
+      super(
+        `The HTTP method used is not allowed for this endpoint. ${message ? message : ''}`.trim(),
+      );
+    }
+    this.name = 'PineconeMethodNotAllowedError';
+  }
+}
+
+/**
  * This catch-all exception is thrown when a request error that is not
  * specifically mapped to another exception is thrown.
  */
@@ -192,6 +213,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeBadRequestError(failedRequestInfo);
     case 404:
       return new PineconeNotFoundError(failedRequestInfo);
+    case 405:
+      return new PineconeMethodNotAllowedError(failedRequestInfo);
     case 409:
       return new PineconeConflictError(failedRequestInfo);
     case 500:
