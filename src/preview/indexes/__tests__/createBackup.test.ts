@@ -1,5 +1,9 @@
 import { createPreviewBackup } from '../createBackup';
-import { PineconeArgumentError } from '../../../errors';
+import {
+  PineconeArgumentError,
+  PineconeBadRequestError,
+  PineconeConnectionError,
+} from '../../../errors';
 import type { ManageIndexesApi } from '../../../pinecone-generated-ts-fetch-alpha/db_control';
 
 const buildMockApi = (
@@ -92,6 +96,22 @@ describe('createPreviewBackup', () => {
         ),
       });
       await expect(createPreviewBackup(api, 'my-index')).rejects.toThrow();
+    });
+
+    test('does not re-wrap PineconeBadRequestError from middleware as PineconeConnectionError', async () => {
+      const badRequestError = new PineconeBadRequestError({
+        status: 400,
+        message: 'Backup creation is not supported for this index',
+      });
+      const api = buildMockApi({
+        createBackup: jest.fn().mockRejectedValue(badRequestError),
+      });
+      await expect(createPreviewBackup(api, 'my-index')).rejects.toThrow(
+        PineconeBadRequestError,
+      );
+      await expect(createPreviewBackup(api, 'my-index')).rejects.not.toThrow(
+        PineconeConnectionError,
+      );
     });
   });
 });
