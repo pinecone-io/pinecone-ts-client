@@ -18,10 +18,6 @@ import {
   PreviewConfigureIndexOptions,
 } from './configureIndex';
 import {
-  createIndexForModel,
-  PreviewCreateIndexForModelOptions,
-} from './createIndexForModel';
-import {
   createPreviewBackup,
   PreviewCreateBackupOptions,
 } from './createBackup';
@@ -128,25 +124,6 @@ export class PreviewIndexes {
     options: PreviewConfigureIndexOptions,
   ): Promise<IndexModel> {
     return configurePreviewIndex(this._api, name, options);
-  }
-
-  /**
-   * Creates a serverless index pre-configured for a named embedding model using
-   * the 2026-01.alpha API.
-   *
-   * Dimension and similarity metric are derived from the model; supply `cloud`,
-   * `region`, `field`, and `model` to get started.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
-   *
-   * @see [Model-based indexes](https://docs.pinecone.io/guides/index-data/create-an-index)
-   * @alpha
-   */
-  async createIndexForModel(
-    options: PreviewCreateIndexForModelOptions,
-  ): Promise<IndexModel> {
-    return createIndexForModel(this._api, options);
   }
 
   /**
