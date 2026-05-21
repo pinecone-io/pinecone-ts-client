@@ -1,28 +1,27 @@
-import { Pinecone, PreviewIndexModel, PreviewBackupModel } from '../../index';
+import { Pinecone, IndexModel, PreviewBackupModel } from '../../index';
 import { randomName } from '../test-helpers';
 
 describe('preview backups', () => {
   let pc: Pinecone;
-  let index: PreviewIndexModel;
+  let index: IndexModel;
   let backup: PreviewBackupModel;
 
   beforeAll(async () => {
     pc = new Pinecone();
 
-    // Create an index with a single full text searchable field (this is what backups supports currently)
+    // Create a generic serverless index through non-preview API to test preview backups integration
     const indexName = randomName('preview-backup-src');
-    index = await pc.preview.indexes.createIndex({
+    index = (await pc.createIndex({
       name: indexName,
-      schema: {
-        fields: {
-          text: {
-            type: 'string',
-            full_text_search: {},
-          },
+      dimension: 3,
+      spec: {
+        serverless: {
+          cloud: 'aws',
+          region: 'us-east-1',
         },
       },
       waitUntilReady: true,
-    });
+    })) as IndexModel; // we're not suppressing conflicts so we know the response should be an IndexModel
     expect(index.name).toEqual(indexName);
 
     // Create shared backup
