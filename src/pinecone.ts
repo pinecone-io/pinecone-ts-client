@@ -182,6 +182,7 @@ export class Pinecone {
     const asstControlApi = asstControlOperationsBuilder(this.config);
     const asstMetricsApi = asstMetricsOperationsBuilder(this.config);
 
+    // Index operations
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
     this._createIndex = createIndex(api);
@@ -192,14 +193,6 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
-
-    this._createAssistant = createAssistant(asstControlApi);
-    this._deleteAssistant = deleteAssistant(asstControlApi);
-    this._updateAssistant = updateAssistant(asstControlApi);
-    this._describeAssistant = describeAssistant(asstControlApi);
-    this._listAssistants = listAssistants(asstControlApi);
-    this._evaluate = evaluate(asstMetricsApi);
-
     this._createBackup = createBackup(api);
     this._createIndexFromBackup = createIndexFromBackup(api);
     this._describeBackup = describeBackup(api);
@@ -208,6 +201,15 @@ export class Pinecone {
     this._listBackups = listBackups(api);
     this._listRestoreJobs = listRestoreJobs(api);
 
+    // Assistant operations
+    this._createAssistant = createAssistant(asstControlApi);
+    this._deleteAssistant = deleteAssistant(asstControlApi);
+    this._updateAssistant = updateAssistant(asstControlApi);
+    this._describeAssistant = describeAssistant(asstControlApi);
+    this._listAssistants = listAssistants(asstControlApi);
+    this._evaluate = evaluate(asstMetricsApi);
+
+    // Inference operations
     this.inference = new Inference(this.config);
   }
 

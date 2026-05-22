@@ -70,7 +70,7 @@ describe('preview backups', () => {
       const result = await pc.preview.indexes.listProjectBackups();
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
       const someBackup = result.data!.some(
-        (backup) => backup.backup_id === backup.backup_id,
+        (currBackup) => currBackup.backup_id === backup.backup_id,
       );
       expect(someBackup).toBe(true);
     });
