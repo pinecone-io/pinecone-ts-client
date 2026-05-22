@@ -219,7 +219,6 @@ describe('createIndex', () => {
               podType: 'p1.x1',
             },
           },
-          waitUntilReady: true,
         },
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
