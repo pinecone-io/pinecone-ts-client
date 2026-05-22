@@ -210,7 +210,8 @@ export const createIndex = (api: ManageIndexesApi) => {
         spec = { pod: options.spec.pod! };
       }
 
-      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } = options;
+      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+        options;
       const createRequest: CreateIndexRequest = {
         ...createOptions,
         spec,

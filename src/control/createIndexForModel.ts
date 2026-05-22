@@ -108,7 +108,8 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
 
     validateCreateIndexForModelRequest(options);
     try {
-      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } = options;
+      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+        options;
       const createRequest: CreateIndexForModelRequest = {
         ...createOptions,
         readCapacity: toApiReadCapacity(options.readCapacity),

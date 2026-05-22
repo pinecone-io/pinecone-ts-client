@@ -159,11 +159,9 @@ describe('createPreviewIndex', () => {
 
     test('throws PineconeIndexInitializationFailedError on InitializationFailed state', async () => {
       const api = buildMockApi({
-        describeIndex: jest
-          .fn()
-          .mockResolvedValue({
-            status: { ready: false, state: 'InitializationFailed' },
-          }),
+        describeIndex: jest.fn().mockResolvedValue({
+          status: { ready: false, state: 'InitializationFailed' },
+        }),
       });
       await expect(
         createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
@@ -172,11 +170,9 @@ describe('createPreviewIndex', () => {
 
     test('throws PineconeIndexTerminatedError on Terminating state', async () => {
       const api = buildMockApi({
-        describeIndex: jest
-          .fn()
-          .mockResolvedValue({
-            status: { ready: false, state: 'Terminating' },
-          }),
+        describeIndex: jest.fn().mockResolvedValue({
+          status: { ready: false, state: 'Terminating' },
+        }),
       });
       await expect(
         createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
@@ -196,11 +192,9 @@ describe('createPreviewIndex', () => {
 
     test('throws PineconeTimeoutError when timeout elapses', async () => {
       const api = buildMockApi({
-        describeIndex: jest
-          .fn()
-          .mockResolvedValue({
-            status: { ready: false, state: 'Initializing' },
-          }),
+        describeIndex: jest.fn().mockResolvedValue({
+          status: { ready: false, state: 'Initializing' },
+        }),
       });
       const promise = createPreviewIndex(api, {
         ...validOptions,
