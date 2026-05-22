@@ -142,10 +142,15 @@ describe('createPreviewIndex', () => {
       const api = buildMockApi({
         describeIndex: jest
           .fn()
-          .mockResolvedValueOnce({ status: { ready: false, state: 'Initializing' } })
+          .mockResolvedValueOnce({
+            status: { ready: false, state: 'Initializing' },
+          })
           .mockResolvedValueOnce({ status: { ready: true, state: 'Ready' } }),
       });
-      const promise = createPreviewIndex(api, { ...validOptions, waitUntilReady: true });
+      const promise = createPreviewIndex(api, {
+        ...validOptions,
+        waitUntilReady: true,
+      });
       await jest.advanceTimersByTimeAsync(10000);
       const result = await promise;
       expect(result.status?.state).toBe('Ready');
@@ -156,7 +161,9 @@ describe('createPreviewIndex', () => {
       const api = buildMockApi({
         describeIndex: jest
           .fn()
-          .mockResolvedValue({ status: { ready: false, state: 'InitializationFailed' } }),
+          .mockResolvedValue({
+            status: { ready: false, state: 'InitializationFailed' },
+          }),
       });
       await expect(
         createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
@@ -167,7 +174,9 @@ describe('createPreviewIndex', () => {
       const api = buildMockApi({
         describeIndex: jest
           .fn()
-          .mockResolvedValue({ status: { ready: false, state: 'Terminating' } }),
+          .mockResolvedValue({
+            status: { ready: false, state: 'Terminating' },
+          }),
       });
       await expect(
         createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
@@ -189,7 +198,9 @@ describe('createPreviewIndex', () => {
       const api = buildMockApi({
         describeIndex: jest
           .fn()
-          .mockResolvedValue({ status: { ready: false, state: 'Initializing' } }),
+          .mockResolvedValue({
+            status: { ready: false, state: 'Initializing' },
+          }),
       });
       const promise = createPreviewIndex(api, {
         ...validOptions,

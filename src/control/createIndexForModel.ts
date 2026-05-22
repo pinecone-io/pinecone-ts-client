@@ -117,7 +117,11 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(api, createResponse.name, options.timeout);
+        return await waitUntilIndexIsReady(
+          api,
+          createResponse.name,
+          options.timeout,
+        );
       }
       return createResponse;
     } catch (e) {

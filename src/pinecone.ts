@@ -1426,5 +1426,4 @@ export class Pinecone {
   ): Assistant {
     return this.assistant(optionsOrName as any, host);
   }
-
 }
