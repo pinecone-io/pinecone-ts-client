@@ -8,7 +8,7 @@ import {
   ReadCapacity,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
-import { debugLog } from '../utils';
+import { pollUntilIndexIsReady } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
 
@@ -21,6 +21,13 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
 
   /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
   waitUntilReady?: boolean;
+
+  /**
+   * Maximum time in milliseconds to wait for the index to become ready when
+   * `waitUntilReady` is `true`. Omit to poll indefinitely.
+   * Throws {@link Errors.PineconeTimeoutError} if the deadline is exceeded.
+   */
+  timeout?: number;
 
   /** This option tells the client not to throw if you attempt to create an index that already exists. */
   suppressConflicts?: boolean;
@@ -213,7 +220,7 @@ export const createIndex = (api: ManageIndexesApi) => {
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(api, options.name);
+        return await waitUntilIndexIsReady(api, options.name, options.timeout);
       }
       return createResponse;
     } catch (e) {
@@ -230,31 +237,29 @@ export const createIndex = (api: ManageIndexesApi) => {
   };
 };
 
-export const waitUntilIndexIsReady = async (
+export const waitUntilIndexIsReady = (
   api: ManageIndexesApi,
   indexName: string,
-  seconds: number = 0,
+  timeoutMs?: number,
 ): Promise<IndexModel> => {
-  try {
-    const indexDescription = await api.describeIndex({
-      indexName,
-      xPineconeApiVersion: X_PINECONE_API_VERSION,
-    });
-    if (!indexDescription.status?.ready) {
-      await new Promise((r) => setTimeout(r, 1000));
-      return await waitUntilIndexIsReady(api, indexName, seconds + 1);
-    } else {
-      debugLog(`Index ${indexName} is ready after ${seconds}`);
-      return indexDescription;
-    }
-  } catch (e) {
-    const err = await handleApiError(
-      e,
-      async (_, rawMessageText) =>
-        `Error creating index ${indexName}: ${rawMessageText}`,
-    );
-    throw err;
-  }
+  return pollUntilIndexIsReady(
+    async () => {
+      try {
+        return await api.describeIndex({
+          indexName,
+          xPineconeApiVersion: X_PINECONE_API_VERSION,
+        });
+      } catch (e) {
+        throw await handleApiError(
+          e,
+          async (_, rawMessageText) =>
+            `Error waiting for index ${indexName} to be ready: ${rawMessageText}`,
+        );
+      }
+    },
+    indexName,
+    timeoutMs,
+  );
 };
 
 const validateCreateIndexRequest = (options: CreateIndexOptions) => {

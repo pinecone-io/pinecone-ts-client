@@ -185,6 +185,45 @@ export class PineconeMethodNotAllowedError extends BasePineconeError {
 }
 
 /**
+ * Thrown when `waitUntilReady: true` is used and the index does not become
+ * ready within the specified `timeout`.
+ */
+export class PineconeTimeoutError extends BasePineconeError {
+  constructor(indexName: string, timeoutMs: number) {
+    super(
+      `Index '${indexName}' was not ready within ${timeoutMs}ms. You can increase the timeout by passing a larger value for the \`timeout\` option.`,
+    );
+    this.name = 'PineconeTimeoutError';
+  }
+}
+
+/**
+ * Thrown when an index enters the `InitializationFailed` state during
+ * `waitUntilReady` polling.
+ */
+export class PineconeIndexInitializationFailedError extends BasePineconeError {
+  constructor(indexName: string) {
+    super(
+      `Index '${indexName}' failed to initialize. Check the Pinecone console for more details.`,
+    );
+    this.name = 'PineconeIndexInitializationFailedError';
+  }
+}
+
+/**
+ * Thrown when an index enters a terminal non-ready state (`Terminating` or
+ * `Disabled`) during `waitUntilReady` polling.
+ */
+export class PineconeIndexTerminatedError extends BasePineconeError {
+  constructor(indexName: string, state: string) {
+    super(
+      `Index '${indexName}' entered '${state}' state and will not become ready.`,
+    );
+    this.name = 'PineconeIndexTerminatedError';
+  }
+}
+
+/**
  * This catch-all exception is thrown when a request error that is not
  * specifically mapped to another exception is thrown.
  */

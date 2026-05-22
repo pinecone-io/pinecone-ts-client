@@ -259,7 +259,7 @@ describe('createIndex', () => {
         waitUntilReady: true,
       });
 
-      await jest.advanceTimersByTimeAsync(3000);
+      await jest.advanceTimersByTimeAsync(20000);
 
       return returned.then((result) => {
         expect(result).toEqual({ status: { ready: true, state: 'Ready' } });

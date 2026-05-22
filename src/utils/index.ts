@@ -1,4 +1,6 @@
 import { debugLog } from './debugLog';
+import { pollUntilIndexIsReady } from './pollUntilIndexIsReady';
+export type { IndexReadinessResponse } from './pollUntilIndexIsReady';
 import { normalizeUrl } from './normalizeUrl';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
@@ -15,6 +17,7 @@ export {
   getNonRetryingFetch,
   convertKeysToCamelCase,
   ChatStream,
+  pollUntilIndexIsReady,
 };
 
 export type { RetryConfig } from './fetch';

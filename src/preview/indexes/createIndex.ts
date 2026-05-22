@@ -6,7 +6,7 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
-import { debugLog } from '../../utils';
+import { pollUntilIndexIsReady } from '../../utils';
 
 export type {
   CreateIndexSchema as PreviewCreateIndexSchema,
@@ -27,9 +27,14 @@ export interface PreviewCreateIndexOptions extends Omit<
   name: string;
   /**
    * When true, polls until the index is ready before returning.
-   * Uses client-side polling with exponential backoff.
    */
   waitUntilReady?: boolean;
+  /**
+   * Maximum time in milliseconds to wait for the index to become ready when
+   * `waitUntilReady` is `true`. Omit to poll indefinitely.
+   * Throws {@link Errors.PineconeTimeoutError} if the deadline is exceeded.
+   */
+  timeout?: number;
 }
 
 /**
@@ -56,7 +61,7 @@ export async function createPreviewIndex(
     );
   }
 
-  const { waitUntilReady, ...createRequest } = options;
+  const { waitUntilReady, timeout, ...createRequest } = options;
 
   try {
     const result = await api.createIndex({
@@ -64,7 +69,24 @@ export async function createPreviewIndex(
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
     if (waitUntilReady) {
-      return await waitUntilPreviewIndexIsReady(api, options.name);
+      return await pollUntilIndexIsReady(
+        async () => {
+          try {
+            return await api.describeIndex({
+              indexName: options.name,
+              xPineconeApiVersion: X_PINECONE_API_VERSION,
+            });
+          } catch (e) {
+            throw await handleApiError(
+              e,
+              async (_, rawMessageText) =>
+                `Error waiting for preview index ${options.name} to be ready: ${rawMessageText}`,
+            );
+          }
+        },
+        options.name,
+        timeout,
+      );
     }
     return result;
   } catch (e) {
@@ -72,32 +94,6 @@ export async function createPreviewIndex(
       e,
       async (_, rawMessageText) =>
         `Error creating preview index ${options.name}: ${rawMessageText}`,
-    );
-  }
-}
-
-async function waitUntilPreviewIndexIsReady(
-  api: ManageIndexesApi,
-  indexName: string,
-  seconds: number = 0,
-): Promise<IndexModel> {
-  try {
-    const indexDescription = await api.describeIndex({
-      indexName,
-      xPineconeApiVersion: X_PINECONE_API_VERSION,
-    });
-    if (!indexDescription.status?.ready) {
-      await new Promise((r) => setTimeout(r, 1000));
-      return await waitUntilPreviewIndexIsReady(api, indexName, seconds + 1);
-    } else {
-      debugLog(`Index ${indexName} is ready after ${seconds}s`);
-      return indexDescription;
-    }
-  } catch (e) {
-    throw await handleApiError(
-      e,
-      async (_, rawMessageText) =>
-        `Error waiting for preview index ${indexName} to be ready: ${rawMessageText}`,
     );
   }
 }

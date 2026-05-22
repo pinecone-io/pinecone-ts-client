@@ -1,5 +1,10 @@
 import { createPreviewIndex } from '../createIndex';
-import { PineconeArgumentError } from '../../../errors';
+import {
+  PineconeArgumentError,
+  PineconeIndexInitializationFailedError,
+  PineconeIndexTerminatedError,
+  PineconeTimeoutError,
+} from '../../../errors';
 import type { ManageIndexesApi } from '../../../pinecone-generated-ts-fetch-alpha/db_control';
 import type { PreviewCreateIndexOptions } from '../createIndex';
 
@@ -126,6 +131,75 @@ describe('createPreviewIndex', () => {
       expect(api.describeIndex).toHaveBeenCalledWith(
         expect.objectContaining({ indexName: 'schema-idx' }),
       );
+    });
+  });
+
+  describe('waitUntilReady polling', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    test('resolves once index becomes ready after not-ready polls', async () => {
+      const api = buildMockApi({
+        describeIndex: jest
+          .fn()
+          .mockResolvedValueOnce({ status: { ready: false, state: 'Initializing' } })
+          .mockResolvedValueOnce({ status: { ready: true, state: 'Ready' } }),
+      });
+      const promise = createPreviewIndex(api, { ...validOptions, waitUntilReady: true });
+      await jest.advanceTimersByTimeAsync(10000);
+      const result = await promise;
+      expect(result.status?.state).toBe('Ready');
+      expect(api.describeIndex).toHaveBeenCalledTimes(2);
+    });
+
+    test('throws PineconeIndexInitializationFailedError on InitializationFailed state', async () => {
+      const api = buildMockApi({
+        describeIndex: jest
+          .fn()
+          .mockResolvedValue({ status: { ready: false, state: 'InitializationFailed' } }),
+      });
+      await expect(
+        createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
+      ).rejects.toThrow(PineconeIndexInitializationFailedError);
+    });
+
+    test('throws PineconeIndexTerminatedError on Terminating state', async () => {
+      const api = buildMockApi({
+        describeIndex: jest
+          .fn()
+          .mockResolvedValue({ status: { ready: false, state: 'Terminating' } }),
+      });
+      await expect(
+        createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
+      ).rejects.toThrow(PineconeIndexTerminatedError);
+    });
+
+    test('throws PineconeIndexTerminatedError on Disabled state', async () => {
+      const api = buildMockApi({
+        describeIndex: jest
+          .fn()
+          .mockResolvedValue({ status: { ready: false, state: 'Disabled' } }),
+      });
+      await expect(
+        createPreviewIndex(api, { ...validOptions, waitUntilReady: true }),
+      ).rejects.toThrow(PineconeIndexTerminatedError);
+    });
+
+    test('throws PineconeTimeoutError when timeout elapses', async () => {
+      const api = buildMockApi({
+        describeIndex: jest
+          .fn()
+          .mockResolvedValue({ status: { ready: false, state: 'Initializing' } }),
+      });
+      const promise = createPreviewIndex(api, {
+        ...validOptions,
+        waitUntilReady: true,
+        timeout: 8000,
+      });
+      // Attach rejection handler before advancing timers to avoid unhandled rejection warning
+      const assertion = expect(promise).rejects.toThrow(PineconeTimeoutError);
+      await jest.advanceTimersByTimeAsync(10000);
+      await assertion;
     });
   });
 
