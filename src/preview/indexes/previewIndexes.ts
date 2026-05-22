@@ -6,6 +6,7 @@ import type {
   BackupList,
   CreateIndexFromBackupResponse,
   RestoreJobList,
+  RestoreJobModel,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { alphaIndexOperationsBuilder } from './alphaIndexOperationsBuilder';
@@ -39,6 +40,7 @@ import {
   listPreviewRestoreJobs,
   PreviewListRestoreJobsOptions,
 } from './listRestoreJobs';
+import { describePreviewRestoreJob } from './describeRestoreJob';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -240,5 +242,21 @@ export class PreviewIndexes {
     options?: PreviewListRestoreJobsOptions,
   ): Promise<RestoreJobList> {
     return listPreviewRestoreJobs(this._api, options);
+  }
+
+  /**
+   * Describes a restore job by ID using the alpha API.
+   *
+   * Use this to poll the status of an index restore initiated by {@link createIndexFromBackup}.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param jobId - The restore job ID returned by {@link createIndexFromBackup}.
+   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+   * @alpha
+   */
+  async describeRestoreJob(jobId: string): Promise<RestoreJobModel> {
+    return describePreviewRestoreJob(this._api, jobId);
   }
 }
