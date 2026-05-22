@@ -27,7 +27,7 @@ describe('preview describeIndex', () => {
       expect(result.schema).toBeDefined();
       expect(result.schema.fields).toBeDefined();
     } finally {
-      await pc.deleteIndex(indexName).catch(() => {});
+      await pc.preview.indexes.deleteIndex(indexName).catch(() => {});
     }
   });
 
