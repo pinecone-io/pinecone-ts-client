@@ -106,10 +106,12 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
       );
     }
 
+    // Destructure client options to avoid passing them to the API
+    const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+      options;
+
     validateCreateIndexForModelRequest(options);
     try {
-      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
-        options;
       const createRequest: CreateIndexForModelRequest = {
         ...createOptions,
         readCapacity: toApiReadCapacity(options.readCapacity),
@@ -118,18 +120,14 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
         createIndexForModelRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
-      if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(
-          api,
-          createResponse.name,
-          options.timeout,
-        );
+      if (waitUntilReady) {
+        return await waitUntilIndexIsReady(api, createResponse.name, timeout);
       }
       return createResponse;
     } catch (e) {
       if (
         !(
-          options.suppressConflicts &&
+          suppressConflicts &&
           e instanceof Error &&
           e.name === 'PineconeConflictError'
         )

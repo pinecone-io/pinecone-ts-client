@@ -186,6 +186,10 @@ export const createIndex = (api: ManageIndexesApi) => {
 
     validateCreateIndexRequest(options);
 
+    // Destructure client options to avoid passing them to the API
+    const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+      options;
+
     try {
       // Build the spec based on which type is provided
       let spec: IndexSpec;
@@ -210,8 +214,6 @@ export const createIndex = (api: ManageIndexesApi) => {
         spec = { pod: options.spec.pod! };
       }
 
-      const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
-        options;
       const createRequest: CreateIndexRequest = {
         ...createOptions,
         spec,
@@ -221,14 +223,14 @@ export const createIndex = (api: ManageIndexesApi) => {
         createIndexRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
-      if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(api, options.name, options.timeout);
+      if (waitUntilReady) {
+        return await waitUntilIndexIsReady(api, options.name, timeout);
       }
       return createResponse;
     } catch (e) {
       if (
         !(
-          options.suppressConflicts &&
+          suppressConflicts &&
           e instanceof Error &&
           e.name === 'PineconeConflictError'
         )

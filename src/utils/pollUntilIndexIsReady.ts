@@ -28,7 +28,8 @@ export async function pollUntilIndexIsReady<T extends IndexReadinessResponse>(
   pollIntervalMs = 5000,
 ): Promise<T> {
   const start = Date.now();
-  while (true) {
+
+  while (timeoutMs === undefined || Date.now() - start < timeoutMs) {
     const model = await describeFn();
     const state = model.status?.state;
 
@@ -41,10 +42,9 @@ export async function pollUntilIndexIsReady<T extends IndexReadinessResponse>(
     if (state && TERMINAL_TERMINATED_STATES.has(state)) {
       throw new PineconeIndexTerminatedError(indexName, state);
     }
-    if (timeoutMs !== undefined && Date.now() - start >= timeoutMs) {
-      throw new PineconeTimeoutError(indexName, timeoutMs);
-    }
 
     await new Promise((r) => setTimeout(r, pollIntervalMs));
   }
+
+  throw new PineconeTimeoutError(indexName, timeoutMs as number);
 }
