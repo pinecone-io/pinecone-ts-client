@@ -149,6 +149,16 @@ export class Pinecone {
   private _listRestoreJobs: ReturnType<typeof listRestoreJobs>;
 
   public inference: Inference;
+  /**
+   * Provides access to alpha preview operations using the 2026-01.alpha API.
+   *
+   * @example
+   * ```typescript
+   * const list = await pc.preview.indexes.listIndexes();
+   * ```
+   * @alpha
+   */
+  public preview: { indexes: PreviewIndexes };
 
   /**
    * @example
@@ -211,6 +221,9 @@ export class Pinecone {
 
     // Inference operations
     this.inference = new Inference(this.config);
+
+    // Preview (alpha) operations
+    this.preview = { indexes: new PreviewIndexes(this.config) };
   }
 
   /**
@@ -1414,16 +1427,4 @@ export class Pinecone {
     return this.assistant(optionsOrName as any, host);
   }
 
-  /**
-   * Provides access to alpha preview operations using the 2026-01.alpha API.
-   *
-   * @example
-   * ```typescript
-   * const list = await pc.preview.indexes.listIndexes();
-   * ```
-   * @alpha
-   */
-  get preview(): { indexes: PreviewIndexes } {
-    return { indexes: new PreviewIndexes(this.config) };
-  }
 }
