@@ -49,6 +49,7 @@ import {
   PreviewCreateCollectionOptions,
 } from './createCollection';
 import { describePreviewCollection } from './describeCollection';
+import { deletePreviewCollection } from './deleteCollection';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -318,5 +319,19 @@ export class PreviewIndexes {
    */
   async describeCollection(collectionName: string): Promise<CollectionModel> {
     return describePreviewCollection(this._api, collectionName);
+  }
+
+  /**
+   * Deletes an existing collection.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward
+   * compatibility guarantee.
+   *
+   * @param collectionName - The name of the collection to delete.
+   * @see [Collections](https://docs.pinecone.io/guides/indexes/collections)
+   * @alpha
+   */
+  async deleteCollection(collectionName: string): Promise<void> {
+    return deletePreviewCollection(this._api, collectionName);
   }
 }
