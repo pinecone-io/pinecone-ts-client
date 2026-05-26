@@ -9,6 +9,11 @@ import {
   PreviewSearchDocumentsOptions,
   PreviewSearchDocumentsResponse,
 } from './searchDocuments';
+import {
+  fetchPreviewDocuments,
+  PreviewFetchDocumentsOptions,
+  PreviewFetchDocumentsResponse,
+} from './fetchDocuments';
 import type { PineconeConfiguration } from '../../data';
 
 /**
@@ -65,5 +70,24 @@ export class PreviewIndex {
   ): Promise<PreviewSearchDocumentsResponse> {
     const api = await this._provider.provide();
     return searchPreviewDocuments(api, namespace, options);
+  }
+
+  /**
+   * Fetches documents from a namespace by their IDs.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param namespace - The namespace to fetch documents from.
+   * @param options - The IDs to fetch and optional field selection.
+   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
+   * @alpha
+   */
+  async fetchDocuments(
+    namespace: string,
+    options: PreviewFetchDocumentsOptions,
+  ): Promise<PreviewFetchDocumentsResponse> {
+    const api = await this._provider.provide();
+    return fetchPreviewDocuments(api, namespace, options);
   }
 }

@@ -92,3 +92,10 @@ export type {
   PreviewDocumentSearchMatch,
   PreviewSearchDocumentsResponse,
 } from './indexes/searchDocuments';
+
+// Fetch documents (data plane)
+export type {
+  PreviewFetchDocumentsOptions,
+  PreviewFetchedDocument,
+  PreviewFetchDocumentsResponse,
+} from './indexes/fetchDocuments';

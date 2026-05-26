@@ -267,4 +267,8 @@ export type {
   PreviewSearchDocumentsOptions,
   PreviewDocumentSearchMatch,
   PreviewSearchDocumentsResponse,
+  // Fetch documents (data plane)
+  PreviewFetchDocumentsOptions,
+  PreviewFetchedDocument,
+  PreviewFetchDocumentsResponse,
 } from './preview';
