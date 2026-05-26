@@ -48,6 +48,7 @@ import {
   createPreviewCollection,
   PreviewCreateCollectionOptions,
 } from './createCollection';
+import { describePreviewCollection } from './describeCollection';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -300,5 +301,22 @@ export class PreviewIndexes {
     options: PreviewCreateCollectionOptions,
   ): Promise<CollectionModel> {
     return createPreviewCollection(this._api, options);
+  }
+
+  /**
+   * Retrieves metadata for a single named collection using the 2026-01.alpha API.
+   *
+   * Collections are only supported for pod-based indexes; serverless indexes
+   * do not support collections.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward
+   * compatibility guarantee.
+   *
+   * @param collectionName - The name of the collection to describe.
+   * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
+   * @alpha
+   */
+  async describeCollection(collectionName: string): Promise<CollectionModel> {
+    return describePreviewCollection(this._api, collectionName);
   }
 }
