@@ -84,3 +84,11 @@ export type {
   PreviewUpsertDocumentsOptions,
   PreviewUpsertDocumentsResponse,
 } from './indexes/upsertDocuments';
+
+// Search documents (data plane)
+export type {
+  PreviewDocumentScoringMethod,
+  PreviewSearchDocumentsOptions,
+  PreviewDocumentSearchMatch,
+  PreviewSearchDocumentsResponse,
+} from './indexes/searchDocuments';

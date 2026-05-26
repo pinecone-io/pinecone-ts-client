@@ -4,6 +4,11 @@ import {
   PreviewUpsertDocumentsOptions,
   PreviewUpsertDocumentsResponse,
 } from './upsertDocuments';
+import {
+  searchPreviewDocuments,
+  PreviewSearchDocumentsOptions,
+  PreviewSearchDocumentsResponse,
+} from './searchDocuments';
 import type { PineconeConfiguration } from '../../data';
 
 /**
@@ -41,5 +46,24 @@ export class PreviewIndex {
   ): Promise<PreviewUpsertDocumentsResponse> {
     const api = await this._provider.provide();
     return upsertPreviewDocuments(api, namespace, options);
+  }
+
+  /**
+   * Searches for documents in a namespace using one or more scoring methods.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param namespace - The namespace to search.
+   * @param options - Search parameters including scoring methods and top_k.
+   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
+   * @alpha
+   */
+  async searchDocuments(
+    namespace: string,
+    options: PreviewSearchDocumentsOptions,
+  ): Promise<PreviewSearchDocumentsResponse> {
+    const api = await this._provider.provide();
+    return searchPreviewDocuments(api, namespace, options);
   }
 }

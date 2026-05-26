@@ -262,4 +262,9 @@ export type {
   PreviewDocumentRecord,
   PreviewUpsertDocumentsOptions,
   PreviewUpsertDocumentsResponse,
+  // Search documents (data plane)
+  PreviewDocumentScoringMethod,
+  PreviewSearchDocumentsOptions,
+  PreviewDocumentSearchMatch,
+  PreviewSearchDocumentsResponse,
 } from './preview';
