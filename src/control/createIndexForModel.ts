@@ -55,6 +55,12 @@ export type CreateIndexForModelOptions = {
    */
   waitUntilReady?: boolean;
   /**
+   * Maximum time in milliseconds to wait for the index to become ready when
+   * `waitUntilReady` is `true`. Omit to poll indefinitely.
+   * Throws {@link Errors.PineconeTimeoutError} if the deadline is exceeded.
+   */
+  timeout?: number;
+  /**
    * This option tells the client not to throw if you attempt to create an index that already exists.
    */
   suppressConflicts?: boolean;
@@ -100,24 +106,28 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
       );
     }
 
+    // Destructure client options to avoid passing them to the API
+    const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+      options;
+
     validateCreateIndexForModelRequest(options);
     try {
       const createRequest: CreateIndexForModelRequest = {
-        ...options,
+        ...createOptions,
         readCapacity: toApiReadCapacity(options.readCapacity),
       };
       const createResponse = await api.createIndexForModel({
         createIndexForModelRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
-      if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(api, createResponse.name);
+      if (waitUntilReady) {
+        return await waitUntilIndexIsReady(api, createResponse.name, timeout);
       }
       return createResponse;
     } catch (e) {
       if (
         !(
-          options.suppressConflicts &&
+          suppressConflicts &&
           e instanceof Error &&
           e.name === 'PineconeConflictError'
         )

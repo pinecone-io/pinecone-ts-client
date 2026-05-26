@@ -219,7 +219,6 @@ describe('createIndex', () => {
               podType: 'p1.x1',
             },
           },
-          waitUntilReady: true,
         },
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
@@ -259,7 +258,7 @@ describe('createIndex', () => {
         waitUntilReady: true,
       });
 
-      await jest.advanceTimersByTimeAsync(3000);
+      await jest.advanceTimersByTimeAsync(20000);
 
       return returned.then((result) => {
         expect(result).toEqual({ status: { ready: true, state: 'Ready' } });

@@ -205,3 +205,52 @@ export type {
   ServerlessSpec,
   ServerlessSpecResponse,
 } from './pinecone-generated-ts-fetch/db_control';
+
+// --- Alpha / Preview exports (2026-01.alpha) ---
+export { PreviewIndexes } from './preview';
+export type {
+  // Index list / model
+  PreviewIndexList,
+  PreviewIndexModel,
+  PreviewIndexModelStatus,
+  // Create index
+  PreviewCreateIndexOptions,
+  PreviewCreateIndexSchema,
+  PreviewCreateIndexSchemaField,
+  // Deployment
+  PreviewIndexDeploymentRequest,
+  PreviewIndexDeployment,
+  PreviewManagedDeployment,
+  PreviewByocDeployment,
+  PreviewPodDeployment,
+  // Schema field types
+  PreviewBooleanField,
+  PreviewDenseVectorField,
+  PreviewFloatField,
+  PreviewSemanticTextField,
+  PreviewSparseVectorField,
+  PreviewStringField,
+  PreviewStringListField,
+  PreviewStringFieldFullTextSearch,
+  // Read capacity
+  PreviewReadCapacity,
+  // Configure index
+  PreviewConfigureIndexOptions,
+  PreviewPatchIndexDeploymentRequest,
+  PreviewPatchIndexSchema,
+  PreviewPatchSemanticTextField,
+  // Backup
+  PreviewCreateBackupOptions,
+  PreviewBackupModel,
+  // List index backups
+  PreviewListIndexBackupsOptions,
+  PreviewBackupList,
+  // List project backups
+  PreviewListProjectBackupsOptions,
+  // Create index from backup
+  PreviewCreateIndexFromBackupOptions,
+  // List restore jobs
+  PreviewListRestoreJobsOptions,
+  PreviewRestoreJobList,
+  PreviewRestoreJobModel,
+} from './preview';
