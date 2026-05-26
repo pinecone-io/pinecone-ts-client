@@ -271,4 +271,6 @@ export type {
   PreviewFetchDocumentsOptions,
   PreviewFetchedDocument,
   PreviewFetchDocumentsResponse,
+  // Delete documents (data plane)
+  PreviewDeleteDocumentsOptions,
 } from './preview';

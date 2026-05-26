@@ -14,6 +14,10 @@ import {
   PreviewFetchDocumentsOptions,
   PreviewFetchDocumentsResponse,
 } from './fetchDocuments';
+import {
+  deletePreviewDocuments,
+  PreviewDeleteDocumentsOptions,
+} from './deleteDocuments';
 import type { PineconeConfiguration } from '../../data';
 
 /**
@@ -89,5 +93,24 @@ export class PreviewIndex {
   ): Promise<PreviewFetchDocumentsResponse> {
     const api = await this._provider.provide();
     return fetchPreviewDocuments(api, namespace, options);
+  }
+
+  /**
+   * Deletes documents from a namespace by their IDs or deletes all documents.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
+   * guarantee.
+   *
+   * @param namespace - The namespace to delete documents from.
+   * @param options - Either `ids` (list of IDs) or `delete_all: true`. Exactly one must be set.
+   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
+   * @alpha
+   */
+  async deleteDocuments(
+    namespace: string,
+    options: PreviewDeleteDocumentsOptions,
+  ): Promise<void> {
+    const api = await this._provider.provide();
+    return deletePreviewDocuments(api, namespace, options);
   }
 }

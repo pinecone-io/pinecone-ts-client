@@ -99,3 +99,6 @@ export type {
   PreviewFetchedDocument,
   PreviewFetchDocumentsResponse,
 } from './indexes/fetchDocuments';
+
+// Delete documents (data plane)
+export type { PreviewDeleteDocumentsOptions } from './indexes/deleteDocuments';
