@@ -14,7 +14,6 @@ beforeAll(async () => {
     schema: {
       fields: {
         content: { type: 'string', full_text_search: {} },
-        title: { type: 'string' },
       },
     },
     waitUntilReady: true,
