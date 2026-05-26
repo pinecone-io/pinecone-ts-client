@@ -253,4 +253,7 @@ export type {
   PreviewListRestoreJobsOptions,
   PreviewRestoreJobList,
   PreviewRestoreJobModel,
+  // List collections
+  PreviewCollectionList,
+  PreviewCollectionModel,
 } from './preview';

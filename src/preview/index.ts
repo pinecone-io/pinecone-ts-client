@@ -66,3 +66,9 @@ export type {
   RestoreJobList as PreviewRestoreJobList,
   RestoreJobModel as PreviewRestoreJobModel,
 } from '../pinecone-generated-ts-fetch-alpha/db_control';
+
+// List collections
+export type {
+  CollectionList as PreviewCollectionList,
+  CollectionModel as PreviewCollectionModel,
+} from '../pinecone-generated-ts-fetch-alpha/db_control';
