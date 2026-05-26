@@ -72,3 +72,6 @@ export type {
   CollectionList as PreviewCollectionList,
   CollectionModel as PreviewCollectionModel,
 } from '../pinecone-generated-ts-fetch-alpha/db_control';
+
+// Create collection
+export type { PreviewCreateCollectionOptions } from './indexes/createCollection';

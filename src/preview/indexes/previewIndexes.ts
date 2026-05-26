@@ -5,6 +5,7 @@ import type {
   BackupModel,
   BackupList,
   CollectionList,
+  CollectionModel,
   CreateIndexFromBackupResponse,
   RestoreJobList,
   RestoreJobModel,
@@ -43,6 +44,10 @@ import {
 } from './listRestoreJobs';
 import { describePreviewRestoreJob } from './describeRestoreJob';
 import { listPreviewCollections } from './listCollections';
+import {
+  createPreviewCollection,
+  PreviewCreateCollectionOptions,
+} from './createCollection';
 
 /**
  * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
@@ -276,5 +281,24 @@ export class PreviewIndexes {
    */
   async listCollections(): Promise<CollectionList> {
     return listPreviewCollections(this._api);
+  }
+
+  /**
+   * Creates a collection from a pod-based index using the 2026-01.alpha API.
+   *
+   * Collections snapshot the current state of a pod-based index. Serverless
+   * indexes do not support collections.
+   *
+   * **Alpha notice:** This method is not covered by the SDK's backward
+   * compatibility guarantee.
+   *
+   * @param options - Collection name and source index name.
+   * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
+   * @alpha
+   */
+  async createCollection(
+    options: PreviewCreateCollectionOptions,
+  ): Promise<CollectionModel> {
+    return createPreviewCollection(this._api, options);
   }
 }

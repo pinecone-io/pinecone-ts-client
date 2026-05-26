@@ -256,4 +256,6 @@ export type {
   // List collections
   PreviewCollectionList,
   PreviewCollectionModel,
+  // Create collection
+  PreviewCreateCollectionOptions,
 } from './preview';
