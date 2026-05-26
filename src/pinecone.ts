@@ -56,7 +56,7 @@ import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOpe
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
-import { PreviewIndexes } from './preview';
+import { Preview } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -155,10 +155,11 @@ export class Pinecone {
    * @example
    * ```typescript
    * const list = await pc.preview.indexes.listIndexes();
+   * const idx = pc.preview.index('my-schema-index');
    * ```
    * @alpha
    */
-  public preview: { indexes: PreviewIndexes };
+  public preview: Preview;
 
   /**
    * @example
@@ -223,7 +224,7 @@ export class Pinecone {
     this.inference = new Inference(this.config);
 
     // Preview (alpha) operations
-    this.preview = { indexes: new PreviewIndexes(this.config) };
+    this.preview = new Preview(this.config);
   }
 
   /**

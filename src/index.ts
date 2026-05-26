@@ -207,7 +207,7 @@ export type {
 } from './pinecone-generated-ts-fetch/db_control';
 
 // --- Alpha / Preview exports (2026-01.alpha) ---
-export { PreviewIndexes } from './preview';
+export { PreviewIndexes, PreviewIndex, Preview } from './preview';
 export type {
   // Index list / model
   PreviewIndexList,
@@ -258,4 +258,8 @@ export type {
   PreviewCollectionModel,
   // Create collection
   PreviewCreateCollectionOptions,
+  // Upsert documents (data plane)
+  PreviewDocumentRecord,
+  PreviewUpsertDocumentsOptions,
+  PreviewUpsertDocumentsResponse,
 } from './preview';

@@ -1,4 +1,6 @@
 export { PreviewIndexes } from './indexes/previewIndexes';
+export { PreviewIndex } from './indexes/previewIndex';
+export { Preview } from './previewAccessor';
 
 // Index list / model
 export type { IndexList as PreviewIndexList } from '../pinecone-generated-ts-fetch-alpha/db_control';
@@ -75,3 +77,10 @@ export type {
 
 // Create collection
 export type { PreviewCreateCollectionOptions } from './indexes/createCollection';
+
+// Upsert documents (data plane)
+export type {
+  PreviewDocumentRecord,
+  PreviewUpsertDocumentsOptions,
+  PreviewUpsertDocumentsResponse,
+} from './indexes/upsertDocuments';
