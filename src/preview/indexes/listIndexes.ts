@@ -5,6 +5,12 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { handleApiError } from '../../errors/handling';
 
+export type {
+  IndexList as PreviewIndexList,
+  IndexModel as PreviewIndexModel,
+  IndexModelStatus as PreviewIndexModelStatus,
+} from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Lists all indexes in the project using the 2026-01.alpha API.
  *

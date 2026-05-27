@@ -11,6 +11,20 @@ import { pollUntilIndexIsReady } from '../../utils';
 export type {
   CreateIndexSchema as PreviewCreateIndexSchema,
   CreateIndexSchemaField as PreviewCreateIndexSchemaField,
+  IndexDeploymentRequest as PreviewIndexDeploymentRequest,
+  IndexDeployment as PreviewIndexDeployment,
+  ManagedDeployment as PreviewManagedDeployment,
+  ByocDeployment as PreviewByocDeployment,
+  PodDeployment as PreviewPodDeployment,
+  BooleanField as PreviewBooleanField,
+  DenseVectorField as PreviewDenseVectorField,
+  FloatField as PreviewFloatField,
+  SemanticTextField as PreviewSemanticTextField,
+  SparseVectorField as PreviewSparseVectorField,
+  StringField as PreviewStringField,
+  StringListField as PreviewStringListField,
+  StringFieldFullTextSearch as PreviewStringFieldFullTextSearch,
+  ReadCapacity as PreviewReadCapacity,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**

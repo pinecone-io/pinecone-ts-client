@@ -12,6 +12,8 @@ export type {
   SearchDocumentsRequest as PreviewSearchDocumentsOptions,
   DocumentSearchMatch as PreviewDocumentSearchMatch,
   SearchDocumentsResponse as PreviewSearchDocumentsResponse,
+  DocumentSearchUsage as PreviewDocumentSearchUsage,
+  SparseValues as PreviewSparseValues,
 } from '../../pinecone-generated-ts-fetch-alpha/db_data';
 
 export const searchPreviewDocuments = async (

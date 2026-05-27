@@ -16,6 +16,12 @@ import { handleApiError } from '../../errors/handling';
  */
 export type PreviewConfigureIndexOptions = ConfigureIndexRequest;
 
+export type {
+  PatchIndexDeploymentRequest as PreviewPatchIndexDeploymentRequest,
+  PatchIndexSchema as PreviewPatchIndexSchema,
+  PatchSemanticTextField as PreviewPatchSemanticTextField,
+} from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Configures an alpha index using the 2026-01.alpha API.
  *

@@ -11,6 +11,7 @@ export type {
   FetchDocumentsRequest as PreviewFetchDocumentsOptions,
   FetchedDocumentRecord as PreviewFetchedDocument,
   FetchDocumentsResponse as PreviewFetchDocumentsResponse,
+  DocumentFetchUsage as PreviewDocumentFetchUsage,
 } from '../../pinecone-generated-ts-fetch-alpha/db_data';
 
 export const fetchPreviewDocuments = async (

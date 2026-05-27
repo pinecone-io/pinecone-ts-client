@@ -267,10 +267,14 @@ export type {
   PreviewSearchDocumentsOptions,
   PreviewDocumentSearchMatch,
   PreviewSearchDocumentsResponse,
+  PreviewDocumentSearchUsage,
   // Fetch documents (data plane)
   PreviewFetchDocumentsOptions,
   PreviewFetchedDocument,
   PreviewFetchDocumentsResponse,
+  PreviewDocumentFetchUsage,
   // Delete documents (data plane)
   PreviewDeleteDocumentsOptions,
+  // Shared data-plane types
+  PreviewSparseValues,
 } from './preview';

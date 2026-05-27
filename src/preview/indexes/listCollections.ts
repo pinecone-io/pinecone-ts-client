@@ -5,6 +5,11 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { handleApiError } from '../../errors/handling';
 
+export type {
+  CollectionList as PreviewCollectionList,
+  CollectionModel as PreviewCollectionModel,
+} from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Lists all collections in the current project using the 2026-01.alpha API.
  *

@@ -5,6 +5,8 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { handleApiError } from '../../errors/handling';
 
+export type { RestoreJobList as PreviewRestoreJobList } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Options for listing restore jobs using the alpha API.
  *

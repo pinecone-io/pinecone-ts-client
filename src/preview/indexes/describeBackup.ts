@@ -6,6 +6,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
+export type { BackupModel as PreviewBackupModel } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Retrieves the configuration and status of a Pinecone backup using the alpha API.
  *

@@ -6,6 +6,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
+export type { RestoreJobModel as PreviewRestoreJobModel } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Describes a restore job by ID using the alpha API.
  *
