@@ -7,17 +7,16 @@ beforeAll(() => {
 });
 
 describe('preview deleteCollection', () => {
-  test('deletes a collection successfully', async () => {
-    const collectionName = process.env.PINECONE_COLLECTION_NAME;
-    if (!collectionName) {
-      test.skip;
-      return;
-    }
+  const collectionName = process.env.PINECONE_COLLECTION_NAME;
 
-    await expect(
-      pc.preview.indexes.deleteCollection(collectionName),
-    ).resolves.toBeUndefined();
-  });
+  (collectionName ? test : test.skip)(
+    'deletes a collection successfully (requires PINECONE_COLLECTION_NAME)',
+    async () => {
+      await expect(
+        pc.preview.indexes.deleteCollection(collectionName!),
+      ).resolves.toBeUndefined();
+    },
+  );
 
   test('throws when collection does not exist', async () => {
     await expect(

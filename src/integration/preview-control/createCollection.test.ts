@@ -8,17 +8,19 @@ beforeAll(() => {
 });
 
 describe('preview createCollection', () => {
-  test('creates a collection and it appears in listCollections', async () => {
-    const source = process.env.PINECONE_COLLECTION_SOURCE_INDEX;
-    if (!source) {
-      test.skip;
-      return;
-    }
+  const source = process.env.PINECONE_COLLECTION_SOURCE_INDEX;
 
-    const name = randomName('preview-col');
-    const result = await pc.preview.indexes.createCollection({ name, source });
+  (source ? test : test.skip)(
+    'creates a collection and it appears in listCollections (requires PINECONE_COLLECTION_SOURCE_INDEX)',
+    async () => {
+      const name = randomName('preview-col');
+      const result = await pc.preview.indexes.createCollection({
+        name,
+        source: source!,
+      });
 
-    expect(result.name).toEqual(name);
-    expect(result.status).toEqual('Initializing');
-  });
+      expect(result.name).toEqual(name);
+      expect(result.status).toEqual('Initializing');
+    },
+  );
 });
