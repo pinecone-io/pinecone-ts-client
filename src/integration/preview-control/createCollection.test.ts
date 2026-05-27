@@ -8,15 +8,15 @@ beforeAll(() => {
 });
 
 describe('preview createCollection', () => {
-  const source = process.env.PINECONE_COLLECTION_SOURCE_INDEX;
+  const indexName = process.env.PINECONE_COLLECTION_SOURCE_INDEX;
 
-  (source ? test : test.skip)(
+  (indexName ? test : test.skip)(
     'creates a collection and it appears in listCollections (requires PINECONE_COLLECTION_SOURCE_INDEX)',
     async () => {
       const name = randomName('preview-col');
       const result = await pc.preview.indexes.createCollection({
         name,
-        source: source!,
+        source: indexName!, // because of the ternary, indexName should not be undefined here
       });
 
       expect(result.name).toEqual(name);
