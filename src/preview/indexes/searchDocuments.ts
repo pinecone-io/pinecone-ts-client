@@ -6,7 +6,6 @@ import { handleApiError } from '../../errors/handling';
 /**
  * Defines how documents are scored against a search query.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewDocumentScoringMethod {
@@ -25,7 +24,6 @@ export interface PreviewDocumentScoringMethod {
 /**
  * Options for searching documents in a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewSearchDocumentsOptions {
@@ -42,7 +40,6 @@ export interface PreviewSearchDocumentsOptions {
 /**
  * A single document result returned from a search operation.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewDocumentSearchMatch {
@@ -56,7 +53,6 @@ export interface PreviewDocumentSearchMatch {
 /**
  * Response from searching documents in a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewSearchDocumentsResponse {
@@ -74,7 +70,6 @@ export interface PreviewSearchDocumentsResponse {
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export const searchPreviewDocuments = async (

@@ -12,7 +12,6 @@ import { handleApiError } from '../../errors/handling';
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function describePreviewIndex(

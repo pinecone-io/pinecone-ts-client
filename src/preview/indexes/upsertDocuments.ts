@@ -6,7 +6,6 @@ import { handleApiError } from '../../errors/handling';
 /**
  * A document record to upsert into a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewDocumentRecord {
@@ -18,7 +17,6 @@ export interface PreviewDocumentRecord {
 /**
  * Options for upserting documents into a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewUpsertDocumentsOptions {
@@ -29,7 +27,6 @@ export interface PreviewUpsertDocumentsOptions {
 /**
  * Response from upserting documents into a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewUpsertDocumentsResponse {
@@ -43,7 +40,6 @@ export interface PreviewUpsertDocumentsResponse {
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export const upsertPreviewDocuments = async (

@@ -6,7 +6,6 @@ import { handleApiError } from '../../errors/handling';
 /**
  * Options for fetching documents by ID from a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewFetchDocumentsOptions {
@@ -19,7 +18,6 @@ export interface PreviewFetchDocumentsOptions {
 /**
  * A fetched document record containing its ID and field values.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewFetchedDocument {
@@ -31,7 +29,6 @@ export interface PreviewFetchedDocument {
 /**
  * Response from fetching documents by ID from a schema-based index namespace.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewFetchDocumentsResponse {
@@ -49,7 +46,6 @@ export interface PreviewFetchDocumentsResponse {
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export const fetchPreviewDocuments = async (

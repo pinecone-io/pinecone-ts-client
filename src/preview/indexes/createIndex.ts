@@ -16,7 +16,6 @@ export type {
 /**
  * Options for creating a schema-based index using the 2026-01.alpha API.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewCreateIndexOptions extends Omit<
@@ -43,7 +42,6 @@ export interface PreviewCreateIndexOptions extends Omit<
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function createPreviewIndex(

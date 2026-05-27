@@ -59,7 +59,6 @@ import { deletePreviewCollection } from './deleteCollection';
  * **Alpha notice:** This class is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export class PreviewIndexes {
@@ -75,7 +74,6 @@ export class PreviewIndexes {
    * **Alpha notice:** Returns `AlphaIndexList` which includes `schema` fields not
    * present in the stable `IndexList`.
    *
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   async listIndexes(): Promise<IndexList> {
@@ -85,7 +83,6 @@ export class PreviewIndexes {
   /**
    * Creates a schema-based index using the 2026-01.alpha API.
    *
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   async createIndex(options: PreviewCreateIndexOptions): Promise<IndexModel> {
@@ -95,7 +92,6 @@ export class PreviewIndexes {
   /**
    * Describes an index by name using the 2026-01.alpha API.
    *
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   async describeIndex(indexName: string): Promise<IndexModel> {
@@ -112,7 +108,6 @@ export class PreviewIndexes {
    * this call returns. Deletion protection must be disabled before calling
    * this method.
    *
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   async deleteIndex(name: string): Promise<void> {
@@ -127,7 +122,6 @@ export class PreviewIndexes {
    * **Alpha notice:** This method is not covered by the SDK's backward compatibility
    * guarantee.
    *
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   async configureIndex(

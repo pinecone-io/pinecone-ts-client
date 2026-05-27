@@ -10,7 +10,6 @@ import type { PineconeConfiguration } from '../data';
  * **Alpha notice:** This class is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export class Preview {
@@ -45,7 +44,6 @@ export class Preview {
    * ```
    *
    * @param indexName - The name of the schema-based index to target.
-   * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
    * @alpha
    */
   index(indexName: string): PreviewIndex {

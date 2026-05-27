@@ -13,7 +13,6 @@ import { handleApiError } from '../../errors/handling';
  * this call returns. Deletion protection must be disabled on the index
  * before calling this method.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function deletePreviewIndex(

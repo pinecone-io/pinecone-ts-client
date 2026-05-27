@@ -12,7 +12,6 @@ import { handleApiError } from '../../errors/handling';
  *
  * All fields are optional — send only those you want to change.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export type PreviewConfigureIndexOptions = ConfigureIndexRequest;
@@ -25,7 +24,6 @@ export type PreviewConfigureIndexOptions = ConfigureIndexRequest;
  * **Alpha notice:** This function is not covered by the SDK's backward
  * compatibility guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function configurePreviewIndex(

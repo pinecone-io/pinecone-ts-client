@@ -8,7 +8,6 @@ import { handleApiError } from '../../errors/handling';
  *
  * Exactly one of `ids` or `delete_all` must be specified.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export interface PreviewDeleteDocumentsOptions {
@@ -24,7 +23,6 @@ export interface PreviewDeleteDocumentsOptions {
  * **Alpha notice:** This function is not covered by the SDK's backward compatibility
  * guarantee. Signatures may change without a major version bump.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export const deletePreviewDocuments = async (
