@@ -23,12 +23,9 @@ export type {
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
- * Configures an alpha index using the 2026-01.alpha API.
+ * Configures an index using the 2026-01.alpha API.
  *
  * Only the fields present in `options` are updated; omit a field to leave it unchanged.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward
- * compatibility guarantee. Signatures may change without a major version bump.
  *
  * @alpha
  */

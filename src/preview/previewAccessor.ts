@@ -3,18 +3,19 @@ import { PreviewIndex } from './indexes/previewIndex';
 import type { PineconeConfiguration } from '../data';
 
 /**
- * Provides access to alpha preview operations using the 2026-01.alpha API.
+ * Entry point for Pinecone preview operations. Access via `pc.preview`.
  *
- * Access via `pc.preview`.
- *
- * **Alpha notice:** This class is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Uses Pinecone API version `2026-01.alpha`.
+ * Preview surface is not covered by SemVer — signatures and behavior
+ * may change in any minor SDK release. Pin your SDK version when
+ * relying on preview features.
  *
  * @alpha
  */
 export class Preview {
   /**
-   * Provides access to alpha control-plane index operations.
+   * Control-plane index operations (list, create, configure, describe, delete,
+   * backups, restore jobs, collections).
    *
    * @example
    * ```typescript
@@ -32,7 +33,7 @@ export class Preview {
   }
 
   /**
-   * Returns a {@link PreviewIndex} for performing alpha data-plane document operations
+   * Returns a {@link PreviewIndex} for performing data-plane document operations
    * against the named index.
    *
    * @example

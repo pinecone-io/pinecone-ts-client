@@ -14,9 +14,6 @@ export type {
 /**
  * Lists all indexes in the project using the 2026-01.alpha API.
  *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
- *
  * @alpha
  */
 export async function listPreviewIndexes(

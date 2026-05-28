@@ -4,9 +4,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Deletes an existing collection.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility guarantee.
+ * Deletes an existing collection using the 2026-01.alpha API.
  *
  * @see [Collections](https://docs.pinecone.io/guides/indexes/collections)
  * @alpha

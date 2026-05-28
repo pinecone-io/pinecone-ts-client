@@ -9,10 +9,7 @@ import { handleApiError } from '../../errors/handling';
 export type { RestoreJobModel as PreviewRestoreJobModel } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
- * Describes a restore job by ID using the alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility guarantee.
- * Signatures may change without a major version bump.
+ * Describes a restore job by ID using the 2026-01.alpha API.
  *
  * @param api - The alpha manage-indexes API client.
  * @param jobId - The ID of the restore job to describe.

@@ -9,9 +9,6 @@ import { handleApiError } from '../../errors/handling';
 /**
  * Describes an index by name using the 2026-01.alpha API.
  *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
- *
  * @alpha
  */
 export async function describePreviewIndex(

@@ -9,10 +9,7 @@ import { handleApiError } from '../../errors/handling';
 export type { BackupModel as PreviewBackupModel } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
- * Retrieves the configuration and status of a Pinecone backup using the alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Retrieves the configuration and status of a Pinecone backup using the 2026-01.alpha API.
  *
  * @param api - The alpha manage-indexes API client.
  * @param backupId - The ID of the backup to describe.

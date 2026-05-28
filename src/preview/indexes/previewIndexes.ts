@@ -52,12 +52,12 @@ import { describePreviewCollection } from './describeCollection';
 import { deletePreviewCollection } from './deleteCollection';
 
 /**
- * Provides access to alpha control-plane index operations using the 2026-01.alpha API.
+ * Control-plane index operations. Access via `pc.preview.indexes`.
  *
- * Access via `pc.preview.indexes`.
- *
- * **Alpha notice:** This class is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Uses Pinecone API version `2026-01.alpha`.
+ * Preview surface is not covered by SemVer — signatures and behavior
+ * may change in any minor SDK release. Pin your SDK version when
+ * relying on preview features.
  *
  * @alpha
  */
@@ -69,10 +69,8 @@ export class PreviewIndexes {
   }
 
   /**
-   * Lists all indexes in the project.
-   *
-   * **Alpha notice:** Returns `AlphaIndexList` which includes `schema` fields not
-   * present in the stable `IndexList`.
+   * Lists all indexes in the project. The returned list includes `schema`
+   * fields not present in the stable `IndexList`.
    *
    * @alpha
    */
@@ -81,7 +79,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Creates a schema-based index using the 2026-01.alpha API.
+   * Creates a schema-based index.
    *
    * @alpha
    */
@@ -90,7 +88,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Describes an index by name using the 2026-01.alpha API.
+   * Describes an index by name.
    *
    * @alpha
    */
@@ -99,10 +97,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Deletes an alpha index by name.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward
-   * compatibility guarantee.
+   * Deletes an index by name.
    *
    * Deletion is asynchronous; the index may still be terminating after
    * this call returns. Deletion protection must be disabled before calling
@@ -115,12 +110,9 @@ export class PreviewIndexes {
   }
 
   /**
-   * Configures an alpha index by name.
+   * Configures an index by name.
    *
    * Only the fields present in `options` are updated; omit a field to leave it unchanged.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @alpha
    */
@@ -132,10 +124,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Creates a backup of an alpha index.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
+   * Creates a backup of an index.
    *
    * @param indexName - Name of the index to back up.
    * @param options - Optional backup configuration (name, description).
@@ -150,10 +139,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Lists all backups for an alpha index.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
+   * Lists all backups for an index.
    *
    * @param indexName - Name of the index whose backups to list.
    * @param options - Optional pagination parameters (limit, paginationToken).
@@ -168,10 +154,7 @@ export class PreviewIndexes {
   }
 
   /**
-   * Lists all backups across every index in the project using the 2026-01.alpha API.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
+   * Lists all backups across every index in the project.
    *
    * @param options - Optional pagination parameters (limit, paginationToken).
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
@@ -186,9 +169,6 @@ export class PreviewIndexes {
   /**
    * Retrieves configuration and status of a backup.
    *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
-   *
    * @param backupId - The ID of the backup to describe.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
@@ -199,9 +179,6 @@ export class PreviewIndexes {
 
   /**
    * Deletes a backup. The delete is accepted asynchronously.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @param backupId - The ID of the backup to delete.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
@@ -214,9 +191,6 @@ export class PreviewIndexes {
   /**
    * Creates an index from a backup. The creation is accepted asynchronously;
    * use the returned `restore_job_id` to poll for completion.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @param backupId - The ID of the backup to create an index from.
    * @param options - Configuration for the new index (name required; tags and
@@ -234,9 +208,6 @@ export class PreviewIndexes {
   /**
    * Lists all restore jobs for the current project.
    *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
-   *
    * @param options - Optional pagination parameters (limit, paginationToken).
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
@@ -248,12 +219,9 @@ export class PreviewIndexes {
   }
 
   /**
-   * Describes a restore job by ID using the alpha API.
+   * Describes a restore job by ID.
    *
    * Use this to poll the status of an index restore initiated by {@link createIndexFromBackup}.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @param jobId - The restore job ID returned by {@link createIndexFromBackup}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
@@ -264,13 +232,10 @@ export class PreviewIndexes {
   }
 
   /**
-   * Lists all collections in the current project using the 2026-01.alpha API.
+   * Lists all collections in the current project.
    *
    * Collections are only supported for pod-based indexes; serverless indexes
    * do not support collections.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward
-   * compatibility guarantee.
    *
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
    * @alpha
@@ -280,13 +245,10 @@ export class PreviewIndexes {
   }
 
   /**
-   * Creates a collection from a pod-based index using the 2026-01.alpha API.
+   * Creates a collection from a pod-based index.
    *
    * Collections snapshot the current state of a pod-based index. Serverless
    * indexes do not support collections.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward
-   * compatibility guarantee.
    *
    * @param options - Collection name and source index name.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
@@ -299,13 +261,10 @@ export class PreviewIndexes {
   }
 
   /**
-   * Retrieves metadata for a single named collection using the 2026-01.alpha API.
+   * Retrieves metadata for a single named collection.
    *
    * Collections are only supported for pod-based indexes; serverless indexes
    * do not support collections.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward
-   * compatibility guarantee.
    *
    * @param collectionName - The name of the collection to describe.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
@@ -317,9 +276,6 @@ export class PreviewIndexes {
 
   /**
    * Deletes an existing collection.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward
-   * compatibility guarantee.
    *
    * @param collectionName - The name of the collection to delete.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections)

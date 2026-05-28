@@ -7,9 +7,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for creating a collection from a pod-based index using the alpha API.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for creating a collection from a pod-based index.
  *
  * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
  * @alpha
@@ -26,9 +24,6 @@ export interface PreviewCreateCollectionOptions {
  *
  * Collections snapshot the current state of a pod-based index. Serverless indexes
  * do not support collections.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward
- * compatibility guarantee. Signatures may change without a major version bump.
  *
  * @param api - The alpha manage-indexes API client.
  * @param options - Collection name and source index name.

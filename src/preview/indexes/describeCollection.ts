@@ -12,9 +12,6 @@ import { handleApiError } from '../../errors/handling';
  * Collections are only supported for pod-based indexes; serverless indexes do
  * not support collections.
  *
- * **Alpha notice:** This function is not covered by the SDK's backward
- * compatibility guarantee. Signatures may change without a major version bump.
- *
  * @param api - The alpha manage-indexes API client.
  * @param collectionName - The name of the collection to describe.
  * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)

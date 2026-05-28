@@ -7,9 +7,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for creating a backup of an alpha index.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for creating a backup of an index.
  *
  * @alpha
  */
@@ -21,10 +19,7 @@ export interface PreviewCreateBackupOptions {
 }
 
 /**
- * Creates a backup of an alpha index using the 2026-01.alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Creates a backup of an index using the 2026-01.alpha API.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  * @alpha

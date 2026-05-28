@@ -8,6 +8,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 
+// Re-export generated types for indexes
 export type {
   CreateIndexSchema as PreviewCreateIndexSchema,
   CreateIndexSchemaField as PreviewCreateIndexSchemaField,
@@ -52,9 +53,6 @@ export interface PreviewCreateIndexOptions extends Omit<
 
 /**
  * Creates a schema-based index using the 2026-01.alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
  *
  * @alpha
  */

@@ -21,12 +21,13 @@ import {
 import type { PineconeConfiguration } from '../../data';
 
 /**
- * Provides access to alpha data-plane document operations using the 2026-01.alpha API.
- *
+ * Data-plane document operations for a schema-based index.
  * Access via `pc.preview.index('index-name')`.
  *
- * **Alpha notice:** This class is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Uses Pinecone API version `2026-01.alpha`.
+ * Preview surface is not covered by SemVer — signatures and behavior
+ * may change in any minor SDK release. Pin your SDK version when
+ * relying on preview features.
  *
  * @alpha
  */
@@ -39,9 +40,6 @@ export class PreviewIndex {
 
   /**
    * Upserts documents into a namespace of this schema-based index.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @param namespace - The namespace to upsert documents into.
    * @param options - The documents to upsert (1–1000 entries).
@@ -58,9 +56,6 @@ export class PreviewIndex {
   /**
    * Searches for documents in a namespace using one or more scoring methods.
    *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
-   *
    * @param namespace - The namespace to search.
    * @param options - Search parameters including scoring methods and top_k.
    * @alpha
@@ -76,9 +71,6 @@ export class PreviewIndex {
   /**
    * Fetches documents from a namespace by their IDs.
    *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
-   *
    * @param namespace - The namespace to fetch documents from.
    * @param options - The IDs to fetch and optional field selection.
    * @alpha
@@ -93,9 +85,6 @@ export class PreviewIndex {
 
   /**
    * Deletes documents from a namespace by their IDs or deletes all documents.
-   *
-   * **Alpha notice:** This method is not covered by the SDK's backward compatibility
-   * guarantee.
    *
    * @param namespace - The namespace to delete documents from.
    * @param options - Either `ids` (list of IDs) or `delete_all: true`. Exactly one must be set.

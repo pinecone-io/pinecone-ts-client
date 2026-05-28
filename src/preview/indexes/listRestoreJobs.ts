@@ -8,9 +8,7 @@ import { handleApiError } from '../../errors/handling';
 export type { RestoreJobList as PreviewRestoreJobList } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
- * Options for listing restore jobs using the alpha API.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for listing restore jobs.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  * @alpha
@@ -23,9 +21,7 @@ export interface PreviewListRestoreJobsOptions {
 }
 
 /**
- * Lists all restore jobs for the current project using the alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility guarantee.
+ * Lists all restore jobs for the current project using the 2026-01.alpha API.
  *
  * @param api - The alpha manage-indexes API client.
  * @param options - Optional pagination parameters (limit, paginationToken).
