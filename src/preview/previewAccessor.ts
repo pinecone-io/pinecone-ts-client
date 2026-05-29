@@ -6,9 +6,8 @@ import type { PineconeConfiguration } from '../data';
  * Entry point for Pinecone preview operations. Access via `pc.preview`.
  *
  * Uses Pinecone API version `2026-01.alpha`.
- * Preview surface is not covered by SemVer — signatures and behavior
- * may change in any minor SDK release. Pin your SDK version when
- * relying on preview features.
+ * Preview surface is not covered by SemVer — signatures and behavior may change
+ * in any minor SDK release. Pin your SDK version when relying on preview features.
  *
  * @alpha
  */
