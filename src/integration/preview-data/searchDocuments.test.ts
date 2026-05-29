@@ -9,7 +9,7 @@ beforeAll(async () => {
   pc = new Pinecone();
   indexName = randomName('preview-search-docs');
 
-  await pc.preview.indexes.createIndex({
+  await pc.preview.indexes.create({
     name: indexName,
     schema: {
       fields: {
@@ -40,7 +40,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await pc.preview.indexes.deleteIndex(indexName);
+    await pc.preview.indexes.delete(indexName);
   } finally {
     // cleanup attempt completed
   }

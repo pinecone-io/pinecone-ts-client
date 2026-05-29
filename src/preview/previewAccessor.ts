@@ -18,7 +18,7 @@ export class Preview {
    *
    * @example
    * ```typescript
-   * const list = await pc.preview.indexes.listIndexes();
+   * const list = await pc.preview.indexes.list();
    * ```
    * @alpha
    */

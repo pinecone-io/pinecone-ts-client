@@ -12,7 +12,7 @@ describe('preview createIndex', () => {
     const indexName = randomName('preview-schema');
 
     try {
-      const result = await pc.preview.indexes.createIndex({
+      const result = await pc.preview.indexes.create({
         name: indexName,
         schema: {
           fields: {
@@ -26,7 +26,7 @@ describe('preview createIndex', () => {
       expect(result.schema).toBeDefined();
       expect(result.schema.fields).toBeDefined();
     } finally {
-      await pc.preview.indexes.deleteIndex(indexName).catch(() => {});
+      await pc.preview.indexes.delete(indexName).catch(() => {});
     }
   });
 
@@ -34,7 +34,7 @@ describe('preview createIndex', () => {
     const indexName = randomName('preview-dupe');
 
     try {
-      await pc.preview.indexes.createIndex({
+      await pc.preview.indexes.create({
         name: indexName,
         schema: {
           fields: {
@@ -45,7 +45,7 @@ describe('preview createIndex', () => {
       });
 
       await expect(
-        pc.preview.indexes.createIndex({
+        pc.preview.indexes.create({
           name: indexName,
           schema: {
             fields: {
@@ -55,7 +55,7 @@ describe('preview createIndex', () => {
         }),
       ).rejects.toBeDefined();
     } finally {
-      await pc.preview.indexes.deleteIndex(indexName).catch(() => {});
+      await pc.preview.indexes.delete(indexName).catch(() => {});
     }
   });
 });

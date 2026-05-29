@@ -154,7 +154,7 @@ export class Pinecone {
    *
    * @example
    * ```typescript
-   * const list = await pc.preview.indexes.listIndexes();
+   * const list = await pc.preview.indexes.list();
    * const idx = pc.preview.index('my-schema-index');
    * ```
    * @alpha

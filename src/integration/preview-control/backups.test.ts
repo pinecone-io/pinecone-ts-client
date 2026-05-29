@@ -35,7 +35,7 @@ describe('preview backups', () => {
   });
 
   afterAll(async () => {
-    await pc.preview.indexes.deleteIndex(index.name).catch(() => {});
+    await pc.preview.indexes.delete(index.name).catch(() => {});
     await pc.preview.indexes.deleteBackup(backup.backup_id).catch(() => {});
   });
 
@@ -52,14 +52,14 @@ describe('preview backups', () => {
 
   describe('preview listIndexBackups', () => {
     test('lists backups for an existing alpha index', async () => {
-      const result = await pc.preview.indexes.listIndexBackups(index.name);
+      const result = await pc.preview.indexes.listBackups(index.name);
       expect(Array.isArray(result.data)).toBe(true);
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
       expect(result.data![0].source_index_name).toEqual(index.name);
     });
 
     test('respects the limit query param', async () => {
-      const result = await pc.preview.indexes.listIndexBackups(index.name, {
+      const result = await pc.preview.indexes.listBackups(index.name, {
         limit: 1,
       });
       expect(result.data!.length).toBeLessThanOrEqual(1);

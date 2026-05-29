@@ -8,13 +8,13 @@ beforeAll(() => {
 
 describe('preview listIndexes', () => {
   test('returns a list (possibly empty) without error', async () => {
-    const result = await pc.preview.indexes.listIndexes();
+    const result = await pc.preview.indexes.list();
     expect(result).toHaveProperty('indexes');
     expect(Array.isArray(result.indexes)).toBe(true);
   });
 
   test('AlphaIndexModel shape includes name field', async () => {
-    const result = await pc.preview.indexes.listIndexes();
+    const result = await pc.preview.indexes.list();
     for (const index of result.indexes ?? []) {
       expect(typeof index.name).toBe('string');
     }

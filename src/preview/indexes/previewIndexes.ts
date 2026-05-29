@@ -74,7 +74,7 @@ export class PreviewIndexes {
    *
    * @alpha
    */
-  async listIndexes(): Promise<IndexList> {
+  async list(): Promise<IndexList> {
     return listPreviewIndexes(this._api);
   }
 
@@ -83,7 +83,7 @@ export class PreviewIndexes {
    *
    * @alpha
    */
-  async createIndex(options: PreviewCreateIndexOptions): Promise<IndexModel> {
+  async create(options: PreviewCreateIndexOptions): Promise<IndexModel> {
     return createPreviewIndex(this._api, options);
   }
 
@@ -92,7 +92,7 @@ export class PreviewIndexes {
    *
    * @alpha
    */
-  async describeIndex(indexName: string): Promise<IndexModel> {
+  async describe(indexName: string): Promise<IndexModel> {
     return describePreviewIndex(this._api, indexName);
   }
 
@@ -105,7 +105,7 @@ export class PreviewIndexes {
    *
    * @alpha
    */
-  async deleteIndex(name: string): Promise<void> {
+  async delete(name: string): Promise<void> {
     return deletePreviewIndex(this._api, name);
   }
 
@@ -116,7 +116,7 @@ export class PreviewIndexes {
    *
    * @alpha
    */
-  async configureIndex(
+  async configure(
     name: string,
     options: PreviewConfigureIndexOptions,
   ): Promise<IndexModel> {
@@ -146,7 +146,7 @@ export class PreviewIndexes {
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
-  async listIndexBackups(
+  async listBackups(
     indexName: string,
     options?: PreviewListIndexBackupsOptions,
   ): Promise<BackupList> {
@@ -198,7 +198,7 @@ export class PreviewIndexes {
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
-  async createIndexFromBackup(
+  async createFromBackup(
     backupId: string,
     options: PreviewCreateIndexFromBackupOptions,
   ): Promise<CreateIndexFromBackupResponse> {
