@@ -39,7 +39,7 @@ generate_client() {
 		--input-spec "/workspace/$oas_file" \
 		--generator-name typescript-fetch \
 		--output "/workspace/${build_dir}" \
-		--additional-properties=supportsES6=true,withoutRuntimeChecks=true,modelPropertyNaming=original,useSingleRequestParameter=true
+		--additional-properties=supportsES6=true,useSingleRequestParameter=true
 
 	rm -rf "${destination}/${module_name}"
 	mkdir -p "${destination}/${module_name}"
@@ -47,6 +47,41 @@ generate_client() {
 
 	echo "export const X_PINECONE_API_VERSION = '${version}';" > ${destination}/${module_name}/api_version.ts
 	echo "export * from './api_version';" >> ${destination}/${module_name}/index.ts
+}
+
+fix_id_field() {
+	local file=$1
+	sed -i '' \
+		-e 's/id:/_id:/g' \
+		-e "s/'id'/'_id'/g" \
+		-e 's/"id"/"_id"/g' \
+		-e 's/\.id/\._id/g' \
+		"$file"
+}
+
+fix_score_field() {
+	local file=$1
+	sed -i '' \
+		-e 's/score:/_score:/g' \
+		-e "s/'score'/'_score'/g" \
+		-e 's/"score"/"_score"/g' \
+		-e 's/\.score/\._score/g' \
+		"$file"
+}
+
+# The generator strips leading underscores from property names (e.g. _id -> id,
+# _score -> score). These sed fixups restore the original names to match the spec.
+clean_oas_underscore_manipulation() {
+	local models_dir="${destination}/db_data/models"
+
+	for file in Hit.ts DocumentSearchMatch.ts; do
+		fix_id_field "${models_dir}/${file}"
+		fix_score_field "${models_dir}/${file}"
+	done
+
+	for file in UpsertRecord.ts DocumentRecord.ts FetchedDocumentRecord.ts; do
+		fix_id_field "${models_dir}/${file}"
+	done
 }
 
 update_apis_repo
@@ -57,5 +92,7 @@ for module in "${modules[@]}"; do
 	generate_client $module
 	sleep 1
 done
+
+clean_oas_underscore_manipulation
 
 rm -rf "${build_dir}"

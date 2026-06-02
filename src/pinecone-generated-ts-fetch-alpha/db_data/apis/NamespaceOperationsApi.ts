@@ -20,6 +20,16 @@ import type {
   NamespaceDescription,
   RpcStatus,
 } from '../models/index';
+import {
+    CreateNamespaceRequestFromJSON,
+    CreateNamespaceRequestToJSON,
+    ListNamespacesResponseFromJSON,
+    ListNamespacesResponseToJSON,
+    NamespaceDescriptionFromJSON,
+    NamespaceDescriptionToJSON,
+    RpcStatusFromJSON,
+    RpcStatusToJSON,
+} from '../models/index';
 
 export interface CreateNamespaceOperationRequest {
     xPineconeApiVersion: string;
@@ -80,10 +90,10 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createNamespaceRequest,
+            body: CreateNamespaceRequestToJSON(requestParameters.createNamespaceRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => NamespaceDescriptionFromJSON(jsonValue));
     }
 
     /**
@@ -171,7 +181,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => NamespaceDescriptionFromJSON(jsonValue));
     }
 
     /**
@@ -223,7 +233,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListNamespacesResponseFromJSON(jsonValue));
     }
 
     /**

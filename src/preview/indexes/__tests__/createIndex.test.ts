@@ -12,7 +12,7 @@ const validOptions: PreviewCreateIndexOptions = {
   name: 'schema-idx',
   schema: {
     fields: {
-      chunk_text: { type: 'string' as const, full_text_search: {} },
+      chunk_text: { type: 'string' as const, fullTextSearch: {} },
     },
   },
 };
@@ -25,7 +25,7 @@ const buildMockApi = (
       name: 'schema-idx',
       host: 'schema-idx.svc.pinecone.io',
       schema: {
-        fields: { chunk_text: { type: 'string', full_text_search: {} } },
+        fields: { chunk_text: { type: 'string', fullTextSearch: {} } },
       },
       status: { ready: true, state: 'Ready' },
       deployment: { deployment_type: 'managed' },

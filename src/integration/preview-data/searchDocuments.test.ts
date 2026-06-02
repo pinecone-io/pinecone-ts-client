@@ -13,7 +13,7 @@ beforeAll(async () => {
     name: indexName,
     schema: {
       fields: {
-        content: { type: 'string', full_text_search: {} },
+        content: { type: 'string', fullTextSearch: {} },
       },
     },
     waitUntilReady: true,
@@ -51,14 +51,14 @@ describe('preview searchDocuments', () => {
     const result = await pc.preview
       .index(indexName)
       .searchDocuments(namespace, {
-        score_by: [
+        scoreBy: [
           { type: 'text', field: 'content', query: 'machine learning' },
         ],
-        top_k: 5,
+        topK: 5,
       });
 
     expect(Array.isArray(result.matches)).toBe(true);
     expect(result.namespace).toBe(namespace);
-    expect(result.usage.read_units).toBeGreaterThanOrEqual(0);
+    expect(result.usage.readUnits).toBeGreaterThanOrEqual(0);
   });
 });

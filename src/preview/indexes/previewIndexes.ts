@@ -93,7 +93,7 @@ export class PreviewIndexes {
    * //       metric: 'cosine',
    * //       host: 'my-schema-index-abc123.svc.pinecone.io',
    * //       schema: {
-   * //         fields: { chunk_text: { type: 'string', full_text_search: {} } }
+   * //         fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
    * //       },
    * //       status: { ready: true, state: 'Ready' }
    * //     }
@@ -114,7 +114,7 @@ export class PreviewIndexes {
    *
    * The `schema` object defines the fields stored in each document. At least one
    * primary field (`dense_vector`, `sparse_vector`, `semantic_text`, or a `string`
-   * field with `full_text_search`) must be present.
+   * field with `fullTextSearch`) must be present.
    *
    * @example
    * ```typescript
@@ -125,7 +125,7 @@ export class PreviewIndexes {
    *   name: 'my-schema-index',
    *   schema: {
    *     fields: {
-   *       chunk_text: { type: 'string', full_text_search: {} },
+   *       chunk_text: { type: 'string', fullTextSearch: {} },
    *     },
    *   },
    *   waitUntilReady: true,
@@ -161,7 +161,7 @@ export class PreviewIndexes {
    * //   metric: 'cosine',
    * //   host: 'my-schema-index-abc123.svc.pinecone.io',
    * //   schema: {
-   * //     fields: { chunk_text: { type: 'string', full_text_search: {} } }
+   * //     fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
    * //   },
    * //   status: { ready: true, state: 'Ready' }
    * // }

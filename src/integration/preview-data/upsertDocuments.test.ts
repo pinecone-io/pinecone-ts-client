@@ -13,7 +13,7 @@ beforeAll(async () => {
     name: indexName,
     schema: {
       fields: {
-        content: { type: 'string', full_text_search: {} },
+        content: { type: 'string', fullTextSearch: {} },
       },
     },
     waitUntilReady: true,
@@ -29,7 +29,7 @@ afterAll(async () => {
 });
 
 describe('preview upsertDocuments', () => {
-  test('upserts 2 documents and returns upserted_count === 2', async () => {
+  test('upserts 2 documents and returns upsertedCount === 2', async () => {
     const result = await pc.preview
       .index(indexName)
       .upsertDocuments(namespace, {
@@ -47,6 +47,6 @@ describe('preview upsertDocuments', () => {
         ],
       });
 
-    expect(result.upserted_count).toBe(2);
+    expect(result.upsertedCount).toBe(2);
   });
 });

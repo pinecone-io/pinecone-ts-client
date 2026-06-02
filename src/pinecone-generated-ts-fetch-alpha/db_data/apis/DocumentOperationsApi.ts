@@ -24,6 +24,24 @@ import type {
   UpsertDocumentsRequest,
   UpsertDocumentsResponse,
 } from '../models/index';
+import {
+    DeleteDocumentsRequestFromJSON,
+    DeleteDocumentsRequestToJSON,
+    FetchDocumentsRequestFromJSON,
+    FetchDocumentsRequestToJSON,
+    FetchDocumentsResponseFromJSON,
+    FetchDocumentsResponseToJSON,
+    RpcStatusFromJSON,
+    RpcStatusToJSON,
+    SearchDocumentsRequestFromJSON,
+    SearchDocumentsRequestToJSON,
+    SearchDocumentsResponseFromJSON,
+    SearchDocumentsResponseToJSON,
+    UpsertDocumentsRequestFromJSON,
+    UpsertDocumentsRequestToJSON,
+    UpsertDocumentsResponseFromJSON,
+    UpsertDocumentsResponseToJSON,
+} from '../models/index';
 
 export interface DeleteDocumentsOperationRequest {
     xPineconeApiVersion: string;
@@ -90,7 +108,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.deleteDocumentsRequest,
+            body: DeleteDocumentsRequestToJSON(requestParameters.deleteDocumentsRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
@@ -141,10 +159,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.fetchDocumentsRequest,
+            body: FetchDocumentsRequestToJSON(requestParameters.fetchDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FetchDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -192,10 +210,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.searchDocumentsRequest,
+            body: SearchDocumentsRequestToJSON(requestParameters.searchDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -243,10 +261,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.upsertDocumentsRequest,
+            body: UpsertDocumentsRequestToJSON(requestParameters.upsertDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpsertDocumentsResponseFromJSON(jsonValue));
     }
 
     /**

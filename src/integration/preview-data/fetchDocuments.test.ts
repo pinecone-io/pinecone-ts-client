@@ -13,7 +13,7 @@ beforeAll(async () => {
     name: indexName,
     schema: {
       fields: {
-        content: { type: 'string', full_text_search: {} },
+        content: { type: 'string', fullTextSearch: {} },
       },
     },
     waitUntilReady: true,
@@ -48,13 +48,13 @@ describe('preview fetchDocuments', () => {
     expect(result.documents['doc-1']).toBeDefined();
     expect(result.documents['doc-2']).toBeDefined();
     expect(result.namespace).toBe(namespace);
-    expect(result.usage.read_units).toBeGreaterThanOrEqual(0);
+    expect(result.usage.readUnits).toBeGreaterThanOrEqual(0);
   });
 
-  test('respects include_fields by returning only the requested fields', async () => {
+  test('respects includeFields by returning only the requested fields', async () => {
     const result = await pc.preview.index(indexName).fetchDocuments(namespace, {
       ids: ['doc-1'],
-      include_fields: ['title'],
+      includeFields: ['title'],
     });
 
     const doc = result.documents['doc-1'];

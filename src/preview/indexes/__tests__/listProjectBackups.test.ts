@@ -9,17 +9,17 @@ const buildMockApi = (
     listProjectBackups: jest.fn().mockResolvedValue({
       data: [
         {
-          backup_id: 'bk-proj-1',
-          source_index_name: 'index-a',
-          source_index_id: 'idx-001',
+          backupId: 'bk-proj-1',
+          sourceIndexName: 'index-a',
+          sourceIndexId: 'idx-001',
           status: 'Ready',
           cloud: 'aws',
           region: 'us-east-1',
         },
         {
-          backup_id: 'bk-proj-2',
-          source_index_name: 'index-b',
-          source_index_id: 'idx-002',
+          backupId: 'bk-proj-2',
+          sourceIndexName: 'index-b',
+          sourceIndexId: 'idx-002',
           status: 'Ready',
           cloud: 'aws',
           region: 'us-west-2',
@@ -40,7 +40,7 @@ describe('listPreviewProjectBackups', () => {
 
     test('returns backup entries spanning multiple source indexes', async () => {
       const result = await listPreviewProjectBackups(buildMockApi());
-      const names = result.data?.map((b) => b.source_index_name);
+      const names = result.data?.map((b) => b.sourceIndexName);
       expect(names).toContain('index-a');
       expect(names).toContain('index-b');
     });

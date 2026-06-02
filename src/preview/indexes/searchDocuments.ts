@@ -21,14 +21,14 @@ export const searchPreviewDocuments = async (
   namespace: string,
   options: SearchDocumentsRequest,
 ): Promise<SearchDocumentsResponse> => {
-  if (!options.score_by || options.score_by.length === 0) {
+  if (!options.scoreBy || options.scoreBy.length === 0) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty `score_by` array to searchDocuments.',
+      'You must pass a non-empty `scoreBy` array to searchDocuments.',
     );
   }
-  if (options.top_k == null || options.top_k < 1) {
+  if (options.topK == null || options.topK < 1) {
     throw new PineconeArgumentError(
-      '`top_k` must be a positive integer of at least 1.',
+      '`topK` must be a positive integer of at least 1.',
     );
   }
   try {

@@ -24,8 +24,8 @@ export interface PreviewCreateIndexFromBackupOptions {
 /**
  * Creates an index from a Pinecone backup using the 2026-01.alpha API.
  *
- * The creation is accepted asynchronously — returns a `restore_job_id` and
- * `index_id` once the request is accepted (HTTP 202). Poll the restore job
+ * The creation is accepted asynchronously — returns a `restoreJobId` and
+ * `indexId` once the request is accepted (HTTP 202). Poll the restore job
  * to track completion.
  *
  * @param api - The alpha manage-indexes API client.
@@ -55,7 +55,7 @@ export const createIndexFromBackup = async (
       createIndexFromBackupRequest: {
         name: options.name,
         tags: options.tags,
-        deletion_protection: options.deletionProtection,
+        deletionProtection: options.deletionProtection,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

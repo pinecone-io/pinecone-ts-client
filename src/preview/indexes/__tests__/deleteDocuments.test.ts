@@ -13,33 +13,33 @@ const buildMockApi = (
 
 describe('deletePreviewDocuments', () => {
   describe('validation', () => {
-    test('throws when neither ids nor delete_all is provided', async () => {
+    test('throws when neither ids nor deleteAll is provided', async () => {
       await expect(
         deletePreviewDocuments(buildMockApi(), 'test-ns', {}),
       ).rejects.toThrow(PineconeArgumentError);
     });
 
-    test('error message references ids and delete_all when neither is provided', async () => {
+    test('error message references ids and deleteAll when neither is provided', async () => {
       await expect(
         deletePreviewDocuments(buildMockApi(), 'test-ns', {}),
-      ).rejects.toThrow('`ids` or `delete_all`');
+      ).rejects.toThrow('`ids` or `deleteAll`');
     });
 
-    test('throws when both ids and delete_all are provided', async () => {
+    test('throws when both ids and deleteAll are provided', async () => {
       const options: PreviewDeleteDocumentsOptions = {
         ids: ['doc-1'],
-        delete_all: true,
+        deleteAll: true,
       };
       await expect(
         deletePreviewDocuments(buildMockApi(), 'test-ns', options),
       ).rejects.toThrow(PineconeArgumentError);
     });
 
-    test('error message mentions mutual exclusion when both ids and delete_all are set', async () => {
+    test('error message mentions mutual exclusion when both ids and deleteAll are set', async () => {
       await expect(
         deletePreviewDocuments(buildMockApi(), 'test-ns', {
           ids: ['doc-1'],
-          delete_all: true,
+          deleteAll: true,
         }),
       ).rejects.toThrow('mutually exclusive');
     });
@@ -77,20 +77,20 @@ describe('deletePreviewDocuments', () => {
       );
     });
 
-    test('resolves to void when delete_all is true', async () => {
+    test('resolves to void when deleteAll is true', async () => {
       const result = await deletePreviewDocuments(buildMockApi(), 'test-ns', {
-        delete_all: true,
+        deleteAll: true,
       });
       expect(result).toBeUndefined();
     });
 
-    test('passes delete_all in deleteDocumentsRequest', async () => {
+    test('passes deleteAll in deleteDocumentsRequest', async () => {
       const api = buildMockApi();
-      await deletePreviewDocuments(api, 'test-ns', { delete_all: true });
+      await deletePreviewDocuments(api, 'test-ns', { deleteAll: true });
       expect(api.deleteDocuments).toHaveBeenCalledWith(
         expect.objectContaining({
           deleteDocumentsRequest: expect.objectContaining({
-            delete_all: true,
+            deleteAll: true,
           }),
         }),
       );

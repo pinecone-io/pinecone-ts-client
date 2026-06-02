@@ -30,22 +30,22 @@ describe('preview backups', () => {
       name: 'test-backup',
       description: 'Integration test backup',
     });
-    expect(backup.backup_id).toBeDefined();
-    expect(backup.source_index_name).toEqual(indexName);
+    expect(backup.backupId).toBeDefined();
+    expect(backup.sourceIndexName).toEqual(indexName);
   });
 
   afterAll(async () => {
     await pc.preview.indexes.delete(index.name).catch(() => {});
-    await pc.preview.indexes.deleteBackup(backup.backup_id).catch(() => {});
+    await pc.preview.indexes.deleteBackup(backup.backupId).catch(() => {});
   });
 
   describe('preview describeBackup', () => {
     test('returns PreviewBackupModel for an existing backup', async () => {
-      const backupId = backup.backup_id;
+      const backupId = backup.backupId;
 
       const described = await pc.preview.indexes.describeBackup(backupId);
-      expect(described.backup_id).toEqual(backupId);
-      expect(described.source_index_name).toEqual(index.name);
+      expect(described.backupId).toEqual(backupId);
+      expect(described.sourceIndexName).toEqual(index.name);
       expect(['Initializing', 'Ready']).toContain(described.status);
     });
   });
@@ -55,7 +55,7 @@ describe('preview backups', () => {
       const result = await pc.preview.indexes.listBackups(index.name);
       expect(Array.isArray(result.data)).toBe(true);
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
-      expect(result.data![0].source_index_name).toEqual(index.name);
+      expect(result.data![0].sourceIndexName).toEqual(index.name);
     });
 
     test('respects the limit query param', async () => {
@@ -71,7 +71,7 @@ describe('preview backups', () => {
       const result = await pc.preview.indexes.listProjectBackups();
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
       const someBackup = result.data!.some(
-        (currBackup) => currBackup.backup_id === backup.backup_id,
+        (currBackup) => currBackup.backupId === backup.backupId,
       );
       expect(someBackup).toBe(true);
     });
@@ -82,18 +82,18 @@ describe('preview backups', () => {
       const result = await pc.preview.indexes.listRestoreJobs({ limit: 1 });
       if (result.data.length > 0) {
         const described = await pc.preview.indexes.describeRestoreJob(
-          result.data[0].restore_job_id,
+          result.data[0].restoreJobId,
         );
-        expect(described.restore_job_id).toBeDefined();
-        expect(described.backup_id).toBeDefined();
+        expect(described.restoreJobId).toBeDefined();
+        expect(described.backupId).toBeDefined();
         expect(described.status).toBeDefined();
-        expect(described.target_index_name).toBeDefined();
+        expect(described.targetIndexName).toBeDefined();
       } else {
         console.log('No restore jobs found, skipping describe assertion');
       }
     });
 
-    test('throws PineconeNotFoundError for a non-existent job_id', async () => {
+    test('throws PineconeNotFoundError for a non-existent jobId', async () => {
       await expect(
         pc.preview.indexes.describeRestoreJob('nonexistent-job-id-xyz'),
       ).rejects.toThrow(PineconeNotFoundError);

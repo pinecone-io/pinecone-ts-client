@@ -14,7 +14,7 @@ describe('preview deleteIndex', () => {
       name: indexName,
       schema: {
         fields: {
-          chunk_text: { type: 'string', full_text_search: {} },
+          chunk_text: { type: 'string', fullTextSearch: {} },
         },
       },
       waitUntilReady: true,

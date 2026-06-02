@@ -9,7 +9,7 @@ const mockResponse = {
     'doc-2': { _id: 'doc-2', title: 'VDB Doc', content: 'Vector databases' },
   },
   namespace: 'test-ns',
-  usage: { read_units: 2 },
+  usage: { readUnits: 2 },
 };
 
 const buildMockApi = (
@@ -58,7 +58,7 @@ describe('fetchPreviewDocuments', () => {
       );
       expect(result.documents).toBeDefined();
       expect(result.namespace).toBe('test-ns');
-      expect(result.usage.read_units).toBeGreaterThanOrEqual(0);
+      expect(result.usage.readUnits).toBeGreaterThanOrEqual(0);
     });
 
     test('passes namespace to the API call', async () => {
@@ -81,16 +81,16 @@ describe('fetchPreviewDocuments', () => {
       );
     });
 
-    test('passes include_fields when provided', async () => {
+    test('passes includeFields when provided', async () => {
       const api = buildMockApi();
       await fetchPreviewDocuments(api, 'test-ns', {
         ...validOptions,
-        include_fields: ['title'],
+        includeFields: ['title'],
       });
       expect(api.fetchDocuments).toHaveBeenCalledWith(
         expect.objectContaining({
           fetchDocumentsRequest: expect.objectContaining({
-            include_fields: ['title'],
+            includeFields: ['title'],
           }),
         }),
       );

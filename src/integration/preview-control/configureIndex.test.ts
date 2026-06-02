@@ -8,26 +8,26 @@ beforeAll(() => {
 });
 
 describe('preview configureIndex', () => {
-  test('updates deletion_protection on an existing index', async () => {
+  test('updates deletionProtection on an existing index', async () => {
     const indexName = randomName('preview-cfg');
     await pc.preview.indexes.create({
       name: indexName,
       schema: {
         fields: {
-          chunk_text: { type: 'string', full_text_search: {} },
+          chunk_text: { type: 'string', fullTextSearch: {} },
         },
       },
       waitUntilReady: true,
     });
 
     const updated = await pc.preview.indexes.configure(indexName, {
-      deletion_protection: 'enabled',
+      deletionProtection: 'enabled',
     });
-    expect(updated.deletion_protection).toBe('enabled');
+    expect(updated.deletionProtection).toBe('enabled');
 
     // Disable protection before deletion
     await pc.preview.indexes.configure(indexName, {
-      deletion_protection: 'disabled',
+      deletionProtection: 'disabled',
     });
     await pc.preview.indexes.delete(indexName);
   });
@@ -35,7 +35,7 @@ describe('preview configureIndex', () => {
   test('throws on configuring a non-existent index', async () => {
     await expect(
       pc.preview.indexes.configure(randomName('no-such-idx'), {
-        deletion_protection: 'enabled',
+        deletionProtection: 'enabled',
       }),
     ).rejects.toThrow();
   });

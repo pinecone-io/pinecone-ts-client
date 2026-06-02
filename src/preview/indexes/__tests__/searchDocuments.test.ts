@@ -9,7 +9,7 @@ const mockResponse = {
     { _id: 'doc-2', _score: 0.82, content: 'Vector databases' },
   ],
   namespace: 'test-ns',
-  usage: { read_units: 5 },
+  usage: { readUnits: 5 },
 };
 
 const buildMockApi = (
@@ -21,60 +21,60 @@ const buildMockApi = (
   }) as unknown as DocumentOperationsApi;
 
 const validOptions: PreviewSearchDocumentsOptions = {
-  score_by: [{ type: 'text', field: 'content', query: 'machine learning' }],
-  top_k: 5,
+  scoreBy: [{ type: 'text', field: 'content', query: 'machine learning' }],
+  topK: 5,
 };
 
 describe('searchPreviewDocuments', () => {
   describe('validation', () => {
-    test('throws PineconeArgumentError when score_by is an empty array', async () => {
+    test('throws PineconeArgumentError when scoreBy is an empty array', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
           ...validOptions,
-          score_by: [],
+          scoreBy: [],
         }),
       ).rejects.toThrow(PineconeArgumentError);
     });
 
-    test('error message references `score_by` when it is empty', async () => {
+    test('error message references `scoreBy` when it is empty', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
           ...validOptions,
-          score_by: [],
+          scoreBy: [],
         }),
-      ).rejects.toThrow('`score_by`');
+      ).rejects.toThrow('`scoreBy`');
     });
 
-    test('throws PineconeArgumentError when score_by is missing', async () => {
+    test('throws PineconeArgumentError when scoreBy is missing', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
-          top_k: 5,
+          topK: 5,
         } as PreviewSearchDocumentsOptions),
       ).rejects.toThrow(PineconeArgumentError);
     });
 
-    test('throws PineconeArgumentError when top_k is less than 1', async () => {
+    test('throws PineconeArgumentError when topK is less than 1', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
           ...validOptions,
-          top_k: 0,
+          topK: 0,
         }),
       ).rejects.toThrow(PineconeArgumentError);
     });
 
-    test('error message references `top_k` when it is invalid', async () => {
+    test('error message references `topK` when it is invalid', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
           ...validOptions,
-          top_k: 0,
+          topK: 0,
         }),
-      ).rejects.toThrow('`top_k`');
+      ).rejects.toThrow('`topK`');
     });
 
-    test('throws PineconeArgumentError when top_k is missing', async () => {
+    test('throws PineconeArgumentError when topK is missing', async () => {
       await expect(
         searchPreviewDocuments(buildMockApi(), 'test-ns', {
-          score_by: validOptions.score_by,
+          scoreBy: validOptions.scoreBy,
         } as PreviewSearchDocumentsOptions),
       ).rejects.toThrow(PineconeArgumentError);
     });
@@ -90,7 +90,7 @@ describe('searchPreviewDocuments', () => {
       expect(result.matches).toBeDefined();
       expect(result.namespace).toBe('test-ns');
       expect(result.usage).toBeDefined();
-      expect(result.usage.read_units).toBeGreaterThanOrEqual(0);
+      expect(result.usage.readUnits).toBeGreaterThanOrEqual(0);
     });
 
     test('passes namespace to the API call', async () => {
@@ -101,29 +101,29 @@ describe('searchPreviewDocuments', () => {
       );
     });
 
-    test('passes score_by and top_k to the API call', async () => {
+    test('passes scoreBy and topK to the API call', async () => {
       const api = buildMockApi();
       await searchPreviewDocuments(api, 'test-ns', validOptions);
       expect(api.searchDocuments).toHaveBeenCalledWith(
         expect.objectContaining({
           searchDocumentsRequest: expect.objectContaining({
-            score_by: validOptions.score_by,
-            top_k: 5,
+            scoreBy: validOptions.scoreBy,
+            topK: 5,
           }),
         }),
       );
     });
 
-    test('passes include_fields when provided', async () => {
+    test('passes includeFields when provided', async () => {
       const api = buildMockApi();
       await searchPreviewDocuments(api, 'test-ns', {
         ...validOptions,
-        include_fields: ['content', 'title'],
+        includeFields: ['content', 'title'],
       });
       expect(api.searchDocuments).toHaveBeenCalledWith(
         expect.objectContaining({
           searchDocumentsRequest: expect.objectContaining({
-            include_fields: ['content', 'title'],
+            includeFields: ['content', 'title'],
           }),
         }),
       );

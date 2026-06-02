@@ -68,14 +68,14 @@ export class PreviewIndex {
    *   ],
    * });
    * console.log(result);
-   * // { upserted_count: 2 }
+   * // { upsertedCount: 2 }
    * ```
    *
    * @param namespace - The namespace to upsert documents into.
    * @param options - The {@link PreviewUpsertDocumentsOptions} containing the `documents` array (1–1000 entries). Each entry must be a {@link PreviewDocumentRecord} with a required `_id` field.
    * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or not provided.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link PreviewUpsertDocumentsResponse} containing `upserted_count`.
+   * @returns A promise that resolves to a {@link PreviewUpsertDocumentsResponse}.
    * @alpha
    */
   async upsertDocuments(
@@ -89,7 +89,7 @@ export class PreviewIndex {
   /**
    * Searches for documents in a namespace using one or more scoring methods.
    *
-   * The `score_by` array specifies how documents are ranked. Supported scoring
+   * The `scoreBy` array specifies how documents are ranked. Supported scoring
    * method types are `text` (BM25), `dense_vector`, `sparse_vector`, and
    * `query_string`. Multiple scoring methods can be combined for hybrid search.
    *
@@ -100,11 +100,11 @@ export class PreviewIndex {
    *
    * const index = pc.preview.index('my-schema-index');
    * const results = await index.searchDocuments('my-namespace', {
-   *   score_by: [
+   *   scoreBy: [
    *     { type: 'text', field: 'chunk_text', query: 'machine learning' },
    *   ],
-   *   top_k: 5,
-   *   include_fields: ['chunk_text'],
+   *   topK: 5,
+   *   includeFields: ['chunk_text'],
    * });
    * console.log(results);
    * // {
@@ -113,13 +113,13 @@ export class PreviewIndex {
    * //     { _id: 'doc-2', _score: 0.72, chunk_text: 'Vector databases enable semantic search' },
    * //   ],
    * //   namespace: 'my-namespace',
-   * //   usage: { read_units: 1 }
+   * //   usage: { readUnits: 1 }
    * // }
    * ```
    *
    * @param namespace - The namespace to search.
-   * @param options - The {@link PreviewSearchDocumentsOptions} for the search, including `score_by` (required), `top_k` (required), and optional `include_fields` and `filter`.
-   * @throws {@link Errors.PineconeArgumentError} when `score_by` is empty or `top_k` is less than 1.
+   * @param options - The {@link PreviewSearchDocumentsOptions} for the search, including `scoreBy` (required), `topK` (required), and optional `includeFields`.
+   * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is empty or `topK` is less than 1.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link PreviewSearchDocumentsResponse} containing `matches`, `namespace`, and `usage`.
    * @alpha
@@ -159,12 +159,12 @@ export class PreviewIndex {
    * // Fetch only specific fields
    * const partial = await index.fetchDocuments('my-namespace', {
    *   ids: ['doc-1'],
-   *   include_fields: ['chunk_text'],
+   *   includeFields: ['chunk_text'],
    * });
    * ```
    *
    * @param namespace - The namespace to fetch documents from.
-   * @param options - The {@link PreviewFetchDocumentsOptions} containing `ids` (required) and an optional `include_fields` list to limit which fields are returned.
+   * @param options - The {@link PreviewFetchDocumentsOptions} containing `ids` (required) and an optional `includeFields` list to limit which fields are returned.
    * @throws {@link Errors.PineconeArgumentError} when `ids` is empty or not provided.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link PreviewFetchDocumentsResponse} containing a `documents` map, `namespace`, and `usage`.
@@ -181,7 +181,7 @@ export class PreviewIndex {
   /**
    * Deletes documents from a namespace by their IDs, or deletes all documents in the namespace.
    *
-   * Exactly one of `ids` or `delete_all` must be set.
+   * Exactly one of `ids` or `deleteAll` must be set.
    *
    * @example
    * ```typescript
@@ -194,12 +194,12 @@ export class PreviewIndex {
    * await index.deleteDocuments('my-namespace', { ids: ['doc-1', 'doc-2'] });
    *
    * // Delete all documents in the namespace
-   * await index.deleteDocuments('my-namespace', { delete_all: true });
+   * await index.deleteDocuments('my-namespace', { deleteAll: true });
    * ```
    *
    * @param namespace - The namespace to delete documents from.
-   * @param options - The {@link PreviewDeleteDocumentsOptions}: either `ids` (a non-empty list of document IDs) or `delete_all: true`. These options are mutually exclusive.
-   * @throws {@link Errors.PineconeArgumentError} when neither `ids` nor `delete_all` is set, both are set at the same time, or `ids` is an empty array.
+   * @param options - The {@link PreviewDeleteDocumentsOptions}: either `ids` (a non-empty list of document IDs) or `deleteAll: true`. These options are mutually exclusive.
+   * @throws {@link Errors.PineconeArgumentError} when neither `ids` nor `deleteAll` is set, both are set at the same time, or `ids` is an empty array.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the deletion is complete.
    * @alpha

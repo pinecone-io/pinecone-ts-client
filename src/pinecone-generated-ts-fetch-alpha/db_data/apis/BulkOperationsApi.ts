@@ -21,6 +21,18 @@ import type {
   StartImportRequest,
   StartImportResponse,
 } from '../models/index';
+import {
+    ImportModelFromJSON,
+    ImportModelToJSON,
+    ListImportsResponseFromJSON,
+    ListImportsResponseToJSON,
+    RpcStatusFromJSON,
+    RpcStatusToJSON,
+    StartImportRequestFromJSON,
+    StartImportRequestToJSON,
+    StartImportResponseFromJSON,
+    StartImportResponseToJSON,
+} from '../models/index';
 
 export interface CancelBulkImportRequest {
     xPineconeApiVersion: string;
@@ -124,7 +136,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ImportModelFromJSON(jsonValue));
     }
 
     /**
@@ -172,7 +184,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListImportsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -216,10 +228,10 @@ export class BulkOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.startImportRequest,
+            body: StartImportRequestToJSON(requestParameters.startImportRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => StartImportResponseFromJSON(jsonValue));
     }
 
     /**

@@ -13,14 +13,14 @@ export const deletePreviewDocuments = async (
   namespace: string,
   options: DeleteDocumentsRequest,
 ): Promise<void> => {
-  if (!options.ids && !options.delete_all) {
+  if (!options.ids && !options.deleteAll) {
     throw new PineconeArgumentError(
-      'You must specify either `ids` or `delete_all` to deleteDocuments.',
+      'You must specify either `ids` or `deleteAll` to deleteDocuments.',
     );
   }
-  if (options.ids && options.delete_all) {
+  if (options.ids && options.deleteAll) {
     throw new PineconeArgumentError(
-      '`ids` and `delete_all` are mutually exclusive in deleteDocuments.',
+      '`ids` and `deleteAll` are mutually exclusive in deleteDocuments.',
     );
   }
   if (options.ids && options.ids.length === 0) {

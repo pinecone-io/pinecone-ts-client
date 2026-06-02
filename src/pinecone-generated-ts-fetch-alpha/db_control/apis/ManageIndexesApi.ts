@@ -32,6 +32,40 @@ import type {
   RestoreJobList,
   RestoreJobModel,
 } from '../models/index';
+import {
+    BackupListFromJSON,
+    BackupListToJSON,
+    BackupModelFromJSON,
+    BackupModelToJSON,
+    CollectionListFromJSON,
+    CollectionListToJSON,
+    CollectionModelFromJSON,
+    CollectionModelToJSON,
+    ConfigureIndexRequestFromJSON,
+    ConfigureIndexRequestToJSON,
+    CreateBackupRequestFromJSON,
+    CreateBackupRequestToJSON,
+    CreateCollectionRequestFromJSON,
+    CreateCollectionRequestToJSON,
+    CreateIndexForModelRequestFromJSON,
+    CreateIndexForModelRequestToJSON,
+    CreateIndexFromBackupRequestFromJSON,
+    CreateIndexFromBackupRequestToJSON,
+    CreateIndexFromBackupResponseFromJSON,
+    CreateIndexFromBackupResponseToJSON,
+    CreateIndexRequestFromJSON,
+    CreateIndexRequestToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
+    IndexListFromJSON,
+    IndexListToJSON,
+    IndexModelFromJSON,
+    IndexModelToJSON,
+    RestoreJobListFromJSON,
+    RestoreJobListToJSON,
+    RestoreJobModelFromJSON,
+    RestoreJobModelToJSON,
+} from '../models/index';
 
 export interface ConfigureIndexOperationRequest {
     xPineconeApiVersion: string;
@@ -169,10 +203,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.configureIndexRequest,
+            body: ConfigureIndexRequestToJSON(requestParameters.configureIndexRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
     }
 
     /**
@@ -220,10 +254,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createBackupRequest,
+            body: CreateBackupRequestToJSON(requestParameters.createBackupRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => BackupModelFromJSON(jsonValue));
     }
 
     /**
@@ -267,10 +301,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createCollectionRequest,
+            body: CreateCollectionRequestToJSON(requestParameters.createCollectionRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionModelFromJSON(jsonValue));
     }
 
     /**
@@ -314,10 +348,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createIndexRequest,
+            body: CreateIndexRequestToJSON(requestParameters.createIndexRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
     }
 
     /**
@@ -361,10 +395,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createIndexForModelRequest,
+            body: CreateIndexForModelRequestToJSON(requestParameters.createIndexForModelRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
     }
 
     /**
@@ -412,10 +446,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.createIndexFromBackupRequest,
+            body: CreateIndexFromBackupRequestToJSON(requestParameters.createIndexFromBackupRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateIndexFromBackupResponseFromJSON(jsonValue));
     }
 
     /**
@@ -588,7 +622,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => BackupModelFromJSON(jsonValue));
     }
 
     /**
@@ -632,7 +666,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionModelFromJSON(jsonValue));
     }
 
     /**
@@ -676,7 +710,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexModelFromJSON(jsonValue));
     }
 
     /**
@@ -720,7 +754,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => RestoreJobModelFromJSON(jsonValue));
     }
 
     /**
@@ -760,7 +794,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => CollectionListFromJSON(jsonValue));
     }
 
     /**
@@ -812,7 +846,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => BackupListFromJSON(jsonValue));
     }
 
     /**
@@ -852,7 +886,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexListFromJSON(jsonValue));
     }
 
     /**
@@ -900,7 +934,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => BackupListFromJSON(jsonValue));
     }
 
     /**
@@ -948,7 +982,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => RestoreJobListFromJSON(jsonValue));
     }
 
     /**
