@@ -86,6 +86,7 @@ clean_oas_underscore_manipulation() {
 
 update_apis_repo
 
+rm -rf "${destination}"
 mkdir -p "${destination}"
 
 for module in "${modules[@]}"; do
