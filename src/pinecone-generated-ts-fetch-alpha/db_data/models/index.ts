@@ -49,6 +49,8 @@ export * from './SingleQueryResults';
 export * from './SparseValues';
 export * from './StartImportRequest';
 export * from './StartImportResponse';
+export * from './UpdateDocumentRecord';
+export * from './UpdateDocumentsRequest';
 export * from './UpdateRequest';
 export * from './UpdateResponse';
 export * from './UpsertDocumentsRequest';

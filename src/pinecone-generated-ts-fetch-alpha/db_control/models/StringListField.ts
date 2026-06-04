@@ -31,6 +31,12 @@ export interface StringListField {
      * @memberof StringListField
      */
     description?: string;
+    /**
+     * Whether this field is indexed for metadata filtering.
+     * @type {boolean}
+     * @memberof StringListField
+     */
+    filterable?: boolean;
 }
 
 
@@ -65,6 +71,7 @@ export function StringListFieldFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'type': json['type'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'filterable': !exists(json, 'filterable') ? undefined : json['filterable'],
     };
 }
 
@@ -79,6 +86,7 @@ export function StringListFieldToJSON(value?: StringListField | null): any {
         
         'type': value.type,
         'description': value.description,
+        'filterable': value.filterable,
     };
 }
 

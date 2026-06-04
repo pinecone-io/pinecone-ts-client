@@ -49,9 +49,16 @@ generate_client() {
 	echo "export * from './api_version';" >> ${destination}/${module_name}/index.ts
 }
 
+# BSD sed (macOS) requires an explicit empty string for in-place edits; GNU sed does not.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sedi() { sed -i '' "$@"; }
+else
+	sedi() { sed -i "$@"; }
+fi
+
 fix_id_field() {
 	local file=$1
-	sed -i '' \
+	sedi \
 		-e 's/id:/_id:/g' \
 		-e "s/'id'/'_id'/g" \
 		-e 's/"id"/"_id"/g' \
@@ -61,7 +68,7 @@ fix_id_field() {
 
 fix_score_field() {
 	local file=$1
-	sed -i '' \
+	sedi \
 		-e 's/score:/_score:/g' \
 		-e "s/'score'/'_score'/g" \
 		-e 's/"score"/"_score"/g' \

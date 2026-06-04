@@ -14,27 +14,27 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A numeric (floating-point) field configuration. Numeric values are not declared in the index schema; include them as document metadata instead — they are indexed automatically at upsert time.
+ * A legacy integer field configuration. Integer fields were used in older index schemas before numeric values were normalized to `float` at upsert time. New indexes will not produce this field type; it may appear in responses for indexes created before that normalization was introduced.
  * @export
- * @interface FloatField
+ * @interface IntegerField
  */
-export interface FloatField {
+export interface IntegerField {
     /**
-     * Identifies this as a float field. Must be `float`.
+     * Identifies this as an integer field. Must be `integer`.
      * @type {string}
-     * @memberof FloatField
+     * @memberof IntegerField
      */
-    type: FloatFieldTypeEnum;
+    type: IntegerFieldTypeEnum;
     /**
      * Optional description for this field.
      * @type {string}
-     * @memberof FloatField
+     * @memberof IntegerField
      */
     description?: string;
     /**
      * Whether this field is indexed for metadata filtering.
      * @type {boolean}
-     * @memberof FloatField
+     * @memberof IntegerField
      */
     filterable?: boolean;
 }
@@ -43,27 +43,27 @@ export interface FloatField {
 /**
  * @export
  */
-export const FloatFieldTypeEnum = {
-    Float: 'float'
+export const IntegerFieldTypeEnum = {
+    Integer: 'integer'
 } as const;
-export type FloatFieldTypeEnum = typeof FloatFieldTypeEnum[keyof typeof FloatFieldTypeEnum];
+export type IntegerFieldTypeEnum = typeof IntegerFieldTypeEnum[keyof typeof IntegerFieldTypeEnum];
 
 
 /**
- * Check if a given object implements the FloatField interface.
+ * Check if a given object implements the IntegerField interface.
  */
-export function instanceOfFloatField(value: object): boolean {
+export function instanceOfIntegerField(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
 
     return isInstance;
 }
 
-export function FloatFieldFromJSON(json: any): FloatField {
-    return FloatFieldFromJSONTyped(json, false);
+export function IntegerFieldFromJSON(json: any): IntegerField {
+    return IntegerFieldFromJSONTyped(json, false);
 }
 
-export function FloatFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean): FloatField {
+export function IntegerFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean): IntegerField {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -75,7 +75,7 @@ export function FloatFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function FloatFieldToJSON(value?: FloatField | null): any {
+export function IntegerFieldToJSON(value?: IntegerField | null): any {
     if (value === undefined) {
         return undefined;
     }

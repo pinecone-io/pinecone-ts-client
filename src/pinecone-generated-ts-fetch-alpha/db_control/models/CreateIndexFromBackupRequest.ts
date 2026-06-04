@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ReadCapacity } from './ReadCapacity';
+import {
+    ReadCapacityFromJSON,
+    ReadCapacityFromJSONTyped,
+    ReadCapacityToJSON,
+} from './ReadCapacity';
+
 /**
  * The configuration needed to create a Pinecone index from a backup.
  * @export
@@ -38,6 +45,12 @@ export interface CreateIndexFromBackupRequest {
      * @memberof CreateIndexFromBackupRequest
      */
     deletionProtection?: string;
+    /**
+     * 
+     * @type {ReadCapacity}
+     * @memberof CreateIndexFromBackupRequest
+     */
+    readCapacity?: ReadCapacity;
 }
 
 /**
@@ -63,6 +76,7 @@ export function CreateIndexFromBackupRequestFromJSONTyped(json: any, ignoreDiscr
         'name': json['name'],
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : json['deletion_protection'],
+        'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
     };
 }
 
@@ -78,6 +92,7 @@ export function CreateIndexFromBackupRequestToJSON(value?: CreateIndexFromBackup
         'name': value.name,
         'tags': value.tags,
         'deletion_protection': value.deletionProtection,
+        'read_capacity': ReadCapacityToJSON(value.readCapacity),
     };
 }
 

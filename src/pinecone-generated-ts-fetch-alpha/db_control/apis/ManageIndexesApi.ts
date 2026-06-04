@@ -411,7 +411,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup.
+     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperationRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
@@ -453,7 +453,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup.
+     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperation(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {

@@ -31,6 +31,12 @@ export interface BooleanField {
      * @memberof BooleanField
      */
     description?: string;
+    /**
+     * Whether this field is indexed for metadata filtering.
+     * @type {boolean}
+     * @memberof BooleanField
+     */
+    filterable?: boolean;
 }
 
 
@@ -65,6 +71,7 @@ export function BooleanFieldFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'type': json['type'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'filterable': !exists(json, 'filterable') ? undefined : json['filterable'],
     };
 }
 
@@ -79,6 +86,7 @@ export function BooleanFieldToJSON(value?: BooleanField | null): any {
         
         'type': value.type,
         'description': value.description,
+        'filterable': value.filterable,
     };
 }
 

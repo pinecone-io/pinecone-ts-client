@@ -38,18 +38,6 @@ export interface StringFieldFullTextSearch {
      * @memberof StringFieldFullTextSearch
      */
     stopWords?: boolean;
-    /**
-     * Whether to lowercase tokens during text analysis. Defaults to `true`. Read-only; set by the server.
-     * @type {boolean}
-     * @memberof StringFieldFullTextSearch
-     */
-    readonly lowercase?: boolean;
-    /**
-     * The maximum token length to index. Tokens exceeding this length are truncated. Defaults to `40`. Read-only; set by the server.
-     * @type {number}
-     * @memberof StringFieldFullTextSearch
-     */
-    readonly maxTermLen?: number;
 }
 
 /**
@@ -74,8 +62,6 @@ export function StringFieldFullTextSearchFromJSONTyped(json: any, ignoreDiscrimi
         'language': !exists(json, 'language') ? undefined : json['language'],
         'stemming': !exists(json, 'stemming') ? undefined : json['stemming'],
         'stopWords': !exists(json, 'stop_words') ? undefined : json['stop_words'],
-        'lowercase': !exists(json, 'lowercase') ? undefined : json['lowercase'],
-        'maxTermLen': !exists(json, 'max_term_len') ? undefined : json['max_term_len'],
     };
 }
 

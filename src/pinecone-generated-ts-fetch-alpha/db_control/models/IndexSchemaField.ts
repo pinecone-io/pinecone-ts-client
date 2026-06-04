@@ -34,6 +34,27 @@ import {
     FloatFieldToJSON,
 } from './FloatField';
 import {
+    IntegerField,
+    instanceOfIntegerField,
+    IntegerFieldFromJSON,
+    IntegerFieldFromJSONTyped,
+    IntegerFieldToJSON,
+} from './IntegerField';
+import {
+    LegacyMetadataField,
+    instanceOfLegacyMetadataField,
+    LegacyMetadataFieldFromJSON,
+    LegacyMetadataFieldFromJSONTyped,
+    LegacyMetadataFieldToJSON,
+} from './LegacyMetadataField';
+import {
+    ResponseStringField,
+    instanceOfResponseStringField,
+    ResponseStringFieldFromJSON,
+    ResponseStringFieldFromJSONTyped,
+    ResponseStringFieldToJSON,
+} from './ResponseStringField';
+import {
     SemanticTextField,
     instanceOfSemanticTextField,
     SemanticTextFieldFromJSON,
@@ -48,13 +69,6 @@ import {
     SparseVectorFieldToJSON,
 } from './SparseVectorField';
 import {
-    StringField,
-    instanceOfStringField,
-    StringFieldFromJSON,
-    StringFieldFromJSONTyped,
-    StringFieldToJSON,
-} from './StringField';
-import {
     StringListField,
     instanceOfStringListField,
     StringListFieldFromJSON,
@@ -64,12 +78,16 @@ import {
 
 /**
  * @type IndexSchemaField
- * The configuration of a single field in the index schema. The `type` property determines how the field is stored and searched.
- * Supported field types:
- * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search. - `string_list`: String array field. - `float`: Numeric field. - `boolean`: Boolean field.
+ * The configuration of a single field in the index schema.
+ * Most fields carry a `type` property that identifies the field type:
+ * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search or metadata filtering. - `string_list`: String array field. - `float`: Numeric field. - `integer`: Legacy numeric field from older indexes (pre-dating float
+ * 
+ *   normalization). Will not appear in new indexes.
+ * - `boolean`: Boolean field.
+ * Fields in older indexes may omit `type` entirely. These are legacy metadata fields from before typed schemas were introduced.
  * @export
  */
-export type IndexSchemaField = { type: 'boolean' } & BooleanField | { type: 'dense_vector' } & DenseVectorField | { type: 'float' } & FloatField | { type: 'semantic_text' } & SemanticTextField | { type: 'sparse_vector' } & SparseVectorField | { type: 'string' } & StringField | { type: 'string_list' } & StringListField;
+export type IndexSchemaField = BooleanField | DenseVectorField | FloatField | IntegerField | LegacyMetadataField | ResponseStringField | SemanticTextField | SparseVectorField | StringListField;
 
 export function IndexSchemaFieldFromJSON(json: any): IndexSchemaField {
     return IndexSchemaFieldFromJSONTyped(json, false);
@@ -79,24 +97,7 @@ export function IndexSchemaFieldFromJSONTyped(json: any, ignoreDiscriminator: bo
     if ((json === undefined) || (json === null)) {
         return json;
     }
-    switch (json['type']) {
-        case 'boolean':
-            return {...BooleanFieldFromJSONTyped(json, true), type: 'boolean'};
-        case 'dense_vector':
-            return {...DenseVectorFieldFromJSONTyped(json, true), type: 'dense_vector'};
-        case 'float':
-            return {...FloatFieldFromJSONTyped(json, true), type: 'float'};
-        case 'semantic_text':
-            return {...SemanticTextFieldFromJSONTyped(json, true), type: 'semantic_text'};
-        case 'sparse_vector':
-            return {...SparseVectorFieldFromJSONTyped(json, true), type: 'sparse_vector'};
-        case 'string':
-            return {...StringFieldFromJSONTyped(json, true), type: 'string'};
-        case 'string_list':
-            return {...StringListFieldFromJSONTyped(json, true), type: 'string_list'};
-        default:
-            throw new Error(`No variant of IndexSchemaField exists with 'type=${json['type']}'`);
-    }
+    return { ...BooleanFieldFromJSONTyped(json, true), ...DenseVectorFieldFromJSONTyped(json, true), ...FloatFieldFromJSONTyped(json, true), ...IntegerFieldFromJSONTyped(json, true), ...LegacyMetadataFieldFromJSONTyped(json, true), ...ResponseStringFieldFromJSONTyped(json, true), ...SemanticTextFieldFromJSONTyped(json, true), ...SparseVectorFieldFromJSONTyped(json, true), ...StringListFieldFromJSONTyped(json, true) };
 }
 
 export function IndexSchemaFieldToJSON(value?: IndexSchemaField | null): any {
@@ -106,24 +107,35 @@ export function IndexSchemaFieldToJSON(value?: IndexSchemaField | null): any {
     if (value === null) {
         return null;
     }
-    switch (value['type']) {
-        case 'boolean':
-            return BooleanFieldToJSON(value);
-        case 'dense_vector':
-            return DenseVectorFieldToJSON(value);
-        case 'float':
-            return FloatFieldToJSON(value);
-        case 'semantic_text':
-            return SemanticTextFieldToJSON(value);
-        case 'sparse_vector':
-            return SparseVectorFieldToJSON(value);
-        case 'string':
-            return StringFieldToJSON(value);
-        case 'string_list':
-            return StringListFieldToJSON(value);
-        default:
-            throw new Error(`No variant of IndexSchemaField exists with 'type=${value['type']}'`);
+
+    if (instanceOfBooleanField(value)) {
+        return BooleanFieldToJSON(value as BooleanField);
+    }
+    if (instanceOfDenseVectorField(value)) {
+        return DenseVectorFieldToJSON(value as DenseVectorField);
+    }
+    if (instanceOfFloatField(value)) {
+        return FloatFieldToJSON(value as FloatField);
+    }
+    if (instanceOfIntegerField(value)) {
+        return IntegerFieldToJSON(value as IntegerField);
+    }
+    if (instanceOfLegacyMetadataField(value)) {
+        return LegacyMetadataFieldToJSON(value as LegacyMetadataField);
+    }
+    if (instanceOfResponseStringField(value)) {
+        return ResponseStringFieldToJSON(value as ResponseStringField);
+    }
+    if (instanceOfSemanticTextField(value)) {
+        return SemanticTextFieldToJSON(value as SemanticTextField);
+    }
+    if (instanceOfSparseVectorField(value)) {
+        return SparseVectorFieldToJSON(value as SparseVectorField);
+    }
+    if (instanceOfStringListField(value)) {
+        return StringListFieldToJSON(value as StringListField);
     }
 
+    return {};
 }
 
