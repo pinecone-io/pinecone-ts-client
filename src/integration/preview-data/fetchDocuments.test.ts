@@ -52,10 +52,12 @@ describe('preview fetchDocuments', () => {
   });
 
   test('respects includeFields by returning only the requested fields', async () => {
-    const result = await pc.preview.index({ name: indexName }).fetchDocuments(namespace, {
-      ids: ['doc-1'],
-      includeFields: ['title'],
-    });
+    const result = await pc.preview
+      .index({ name: indexName })
+      .fetchDocuments(namespace, {
+        ids: ['doc-1'],
+        includeFields: ['title'],
+      });
 
     const doc = result.documents['doc-1'];
     expect(doc).toBeDefined();

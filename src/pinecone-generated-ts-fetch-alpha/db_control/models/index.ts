@@ -52,3 +52,4 @@ export * from './SparseVectorField';
 export * from './StringField';
 export * from './StringFieldFullTextSearch';
 export * from './StringListField';
+export * from './TypedIndexSchemaField';

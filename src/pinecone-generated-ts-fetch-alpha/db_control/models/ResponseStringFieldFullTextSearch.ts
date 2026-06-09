@@ -24,7 +24,7 @@ export interface ResponseStringFieldFullTextSearch {
      * @type {string}
      * @memberof ResponseStringFieldFullTextSearch
      */
-    language?: string;
+    language: string;
     /**
      * Whether stemming is applied during text analysis.
      * @type {boolean}
@@ -32,7 +32,7 @@ export interface ResponseStringFieldFullTextSearch {
      */
     stemming: boolean;
     /**
-     * Whether stop words are filtered during text analysis.
+     * Whether stop words are filtered during text analysis. Only `true` if `stemming: true`.
      * @type {boolean}
      * @memberof ResponseStringFieldFullTextSearch
      */
@@ -44,6 +44,7 @@ export interface ResponseStringFieldFullTextSearch {
  */
 export function instanceOfResponseStringFieldFullTextSearch(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "language" in value;
     isInstance = isInstance && "stemming" in value;
     isInstance = isInstance && "stopWords" in value;
 
@@ -60,7 +61,7 @@ export function ResponseStringFieldFullTextSearchFromJSONTyped(json: any, ignore
     }
     return {
         
-        'language': !exists(json, 'language') ? undefined : json['language'],
+        'language': json['language'],
         'stemming': json['stemming'],
         'stopWords': json['stop_words'],
     };
