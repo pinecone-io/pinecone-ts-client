@@ -19,6 +19,8 @@ import {
   PreviewDeleteDocumentsOptions,
 } from './deleteDocuments';
 import type { PineconeConfiguration } from '../../data';
+import { IndexOptions } from '../../types';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * Data-plane document operations for a schema-based index.
@@ -44,8 +46,18 @@ import type { PineconeConfiguration } from '../../data';
 export class PreviewIndex {
   private _provider: AlphaDocumentOperationsProvider;
 
-  constructor(config: PineconeConfiguration, indexName: string) {
-    this._provider = new AlphaDocumentOperationsProvider(config, indexName);
+  constructor(config: PineconeConfiguration, options: IndexOptions) {
+    if (!options.name && !options.host) {
+      throw new PineconeArgumentError(
+        'Either name or host must be provided in IndexOptions',
+      );
+    }
+    this._provider = new AlphaDocumentOperationsProvider(
+      config,
+      options.name,
+      options.host,
+      options.additionalHeaders,
+    );
   }
 
   /**

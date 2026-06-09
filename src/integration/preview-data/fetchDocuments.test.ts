@@ -19,7 +19,7 @@ beforeAll(async () => {
     waitUntilReady: true,
   });
 
-  await pc.preview.index(indexName).upsertDocuments(namespace, {
+  await pc.preview.index({ name: indexName }).upsertDocuments(namespace, {
     documents: [
       { _id: 'doc-1', title: 'Foo', content: 'Machine learning' },
       { _id: 'doc-2', title: 'Bar', content: 'Vector databases' },
@@ -41,7 +41,7 @@ afterAll(async () => {
 describe('preview fetchDocuments', () => {
   test('fetches 2 documents and returns a documents map with namespace and usage', async () => {
     const result = await pc.preview
-      .index(indexName)
+      .index({ name: indexName })
       .fetchDocuments(namespace, { ids: ['doc-1', 'doc-2'] });
 
     expect(Object.keys(result.documents)).toHaveLength(2);
@@ -52,7 +52,7 @@ describe('preview fetchDocuments', () => {
   });
 
   test('respects includeFields by returning only the requested fields', async () => {
-    const result = await pc.preview.index(indexName).fetchDocuments(namespace, {
+    const result = await pc.preview.index({ name: indexName }).fetchDocuments(namespace, {
       ids: ['doc-1'],
       includeFields: ['title'],
     });

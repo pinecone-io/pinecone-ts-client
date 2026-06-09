@@ -19,7 +19,7 @@ beforeAll(async () => {
     waitUntilReady: true,
   });
 
-  await pc.preview.index(indexName).upsertDocuments(namespace, {
+  await pc.preview.index({ name: indexName }).upsertDocuments(namespace, {
     documents: [
       {
         _id: 'doc-1',
@@ -49,7 +49,7 @@ afterAll(async () => {
 describe('preview searchDocuments', () => {
   test('returns matches, namespace, and usage from search', async () => {
     const result = await pc.preview
-      .index(indexName)
+      .index({ name: indexName })
       .searchDocuments(namespace, {
         scoreBy: [
           { type: 'text', field: 'content', query: 'machine learning' },

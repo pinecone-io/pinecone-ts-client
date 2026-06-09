@@ -31,7 +31,7 @@ afterAll(async () => {
 describe('preview upsertDocuments', () => {
   test('upserts 2 documents and returns upsertedCount === 2', async () => {
     const result = await pc.preview
-      .index(indexName)
+      .index({ name: indexName })
       .upsertDocuments(namespace, {
         documents: [
           {

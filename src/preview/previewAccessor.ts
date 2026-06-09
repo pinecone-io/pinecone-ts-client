@@ -1,6 +1,7 @@
 import { PreviewIndexes } from './indexes/previewIndexes';
 import { PreviewIndex } from './indexes/previewIndex';
 import type { PineconeConfiguration } from '../data';
+import type { IndexOptions } from '../types';
 
 /**
  * Entry point for Pinecone preview operations. Access via `pc.preview`.
@@ -33,20 +34,29 @@ export class Preview {
 
   /**
    * Returns a {@link PreviewIndex} for performing data-plane document operations
-   * against the named index.
+   * against a schema-based index.
+   *
+   * Provide either `name` (resolves the host via `describeIndex`) or `host`
+   * (skips that round-trip). When both are provided, `host` is used directly
+   * and `name` is only used for cache-key purposes.
    *
    * @example
    * ```typescript
-   * const previewIndex = pc.preview.index('my-schema-index');
+   * // Resolve host automatically from the index name
+   * const previewIndex = pc.preview.index({ name: 'my-schema-index' });
+   *
+   * // Skip host resolution when you already know the host URL
+   * const previewIndex = pc.preview.index({ host: 'https://my-host.pinecone.io' });
+   *
    * const result = await previewIndex.upsertDocuments('my-namespace', {
    *   documents: [{ _id: 'doc-1', content: 'Hello world' }],
    * });
    * ```
    *
-   * @param indexName - The name of the schema-based index to target.
+   * @param options - {@link IndexOptions} — must include at least `name` or `host`.
    * @alpha
    */
-  index(indexName: string): PreviewIndex {
-    return new PreviewIndex(this._config, indexName);
+  index(options: IndexOptions): PreviewIndex {
+    return new PreviewIndex(this._config, options);
   }
 }
