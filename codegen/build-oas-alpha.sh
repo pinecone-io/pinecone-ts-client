@@ -59,20 +59,24 @@ fi
 fix_id_field() {
 	local file=$1
 	sedi \
-		-e 's/id:/_id:/g' \
+		-e 's/\([^a-zA-Z0-9_]\)id:/\1_id:/g' \
+		-e 's/^id:/_id:/' \
 		-e "s/'id'/'_id'/g" \
 		-e 's/"id"/"_id"/g' \
-		-e 's/\.id/\._id/g' \
+		-e 's/\.id\([^a-zA-Z0-9_]\)/\._id\1/g' \
+		-e 's/\.id$/\._id/' \
 		"$file"
 }
 
 fix_score_field() {
 	local file=$1
 	sedi \
-		-e 's/score:/_score:/g' \
+		-e 's/\([^a-zA-Z0-9_]\)score:/\1_score:/g' \
+		-e 's/^score:/_score:/' \
 		-e "s/'score'/'_score'/g" \
 		-e 's/"score"/"_score"/g' \
-		-e 's/\.score/\._score/g' \
+		-e 's/\.score\([^a-zA-Z0-9_]\)/\._score\1/g' \
+		-e 's/\.score$/\._score/' \
 		"$file"
 }
 
