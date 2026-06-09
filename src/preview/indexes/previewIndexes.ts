@@ -50,6 +50,7 @@ import {
 } from './createCollection';
 import { describePreviewCollection } from './describeCollection';
 import { deletePreviewCollection } from './deleteCollection';
+import { IndexHostSingleton } from '../../data/indexHostSingleton';
 
 /**
  * Control-plane index operations for Pinecone's alpha API (`2026-01.alpha`).
@@ -70,8 +71,10 @@ import { deletePreviewCollection } from './deleteCollection';
  */
 export class PreviewIndexes {
   private _api: ManageIndexesApi;
+  private _config: PineconeConfiguration;
 
   constructor(config: PineconeConfiguration) {
+    this._config = config;
     this._api = alphaIndexOperationsBuilder(config);
   }
 
@@ -106,7 +109,14 @@ export class PreviewIndexes {
    * @alpha
    */
   async list(): Promise<IndexList> {
-    return listPreviewIndexes(this._api);
+    const indexList = await listPreviewIndexes(this._api);
+    if (indexList.indexes && indexList.indexes.length > 0) {
+      for (const index of indexList.indexes) {
+        const host = index.privateHost || index.host;
+        IndexHostSingleton._set(this._config, index.name, host);
+      }
+    }
+    return indexList;
   }
 
   /**
@@ -143,7 +153,10 @@ export class PreviewIndexes {
    * @alpha
    */
   async create(options: PreviewCreateIndexOptions): Promise<IndexModel> {
-    return createPreviewIndex(this._api, options);
+    const indexModel = await createPreviewIndex(this._api, options);
+    const host = indexModel.privateHost || indexModel.host;
+    IndexHostSingleton._set(this._config, indexModel.name, host);
+    return indexModel;
   }
 
   /**
@@ -174,7 +187,10 @@ export class PreviewIndexes {
    * @alpha
    */
   async describe(indexName: string): Promise<IndexModel> {
-    return describePreviewIndex(this._api, indexName);
+    const indexModel = await describePreviewIndex(this._api, indexName);
+    const host = indexModel.privateHost || indexModel.host;
+    IndexHostSingleton._set(this._config, indexName, host);
+    return indexModel;
   }
 
   /**
@@ -198,7 +214,8 @@ export class PreviewIndexes {
    * @alpha
    */
   async delete(name: string): Promise<void> {
-    return deletePreviewIndex(this._api, name);
+    await deletePreviewIndex(this._api, name);
+    IndexHostSingleton._delete(this._config, name);
   }
 
   /**

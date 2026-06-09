@@ -505,8 +505,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndex(options: CreateIndexOptions) {
-    return this._createIndex(options);
+  async createIndex(options: CreateIndexOptions) {
+    const indexModel = await this._createIndex(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**
@@ -539,8 +544,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndexForModel(options: CreateIndexForModelOptions) {
-    return this._createIndexForModel(options);
+  async createIndexForModel(options: CreateIndexForModelOptions) {
+    const indexModel = await this._createIndexForModel(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**
