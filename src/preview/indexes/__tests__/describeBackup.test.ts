@@ -7,9 +7,9 @@ const buildMockApi = (
 ): ManageIndexesApi =>
   ({
     describeBackup: jest.fn().mockResolvedValue({
-      backup_id: 'bk-123',
-      source_index_name: 'my-index',
-      source_index_id: 'idx-abc',
+      backupId: 'bk-123',
+      sourceIndexName: 'my-index',
+      sourceIndexId: 'idx-abc',
       status: 'Ready',
       cloud: 'aws',
       region: 'us-east-1',
@@ -34,7 +34,7 @@ describe('describePreviewBackup', () => {
   describe('success', () => {
     test('returns BackupModel on success', async () => {
       const result = await describePreviewBackup(buildMockApi(), 'bk-123');
-      expect(result).toMatchObject({ backup_id: 'bk-123', status: 'Ready' });
+      expect(result).toMatchObject({ backupId: 'bk-123', status: 'Ready' });
     });
     test('passes backupId to the API client', async () => {
       const api = buildMockApi();

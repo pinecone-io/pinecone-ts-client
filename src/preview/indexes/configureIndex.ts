@@ -12,20 +12,21 @@ import { handleApiError } from '../../errors/handling';
  *
  * All fields are optional — send only those you want to change.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export type PreviewConfigureIndexOptions = ConfigureIndexRequest;
 
+export type {
+  PatchIndexDeploymentRequest as PreviewPatchIndexDeploymentRequest,
+  PatchIndexSchema as PreviewPatchIndexSchema,
+  PatchSemanticTextField as PreviewPatchSemanticTextField,
+} from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
- * Configures an alpha index using the 2026-01.alpha API.
+ * Configures an index using the 2026-01.alpha API.
  *
  * Only the fields present in `options` are updated; omit a field to leave it unchanged.
  *
- * **Alpha notice:** This function is not covered by the SDK's backward
- * compatibility guarantee. Signatures may change without a major version bump.
- *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function configurePreviewIndex(

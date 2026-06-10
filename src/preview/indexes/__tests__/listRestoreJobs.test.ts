@@ -3,10 +3,10 @@ import type { PreviewListRestoreJobsOptions } from '../listRestoreJobs';
 import type { ManageIndexesApi } from '../../../pinecone-generated-ts-fetch-alpha/db_control';
 
 const mockRestoreJob = {
-  restore_job_id: 'rj-abc123',
-  backup_id: 'bk-xyz',
-  target_index_name: 'my-restored-index',
-  target_index_id: 'idx-111',
+  restoreJobId: 'rj-abc123',
+  backupId: 'bk-xyz',
+  targetIndexName: 'my-restored-index',
+  targetIndexId: 'idx-111',
   status: 'Initializing',
 };
 

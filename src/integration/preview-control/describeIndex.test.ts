@@ -12,28 +12,28 @@ describe('preview describeIndex', () => {
     const indexName = randomName('preview-desc');
 
     try {
-      await pc.preview.indexes.createIndex({
+      await pc.preview.indexes.create({
         name: indexName,
         schema: {
           fields: {
-            chunk_text: { type: 'string', full_text_search: {} },
+            chunk_text: { type: 'string', fullTextSearch: {} },
           },
         },
         waitUntilReady: true,
       });
 
-      const result = await pc.preview.indexes.describeIndex(indexName);
+      const result = await pc.preview.indexes.describe(indexName);
       expect(result.name).toEqual(indexName);
       expect(result.schema).toBeDefined();
       expect(result.schema.fields).toBeDefined();
     } finally {
-      await pc.preview.indexes.deleteIndex(indexName).catch(() => {});
+      await pc.preview.indexes.delete(indexName).catch(() => {});
     }
   });
 
   test('throws for an index that does not exist', async () => {
     await expect(
-      pc.preview.indexes.describeIndex('definitely-does-not-exist-xyzzy'),
+      pc.preview.indexes.describe('definitely-does-not-exist-xyzzy'),
     ).rejects.toBeDefined();
   });
 });

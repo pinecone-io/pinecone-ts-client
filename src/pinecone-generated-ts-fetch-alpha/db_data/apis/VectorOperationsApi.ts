@@ -33,6 +33,42 @@ import type {
   UpsertRequest,
   UpsertResponse,
 } from '../models/index';
+import {
+    DeleteRequestFromJSON,
+    DeleteRequestToJSON,
+    DescribeIndexStatsRequestFromJSON,
+    DescribeIndexStatsRequestToJSON,
+    FetchByMetadataRequestFromJSON,
+    FetchByMetadataRequestToJSON,
+    FetchByMetadataResponseFromJSON,
+    FetchByMetadataResponseToJSON,
+    FetchResponseFromJSON,
+    FetchResponseToJSON,
+    IndexDescriptionFromJSON,
+    IndexDescriptionToJSON,
+    ListResponseFromJSON,
+    ListResponseToJSON,
+    QueryRequestFromJSON,
+    QueryRequestToJSON,
+    QueryResponseFromJSON,
+    QueryResponseToJSON,
+    RpcStatusFromJSON,
+    RpcStatusToJSON,
+    SearchRecordsRequestFromJSON,
+    SearchRecordsRequestToJSON,
+    SearchRecordsResponseFromJSON,
+    SearchRecordsResponseToJSON,
+    UpdateRequestFromJSON,
+    UpdateRequestToJSON,
+    UpdateResponseFromJSON,
+    UpdateResponseToJSON,
+    UpsertRecordFromJSON,
+    UpsertRecordToJSON,
+    UpsertRequestFromJSON,
+    UpsertRequestToJSON,
+    UpsertResponseFromJSON,
+    UpsertResponseToJSON,
+} from '../models/index';
 
 export interface DeleteVectorsRequest {
     xPineconeApiVersion: string;
@@ -127,7 +163,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.deleteRequest,
+            body: DeleteRequestToJSON(requestParameters.deleteRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
@@ -174,10 +210,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.describeIndexStatsRequest,
+            body: DescribeIndexStatsRequestToJSON(requestParameters.describeIndexStatsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => IndexDescriptionFromJSON(jsonValue));
     }
 
     /**
@@ -229,7 +265,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FetchResponseFromJSON(jsonValue));
     }
 
     /**
@@ -273,10 +309,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.fetchByMetadataRequest,
+            body: FetchByMetadataRequestToJSON(requestParameters.fetchByMetadataRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FetchByMetadataResponseFromJSON(jsonValue));
     }
 
     /**
@@ -332,7 +368,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListResponseFromJSON(jsonValue));
     }
 
     /**
@@ -376,10 +412,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.queryRequest,
+            body: QueryRequestToJSON(requestParameters.queryRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => QueryResponseFromJSON(jsonValue));
     }
 
     /**
@@ -427,10 +463,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.searchRecordsRequest,
+            body: SearchRecordsRequestToJSON(requestParameters.searchRecordsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchRecordsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -474,10 +510,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.updateRequest,
+            body: UpdateRequestToJSON(requestParameters.updateRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateResponseFromJSON(jsonValue));
     }
 
     /**
@@ -525,7 +561,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.upsertRecord,
+            body: requestParameters.upsertRecord.map(UpsertRecordToJSON),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -571,10 +607,10 @@ export class VectorOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.upsertRequest,
+            body: UpsertRequestToJSON(requestParameters.upsertRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpsertResponseFromJSON(jsonValue));
     }
 
     /**

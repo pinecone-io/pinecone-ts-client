@@ -207,7 +207,7 @@ export type {
 } from './pinecone-generated-ts-fetch/db_control';
 
 // --- Alpha / Preview exports (2026-01.alpha) ---
-export { PreviewIndexes } from './preview';
+export { PreviewIndexes, PreviewIndex, Preview } from './preview';
 export type {
   // Index list / model
   PreviewIndexList,
@@ -253,4 +253,28 @@ export type {
   PreviewListRestoreJobsOptions,
   PreviewRestoreJobList,
   PreviewRestoreJobModel,
+  // List collections
+  PreviewCollectionList,
+  PreviewCollectionModel,
+  // Create collection
+  PreviewCreateCollectionOptions,
+  // Upsert documents (data plane)
+  PreviewDocumentRecord,
+  PreviewUpsertDocumentsOptions,
+  PreviewUpsertDocumentsResponse,
+  // Search documents (data plane)
+  PreviewDocumentScoringMethod,
+  PreviewSearchDocumentsOptions,
+  PreviewDocumentSearchMatch,
+  PreviewSearchDocumentsResponse,
+  PreviewDocumentSearchUsage,
+  // Fetch documents (data plane)
+  PreviewFetchDocumentsOptions,
+  PreviewFetchedDocument,
+  PreviewFetchDocumentsResponse,
+  PreviewDocumentFetchUsage,
+  // Delete documents (data plane)
+  PreviewDeleteDocumentsOptions,
+  // Shared data-plane types
+  PreviewSparseValues,
 } from './preview';

@@ -1,68 +1,103 @@
 export { PreviewIndexes } from './indexes/previewIndexes';
+export { PreviewIndex } from './indexes/previewIndex';
+export { Preview } from './previewAccessor';
 
-// Index list / model
-export type { IndexList as PreviewIndexList } from '../pinecone-generated-ts-fetch-alpha/db_control';
+// listIndexes
 export type {
-  IndexModel as PreviewIndexModel,
-  IndexModelStatus as PreviewIndexModelStatus,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
+  PreviewIndexList,
+  PreviewIndexModel,
+  PreviewIndexModelStatus,
+} from './indexes/listIndexes';
 
-// Create index
+// createIndex
 export type {
   PreviewCreateIndexOptions,
   PreviewCreateIndexSchema,
   PreviewCreateIndexSchemaField,
+  PreviewIndexDeploymentRequest,
+  PreviewIndexDeployment,
+  PreviewManagedDeployment,
+  PreviewByocDeployment,
+  PreviewPodDeployment,
+  PreviewBooleanField,
+  PreviewDenseVectorField,
+  PreviewFloatField,
+  PreviewSemanticTextField,
+  PreviewSparseVectorField,
+  PreviewStringField,
+  PreviewStringListField,
+  PreviewStringFieldFullTextSearch,
+  PreviewReadCapacity,
 } from './indexes/createIndex';
 
-// Deployment
+// configureIndex
 export type {
-  IndexDeploymentRequest as PreviewIndexDeploymentRequest,
-  IndexDeployment as PreviewIndexDeployment,
-  ManagedDeployment as PreviewManagedDeployment,
-  ByocDeployment as PreviewByocDeployment,
-  PodDeployment as PreviewPodDeployment,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
+  PreviewConfigureIndexOptions,
+  PreviewPatchIndexDeploymentRequest,
+  PreviewPatchIndexSchema,
+  PreviewPatchSemanticTextField,
+} from './indexes/configureIndex';
 
-// Schema field types
-export type {
-  BooleanField as PreviewBooleanField,
-  DenseVectorField as PreviewDenseVectorField,
-  FloatField as PreviewFloatField,
-  SemanticTextField as PreviewSemanticTextField,
-  SparseVectorField as PreviewSparseVectorField,
-  StringField as PreviewStringField,
-  StringListField as PreviewStringListField,
-  StringFieldFullTextSearch as PreviewStringFieldFullTextSearch,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
+// describeBackup
+export type { PreviewBackupModel } from './indexes/describeBackup';
 
-// Read capacity
-export type { ReadCapacity as PreviewReadCapacity } from '../pinecone-generated-ts-fetch-alpha/db_control';
-
-// Configure index
-export type { PreviewConfigureIndexOptions } from './indexes/configureIndex';
-export type {
-  PatchIndexDeploymentRequest as PreviewPatchIndexDeploymentRequest,
-  PatchIndexSchema as PreviewPatchIndexSchema,
-  PatchSemanticTextField as PreviewPatchSemanticTextField,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
-
-// Create backup
+// createBackup
 export type { PreviewCreateBackupOptions } from './indexes/createBackup';
-export type { BackupModel as PreviewBackupModel } from '../pinecone-generated-ts-fetch-alpha/db_control';
 
-// List index backups
-export type { PreviewListIndexBackupsOptions } from './indexes/listIndexBackups';
-export type { BackupList as PreviewBackupList } from '../pinecone-generated-ts-fetch-alpha/db_control';
+// listIndexBackups
+export type {
+  PreviewListIndexBackupsOptions,
+  PreviewBackupList,
+} from './indexes/listIndexBackups';
 
-// List project backups
+// listProjectBackups
 export type { PreviewListProjectBackupsOptions } from './indexes/listProjectBackups';
 
-// Create index from backup
+// createIndexFromBackup
 export type { PreviewCreateIndexFromBackupOptions } from './indexes/createIndexFromBackup';
 
-// List restore jobs
-export type { PreviewListRestoreJobsOptions } from './indexes/listRestoreJobs';
+// listRestoreJobs
 export type {
-  RestoreJobList as PreviewRestoreJobList,
-  RestoreJobModel as PreviewRestoreJobModel,
-} from '../pinecone-generated-ts-fetch-alpha/db_control';
+  PreviewListRestoreJobsOptions,
+  PreviewRestoreJobList,
+} from './indexes/listRestoreJobs';
+
+// describeRestoreJob
+export type { PreviewRestoreJobModel } from './indexes/describeRestoreJob';
+
+// listCollections
+export type {
+  PreviewCollectionList,
+  PreviewCollectionModel,
+} from './indexes/listCollections';
+
+// createCollection
+export type { PreviewCreateCollectionOptions } from './indexes/createCollection';
+
+// upsertDocuments
+export type {
+  PreviewDocumentRecord,
+  PreviewUpsertDocumentsOptions,
+  PreviewUpsertDocumentsResponse,
+} from './indexes/upsertDocuments';
+
+// searchDocuments
+export type {
+  PreviewDocumentScoringMethod,
+  PreviewSearchDocumentsOptions,
+  PreviewDocumentSearchMatch,
+  PreviewSearchDocumentsResponse,
+  PreviewDocumentSearchUsage,
+  PreviewSparseValues,
+} from './indexes/searchDocuments';
+
+// fetchDocuments
+export type {
+  PreviewFetchDocumentsOptions,
+  PreviewFetchedDocument,
+  PreviewFetchDocumentsResponse,
+  PreviewDocumentFetchUsage,
+} from './indexes/fetchDocuments';
+
+// deleteDocuments
+export type { PreviewDeleteDocumentsOptions } from './indexes/deleteDocuments';

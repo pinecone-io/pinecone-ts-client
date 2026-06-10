@@ -6,10 +6,10 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
+export type { BackupList as PreviewBackupList } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
- * Options for listing backups of an alpha index.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for listing backups of an index.
  *
  * @alpha
  */
@@ -21,10 +21,7 @@ export interface PreviewListIndexBackupsOptions {
 }
 
 /**
- * Lists all backups for an alpha index using the 2026-01.alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
+ * Lists all backups for an index using the 2026-01.alpha API.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  * @alpha

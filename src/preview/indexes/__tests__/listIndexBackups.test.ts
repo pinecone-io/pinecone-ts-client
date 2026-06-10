@@ -10,9 +10,9 @@ const buildMockApi = (
     listIndexBackups: jest.fn().mockResolvedValue({
       data: [
         {
-          backup_id: 'bk-123',
-          source_index_name: 'my-index',
-          source_index_id: 'idx-abc',
+          backupId: 'bk-123',
+          sourceIndexName: 'my-index',
+          sourceIndexId: 'idx-abc',
           status: 'Ready',
           cloud: 'aws',
           region: 'us-east-1',
@@ -42,7 +42,7 @@ describe('listPreviewIndexBackups', () => {
     test('returns BackupList on success', async () => {
       const result = await listPreviewIndexBackups(buildMockApi(), 'my-index');
       expect(result.data).toHaveLength(1);
-      expect(result.data?.[0]).toMatchObject({ backup_id: 'bk-123' });
+      expect(result.data?.[0]).toMatchObject({ backupId: 'bk-123' });
     });
 
     test('passes indexName to the API', async () => {

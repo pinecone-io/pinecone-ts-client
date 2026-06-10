@@ -7,9 +7,7 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for creating an index from a backup using the alpha API.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for creating an index from a backup.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  * @alpha
@@ -24,13 +22,11 @@ export interface PreviewCreateIndexFromBackupOptions {
 }
 
 /**
- * Creates an index from a Pinecone backup using the alpha API.
+ * Creates an index from a Pinecone backup using the 2026-01.alpha API.
  *
- * The creation is accepted asynchronously — returns a `restore_job_id` and
- * `index_id` once the request is accepted (HTTP 202). Poll the restore job
+ * The creation is accepted asynchronously — returns a `restoreJobId` and
+ * `indexId` once the request is accepted (HTTP 202). Poll the restore job
  * to track completion.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility guarantee.
  *
  * @param api - The alpha manage-indexes API client.
  * @param backupId - The ID of the backup to create an index from.
@@ -59,7 +55,7 @@ export const createIndexFromBackup = async (
       createIndexFromBackupRequest: {
         name: options.name,
         tags: options.tags,
-        deletion_protection: options.deletionProtection,
+        deletionProtection: options.deletionProtection,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

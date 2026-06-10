@@ -21,8 +21,29 @@ import type {
   RpcStatus,
   SearchDocumentsRequest,
   SearchDocumentsResponse,
+  UpdateDocumentsRequest,
   UpsertDocumentsRequest,
   UpsertDocumentsResponse,
+} from '../models/index';
+import {
+    DeleteDocumentsRequestFromJSON,
+    DeleteDocumentsRequestToJSON,
+    FetchDocumentsRequestFromJSON,
+    FetchDocumentsRequestToJSON,
+    FetchDocumentsResponseFromJSON,
+    FetchDocumentsResponseToJSON,
+    RpcStatusFromJSON,
+    RpcStatusToJSON,
+    SearchDocumentsRequestFromJSON,
+    SearchDocumentsRequestToJSON,
+    SearchDocumentsResponseFromJSON,
+    SearchDocumentsResponseToJSON,
+    UpdateDocumentsRequestFromJSON,
+    UpdateDocumentsRequestToJSON,
+    UpsertDocumentsRequestFromJSON,
+    UpsertDocumentsRequestToJSON,
+    UpsertDocumentsResponseFromJSON,
+    UpsertDocumentsResponseToJSON,
 } from '../models/index';
 
 export interface DeleteDocumentsOperationRequest {
@@ -41,6 +62,12 @@ export interface SearchDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
     searchDocumentsRequest: SearchDocumentsRequest;
+}
+
+export interface UpdateDocumentsOperationRequest {
+    xPineconeApiVersion: string;
+    namespace: string;
+    updateDocumentsRequest: UpdateDocumentsRequest;
 }
 
 export interface UpsertDocumentsOperationRequest {
@@ -90,7 +117,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.deleteDocumentsRequest,
+            body: DeleteDocumentsRequestToJSON(requestParameters.deleteDocumentsRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse<any>(response);
@@ -141,10 +168,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.fetchDocumentsRequest,
+            body: FetchDocumentsRequestToJSON(requestParameters.fetchDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FetchDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -192,10 +219,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.searchDocumentsRequest,
+            body: SearchDocumentsRequestToJSON(requestParameters.searchDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => SearchDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
@@ -204,6 +231,57 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
      */
     async searchDocuments(requestParameters: SearchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchDocumentsResponse> {
         const response = await this.searchDocumentsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Apply partial updates to documents in a namespace.  Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect.
+     * Update documents
+     */
+    async updateDocumentsRaw(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling updateDocuments.');
+        }
+
+        if (requestParameters.namespace === null || requestParameters.namespace === undefined) {
+            throw new runtime.RequiredError('namespace','Required parameter requestParameters.namespace was null or undefined when calling updateDocuments.');
+        }
+
+        if (requestParameters.updateDocumentsRequest === null || requestParameters.updateDocumentsRequest === undefined) {
+            throw new runtime.RequiredError('updateDocumentsRequest','Required parameter requestParameters.updateDocumentsRequest was null or undefined when calling updateDocuments.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/namespaces/{namespace}/documents/update`.replace(`{${"namespace"}}`, encodeURIComponent(String(requestParameters.namespace))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateDocumentsRequestToJSON(requestParameters.updateDocumentsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Apply partial updates to documents in a namespace.  Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect.
+     * Update documents
+     */
+    async updateDocuments(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.updateDocumentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -243,10 +321,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.upsertDocumentsRequest,
+            body: UpsertDocumentsRequestToJSON(requestParameters.upsertDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpsertDocumentsResponseFromJSON(jsonValue));
     }
 
     /**

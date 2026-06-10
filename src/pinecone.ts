@@ -56,7 +56,7 @@ import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOpe
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
-import { PreviewIndexes } from './preview';
+import { Preview } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -154,11 +154,12 @@ export class Pinecone {
    *
    * @example
    * ```typescript
-   * const list = await pc.preview.indexes.listIndexes();
+   * const list = await pc.preview.indexes.list();
+   * const idx = pc.preview.index('my-schema-index');
    * ```
    * @alpha
    */
-  public preview: { indexes: PreviewIndexes };
+  public preview: Preview;
 
   /**
    * @example
@@ -223,7 +224,7 @@ export class Pinecone {
     this.inference = new Inference(this.config);
 
     // Preview (alpha) operations
-    this.preview = { indexes: new PreviewIndexes(this.config) };
+    this.preview = new Preview(this.config);
   }
 
   /**
@@ -504,8 +505,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndex(options: CreateIndexOptions) {
-    return this._createIndex(options);
+  async createIndex(options: CreateIndexOptions) {
+    const indexModel = await this._createIndex(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**
@@ -538,8 +544,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndexForModel(options: CreateIndexForModelOptions) {
-    return this._createIndexForModel(options);
+  async createIndexForModel(options: CreateIndexForModelOptions) {
+    const indexModel = await this._createIndexForModel(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**

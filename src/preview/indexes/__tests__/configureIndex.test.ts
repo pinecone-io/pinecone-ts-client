@@ -17,7 +17,7 @@ describe('configurePreviewIndex', () => {
     test('throws PineconeArgumentError when name is empty string', async () => {
       await expect(
         configurePreviewIndex(makeFakeApi(), '', {
-          deletion_protection: 'enabled',
+          deletionProtection: 'enabled',
         }),
       ).rejects.toThrow(PineconeArgumentError);
     });
@@ -33,12 +33,12 @@ describe('configurePreviewIndex', () => {
     test('calls api.configureIndex with correct args', async () => {
       const fakeApi = makeFakeApi();
       await configurePreviewIndex(fakeApi, 'my-index', {
-        deletion_protection: 'enabled',
+        deletionProtection: 'enabled',
       });
       expect(fakeApi.configureIndex).toHaveBeenCalledWith(
         expect.objectContaining({
           indexName: 'my-index',
-          configureIndexRequest: { deletion_protection: 'enabled' },
+          configureIndexRequest: { deletionProtection: 'enabled' },
         }),
       );
     });
@@ -61,7 +61,7 @@ describe('configurePreviewIndex', () => {
         }),
       });
       const result = await configurePreviewIndex(fakeApi, 'my-index', {
-        deletion_protection: 'enabled',
+        deletionProtection: 'enabled',
       });
       expect(result).toMatchObject({ name: 'my-index' });
     });

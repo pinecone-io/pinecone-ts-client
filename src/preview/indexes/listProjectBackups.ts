@@ -6,9 +6,7 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for listing all backups in a project using the alpha API.
- *
- * **Alpha notice:** This type is not covered by the SDK's backward compatibility guarantee.
+ * Options for listing all backups in a project.
  *
  * @alpha
  */
@@ -21,9 +19,6 @@ export interface PreviewListProjectBackupsOptions {
 
 /**
  * Lists all backups across every index in the project using the 2026-01.alpha API.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility
- * guarantee. Signatures may change without a major version bump.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  * @alpha

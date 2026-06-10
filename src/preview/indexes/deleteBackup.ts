@@ -4,12 +4,10 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Deletes a Pinecone backup using the alpha API.
+ * Deletes a Pinecone backup using the 2026-01.alpha API.
  *
  * The delete is accepted asynchronously — the backup may not be removed immediately.
  * Returns once the delete request is accepted (HTTP 202).
- *
- * **Alpha notice:** This function is not covered by the SDK's backward compatibility guarantee.
  *
  * @param api - The alpha manage-indexes API client.
  * @param backupId - The ID of the backup to delete.

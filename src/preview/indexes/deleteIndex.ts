@@ -4,16 +4,12 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Deletes an alpha index by name.
- *
- * **Alpha notice:** This function is not covered by the SDK's backward
- * compatibility guarantee.
+ * Deletes an index by name.
  *
  * Deletion is asynchronous; the index may still be terminating after
  * this call returns. Deletion protection must be disabled on the index
  * before calling this method.
  *
- * @see [Schema-based indexes](https://docs.pinecone.io/guides/indexes/schema-based)
  * @alpha
  */
 export async function deletePreviewIndex(
