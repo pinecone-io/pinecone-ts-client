@@ -33,7 +33,7 @@ export const deleteFile = (
       );
     }
     const api = await apiProvider.provideData();
-    return await api.deleteFile({
+    await api.deleteFile({
       assistantName: assistantName,
       assistantFileId: fileId,
       xPineconeApiVersion: X_PINECONE_API_VERSION,

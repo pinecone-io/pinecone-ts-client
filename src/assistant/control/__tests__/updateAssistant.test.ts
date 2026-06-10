@@ -1,7 +1,7 @@
 import {
   ManageAssistantsApi,
   UpdateAssistantOperationRequest,
-  UpdateAssistant200Response,
+  UpdateAssistantResponse,
   X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_control';
 import { updateAssistant } from '../updateAssistant';
@@ -9,7 +9,7 @@ import { updateAssistant } from '../updateAssistant';
 const setupManageAssistantsApi = () => {
   const fakeUpdateAssistant: (
     req: UpdateAssistantOperationRequest,
-  ) => Promise<UpdateAssistant200Response> = jest.fn().mockImplementation(() =>
+  ) => Promise<UpdateAssistantResponse> = jest.fn().mockImplementation(() =>
     Promise.resolve({
       assistantName: 'test-assistant',
       instructions: 'updated instructions',
@@ -19,7 +19,7 @@ const setupManageAssistantsApi = () => {
 
   const MAP = {
     updateAssistant: fakeUpdateAssistant,
-  } as ManageAssistantsApi;
+  } as unknown as ManageAssistantsApi;
   return MAP;
 };
 

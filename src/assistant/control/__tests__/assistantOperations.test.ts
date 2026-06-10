@@ -4,7 +4,7 @@ import {
   GetAssistantRequest,
   DeleteAssistantRequest,
   ListAssistantsRequest,
-  ListAssistants200Response,
+  ListAssistantsResponse,
   X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_control';
 import { describeAssistant } from '../describeAssistant';
@@ -30,7 +30,7 @@ const setupManageAssistantsApi = () => {
 
   const fakeListAssistants: (
     req: ListAssistantsRequest,
-  ) => Promise<ListAssistants200Response> = jest.fn().mockImplementation(() =>
+  ) => Promise<ListAssistantsResponse> = jest.fn().mockImplementation(() =>
     Promise.resolve({
       assistants: [
         {
@@ -55,7 +55,7 @@ const setupManageAssistantsApi = () => {
     getAssistant: fakeGetAssistant,
     deleteAssistant: fakeDeleteAssistant,
     listAssistants: fakeListAssistants,
-  } as ManageAssistantsApi;
+  } as unknown as ManageAssistantsApi;
   return MAP;
 };
 

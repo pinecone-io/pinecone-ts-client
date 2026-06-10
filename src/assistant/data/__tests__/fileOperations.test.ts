@@ -3,7 +3,7 @@ import { describeFile } from '../describeFile';
 import { deleteFile } from '../deleteFile';
 import {
   ListFilesRequest,
-  ListFiles200Response,
+  ListFilesResponse,
   DescribeFileRequest,
   AssistantFileModel,
   DeleteFileRequest,
@@ -15,7 +15,7 @@ import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 const setupApiProvider = () => {
   const fakeListFiles: (
     req: ListFilesRequest,
-  ) => Promise<ListFiles200Response> = jest.fn().mockImplementation(() =>
+  ) => Promise<ListFilesResponse> = jest.fn().mockImplementation(() =>
     Promise.resolve({
       files: [
         {
@@ -61,7 +61,7 @@ const setupApiProvider = () => {
     listFiles: fakeListFiles,
     describeFile: fakeDescribeFile,
     deleteFile: fakeDeleteFile,
-  } as ManageAssistantsApi;
+  } as unknown as ManageAssistantsApi;
   const AsstDataOperationsProvider = {
     provideData: async () => MAP,
   } as AsstDataOperationsProvider;
