@@ -54,6 +54,20 @@
     "typedoc": "^0.27.9",
     "typescript": "~5.6.3"
   },
+  "overrides": {
+    "eslint": {
+      "minimatch": "3.1.5"
+    },
+    "eslint-plugin-import": {
+      "minimatch": "3.1.5"
+    },
+    "jest": {
+      "minimatch": "3.1.5"
+    },
+    "ts-jest": {
+      "minimatch": "3.1.5"
+    }
+  },
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
