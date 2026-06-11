@@ -72,15 +72,13 @@ describe('Upload file happy path', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(tempFile);
     expect(response.id).toBeDefined();
-    expect(response.createdOn).toBeDefined();
-    expect(response.updatedOn).toBeDefined();
+    expect(response.fileId).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },
@@ -97,20 +95,13 @@ describe('Upload file happy path', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(tempFileWithMetadata);
     expect(response.id).toBeDefined();
-    expect(response.createdOn).toBeDefined();
-    expect(response.updatedOn).toBeDefined();
+    expect(response.fileId).toBeDefined();
     expect(response.status).toBeDefined();
-    expect(response.metadata).toBeDefined();
-    if (response.metadata) {
-      expect(response.metadata['description']).toEqual('Test file');
-      expect(response.metadata['category']).toEqual('integration-test');
-    }
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },
@@ -133,13 +124,13 @@ describe('Upload via Buffer', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(fileName);
     expect(response.id).toBeDefined();
+    expect(response.fileId).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },
@@ -157,14 +148,13 @@ describe('Upload via Buffer', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(fileName);
-    if (response.metadata) {
-      expect(response.metadata['source']).toEqual('buffer');
-    }
+    expect(response.id).toBeDefined();
+    expect(response.fileId).toBeDefined();
+    expect(response.status).toBeDefined();
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },
@@ -186,13 +176,13 @@ describe('Upload via ReadableStream', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(fileName);
     expect(response.id).toBeDefined();
+    expect(response.fileId).toBeDefined();
     expect(response.status).toBeDefined();
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },
@@ -209,14 +199,13 @@ describe('Upload via ReadableStream', () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.name).toEqual(fileName);
-    if (response.metadata) {
-      expect(response.metadata['source']).toEqual('stream');
-    }
+    expect(response.id).toBeDefined();
+    expect(response.fileId).toBeDefined();
+    expect(response.status).toBeDefined();
 
-    await waitUntilAssistantFileReady(assistantName, response.id);
+    await waitUntilAssistantFileReady(assistantName, response.fileId!);
     await assertWithRetries(
-      () => assistant.deleteFile(response.id),
+      () => assistant.deleteFile(response.fileId!),
       () => {
         return;
       },

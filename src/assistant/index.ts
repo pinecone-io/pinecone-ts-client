@@ -66,6 +66,7 @@ export type {
   MultiModalSnippetModel,
   ReferenceModel,
   HighlightModel,
+  OperationModel,
 } from '../pinecone-generated-ts-fetch/assistant_data';
 
 export { ChatStream } from './chatStream';
@@ -436,7 +437,7 @@ export class Assistant {
    * @param options - A {@link UploadFileOptions} object. Provide either
    *   `path` (local file path) or `file` ({@link Uploadable}) + `fileName`,
    *   along with optional `metadata` and `multimodal` flags.
-   * @returns A promise that resolves to an {@link AssistantFileModel} object containing the file details.
+   * @returns A promise that resolves to an {@link OperationModel} describing the async upload operation. Use `operation.fileId` to track the file once processing begins.
    */
   uploadFile(options: UploadFileOptions) {
     return this._uploadFile(options);

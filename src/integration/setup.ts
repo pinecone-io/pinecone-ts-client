@@ -128,12 +128,15 @@ export const setup = async () => {
   fs.writeFileSync(testFilePath, 'Sample content for assistant file testing');
 
   console.error(`\tUploading test file: ${testFilePath}`);
-  const file = await assistant.uploadFile({
+  const uploadOp = await assistant.uploadFile({
     path: testFilePath,
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
   });
 
-  await waitUntilAssistantFileReady(assistantName, file.id);
+  if (!uploadOp.fileId) {
+    throw new Error('Upload operation did not return a file ID');
+  }
+  await waitUntilAssistantFileReady(assistantName, uploadOp.fileId);
 
   // Build fixtures object
   const fixtures = {

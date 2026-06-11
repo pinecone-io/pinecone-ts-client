@@ -13,29 +13,28 @@ import {
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
 const setupApiProvider = () => {
-  const fakeListFiles: (
-    req: ListFilesRequest,
-  ) => Promise<ListFilesResponse> = jest.fn().mockImplementation(() =>
-    Promise.resolve({
-      files: [
-        {
-          name: 'file1.txt',
-          id: 'file-id-1',
-          status: 'Available',
-          createdOn: new Date(),
-          updatedOn: new Date(),
-        },
-        {
-          name: 'file2.pdf',
-          id: 'file-id-2',
-          status: 'Processing',
-          createdOn: new Date(),
-          updatedOn: new Date(),
-          multimodal: true,
-        },
-      ],
-    }),
-  );
+  const fakeListFiles: (req: ListFilesRequest) => Promise<ListFilesResponse> =
+    jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        files: [
+          {
+            name: 'file1.txt',
+            id: 'file-id-1',
+            status: 'Available',
+            createdOn: new Date(),
+            updatedOn: new Date(),
+          },
+          {
+            name: 'file2.pdf',
+            id: 'file-id-2',
+            status: 'Processing',
+            createdOn: new Date(),
+            updatedOn: new Date(),
+            multimodal: true,
+          },
+        ],
+      }),
+    );
 
   const fakeDescribeFile: (
     req: DescribeFileRequest,
