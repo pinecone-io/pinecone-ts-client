@@ -17,7 +17,7 @@ const buildMockApi = (
   ({
     describeRestoreJob: jest.fn().mockResolvedValue(mockRestoreJob),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('describePreviewRestoreJob', () => {
   describe('validation', () => {

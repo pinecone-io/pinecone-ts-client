@@ -17,7 +17,7 @@ const buildMockApi = (
   ({
     describeIndex: jest.fn().mockResolvedValue(mockIndexModel),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('describePreviewIndex', () => {
   describe('validation', () => {

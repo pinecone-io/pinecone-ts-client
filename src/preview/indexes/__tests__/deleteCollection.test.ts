@@ -8,7 +8,7 @@ const buildMockApi = (
   ({
     deleteCollection: jest.fn().mockResolvedValue(undefined),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('deletePreviewCollection', () => {
   describe('validation', () => {

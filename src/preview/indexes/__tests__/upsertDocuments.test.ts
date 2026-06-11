@@ -9,7 +9,7 @@ const buildMockApi = (
   ({
     upsertDocuments: jest.fn().mockResolvedValue({ upserted_count: 2 }),
     ...overrides,
-  }) as unknown as DocumentOperationsApi;
+  }) as DocumentOperationsApi;
 
 const validOptions: PreviewUpsertDocumentsOptions = {
   documents: [

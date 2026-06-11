@@ -14,7 +14,7 @@ const buildMockApi = (
       vector_count: 99,
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('describePreviewCollection', () => {
   describe('validation', () => {

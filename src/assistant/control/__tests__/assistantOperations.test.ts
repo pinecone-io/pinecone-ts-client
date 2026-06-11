@@ -55,7 +55,7 @@ const setupManageAssistantsApi = () => {
     getAssistant: fakeGetAssistant,
     deleteAssistant: fakeDeleteAssistant,
     listAssistants: fakeListAssistants,
-  } as unknown as ManageAssistantsApi;
+  } as ManageAssistantsApi;
   return MAP;
 };
 

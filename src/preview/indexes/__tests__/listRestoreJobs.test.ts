@@ -19,7 +19,7 @@ const buildMockApi = (
       pagination: null,
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('listPreviewRestoreJobs', () => {
   describe('success', () => {

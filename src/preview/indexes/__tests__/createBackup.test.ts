@@ -19,7 +19,7 @@ const buildMockApi = (
       region: 'us-east-1',
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('createPreviewBackup', () => {
   describe('validation', () => {

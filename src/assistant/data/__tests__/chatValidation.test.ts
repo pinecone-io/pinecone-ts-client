@@ -23,7 +23,7 @@ describe(`chat validation tests`, () => {
     test('throws error when model is not a string', () => {
       const input = {
         messages: ['Hello'],
-        model: 123, // Invalid type
+        model: 123, // Invalid type, cast as unknown as ChatOptions
       } as unknown as ChatOptions;
 
       expect(() => validateChatOptions(input)).toThrow(

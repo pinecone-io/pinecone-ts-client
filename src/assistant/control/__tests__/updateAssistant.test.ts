@@ -19,7 +19,7 @@ const setupManageAssistantsApi = () => {
 
   const MAP = {
     updateAssistant: fakeUpdateAssistant,
-  } as unknown as ManageAssistantsApi;
+  } as ManageAssistantsApi;
   return MAP;
 };
 

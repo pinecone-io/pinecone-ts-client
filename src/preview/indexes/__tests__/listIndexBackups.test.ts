@@ -21,7 +21,7 @@ const buildMockApi = (
       pagination: { next: undefined },
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('listPreviewIndexBackups', () => {
   describe('validation', () => {

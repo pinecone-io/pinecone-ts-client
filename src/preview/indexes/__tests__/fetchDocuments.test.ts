@@ -18,7 +18,7 @@ const buildMockApi = (
   ({
     fetchDocuments: jest.fn().mockResolvedValue(mockResponse),
     ...overrides,
-  }) as unknown as DocumentOperationsApi;
+  }) as DocumentOperationsApi;
 
 const validOptions: PreviewFetchDocumentsOptions = {
   ids: ['doc-1', 'doc-2'],

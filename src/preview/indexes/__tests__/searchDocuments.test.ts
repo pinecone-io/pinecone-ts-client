@@ -18,7 +18,7 @@ const buildMockApi = (
   ({
     searchDocuments: jest.fn().mockResolvedValue(mockResponse),
     ...overrides,
-  }) as unknown as DocumentOperationsApi;
+  }) as DocumentOperationsApi;
 
 const validOptions: PreviewSearchDocumentsOptions = {
   scoreBy: [{ type: 'text', field: 'content', query: 'machine learning' }],

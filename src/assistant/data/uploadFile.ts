@@ -170,7 +170,7 @@ async function executeStreamUpload(
     body,
     // undici (Node.js built-in fetch) requires duplex: 'half' for streaming
     // request bodies. The RequestInit type doesn't include this field yet.
-    ...({ duplex: 'half' } as unknown as RequestInit),
+    ...({ duplex: 'half' } as RequestInit),
   });
   return parseResponse(response, filesUrl);
 }

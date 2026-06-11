@@ -67,7 +67,7 @@ const setupApiProvider = () => {
     listFiles: fakeListFiles,
     describeFile: fakeDescribeFile,
     deleteFile: fakeDeleteFile,
-  } as unknown as ManageAssistantsApi;
+  } as ManageAssistantsApi;
   const AsstDataOperationsProvider = {
     provideData: async () => MAP,
   } as AsstDataOperationsProvider;

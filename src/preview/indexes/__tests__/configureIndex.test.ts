@@ -10,7 +10,7 @@ const makeFakeApi = (
       .fn()
       .mockResolvedValue({ name: 'my-index', status: { ready: true } }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('configurePreviewIndex', () => {
   describe('validation', () => {

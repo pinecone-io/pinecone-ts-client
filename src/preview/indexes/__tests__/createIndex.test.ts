@@ -33,7 +33,7 @@ const buildMockApi = (
     }),
     describeIndex: jest.fn(),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('createPreviewIndex', () => {
   describe('validation', () => {

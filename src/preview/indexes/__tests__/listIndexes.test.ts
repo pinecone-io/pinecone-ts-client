@@ -7,7 +7,7 @@ const buildMockApi = (
   ({
     listIndexes: jest.fn().mockResolvedValue({ indexes: [] }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('listPreviewIndexes', () => {
   describe('success', () => {

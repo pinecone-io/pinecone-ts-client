@@ -9,7 +9,7 @@ const buildMockApi = (
   ({
     deleteDocuments: jest.fn().mockResolvedValue({}),
     ...overrides,
-  }) as unknown as DocumentOperationsApi;
+  }) as DocumentOperationsApi;
 
 describe('deletePreviewDocuments', () => {
   describe('validation', () => {
