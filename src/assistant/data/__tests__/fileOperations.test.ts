@@ -8,6 +8,7 @@ import {
   AssistantFileModel,
   DeleteFileRequest,
   ManageAssistantsApi,
+  OperationModel,
   X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
@@ -52,9 +53,15 @@ const setupApiProvider = () => {
     }),
   );
 
-  const fakeDeleteFile: (req: DeleteFileRequest) => Promise<void> = jest
-    .fn()
-    .mockImplementation(() => Promise.resolve());
+  const mockDeleteOp: OperationModel = {
+    id: 'op-delete-id',
+    fileId: 'file-id-1',
+    status: 'Processing',
+    operationType: 'delete_file',
+    createdOn: new Date(),
+  };
+  const fakeDeleteFile: (req: DeleteFileRequest) => Promise<OperationModel> =
+    jest.fn().mockResolvedValue(mockDeleteOp);
 
   const MAP = {
     listFiles: fakeListFiles,
@@ -162,8 +169,10 @@ describe('deleteFile', () => {
     });
   });
 
-  test('resolves successfully when delete completes', async () => {
+  test('returns OperationModel on success', async () => {
     const deleteFileFn = deleteFile('test-assistant', asstOperationsProvider);
-    await expect(deleteFileFn('file-id-1')).resolves.toBeUndefined();
+    const result = await deleteFileFn('file-id-1');
+    expect(result.id).toBeDefined();
+    expect(result.status).toBeDefined();
   });
 });

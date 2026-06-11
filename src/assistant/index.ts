@@ -461,7 +461,7 @@ export class Assistant {
    * ```
    *
    * @param options - A {@link DeleteFile} object containing the file ID to delete.
-   * @returns A promise that resolves to void on success.
+   * @returns A promise that resolves to an {@link OperationModel} describing the async delete operation.
    */
   deleteFile(fileId: string) {
     return this._deleteFile(fileId);
