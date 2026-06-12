@@ -24,6 +24,32 @@ export interface AssistantFilesList {
 }
 
 /**
+ * Options for listing the async operations (such as file uploads and deletes)
+ * performed on an assistant.
+ */
+export interface ListOperationsOptions {
+  /**
+   * Optionally filter operations by type, such as the kind of action the
+   * operation represents (e.g. uploading or deleting a file).
+   */
+  operationType?: string;
+  /**
+   * Optionally filter operations by status (e.g. `Processing`, `Completed`, or
+   * `Failed`).
+   */
+  status?: string;
+  /**
+   * The maximum number of operations to return.
+   */
+  limit?: number;
+  /**
+   * The token to paginate through the list of operations. Use the
+   * `paginationToken` returned in a previous response to fetch the next page.
+   */
+  paginationToken?: string;
+}
+
+/**
  * An enum constant representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
  *
  * This enum is provided for convenience but is not enforced. You can pass any string value
@@ -198,6 +224,54 @@ export type UploadFileOptions = {
    * Metadata to attach to the file.
    */
   metadata?: Record<string, string | number>;
+  /**
+   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   */
+  multimodal?: boolean;
+} & (
+  | {
+      /**
+       * The local path to the file to upload. The file is read asynchronously.
+       */
+      path: string;
+      file?: never;
+      fileName?: never;
+    }
+  | {
+      /**
+       * The file data to upload. Accepts a `Buffer`, `Blob`, or Node.js
+       * `ReadableStream`. When passing a stream, `fileName` is required so
+       * the server receives a meaningful filename.
+       */
+      file: Uploadable;
+      /**
+       * The filename to use in the multipart upload (e.g. `"report.pdf"`).
+       * Required when using `file`.
+       */
+      fileName: string;
+      path?: never;
+    }
+);
+
+/**
+ * Options for creating or replacing a file on an assistant at a caller-supplied
+ * file ID.
+ *
+ * Provide the `assistantFileId` to create or replace, along with either `path`
+ * (a local file path) or `file` + `fileName` (an in-memory buffer, blob, or
+ * readable stream). The two content forms are mutually exclusive.
+ *
+ * Unlike {@link UploadFileOptions} — which always creates a new file with a
+ * server-generated ID — upsert is keyed on the ID you supply and does not
+ * accept metadata.
+ */
+export type UpsertFileOptions = {
+  /**
+   * The ID of the file to create or replace. If a file with this ID already
+   * exists, its content is replaced; otherwise a new file is created with this
+   * identifier.
+   */
+  assistantFileId: string;
   /**
    * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
    */

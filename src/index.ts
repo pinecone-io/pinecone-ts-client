@@ -51,7 +51,9 @@ export type {
   ChatCompletionOptions,
   ContextOptions,
   ListFilesOptions,
+  ListOperationsOptions,
   UploadFileOptions,
+  UpsertFileOptions,
   Uploadable,
   AssistantFilesList,
   MessagesModel,
@@ -89,6 +91,9 @@ export type {
   JsonReferenceModel,
   MarkdownReferenceModel,
   AssistantFileModel,
+  OperationModel,
+  OperationList,
+  PaginationResponse,
 } from './pinecone-generated-ts-fetch/assistant_data';
 export type {
   AlignmentResponse,

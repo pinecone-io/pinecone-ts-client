@@ -21,6 +21,10 @@ export interface EmbedOptions {
 
   /**
    * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available model parameters.
+   *
+   * As a convenience, `inputType` is automatically converted to the API's
+   * `input_type` parameter. All other parameters are passed through unchanged,
+   * so they must use the model's documented (snake_case) parameter names.
    */
   parameters?: Record<string, string>;
 }

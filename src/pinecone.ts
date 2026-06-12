@@ -582,8 +582,9 @@ export class Pinecone {
    * Configure an index
    *
    * Use this method to update configuration on an existing index. For both pod-based and serverless indexes you can update
-   * the deletionProtection status of an index and/or change any index tags. For pod-based index you can also
-   * configure the number of replicas and pod type.
+   * the deletionProtection status of an index and/or change any index tags. For pod-based indexes you can also
+   * configure the number of replicas and pod type. For serverless and BYOC indexes you can configure the read capacity,
+   * and for indexes with integrated inference you can update the embedding configuration.
    *
    * @example
    * ```js
@@ -608,7 +609,10 @@ export class Pinecone {
   }
 
   /**
-   * Create a new collection from an existing index
+   * Create a new collection from an existing index.
+   *
+   * Note: collections are only supported for pod-based indexes; serverless
+   * indexes do not support collections.
    *
    * @example
    * ```js
@@ -752,7 +756,8 @@ export class Pinecone {
   }
 
   /**
-   * Retrieves information about an Assistant by name.
+   * Retrieves information about an Assistant by name, including its current
+   * status (e.g. whether it is still initializing or ready to use).
    *
    * @example
    * ```typescript
@@ -853,7 +858,7 @@ export class Pinecone {
    * optional instructions and metadata.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
+   * @returns A Promise that resolves to an {@link UpdateAssistantResponse} object.
    */
   updateAssistant(options: UpdateAssistantOptions) {
     return this._updateAssistant(options);
@@ -1164,10 +1169,10 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param options - A {@link ListBackupsOptions} object containing the optional indexName, limit, and paginationToken values.
+   * @param options - A {@link ListRestoreJobsOptions} object containing the optional limit and paginationToken values.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link BackupList} object.
+   * @returns A Promise that resolves to a {@link RestoreJobList} object.
    */
   listRestoreJobs(options: ListRestoreJobsOptions) {
     return this._listRestoreJobs(options);
