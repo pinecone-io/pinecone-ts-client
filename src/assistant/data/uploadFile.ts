@@ -14,7 +14,7 @@ export const uploadFile = (
     validateUploadFileOptions(options);
 
     const hostUrl = await apiProvider.provideHostUrl();
-    let filesUrl = `${hostUrl}/files/${assistantName}`;
+    let filesUrl = `${hostUrl}/files/${encodeURIComponent(assistantName)}`;
     if (options.multimodal !== undefined) {
       filesUrl += `?multimodal=${options.multimodal}`;
     }

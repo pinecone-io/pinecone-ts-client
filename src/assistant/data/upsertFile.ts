@@ -37,7 +37,11 @@ export const upsertFile = (
     validateUpsertFileOptions(options);
 
     const hostUrl = await apiProvider.provideHostUrl();
-    let filesUrl = `${hostUrl}/files/${assistantName}/${options.assistantFileId}`;
+    // Encode path segments — assistantFileId is caller-owned and may contain
+    // characters (/, ?, #, %, ...) that would otherwise corrupt the URL path.
+    let filesUrl = `${hostUrl}/files/${encodeURIComponent(
+      assistantName,
+    )}/${encodeURIComponent(options.assistantFileId)}`;
     if (options.multimodal !== undefined) {
       filesUrl += `?multimodal=${options.multimodal}`;
     }

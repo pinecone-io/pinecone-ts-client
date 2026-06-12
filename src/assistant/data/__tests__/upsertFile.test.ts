@@ -159,6 +159,15 @@ describe('path input', () => {
     );
   });
 
+  test('percent-encodes special characters in the file ID path segment', async () => {
+    const upsert = upsertFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upsert({ assistantFileId: 'a/b?c#d%e', path: 'test.txt' });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant/a%2Fb%3Fc%23d%25e',
+      expect.anything(),
+    );
+  });
+
   test('includes required headers', async () => {
     const upsert = upsertFile(mockAssistantName, mockApiProvider, mockConfig);
     await upsert({ assistantFileId: mockFileId, path: 'test.txt' });
