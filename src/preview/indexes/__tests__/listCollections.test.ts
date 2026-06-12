@@ -16,7 +16,7 @@ const buildMockApi = (
       ],
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('listPreviewCollections', () => {
   describe('success', () => {

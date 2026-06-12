@@ -12,7 +12,7 @@ const buildMockApi = (
       dimension: 3,
     }),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('createPreviewCollection', () => {
   describe('validation', () => {

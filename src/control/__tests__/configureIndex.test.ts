@@ -215,10 +215,13 @@ describe('configureIndex', () => {
   test('throws error when trying to configure readCapacity on pod index', async () => {
     const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
       jest.fn().mockResolvedValue(podIndexModel);
+    const fakeConfigure: (
+      req: ConfigureIndexOperationRequest,
+    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
-      configureIndex: jest.fn(),
-    } as unknown as ManageIndexesApi;
+      configureIndex: fakeConfigure,
+    } as ManageIndexesApi;
 
     await expect(
       configureIndex(IOA)({
@@ -236,10 +239,15 @@ describe('configureIndex', () => {
   test('throws error when trying to configure podReplicas on serverless index', async () => {
     const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
       jest.fn().mockResolvedValue(serverlessIndexModel);
+    const fakeConfigure: (
+      req: ConfigureIndexOperationRequest,
+    ) => Promise<IndexModel> = jest
+      .fn()
+      .mockResolvedValue(serverlessIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
-      configureIndex: jest.fn(),
-    } as unknown as ManageIndexesApi;
+      configureIndex: fakeConfigure,
+    } as ManageIndexesApi;
 
     await expect(
       configureIndex(IOA)({
@@ -257,10 +265,13 @@ describe('configureIndex', () => {
   test('throws error when trying to configure podType on BYOC index', async () => {
     const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
       jest.fn().mockResolvedValue(byocIndexModel);
+    const fakeConfigure: (
+      req: ConfigureIndexOperationRequest,
+    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(byocIndexModel);
     const IOA = {
       describeIndex: fakeDescribe,
-      configureIndex: jest.fn(),
-    } as unknown as ManageIndexesApi;
+      configureIndex: fakeConfigure,
+    } as ManageIndexesApi;
 
     await expect(
       configureIndex(IOA)({
@@ -276,13 +287,15 @@ describe('configureIndex', () => {
   });
 
   test('skips describeIndex when only non-spec params are updated', async () => {
+    const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
+      jest.fn().mockResolvedValue(podIndexModel);
     const fakeConfigure: (
       req: ConfigureIndexOperationRequest,
     ) => Promise<IndexModel> = jest.fn().mockResolvedValue(podIndexModel);
     const IOA = {
-      describeIndex: jest.fn(),
+      describeIndex: fakeDescribe,
       configureIndex: fakeConfigure,
-    } as unknown as ManageIndexesApi;
+    } as ManageIndexesApi;
 
     const returned = await configureIndex(IOA)({
       name: 'pod-index',
@@ -310,13 +323,16 @@ describe('configureIndex', () => {
     const unknownSpecModel = {
       ...podIndexModel,
       spec: {},
-    } as unknown as IndexModel;
+    } as IndexModel;
     const fakeDescribe: (req: DescribeIndexRequest) => Promise<IndexModel> =
       jest.fn().mockResolvedValue(unknownSpecModel);
+    const fakeConfigure: (
+      req: ConfigureIndexOperationRequest,
+    ) => Promise<IndexModel> = jest.fn().mockResolvedValue(unknownSpecModel);
     const IOA = {
       describeIndex: fakeDescribe,
-      configureIndex: jest.fn(),
-    } as unknown as ManageIndexesApi;
+      configureIndex: fakeConfigure,
+    } as ManageIndexesApi;
 
     await expect(
       configureIndex(IOA)({

@@ -1,6 +1,6 @@
 import {
-  AssistantFileModel,
-  AssistantFileModelFromJSON,
+  OperationModel,
+  OperationModelFromJSON,
   X_PINECONE_API_VERSION,
   JSONApiResponse,
   ResponseError,
@@ -19,7 +19,7 @@ export const uploadFile = (
   apiProvider: AsstDataOperationsProvider,
   config: PineconeConfiguration,
 ) => {
-  return async (options: UploadFileOptions): Promise<AssistantFileModel> => {
+  return async (options: UploadFileOptions): Promise<OperationModel> => {
     validateUploadFileOptions(options);
 
     const hostUrl = await apiProvider.provideHostUrl();
@@ -27,7 +27,13 @@ export const uploadFile = (
     const requestHeaders = buildRequestHeaders(config);
 
     if ('path' in options && options.path) {
-      return uploadFromPath(options.path, filesUrl, requestHeaders, config);
+      return uploadFromPath(
+        options.path,
+        filesUrl,
+        requestHeaders,
+        config,
+        options.metadata,
+      );
     } else {
       return uploadFromFile(
         options.file!,
@@ -35,6 +41,7 @@ export const uploadFile = (
         filesUrl,
         requestHeaders,
         config,
+        options.metadata,
       );
     }
   };
@@ -47,7 +54,8 @@ async function uploadFromPath(
   filesUrl: string,
   requestHeaders: Record<string, string>,
   config: PineconeConfiguration,
-): Promise<AssistantFileModel> {
+  metadata?: Record<string, string | number>,
+): Promise<OperationModel> {
   const fetch = getFetch(config);
   const fileBuffer = await fs.promises.readFile(filePath);
   const fileName = path.basename(filePath);
@@ -55,6 +63,12 @@ async function uploadFromPath(
   const fileBlob = new Blob([fileBuffer], { type: mimeType });
   const formData = new FormData();
   formData.append('file', fileBlob, fileName);
+  if (metadata) {
+    formData.append(
+      'metadata',
+      new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
+    );
+  }
 
   return executeUpload(fetch, filesUrl, requestHeaders, formData);
 }
@@ -67,7 +81,8 @@ async function uploadFromFile(
   filesUrl: string,
   requestHeaders: Record<string, string>,
   config: PineconeConfiguration,
-): Promise<AssistantFileModel> {
+  metadata?: Record<string, string | number>,
+): Promise<OperationModel> {
   const mimeType = getMimeType(fileName);
 
   if (file instanceof Blob) {
@@ -75,6 +90,12 @@ async function uploadFromFile(
     const fetch = getFetch(config);
     const formData = new FormData();
     formData.append('file', file, fileName);
+    if (metadata) {
+      formData.append(
+        'metadata',
+        new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
+      );
+    }
     return executeUpload(fetch, filesUrl, requestHeaders, formData);
   }
 
@@ -94,12 +115,23 @@ async function uploadFromFile(
     );
     const formData = new FormData();
     formData.append('file', fileBlob, fileName);
+    if (metadata) {
+      formData.append(
+        'metadata',
+        new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
+      );
+    }
     return executeUpload(fetch, filesUrl, requestHeaders, formData);
   }
 
   // Node.js ReadableStream — stream is consumed on first read, no retries
   const fetch = getNonRetryingFetch(config);
-  const { body, contentType } = buildMultipartBody(file, fileName, mimeType);
+  const { body, contentType } = buildMultipartBody(
+    file,
+    fileName,
+    mimeType,
+    metadata,
+  );
   return executeStreamUpload(
     fetch,
     filesUrl,
@@ -116,7 +148,7 @@ async function executeUpload(
   filesUrl: string,
   requestHeaders: Record<string, string>,
   body: FormData,
-): Promise<AssistantFileModel> {
+): Promise<OperationModel> {
   const response = await fetch(filesUrl, {
     method: 'POST',
     headers: requestHeaders,
@@ -131,14 +163,14 @@ async function executeStreamUpload(
   requestHeaders: Record<string, string>,
   body: ReadableStream<Uint8Array>,
   contentType: string,
-): Promise<AssistantFileModel> {
+): Promise<OperationModel> {
   const response = await fetch(filesUrl, {
     method: 'POST',
     headers: { ...requestHeaders, 'Content-Type': contentType },
     body,
     // undici (Node.js built-in fetch) requires duplex: 'half' for streaming
     // request bodies. The RequestInit type doesn't include this field yet.
-    ...({ duplex: 'half' } as unknown as RequestInit),
+    ...({ duplex: 'half' } as RequestInit),
   });
   return parseResponse(response, filesUrl);
 }
@@ -146,10 +178,10 @@ async function executeStreamUpload(
 async function parseResponse(
   response: Response,
   filesUrl: string,
-): Promise<AssistantFileModel> {
+): Promise<OperationModel> {
   if (response.ok) {
     return await new JSONApiResponse(response, (jsonValue) =>
-      AssistantFileModelFromJSON(jsonValue),
+      OperationModelFromJSON(jsonValue),
     ).value();
   } else {
     const err = await handleApiError(
@@ -172,16 +204,41 @@ function buildMultipartBody(
   stream: NodeJS.ReadableStream,
   fileName: string,
   mimeType: string,
+  metadata?: Record<string, string | number>,
 ): { body: ReadableStream<Uint8Array>; contentType: string } {
   const boundary = `----PineconeBoundary${Math.random().toString(36).slice(2)}`;
   const encoder = new TextEncoder();
 
-  const header = encoder.encode(
-    `--${boundary}\r\n` +
-      `Content-Disposition: form-data; name="file"; filename="${escapeFilename(fileName)}"\r\n` +
-      `Content-Type: ${mimeType}\r\n` +
-      `\r\n`,
+  const preambleParts: Uint8Array[] = [];
+  if (metadata) {
+    preambleParts.push(
+      encoder.encode(
+        `--${boundary}\r\n` +
+          `Content-Disposition: form-data; name="metadata"\r\n` +
+          `Content-Type: application/json\r\n` +
+          `\r\n` +
+          JSON.stringify(metadata) +
+          `\r\n`,
+      ),
+    );
+  }
+  preambleParts.push(
+    encoder.encode(
+      `--${boundary}\r\n` +
+        `Content-Disposition: form-data; name="file"; filename="${escapeFilename(fileName)}"\r\n` +
+        `Content-Type: ${mimeType}\r\n` +
+        `\r\n`,
+    ),
   );
+
+  const totalLength = preambleParts.reduce((sum, p) => sum + p.length, 0);
+  const header = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const part of preambleParts) {
+    header.set(part, offset);
+    offset += part.length;
+  }
+
   const footer = encoder.encode(`\r\n--${boundary}--\r\n`);
 
   // Convert Node.js ReadableStream to Web ReadableStream
@@ -229,16 +286,8 @@ function buildFilesUrl(
 ): string {
   let filesUrl = `${hostUrl}/files/${assistantName}`;
 
-  if (options.metadata) {
-    const encodedMetadata = encodeURIComponent(
-      JSON.stringify(options.metadata),
-    );
-    filesUrl += `?metadata=${encodedMetadata}`;
-  }
-
   if (options.multimodal !== undefined) {
-    const separator = filesUrl.includes('?') ? '&' : '?';
-    filesUrl += `${separator}multimodal=${options.multimodal}`;
+    filesUrl += `?multimodal=${options.multimodal}`;
   }
 
   return filesUrl;

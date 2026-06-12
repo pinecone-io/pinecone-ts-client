@@ -10,7 +10,7 @@ const buildMockApi = (
   ({
     createIndexFromBackupOperation: jest.fn().mockResolvedValue(mockResponse),
     ...overrides,
-  }) as unknown as ManageIndexesApi;
+  }) as ManageIndexesApi;
 
 describe('createIndexFromBackup', () => {
   describe('validation', () => {

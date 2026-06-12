@@ -147,16 +147,18 @@ describe('path input', () => {
     );
   });
 
-  test('builds URL with metadata', async () => {
+  test('sends metadata in form body', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     const metadata = { key: 'value' };
     await upload({ path: 'test.txt', metadata });
 
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
     expect(mockRetryingFetch).toHaveBeenCalledWith(
-      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}`,
-      expect.anything(),
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
+      expect.objectContaining({ body: expect.any(FormData) }),
     );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
   });
 
   test('builds URL with multimodal=true', async () => {
@@ -177,15 +179,18 @@ describe('path input', () => {
     );
   });
 
-  test('builds URL with both metadata and multimodal', async () => {
+  test('sends metadata in form body with multimodal query param', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     const metadata = { key: 'value' };
     await upload({ path: 'test.txt', metadata, multimodal: true });
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
+
     expect(mockRetryingFetch).toHaveBeenCalledWith(
-      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}&multimodal=true`,
-      expect.anything(),
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=true',
+      expect.objectContaining({ body: expect.any(FormData) }),
     );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
   });
 
   test('includes required headers', async () => {
@@ -237,7 +242,7 @@ describe('Buffer input', () => {
     );
   });
 
-  test('builds URL with metadata', async () => {
+  test('sends metadata in form body', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     const metadata = { source: 'upload' };
     await upload({
@@ -245,11 +250,14 @@ describe('Buffer input', () => {
       fileName: 'doc.txt',
       metadata,
     });
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
+
     expect(mockRetryingFetch).toHaveBeenCalledWith(
-      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}`,
-      expect.anything(),
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
+      expect.objectContaining({ body: expect.any(FormData) }),
     );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
   });
 });
 
@@ -353,15 +361,25 @@ describe('ReadableStream input', () => {
     expect(raw).not.toContain('"name"');
   });
 
-  test('builds URL with metadata', async () => {
+  test('sends metadata in multipart body (not URL)', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
-    const stream = Readable.from(['data']);
+    const stream = Readable.from([Buffer.from('data')]);
     const metadata = { source: 'stream' };
     await upload({ file: stream, fileName: 'doc.txt', metadata });
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
-    expect(mockNonRetryingFetch).toHaveBeenCalledWith(
-      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}`,
-      expect.anything(),
+
+    const [url, init] = mockNonRetryingFetch.mock.calls[0];
+    expect(url).toBe(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
     );
+
+    const reader = (init.body as ReadableStream<Uint8Array>).getReader();
+    let raw = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      raw += new TextDecoder().decode(value);
+    }
+    expect(raw).toContain('"metadata"');
+    expect(raw).toContain(JSON.stringify(metadata));
   });
 });
