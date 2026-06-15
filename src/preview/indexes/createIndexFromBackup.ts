@@ -6,6 +6,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
+export type { CreateIndexFromBackupResponse as PreviewCreateIndexFromBackupResponse } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+
 /**
  * Options for creating an index from a backup.
  *

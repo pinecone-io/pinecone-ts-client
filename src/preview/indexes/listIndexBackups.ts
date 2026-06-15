@@ -6,7 +6,11 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
-export type { BackupList as PreviewBackupList } from '../../pinecone-generated-ts-fetch-alpha/db_control';
+export type {
+  BackupList as PreviewBackupList,
+  // Pagination cursor on `PreviewBackupList` / `PreviewRestoreJobList`.
+  PaginationResponse as PreviewPaginationResponse,
+} from '../../pinecone-generated-ts-fetch-alpha/db_control';
 
 /**
  * Options for listing backups of an index.

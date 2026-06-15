@@ -1,14 +1,14 @@
 import type {
   ManageIndexesApi,
-  IndexList,
-  IndexModel,
-  BackupModel,
-  BackupList,
-  CollectionList,
-  CollectionModel,
-  CreateIndexFromBackupResponse,
-  RestoreJobList,
-  RestoreJobModel,
+  IndexList as PreviewIndexList,
+  IndexModel as PreviewIndexModel,
+  BackupModel as PreviewBackupModel,
+  BackupList as PreviewBackupList,
+  CollectionList as PreviewCollectionList,
+  CollectionModel as PreviewCollectionModel,
+  CreateIndexFromBackupResponse as PreviewCreateIndexFromBackupResponse,
+  RestoreJobList as PreviewRestoreJobList,
+  RestoreJobModel as PreviewRestoreJobModel,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { alphaIndexOperationsBuilder } from './alphaIndexOperationsBuilder';
@@ -105,10 +105,10 @@ export class PreviewIndexes {
    * ```
    *
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexList}.
+   * @returns A promise that resolves to {@link PreviewIndexList}.
    * @alpha
    */
-  async list(): Promise<IndexList> {
+  async list(): Promise<PreviewIndexList> {
     const indexList = await listPreviewIndexes(this._api);
     if (indexList.indexes && indexList.indexes.length > 0) {
       for (const index of indexList.indexes) {
@@ -149,10 +149,10 @@ export class PreviewIndexes {
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted. Use `waitUntilReady: true` to block until the index is ready for data operations.
+   * @returns A promise that resolves to {@link PreviewIndexModel} when the creation request is accepted. Use `waitUntilReady: true` to block until the index is ready for data operations.
    * @alpha
    */
-  async create(options: PreviewCreateIndexOptions): Promise<IndexModel> {
+  async create(options: PreviewCreateIndexOptions): Promise<PreviewIndexModel> {
     const indexModel = await createPreviewIndex(this._api, options);
     const host = indexModel.privateHost || indexModel.host;
     IndexHostSingleton._set(this._config, indexModel.name, host);
@@ -183,10 +183,10 @@ export class PreviewIndexes {
    * @param indexName - The name of the index to describe.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexModel}.
+   * @returns A promise that resolves to {@link PreviewIndexModel}.
    * @alpha
    */
-  async describe(indexName: string): Promise<IndexModel> {
+  async describe(indexName: string): Promise<PreviewIndexModel> {
     const indexModel = await describePreviewIndex(this._api, indexName);
     const host = indexModel.privateHost || indexModel.host;
     IndexHostSingleton._set(this._config, indexName, host);
@@ -240,13 +240,13 @@ export class PreviewIndexes {
    * @param options - The {@link PreviewConfigureIndexOptions} fields to update. Only provided fields are changed.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to the updated {@link IndexModel}.
+   * @returns A promise that resolves to the updated {@link PreviewIndexModel}.
    * @alpha
    */
   async configure(
     name: string,
     options: PreviewConfigureIndexOptions,
-  ): Promise<IndexModel> {
+  ): Promise<PreviewIndexModel> {
     return configurePreviewIndex(this._api, name, options);
   }
 
@@ -278,14 +278,14 @@ export class PreviewIndexes {
    * @param options - Optional {@link PreviewCreateBackupOptions} for the backup (name, description).
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link BackupModel}.
+   * @returns A promise that resolves to a {@link PreviewBackupModel}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
   async createBackup(
     indexName: string,
     options?: PreviewCreateBackupOptions,
-  ): Promise<BackupModel> {
+  ): Promise<PreviewBackupModel> {
     return createPreviewBackup(this._api, indexName, options);
   }
 
@@ -316,14 +316,14 @@ export class PreviewIndexes {
    * @param indexName - Name of the index whose backups to list.
    * @param options - Optional {@link PreviewListIndexBackupsOptions} pagination parameters (limit, paginationToken).
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link BackupList}.
+   * @returns A promise that resolves to a {@link PreviewBackupList}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
   async listBackups(
     indexName: string,
     options?: PreviewListIndexBackupsOptions,
-  ): Promise<BackupList> {
+  ): Promise<PreviewBackupList> {
     return listPreviewIndexBackups(this._api, indexName, options);
   }
 
@@ -353,13 +353,13 @@ export class PreviewIndexes {
    *
    * @param options - Optional {@link PreviewListProjectBackupsOptions} pagination parameters (limit, paginationToken).
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link BackupList}.
+   * @returns A promise that resolves to a {@link PreviewBackupList}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
   async listProjectBackups(
     options?: PreviewListProjectBackupsOptions,
-  ): Promise<BackupList> {
+  ): Promise<PreviewBackupList> {
     return listPreviewProjectBackups(this._api, options);
   }
 
@@ -387,11 +387,11 @@ export class PreviewIndexes {
    *
    * @param backupId - The ID of the backup to describe.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link BackupModel}.
+   * @returns A promise that resolves to a {@link PreviewBackupModel}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
-  async describeBackup(backupId: string): Promise<BackupModel> {
+  async describeBackup(backupId: string): Promise<PreviewBackupModel> {
     return describePreviewBackup(this._api, backupId);
   }
 
@@ -445,14 +445,14 @@ export class PreviewIndexes {
    * @param options - The {@link PreviewCreateIndexFromBackupOptions} for the new index (name required; tags and deletionProtection optional).
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link CreateIndexFromBackupResponse} containing the `restoreJobId` and `indexId`.
+   * @returns A promise that resolves to a {@link PreviewCreateIndexFromBackupResponse} containing the `restoreJobId` and `indexId`.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
   async createFromBackup(
     backupId: string,
     options: PreviewCreateIndexFromBackupOptions,
-  ): Promise<CreateIndexFromBackupResponse> {
+  ): Promise<PreviewCreateIndexFromBackupResponse> {
     return createIndexFromBackup(this._api, backupId, options);
   }
 
@@ -482,13 +482,13 @@ export class PreviewIndexes {
    *
    * @param options - Optional {@link PreviewListRestoreJobsOptions} pagination parameters (limit, paginationToken).
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link RestoreJobList}.
+   * @returns A promise that resolves to a {@link PreviewRestoreJobList}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
   async listRestoreJobs(
     options?: PreviewListRestoreJobsOptions,
-  ): Promise<RestoreJobList> {
+  ): Promise<PreviewRestoreJobList> {
     return listPreviewRestoreJobs(this._api, options);
   }
 
@@ -516,11 +516,11 @@ export class PreviewIndexes {
    *
    * @param jobId - The restore job ID returned by {@link createFromBackup}.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link RestoreJobModel}.
+   * @returns A promise that resolves to a {@link PreviewRestoreJobModel}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    * @alpha
    */
-  async describeRestoreJob(jobId: string): Promise<RestoreJobModel> {
+  async describeRestoreJob(jobId: string): Promise<PreviewRestoreJobModel> {
     return describePreviewRestoreJob(this._api, jobId);
   }
 
@@ -552,11 +552,11 @@ export class PreviewIndexes {
    * ```
    *
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link CollectionList}.
+   * @returns A promise that resolves to a {@link PreviewCollectionList}.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
    * @alpha
    */
-  async listCollections(): Promise<CollectionList> {
+  async listCollections(): Promise<PreviewCollectionList> {
     return listPreviewCollections(this._api);
   }
 
@@ -586,13 +586,13 @@ export class PreviewIndexes {
    * @param options - The {@link PreviewCreateCollectionOptions} for the collection, including `name` and `source` index name.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link CollectionModel}.
+   * @returns A promise that resolves to a {@link PreviewCollectionModel}.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
    * @alpha
    */
   async createCollection(
     options: PreviewCreateCollectionOptions,
-  ): Promise<CollectionModel> {
+  ): Promise<PreviewCollectionModel> {
     return createPreviewCollection(this._api, options);
   }
 
@@ -621,11 +621,13 @@ export class PreviewIndexes {
    *
    * @param collectionName - The name of the collection to describe.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link CollectionModel}.
+   * @returns A promise that resolves to a {@link PreviewCollectionModel}.
    * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
    * @alpha
    */
-  async describeCollection(collectionName: string): Promise<CollectionModel> {
+  async describeCollection(
+    collectionName: string,
+  ): Promise<PreviewCollectionModel> {
     return describePreviewCollection(this._api, collectionName);
   }
 
