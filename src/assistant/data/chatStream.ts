@@ -54,6 +54,7 @@ export const chatStream = (
         messages: messagesValidation(options),
         stream: true,
         model: modelValidation(options),
+        temperature: options.temperature,
         filter: options.filter,
         json_response: options.jsonResponse,
         include_highlights: options.includeHighlights,

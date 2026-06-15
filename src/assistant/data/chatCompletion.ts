@@ -31,6 +31,7 @@ export const chatCompletion = (
         messages: messages,
         stream: false,
         model: model,
+        temperature: options.temperature,
         filter: options.filter,
       },
     });

@@ -125,6 +125,7 @@ describe('chat', () => {
         messages: [{ role: 'user', content: 'Hello' }],
         stream: false,
         model: 'gpt-4.1',
+        temperature: 0.5,
         filter: { category: 'docs' },
         jsonResponse: true,
         includeHighlights: true,
