@@ -22,8 +22,6 @@ import { sendFileMultipart } from './fileUpload';
  * is an asynchronous operation: the returned {@link OperationModel} can be
  * polled for completion via `describeOperation`.
  *
- * Note: This method does *not* use the generated code from the OpenAPI spec.
- *
  * @param assistantName - The name of the Assistant that owns the file.
  * @param apiProvider - The data plane operations provider.
  * @param config - The Pinecone configuration object.

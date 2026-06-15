@@ -425,8 +425,6 @@ export class Assistant {
    * incoming HTTP upload stream directly to the assistant without writing it
    * to disk or buffering the entire file in memory.
    *
-   * Note: This method does *not* use the generated code from the OpenAPI spec.
-   *
    * @example
    * Upload from a local path:
    * ```typescript
@@ -494,8 +492,6 @@ export class Assistant {
    * an in-memory `Buffer`, `Blob`, or Node.js `ReadableStream`. Like upload,
    * this is asynchronous: poll the returned operation with
    * {@link describeOperation} to track completion.
-   *
-   * Note: This method does *not* use the generated code from the OpenAPI spec.
    *
    * @example
    * ```typescript
