@@ -1,6 +1,8 @@
 import type {
   AssistantFileModel,
   UsageModel,
+  ContentFilterResults,
+  HighlightModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 /**
@@ -372,6 +374,14 @@ export interface MessageStartChunk extends BaseChunk {
    * The role of the message sender. Either `user` or `assistant`.
    */
   role: string;
+  /**
+   * The number of context snippets used to generate the response.
+   */
+  contextSnippetCount?: number;
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**
@@ -388,6 +398,10 @@ export interface ContentChunk extends BaseChunk {
   delta: {
     content: string;
   };
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**
@@ -413,11 +427,15 @@ export interface CitationChunk extends BaseChunk {
       /**
        * The {@link AssistantFileModel} associated with the citation.
        */
-      file: AssistantFileModel;
+      file?: AssistantFileModel;
       /**
        * The pages in the file that are referenced.
        */
-      pages: number[];
+      pages?: number[];
+      /**
+       * The highlighted excerpt within the referenced file, if available.
+       */
+      highlight?: HighlightModel | null;
     }>;
   };
 }
@@ -437,7 +455,11 @@ export interface MessageEndChunk extends BaseChunk {
   /**
    * The usage details associated with the streamed response.
    */
-  usage: UsageModel;
+  usage?: UsageModel;
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**

@@ -1,6 +1,7 @@
 import type {
   ManageIndexesApi,
   CreateIndexFromBackupResponse,
+  ReadCapacity,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 import { PineconeArgumentError } from '../../errors';
@@ -21,6 +22,8 @@ export interface PreviewCreateIndexFromBackupOptions {
   tags?: Record<string, string>;
   /** Whether to enable deletion protection on the created index. */
   deletionProtection?: string;
+  /** Optional read capacity configuration for the created index. */
+  readCapacity?: ReadCapacity;
 }
 
 /**
@@ -58,6 +61,7 @@ export const createIndexFromBackup = async (
         name: options.name,
         tags: options.tags,
         deletionProtection: options.deletionProtection,
+        readCapacity: options.readCapacity,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
