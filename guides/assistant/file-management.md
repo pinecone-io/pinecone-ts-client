@@ -1,12 +1,12 @@
 # File Management
 
-This guide covers operations for managing files within a Pinecone Assistant, including uploading, listing, describing, and deleting files.
+This guide covers operations for managing files within a Pinecone Assistant, including uploading, upserting, listing, describing, deleting files, and polling the async operations those mutations return.
 
 For more information, see [Manage files](https://docs.pinecone.io/guides/assistant/manage-files).
 
 ## Upload a file
 
-Upload a local file to an Assistant. You can attach metadata to the file for organization and filtering purposes.
+Upload a local file to an Assistant. You can attach metadata to the file for organization and filtering purposes. `uploadFile` returns an `OperationModel` — the file is processed asynchronously, so use `describeOperation` to poll until it is ready.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -14,7 +14,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
 
-const uploadResponse = await assistant.uploadFile({
+const operation = await assistant.uploadFile({
   path: 'product-catalog.txt',
   metadata: {
     source: 'catalog',
@@ -23,17 +23,14 @@ const uploadResponse = await assistant.uploadFile({
   },
 });
 
-console.log(uploadResponse);
+console.log(operation);
 // {
-//   name: 'product-catalog.txt',
-//   id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
-//   metadata: { source: 'catalog', version: '2025-01', category: 'products' },
-//   createdOn: '2025-01-06T19:14:21.969Z',
-//   updatedOn: '2025-01-06T19:14:21.969Z',
+//   id: 'op-921ad74c-...',
+//   operationType: 'upload',
+//   fileId: '921ad74c-2421-413a-8c86-fca81ceabc5c',
 //   status: 'Processing',
-//   percentDone: null,
-//   signedUrl: null,
-//   errorMessage: null
+//   createdOn: 2025-01-06T19:14:21.969Z,
+//   percentComplete: 0,
 // }
 ```
 
@@ -47,18 +44,15 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
 
-const uploadResponse = await assistant.uploadFile({
+const operation = await assistant.uploadFile({
   path: 'quarterly-report-with-charts.pdf',
-  multimodal: true, // Enable image extraction and processing
+  multimodal: true,
   metadata: {
     document_type: 'financial_report',
     quarter: 'Q4',
     year: 2024,
   },
 });
-
-// The assistant can now understand and reference charts, graphs, and images
-// in the document when answering questions
 ```
 
 When `multimodal: true`, the assistant will:
@@ -68,13 +62,71 @@ When `multimodal: true`, the assistant will:
 - Enable the assistant to answer questions about visual elements
 - Allow you to retrieve image-related context snippets
 
-## File processing states
+## Upsert a file
 
-After uploading, files go through several states:
+Create or replace a file at a caller-supplied ID. Unlike `uploadFile`, the ID is stable and does not change on repeated calls — if a file with that ID already exists its content is replaced. `upsertFile` does not accept metadata.
 
-- `Processing` - File is being processed
-- `Available` - File is ready to be used in chats
-- `Failed` - File processing failed
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+const assistant = pc.assistant({ name: 'my-assistant' });
+
+const operation = await assistant.upsertFile({
+  assistantFileId: 'openapi-spec',
+  path: './openapi-2026-04.yaml',
+});
+
+console.log(operation.fileId); // 'openapi-spec'
+console.log(operation.status); // 'Processing'
+```
+
+## Polling async operations
+
+`uploadFile`, `upsertFile`, and `deleteFile` all return an `OperationModel` immediately. The underlying file operation is processed asynchronously. Use `describeOperation` to check progress:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+const assistant = pc.assistant({ name: 'my-assistant' });
+
+const operation = await assistant.uploadFile({ path: 'report.pdf' });
+
+// Poll until complete
+let op = operation;
+while (op.status === 'Processing') {
+  await new Promise((r) => setTimeout(r, 2000));
+  op = await assistant.describeOperation({ operationId: operation.id });
+}
+
+if (op.status === 'Completed') {
+  console.log('File is ready. Ingestion units used:', op.ingestionUnits);
+} else {
+  console.error('Upload failed:', op.errorMessage);
+}
+```
+
+### Operation status values
+
+- `Processing` — operation is in progress
+- `Completed` — operation finished successfully; the file is available for chat
+- `Failed` — operation failed; check `errorMessage` for details
+
+### List recent operations
+
+List operations across all files on an assistant, optionally filtered by type or status. Operations are retained for 30 days.
+
+```typescript
+const ops = await assistant.listOperations({
+  status: 'Completed',
+  limit: 10,
+});
+
+for (const op of ops.operations ?? []) {
+  console.log(op.operationType, op.fileId, op.status);
+}
+```
 
 ## List files
 
@@ -133,14 +185,12 @@ console.log(fileInfo);
 //   updatedOn: '2025-01-06T19:14:36.925Z',
 //   status: 'Available',
 //   percentDone: 1,
-//   signedUrl: undefined,
-//   errorMessage: undefined
 // }
 ```
 
 ## Delete a file
 
-Delete a file from an Assistant by ID:
+Delete a file from an Assistant by ID. Deletion is asynchronous — the returned `OperationModel` tracks the operation.
 
 > **Warning:** Deleting files is a PERMANENT operation. Deleted files cannot be recovered.
 
@@ -150,14 +200,13 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
 
-await assistant.deleteFile({
-  fileId: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
-});
+const operation = await assistant.deleteFile('1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b');
+console.log(operation.status); // 'Processing'
 ```
 
 ## Complete file management workflow
 
-Here's a complete example showing file upload, status checking, and cleanup:
+Here's a complete example showing file upload, status checking via `describeOperation`, and cleanup:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -166,25 +215,26 @@ async function fileManagementWorkflow() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
   const assistant = pc.assistant({ name: 'my-assistant' });
 
-  // 1. Upload multiple files
-  const file1 = await assistant.uploadFile({
+  // 1. Upload files and collect operation IDs
+  const op1 = await assistant.uploadFile({
     path: 'catalog-2024.txt',
     metadata: { year: '2024', type: 'catalog' },
   });
 
-  const file2 = await assistant.uploadFile({
+  const op2 = await assistant.uploadFile({
     path: 'catalog-2025.txt',
     metadata: { year: '2025', type: 'catalog' },
   });
 
-  // 2. Wait for files to be processed
-  let allReady = false;
-  while (!allReady) {
-    const files = await assistant.listFiles();
-    allReady = files.files.every((f) => f.status === 'Available');
-
-    if (!allReady) {
-      await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
+  // 2. Poll until both uploads complete
+  for (const op of [op1, op2]) {
+    let current = op;
+    while (current.status === 'Processing') {
+      await new Promise((r) => setTimeout(r, 2000));
+      current = await assistant.describeOperation({ operationId: op.id });
+    }
+    if (current.status === 'Failed') {
+      throw new Error(`Upload failed: ${current.errorMessage}`);
     }
   }
 
@@ -195,7 +245,7 @@ async function fileManagementWorkflow() {
     filter: { type: { $eq: 'catalog' } },
   });
 
-  console.log(`Found ${catalogFiles.files.length} catalog files`);
+  console.log(`Found ${catalogFiles.files?.length} catalog files`);
 
   // 4. Chat with the assistant
   const response = await assistant.chat({
@@ -207,16 +257,16 @@ async function fileManagementWorkflow() {
     ],
   });
 
-  console.log(response.message.content);
+  console.log(response.message?.content);
 
   // 5. Clean up old files
   const oldFiles = await assistant.listFiles({
     filter: { year: { $eq: '2024' } },
   });
 
-  for (const file of oldFiles.files) {
-    await assistant.deleteFile({ fileId: file.id });
-    console.log(`Deleted old file: ${file.name}`);
+  for (const file of oldFiles.files ?? []) {
+    await assistant.deleteFile(file.id);
+    console.log(`Deleting: ${file.name}`);
   }
 }
 
@@ -241,10 +291,10 @@ For file size limits and additional restrictions, see [Pinecone Assistant limits
 
 ## Best practices
 
-1. **Descriptive metadata**: Add meaningful metadata to files for easy filtering and organization
-2. **Check status**: Always verify files are `Available` before chatting
-3. **Handle errors**: Check for `errorMessage` when file status is `Failed`
-4. **Clean up**: Delete obsolete files to manage storage
-5. **Organize by source**: Use metadata to track file sources and versions
+1. **Poll with `describeOperation`**: Don't use `listFiles` to wait for a file to become available — use `describeOperation` with the ID returned by `uploadFile`, `upsertFile`, or `deleteFile`
+2. **Use `upsertFile` for stable IDs**: If you need to replace a file at a predictable ID (e.g. a spec or config file), use `upsertFile` instead of deleting and re-uploading
+3. **Descriptive metadata**: Add meaningful metadata to files for easy filtering and organization
+4. **Handle errors**: Check `op.errorMessage` when an operation's status is `Failed`
+5. **Clean up**: Delete obsolete files to manage storage
 
 For more information on getting started with Assistants, see [Getting Started](./getting-started.md).
