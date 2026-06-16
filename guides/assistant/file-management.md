@@ -200,7 +200,9 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
 
-const operation = await assistant.deleteFile('1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b');
+const operation = await assistant.deleteFile(
+  '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+);
 console.log(operation.status); // 'Processing'
 ```
 

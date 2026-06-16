@@ -14,7 +14,7 @@ The 2026-04 API made all file mutation operations asynchronous. `uploadFile` and
 
 ```typescript
 const file = await assistant.uploadFile({ path: 'report.pdf' });
-console.log(file.id);     // file ID, ready to use
+console.log(file.id); // file ID, ready to use
 console.log(file.status); // 'Processing' | 'Available' | 'Failed'
 ```
 
@@ -22,9 +22,9 @@ console.log(file.status); // 'Processing' | 'Available' | 'Failed'
 
 ```typescript
 const operation = await assistant.uploadFile({ path: 'report.pdf' });
-console.log(operation.id);          // operation ID — use this to poll
-console.log(operation.fileId);      // the file ID being created
-console.log(operation.status);      // 'Processing' | 'Completed' | 'Failed'
+console.log(operation.id); // operation ID — use this to poll
+console.log(operation.fileId); // the file ID being created
+console.log(operation.status); // 'Processing' | 'Completed' | 'Failed'
 
 // Poll until the file is ready
 let op = operation;
@@ -77,7 +77,7 @@ Fetch the current status of any async file operation by its ID.
 
 ```typescript
 const op = await assistant.describeOperation({ operationId: operation.id });
-console.log(op.status);          // 'Processing' | 'Completed' | 'Failed'
+console.log(op.status); // 'Processing' | 'Completed' | 'Failed'
 console.log(op.percentComplete); // 0–100
 ```
 
