@@ -349,7 +349,9 @@ export class Assistant {
    * const pc = new Pinecone();
    * const assistantName = 'test1';
    * const assistant = pc.assistant({ name: assistantName });
-   * const files = await assistant.listFiles({filter: {key: 'value'}});
+   * // Metadata fields are referenced at the top level — not wrapped in a `metadata` key.
+   * // See https://docs.pinecone.io/guides/data/filter-with-metadata for operators ($eq, $ne, $gt, $lt, $in).
+   * const files = await assistant.listFiles({ filter: { version: { $eq: 'v1' } } });
    * console.log(files);
    * // {
    * //  files: [

@@ -10,7 +10,30 @@ import type {
  */
 export interface ListFilesOptions {
   /**
-   * Optionally filter which files can be retrieved using the following metadata fields.
+   * Optionally filter files by metadata. Uses Pinecone's metadata filter language:
+   * fields are referenced at the top level (not wrapped in a `metadata` key), and
+   * may be combined with operators like `$eq`, `$ne`, `$gt`, `$lt`, `$in`.
+   *
+   * @example Direct value match:
+   * ```typescript
+   * filter: { version: 'v1' }
+   * ```
+   *
+   * @example Operator filter:
+   * ```typescript
+   * filter: { version: { $eq: 'v1' } }
+   * ```
+   *
+   * @example Combined fields:
+   * ```typescript
+   * filter: { version: 'v1', tier: { $in: ['gold', 'silver'] } }
+   * ```
+   *
+   * @see {@link https://docs.pinecone.io/guides/data/filter-with-metadata Metadata filter language}
+   *
+   * Filters that don't match Pinecone's expected shape (e.g. wrapping fields
+   * in a top-level `metadata` key like `{ metadata: { version: 'v1' } }`) are
+   * silently ignored server-side and return the unfiltered file list.
    */
   filter?: object;
 }
