@@ -28,7 +28,8 @@ export type IndexStatsDescription = {
 
   /**
    * A number indicating the percentage of available storage consumed
-   * by your index.
+   * by your index. This is relevant only for pod-based indexes; serverless
+   * indexes scale automatically, so index fullness does not apply.
    *
    * @see [Manage indexes](https://docs.pinecone.io/docs/manage-indexes)
    * @see [Choosing index type and size](https://docs.pinecone.io/docs/choosing-index-type-and-size)

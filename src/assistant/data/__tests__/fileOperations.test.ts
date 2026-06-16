@@ -1,17 +1,23 @@
 import { listFiles } from '../listFiles';
 import { describeFile } from '../describeFile';
 import { deleteFile } from '../deleteFile';
+import { describeOperation } from '../describeOperation';
+import { listOperations } from '../listOperations';
 import {
   ListFilesRequest,
   ListFilesResponse,
   DescribeFileRequest,
   AssistantFileModel,
   DeleteFileRequest,
+  DescribeOperationRequest,
+  ListOperationsRequest,
+  OperationList,
   ManageAssistantsApi,
   OperationModel,
   X_PINECONE_API_VERSION,
 } from '../../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
+import { PineconeArgumentError } from '../../../errors';
 
 const setupApiProvider = () => {
   const fakeListFiles: (req: ListFilesRequest) => Promise<ListFilesResponse> =
@@ -63,10 +69,30 @@ const setupApiProvider = () => {
   const fakeDeleteFile: (req: DeleteFileRequest) => Promise<OperationModel> =
     jest.fn().mockResolvedValue(mockDeleteOp);
 
+  const mockOperation: OperationModel = {
+    id: 'op-id-1',
+    fileId: 'file-id-1',
+    status: 'Completed',
+    operationType: 'upload_file',
+    createdOn: new Date(),
+  };
+  const fakeDescribeOperation: (
+    req: DescribeOperationRequest,
+  ) => Promise<OperationModel> = jest.fn().mockResolvedValue(mockOperation);
+
+  const mockOperationList: OperationList = {
+    operations: [mockOperation],
+  };
+  const fakeListOperations: (
+    req: ListOperationsRequest,
+  ) => Promise<OperationList> = jest.fn().mockResolvedValue(mockOperationList);
+
   const MAP = {
     listFiles: fakeListFiles,
     describeFile: fakeDescribeFile,
     deleteFile: fakeDeleteFile,
+    describeOperation: fakeDescribeOperation,
+    listOperations: fakeListOperations,
   } as ManageAssistantsApi;
   const AsstDataOperationsProvider = {
     provideData: async () => MAP,
@@ -174,5 +200,111 @@ describe('deleteFile', () => {
     const result = await deleteFileFn('file-id-1');
     expect(result.id).toBeDefined();
     expect(result.status).toBeDefined();
+  });
+});
+
+describe('describeOperation', () => {
+  let mockApi: ManageAssistantsApi;
+  let asstOperationsProvider: AsstDataOperationsProvider;
+
+  beforeEach(() => {
+    const { MAP, AsstDataOperationsProvider } = setupApiProvider();
+    mockApi = MAP;
+    asstOperationsProvider = AsstDataOperationsProvider;
+  });
+
+  test('calls describeOperation with correct parameters', async () => {
+    const describeOperationFn = describeOperation(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    await describeOperationFn('op-id-1');
+
+    expect(mockApi.describeOperation).toHaveBeenCalledWith({
+      assistantName: 'test-assistant',
+      operationId: 'op-id-1',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  });
+
+  test('returns OperationModel on success', async () => {
+    const describeOperationFn = describeOperation(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    const result = await describeOperationFn('op-id-1');
+    expect(result.id).toBeDefined();
+    expect(result.status).toBeDefined();
+  });
+
+  test('throws when operationId is empty', async () => {
+    const describeOperationFn = describeOperation(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    await expect(describeOperationFn('')).rejects.toThrow(
+      PineconeArgumentError,
+    );
+    expect(mockApi.describeOperation).not.toHaveBeenCalled();
+  });
+});
+
+describe('listOperations', () => {
+  let mockApi: ManageAssistantsApi;
+  let asstOperationsProvider: AsstDataOperationsProvider;
+
+  beforeEach(() => {
+    const { MAP, AsstDataOperationsProvider } = setupApiProvider();
+    mockApi = MAP;
+    asstOperationsProvider = AsstDataOperationsProvider;
+  });
+
+  test('calls listOperations with no filters', async () => {
+    const listOperationsFn = listOperations(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    await listOperationsFn({});
+
+    expect(mockApi.listOperations).toHaveBeenCalledWith({
+      assistantName: 'test-assistant',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      operationType: undefined,
+      status: undefined,
+      limit: undefined,
+      paginationToken: undefined,
+    });
+  });
+
+  test('calls listOperations with filters', async () => {
+    const listOperationsFn = listOperations(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    await listOperationsFn({
+      operationType: 'upload_file',
+      status: 'Processing',
+      limit: 10,
+      paginationToken: 'token-1',
+    });
+
+    expect(mockApi.listOperations).toHaveBeenCalledWith({
+      assistantName: 'test-assistant',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+      operationType: 'upload_file',
+      status: 'Processing',
+      limit: 10,
+      paginationToken: 'token-1',
+    });
+  });
+
+  test('returns OperationList on success', async () => {
+    const listOperationsFn = listOperations(
+      'test-assistant',
+      asstOperationsProvider,
+    );
+    const result = await listOperationsFn({});
+    expect(result.operations).toBeDefined();
+    expect(result.operations?.length).toBeGreaterThan(0);
   });
 });

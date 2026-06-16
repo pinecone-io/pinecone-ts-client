@@ -18,8 +18,13 @@ export type {
   EmbeddingsList,
   EmbeddingsListUsage,
   Embedding,
+  DenseEmbedding,
+  SparseEmbedding,
   ModelInfo,
   ModelInfoList,
+  ModelInfoSupportedParameter,
+  ModelInfoSupportedParameterAllowedValuesInner,
+  ModelInfoSupportedParameterDefault,
 } from './pinecone-generated-ts-fetch/inference';
 export type {
   HTTPHeaders,
@@ -28,16 +33,19 @@ export type {
   ImportErrorMode,
   ListImportsResponse,
   ListResponse,
+  ListItem,
   ListNamespacesResponse,
   Pagination,
   NamespaceDescription,
   CreateNamespaceRequestSchema,
   CreateNamespaceRequestSchemaFieldsValue,
   NamespaceDescriptionIndexedFields,
+  SearchMatchTerms,
   SearchRecordsResponse,
   SearchRecordsResponseResult,
   SearchUsage,
   StartImportResponse,
+  Usage,
 } from './pinecone-generated-ts-fetch/db_data';
 export type {
   CreateAssistantOptions,
@@ -51,7 +59,9 @@ export type {
   ChatCompletionOptions,
   ContextOptions,
   ListFilesOptions,
+  ListOperationsOptions,
   UploadFileOptions,
+  UpsertFileOptions,
   Uploadable,
   AssistantFilesList,
   MessagesModel,
@@ -89,6 +99,17 @@ export type {
   JsonReferenceModel,
   MarkdownReferenceModel,
   AssistantFileModel,
+  OperationModel,
+  OperationList,
+  PaginationResponse,
+  ContentFilterResults,
+  // Generated (non-streaming) chat/completion response sub-types. Aliased to
+  // avoid colliding with the wrapper's input/streaming `MessageModel` and
+  // `ChoiceModel` (exported from './assistant'), which have different shapes:
+  // the wrapper `ChoiceModel` carries a streaming `delta`, whereas the generated
+  // one carries a full `message`.
+  MessageModel as ChatMessageModel,
+  ChoiceModel as ChatCompletionChoiceModel,
 } from './pinecone-generated-ts-fetch/assistant_data';
 export type {
   AlignmentResponse,
@@ -187,6 +208,14 @@ export type {
   FetchAPI,
   IndexList,
   IndexModel,
+  IndexModelSpec,
+  IndexModelStatus,
+  ModelIndexEmbed,
+  // Members of the `IndexModelSpec` discriminated union (`spec` field on a
+  // described/created index).
+  Serverless2,
+  PodBased,
+  BYOC2,
   MetadataSchema,
   MetadataSchemaFieldsValue,
   PodSpec,
@@ -204,6 +233,10 @@ export type {
   ScalingConfigManual,
   ServerlessSpec,
   ServerlessSpecResponse,
+  // Pagination cursor on `BackupList` / `RestoreJobList`. Aliased to avoid
+  // colliding with the identically-named `PaginationResponse` already exported
+  // from the assistant data plane.
+  PaginationResponse as BackupPaginationResponse,
 } from './pinecone-generated-ts-fetch/db_control';
 
 // --- Alpha / Preview exports (2026-01.alpha) ---
@@ -213,6 +246,14 @@ export type {
   PreviewIndexList,
   PreviewIndexModel,
   PreviewIndexModelStatus,
+  // Response-side schema (the `schema` field on a returned PreviewIndexModel)
+  PreviewIndexSchema,
+  PreviewIndexSchemaField,
+  PreviewTypedIndexSchemaField,
+  PreviewLegacyMetadataField,
+  PreviewIntegerField,
+  PreviewResponseStringField,
+  PreviewResponseStringFieldFullTextSearch,
   // Create index
   PreviewCreateIndexOptions,
   PreviewCreateIndexSchema,
@@ -232,8 +273,15 @@ export type {
   PreviewStringField,
   PreviewStringListField,
   PreviewStringFieldFullTextSearch,
-  // Read capacity
+  // Read capacity (request-side)
   PreviewReadCapacity,
+  // Read capacity (response-side: the `readCapacity` field on a returned PreviewIndexModel)
+  PreviewReadCapacityResponse,
+  PreviewReadCapacityDedicatedSpecResponse,
+  PreviewReadCapacityOnDemandSpecResponse,
+  PreviewReadCapacityDedicatedConfig,
+  PreviewReadCapacityStatus,
+  PreviewScalingConfigManual,
   // Configure index
   PreviewConfigureIndexOptions,
   PreviewPatchIndexDeploymentRequest,
@@ -245,10 +293,12 @@ export type {
   // List index backups
   PreviewListIndexBackupsOptions,
   PreviewBackupList,
+  PreviewPaginationResponse,
   // List project backups
   PreviewListProjectBackupsOptions,
   // Create index from backup
   PreviewCreateIndexFromBackupOptions,
+  PreviewCreateIndexFromBackupResponse,
   // List restore jobs
   PreviewListRestoreJobsOptions,
   PreviewRestoreJobList,

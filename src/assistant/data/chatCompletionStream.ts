@@ -46,6 +46,7 @@ export const chatCompletionStream = (
         messages: messagesValidation(options),
         stream: true,
         model: modelValidation(options),
+        temperature: options.temperature,
         filter: options.filter,
       }),
     });

@@ -166,6 +166,7 @@ describe('chatStream', () => {
           messages: [{ role: 'user', content: 'Hello' }],
           stream: true,
           model: 'gpt-4.1',
+          temperature: 0.7,
           filter: { category: 'docs' },
           json_response: true,
           include_highlights: true,

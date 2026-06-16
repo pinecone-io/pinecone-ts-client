@@ -491,7 +491,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Upsert records to the index.
+   * Upsert records to the index. If a new value is upserted for an existing
+   * record ID, it overwrites the previous value.
    *
    * @example
    * ```js
@@ -609,7 +610,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Update a record in the index by id.
+   * Update records in the index by id or by metadata filter. Updating by id
+   * changes the vector and/or metadata of a single record; updating by metadata
+   * filter changes metadata across all matching records. If a vector value is
+   * provided it overwrites the previous value, and `metadata` is merged into the
+   * existing metadata (only the specified fields are modified or added).
    *
    * @example
    * ```js
@@ -635,6 +640,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Upsert integrated records into a specific namespace within an index.
+   * Pinecone converts the record text to vectors automatically using the hosted
+   * embedding model associated with the index, so this is supported only for
+   * indexes with integrated embedding.
    *
    * @example
    * ```js
@@ -708,7 +716,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Search a specific namespace for records within an index.
+   * Search a specific namespace for records within an index, using a query
+   * text, query vector, or record ID. Searching with a query vector or record
+   * ID is supported for all indexes; searching with text is supported only for
+   * indexes with integrated embedding.
    *
    * @example
    * ```js
@@ -877,6 +888,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Creates a new namespace within the index with an optional metadata schema.
+   * Note: this operation is not supported for pod-based indexes.
    *
    * @example
    * ```js
@@ -906,6 +918,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Returns a list of namespaces within the index.
+   * Note: this operation is not supported for pod-based indexes.
    *
    * @example
    * ```js
@@ -934,6 +947,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Returns the details of a specific namespace.
+   * Note: this operation is not supported for pod-based indexes.
    *
    * @example
    * ```js
@@ -954,6 +968,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
 
   /**
    * Deletes a specific namespace from the index, including all records within it.
+   * Deleting a namespace is irreversible; all data in the namespace is permanently
+   * deleted. Note: this operation is not supported for pod-based indexes.
    *
    * @example
    * ```js

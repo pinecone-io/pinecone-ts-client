@@ -12,7 +12,7 @@ import { PineconeArgumentError } from '../../errors';
 export type ListOptions = {
   /** The id prefix to match. If unspecified, an empty string prefix will be used with the effect of listing all ids in a namespace. */
   prefix?: string;
-  /** The maximum number of ids to return. If unspecified, the server will use a default value. */
+  /** The maximum number of ids to return. If unspecified, the server returns up to 100 ids at a time, in sorted order (bitwise "C" collation). */
   limit?: number;
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;

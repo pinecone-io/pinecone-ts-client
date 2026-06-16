@@ -1,6 +1,8 @@
 import type {
   AssistantFileModel,
   UsageModel,
+  ContentFilterResults,
+  HighlightModel,
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 
 /**
@@ -8,7 +10,30 @@ import type {
  */
 export interface ListFilesOptions {
   /**
-   * Optionally filter which files can be retrieved using the following metadata fields.
+   * Optionally filter files by metadata. Uses Pinecone's metadata filter language:
+   * fields are referenced at the top level (not wrapped in a `metadata` key), and
+   * may be combined with operators like `$eq`, `$ne`, `$gt`, `$lt`, `$in`.
+   *
+   * @example Direct value match:
+   * ```typescript
+   * filter: { version: 'v1' }
+   * ```
+   *
+   * @example Operator filter:
+   * ```typescript
+   * filter: { version: { $eq: 'v1' } }
+   * ```
+   *
+   * @example Combined fields:
+   * ```typescript
+   * filter: { version: 'v1', tier: { $in: ['gold', 'silver'] } }
+   * ```
+   *
+   * @see {@link https://docs.pinecone.io/guides/data/filter-with-metadata Metadata filter language}
+   *
+   * Filters that don't match Pinecone's expected shape (e.g. wrapping fields
+   * in a top-level `metadata` key like `{ metadata: { version: 'v1' } }`) are
+   * silently ignored server-side and return the unfiltered file list.
    */
   filter?: object;
 }
@@ -21,6 +46,32 @@ export interface AssistantFilesList {
    * The list of files associated with the assistant.
    */
   files?: Array<AssistantFileModel>;
+}
+
+/**
+ * Options for listing the async operations (such as file uploads and deletes)
+ * performed on an assistant.
+ */
+export interface ListOperationsOptions {
+  /**
+   * Optionally filter operations by type, such as the kind of action the
+   * operation represents (e.g. uploading or deleting a file).
+   */
+  operationType?: string;
+  /**
+   * Optionally filter operations by status (e.g. `Processing`, `Completed`, or
+   * `Failed`).
+   */
+  status?: string;
+  /**
+   * The maximum number of operations to return.
+   */
+  limit?: number;
+  /**
+   * The token to paginate through the list of operations. Use the
+   * `paginationToken` returned in a previous response to fetch the next page.
+   */
+  paginationToken?: string;
 }
 
 /**
@@ -228,6 +279,54 @@ export type UploadFileOptions = {
 );
 
 /**
+ * Options for creating or replacing a file on an assistant at a caller-supplied
+ * file ID.
+ *
+ * Provide the `assistantFileId` to create or replace, along with either `path`
+ * (a local file path) or `file` + `fileName` (an in-memory buffer, blob, or
+ * readable stream). The two content forms are mutually exclusive.
+ *
+ * Unlike {@link UploadFileOptions} — which always creates a new file with a
+ * server-generated ID — upsert is keyed on the ID you supply and does not
+ * accept metadata.
+ */
+export type UpsertFileOptions = {
+  /**
+   * The ID of the file to create or replace. If a file with this ID already
+   * exists, its content is replaced; otherwise a new file is created with this
+   * identifier.
+   */
+  assistantFileId: string;
+  /**
+   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   */
+  multimodal?: boolean;
+} & (
+  | {
+      /**
+       * The local path to the file to upload. The file is read asynchronously.
+       */
+      path: string;
+      file?: never;
+      fileName?: never;
+    }
+  | {
+      /**
+       * The file data to upload. Accepts a `Buffer`, `Blob`, or Node.js
+       * `ReadableStream`. When passing a stream, `fileName` is required so
+       * the server receives a meaningful filename.
+       */
+      file: Uploadable;
+      /**
+       * The filename to use in the multipart upload (e.g. `"report.pdf"`).
+       * Required when using `file`.
+       */
+      fileName: string;
+      path?: never;
+    }
+);
+
+/**
  * Indicates why the chat response generation stopped. This signals the end of the response.
  *
  * - `stop`: The model finished generating the response.
@@ -298,6 +397,14 @@ export interface MessageStartChunk extends BaseChunk {
    * The role of the message sender. Either `user` or `assistant`.
    */
   role: string;
+  /**
+   * The number of context snippets used to generate the response.
+   */
+  contextSnippetCount?: number;
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**
@@ -314,6 +421,10 @@ export interface ContentChunk extends BaseChunk {
   delta: {
     content: string;
   };
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**
@@ -339,11 +450,15 @@ export interface CitationChunk extends BaseChunk {
       /**
        * The {@link AssistantFileModel} associated with the citation.
        */
-      file: AssistantFileModel;
+      file?: AssistantFileModel;
       /**
        * The pages in the file that are referenced.
        */
-      pages: number[];
+      pages?: number[];
+      /**
+       * The highlighted excerpt within the referenced file, if available.
+       */
+      highlight?: HighlightModel | null;
     }>;
   };
 }
@@ -363,7 +478,11 @@ export interface MessageEndChunk extends BaseChunk {
   /**
    * The usage details associated with the streamed response.
    */
-  usage: UsageModel;
+  usage?: UsageModel;
+  /**
+   * The results of any content filtering applied to the response.
+   */
+  contentFilterResults?: ContentFilterResults;
 }
 
 /**

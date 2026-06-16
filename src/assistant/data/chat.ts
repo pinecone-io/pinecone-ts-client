@@ -25,6 +25,7 @@ export const chat = (
         messages: messages,
         stream: false,
         model: model,
+        temperature: options.temperature,
         filter: options.filter,
         jsonResponse: options.jsonResponse,
         includeHighlights: options.includeHighlights,

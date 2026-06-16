@@ -87,6 +87,11 @@ export type CreateIndexForModelEmbed = {
    */
   fieldMap: object;
   /**
+   * The dimension of embeddings produced by the model. Only applicable to models that
+   * support multiple output dimensions; defaulted by the model when omitted.
+   */
+  dimension?: number;
+  /**
    * The read parameters for the embedding model.
    */
   readParameters?: object;

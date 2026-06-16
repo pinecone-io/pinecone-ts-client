@@ -7,6 +7,20 @@ export type {
   PreviewIndexList,
   PreviewIndexModel,
   PreviewIndexModelStatus,
+  // Response-side sub-types of PreviewIndexModel (schema + read capacity)
+  PreviewIndexSchema,
+  PreviewIndexSchemaField,
+  PreviewTypedIndexSchemaField,
+  PreviewLegacyMetadataField,
+  PreviewIntegerField,
+  PreviewResponseStringField,
+  PreviewResponseStringFieldFullTextSearch,
+  PreviewReadCapacityResponse,
+  PreviewReadCapacityDedicatedSpecResponse,
+  PreviewReadCapacityOnDemandSpecResponse,
+  PreviewReadCapacityDedicatedConfig,
+  PreviewReadCapacityStatus,
+  PreviewScalingConfigManual,
 } from './indexes/listIndexes';
 
 // createIndex
@@ -48,13 +62,17 @@ export type { PreviewCreateBackupOptions } from './indexes/createBackup';
 export type {
   PreviewListIndexBackupsOptions,
   PreviewBackupList,
+  PreviewPaginationResponse,
 } from './indexes/listIndexBackups';
 
 // listProjectBackups
 export type { PreviewListProjectBackupsOptions } from './indexes/listProjectBackups';
 
 // createIndexFromBackup
-export type { PreviewCreateIndexFromBackupOptions } from './indexes/createIndexFromBackup';
+export type {
+  PreviewCreateIndexFromBackupOptions,
+  PreviewCreateIndexFromBackupResponse,
+} from './indexes/createIndexFromBackup';
 
 // listRestoreJobs
 export type {

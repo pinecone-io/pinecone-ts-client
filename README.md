@@ -34,10 +34,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 ### Upgrading the SDK
 
 > [!NOTE]
-> For notes on changes between major versions, see the migration guides:
->
-> - [v2 Migration Guide](./guides/upgrading/v2-migration.md) - Upgrading from v1.x to v2.x
-> - [v1 Migration Guide](./guides/upgrading/v1-migration.md) - Upgrading from v0.x to v1.x
+> For notes on breaking changes between versions, see the [migration guides](./guides/upgrading/).
 
 ## Prerequisites
 
@@ -224,7 +221,7 @@ const response = await myAssistant.chat({
   ],
 });
 
-console.log(response.message.content);
+console.log(response.message?.content);
 ```
 
 For more information on Pinecone Assistant, see the [Pinecone Assistant documentation](https://docs.pinecone.io/guides/assistant/understanding-assistant).
@@ -257,7 +254,7 @@ Detailed information on specific ways of using the SDK are covered in these guid
 
 - [Getting Started](./guides/assistant/getting-started.md) - Quick start guide for Pinecone Assistant
 - [Chat Operations](./guides/assistant/chat.md) - Chat, streaming, and context retrieval
-- [File Management](./guides/assistant/file-management.md) - Upload, list, and manage files
+- [File Management](./guides/assistant/file-management.md) - Upload, upsert, list, describe, and delete files; poll async file operations
 
 **TypeScript Features:**
 
