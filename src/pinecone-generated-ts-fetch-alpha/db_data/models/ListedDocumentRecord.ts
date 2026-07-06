@@ -24,7 +24,7 @@ export interface ListedDocumentRecord {
      * @type {string}
      * @memberof ListedDocumentRecord
      */
-    id: string;
+    _id: string;
 }
 
 /**
@@ -32,7 +32,7 @@ export interface ListedDocumentRecord {
  */
 export function instanceOfListedDocumentRecord(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "id" in value;
+    isInstance = isInstance && "_id" in value;
 
     return isInstance;
 }
@@ -47,7 +47,7 @@ export function ListedDocumentRecordFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'id': json['_id'],
+        '_id': json['_id'],
     };
 }
 
@@ -60,7 +60,7 @@ export function ListedDocumentRecordToJSON(value?: ListedDocumentRecord | null):
     }
     return {
         
-        '_id': value.id,
+        '_id': value._id,
     };
 }
 

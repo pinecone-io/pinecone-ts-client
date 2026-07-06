@@ -13,8 +13,8 @@ const buildMockApi = (
 
 const validOptions: PreviewUpdateDocumentsOptions = {
   documents: [
-    { id: 'doc-1', chunk_text: 'Updated content' },
-    { id: 'doc-2', removeFields: ['category'] },
+    { _id: 'doc-1', chunk_text: 'Updated content' },
+    { _id: 'doc-2', _remove_fields: ['category'] },
   ],
 };
 
@@ -61,7 +61,7 @@ describe('updatePreviewDocuments', () => {
       );
     });
 
-    test('passes documents (including removeFields) to the API call', async () => {
+    test('passes documents (including _remove_fields) to the API call', async () => {
       const api = buildMockApi();
       await updatePreviewDocuments(api, 'test-ns', validOptions);
       expect(api.updateDocuments).toHaveBeenCalledWith(

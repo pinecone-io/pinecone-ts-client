@@ -57,7 +57,7 @@ describe('preview listDocuments', () => {
 
     expect(result.documents.length).toBe(2);
     result.documents.forEach((doc) => {
-      expect(doc.id.startsWith('doc-')).toBe(true);
+      expect(doc._id.startsWith('doc-')).toBe(true);
     });
   });
 
@@ -77,6 +77,6 @@ describe('preview listDocuments', () => {
       });
 
     expect(secondPage.documents.length).toBe(1);
-    expect(secondPage.documents[0].id).not.toBe(firstPage.documents[0].id);
+    expect(secondPage.documents[0]._id).not.toBe(firstPage.documents[0]._id);
   });
 });

@@ -253,7 +253,7 @@ export class PreviewIndex {
    * const page = await index.listDocuments('my-namespace', { limit: 50 });
    * console.log(page);
    * // {
-   * //   documents: [{ id: 'doc-1' }, { id: 'doc-2' }],
+   * //   documents: [{ _id: 'doc-1' }, { _id: 'doc-2' }],
    * //   pagination: { next: 'eyJ...' },
    * //   namespace: 'my-namespace',
    * //   usage: { readUnits: 1 }
@@ -300,15 +300,15 @@ export class PreviewIndex {
    * await index.updateDocuments('my-namespace', {
    *   documents: [
    *     // Set a new value for `chunk_text` on doc-1
-   *     { id: 'doc-1', chunk_text: 'Updated content' },
+   *     { _id: 'doc-1', chunk_text: 'Updated content' },
    *     // Remove the `category` field from doc-2
-   *     { id: 'doc-2', removeFields: ['category'] },
+   *     { _id: 'doc-2', _remove_fields: ['category'] },
    *   ],
    * });
    * ```
    *
    * @param namespace - The namespace to update documents in.
-   * @param options - The {@link PreviewUpdateDocumentsOptions} containing a non-empty `documents` array. Each entry is a {@link PreviewUpdateDocumentRecord} with a required `id` field (sent as `_id`), optional replacement fields, and an optional `removeFields` list (sent as `_remove_fields`).
+   * @param options - The {@link PreviewUpdateDocumentsOptions} containing a non-empty `documents` array. Each entry is a {@link PreviewUpdateDocumentRecord} with a required `_id` field, optional replacement fields, and an optional `_remove_fields` list.
    * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or not provided.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves when the update is complete.

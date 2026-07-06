@@ -42,7 +42,7 @@ describe('preview updateDocuments', () => {
   test('applies a partial field update and removes a field', async () => {
     await pc.preview.index({ name: indexName }).updateDocuments(namespace, {
       documents: [
-        { id: 'doc-1', content: 'Updated content', removeFields: ['title'] },
+        { _id: 'doc-1', content: 'Updated content', _remove_fields: ['title'] },
       ],
     });
 
