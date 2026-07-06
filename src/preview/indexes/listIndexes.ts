@@ -20,6 +20,7 @@ export type {
   IntegerField as PreviewIntegerField,
   ResponseStringField as PreviewResponseStringField,
   ResponseStringFieldFullTextSearch as PreviewResponseStringFieldFullTextSearch,
+  ResponseStringFieldFullTextSearchNgram as PreviewResponseStringFieldFullTextSearchNgram,
   ReadCapacityResponse as PreviewReadCapacityResponse,
   ReadCapacityDedicatedSpecResponse as PreviewReadCapacityDedicatedSpecResponse,
   ReadCapacityOnDemandSpecResponse as PreviewReadCapacityOnDemandSpecResponse,

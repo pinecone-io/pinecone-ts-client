@@ -25,6 +25,7 @@ export type {
   StringField as PreviewStringField,
   StringListField as PreviewStringListField,
   StringFieldFullTextSearch as PreviewStringFieldFullTextSearch,
+  StringFieldFullTextSearchNgram as PreviewStringFieldFullTextSearchNgram,
   ReadCapacity as PreviewReadCapacity,
 } from '../../pinecone-generated-ts-fetch-alpha/db_control';
 

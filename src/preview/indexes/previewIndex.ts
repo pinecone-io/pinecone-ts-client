@@ -18,6 +18,15 @@ import {
   deletePreviewDocuments,
   PreviewDeleteDocumentsOptions,
 } from './deleteDocuments';
+import {
+  listPreviewDocuments,
+  PreviewListDocumentsOptions,
+  PreviewListDocumentsResponse,
+} from './listDocuments';
+import {
+  updatePreviewDocuments,
+  PreviewUpdateDocumentsOptions,
+} from './updateDocuments';
 import type { PineconeConfiguration } from '../../data';
 import { IndexOptions } from '../../types';
 import { PineconeArgumentError } from '../../errors';
@@ -222,5 +231,94 @@ export class PreviewIndex {
   ): Promise<void> {
     const api = await this._provider.provide();
     return deletePreviewDocuments(api, namespace, options);
+  }
+
+  /**
+   * Lists documents in a namespace, returning their IDs in sorted order.
+   *
+   * Returns up to 100 documents per page by default. Use `prefix` to limit
+   * results to documents whose IDs start with a given string, and `limit` to
+   * control the page size. When more documents remain, the response includes a
+   * `pagination.next` token you can pass back as `paginationToken` to retrieve
+   * the next page. When no token is returned, there are no more documents.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.preview.index('my-schema-index');
+   *
+   * // List the first page of documents
+   * const page = await index.listDocuments('my-namespace', { limit: 50 });
+   * console.log(page);
+   * // {
+   * //   documents: [{ id: 'doc-1' }, { id: 'doc-2' }],
+   * //   pagination: { next: 'eyJ...' },
+   * //   namespace: 'my-namespace',
+   * //   usage: { readUnits: 1 }
+   * // }
+   *
+   * // Retrieve the next page
+   * const next = await index.listDocuments('my-namespace', {
+   *   paginationToken: page.pagination?.next,
+   * });
+   *
+   * // Only list documents whose IDs start with a prefix
+   * const prefixed = await index.listDocuments('my-namespace', { prefix: 'doc-' });
+   * ```
+   *
+   * @param namespace - The namespace to list documents from.
+   * @param options - The optional {@link PreviewListDocumentsOptions}: `prefix` to filter by ID prefix, `limit` to set the page size, and `paginationToken` to fetch a subsequent page.
+   * @throws {@link Errors.PineconeArgumentError} when `limit` is provided but less than 1.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link PreviewListDocumentsResponse} containing `documents`, an optional `pagination` token, `namespace`, and `usage`.
+   * @alpha
+   */
+  async listDocuments(
+    namespace: string,
+    options: PreviewListDocumentsOptions = {},
+  ): Promise<PreviewListDocumentsResponse> {
+    const api = await this._provider.provide();
+    return listPreviewDocuments(api, namespace, options);
+  }
+
+  /**
+   * Applies partial updates to documents in a namespace.
+   *
+   * Each update is identified by its `_id`. Any other fields set new values for
+   * those fields, fields listed in `_remove_fields` are removed from the
+   * document, and fields that are not mentioned are left unchanged. Updates to a
+   * document that does not exist are accepted but have no effect.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const index = pc.preview.index('my-schema-index');
+   * await index.updateDocuments('my-namespace', {
+   *   documents: [
+   *     // Set a new value for `chunk_text` on doc-1
+   *     { id: 'doc-1', chunk_text: 'Updated content' },
+   *     // Remove the `category` field from doc-2
+   *     { id: 'doc-2', removeFields: ['category'] },
+   *   ],
+   * });
+   * ```
+   *
+   * @param namespace - The namespace to update documents in.
+   * @param options - The {@link PreviewUpdateDocumentsOptions} containing a non-empty `documents` array. Each entry is a {@link PreviewUpdateDocumentRecord} with a required `id` field (sent as `_id`), optional replacement fields, and an optional `removeFields` list (sent as `_remove_fields`).
+   * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or not provided.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the update is complete.
+   * @alpha
+   */
+  async updateDocuments(
+    namespace: string,
+    options: PreviewUpdateDocumentsOptions,
+  ): Promise<void> {
+    const api = await this._provider.provide();
+    return updatePreviewDocuments(api, namespace, options);
   }
 }

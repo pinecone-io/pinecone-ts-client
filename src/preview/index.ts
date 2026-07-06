@@ -15,6 +15,7 @@ export type {
   PreviewIntegerField,
   PreviewResponseStringField,
   PreviewResponseStringFieldFullTextSearch,
+  PreviewResponseStringFieldFullTextSearchNgram,
   PreviewReadCapacityResponse,
   PreviewReadCapacityDedicatedSpecResponse,
   PreviewReadCapacityOnDemandSpecResponse,
@@ -41,6 +42,7 @@ export type {
   PreviewStringField,
   PreviewStringListField,
   PreviewStringFieldFullTextSearch,
+  PreviewStringFieldFullTextSearchNgram,
   PreviewReadCapacity,
 } from './indexes/createIndex';
 
@@ -119,3 +121,18 @@ export type {
 
 // deleteDocuments
 export type { PreviewDeleteDocumentsOptions } from './indexes/deleteDocuments';
+
+// listDocuments
+export type {
+  PreviewListDocumentsOptions,
+  PreviewListDocumentsResponse,
+  PreviewListedDocumentRecord,
+  PreviewDocumentListUsage,
+  PreviewDocumentPagination,
+} from './indexes/listDocuments';
+
+// updateDocuments
+export type {
+  PreviewUpdateDocumentsOptions,
+  PreviewUpdateDocumentRecord,
+} from './indexes/updateDocuments';
