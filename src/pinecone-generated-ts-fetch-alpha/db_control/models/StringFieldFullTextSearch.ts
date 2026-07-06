@@ -13,9 +13,16 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { StringFieldFullTextSearchNgram } from './StringFieldFullTextSearchNgram';
+import {
+    StringFieldFullTextSearchNgramFromJSON,
+    StringFieldFullTextSearchNgramFromJSONTyped,
+    StringFieldFullTextSearchNgramToJSON,
+} from './StringFieldFullTextSearchNgram';
+
 /**
  * Full-text search configuration. When present, the field is indexed for full-text search.
- * `stop_words` requires `stemming: true`.
+ * `stop_words` requires `stemming: true`. `ngram` cannot be combined with `stemming` or `stop_words`.
  * @export
  * @interface StringFieldFullTextSearch
  */
@@ -38,6 +45,12 @@ export interface StringFieldFullTextSearch {
      * @memberof StringFieldFullTextSearch
      */
     stopWords?: boolean;
+    /**
+     * 
+     * @type {StringFieldFullTextSearchNgram}
+     * @memberof StringFieldFullTextSearch
+     */
+    ngram?: StringFieldFullTextSearchNgram;
 }
 
 /**
@@ -62,6 +75,7 @@ export function StringFieldFullTextSearchFromJSONTyped(json: any, ignoreDiscrimi
         'language': !exists(json, 'language') ? undefined : json['language'],
         'stemming': !exists(json, 'stemming') ? undefined : json['stemming'],
         'stopWords': !exists(json, 'stop_words') ? undefined : json['stop_words'],
+        'ngram': !exists(json, 'ngram') ? undefined : StringFieldFullTextSearchNgramFromJSON(json['ngram']),
     };
 }
 
@@ -77,6 +91,7 @@ export function StringFieldFullTextSearchToJSON(value?: StringFieldFullTextSearc
         'language': value.language,
         'stemming': value.stemming,
         'stop_words': value.stopWords,
+        'ngram': StringFieldFullTextSearchNgramToJSON(value.ngram),
     };
 }
 

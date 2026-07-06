@@ -18,6 +18,8 @@ import type {
   DeleteDocumentsRequest,
   FetchDocumentsRequest,
   FetchDocumentsResponse,
+  ListDocumentsRequest,
+  ListDocumentsResponse,
   RpcStatus,
   SearchDocumentsRequest,
   SearchDocumentsResponse,
@@ -32,6 +34,10 @@ import {
     FetchDocumentsRequestToJSON,
     FetchDocumentsResponseFromJSON,
     FetchDocumentsResponseToJSON,
+    ListDocumentsRequestFromJSON,
+    ListDocumentsRequestToJSON,
+    ListDocumentsResponseFromJSON,
+    ListDocumentsResponseToJSON,
     RpcStatusFromJSON,
     RpcStatusToJSON,
     SearchDocumentsRequestFromJSON,
@@ -56,6 +62,12 @@ export interface FetchDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
     fetchDocumentsRequest: FetchDocumentsRequest;
+}
+
+export interface ListDocumentsOperationRequest {
+    xPineconeApiVersion: string;
+    namespace: string;
+    listDocumentsRequest: ListDocumentsRequest;
 }
 
 export interface SearchDocumentsOperationRequest {
@@ -180,6 +192,57 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
      */
     async fetchDocuments(requestParameters: FetchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchDocumentsResponse> {
         const response = await this.fetchDocumentsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * List documents in a namespace.  Returns up to 100 documents per page by default, in sorted order (bitwise \"C\" collation). Use the optional `prefix` parameter to limit results to documents whose IDs start with a given prefix. When there are more documents to return, the response includes a `pagination` token you can pass to retrieve the next page. When no `pagination` token is returned, there are no more documents to list.
+     * List documents
+     */
+    async listDocumentsRaw(requestParameters: ListDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListDocumentsResponse>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling listDocuments.');
+        }
+
+        if (requestParameters.namespace === null || requestParameters.namespace === undefined) {
+            throw new runtime.RequiredError('namespace','Required parameter requestParameters.namespace was null or undefined when calling listDocuments.');
+        }
+
+        if (requestParameters.listDocumentsRequest === null || requestParameters.listDocumentsRequest === undefined) {
+            throw new runtime.RequiredError('listDocumentsRequest','Required parameter requestParameters.listDocumentsRequest was null or undefined when calling listDocuments.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/namespaces/{namespace}/documents/list`.replace(`{${"namespace"}}`, encodeURIComponent(String(requestParameters.namespace))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ListDocumentsRequestToJSON(requestParameters.listDocumentsRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListDocumentsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * List documents in a namespace.  Returns up to 100 documents per page by default, in sorted order (bitwise \"C\" collation). Use the optional `prefix` parameter to limit results to documents whose IDs start with a given prefix. When there are more documents to return, the response includes a `pagination` token you can pass to retrieve the next page. When no `pagination` token is returned, there are no more documents to list.
+     * List documents
+     */
+    async listDocuments(requestParameters: ListDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListDocumentsResponse> {
+        const response = await this.listDocumentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
