@@ -361,10 +361,7 @@ export type FinishReasonEnum =
  * These represent the objects that will be streamed as a part of the assistant't response.
  */
 export type StreamedChatResponse =
-  | MessageStartChunk
-  | ContentChunk
-  | CitationChunk
-  | MessageEndChunk;
+  MessageStartChunk | ContentChunk | CitationChunk | MessageEndChunk;
 
 /**
  * Describes the common properties of all the chunk types streamed in a chat response.
