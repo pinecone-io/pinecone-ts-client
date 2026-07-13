@@ -129,6 +129,27 @@ jobs:
           CI: true
         run: npm run test:unit -- --coverage
 
+  smoke-mocked:
+    name: Smoke (mocked, no key)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # No PINECONE_API_KEY in env: proves the mocked critical path needs none.
+      # The dedicated smoke config targets only src/smoke and does NOT set
+      # --passWithNoTests, so the job fails (jest exits 1) if that suite ever
+      # collects zero tests, rather than silently passing by running nothing.
+      - name: Run mocked critical-path smoke test
+        env:
+          CI: true
+        run: npm run test:smoke:mocked
+
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest

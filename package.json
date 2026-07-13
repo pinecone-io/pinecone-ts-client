@@ -29,7 +29,8 @@
     "test:integration:local:edge": "./scripts/run-integration-tests-local.sh edge",
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
-    "test:unit": "jest src/"
+    "test:unit": "jest src/",
+    "test:smoke:mocked": "jest -c jest.config.smoke.js"
   },
   "engines": {
     "node": ">=18.0.0"
