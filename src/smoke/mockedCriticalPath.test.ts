@@ -90,9 +90,9 @@ const buildFetchMock = () => {
       }
 
       throw new Error(
-        `Unexpected request in mocked smoke test: ${method} ${url}`
+        `Unexpected request in mocked smoke test: ${method} ${url}`,
       );
-    }
+    },
   );
   return { mockFetch, hits };
 };
@@ -134,7 +134,7 @@ describe('mocked critical path (no API key)', () => {
 
     // Every leg of the critical path was actually exercised.
     expect(
-      countHits(hits, 'GET', `${CONTROL_PLANE}/indexes/${INDEX_NAME}`)
+      countHits(hits, 'GET', `${CONTROL_PLANE}/indexes/${INDEX_NAME}`),
     ).toBe(1);
     expect(countHits(hits, 'POST', `${DATA_PLANE}/vectors/upsert`)).toBe(1);
     expect(countHits(hits, 'POST', `${DATA_PLANE}/query`)).toBe(1);
@@ -157,7 +157,7 @@ describe('mocked critical path (no API key)', () => {
       .upsert({ records: [{ id: 'v2', values: [0.4, 0.5, 0.6] }] });
 
     expect(
-      countHits(hits, 'GET', `${CONTROL_PLANE}/indexes/${INDEX_NAME}`)
+      countHits(hits, 'GET', `${CONTROL_PLANE}/indexes/${INDEX_NAME}`),
     ).toBe(1);
   });
 });
