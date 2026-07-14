@@ -86,9 +86,8 @@ describe('updatePreviewDocuments', () => {
 
   describe('error handling', () => {
     test('converts ResponseError (404) to a typed Pinecone error via handleApiError', async () => {
-      const { ResponseError } = await import(
-        '../../../pinecone-generated-ts-fetch-alpha/db_data'
-      );
+      const { ResponseError } =
+        await import('../../../pinecone-generated-ts-fetch-alpha/db_data');
       const api = buildMockApi({
         updateDocuments: jest.fn().mockRejectedValue(
           new ResponseError(
