@@ -2,12 +2,13 @@ import { UpsertCommand } from '../../vectors/upsert';
 import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
 import type { UpsertVectorsRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpsert: (req: UpsertVectorsRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { upsertVectors: fakeUpsert } as VectorOperationsApi;
   const VectorProvider = {
@@ -26,7 +27,9 @@ describe('upsert', () => {
   test('calls the openapi upsert endpoint', async () => {
     const { fakeUpsert, cmd } = setupSuccess('');
 
-    const returned = await cmd.run([{ id: '1', values: [1, 2, 3] }]);
+    const returned = await cmd.run({
+      records: [{ id: '1', values: [1, 2, 3] }],
+    });
 
     expect(returned).toBe(void 0);
     expect(fakeUpsert).toHaveBeenCalledWith({
@@ -34,7 +37,7 @@ describe('upsert', () => {
         namespace: 'namespace',
         vectors: [{ id: '1', values: [1, 2, 3] }],
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -42,10 +45,10 @@ describe('upsert', () => {
     const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
-      await cmd.run([]);
+      await cmd.run({ records: [] });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 record to upsert.'
+      'Must pass in at least 1 record to upsert.',
     );
   });
 
@@ -55,10 +58,10 @@ describe('upsert', () => {
     // Missing `id` property
     const toThrow = async () => {
       // @ts-ignore
-      await cmd.run([{ values: [1, 2, 3] }]);
+      await cmd.run({ records: [{ values: [1, 2, 3] }] });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Every record must include an `id` property in order to upsert.'
+      'Every record must include an `id` property in order to upsert.',
     );
   });
 
@@ -66,10 +69,26 @@ describe('upsert', () => {
     const { cmd } = setupSuccess('');
     const toThrow = async () => {
       // @ts-ignore
-      await cmd.run([{ id: '1' }]);
+      await cmd.run({ records: [{ id: '1' }] });
     };
     expect(toThrow()).rejects.toThrowError(
-      'Every record must include either `values` or `sparseValues` in order to upsert.'
+      'Every record must include either `values` or `sparseValues` in order to upsert.',
     );
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { fakeUpsert, cmd } = setupSuccess('');
+    await cmd.run({
+      records: [{ id: '1', values: [1, 2, 3] }],
+      namespace: 'custom-namespace',
+    });
+
+    expect(fakeUpsert).toHaveBeenCalledWith({
+      upsertRequest: {
+        namespace: 'custom-namespace',
+        vectors: [{ id: '1', values: [1, 2, 3] }],
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

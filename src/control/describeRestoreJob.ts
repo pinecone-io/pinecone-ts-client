@@ -13,11 +13,11 @@ export type DescribeRestoreJobOptions = RestoreJobId;
 
 export const describeRestoreJob = (api: ManageIndexesApi) => {
   return async (
-    restoreJobId: DescribeRestoreJobOptions
+    restoreJobId: DescribeRestoreJobOptions,
   ): Promise<RestoreJobModel> => {
     if (!restoreJobId) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `restoreJobId` in order to describe a restore job'
+        'You must pass a non-empty string for `restoreJobId` in order to describe a restore job',
       );
     }
 

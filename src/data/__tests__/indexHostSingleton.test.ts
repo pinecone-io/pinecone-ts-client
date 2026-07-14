@@ -36,7 +36,7 @@ describe('IndexHostSingleton', () => {
 
     const hostUrl = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      testIndex
+      testIndex,
     );
     expect(hostUrl).toEqual(`https://${testHost}`);
     expect(mockDescribeIndex).toHaveBeenCalledWith(testIndex);
@@ -70,7 +70,7 @@ describe('IndexHostSingleton', () => {
 
     const hostUrl = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      testIndex
+      testIndex,
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
     expect(hostUrl).toEqual(`https://${testHost}`);
@@ -78,7 +78,7 @@ describe('IndexHostSingleton', () => {
     // call again for same indexName, no additional calls
     const hostUrl2 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      testIndex
+      testIndex,
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
     expect(hostUrl2).toEqual(`https://${testHost}`);
@@ -87,7 +87,7 @@ describe('IndexHostSingleton', () => {
     // to resolve the new host
     const hostUrl3 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      testIndex2
+      testIndex2,
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(2);
     expect(hostUrl3).toEqual(`https://${testHost2}`);
@@ -109,7 +109,7 @@ describe('IndexHostSingleton', () => {
     IndexHostSingleton._set(pineconeConfig, 'index-1', 'test-host');
     const host1 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      'index-1'
+      'index-1',
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(0);
     expect(host1).toEqual('https://test-host');
@@ -118,7 +118,7 @@ describe('IndexHostSingleton', () => {
     IndexHostSingleton._delete(pineconeConfig, 'index-1');
     const host2 = await IndexHostSingleton.getHostUrl(
       pineconeConfig,
-      'index-1'
+      'index-1',
     );
     expect(mockDescribeIndex).toHaveBeenCalledTimes(1);
     expect(host2).toBe('https://test-host');
@@ -176,11 +176,11 @@ describe('IndexHostSingleton', () => {
     expect(mockIndexOperationsBuilder).toHaveBeenCalledTimes(2);
     expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
       1,
-      pineconeConfig1
+      pineconeConfig1,
     );
     expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
       2,
-      pineconeConfig2
+      pineconeConfig2,
     );
   });
 });

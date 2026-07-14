@@ -10,11 +10,11 @@ import { FetchByMetadataCommand } from '../../vectors/fetchByMetadata';
 const indexNamespace = 'namespace-1';
 const setupResponse = (response, isSuccess) => {
   const fakeFetchByMetadata: (
-    req: FetchVectorsByMetadataRequest
+    req: FetchVectorsByMetadataRequest,
   ) => Promise<FetchByMetadataResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = {
     fetchVectorsByMetadata: fakeFetchByMetadata,
@@ -56,7 +56,25 @@ describe('fetchByMetadata', () => {
       await cmd.run({});
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must pass a non-empty object for the `filter` field in order to fetch by metadata.'
+      'You must pass a non-empty object for the `filter` field in order to fetch by metadata.',
     );
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { VOA, cmd } = setupResponse({ vectors: [] }, true);
+    await cmd.run({
+      filter: { genre: 'classical' },
+      namespace: 'custom-namespace',
+    });
+
+    expect(VOA.fetchVectorsByMetadata).toHaveBeenCalledWith({
+      fetchByMetadataRequest: {
+        filter: { genre: 'classical' },
+        namespace: 'custom-namespace',
+        limit: undefined,
+        paginationToken: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

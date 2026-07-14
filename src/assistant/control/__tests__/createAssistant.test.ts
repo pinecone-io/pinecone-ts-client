@@ -7,7 +7,7 @@ import { createAssistant } from '../createAssistant';
 
 const setupManageAssistantsApi = () => {
   const fakeCreateAssistant: (
-    req: CreateAssistantOperationRequest
+    req: CreateAssistantOperationRequest,
   ) => Promise<Assistant> = jest
     .fn()
     .mockImplementation(() => Promise.resolve({}));
@@ -33,9 +33,9 @@ describe('AssistantCtrlPlane', () => {
       };
 
       await expect(
-        createAssistant(manageAssistantsApi)(invalidRequest)
+        createAssistant(manageAssistantsApi)(invalidRequest),
       ).rejects.toThrow(
-        'Invalid region specified. Must be one of "us" or "eu"'
+        'Invalid region specified. Must be one of "us" or "eu"',
       );
     });
 
@@ -53,7 +53,7 @@ describe('AssistantCtrlPlane', () => {
 
       for (const request of validRequests) {
         await expect(
-          createAssistant(manageAssistantsApi)(request)
+          createAssistant(manageAssistantsApi)(request),
         ).resolves.not.toThrow();
       }
     });

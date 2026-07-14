@@ -71,7 +71,7 @@ describe('Pinecone', () => {
           new Pinecone({} as PineconeConfiguration);
         }).toThrow(
           'The client configuration must have required property: apiKey. You can find the configuration values for' +
-            ' your project in the Pinecone developer console at https://app.pinecone.io.'
+            ' your project in the Pinecone developer console at https://app.pinecone.io.',
         );
       });
 
@@ -83,7 +83,7 @@ describe('Pinecone', () => {
           new Pinecone(config);
         }).toThrow(
           'The client configuration must have required property: apiKey. You can find the configuration values for' +
-            ' your project in the Pinecone developer console at https://app.pinecone.io.'
+            ' your project in the Pinecone developer console at https://app.pinecone.io.',
         );
       });
     });
@@ -126,7 +126,7 @@ describe('Pinecone', () => {
 
       test('should throw an error if required environment variable is not set', () => {
         expect(() => new Pinecone()).toThrow(
-          "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io"
+          "Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: PINECONE_API_KEY. You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io",
         );
       });
     });
@@ -143,7 +143,7 @@ describe('Pinecone', () => {
       new Pinecone({ apiKey: 'test-api-key' });
 
       expect(warnSpy).toHaveBeenCalledWith(
-        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.',
       );
 
       // Clean up: remove the mock window object
@@ -162,7 +162,7 @@ describe('Pinecone', () => {
       const p = new Pinecone({ apiKey: 'foo' });
       const i = p.index<ProductMetadata>({ name: 'product-embeddings' });
 
-      const result = await i.fetch(['1']);
+      const result = await i.fetch({ ids: ['1'] });
       if (result && result.records) {
         // No ts error
         console.log(result.records['1'].metadata?.color);
@@ -172,22 +172,26 @@ describe('Pinecone', () => {
       }
 
       // No ts errors when passing ProductMetadata
-      await i.upsert([
-        {
-          id: 'party-shirt',
-          values: [0.1, 0.1, 0.1],
-          metadata: { color: 'black', description: 'sexy black dress' },
-        },
-      ]);
+      await i.upsert({
+        records: [
+          {
+            id: 'party-shirt',
+            values: [0.1, 0.1, 0.1],
+            metadata: { color: 'black', description: 'sexy black dress' },
+          },
+        ],
+      });
 
-      await i.upsert([
-        {
-          id: 'pink-shirt',
-          values: [0.1, 0.1, 0.1],
-          // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
-          metadata: { color: 'pink', description: 'pink shirt' },
-        },
-      ]);
+      await i.upsert({
+        records: [
+          {
+            id: 'pink-shirt',
+            values: [0.1, 0.1, 0.1],
+            // @ts-expect-error becuase 'pink' not a valid value for ProductMeta color field
+            metadata: { color: 'pink', description: 'pink shirt' },
+          },
+        ],
+      });
     });
   });
 
@@ -199,7 +203,7 @@ describe('Pinecone', () => {
       expect(IndexHostSingleton._set).toHaveBeenCalledWith(
         { apiKey: 'foo' },
         'test-index',
-        fakeHost
+        fakeHost,
       );
     });
 
@@ -211,19 +215,19 @@ describe('Pinecone', () => {
         1,
         { apiKey: 'foo' },
         'fake-index1',
-        fakeHost
+        fakeHost,
       );
       expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
         2,
         { apiKey: 'foo' },
         'fake-index2',
-        fakeHost
+        fakeHost,
       );
       expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
         3,
         { apiKey: 'foo' },
         'fake-index3',
-        fakeHost
+        fakeHost,
       );
     });
 
@@ -233,7 +237,7 @@ describe('Pinecone', () => {
 
       expect(IndexHostSingleton._delete).toHaveBeenCalledWith(
         { apiKey: 'foo' },
-        'test-index'
+        'test-index',
       );
     });
   });

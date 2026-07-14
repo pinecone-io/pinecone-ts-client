@@ -9,22 +9,23 @@ import type {
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexForModelResponse = (
   createIndexForModelResponse,
   describeIndexResponse,
   isCreateIndexSuccess = true,
-  isDescribeIndexSuccess = true
+  isDescribeIndexSuccess = true,
 ) => {
   const fakeCreateIndexForModel: (
-    req: CreateIndexForModelOperationRequest
+    req: CreateIndexForModelOperationRequest,
   ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
         ? Promise.resolve(createIndexForModelResponse)
-        : Promise.reject(createIndexForModelResponse)
+        : Promise.reject(createIndexForModelResponse),
     );
 
   // unfold describeIndexResponse
@@ -37,7 +38,7 @@ const setupCreateIndexForModelResponse = (
     describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
         ? Promise.resolve(response)
-        : Promise.reject({ response })
+        : Promise.reject({ response }),
     );
   });
 
@@ -58,7 +59,7 @@ describe('createIndexForModel', () => {
       { name: 'test-index' },
       {
         status: { ready: true, state: 'Ready' },
-      }
+      },
     );
     const mockCreateReq = {
       name: 'test-index',
@@ -79,7 +80,7 @@ describe('createIndexForModel', () => {
 
     expect(MIA.createIndexForModel).toHaveBeenCalledWith({
       createIndexForModelRequest: mockCreateReq,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -99,7 +100,7 @@ describe('createIndexForModel', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass a non-empty string for `name` in order to create an index.'
+        'You must pass a non-empty string for `name` in order to create an index.',
       );
     }
   });
@@ -120,7 +121,7 @@ describe('createIndexForModel', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass a non-empty string for `cloud` in order to create an index.'
+        'You must pass a non-empty string for `cloud` in order to create an index.',
       );
     }
   });
@@ -141,7 +142,7 @@ describe('createIndexForModel', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass a non-empty string for `region` in order to create an index.'
+        'You must pass a non-empty string for `region` in order to create an index.',
       );
     }
   });
@@ -159,7 +160,7 @@ describe('createIndexForModel', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass an `embed` object in order to create an index.'
+        'You must pass an `embed` object in order to create an index.',
       );
     }
   });
@@ -168,7 +169,7 @@ describe('createIndexForModel', () => {
     test('creates index with default OnDemand readCapacity when omitted', async () => {
       const MIA = setupCreateIndexForModelResponse(
         { name: 'test-index' },
-        { status: { ready: true, state: 'Ready' } }
+        { status: { ready: true, state: 'Ready' } },
       );
 
       await createIndexForModel(MIA)({
@@ -192,14 +193,14 @@ describe('createIndexForModel', () => {
           },
           readCapacity: undefined,
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
     test('creates index with explicit OnDemand readCapacity', async () => {
       const MIA = setupCreateIndexForModelResponse(
         { name: 'test-index' },
-        { status: { ready: true, state: 'Ready' } }
+        { status: { ready: true, state: 'Ready' } },
       );
 
       await createIndexForModel(MIA)({
@@ -224,14 +225,14 @@ describe('createIndexForModel', () => {
           },
           readCapacity: { mode: 'OnDemand' },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
     test('creates index with Dedicated readCapacity', async () => {
       const MIA = setupCreateIndexForModelResponse(
         { name: 'test-index' },
-        { status: { ready: true, state: 'Ready' } }
+        { status: { ready: true, state: 'Ready' } },
       );
 
       await createIndexForModel(MIA)({
@@ -267,14 +268,14 @@ describe('createIndexForModel', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
     test('creates index with Dedicated readCapacity (mode inferred)', async () => {
       const MIA = setupCreateIndexForModelResponse(
         { name: 'test-index' },
-        { status: { ready: true, state: 'Ready' } }
+        { status: { ready: true, state: 'Ready' } },
       );
 
       await createIndexForModel(MIA)({
@@ -309,7 +310,7 @@ describe('createIndexForModel', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });
@@ -334,7 +335,7 @@ describe('createIndexForModel', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(PineconeArgumentError);
         expect((err as PineconeArgumentError).message).toMatch(
-          /Invalid read capacity mode/i
+          /Invalid read capacity mode/i,
         );
       }
     });
@@ -361,7 +362,7 @@ describe('createIndexForModel', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(PineconeArgumentError);
         expect((err as PineconeArgumentError).message).toMatch(
-          /Invalid node type.*b1.*t1/i
+          /Invalid node type.*b1.*t1/i,
         );
       }
     });
@@ -385,7 +386,7 @@ describe('createIndexForModel', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(PineconeArgumentError);
         expect((err as PineconeArgumentError).message).toMatch(
-          /manual is required for dedicated mode/i
+          /manual is required for dedicated mode/i,
         );
       }
     });
@@ -402,7 +403,7 @@ describe('createIndexForModel', () => {
     test('polls describeIndex when waitUntilReady is true', async () => {
       const MIA = setupCreateIndexForModelResponse(
         { name: 'test-index' },
-        { status: { ready: true, state: 'Ready' } }
+        { status: { ready: true, state: 'Ready' } },
       );
 
       const returned = await createIndexForModel(MIA)({
@@ -419,7 +420,7 @@ describe('createIndexForModel', () => {
       expect(returned).toEqual({ status: { ready: true, state: 'Ready' } });
       expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'test-index',
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });

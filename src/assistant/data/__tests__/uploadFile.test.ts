@@ -1,131 +1,385 @@
 import { uploadFile } from '../uploadFile';
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
-const mockFetch = jest.fn();
-jest.mock('fs');
+const mockRetryingFetch = jest.fn();
+const mockNonRetryingFetch = jest.fn();
+
+jest.mock('fs', () => ({
+  promises: {
+    readFile: jest.fn(),
+  },
+}));
 jest.mock('path');
 jest.mock('../../../utils', () => {
   const actual = jest.requireActual('../../../utils');
   return {
     ...actual,
-    getFetch: () => mockFetch,
+    getFetch: () => mockRetryingFetch,
+    getNonRetryingFetch: () => mockNonRetryingFetch,
     buildUserAgent: () => 'TestUserAgent',
   };
 });
 
 const buildMockFetchResponse = (
+  mock: jest.Mock,
   isSuccess: boolean,
   status: number,
-  body: string
+  body: string,
 ) =>
-  mockFetch.mockResolvedValue({
-    ok: isSuccess ? true : false,
+  mock.mockResolvedValue({
+    ok: isSuccess,
     status: status,
     json: async () => JSON.parse(body),
   });
 
-describe('uploadFileInternal', () => {
-  const mockConfig = {
-    apiKey: 'test-api-key',
-    additionalHeaders: {
-      'Custom-Header': 'test',
-    },
-  };
-  const mockAssistantName = 'test-assistant';
-  const mockFileContent = Buffer.from('test file content');
-  const mockResponse = {
-    data: {
-      name: 'test.txt',
-      id: 'test-id',
-      createdOn: new Date().toISOString(),
-      updatedOn: new Date().toISOString(),
-      status: 'ready',
-    },
-  };
-  const mockApiProvider = {
-    provideHostUrl: async () => 'https://prod-1-data.ke.pinecone.io/assistant',
-  } as AsstDataOperationsProvider;
+const mockResponse = {
+  data: {
+    name: 'test.txt',
+    id: 'test-id',
+    createdOn: new Date().toISOString(),
+    updatedOn: new Date().toISOString(),
+    status: 'ready',
+  },
+};
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    (fs.readFileSync as jest.Mock).mockResolvedValue(mockFileContent);
-    (path.basename as jest.Mock).mockReturnValue('test.txt');
+const mockConfig = {
+  apiKey: 'test-api-key',
+  additionalHeaders: {
+    'Custom-Header': 'test',
+  },
+};
+
+const mockAssistantName = 'test-assistant';
+
+const mockApiProvider = {
+  provideHostUrl: async () => 'https://prod-1-data.ke.pinecone.io/assistant',
+} as AsstDataOperationsProvider;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+});
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+describe('validation', () => {
+  test('throws when called with no options', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(upload(undefined as any)).rejects.toThrow(
+      'You must pass an object with required properties',
+    );
   });
 
-  test('throws error when file path is not provided', async () => {
+  test('throws when neither path nor file is provided', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(upload({} as any)).rejects.toThrow(
+      'You must pass an object with required properties',
+    );
+  });
+
+  test('throws when only metadata is provided', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(upload({ metadata: { key: 'value' } } as any)).rejects.toThrow(
+      'You must pass an object with required properties',
+    );
+  });
+
+  test('throws when path is empty string', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await expect(upload({ path: '' })).rejects.toThrow(
-      'You must pass an object with required properties (`path`) to upload a file.'
+      'You must pass an object with required properties',
     );
   });
 
-  test('correctly builds URL without metadata', async () => {
-    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+  test('throws when file is provided without fileName', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await expect(
+      upload({ file: Buffer.from('data'), fileName: '' } as any),
+    ).rejects.toThrow('`fileName` is required when uploading via `file`.');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// path input — uses retrying fetch
+// ---------------------------------------------------------------------------
+
+describe('path input', () => {
+  const mockFileContent = Buffer.from('test file content');
+
+  beforeEach(() => {
+    (fs.promises.readFile as jest.Mock).mockResolvedValue(mockFileContent);
+    (path.basename as jest.Mock).mockReturnValue('test.txt');
+    buildMockFetchResponse(
+      mockRetryingFetch,
+      true,
+      200,
+      JSON.stringify(mockResponse),
+    );
+  });
+
+  test('reads file asynchronously from path', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt' });
+    expect(fs.promises.readFile).toHaveBeenCalledWith('test.txt');
+  });
 
-    expect(mockFetch).toHaveBeenCalledWith(
+  test('uses retrying fetch', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt' });
+    expect(mockRetryingFetch).toHaveBeenCalled();
+    expect(mockNonRetryingFetch).not.toHaveBeenCalled();
+  });
+
+  test('sends FormData body', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt' });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
       'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
       expect.objectContaining({
         method: 'POST',
         body: expect.any(FormData),
-        headers: expect.objectContaining({
-          'Api-Key': 'test-api-key',
-          'User-Agent': 'TestUserAgent',
-          'X-Pinecone-Api-Version': expect.any(String),
-        }),
-      })
+      }),
     );
   });
 
-  test('correctly builds URL with metadata', async () => {
-    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
-    const metadata = { key: 'value' };
+  test('sends metadata in form body', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const metadata = { key: 'value' };
     await upload({ path: 'test.txt', metadata });
 
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
-    expect(mockFetch).toHaveBeenCalledWith(
-      `https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?metadata=${encodedMetadata}`,
-      expect.objectContaining({
-        method: 'POST',
-        body: expect.any(FormData),
-        headers: expect.objectContaining({
-          'Api-Key': 'test-api-key',
-          'User-Agent': 'TestUserAgent',
-          'X-Pinecone-Api-Version': expect.any(String),
-        }),
-      })
-    );
-  });
-
-  test('includes correct headers in request', async () => {
-    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
-    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
-    await upload({ path: 'test.txt' });
-
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
       'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
+      expect.objectContaining({ body: expect.any(FormData) }),
+    );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
+  });
+
+  test('builds URL with multimodal=true', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt', multimodal: true });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=true',
+      expect.anything(),
+    );
+  });
+
+  test('builds URL with multimodal=false', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt', multimodal: false });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=false',
+      expect.anything(),
+    );
+  });
+
+  test('sends metadata in form body with multimodal query param', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const metadata = { key: 'value' };
+    await upload({ path: 'test.txt', metadata, multimodal: true });
+
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant?multimodal=true',
+      expect.objectContaining({ body: expect.any(FormData) }),
+    );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
+  });
+
+  test('includes required headers', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ path: 'test.txt' });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      expect.anything(),
       expect.objectContaining({
-        method: 'POST',
-        body: expect.any(FormData),
         headers: expect.objectContaining({
           'Api-Key': 'test-api-key',
           'User-Agent': 'TestUserAgent',
           'X-Pinecone-Api-Version': expect.any(String),
         }),
-      })
+      }),
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Buffer input — uses retrying fetch
+// ---------------------------------------------------------------------------
+
+describe('Buffer input', () => {
+  beforeEach(() => {
+    buildMockFetchResponse(
+      mockRetryingFetch,
+      true,
+      200,
+      JSON.stringify(mockResponse),
     );
   });
 
-  test('creates form data with file stream', async () => {
-    buildMockFetchResponse(true, 200, JSON.stringify(mockResponse));
+  test('uses retrying fetch', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
-    await upload({ path: 'test.txt' });
+    await upload({ file: Buffer.from('pdf content'), fileName: 'doc.pdf' });
+    expect(mockRetryingFetch).toHaveBeenCalled();
+    expect(mockNonRetryingFetch).not.toHaveBeenCalled();
+  });
 
-    expect(fs.readFileSync).toHaveBeenCalledWith('test.txt');
+  test('sends FormData body', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    await upload({ file: Buffer.from('pdf content'), fileName: 'doc.pdf' });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+      }),
+    );
+  });
+
+  test('sends metadata in form body', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const metadata = { source: 'upload' };
+    await upload({
+      file: Buffer.from('data'),
+      fileName: 'doc.txt',
+      metadata,
+    });
+
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
+      expect.objectContaining({ body: expect.any(FormData) }),
+    );
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    const metadataBlob = body.get('metadata') as Blob;
+    expect(await metadataBlob.text()).toBe(JSON.stringify(metadata));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Blob input — uses retrying fetch
+// ---------------------------------------------------------------------------
+
+describe('Blob input', () => {
+  beforeEach(() => {
+    buildMockFetchResponse(
+      mockRetryingFetch,
+      true,
+      200,
+      JSON.stringify(mockResponse),
+    );
+  });
+
+  test('uses retrying fetch', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const blob = new Blob(['pdf content'], { type: 'application/pdf' });
+    await upload({ file: blob, fileName: 'doc.pdf' });
+    expect(mockRetryingFetch).toHaveBeenCalled();
+    expect(mockNonRetryingFetch).not.toHaveBeenCalled();
+  });
+
+  test('sends FormData body', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const blob = new Blob(['pdf content'], { type: 'application/pdf' });
+    await upload({ file: blob, fileName: 'doc.pdf' });
+    expect(mockRetryingFetch).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+      }),
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ReadableStream input — uses non-retrying fetch
+// ---------------------------------------------------------------------------
+
+describe('ReadableStream input', () => {
+  beforeEach(() => {
+    buildMockFetchResponse(
+      mockNonRetryingFetch,
+      true,
+      200,
+      JSON.stringify(mockResponse),
+    );
+  });
+
+  test('uses non-retrying fetch', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from(['pdf content']);
+    await upload({ file: stream, fileName: 'doc.pdf' });
+    expect(mockNonRetryingFetch).toHaveBeenCalled();
+    expect(mockRetryingFetch).not.toHaveBeenCalled();
+  });
+
+  test('sends a ReadableStream body (not FormData)', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from(['pdf content']);
+    await upload({ file: stream, fileName: 'doc.pdf' });
+    expect(mockNonRetryingFetch).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(ReadableStream),
+      }),
+    );
+  });
+
+  test('sets multipart Content-Type header with boundary', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from(['pdf content']);
+    await upload({ file: stream, fileName: 'doc.pdf' });
+    const [, init] = mockNonRetryingFetch.mock.calls[0];
+    expect(init.headers['Content-Type']).toMatch(
+      /^multipart\/form-data; boundary=/,
+    );
+  });
+
+  test('escapes special characters in fileName for Content-Disposition header', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from([Buffer.from('pdf content')]);
+    await upload({ file: stream, fileName: 'file "name"\r\n.pdf' });
+
+    const [, init] = mockNonRetryingFetch.mock.calls[0];
+    const body: ReadableStream<Uint8Array> = init.body;
+    const reader = body.getReader();
+    let raw = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      raw += new TextDecoder().decode(value);
+    }
+    // Unescaped chars would break the header line; verify they are encoded
+    expect(raw).toContain('filename="file %22name%22%0D%0A.pdf"');
+    expect(raw).not.toContain('"name"');
+  });
+
+  test('sends metadata in multipart body (not URL)', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const stream = Readable.from([Buffer.from('data')]);
+    const metadata = { source: 'stream' };
+    await upload({ file: stream, fileName: 'doc.txt', metadata });
+
+    const [url, init] = mockNonRetryingFetch.mock.calls[0];
+    expect(url).toBe(
+      'https://prod-1-data.ke.pinecone.io/assistant/files/test-assistant',
+    );
+
+    const reader = (init.body as ReadableStream<Uint8Array>).getReader();
+    let raw = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      raw += new TextDecoder().decode(value);
+    }
+    expect(raw).toContain('"metadata"');
+    expect(raw).toContain(JSON.stringify(metadata));
   });
 });

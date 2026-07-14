@@ -14,6 +14,7 @@ import {
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
 import { createMiddlewareArray } from '../../utils/middleware';
+import { PineconeArgumentError } from '../../errors';
 
 export class NamespaceOperationsProvider {
   private readonly config: PineconeConfiguration;
@@ -26,7 +27,7 @@ export class NamespaceOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -45,13 +46,13 @@ export class NamespaceOperationsProvider {
       this.namespaceOperations = this.buildNamespaceOperationsConfig();
     } else {
       if (!this.indexName) {
-        throw new Error(
-          'Either indexName or indexHostUrl must be provided to NamespaceOperationsProvider'
+        throw new PineconeArgumentError(
+          'Either indexName or indexHostUrl must be provided to NamespaceOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.namespaceOperations = this.buildNamespaceOperationsConfig();

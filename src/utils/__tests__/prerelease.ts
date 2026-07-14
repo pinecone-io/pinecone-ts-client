@@ -22,7 +22,7 @@ test('confirm featureFlag prints correct message, given API Version', () => {
 
   // Verify that the warning was printed
   expect(consoleWarnSpy).toHaveBeenCalledWith(
-    `This is a prerelease feature implemented against the ${testApiVersion} version of our API.`
+    `This is a prerelease feature implemented against the ${testApiVersion} version of our API.`,
   );
 
   // Verify that the original method was called

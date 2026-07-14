@@ -4,13 +4,14 @@ import type {
   ModelInfoList,
 } from '../../pinecone-generated-ts-fetch/inference';
 import { listModels } from '../listModels';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/inference/api_version';
 
 const setupListModelsResponse = (response = {}, isSuccessful = true) => {
   const fakeListModels: (req: ListModelsRequest) => Promise<ModelInfoList> =
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccessful ? Promise.resolve(response) : Promise.reject(response)
+        isSuccessful ? Promise.resolve(response) : Promise.reject(response),
       );
 
   const IA = { listModels: fakeListModels } as InferenceApi;
@@ -24,7 +25,7 @@ describe('listModels', () => {
     expect(IA.listModels).toHaveBeenCalledWith({
       type: 'embed',
       vectorType: 'sparse',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

@@ -75,7 +75,7 @@ Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs sh
 ┌──────────────────┐                        ┌──────────────────┐
 │ Integration      │                        │ Integration      │
 │ Tests Job 1      │         ...            │ Tests Job 6      │
-│ (Node 18 + npm)  │                        │ (Node 20 + bun)  │
+│ (Node 22 + npm)  │                        │ (Node 24 + bun)  │
 │ Uses FIXTURES_JSON                        │ Uses FIXTURES_JSON
 └────────┬─────────┘                        └────────┬─────────┘
          │                                           │

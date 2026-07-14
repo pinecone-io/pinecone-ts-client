@@ -3,11 +3,9 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_dat
 
 export class CancelImportCommand {
   apiProvider: BulkOperationsProvider;
-  namespace: string;
 
-  constructor(apiProvider: BulkOperationsProvider, namespace: string) {
+  constructor(apiProvider: BulkOperationsProvider) {
     this.apiProvider = apiProvider;
-    this.namespace = namespace;
   }
 
   async run(id: string): Promise<object> {

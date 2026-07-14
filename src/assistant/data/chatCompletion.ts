@@ -13,10 +13,10 @@ import type { ChatCompletionOptions } from './types';
 
 export const chatCompletion = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (
-    options: ChatCompletionOptions
+    options: ChatCompletionOptions,
   ): Promise<ChatCompletionModel> => {
     validateChatOptions(options);
 
@@ -31,6 +31,7 @@ export const chatCompletion = (
         messages: messages,
         stream: false,
         model: model,
+        temperature: options.temperature,
         filter: options.filter,
       },
     });

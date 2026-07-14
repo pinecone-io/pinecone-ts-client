@@ -13,7 +13,8 @@ export const load = (app) => {
   // See PageEvent: https://github.com/TypeStrong/typedoc/blob/f2d2abe054feca91b89c00c33e1d726bbda85dcb/src/lib/output/events.ts#L134
   app.renderer.on('endPage', onPageRendered.bind(this));
   // See RendererEvent: https://github.com/TypeStrong/typedoc/blob/f2d2abe054feca91b89c00c33e1d726bbda85dcb/src/lib/output/events.ts#L47
-  app.renderer.once('endRender', onRenderFinished.bind(this));
+  // TypeDoc 0.27+ changed from 'endRender' to 'end'
+  app.renderer.on('end', onRenderFinished.bind(this));
 };
 
 function onPageRendered(page) {
@@ -21,7 +22,7 @@ function onPageRendered(page) {
   if (page && page.contents) {
     page.contents = page.contents.replace(
       '</head>',
-      '<link rel="icon" href="./favicon-32x32.png"/></head>'
+      '<link rel="icon" href="./favicon-32x32.png"/></head>',
     );
   }
 }

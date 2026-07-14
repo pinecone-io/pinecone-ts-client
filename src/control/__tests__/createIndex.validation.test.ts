@@ -16,7 +16,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.',
       );
     });
 
@@ -31,7 +31,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to create an index.'
+        'You must pass a non-empty string for `name` in order to create an index.',
       );
     });
 
@@ -46,7 +46,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to create an index.'
+        'You must pass a non-empty string for `name` in order to create an index.',
       );
     });
 
@@ -61,7 +61,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a positive `dimension` when creating a dense index.'
+        'You must pass a positive `dimension` when creating a dense index.',
       );
     });
 
@@ -76,7 +76,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a positive integer for `dimension` in order to create an index.'
+        'You must pass a positive integer for `dimension` in order to create an index.',
       );
     });
 
@@ -96,7 +96,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'You must pass a `region` for the serverless `spec` object in order to create an index.'
+        'You must pass a `region` for the serverless `spec` object in order to create an index.',
       );
     });
 
@@ -116,7 +116,7 @@ describe('createIndex argument validations', () => {
 
       expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       expect(toThrow).rejects.toThrowError(
-        'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
+        'You must pass a `cloud` for the serverless `spec` object in order to create an index.',
       );
     });
 
@@ -153,7 +153,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        "Invalid metric value: foo. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'"
+        "Invalid metric value: foo. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'",
       );
     });
 
@@ -176,7 +176,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a positive integer for `replicas` in order to create an index.'
+        'You must pass a positive integer for `replicas` in order to create an index.',
       );
     });
 
@@ -199,7 +199,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'Invalid pod type: gobblygook. Valid values are: s1.x1, s1.x2, s1.x4, s1.x8, p1.x1, p1.x2, p1.x4, p1.x8, p2.x1, p2.x2, p2.x4, p2.x8.'
+        'Invalid pod type: gobblygook. Valid values are: s1.x1, s1.x2, s1.x4, s1.x8, p1.x1, p1.x2, p1.x4, p1.x8, p2.x1, p2.x2, p2.x4, p2.x8.',
       );
     });
 
@@ -222,7 +222,7 @@ describe('createIndex argument validations', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a positive integer for `pods` in order to create an index.'
+        'You must pass a positive integer for `pods` in order to create an index.',
       );
     });
   });

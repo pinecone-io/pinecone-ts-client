@@ -8,8 +8,19 @@ import type {
 } from './types';
 import { PineconeArgumentError } from '../../errors';
 
-/** The list of record ids you would like to fetch using { @link Index.fetch } */
-export type FetchOptions = Array<RecordId>;
+/**
+ * Options for fetching records from the index.
+ * @see {@link Index.fetch}
+ */
+export type FetchOptions = {
+  /** The list of record ids you would like to fetch */
+  ids: Array<RecordId>;
+
+  /**
+   * The namespace to fetch from. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
+};
 
 /**
  *  The response from {@link Index.fetch }
@@ -38,19 +49,20 @@ export class FetchCommand<T extends RecordMetadata = RecordMetadata> {
   }
 
   validator = (options: FetchOptions) => {
-    if (options.length === 0) {
+    if (!options.ids || options.ids.length === 0) {
       throw new PineconeArgumentError('Must pass in at least 1 recordID.');
     }
   };
 
-  async run(ids: FetchOptions): Promise<FetchResponse<T>> {
-    this.validator(ids);
+  async run(options: FetchOptions): Promise<FetchResponse<T>> {
+    this.validator(options);
+    const namespace = options.namespace ?? this.namespace;
     const api = await this.apiProvider.provide();
 
     const response = await api.fetchVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      ids: ids,
-      namespace: this.namespace,
+      ids: options.ids,
+      namespace,
     });
 
     // Vectors and Namespace should never actually be undefined, but we need to satisfy the typescript compiler.

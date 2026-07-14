@@ -18,31 +18,31 @@ import { PineconeArgumentError } from '../../../errors';
 
 const setupResponse = (response, isSuccess) => {
   const fakeStartImport: (
-    req: StartBulkImportRequest
+    req: StartBulkImportRequest,
   ) => Promise<StartImportResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeListImports: (
-    req: ListBulkImportsRequest
+    req: ListBulkImportsRequest,
   ) => Promise<ListImportsResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeDescribeImport: (
-    req: DescribeBulkImportRequest
+    req: DescribeBulkImportRequest,
   ) => Promise<ImportModel> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const fakeCancelImport: (req: CancelBulkImportRequest) => Promise<object> =
     jest
       .fn()
       .mockImplementation(() =>
-        isSuccess ? Promise.resolve(response) : Promise.reject(response)
+        isSuccess ? Promise.resolve(response) : Promise.reject(response),
       );
 
   const BOA = {
@@ -56,16 +56,10 @@ const setupResponse = (response, isSuccess) => {
     provide: async () => BOA,
   } as BulkOperationsProvider;
 
-  const startCmd = new StartImportCommand(BulkOperationsProvider, 'namespace');
-  const listCmd = new ListImportsCommand(BulkOperationsProvider, 'namespace');
-  const describeCmd = new DescribeImportCommand(
-    BulkOperationsProvider,
-    'namespace'
-  );
-  const cancelCmd = new CancelImportCommand(
-    BulkOperationsProvider,
-    'namespace'
-  );
+  const startCmd = new StartImportCommand(BulkOperationsProvider);
+  const listCmd = new ListImportsCommand(BulkOperationsProvider);
+  const describeCmd = new DescribeImportCommand(BulkOperationsProvider);
+  const cancelCmd = new CancelImportCommand(BulkOperationsProvider);
 
   return {
     fakeStartImport,
@@ -88,7 +82,7 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'continue';
 
-    await startCmd.run(uri, errorMode);
+    await startCmd.run({ uri, errorMode });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -97,7 +91,7 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'continue' },
         },
-      })
+      }),
     );
   });
 
@@ -107,7 +101,7 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'abort';
 
-    await startCmd.run(uri, errorMode);
+    await startCmd.run({ uri, errorMode });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -116,7 +110,7 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'abort' },
         },
-      })
+      }),
     );
   });
 
@@ -126,8 +120,9 @@ describe('StartImportCommand', () => {
     const uri = 's3://my-bucket/my-file.csv';
     const errorMode = 'invalid';
 
-    await expect(startCmd.run(uri, errorMode)).rejects.toThrow(
-      PineconeArgumentError
+    // @ts-expect-error - invalid errorMode
+    await expect(startCmd.run({ uri, errorMode })).rejects.toThrow(
+      PineconeArgumentError,
     );
   });
 
@@ -136,7 +131,7 @@ describe('StartImportCommand', () => {
 
     const uri = 's3://my-bucket/my-file.csv';
 
-    await startCmd.run(uri, undefined);
+    await startCmd.run({ uri });
 
     expect(fakeStartImport).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -145,16 +140,18 @@ describe('StartImportCommand', () => {
           uri,
           errorMode: { onError: 'continue' },
         },
-      })
+      }),
     );
   });
 
   test('should throw error when URI/1st arg is missing', async () => {
     const { startCmd } = setupResponse(undefined, false);
 
-    await expect(startCmd.run('')).rejects.toThrow(PineconeArgumentError);
-    await expect(startCmd.run('')).rejects.toThrow(
-      '`uri` field is required and must start with the scheme of a supported storage provider.'
+    // @ts-expect-error - invalid URI
+    await expect(startCmd.run({})).rejects.toThrow(PineconeArgumentError);
+    // @ts-expect-error - invalid URI
+    await expect(startCmd.run({})).rejects.toThrow(
+      '`uri` field is required and must start with the scheme of a supported storage provider.',
     );
   });
 
@@ -169,14 +166,14 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         limit,
-      })
+      }),
     );
   });
 
   test('should call describeImport with correct request', async () => {
     const { describeCmd, fakeDescribeImport } = setupResponse(
       { id: '1' },
-      true
+      true,
     );
 
     const importId = 'import-id';
@@ -187,7 +184,7 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         id: importId,
-      })
+      }),
     );
   });
 
@@ -202,7 +199,7 @@ describe('StartImportCommand', () => {
       expect.objectContaining({
         xPineconeApiVersion: X_PINECONE_API_VERSION,
         id: importId,
-      })
+      }),
     );
   });
 });

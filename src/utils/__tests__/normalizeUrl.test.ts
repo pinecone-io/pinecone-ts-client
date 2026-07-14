@@ -9,19 +9,19 @@ describe('normalizeUrl', () => {
 
   test('adds https:// to url if no protocol present', () => {
     expect(normalizeUrl('index-name-abcdef.svc.pinecone.io')).toBe(
-      'https://index-name-abcdef.svc.pinecone.io'
+      'https://index-name-abcdef.svc.pinecone.io',
     );
   });
 
   test('keeps http:// protocol if present', () => {
     expect(normalizeUrl('http://index-name-abcdef.svc.pinecone.io')).toBe(
-      'http://index-name-abcdef.svc.pinecone.io'
+      'http://index-name-abcdef.svc.pinecone.io',
     );
   });
 
   test('keeps https:// protocol if present', () => {
     expect(normalizeUrl('https://index-name-abcdef.svc.pinecone.io')).toBe(
-      'https://index-name-abcdef.svc.pinecone.io'
+      'https://index-name-abcdef.svc.pinecone.io',
     );
   });
 });

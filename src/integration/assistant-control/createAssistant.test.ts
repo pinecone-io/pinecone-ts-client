@@ -36,7 +36,7 @@ describe('createAssistant error paths', () => {
       pinecone.createAssistant({
         name: assistantName,
         metadata: { key: 'a'.repeat(1000000) },
-      })
+      }),
     ).rejects.toThrow(/Metadata exceeds maximum length of 16384 bytes/);
   });
 
@@ -46,7 +46,7 @@ describe('createAssistant error paths', () => {
       pinecone.createAssistant({
         name: assistantName,
         region: 'invalid-region',
-      })
+      }),
     ).rejects.toThrow('Invalid region specified. Must be one of "us" or "eu"');
   });
 
@@ -55,7 +55,7 @@ describe('createAssistant error paths', () => {
     await expect(
       pinecone.createAssistant({
         name: assistantName,
-      })
+      }),
     ).rejects.toThrow('Invalid assistant name');
   });
 
@@ -67,7 +67,7 @@ describe('createAssistant error paths', () => {
     await expect(
       pinecone.createAssistant({
         name: assistantName,
-      })
+      }),
     ).rejects.toThrow();
 
     await pinecone.deleteAssistant(assistantName);

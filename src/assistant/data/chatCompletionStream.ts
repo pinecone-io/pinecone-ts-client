@@ -21,10 +21,10 @@ import {
 export const chatCompletionStream = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider,
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ) => {
   return async (
-    options: ChatCompletionOptions
+    options: ChatCompletionOptions,
   ): Promise<ChatStream<StreamedChatCompletionResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -46,6 +46,7 @@ export const chatCompletionStream = (
         messages: messagesValidation(options),
         stream: true,
         model: modelValidation(options),
+        temperature: options.temperature,
         filter: options.filter,
       }),
     });
@@ -57,7 +58,7 @@ export const chatCompletionStream = (
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        chatUrl
+        chatUrl,
       );
       throw err;
     }

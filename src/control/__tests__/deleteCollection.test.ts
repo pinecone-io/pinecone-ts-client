@@ -9,12 +9,12 @@ import type {
 
 const setupMocks = (
   deleteResponse,
-  listCollectionResponse = () => Promise.resolve([])
+  listCollectionResponse = () => Promise.resolve([]),
 ) => {
   const fakeDeleteCollection: (req: DeleteCollectionRequest) => Promise<void> =
     jest.fn().mockImplementation(deleteResponse);
   const fakeListCollections: (
-    req: ListCollectionsRequest
+    req: ListCollectionsRequest,
   ) => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
@@ -34,7 +34,7 @@ describe('deleteCollection', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `collectionName`'
+        'You must pass a non-empty string for `collectionName`',
       );
     });
 
@@ -45,7 +45,7 @@ describe('deleteCollection', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `collectionName`'
+        'You must pass a non-empty string for `collectionName`',
       );
     });
   });

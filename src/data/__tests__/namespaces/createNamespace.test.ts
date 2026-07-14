@@ -10,11 +10,11 @@ import { PineconeArgumentError } from '../../../errors';
 
 const setupResponse = (response, isSuccess) => {
   const fakeCreateNamespace: (
-    req: CreateNamespaceOperationRequest
+    req: CreateNamespaceOperationRequest,
   ) => Promise<NamespaceDescription> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
 
   const NOA = {
@@ -40,7 +40,7 @@ describe('createNamespace', () => {
         name,
         schema,
       },
-      true
+      true,
     );
 
     await cmd({ name, schema });
@@ -55,7 +55,7 @@ describe('createNamespace', () => {
 
     await expect(cmd({ name: '' })).rejects.toThrow(PineconeArgumentError);
     await expect(cmd({ name: '' })).rejects.toThrow(
-      'You must pass a non-empty string for `name` in order to create a namespace.'
+      'You must pass a non-empty string for `name` in order to create a namespace.',
     );
   });
 });

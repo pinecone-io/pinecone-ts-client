@@ -54,7 +54,7 @@ describe('BulkOperationsProvider', () => {
     const provider = new BulkOperationsProvider(
       config,
       'index-name',
-      indexHostUrl
+      indexHostUrl,
     );
 
     jest.spyOn(provider, 'buildBulkOperationsConfig');
@@ -71,14 +71,14 @@ describe('BulkOperationsProvider', () => {
       config,
       'index-name',
       undefined,
-      additionalHeaders
+      additionalHeaders,
     );
 
     await provider.provide();
     expect(Configuration).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expect.objectContaining(additionalHeaders),
-      })
+      }),
     );
   });
 });

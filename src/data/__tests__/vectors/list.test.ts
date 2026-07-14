@@ -5,12 +5,13 @@ import type {
   VectorOperationsApi,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupListResponse = (response, isSuccess = true) => {
   const fakeList: (req: ListVectorsRequest) => Promise<ListResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { listVectors: fakeList } as VectorOperationsApi;
   const VectorProvider = {
@@ -40,7 +41,7 @@ describe('list', () => {
     expect(VOA.listVectors).toHaveBeenCalledWith({
       prefix: 'prefix-',
       namespace: 'list-namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -51,7 +52,25 @@ describe('list', () => {
       await listPaginatedFn({ limit: -3 });
     };
     await expect(toThrow()).rejects.toThrow(
-      '`limit` property must be greater than 0'
+      '`limit` property must be greater than 0',
     );
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const listResponse = {
+      vectors: [{ id: 'prefix-1', values: [0.2, 0.4] }],
+      namespace: 'custom-namespace',
+      usage: { readUnits: 1 },
+    };
+    const { VectorProvider, VOA } = setupListResponse(listResponse);
+
+    const listPaginatedFn = listPaginated(VectorProvider, 'list-namespace');
+    await listPaginatedFn({ prefix: 'prefix-', namespace: 'custom-namespace' });
+
+    expect(VOA.listVectors).toHaveBeenCalledWith({
+      prefix: 'prefix-',
+      namespace: 'custom-namespace',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

@@ -9,7 +9,7 @@ import {
 describe('describeBackup', () => {
   const setupSuccessResponse = (responseData) => {
     const fakeDescribeBackup: (
-      req: DescribeBackupRequest
+      req: DescribeBackupRequest,
     ) => Promise<BackupModel> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
@@ -27,7 +27,7 @@ describe('describeBackup', () => {
     expect(MIA.describeBackup).toHaveBeenCalledWith(
       expect.objectContaining({
         backupId: 'backup-id',
-      })
+      }),
     );
   });
 
@@ -35,10 +35,10 @@ describe('describeBackup', () => {
     const MIA = setupSuccessResponse('');
     // @ts-ignore
     await expect(describeBackup(MIA)()).rejects.toThrow(
-      'You must pass a non-empty string for `backupId` in order to describe a backup'
+      'You must pass a non-empty string for `backupId` in order to describe a backup',
     );
     await expect(describeBackup(MIA)('')).rejects.toThrow(
-      PineconeArgumentError
+      PineconeArgumentError,
     );
   });
 });

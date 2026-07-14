@@ -15,6 +15,8 @@ on:
     secrets:
       PINECONE_API_KEY:
         required: true
+      VERCEL_TOKEN:
+        required: true
 
 permissions:
   contents: read

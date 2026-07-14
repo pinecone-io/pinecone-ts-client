@@ -5,12 +5,13 @@ import type {
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import { PineconeArgumentError } from '../../../errors';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupDeleteResponse = (response, isSuccess) => {
   const fakeDelete: (req: DeleteVectorsRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { deleteVectors: fakeDelete } as VectorOperationsApi;
   const VectorProvider = {
@@ -27,12 +28,12 @@ describe('deleteOne', () => {
     const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
 
     const deleteOneFn = deleteOne(VectorProvider, 'namespace');
-    const returned = await deleteOneFn('123');
+    const returned = await deleteOneFn({ id: '123' });
 
     expect(returned).toBe(void 0);
     expect(VOA.deleteVectors).toHaveBeenCalledWith({
       deleteRequest: { ids: ['123'], namespace: 'namespace' },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -40,11 +41,22 @@ describe('deleteOne', () => {
     const { VectorProvider } = setupDeleteSuccess(undefined);
     const deleteOneFn = deleteOne(VectorProvider, 'namespace');
     const toThrow = async () => {
-      await deleteOneFn('');
+      await deleteOneFn({ id: '' });
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      'You must pass a non-empty string for `options` in order to delete a record.'
+      'You must pass a non-empty string for `id` in order to delete a record.',
     );
+  });
+
+  test('Uses namespace from options when provided', async () => {
+    const { VectorProvider, VOA } = setupDeleteSuccess(undefined);
+    const deleteOneFn = deleteOne(VectorProvider, 'namespace');
+    await deleteOneFn({ id: '123', namespace: 'custom-namespace' });
+
+    expect(VOA.deleteVectors).toHaveBeenCalledWith({
+      deleteRequest: { ids: ['123'], namespace: 'custom-namespace' },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

@@ -23,6 +23,10 @@ export type SearchRecordsOptions = {
    * Parameters to rerank the initial search results.
    */
   rerank?: SearchRecordsRerank;
+  /**
+   * The namespace to search in. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 /**
@@ -122,20 +126,21 @@ export class SearchRecordsCommand {
   validator = (options: SearchRecordsOptions) => {
     if (!options.query) {
       throw new PineconeArgumentError(
-        'You must pass a `query` object to search.'
+        'You must pass a `query` object to search.',
       );
     }
   };
 
   async run(
-    searchOptions: SearchRecordsOptions
+    searchOptions: SearchRecordsOptions,
   ): Promise<SearchRecordsResponse> {
     this.validator(searchOptions);
+    const namespace = searchOptions.namespace ?? this.namespace;
     const api = await this.apiProvider.provide();
     return await api.searchRecordsNamespace({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       searchRecordsRequest: searchOptions,
-      namespace: this.namespace,
+      namespace,
     });
   }
 }

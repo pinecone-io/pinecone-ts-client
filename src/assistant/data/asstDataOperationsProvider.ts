@@ -26,7 +26,7 @@ export class AsstDataOperationsProvider {
     config: PineconeConfiguration,
     asstName: string,
     asstHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.asstName = asstName;
@@ -46,7 +46,7 @@ export class AsstDataOperationsProvider {
     } else {
       this.asstHostUrl = await AssistantHostSingleton.getHostUrl(
         this.config,
-        this.asstName
+        this.asstName,
       );
       this.asstDataOperations = this.buildAsstDataOperationsConfig();
     }
@@ -60,7 +60,7 @@ export class AsstDataOperationsProvider {
     } else {
       return await AssistantHostSingleton.getHostUrl(
         this.config,
-        this.asstName
+        this.asstName,
       );
     }
   }

@@ -6,16 +6,17 @@ import {
   SearchRecordsResponse,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const mockNamespace = 'mock-namespace';
 
 const setupResponse = (response, isSuccess) => {
   const fakeSearchRecords: (
-    req: SearchRecordsNamespaceRequest
+    req: SearchRecordsNamespaceRequest,
   ) => Promise<SearchRecordsResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = {
     searchRecordsNamespace: fakeSearchRecords,
@@ -56,7 +57,7 @@ describe('SearchRecordsCommand', () => {
     expect(fakeSearchRecords).toHaveBeenCalledWith({
       namespace: mockNamespace,
       searchRecordsRequest: mockSearchRequest,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -69,8 +70,24 @@ describe('SearchRecordsCommand', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toBe(
-        'You must pass a `query` object to search.'
+        'You must pass a `query` object to search.',
       );
     }
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { fakeSearchRecords, cmd } = setupResponse('', true);
+    const mockSearchRequest = {
+      query: { topK: 2, inputs: { text: 'test' } },
+      namespace: 'custom-namespace',
+    };
+
+    await cmd.run(mockSearchRequest);
+
+    expect(fakeSearchRecords).toHaveBeenCalledWith({
+      namespace: 'custom-namespace',
+      searchRecordsRequest: mockSearchRequest,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

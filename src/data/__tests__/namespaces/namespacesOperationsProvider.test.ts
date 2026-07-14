@@ -54,7 +54,7 @@ describe('NamespacesOperationsProvider', () => {
     const provider = new NamespaceOperationsProvider(
       config,
       'index-name',
-      indexHostUrl
+      indexHostUrl,
     );
 
     jest.spyOn(provider, 'buildNamespaceOperationsConfig');
@@ -71,14 +71,14 @@ describe('NamespacesOperationsProvider', () => {
       config,
       'index-name',
       undefined,
-      additionalHeaders
+      additionalHeaders,
     );
 
     await provider.provide();
     expect(Configuration).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expect.objectContaining(additionalHeaders),
-      })
+      }),
     );
   });
 });

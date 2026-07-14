@@ -16,7 +16,7 @@ export const teardown = async () => {
   const fixturesJson = process.env.FIXTURES_JSON;
   if (!fixturesJson) {
     throw new Error(
-      'FIXTURES_JSON environment variable not set. Nothing to clean up.'
+      'FIXTURES_JSON environment variable not set. Nothing to clean up.',
     );
   }
 
@@ -25,7 +25,7 @@ export const teardown = async () => {
     fixtures = JSON.parse(fixturesJson);
   } catch (error) {
     throw new Error(
-      `Failed to parse FIXTURES_JSON: ${error}. Value: ${fixturesJson}`
+      `Failed to parse FIXTURES_JSON: ${error}. Value: ${fixturesJson}`,
     );
   }
 

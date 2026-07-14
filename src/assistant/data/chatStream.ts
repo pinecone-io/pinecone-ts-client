@@ -18,10 +18,10 @@ import {
 export const chatStream = (
   assistantName: string,
   apiProvider: AsstDataOperationsProvider,
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ) => {
   return async (
-    options: ChatOptions
+    options: ChatOptions,
   ): Promise<ChatStream<StreamedChatResponse>> => {
     const fetch = getFetch(config);
     validateChatOptions(options);
@@ -35,16 +35,14 @@ export const chatStream = (
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
     };
 
-    // format context options
+    // Format context options if any are provided
     let contextOptions: object | void = undefined;
-    if (options.contextOptions?.topK || options.contextOptions?.snippetSize) {
+    if (options.contextOptions) {
       contextOptions = {
-        top_k: options.contextOptions?.topK || options.topK,
-        snippet_size: options.contextOptions?.snippetSize,
-      };
-    } else if (options.topK) {
-      contextOptions = {
-        top_k: options.topK,
+        top_k: options.contextOptions.topK,
+        snippet_size: options.contextOptions.snippetSize,
+        multimodal: options.contextOptions.multimodal,
+        include_binary_content: options.contextOptions.includeBinaryContent,
       };
     }
 
@@ -56,6 +54,7 @@ export const chatStream = (
         messages: messagesValidation(options),
         stream: true,
         model: modelValidation(options),
+        temperature: options.temperature,
         filter: options.filter,
         json_response: options.jsonResponse,
         include_highlights: options.includeHighlights,
@@ -70,7 +69,7 @@ export const chatStream = (
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        chatUrl
+        chatUrl,
       );
       throw err;
     }

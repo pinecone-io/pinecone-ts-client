@@ -42,6 +42,11 @@ export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
    * @see [Metadata filtering](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
    */
   filter?: object;
+
+  /**
+   * The namespace to update in. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
 };
 
 export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
@@ -56,12 +61,12 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   validator = (options: UpdateOptions<T>) => {
     if (options && !options.id && !options.filter) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
+        'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.',
       );
     }
     if (options && options.id && options.filter) {
       throw new PineconeArgumentError(
-        'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
+        'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.',
       );
     }
   };
@@ -69,13 +74,14 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
   async run(options: UpdateOptions<T>): Promise<void> {
     this.validator(options);
 
+    const namespace = options.namespace ?? this.namespace;
     const request: UpdateRequest = {
       id: options['id'],
       values: options['values'],
       sparseValues: options['sparseValues'],
       setMetadata: options['metadata'],
       filter: options['filter'],
-      namespace: this.namespace,
+      namespace,
     };
 
     const api = await this.apiProvider.provide();

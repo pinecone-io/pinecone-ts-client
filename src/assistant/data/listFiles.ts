@@ -1,14 +1,6 @@
-import {
-  AssistantFileModel as GeneratedAssistantFileModel,
-  X_PINECONE_API_VERSION,
-} from '../../pinecone-generated-ts-fetch/assistant_data';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
-import type {
-  AssistantFileModel,
-  AssistantFilesList,
-  ListFilesOptions,
-} from './types';
-import { mapAssistantFileStatus } from './fileStatus';
+import type { ListFilesOptions, AssistantFilesList } from './types';
 
 /**
  * Lists files (with optional filter) uploaded to an Assistant.
@@ -19,7 +11,9 @@ import { mapAssistantFileStatus } from './fileStatus';
  * const pc = new Pinecone();
  * const assistantName = 'test1';
  * const assistant = pc.assistant({ name: assistantName });
- * const files = await assistant.listFiles({filter: {key: 'value'}});
+ * // Metadata fields are referenced at the top level — not wrapped in a `metadata` key.
+ * // See https://docs.pinecone.io/guides/data/filter-with-metadata for operators ($eq, $ne, $gt, $lt, $in).
+ * const files = await assistant.listFiles({ filter: { version: { $eq: 'v1' } } });
  * console.log(files);
  * // {
  * //  files: [
@@ -39,29 +33,18 @@ import { mapAssistantFileStatus } from './fileStatus';
  * ```
  * @param assistantName - The name of the Assistant that the files are uploaded to.
  * @param api - The API object to use to send the request.
+ * @returns A promise that resolves to a {@link AssistantFilesList} object containing the list of files.
  */
 export const listFiles = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ListFilesOptions): Promise<AssistantFilesList> => {
     const api = await apiProvider.provideData();
-    const response = await api.listFiles({
+    return await api.listFiles({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       assistantName: assistantName,
       filter: options.filter && JSON.stringify(options.filter),
     });
-    return {
-      files: response.files?.map(mapAssistantFileModel),
-    };
-  };
-};
-
-const mapAssistantFileModel = (
-  file: GeneratedAssistantFileModel
-): AssistantFileModel => {
-  return {
-    ...file,
-    status: mapAssistantFileStatus(file.status),
   };
 };

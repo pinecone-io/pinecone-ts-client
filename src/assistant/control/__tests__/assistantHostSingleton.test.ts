@@ -23,7 +23,7 @@ describe('AssistantHostSingleton', () => {
     const pineconeConfig = { apiKey: 'test-key' };
     const hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
@@ -33,11 +33,11 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
     const hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
@@ -47,11 +47,11 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-eu-data.ke.pinecone.io'
+      'https://prod-eu-data.ke.pinecone.io',
     );
     const hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-eu-data.ke.pinecone.io/assistant');
   });
@@ -63,21 +63,21 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig1,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
     AssistantHostSingleton._set(
       pineconeConfig2,
       'assistant-1',
-      'https://prod-eu-data.ke.pinecone.io'
+      'https://prod-eu-data.ke.pinecone.io',
     );
 
     const hostUrl1 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig1,
-      'assistant-1'
+      'assistant-1',
     );
     const hostUrl2 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig2,
-      'assistant-1'
+      'assistant-1',
     );
 
     expect(hostUrl1).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
@@ -89,19 +89,19 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
 
     let hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
 
     AssistantHostSingleton._delete(pineconeConfig, 'assistant-1');
     hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
@@ -111,23 +111,23 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-2',
-      'https://prod-eu-data.ke.pinecone.io'
+      'https://prod-eu-data.ke.pinecone.io',
     );
 
     AssistantHostSingleton._reset();
 
     const hostUrl1 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     const hostUrl2 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-2'
+      'assistant-2',
     );
 
     expect(hostUrl1).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
@@ -140,7 +140,7 @@ describe('AssistantHostSingleton', () => {
 
     const hostUrl = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     expect(hostUrl).toEqual('https://prod-1-data.ke.pinecone.io/assistant');
   });
@@ -150,16 +150,16 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
 
     const hostUrl1 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     const hostUrl2 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
 
     expect(hostUrl1).toBe(hostUrl2); // Using .toBe() to check instance equality
@@ -173,21 +173,21 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig1,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
     AssistantHostSingleton._set(
       pineconeConfig2,
       'assistant-1',
-      'https://prod-eu-data.ke.pinecone.io'
+      'https://prod-eu-data.ke.pinecone.io',
     );
 
     const hostUrl1 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig1,
-      'assistant-1'
+      'assistant-1',
     );
     const hostUrl2 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig2,
-      'assistant-1'
+      'assistant-1',
     );
 
     expect(hostUrl1).not.toBe(hostUrl2);
@@ -201,21 +201,21 @@ describe('AssistantHostSingleton', () => {
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-1',
-      'https://prod-1-data.ke.pinecone.io'
+      'https://prod-1-data.ke.pinecone.io',
     );
     AssistantHostSingleton._set(
       pineconeConfig,
       'assistant-2',
-      'https://prod-eu-data.ke.pinecone.io'
+      'https://prod-eu-data.ke.pinecone.io',
     );
 
     const hostUrl1 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-1'
+      'assistant-1',
     );
     const hostUrl2 = await AssistantHostSingleton.getHostUrl(
       pineconeConfig,
-      'assistant-2'
+      'assistant-2',
     );
 
     expect(hostUrl1).not.toBe(hostUrl2);

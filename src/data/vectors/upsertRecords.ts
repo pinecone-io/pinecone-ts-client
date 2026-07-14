@@ -11,6 +11,21 @@ import {
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/db_data';
 
+/**
+ * Options for upserting integrated records into a namespace.
+ *
+ * @see {@link Index.upsertRecords}
+ */
+export type UpsertRecordsOptions<T extends RecordMetadata = RecordMetadata> = {
+  /** The integrated records to upsert */
+  records: Array<IntegratedRecord<T>>;
+
+  /**
+   * The namespace to upsert into. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
+};
+
 export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   config: PineconeConfiguration;
@@ -19,29 +34,30 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
   constructor(
     apiProvider: VectorOperationsProvider,
     namespace: string,
-    config: PineconeConfiguration
+    config: PineconeConfiguration,
   ) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
     this.config = config;
   }
 
-  validator = (records: Array<IntegratedRecord<T>>) => {
-    for (const record of records) {
+  validator = (options: UpsertRecordsOptions<T>) => {
+    for (const record of options.records) {
       if (!record.id && !record._id) {
         throw new PineconeArgumentError(
-          'Every record must include an `id` or `_id` property in order to upsert.'
+          'Every record must include an `id` or `_id` property in order to upsert.',
         );
       }
     }
   };
 
-  async run(records: Array<IntegratedRecord<T>>): Promise<void> {
+  async run(options: UpsertRecordsOptions<T>): Promise<void> {
     const fetch = getFetch(this.config);
-    this.validator(records);
+    this.validator(options);
 
+    const namespace = options.namespace ?? this.namespace;
     const hostUrl = await this.apiProvider.provideHostUrl();
-    const upsertRecordsUrl = `${hostUrl}/records/namespaces/${this.namespace}/upsert`;
+    const upsertRecordsUrl = `${hostUrl}/records/namespaces/${namespace}/upsert`;
 
     const requestHeaders = {
       'Api-Key': this.config.apiKey,
@@ -54,7 +70,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
     const response = await fetch(upsertRecordsUrl, {
       method: 'POST',
       headers: requestHeaders,
-      body: toNdJson(records),
+      body: toNdJson(options.records),
     });
 
     if (response.ok) {
@@ -63,7 +79,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       const err = await handleApiError(
         new ResponseError(response, 'Response returned an error'),
         undefined,
-        upsertRecordsUrl
+        upsertRecordsUrl,
       );
       throw err;
     }

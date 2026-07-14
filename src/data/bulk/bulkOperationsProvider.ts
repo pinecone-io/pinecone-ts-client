@@ -14,6 +14,7 @@ import {
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
 import { createMiddlewareArray } from '../../utils/middleware';
+import { PineconeArgumentError } from '../../errors';
 
 export class BulkOperationsProvider {
   private readonly config: PineconeConfiguration;
@@ -26,7 +27,7 @@ export class BulkOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -45,13 +46,13 @@ export class BulkOperationsProvider {
       this.bulkOperations = this.buildBulkOperationsConfig();
     } else {
       if (!this.indexName) {
-        throw new Error(
-          'Either indexName or indexHostUrl must be provided to BulkOperationsProvider'
+        throw new PineconeArgumentError(
+          'Either indexName or indexHostUrl must be provided to BulkOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.bulkOperations = this.buildBulkOperationsConfig();

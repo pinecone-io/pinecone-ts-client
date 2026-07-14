@@ -24,7 +24,7 @@ describe('listAssistant happy path', () => {
     expect(assistants.assistants).toBeDefined();
     if (assistants.assistants) {
       const assistantNames = assistants.assistants.map(
-        (assistant) => assistant.name
+        (assistant) => assistant.name,
       );
       expect(assistantNames).toContain(assistantNameOne);
       expect(assistantNames).toContain(assistantNameTwo);

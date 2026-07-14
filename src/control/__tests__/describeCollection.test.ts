@@ -10,15 +10,15 @@ import type {
 
 const setupMocks = (
   describeResponse,
-  listCollectionResponse: () => Promise<Array<string>>
+  listCollectionResponse: () => Promise<Array<string>>,
 ) => {
   const fakeDescribeCollection: (
-    req: DescribeCollectionRequest
+    req: DescribeCollectionRequest,
   ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(describeResponse);
   const fakeListCollections: (
-    req: ListCollectionsRequest
+    req: ListCollectionsRequest,
   ) => Promise<CollectionList> = jest
     .fn()
     .mockImplementation(listCollectionResponse);
@@ -34,28 +34,28 @@ describe('describeCollection', () => {
     test('should throw if collection name is not provided', async () => {
       const IOA = setupMocks(
         () => Promise.resolve(''),
-        () => Promise.resolve([])
+        () => Promise.resolve([]),
       );
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)();
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to describe a collection'
+        'You must pass a non-empty string for `name` in order to describe a collection',
       );
     });
 
     test('should throw if collection name is empty string', async () => {
       const IOA = setupMocks(
         () => Promise.resolve(''),
-        () => Promise.resolve([])
+        () => Promise.resolve([]),
       );
       // @ts-ignore
       const expectToThrow = async () => await describeCollection(IOA)('');
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to describe a collection'
+        'You must pass a non-empty string for `name` in order to describe a collection',
       );
     });
   });
@@ -70,7 +70,7 @@ describe('describeCollection', () => {
             status: 'Ready',
             recordCount: 120,
           }),
-        () => Promise.resolve([])
+        () => Promise.resolve([]),
       );
 
       // @ts-ignore

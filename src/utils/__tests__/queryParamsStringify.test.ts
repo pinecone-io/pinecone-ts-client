@@ -14,7 +14,7 @@ describe('queryParamsStringify', () => {
       other: 'param',
     };
     expect(queryParamsStringify(params)).toEqual(
-      'ids=1&ids=2&ids=3&other=param'
+      'ids=1&ids=2&ids=3&other=param',
     );
   });
 });

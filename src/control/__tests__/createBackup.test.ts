@@ -4,20 +4,21 @@ import type {
   BackupModel,
   CreateBackupOperationRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 import { PineconeArgumentError } from '../../errors';
 
 const setupCreateBackupResponse = (
   createBackupResponse = {} as BackupModel,
-  isCreateBackupSuccess = true
+  isCreateBackupSuccess = true,
 ) => {
   const fakeCreateBackup: (
-    req: CreateBackupOperationRequest
+    req: CreateBackupOperationRequest,
   ) => Promise<BackupModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateBackupSuccess
         ? Promise.resolve(createBackupResponse)
-        : Promise.reject(createBackupResponse)
+        : Promise.reject(createBackupResponse),
     );
 
   const MIA = {
@@ -42,7 +43,7 @@ describe('createBackup', () => {
         name: 'backup-name',
         description: 'backup-description',
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -53,11 +54,11 @@ describe('createBackup', () => {
         indexName: '',
         name: 'backup-name',
         description: 'backup-description',
-      })
+      }),
     ).rejects.toThrow(
       new PineconeArgumentError(
-        'You must pass a non-empty string for `indexName` in order to create a backup'
-      )
+        'You must pass a non-empty string for `indexName` in order to create a backup',
+      ),
     );
   });
 });

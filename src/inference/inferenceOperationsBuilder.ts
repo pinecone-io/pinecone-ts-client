@@ -14,7 +14,7 @@ import {
 import { createMiddlewareArray } from '../utils/middleware';
 
 export const inferenceOperationsBuilder = (
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ): InferenceApi => {
   const { apiKey } = config;
   const controllerPath =

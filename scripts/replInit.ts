@@ -23,11 +23,11 @@ for (const [key, value] of Object.entries(pinecone)) {
 }
 
 console.log(
-  'SUCCESS Pinecone module exports (Pinecone, etc) automatically imported to this repl session.'
+  'SUCCESS Pinecone module exports (Pinecone, etc) automatically imported to this repl session.',
 );
 console.log('');
 console.log(
-  'Run "await init()" to setup client instance using environment variable configs.'
+  'Run "await init()" to setup client instance using environment variable configs.',
 );
 
 const init = async () => {

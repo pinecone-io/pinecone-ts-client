@@ -4,12 +4,13 @@ import type {
   ModelInfo,
 } from '../../pinecone-generated-ts-fetch/inference';
 import { getModel } from '../getModel';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/inference/api_version';
 
 const setupGetModelResponse = (response = {}, isSuccessful = true) => {
   const fakeGetModel: (req: GetModelRequest) => Promise<ModelInfo> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccessful ? Promise.resolve(response) : Promise.reject(response)
+      isSuccessful ? Promise.resolve(response) : Promise.reject(response),
     );
 
   const IA = { getModel: fakeGetModel } as InferenceApi;
@@ -22,8 +23,8 @@ describe('getModel', () => {
     const getModelCmd = getModel(IA);
     await expect(getModelCmd('')).rejects.toThrow(
       new Error(
-        'You must pass a non-empty string for `modelName` in order to get a model'
-      )
+        'You must pass a non-empty string for `modelName` in order to get a model',
+      ),
     );
   });
 
@@ -33,7 +34,7 @@ describe('getModel', () => {
     await getModel(IA)(modelName);
     expect(IA.getModel).toHaveBeenCalledWith({
       modelName,
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

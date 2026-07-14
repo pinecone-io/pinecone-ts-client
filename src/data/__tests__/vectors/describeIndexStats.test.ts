@@ -3,14 +3,15 @@ import { VectorOperationsApi as DataPlaneApi } from '../../../pinecone-generated
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type { DescribeIndexStatsOperationRequest } from '../../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../../errors';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeDescribeIndexStats: (
-    req: DescribeIndexStatsOperationRequest
+    req: DescribeIndexStatsOperationRequest,
   ) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const DPA = {
     describeIndexStats: fakeDescribeIndexStats,
@@ -49,7 +50,7 @@ describe('describeIndexStats', () => {
     });
     expect(DPA.describeIndexStats).toHaveBeenCalledWith({
       describeIndexStatsRequest: { filter: { genre: 'classical' } },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -68,7 +69,7 @@ describe('describeIndexStats', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrowError(
-      '`filter` property cannot be empty'
+      '`filter` property cannot be empty',
     );
   });
 });

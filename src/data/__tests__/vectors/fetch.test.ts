@@ -5,12 +5,13 @@ import type {
   FetchVectorsRequest,
   FetchResponse,
 } from '../../../pinecone-generated-ts-fetch/db_data';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeFetch: (req: FetchVectorsRequest) => Promise<FetchResponse> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { fetchVectors: fakeFetch } as VectorOperationsApi;
   const VectorProvider = {
@@ -26,23 +27,38 @@ const setupSuccess = (response) => {
 describe('fetch', () => {
   test('calls the openapi fetch endpoint, passing target namespace, and properly maps the response', async () => {
     const { VOA, cmd } = setupSuccess({ vectors: [] });
-    const returned = await cmd.run(['1', '2']);
+    const returned = await cmd.run({ ids: ['1', '2'] });
 
     expect(returned).toEqual({ records: [], namespace: '' });
     expect(VOA.fetchVectors).toHaveBeenCalledWith({
       ids: ['1', '2'],
       namespace: 'namespace',
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
   test('Throws error if pass in empty array', async () => {
     const { cmd } = setupSuccess({ vectors: [] });
     const toThrow = async () => {
-      await cmd.run([]);
+      await cmd.run({ ids: [] });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'Must pass in at least 1 recordID.'
+      'Must pass in at least 1 recordID.',
     );
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { VOA, cmd } = setupSuccess({ vectors: [] });
+    const returned = await cmd.run({
+      ids: ['1', '2'],
+      namespace: 'custom-namespace',
+    });
+
+    expect(returned).toEqual({ records: [], namespace: '' });
+    expect(VOA.fetchVectors).toHaveBeenCalledWith({
+      ids: ['1', '2'],
+      namespace: 'custom-namespace',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

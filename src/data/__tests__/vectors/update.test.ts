@@ -2,12 +2,13 @@ import { UpdateCommand } from '../../vectors/update';
 import { VectorOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
 import { VectorOperationsProvider } from '../../vectors/vectorOperationsProvider';
 import type { UpdateVectorRequest } from '../../../pinecone-generated-ts-fetch/db_data';
+import { X_PINECONE_API_VERSION } from '../../../pinecone-generated-ts-fetch/db_data/api_version';
 
 const setupResponse = (response, isSuccess) => {
   const fakeUpdate: (req: UpdateVectorRequest) => Promise<object> = jest
     .fn()
     .mockImplementation(() =>
-      isSuccess ? Promise.resolve(response) : Promise.reject(response)
+      isSuccess ? Promise.resolve(response) : Promise.reject(response),
     );
   const VOA = { updateVector: fakeUpdate } as VectorOperationsApi;
   const VectorProvider = {
@@ -46,7 +47,7 @@ describe('update', () => {
         },
         setMetadata: { genre: 'ambient' },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -61,7 +62,7 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.'
+      'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.',
     );
   });
 
@@ -74,7 +75,28 @@ describe('update', () => {
       });
     };
     await expect(toThrow()).rejects.toThrowError(
-      'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.'
+      'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.',
     );
+  });
+
+  test('uses namespace from options when provided', async () => {
+    const { fakeUpdate, cmd } = setupSuccess('');
+    await cmd.run({
+      id: 'fake-vector',
+      values: [1, 2, 3],
+      namespace: 'custom-namespace',
+    });
+
+    expect(fakeUpdate).toHaveBeenCalledWith({
+      updateRequest: {
+        namespace: 'custom-namespace',
+        id: 'fake-vector',
+        values: [1, 2, 3],
+        sparseValues: undefined,
+        setMetadata: undefined,
+        filter: undefined,
+      },
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
   });
 });

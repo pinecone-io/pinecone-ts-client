@@ -15,7 +15,7 @@ export const describeCollection = (api: ManageIndexesApi) => {
   return async (name: DescribeCollectionOptions): Promise<CollectionModel> => {
     if (!name || name.length === 0) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `name` in order to describe a collection'
+        'You must pass a non-empty string for `name` in order to describe a collection',
       );
     }
 

@@ -34,12 +34,12 @@ import { PineconeArgumentError } from '../../errors';
  *
  * @param assistantName - The name of the Assistant to retrieve the context snippets from.
  * @param api - The Pinecone API object.
- * @throws An error if a query is not provided.
+ * @throws An error if neither `query` nor `messages` is provided.
  * @returns A promise that resolves to a {@link ContextModel} object containing the context snippets.
  */
 export const context = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ContextOptions): Promise<ContextModel> => {
     validateContextOptions(options);
@@ -54,6 +54,8 @@ export const context = (
         messages: toMessageModel(options.messages),
         topK: options.topK,
         snippetSize: options.snippetSize,
+        multimodal: options.multimodal,
+        includeBinaryContent: options.includeBinaryContent,
       },
     });
   };
@@ -62,13 +64,13 @@ export const context = (
 const validateContextOptions = (options: ContextOptions) => {
   if (!options || (!options.query && !options.messages)) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.',
     );
   }
 };
 
 const toMessageModel = (
-  messages?: MessagesModel
+  messages?: MessagesModel,
 ): MessageModel[] | undefined => {
   if (!messages) {
     return undefined;

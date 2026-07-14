@@ -14,6 +14,7 @@ import {
 } from '../../utils';
 import { IndexHostSingleton } from '../indexHostSingleton';
 import { createMiddlewareArray } from '../../utils/middleware';
+import { PineconeArgumentError } from '../../errors';
 
 export class VectorOperationsProvider {
   private config: PineconeConfiguration;
@@ -26,7 +27,7 @@ export class VectorOperationsProvider {
     config: PineconeConfiguration,
     indexName?: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.config = config;
     this.indexName = indexName;
@@ -45,13 +46,13 @@ export class VectorOperationsProvider {
       this.vectorOperations = this.buildDataOperationsConfig();
     } else {
       if (!this.indexName) {
-        throw new Error(
-          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+        throw new PineconeArgumentError(
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider',
         );
       }
       this.indexHostUrl = await IndexHostSingleton.getHostUrl(
         this.config,
-        this.indexName
+        this.indexName,
       );
 
       this.vectorOperations = this.buildDataOperationsConfig();
@@ -65,8 +66,8 @@ export class VectorOperationsProvider {
       return this.indexHostUrl;
     } else {
       if (!this.indexName) {
-        throw new Error(
-          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider'
+        throw new PineconeArgumentError(
+          'Either indexName or indexHostUrl must be provided to VectorOperationsProvider',
         );
       }
       return await IndexHostSingleton.getHostUrl(this.config, this.indexName);

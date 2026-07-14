@@ -40,12 +40,12 @@ describe('upsertRecords', () => {
       { id: '2', chunk_text: 'test2', category: 'test' },
     ];
 
-    await cmd.run(records);
+    await cmd.run({ records });
     expect(mockFetch).toHaveBeenCalledWith(
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
         method: 'POST',
-      })
+      }),
     );
   });
 
@@ -56,12 +56,12 @@ describe('upsertRecords', () => {
       { id: '2', chunk_text: 'test2', category: 'test' },
     ];
 
-    await cmd.run(records);
+    await cmd.run({ records });
     expect(mockFetch).toHaveBeenCalledWith(
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
         body: records.map((record) => JSON.stringify(record)).join('\n'),
-      })
+      }),
     );
   });
 
@@ -75,11 +75,11 @@ describe('upsertRecords', () => {
     ];
 
     try {
-      await cmd.run(records);
+      await cmd.run({ records });
     } catch (err) {
       expect(err).toBeInstanceOf(PineconeArgumentError);
       expect((err as PineconeArgumentError).message).toContain(
-        'Every record must include an `id` or `_id` property in order to upsert.'
+        'Every record must include an `id` or `_id` property in order to upsert.',
       );
     }
   });

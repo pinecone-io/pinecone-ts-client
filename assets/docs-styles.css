@@ -8,10 +8,10 @@
 :root {
   /* Styles copied from docs.pinecone.io */
   --font-family: 'MediumLLWeb', sans-serif;
-  --font-family-mono: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
-    'Ubuntu Mono', monospace;
-  --md-code-font: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono',
-    'Ubuntu Mono', monospace;
+  --font-family-mono:
+    'JetBrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --md-code-font:
+    'JetBrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
   --base-font-size: 1rem;
 
   /* light mode we override with Pinecone colors */

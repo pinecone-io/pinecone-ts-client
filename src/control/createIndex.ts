@@ -8,7 +8,7 @@ import {
   ReadCapacity,
   X_PINECONE_API_VERSION,
 } from '../pinecone-generated-ts-fetch/db_control';
-import { debugLog } from '../utils';
+import { pollUntilIndexIsReady } from '../utils';
 import { PodType, ValidPodTypes } from './types';
 import { handleApiError, PineconeArgumentError } from '../errors';
 
@@ -21,6 +21,13 @@ export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'spec'> {
 
   /** This option tells the client not to resolve the returned promise until the index is ready to receive data. */
   waitUntilReady?: boolean;
+
+  /**
+   * Maximum time in milliseconds to wait for the index to become ready when
+   * `waitUntilReady` is `true`. Omit to poll indefinitely.
+   * Throws {@link Errors.PineconeTimeoutError} if the deadline is exceeded.
+   */
+  timeout?: number;
 
   /** This option tells the client not to throw if you attempt to create an index that already exists. */
   suppressConflicts?: boolean;
@@ -109,6 +116,9 @@ export interface CreateIndexByocSpec {
 
   /** The metadata schema for the index. */
   schema?: MetadataSchema;
+
+  /** The read capacity configuration for the index. Defaults to OnDemand if not provided. */
+  readCapacity?: CreateIndexReadCapacity;
 }
 
 /**
@@ -158,7 +168,7 @@ export const createIndex = (api: ManageIndexesApi) => {
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
     if (!options) {
       throw new PineconeArgumentError(
-        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.'
+        'You must pass an object with required properties (`name`, `dimension`, `spec`) to create an index.',
       );
     }
 
@@ -176,34 +186,51 @@ export const createIndex = (api: ManageIndexesApi) => {
 
     validateCreateIndexRequest(options);
 
+    // Destructure client options to avoid passing them to the API
+    const { waitUntilReady, suppressConflicts, timeout, ...createOptions } =
+      options;
+
     try {
+      // Build the spec based on which type is provided
+      let spec: IndexSpec;
+      if (options.spec.serverless) {
+        spec = {
+          serverless: {
+            ...options.spec.serverless,
+            readCapacity: toApiReadCapacity(
+              options.spec.serverless.readCapacity,
+            ),
+          },
+        };
+      } else if (options.spec.byoc) {
+        spec = {
+          byoc: {
+            ...options.spec.byoc,
+            readCapacity: toApiReadCapacity(options.spec.byoc.readCapacity),
+          },
+        };
+      } else {
+        // pod spec - no readCapacity transformation needed
+        spec = { pod: options.spec.pod! };
+      }
+
       const createRequest: CreateIndexRequest = {
-        ...options,
-        spec: {
-          ...options.spec,
-          serverless: options.spec.serverless
-            ? {
-                ...options.spec.serverless,
-                readCapacity: toApiReadCapacity(
-                  options.spec.serverless?.readCapacity
-                ),
-              }
-            : undefined,
-        } as IndexSpec,
+        ...createOptions,
+        spec,
       };
 
       const createResponse = await api.createIndex({
         createIndexRequest: createRequest,
         xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
-      if (options.waitUntilReady) {
-        return await waitUntilIndexIsReady(api, options.name);
+      if (waitUntilReady) {
+        return await waitUntilIndexIsReady(api, options.name, timeout);
       }
       return createResponse;
     } catch (e) {
       if (
         !(
-          options.suppressConflicts &&
+          suppressConflicts &&
           e instanceof Error &&
           e.name === 'PineconeConflictError'
         )
@@ -214,50 +241,48 @@ export const createIndex = (api: ManageIndexesApi) => {
   };
 };
 
-export const waitUntilIndexIsReady = async (
+export const waitUntilIndexIsReady = (
   api: ManageIndexesApi,
   indexName: string,
-  seconds: number = 0
+  timeoutMs?: number,
 ): Promise<IndexModel> => {
-  try {
-    const indexDescription = await api.describeIndex({
-      indexName,
-      xPineconeApiVersion: X_PINECONE_API_VERSION,
-    });
-    if (!indexDescription.status?.ready) {
-      await new Promise((r) => setTimeout(r, 1000));
-      return await waitUntilIndexIsReady(api, indexName, seconds + 1);
-    } else {
-      debugLog(`Index ${indexName} is ready after ${seconds}`);
-      return indexDescription;
-    }
-  } catch (e) {
-    const err = await handleApiError(
-      e,
-      async (_, rawMessageText) =>
-        `Error creating index ${indexName}: ${rawMessageText}`
-    );
-    throw err;
-  }
+  return pollUntilIndexIsReady(
+    async () => {
+      try {
+        return await api.describeIndex({
+          indexName,
+          xPineconeApiVersion: X_PINECONE_API_VERSION,
+        });
+      } catch (e) {
+        throw await handleApiError(
+          e,
+          async (_, rawMessageText) =>
+            `Error waiting for index ${indexName} to be ready: ${rawMessageText}`,
+        );
+      }
+    },
+    indexName,
+    timeoutMs,
+  );
 };
 
 const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   // validate options properties
   if (!options.name) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `name` in order to create an index.'
+      'You must pass a non-empty string for `name` in order to create an index.',
     );
   }
   if (options.dimension && options.dimension <= 0) {
     throw new PineconeArgumentError(
-      'You must pass a positive integer for `dimension` in order to create an index.'
+      'You must pass a positive integer for `dimension` in order to create an index.',
     );
   }
 
   // validate options.spec properties
   if (!options.spec) {
     throw new PineconeArgumentError(
-      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
+      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.',
     );
   }
 
@@ -265,12 +290,12 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
   if (
     options.metric &&
     !['cosine', 'euclidean', 'dotproduct'].includes(
-      options.metric.toLowerCase()
+      options.metric.toLowerCase(),
     )
   ) {
     {
       throw new PineconeArgumentError(
-        `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`
+        `Invalid metric value: ${options.metric}. Valid values are: 'cosine', 'euclidean', or 'dotproduct.'`,
       );
     }
   }
@@ -283,7 +308,7 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
       : 'dense';
     if (vectorType !== 'dense' && vectorType !== 'sparse') {
       throw new PineconeArgumentError(
-        'Invalid `vectorType` value. Valid values are `dense` or `sparse`.'
+        'Invalid `vectorType` value. Valid values are `dense` or `sparse`.',
       );
     }
 
@@ -291,20 +316,20 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     if (vectorType == 'sparse') {
       if (options.dimension && options.dimension > 0) {
         throw new PineconeArgumentError(
-          'Sparse indexes cannot have a `dimension`.'
+          'Sparse indexes cannot have a `dimension`.',
         );
       }
 
       if (options.metric && options.metric !== 'dotproduct') {
         throw new PineconeArgumentError(
-          'Sparse indexes must have a `metric` of `dotproduct`.'
+          'Sparse indexes must have a `metric` of `dotproduct`.',
         );
       }
     } else if (vectorType == 'dense') {
       // dense indexes must have a dimension
       if (!options.dimension || options.dimension <= 0) {
         throw new PineconeArgumentError(
-          'You must pass a positive `dimension` when creating a dense index.'
+          'You must pass a positive `dimension` when creating a dense index.',
         );
       }
     }
@@ -312,22 +337,22 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     // validate serverless cloud & region
     if (!options.spec.serverless.cloud) {
       throw new PineconeArgumentError(
-        'You must pass a `cloud` for the serverless `spec` object in order to create an index.'
+        'You must pass a `cloud` for the serverless `spec` object in order to create an index.',
       );
     }
     if (
       options.spec.serverless.cloud &&
       !['aws', 'gcp', 'azure'].includes(
-        options.spec.serverless.cloud.toLowerCase()
+        options.spec.serverless.cloud.toLowerCase(),
       )
     ) {
       throw new PineconeArgumentError(
-        `Invalid cloud value: ${options.spec.serverless.cloud}. Valid values are: aws, gcp, or azure.`
+        `Invalid cloud value: ${options.spec.serverless.cloud}. Valid values are: aws, gcp, or azure.`,
       );
     }
     if (!options.spec.serverless.region) {
       throw new PineconeArgumentError(
-        'You must pass a `region` for the serverless `spec` object in order to create an index.'
+        'You must pass a `region` for the serverless `spec` object in order to create an index.',
       );
     }
 
@@ -339,14 +364,14 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     // validate options.spec.pod properties if pod spec is passed
     if (!options.spec.pod.environment) {
       throw new PineconeArgumentError(
-        'You must pass an `environment` for the pod `spec` object in order to create an index.'
+        'You must pass an `environment` for the pod `spec` object in order to create an index.',
       );
     }
 
     // pod indexes must have a dimension
     if (!options.dimension || options.dimension <= 0) {
       throw new PineconeArgumentError(
-        'You must pass a positive `dimension` when creating a dense index.'
+        'You must pass a positive `dimension` when creating a dense index.',
       );
     }
 
@@ -354,44 +379,49 @@ const validateCreateIndexRequest = (options: CreateIndexOptions) => {
     const vectorType = 'dense';
     if (options.vectorType && options.vectorType.toLowerCase() !== vectorType) {
       throw new PineconeArgumentError(
-        'Pod indexes must have a `vectorType` of `dense`.'
+        'Pod indexes must have a `vectorType` of `dense`.',
       );
     }
 
     if (!options.spec.pod.podType) {
       throw new PineconeArgumentError(
-        'You must pass a `podType` for the pod `spec` object in order to create an index.'
+        'You must pass a `podType` for the pod `spec` object in order to create an index.',
       );
     }
     if (options.spec.pod.replicas && options.spec.pod.replicas <= 0) {
       throw new PineconeArgumentError(
-        'You must pass a positive integer for `replicas` in order to create an index.'
+        'You must pass a positive integer for `replicas` in order to create an index.',
       );
     }
     if (options.spec.pod.pods && options.spec.pod.pods <= 0) {
       throw new PineconeArgumentError(
-        'You must pass a positive integer for `pods` in order to create an index.'
+        'You must pass a positive integer for `pods` in order to create an index.',
       );
     }
     if (!ValidPodTypes.includes(<PodType>options.spec.pod.podType)) {
       throw new PineconeArgumentError(
         `Invalid pod type: ${
           options.spec.pod.podType
-        }. Valid values are: ${ValidPodTypes.join(', ')}.`
+        }. Valid values are: ${ValidPodTypes.join(', ')}.`,
       );
     }
   } else if (options.spec.byoc) {
     // Validate that environment is passed
     if (!options.spec.byoc.environment) {
       throw new PineconeArgumentError(
-        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.'
+        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.',
       );
+    }
+
+    // validate readCapacity if provided
+    if (options.spec.byoc.readCapacity) {
+      validateReadCapacity(options.spec.byoc.readCapacity);
     }
   }
 };
 
 export const validateReadCapacity = (
-  readCapacity: CreateIndexReadCapacity | undefined
+  readCapacity: CreateIndexReadCapacity | undefined,
 ) => {
   if (!readCapacity) return; // default to OnDemand
 
@@ -403,7 +433,7 @@ export const validateReadCapacity = (
     mode.toLowerCase() !== 'dedicated'
   ) {
     throw new PineconeArgumentError(
-      `Invalid read capacity mode: ${mode}. Valid values are: 'OnDemand' or 'Dedicated'.`
+      `Invalid read capacity mode: ${mode}. Valid values are: 'OnDemand' or 'Dedicated'.`,
     );
   }
 
@@ -416,29 +446,29 @@ export const validateReadCapacity = (
   const { nodeType, manual } = readCapacity as ReadCapacityDedicatedParams;
   if (!nodeType || !['b1', 't1'].includes(nodeType)) {
     throw new PineconeArgumentError(
-      `Invalid node type: ${nodeType}. Valid values are: 'b1' or 't1'.`
+      `Invalid node type: ${nodeType}. Valid values are: 'b1' or 't1'.`,
     );
   }
   if (!manual) {
     throw new PineconeArgumentError(
-      'CreateIndexReadCapacity.manual is required for dedicated mode.'
+      'CreateIndexReadCapacity.manual is required for dedicated mode.',
     );
   }
   const { replicas, shards } = manual;
   if (!Number.isInteger(replicas) || replicas < 0) {
     throw new PineconeArgumentError(
-      'CreateIndexReadCapacity.manual.replicas must be 0 or a positive integer.'
+      'CreateIndexReadCapacity.manual.replicas must be 0 or a positive integer.',
     );
   }
   if (!Number.isInteger(shards) || shards <= 0) {
     throw new PineconeArgumentError(
-      'CreateIndexReadCapacity.manual.shards must be a positive integer.'
+      'CreateIndexReadCapacity.manual.shards must be a positive integer.',
     );
   }
 };
 
 export const isDedicated = (
-  rc: CreateIndexReadCapacity
+  rc: CreateIndexReadCapacity,
 ): rc is ReadCapacityDedicatedParams =>
   !!rc &&
   typeof rc === 'object' &&
@@ -447,7 +477,7 @@ export const isDedicated = (
     'manual' in rc);
 
 export const toApiReadCapacity = (
-  rc: CreateIndexReadCapacity | undefined
+  rc: CreateIndexReadCapacity | undefined,
 ): ReadCapacity | undefined => {
   if (!rc) return undefined;
 

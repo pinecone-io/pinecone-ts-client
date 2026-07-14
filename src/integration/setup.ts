@@ -71,7 +71,7 @@ export const setup = async () => {
   const metadataFilterValue = firstRecordMetadata[metadataFilterKey];
 
   console.error(
-    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`
+    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
   );
 
   await pc.createIndex({
@@ -84,7 +84,7 @@ export const setup = async () => {
         region: 'us-west-2',
         schema: {
           fields: Object.fromEntries(
-            metadataKeys.map((key) => [key, { filterable: true }])
+            metadataKeys.map((key) => [key, { filterable: true }]),
           ),
         },
       },
@@ -98,14 +98,14 @@ export const setup = async () => {
 
   await pc
     .index({ name: indexName, namespace: globalNamespaceOne })
-    .upsert(allRecords);
+    .upsert({ records: allRecords });
 
   // Wait for data to be indexed
   console.error('\tWaiting for data to be indexed...');
   await waitUntilRecordsReady(
     pc.index({ name: indexName, namespace: globalNamespaceOne }),
     globalNamespaceOne,
-    allRecords.map((record) => record.id)
+    allRecords.map((record) => record.id),
   );
 
   // Create assistant
@@ -128,12 +128,15 @@ export const setup = async () => {
   fs.writeFileSync(testFilePath, 'Sample content for assistant file testing');
 
   console.error(`\tUploading test file: ${testFilePath}`);
-  const file = await assistant.uploadFile({
+  const uploadOp = await assistant.uploadFile({
     path: testFilePath,
     metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
   });
 
-  await waitUntilAssistantFileReady(assistantName, file.id);
+  if (!uploadOp.fileId) {
+    throw new Error('Upload operation did not return a file ID');
+  }
+  await waitUntilAssistantFileReady(assistantName, uploadOp.fileId);
 
   // Build fixtures object
   const fixtures = {

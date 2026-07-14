@@ -5,12 +5,11 @@ import {
 import type { ChatModel } from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { ChatOptions } from './types';
-import { ChatModelEnum } from './types';
 import { PineconeArgumentError } from '../../errors';
 
 export const chat = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
   return async (options: ChatOptions): Promise<ChatModel> => {
     validateChatOptions(options);
@@ -26,13 +25,15 @@ export const chat = (
         messages: messages,
         stream: false,
         model: model,
+        temperature: options.temperature,
         filter: options.filter,
         jsonResponse: options.jsonResponse,
         includeHighlights: options.includeHighlights,
         contextOptions: {
-          // use topK from contextOptions if provided, otherwise use topK from options
-          topK: options.contextOptions?.topK || options.topK,
+          topK: options.contextOptions?.topK,
           snippetSize: options.contextOptions?.snippetSize,
+          multimodal: options.contextOptions?.multimodal,
+          includeBinaryContent: options.contextOptions?.includeBinaryContent,
         },
       },
     });
@@ -42,23 +43,14 @@ export const chat = (
 export const validateChatOptions = (options: ChatOptions) => {
   if (!options || !options.messages) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`messages`) to chat with an assistant.'
+      'You must pass an object with required properties (`messages`) to chat with an assistant.',
     );
   }
 
-  if (options.model) {
-    if (
-      typeof options.model !== 'string' ||
-      !Object.values(ChatModelEnum).includes(options.model as ChatModelEnum)
-    ) {
-      throw new PineconeArgumentError(
-        `Invalid model: "${options.model}". Must be one of: ${Object.values(
-          ChatModelEnum
-        )
-          .map((model) => `"${model}"`)
-          .join(', ')}.`
-      );
-    }
+  if (options.model && typeof options.model !== 'string') {
+    throw new PineconeArgumentError(
+      `Invalid model: "${options.model}". Must be a string.`,
+    );
   }
 };
 
@@ -90,20 +82,20 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
         options.messages[0]['role'].toLowerCase() !== 'user' &&
         options.messages[0]['role'].toLowerCase() !== 'assistant'
       ) {
-        throw new Error(
-          'No role specified in message object. Must be one of "user" or "assistant"'
+        throw new PineconeArgumentError(
+          'No role specified in message object. Must be one of "user" or "assistant"',
         );
       }
     }
 
     // Extract unique keys from all messages
     const keys: string[] = Array.from(
-      new Set(options.messages.flatMap((message) => Object.keys(message)))
+      new Set(options.messages.flatMap((message) => Object.keys(message))),
     );
 
     if (keys.length !== 2) {
-      throw new Error(
-        'Message object must have exactly two keys: "role" and "content"'
+      throw new PineconeArgumentError(
+        'Message object must have exactly two keys: "role" and "content"',
       );
     }
 
@@ -117,23 +109,11 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
 /**
  * Validates the model passed to the Assistant.
  *
- * @param options - A {@link ChatRequest} object containing the model to use for the Assistant.
- * @throws An Error if the model is not one of the available models as outlined in {@link ChatModelEnum}.
+ * @param options - A {@link ChatOptions} object containing the model to use for the Assistant.
+ * @returns The model string to use, defaulting to 'gpt-4o' if not specified.
  */
-export const modelValidation = (options: ChatOptions) => {
-  const allowedModels = Object.values(ChatModelEnum);
+export const modelValidation = (options: ChatOptions): string => {
   // default to GPT-4o for backward compatibility
-  let model: ChatModelEnum = ChatModelEnum.Gpt4o;
-  if (options.model) {
-    if (!allowedModels.includes(options.model as ChatModelEnum)) {
-      throw new Error(
-        `Invalid model specified. Must be one of ${allowedModels
-          .map((m) => `"${m}"`)
-          .join(', ')}:`
-      );
-    } else {
-      model = options.model as ChatModelEnum;
-    }
-  }
+  const model: string = options.model || 'gpt-4o';
   return model;
 };

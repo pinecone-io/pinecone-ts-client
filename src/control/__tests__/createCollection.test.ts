@@ -7,10 +7,11 @@ import type {
   IndexList,
   ListIndexesRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
   const fakeCreateCollection: (
-    req: CreateCollectionOperationRequest
+    req: CreateCollectionOperationRequest,
   ) => Promise<CollectionModel> = jest
     .fn()
     .mockImplementation(fakeCreateCollectionResponse);
@@ -52,7 +53,7 @@ const setOpenAPIResponse = (fakeCreateCollectionResponse) => {
             status: { ready: true, state: 'Ready' },
           },
         ],
-      })
+      }),
     );
   const IOA = {
     createCollection: fakeCreateCollection,
@@ -73,7 +74,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty object with `name` and `source` fields in order to create a collection.'
+        'You must pass a non-empty object with `name` and `source` fields in order to create a collection.',
       );
     });
 
@@ -86,7 +87,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'The argument to createCollection must have required properties: `name`, `source`.'
+        'The argument to createCollection must have required properties: `name`, `source`.',
       );
     });
 
@@ -101,7 +102,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to create a collection.'
+        'You must pass a non-empty string for `name` in order to create a collection.',
       );
     });
 
@@ -114,7 +115,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `source` in order to create a collection.'
+        'You must pass a non-empty string for `source` in order to create a collection.',
       );
     });
 
@@ -129,7 +130,7 @@ describe('createCollection', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `source` in order to create a collection.'
+        'You must pass a non-empty string for `source` in order to create a collection.',
       );
     });
   });
@@ -155,7 +156,7 @@ describe('createCollection', () => {
         name: 'collection-name',
         source: 'index-name',
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 });

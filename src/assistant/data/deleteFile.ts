@@ -1,4 +1,7 @@
-import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assistant_data';
+import {
+  X_PINECONE_API_VERSION,
+  OperationModel,
+} from '../../pinecone-generated-ts-fetch/assistant_data';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import { PineconeArgumentError } from '../../errors';
 
@@ -12,24 +15,26 @@ import { PineconeArgumentError } from '../../errors';
  * const assistantName = 'test1';
  * const assistant = pc.assistant({ name: assistantName });
  * const files = await assistant.listFiles();
- * let fileId: string;
  * if (files.files) {
- *    fileId = files.files[0].id;
- *    await assistant.deleteFile({fileId: fileId});
+ *    const fileId = files.files[0].id;
+ *    await assistant.deleteFile(fileId);
  *  }
  * ```
+ *
+ * This is an asynchronous operation; the returned {@link OperationModel} can be
+ * polled for completion via the assistant's `describeOperation` method.
  *
  * @param assistantName - The name of the Assistant to delete the file from.
  * @param api - The Pinecone API object.
  */
 export const deleteFile = (
   assistantName: string,
-  apiProvider: AsstDataOperationsProvider
+  apiProvider: AsstDataOperationsProvider,
 ) => {
-  return async (fileId: string): Promise<void> => {
+  return async (fileId: string): Promise<OperationModel> => {
     if (!fileId) {
       throw new PineconeArgumentError(
-        'You must pass the fileId of a file to delete.'
+        'You must pass the fileId of a file to delete.',
       );
     }
     const api = await apiProvider.provideData();

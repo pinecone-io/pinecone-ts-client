@@ -19,7 +19,7 @@ describe('deleteIndex', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` in order to delete an index'
+        'You must pass a non-empty string for `indexName` in order to delete an index',
       );
     });
 
@@ -31,7 +31,7 @@ describe('deleteIndex', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `indexName` in order to delete an index'
+        'You must pass a non-empty string for `indexName` in order to delete an index',
       );
     });
   });

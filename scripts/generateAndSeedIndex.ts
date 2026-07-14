@@ -32,18 +32,24 @@ for (const envVar of ['PINECONE_API_KEY']) {
   });
   console.log(
     `Index ${INDEX_NAME} created in ${console.timeEnd(
-      'create-index-duration'
-    )}ms`
+      'create-index-duration',
+    )}ms`,
   );
 
-  const index = pinecone.index(INDEX_NAME);
+  const index = pinecone.index({ name: INDEX_NAME });
   const recordsToUpsert = generateRecords({ dimension: 5, quantity: 100 });
 
   console.time('seed-index-duration');
-  await index.namespace('first-namespace').upsert(recordsToUpsert);
-  await index.namespace('second-namespace').upsert(recordsToUpsert);
+  await index.upsert({
+    records: recordsToUpsert,
+    namespace: 'first-namespace',
+  });
+  await index.upsert({
+    records: recordsToUpsert,
+    namespace: 'second-namespace',
+  });
   console.log(
-    `Index namespaces seeded in ${console.timeEnd('seed-index-duration')}ms`
+    `Index namespaces seeded in ${console.timeEnd('seed-index-duration')}ms`,
   );
 
   process.exit();

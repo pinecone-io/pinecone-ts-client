@@ -37,7 +37,7 @@ describe('Context happy path', () => {
 describe('Context error paths', () => {
   test('Context with empty query', async () => {
     await expect(assistant.context({ query: '' })).rejects.toThrow(
-      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.'
+      'You must pass an object with required properties (`query`, or `messages`) to retrieve context snippets.',
     );
   });
 
@@ -45,7 +45,7 @@ describe('Context error paths', () => {
     await expect(
       pinecone.Assistant({ name: 'nonexistent' }).context({
         query: 'What is in the file?',
-      })
+      }),
     ).rejects.toThrow(/404/);
   });
 });

@@ -1,6 +1,7 @@
 import { extractMessage } from './utils';
 import { mapHttpStatusError } from './http';
 import { PineconeConnectionError } from './request';
+import { BasePineconeError } from './base';
 import type { ResponseError } from '../pinecone-generated-ts-fetch/db_control';
 
 /** @internal */
@@ -8,9 +9,9 @@ export const handleApiError = async (
   e: unknown,
   customMessage?: (
     statusCode: number,
-    rawMessageText: string
+    rawMessageText: string,
   ) => Promise<string>,
-  url?: string
+  url?: string,
 ): Promise<Error> => {
   if (e instanceof Error && e.name === 'ResponseError') {
     const responseError = e as ResponseError;
@@ -25,8 +26,8 @@ export const handleApiError = async (
       url: responseError.response.url || url,
       message: message,
     });
-  } else if (e instanceof PineconeConnectionError) {
-    // If we've already wrapped this error, just return it
+  } else if (e instanceof BasePineconeError) {
+    // Already a Pinecone error (e.g., converted by middleware), return as-is
     return e;
   } else {
     // There seem to be some situations where "e instanceof Error" is erroneously

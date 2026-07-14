@@ -85,8 +85,8 @@ beforeAll(async () => {
 
   // test upserts
   await Promise.all([
-    srvrlssIndexSparse.upsert(sparseRecords),
-    srvrlssIndexDense.upsert(denseRecords),
+    srvrlssIndexSparse.upsert({ records: sparseRecords }),
+    srvrlssIndexDense.upsert({ records: denseRecords }),
   ]);
 
   sparseRecordIds = sparseRecords.map((record) => record.id);
@@ -96,12 +96,12 @@ beforeAll(async () => {
     waitUntilRecordsReady(
       srvrlssIndexSparse,
       globalNamespaceOne,
-      sparseRecordIds
+      sparseRecordIds,
     ),
     waitUntilRecordsReady(
       srvrlssIndexDense,
       globalNamespaceOne,
-      denseRecordIds
+      denseRecordIds,
     ),
   ]);
 });
@@ -127,12 +127,12 @@ describe('update', () => {
       });
 
       await assertWithRetries(
-        () => srvrlssIndexDense.fetch([recordId]),
+        () => srvrlssIndexDense.fetch({ ids: [recordId] }),
         (result: FetchResponse) => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].values).toEqual(newValues);
           expect(result.records[recordId].metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
 
@@ -155,7 +155,7 @@ describe('update', () => {
           const record = Object.values(result.records)[0];
           expect(record).toBeDefined();
           expect(record.metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
   });
@@ -178,12 +178,12 @@ describe('update', () => {
       });
 
       await assertWithRetries(
-        () => srvrlssIndexSparse.fetch([recordId]),
+        () => srvrlssIndexSparse.fetch({ ids: [recordId] }),
         (result: FetchResponse) => {
           expect(result.records[recordId]).toBeDefined();
           expect(result.records[recordId].sparseValues).toEqual(sparseValues);
           expect(result.records[recordId].metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
 
@@ -206,7 +206,7 @@ describe('update', () => {
           const record = Object.values(result.records)[0];
           expect(record).toBeDefined();
           expect(record.metadata).toMatchObject(newMetadata);
-        }
+        },
       );
     });
   });

@@ -24,7 +24,7 @@ describe('deleteBackup', () => {
     expect(MIA.deleteBackup).toHaveBeenCalledWith(
       expect.objectContaining({
         backupId: 'backup-id',
-      })
+      }),
     );
   });
 
@@ -32,7 +32,7 @@ describe('deleteBackup', () => {
     const MIA = setupSuccessResponse('');
     // @ts-ignore
     await expect(deleteBackup(MIA)()).rejects.toThrow(
-      'You must pass a non-empty string for `backupId` in order to delete a backup'
+      'You must pass a non-empty string for `backupId` in order to delete a backup',
     );
     await expect(deleteBackup(MIA)('')).rejects.toThrow(PineconeArgumentError);
   });

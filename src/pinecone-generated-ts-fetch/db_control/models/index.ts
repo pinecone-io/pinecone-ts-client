@@ -1,9 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './BYOC';
+export * from './BYOC1';
+export * from './BYOC1Byoc';
+export * from './BYOC2';
 export * from './BackupList';
 export * from './BackupModel';
 export * from './ByocSpec';
+export * from './ByocSpecResponse';
 export * from './CollectionList';
 export * from './CollectionModel';
 export * from './ConfigureIndexRequest';

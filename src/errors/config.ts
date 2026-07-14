@@ -28,7 +28,7 @@ export class PineconeUnexpectedResponseError extends BasePineconeError {
     super(
       `Unexpected response while calling ${url}. ${
         message ? message + ' ' : ''
-      }Status: ${status}. Body: ${body}`
+      }Status: ${status}. Body: ${body}`,
     );
     this.name = 'PineconeUnexpectedResponseError';
   }

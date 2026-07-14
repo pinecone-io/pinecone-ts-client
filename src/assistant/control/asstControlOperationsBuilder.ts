@@ -14,7 +14,7 @@ import {
 import { createMiddlewareArray } from '../../utils/middleware';
 
 export const asstControlOperationsBuilder = (
-  config: PineconeConfiguration
+  config: PineconeConfiguration,
 ): ManageAssistantsControlApi => {
   const { apiKey } = config;
   const controllerPath =

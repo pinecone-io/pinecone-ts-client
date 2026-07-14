@@ -4,6 +4,7 @@ import type {
   ListVectorsRequest,
   ListResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
+import { PineconeArgumentError } from '../../errors';
 
 /**
  * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
@@ -11,20 +12,24 @@ import type {
 export type ListOptions = {
   /** The id prefix to match. If unspecified, an empty string prefix will be used with the effect of listing all ids in a namespace. */
   prefix?: string;
-  /** The maximum number of ids to return. If unspecified, the server will use a default value. */
+  /** The maximum number of ids to return. If unspecified, the server returns up to 100 ids at a time, in sorted order (bitwise "C" collation). */
   limit?: number;
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;
+  /** The namespace to list from. If not specified, uses the namespace configured on the Index. */
+  namespace?: string;
 };
 
 export const listPaginated = (
   apiProvider: VectorOperationsProvider,
-  namespace: string
+  targetNamespace: string,
 ) => {
   const validator = (options: ListOptions) => {
     // Don't need to check for empty string prefix or paginationToken, since empty strings evaluate to false
     if (options.limit && options.limit < 0) {
-      throw new Error('`limit` property must be greater than 0');
+      throw new PineconeArgumentError(
+        '`limit` property must be greater than 0',
+      );
     }
   };
 
@@ -33,6 +38,7 @@ export const listPaginated = (
       validator(options);
     }
 
+    const namespace = options?.namespace ?? targetNamespace;
     const listRequest: ListVectorsRequest = {
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       ...options,

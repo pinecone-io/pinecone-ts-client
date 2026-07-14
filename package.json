@@ -1,6 +1,6 @@
 {
   "name": "@pinecone-database/pinecone",
-  "version": "6.1.4",
+  "version": "8.0.0",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -14,10 +14,12 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
+    "prepare": "npm run build",
     "build": "rm -rf dist/ && tsc",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
-    "generate:openapi": "./codegen/build-oas.sh 2025-10 && npm run build && npm run format",
+    "generate:openapi": "./codegen/build-oas.sh 2026-04 && npm run build && npm run format",
+    "generate:openapi:alpha": "./codegen/build-oas-alpha.sh && npm run build && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src/ --ext .ts",
     "repl": "npm run build && tsx scripts/replInit.ts",
@@ -33,25 +35,39 @@
     "test:smoke:mocked": "jest -c jest.config.smoke.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "devDependencies": {
-    "@edge-runtime/jest-environment": "^2.3.3",
-    "@edge-runtime/types": "^2.2.3",
+    "@edge-runtime/jest-environment": "^2.3.10",
+    "@edge-runtime/types": "^2.2.9",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.10.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.11",
-    "@typescript-eslint/parser": "^5.59.11",
-    "dotenv": "^16.0.3",
-    "eslint": "^8.42.0",
-    "eslint-plugin-import": "^2.27.5",
+    "@types/node": "^22.19.7",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "dotenv": "^16.6.1",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
     "jest": "29.7",
     "jest-progress-bar-reporter": "^1.0.25",
-    "prettier": "^2.8.8",
-    "ts-jest": "^29.3.2",
-    "tsx": "^4.19.3",
-    "typedoc": "^0.24.8",
-    "typescript": "^4.9.5"
+    "prettier": "^3.4.2",
+    "ts-jest": "^29.4.6",
+    "tsx": "^4.21.0",
+    "typedoc": "^0.27.9",
+    "typescript": "~5.6.3"
+  },
+  "overrides": {
+    "eslint": {
+      "minimatch": "3.1.5"
+    },
+    "eslint-plugin-import": {
+      "minimatch": "3.1.5"
+    },
+    "jest": {
+      "minimatch": "3.1.5"
+    },
+    "ts-jest": {
+      "minimatch": "3.1.5"
+    }
   },
   "types": "dist/index.d.ts",
   "files": [

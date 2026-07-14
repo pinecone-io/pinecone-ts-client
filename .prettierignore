@@ -2,4 +2,6 @@ dist
 node_modules
 codegen
 src/pinecone-generated-ts-fetch
+src/pinecone-generated-ts-fetch-alpha
 .cursor
+package-lock.json

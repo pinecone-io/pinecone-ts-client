@@ -41,7 +41,7 @@ describe('create index', () => {
         expect('serverless' in description.spec).toBe(true);
         if ('serverless' in description.spec) {
           expect(description.spec.serverless?.readCapacity.mode).toEqual(
-            'OnDemand'
+            'OnDemand',
           );
         }
 
@@ -163,7 +163,7 @@ describe('create index', () => {
           const err = e as PineconeArgumentError;
           expect(err.name).toEqual('PineconeArgumentError');
           expect(err.message).toContain(
-            'Sparse indexes must have a `metric` of `dotproduct`'
+            'Sparse indexes must have a `metric` of `dotproduct`',
           );
         }
       });
@@ -186,7 +186,7 @@ describe('create index', () => {
           const err = e as PineconeArgumentError;
           expect(err.name).toEqual('PineconeArgumentError');
           expect(err.message).toContain(
-            'Sparse indexes cannot have a `dimension`'
+            'Sparse indexes cannot have a `dimension`',
           );
         }
       });
@@ -243,7 +243,7 @@ describe('create index', () => {
           const err = e as PineconeNotFoundError;
           expect(err.name).toEqual('PineconeBadRequestError');
           expect(err.message).toContain(
-            'Resource non-existent-collection not found'
+            'Resource non-existent-collection not found',
           );
         }
       });
@@ -268,7 +268,7 @@ describe('create index', () => {
           const err = e as PineconeArgumentError;
           expect(err.name).toEqual('PineconeArgumentError');
           expect(err.message).toContain(
-            'Pod indexes must have a `vectorType` of `dense`'
+            'Pod indexes must have a `vectorType` of `dense`',
           );
         }
       });

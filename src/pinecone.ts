@@ -37,6 +37,7 @@ import {
   updateAssistant,
   UpdateAssistantOptions,
   listAssistants,
+  evaluate,
 } from './assistant/control';
 import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
 import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
@@ -51,9 +52,11 @@ import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
 import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
+import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
+import { Preview } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -129,6 +132,8 @@ export class Pinecone {
   /** @hidden */
   private _listAssistants: ReturnType<typeof listAssistants>;
   /** @hidden */
+  private _evaluate: ReturnType<typeof evaluate>;
+  /** @hidden */
   private _createBackup: ReturnType<typeof createBackup>;
   /** @hidden */
   private _createIndexFromBackup: ReturnType<typeof createIndexFromBackup>;
@@ -144,6 +149,17 @@ export class Pinecone {
   private _listRestoreJobs: ReturnType<typeof listRestoreJobs>;
 
   public inference: Inference;
+  /**
+   * Provides access to alpha preview operations using the 2026-01.alpha API.
+   *
+   * @example
+   * ```typescript
+   * const list = await pc.preview.indexes.list();
+   * const idx = pc.preview.index('my-schema-index');
+   * ```
+   * @alpha
+   */
+  public preview: Preview;
 
   /**
    * @example
@@ -165,7 +181,7 @@ export class Pinecone {
 
     if (!options.apiKey) {
       throw new PineconeConfigurationError(
-        'The client configuration must have required property: apiKey.'
+        'The client configuration must have required property: apiKey.',
       );
     }
 
@@ -175,7 +191,9 @@ export class Pinecone {
 
     const api = indexOperationsBuilder(this.config);
     const asstControlApi = asstControlOperationsBuilder(this.config);
+    const asstMetricsApi = asstMetricsOperationsBuilder(this.config);
 
+    // Index operations
     this._configureIndex = configureIndex(api);
     this._createCollection = createCollection(api);
     this._createIndex = createIndex(api);
@@ -186,13 +204,6 @@ export class Pinecone {
     this._deleteIndex = deleteIndex(api);
     this._listCollections = listCollections(api);
     this._listIndexes = listIndexes(api);
-
-    this._createAssistant = createAssistant(asstControlApi);
-    this._deleteAssistant = deleteAssistant(asstControlApi);
-    this._updateAssistant = updateAssistant(asstControlApi);
-    this._describeAssistant = describeAssistant(asstControlApi);
-    this._listAssistants = listAssistants(asstControlApi);
-
     this._createBackup = createBackup(api);
     this._createIndexFromBackup = createIndexFromBackup(api);
     this._describeBackup = describeBackup(api);
@@ -201,7 +212,19 @@ export class Pinecone {
     this._listBackups = listBackups(api);
     this._listRestoreJobs = listRestoreJobs(api);
 
+    // Assistant operations
+    this._createAssistant = createAssistant(asstControlApi);
+    this._deleteAssistant = deleteAssistant(asstControlApi);
+    this._updateAssistant = updateAssistant(asstControlApi);
+    this._describeAssistant = describeAssistant(asstControlApi);
+    this._listAssistants = listAssistants(asstControlApi);
+    this._evaluate = evaluate(asstMetricsApi);
+
+    // Inference operations
     this.inference = new Inference(this.config);
+
+    // Preview (alpha) operations
+    this.preview = new Preview(this.config);
   }
 
   /**
@@ -218,7 +241,7 @@ export class Pinecone {
     if (typeof process === 'undefined' || !process || !process.env) {
       throw new PineconeEnvironmentVarsNotSupportedError(
         'Your execution environment does not support reading environment variables from process.env, so a' +
-          ' configuration object is required when calling new Pinecone().'
+          ' configuration object is required when calling new Pinecone().',
       );
     }
 
@@ -237,8 +260,8 @@ export class Pinecone {
     if (missingVars.length > 0) {
       throw new PineconeConfigurationError(
         `Since you called 'new Pinecone()' with no configuration object, we attempted to find client configuration in environment variables but the required environment variables were not set. Missing variables: ${missingVars.join(
-          ', '
-        )}.`
+          ', ',
+        )}.`,
       );
     }
 
@@ -297,9 +320,8 @@ export class Pinecone {
 
     // For any describeIndex calls we want to update the IndexHostSingleton cache.
     // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    if (indexModel.host) {
-      IndexHostSingleton._set(this.config, indexName, indexModel.host);
-    }
+    const host = indexModel.privateHost || indexModel.host;
+    IndexHostSingleton._set(this.config, indexName, host);
 
     return Promise.resolve(indexModel);
   }
@@ -364,7 +386,8 @@ export class Pinecone {
     if (indexList.indexes && indexList.indexes.length > 0) {
       for (let i = 0; i < indexList.indexes.length; i++) {
         const index = indexList.indexes[i];
-        IndexHostSingleton._set(this.config, index.name, index.host);
+        const host = index.privateHost || index.host;
+        IndexHostSingleton._set(this.config, index.name, host);
       }
     }
 
@@ -434,7 +457,7 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.createIndex({
+   * const indexModel = await pc.createIndex({
    *  name: 'my-index',
    *   spec: {
    *     serverless: {
@@ -449,7 +472,8 @@ export class Pinecone {
    * const records = [
    *   // PineconeRecord objects with your embedding values
    * ]
-   * await pc.index({ name: 'my-index' }).upsert(records)
+   * const index = pc.index({ host: indexModel.host });
+   * await index.upsert({ records })
    * ```
    *
    * @example
@@ -481,8 +505,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndex(options: CreateIndexOptions) {
-    return this._createIndex(options);
+  async createIndex(options: CreateIndexOptions) {
+    const indexModel = await this._createIndex(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**
@@ -515,8 +544,13 @@ export class Pinecone {
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
    * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
    */
-  createIndexForModel(options: CreateIndexForModelOptions) {
-    return this._createIndexForModel(options);
+  async createIndexForModel(options: CreateIndexForModelOptions) {
+    const indexModel = await this._createIndexForModel(options);
+    if (indexModel) {
+      const host = indexModel.privateHost || indexModel.host;
+      IndexHostSingleton._set(this.config, indexModel.name, host);
+    }
+    return indexModel;
   }
 
   /**
@@ -548,32 +582,37 @@ export class Pinecone {
    * Configure an index
    *
    * Use this method to update configuration on an existing index. For both pod-based and serverless indexes you can update
-   * the deletionProtection status of an index and/or change any index tags. For pod-based index you can also
-   * configure the number of replicas and pod type.
+   * the deletionProtection status of an index and/or change any index tags. For pod-based indexes you can also
+   * configure the number of replicas and pod type. For serverless and BYOC indexes you can configure the read capacity,
+   * and for indexes with integrated inference you can update the embedding configuration.
    *
    * @example
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * await pc.configureIndex('my-index', {
+   * await pc.configureIndex({
+   *   name: 'my-index',
    *   deletionProtection: 'enabled',
-   *   spec:{ pod:{ replicas: 2, podType: 'p1.x2' }},
+   *   podReplicas: 2,
+   *   podType: 'p1.x2'
    * });
    * ```
    *
-   * @param indexName - The name of the index to configure.
-   * @param options - The configuration properties you would like to update
+   * @param options - The {@link ConfigureIndexOptions} for configuring the index.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
    */
-  configureIndex(indexName: IndexName, options: ConfigureIndexOptions) {
-    return this._configureIndex(indexName, options);
+  configureIndex(options: ConfigureIndexOptions) {
+    return this._configureIndex(options);
   }
 
   /**
-   * Create a new collection from an existing index
+   * Create a new collection from an existing index.
+   *
+   * Note: collections are only supported for pod-based indexes; serverless
+   * indexes do not support collections.
    *
    * @example
    * ```js
@@ -682,8 +721,8 @@ export class Pinecone {
    * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
    * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
    * and determines where the Assistant will be hosted.
-   * @throws Error if the Assistant API is not initialized.
-   * @throws Error if an invalid region is provided.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async createAssistant(options: CreateAssistantOptions) {
@@ -707,7 +746,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to be deleted.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    */
   async deleteAssistant(assistantName: string) {
     await this._deleteAssistant(assistantName);
@@ -716,7 +756,8 @@ export class Pinecone {
   }
 
   /**
-   * Retrieves information about an Assistant by name.
+   * Retrieves information about an Assistant by name, including its current
+   * status (e.g. whether it is still initializing or ready to use).
    *
    * @example
    * ```typescript
@@ -736,7 +777,8 @@ export class Pinecone {
    * ```
    *
    * @param assistantName - The name of the Assistant to retrieve.
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async describeAssistant(assistantName: string) {
@@ -773,7 +815,7 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @throws Error if the Assistant API is not initialized.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
    */
   async listAssistants() {
@@ -788,7 +830,7 @@ export class Pinecone {
           AssistantHostSingleton._set(
             this.config,
             assistant.name,
-            assistant.host
+            assistant.host,
           );
         }
       }
@@ -804,7 +846,7 @@ export class Pinecone {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.updateAssistant('test1', { instructions: 'some new  instructions!'});
+   * await pc.updateAssistant({ name: 'test1', instructions: 'some new instructions!'});
    * // {
    * //  assistantName: test1,
    * //  instructions: 'some new instructions!',
@@ -812,21 +854,55 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param assistantName - The name of the assistant being updated.
    * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
    * optional instructions and metadata.
-   * @throws Error if the Assistant API is not initialized.
-   * @returns A Promise that resolves to an {@link UpdateAssistant200Response} object.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to an {@link UpdateAssistantResponse} object.
    */
-  updateAssistant(assistantName: string, options: UpdateAssistantOptions) {
-    return this._updateAssistant(assistantName, options);
+  updateAssistant(options: UpdateAssistantOptions) {
+    return this._updateAssistant(options);
+  }
+
+  /**
+   * Evaluates the alignment of a generated answer against a ground truth answer.
+   * Returns metrics for correctness (precision), completeness (recall), and alignment (harmonic mean).
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const result = await pc.evaluate({
+   *   question: "What is the capital of France?",
+   *   answer: "The capital of France is Paris.",
+   *   groundTruth: "Paris is the capital and most populous city of France."
+   * });
+   * console.log(result);
+   * // {
+   * //   metrics: {
+   * //     correctness: 0.95,
+   * //     completeness: 0.90,
+   * //     alignment: 0.92
+   * //   },
+   * //   reasoning: { evaluatedFacts: [...] },
+   * //   usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 }
+   * // }
+   * ```
+   *
+   * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
+   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
+   */
+  evaluate(options: { question: string; answer: string; groundTruth: string }) {
+    return this._evaluate(options);
   }
 
   /** @internal */
   _checkForBrowser() {
     if (isBrowser()) {
       console.warn(
-        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.'
+        'The Pinecone SDK is intended for server-side use only. Using the SDK within a browser context can expose your API key(s). If you have deployed the SDK to production in a browser, please rotate your API keys.',
       );
     }
   }
@@ -1093,10 +1169,10 @@ export class Pinecone {
    * // }
    * ```
    *
-   * @param options - A {@link ListBackupsOptions} object containing the optional indexName, limit, and paginationToken values.
+   * @param options - A {@link ListRestoreJobsOptions} object containing the optional limit and paginationToken values.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link BackupList} object.
+   * @returns A Promise that resolves to a {@link RestoreJobList} object.
    */
   listRestoreJobs(options: ListRestoreJobsOptions) {
     return this._listRestoreJobs(options);
@@ -1109,7 +1185,18 @@ export class Pinecone {
    * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
    * perform data operations directly against that host.
    *
-   * #### Targeting an index by name (options object - recommended)
+   * #### Targeting an index by host (recommended for production)
+   *
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone()
+   *
+   * // Get the host from describeIndex
+   * const indexModel = await pc.describeIndex('index-name');
+   * const index = pc.index({ host: indexModel.host })
+   * ```
+   *
+   * #### Targeting an index by name
    *
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
@@ -1134,7 +1221,6 @@ export class Pinecone {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone()
    *
-   * // You can find the host URL in the Pinecone console or via describeIndex()
    * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
    * ```
    *
@@ -1154,23 +1240,26 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const index = pc.index<MovieMetadata>({ name: 'test-index' });
+   * const indexModel = await pc.describeIndex('test-index');
+   * const index = pc.index<MovieMetadata>({ host: indexModel.host });
    *
    * // Now you get type errors if upserting malformed metadata
-   * await index.upsert([{
-   *   id: '1234',
-   *   values: [
-   *     .... // embedding values
-   *   ],
-   *   metadata: {
-   *     genre: 'Gone with the Wind',
-   *     runtime: 238,
-   *     genre: 'drama',
+   * await index.upsert({
+   *   records: [{
+   *     id: '1234',
+   *     values: [
+   *       .... // embedding values
+   *     ],
+   *     metadata: {
+   *       title: 'Gone with the Wind',
+   *       runtime: 238,
+   *       genre: 'drama',
    *
-   *     // @ts-expect-error because category property not in MovieMetadata
-   *     category: 'classic'
-   *   }
-   * }])
+   *       // @ts-expect-error because category property not in MovieMetadata
+   *       category: 'classic'
+   *     }
+   *   }]
+   * })
    *
    * const results = await index.query({
    *    vector: [
@@ -1194,7 +1283,7 @@ export class Pinecone {
    * @returns An {@link Index} object that can be used to perform data operations.
    */
   index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions
+    options: IndexOptions,
   ): Index<T>;
   /**
    * @deprecated Use the options object pattern instead: `pc.index({ name: 'index-name' })`.
@@ -1203,12 +1292,12 @@ export class Pinecone {
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T>;
   index<T extends RecordMetadata = RecordMetadata>(
     optionsOrName: IndexOptions | string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T> {
     // Handle legacy string-based API
     if (typeof optionsOrName === 'string') {
@@ -1218,7 +1307,7 @@ export class Pinecone {
           host: indexHostUrl,
           additionalHeaders: additionalHeaders,
         },
-        this.config
+        this.config,
       );
     }
 
@@ -1230,7 +1319,7 @@ export class Pinecone {
         host: optionsOrName.host,
         additionalHeaders: optionsOrName.additionalHeaders,
       },
-      this.config
+      this.config,
     );
   }
 
@@ -1239,7 +1328,7 @@ export class Pinecone {
    */
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions
+    options: IndexOptions,
   ): Index<T>;
   /**
    * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
@@ -1248,12 +1337,12 @@ export class Pinecone {
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T>;
   Index<T extends RecordMetadata = RecordMetadata>(
     optionsOrName: IndexOptions | string,
     indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders
+    additionalHeaders?: HTTPHeaders,
   ): Index<T> {
     return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
   }
@@ -1320,7 +1409,7 @@ export class Pinecone {
   assistant(name: string, host?: string): Assistant;
   assistant(
     optionsOrName: AssistantOptions | string,
-    host?: string
+    host?: string,
   ): Assistant {
     // Handle legacy string-based API
     if (typeof optionsOrName === 'string') {
@@ -1329,7 +1418,7 @@ export class Pinecone {
           name: optionsOrName,
           host: host,
         },
-        this.config
+        this.config,
       );
     }
 
@@ -1349,7 +1438,7 @@ export class Pinecone {
   Assistant(name: string, host?: string): Assistant;
   Assistant(
     optionsOrName: AssistantOptions | string,
-    host?: string
+    host?: string,
   ): Assistant {
     return this.assistant(optionsOrName as any, host);
   }

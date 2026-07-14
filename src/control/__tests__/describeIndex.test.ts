@@ -58,7 +58,7 @@ describe('describeIndex', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to describe an index'
+        'You must pass a non-empty string for `name` in order to describe an index',
       );
     });
 
@@ -70,7 +70,7 @@ describe('describeIndex', () => {
 
       await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(expectToThrow).rejects.toThrowError(
-        'You must pass a non-empty string for `name` in order to describe an index'
+        'You must pass a non-empty string for `name` in order to describe an index',
       );
     });
   });

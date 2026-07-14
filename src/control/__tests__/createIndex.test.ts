@@ -6,22 +6,23 @@ import type {
   IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control/api_version';
 
 // describeIndexResponse can either be a single response, or an array of responses for testing polling scenarios
 const setupCreateIndexResponse = (
   createIndexResponse,
   describeIndexResponse,
   isCreateIndexSuccess = true,
-  isDescribeIndexSuccess = true
+  isDescribeIndexSuccess = true,
 ) => {
   const fakeCreateIndex: (
-    req: CreateIndexOperationRequest
+    req: CreateIndexOperationRequest,
   ) => Promise<IndexModel> = jest
     .fn()
     .mockImplementation(() =>
       isCreateIndexSuccess
         ? Promise.resolve(createIndexResponse)
-        : Promise.reject(createIndexResponse)
+        : Promise.reject(createIndexResponse),
     );
 
   // unfold describeIndexResponse
@@ -34,7 +35,7 @@ const setupCreateIndexResponse = (
     describeIndexMock.mockImplementationOnce(() =>
       isDescribeIndexSuccess
         ? Promise.resolve(response)
-        : Promise.reject({ response })
+        : Promise.reject({ response }),
     );
   });
 
@@ -85,7 +86,7 @@ describe('createIndex', () => {
           example: 'tag',
         },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -117,7 +118,7 @@ describe('createIndex', () => {
           },
         },
       },
-      xPineconeApiVersion: '2025-10',
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   });
 
@@ -140,7 +141,7 @@ describe('createIndex', () => {
 
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a non-empty string for `name` in order to create an index.'
+      'You must pass a non-empty string for `name` in order to create an index.',
     );
 
     // Missing spec
@@ -153,7 +154,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.'
+      'You must pass a `pods`, `serverless`, or `byoc` `spec` object in order to create an index.',
     );
 
     // Missing dimension
@@ -172,7 +173,7 @@ describe('createIndex', () => {
     };
     await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
     await expect(toThrow).rejects.toThrow(
-      'You must pass a positive `dimension` when creating a dense index.'
+      'You must pass a positive `dimension` when creating a dense index.',
     );
   });
 
@@ -218,13 +219,12 @@ describe('createIndex', () => {
               podType: 'p1.x1',
             },
           },
-          waitUntilReady: true,
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
       expect(MIA.describeIndex).toHaveBeenCalledWith({
         indexName: 'index-name',
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -258,13 +258,13 @@ describe('createIndex', () => {
         waitUntilReady: true,
       });
 
-      await jest.advanceTimersByTimeAsync(3000);
+      await jest.advanceTimersByTimeAsync(20000);
 
       return returned.then((result) => {
         expect(result).toEqual({ status: { ready: true, state: 'Ready' } });
         expect(IOA.describeIndex).toHaveBeenNthCalledWith(3, {
           indexName: 'index-name',
-          xPineconeApiVersion: '2025-10',
+          xPineconeApiVersion: X_PINECONE_API_VERSION,
         });
       });
     });
@@ -297,7 +297,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -328,7 +328,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -370,7 +370,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -411,7 +411,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });
@@ -440,7 +440,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -459,7 +459,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.'
+        'You must pass an `environment` for the `CreateIndexByocSpec` object to create an index.',
       );
     });
   });
@@ -484,7 +484,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid read capacity mode.*Valid values are.*OnDemand.*Dedicated/i
+        /Invalid read capacity mode.*Valid values are.*OnDemand.*Dedicated/i,
       );
     });
 
@@ -510,7 +510,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid node type.*Valid values are.*b1.*t1/i
+        /Invalid node type.*Valid values are.*b1.*t1/i,
       );
     });
 
@@ -534,7 +534,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /manual is required for dedicated mode/i
+        /manual is required for dedicated mode/i,
       );
     });
 
@@ -558,7 +558,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /replicas must be 0 or a positive integer/i
+        /replicas must be 0 or a positive integer/i,
       );
     });
 
@@ -582,7 +582,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /shards must be a positive integer/i
+        /shards must be a positive integer/i,
       );
     });
 
@@ -645,7 +645,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
 
@@ -669,7 +669,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /Invalid node type.*Valid values are.*b1.*t1/i
+        /Invalid node type.*Valid values are.*b1.*t1/i,
       );
     });
 
@@ -693,7 +693,7 @@ describe('createIndex', () => {
 
       await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
       await expect(toThrow).rejects.toThrowError(
-        /manual is required for dedicated mode/i
+        /manual is required for dedicated mode/i,
       );
     });
 
@@ -726,7 +726,7 @@ describe('createIndex', () => {
             },
           },
         },
-        xPineconeApiVersion: '2025-10',
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
       });
     });
   });

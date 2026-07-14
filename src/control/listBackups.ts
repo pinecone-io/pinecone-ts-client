@@ -24,7 +24,7 @@ export interface ListBackupsOptions {
 
 export const listBackups = (api: ManageIndexesApi) => {
   return async (
-    listBackupOptions: ListBackupsOptions = {}
+    listBackupOptions: ListBackupsOptions = {},
   ): Promise<BackupList> => {
     const { indexName, ...rest } = listBackupOptions;
     if (!indexName) {

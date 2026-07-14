@@ -1,8 +1,10 @@
 import { debugLog } from './debugLog';
+import { pollUntilIndexIsReady } from './pollUntilIndexIsReady';
+export type { IndexReadinessResponse } from './pollUntilIndexIsReady';
 import { normalizeUrl } from './normalizeUrl';
 import { queryParamsStringify } from './queryParamsStringify';
 import { buildUserAgent } from './user-agent';
-import { getFetch, RetryConfig } from './fetch';
+import { getFetch, getNonRetryingFetch } from './fetch';
 import { ChatStream } from '../assistant/chatStream';
 import { convertKeysToCamelCase } from './convertKeys';
 
@@ -12,7 +14,10 @@ export {
   queryParamsStringify,
   buildUserAgent,
   getFetch,
+  getNonRetryingFetch,
   convertKeysToCamelCase,
   ChatStream,
-  RetryConfig,
+  pollUntilIndexIsReady,
 };
+
+export type { RetryConfig } from './fetch';

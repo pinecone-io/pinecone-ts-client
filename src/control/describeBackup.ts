@@ -15,7 +15,7 @@ export const describeBackup = (api: ManageIndexesApi) => {
   return async (backupId: DescribeBackupOptions): Promise<BackupModel> => {
     if (!backupId) {
       throw new PineconeArgumentError(
-        'You must pass a non-empty string for `backupId` in order to describe a backup'
+        'You must pass a non-empty string for `backupId` in order to describe a backup',
       );
     }
 

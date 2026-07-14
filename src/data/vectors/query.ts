@@ -31,6 +31,32 @@ export type QueryShared = {
    * @see [Metadata filtering](https://docs.pinecone.io/docs/metadata-filtering)
    */
   filter?: object;
+
+  /**
+   * The namespace to query. If not specified, uses the namespace configured on the Index.
+   */
+  namespace?: string;
+
+  /**
+   * An optimization parameter for IVF dense indexes in dedicated read node (DRN) indexes. It adjusts
+   * how much of the index is scanned to find vector candidates. Range: `0.5` – `4` (default).
+   *
+   * Keep the default (`4.0`) for the best search results. If query latency is too high, try lowering
+   * this value incrementally (minimum `0.5`) to speed up the search at the cost of slightly lower
+   * accuracy. This parameter is only supported for dedicated (DRN) dense indexes.
+   */
+  scanFactor?: number;
+
+  /**
+   * An optimization parameter that controls the maximum number of candidate dense vectors to rerank.
+   * Reranking computes exact distances to improve recall but increases query latency.
+   * Range: `topK` – `100000`.
+   *
+   * Keep the default for a balance of recall and latency. Increase this value if recall is too low,
+   * or decrease it to reduce latency at the cost of accuracy. This parameter is only supported for
+   * dedicated (DRN) dense indexes.
+   */
+  maxCandidates?: number;
 };
 
 /**
@@ -73,8 +99,9 @@ export type QueryOptions = QueryByRecordId | QueryByVectorValues;
 /**
  * A {@link PineconeRecord} with a similarity score.
  */
-export interface ScoredPineconeRecord<T extends RecordMetadata = RecordMetadata>
-  extends PineconeRecord<T> {
+export interface ScoredPineconeRecord<
+  T extends RecordMetadata = RecordMetadata,
+> extends PineconeRecord<T> {
   /**
    * The similarity score of the record. The interpretation of this score will be different
    * depending on the distance metric configured on the index.
@@ -113,38 +140,38 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
   validator = (options: QueryOptions) => {
     if (!options) {
       throw new PineconeArgumentError(
-        'You must enter a query configuration object to query the index.'
+        'You must enter a query configuration object to query the index.',
       );
     }
     if (options && !options.topK) {
       throw new PineconeArgumentError(
-        'You must enter an integer for the `topK` search results to be returned.'
+        'You must enter an integer for the `topK` search results to be returned.',
       );
     }
     if (options && options.topK && options.topK < 1) {
       throw new PineconeArgumentError(
-        '`topK` property must be greater than 0.'
+        '`topK` property must be greater than 0.',
       );
     }
     if (options && options.filter) {
       const keys = Object.keys(options.filter);
       if (keys.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter a `filter` object with at least one key-value pair.'
+          'You must enter a `filter` object with at least one key-value pair.',
         );
       }
     }
     if ('id' in options) {
       if (!options.id) {
         throw new PineconeArgumentError(
-          'You must enter non-empty string for `id` to query by record ID.'
+          'You must enter non-empty string for `id` to query by record ID.',
         );
       }
     }
     if ('vector' in options) {
       if (options.vector.length === 0) {
         throw new PineconeArgumentError(
-          'You must enter an array of `RecordValues` in order to query by vector values.'
+          'You must enter an array of `RecordValues` in order to query by vector values.',
         );
       }
     }
@@ -155,7 +182,26 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
       ) {
         throw new PineconeArgumentError(
           'You must enter a `RecordSparseValues` object with `indices` and `values` properties in order to query by' +
-            ' sparse vector values.'
+            ' sparse vector values.',
+        );
+      }
+    }
+    if (options.scanFactor !== undefined) {
+      if (options.scanFactor < 0.5 || options.scanFactor > 4) {
+        throw new PineconeArgumentError(
+          '`scanFactor` must be between 0.5 and 4 (inclusive).',
+        );
+      }
+    }
+    if (options.maxCandidates !== undefined) {
+      if (options.maxCandidates < options.topK) {
+        throw new PineconeArgumentError(
+          '`maxCandidates` must be greater than or equal to `topK`.',
+        );
+      }
+      if (options.maxCandidates > 100000) {
+        throw new PineconeArgumentError(
+          '`maxCandidates` must be less than or equal to 100000.',
         );
       }
     }
@@ -163,17 +209,18 @@ export class QueryCommand<T extends RecordMetadata = RecordMetadata> {
 
   async run(query: QueryOptions): Promise<QueryResponse<T>> {
     this.validator(query);
+    const namespace = query.namespace ?? this.namespace;
     const api = await this.apiProvider.provide();
     const results = await api.queryVectors({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      queryRequest: { ...query, namespace: this.namespace },
+      queryRequest: { ...query, namespace },
     });
 
     const matches = results.matches ? results.matches : [];
 
     return {
       matches: matches as Array<ScoredPineconeRecord<T>>,
-      namespace: this.namespace,
+      namespace,
       ...(results.usage && { usage: results.usage }),
     };
   }

@@ -8,7 +8,7 @@ import {
 describe('listBackups', () => {
   const setupSuccessResponse = (responseData = {}) => {
     const fakeListRestoreJobs: (
-      req: ListRestoreJobsRequest
+      req: ListRestoreJobsRequest,
     ) => Promise<RestoreJobList> = jest
       .fn()
       .mockImplementation(() => Promise.resolve(responseData));
@@ -30,7 +30,7 @@ describe('listBackups', () => {
       expect.objectContaining({
         limit: 10,
         paginationToken: 'pagination-token',
-      })
+      }),
     );
   });
 });

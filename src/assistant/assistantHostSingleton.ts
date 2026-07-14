@@ -16,12 +16,11 @@ export const AssistantHostSingleton = (function () {
 
   const _describeAssistant = async (
     config: PineconeConfiguration,
-    assistantName: string
+    assistantName: string,
   ): Promise<string> => {
     const assistantControlApi = asstControlOperationsBuilder(config);
-    const describeResponse = await describeAssistant(assistantControlApi)(
-      assistantName
-    );
+    const describeResponse =
+      await describeAssistant(assistantControlApi)(assistantName);
     const host = describeResponse?.host;
 
     if (!host) {
@@ -47,7 +46,7 @@ export const AssistantHostSingleton = (function () {
   const singleton = {
     getHostUrl: async (
       config: PineconeConfiguration,
-      assistantName: string
+      assistantName: string,
     ) => {
       const cacheKey = _key(config, assistantName);
       if (cacheKey in hostUrls) {
@@ -68,7 +67,7 @@ export const AssistantHostSingleton = (function () {
     _set: (
       config: PineconeConfiguration,
       assistantName: string,
-      hostUrl: string
+      hostUrl: string,
     ) => {
       const normalizedHostUrl = normalizeUrl(ensureAssistantPath(hostUrl));
       // prevent adding an empty hostUrl to the cache

@@ -37,17 +37,20 @@ beforeAll(async () => {
 
   // Upload the file 3 times with different metadata using unique keys per test run
   for (let i = 0; i < 3; i++) {
-    const file = await assistant.uploadFile({
+    const uploadOp = await assistant.uploadFile({
       path: tempFilePath,
       metadata: {
         [`test_key_${testRunId}`]: `test_value_${i}`,
         [`test_int_${testRunId}`]: i,
       },
     });
-    console.log('File uploaded:', file);
-    uploadedFileIds.push(file.id);
+    console.log('File uploaded:', uploadOp);
+    if (!uploadOp.fileId) {
+      throw new Error('Upload operation did not return a file ID');
+    }
+    uploadedFileIds.push(uploadOp.fileId);
     // Wait for file to be ready instead of fixed delay
-    await waitUntilAssistantFileReady(assistantName, file.id);
+    await waitUntilAssistantFileReady(assistantName, uploadOp.fileId);
   }
 
   // Clean up local temp file
@@ -87,7 +90,7 @@ describe('List files', () => {
       expect(files.files[0].metadata).toBeDefined();
       if (files.files[0].metadata) {
         expect(files.files[0].metadata[`test_key_${testRunId}`]).toBe(
-          'test_value_0'
+          'test_value_0',
         );
         expect(files.files[0].metadata[`test_int_${testRunId}`]).toBe(0);
       }

@@ -36,11 +36,11 @@ export class PineconeAuthorizationError extends BasePineconeError {
     const { url } = failedRequest;
     if (url) {
       super(
-        `The API key you provided was rejected while calling ${url}. Please check your configuration values and try again. ${CONFIG_HELP}`
+        `The API key you provided was rejected while calling ${url}. Please check your configuration values and try again. ${CONFIG_HELP}`,
       );
     } else {
       super(
-        `The API key you provided was rejected. Please check your configuration values and try again. ${CONFIG_HELP}`
+        `The API key you provided was rejected. Please check your configuration values and try again. ${CONFIG_HELP}`,
       );
     }
     this.name = 'PineconeAuthorizationError';
@@ -73,7 +73,7 @@ export class PineconeConflictError extends BasePineconeError {
     const { url, message } = failedRequest;
     if (url) {
       super(
-        `A call to ${url} returned HTTP status 409. ${message ? message : ''}`
+        `A call to ${url} returned HTTP status 409. ${message ? message : ''}`,
       );
     } else {
       super('The resource you are attempting to create already exists.');
@@ -154,12 +154,72 @@ export class PineconeNotImplementedError extends BasePineconeError {
     const { url, message } = requestInfo;
     if (url) {
       super(
-        `A call to ${url} returned HTTP status 501. ${message ? message : ''}`
+        `A call to ${url} returned HTTP status 501. ${message ? message : ''}`,
       );
     } else {
       super();
     }
     this.name = 'PineconeNotImplementedError';
+  }
+}
+
+/**
+ * This error is thrown when an API endpoint does not support the HTTP method
+ * used in the request. This typically indicates the operation is not available
+ * for the targeted resource.
+ */
+export class PineconeMethodNotAllowedError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 405 (Method Not Allowed). ${message ? message : ''}`.trim(),
+      );
+    } else {
+      super(
+        `The HTTP method used is not allowed for this endpoint. ${message ? message : ''}`.trim(),
+      );
+    }
+    this.name = 'PineconeMethodNotAllowedError';
+  }
+}
+
+/**
+ * Thrown when `waitUntilReady: true` is used and the index does not become
+ * ready within the specified `timeout`.
+ */
+export class PineconeTimeoutError extends BasePineconeError {
+  constructor(indexName: string, timeoutMs: number) {
+    super(
+      `Index '${indexName}' was not ready within ${timeoutMs}ms. You can increase the timeout by passing a larger value for the \`timeout\` option.`,
+    );
+    this.name = 'PineconeTimeoutError';
+  }
+}
+
+/**
+ * Thrown when an index enters the `InitializationFailed` state during
+ * `waitUntilReady` polling.
+ */
+export class PineconeIndexInitializationFailedError extends BasePineconeError {
+  constructor(indexName: string) {
+    super(
+      `Index '${indexName}' failed to initialize. Check the Pinecone console for more details.`,
+    );
+    this.name = 'PineconeIndexInitializationFailedError';
+  }
+}
+
+/**
+ * Thrown when an index enters a terminal non-ready state (`Terminating` or
+ * `Disabled`) during `waitUntilReady` polling.
+ */
+export class PineconeIndexTerminatedError extends BasePineconeError {
+  constructor(indexName: string, state: string) {
+    super(
+      `Index '${indexName}' entered '${state}' state and will not become ready.`,
+    );
+    this.name = 'PineconeIndexTerminatedError';
   }
 }
 
@@ -192,6 +252,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeBadRequestError(failedRequestInfo);
     case 404:
       return new PineconeNotFoundError(failedRequestInfo);
+    case 405:
+      return new PineconeMethodNotAllowedError(failedRequestInfo);
     case 409:
       return new PineconeConflictError(failedRequestInfo);
     case 500:
