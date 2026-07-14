@@ -173,7 +173,12 @@ jobs:
           cp -r pinecone-ts-client/ts-compilation-test ts-compilation-test
           cd ts-compilation-test
           npm install typescript@${{ matrix.tsVersion }} --no-cache
-          npm install @types/node --no-cache
+          # Pin @types/node to the 22.x line (matching the SDK's own devDependency).
+          # An unpinned install floats to the latest @types/node, and @types/node >=25
+          # dropped the type fallbacks that keep it compatible with TypeScript <=5.5,
+          # which breaks the older entries in the tsVersion matrix. The 22.x line
+          # compiles cleanly across the entire matrix.
+          npm install @types/node@^22 --no-cache
           npm install '../pinecone-ts-client' --no-cache
           cat package.json
           cat package-lock.json
