@@ -120,11 +120,13 @@ describe('mocked critical path (no API key)', () => {
 
     // `upsert()` resolves to void in the TS SDK, so we assert the write leg via
     // the recorded transport hit below rather than a return value.
-    await index.upsert([
-      { id: 'v1', values: [0.1, 0.2, 0.3] },
-      { id: 'v2', values: [0.4, 0.5, 0.6] },
-      { id: 'v3', values: [0.7, 0.8, 0.9] },
-    ]);
+    await index.upsert({
+      records: [
+        { id: 'v1', values: [0.1, 0.2, 0.3] },
+        { id: 'v2', values: [0.4, 0.5, 0.6] },
+        { id: 'v3', values: [0.7, 0.8, 0.9] },
+      ],
+    });
 
     const queryResult = await index.query({ vector: [0.1, 0.2, 0.3], topK: 2 });
     expect(queryResult.matches.map((m) => m.id)).toEqual(['v1', 'v2']);
@@ -149,10 +151,10 @@ describe('mocked critical path (no API key)', () => {
 
     await pc
       .index({ name: INDEX_NAME })
-      .upsert([{ id: 'v1', values: [0.1, 0.2, 0.3] }]);
+      .upsert({ records: [{ id: 'v1', values: [0.1, 0.2, 0.3] }] });
     await pc
       .index({ name: INDEX_NAME })
-      .upsert([{ id: 'v2', values: [0.4, 0.5, 0.6] }]);
+      .upsert({ records: [{ id: 'v2', values: [0.4, 0.5, 0.6] }] });
 
     expect(
       countHits(hits, 'GET', `${CONTROL_PLANE}/indexes/${INDEX_NAME}`)
