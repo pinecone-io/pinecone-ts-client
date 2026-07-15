@@ -178,7 +178,7 @@ jobs:
           # latest major, whose iterator-helper types (IteratorObject,
           # BuiltinIteratorReturn, ...) require TypeScript >= 5.6 and broke the
           # TS 5.2-5.5 matrix legs. Pinning aligns the type defs with the Node
-          # version actually under test. See PIN-93 / pinecone-io#<tracking>.
+          # version actually under test. See #396.
           npm install @types/node@20 --no-cache
           npm install '../pinecone-ts-client' --no-cache
           cat package.json
