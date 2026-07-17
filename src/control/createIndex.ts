@@ -161,8 +161,7 @@ export type ReadCapacityDedicatedParams = {
 
 /** The read capacity configuration for the index. Default is on-demand. */
 export type CreateIndexReadCapacity =
-  | ReadCapacityOnDemandParams
-  | ReadCapacityDedicatedParams;
+  ReadCapacityOnDemandParams | ReadCapacityDedicatedParams;
 
 export const createIndex = (api: ManageIndexesApi) => {
   return async (options: CreateIndexOptions): Promise<IndexModel | void> => {
@@ -228,13 +227,11 @@ export const createIndex = (api: ManageIndexesApi) => {
       }
       return createResponse;
     } catch (e) {
-      if (
-        !(
-          suppressConflicts &&
-          e instanceof Error &&
-          e.name === 'PineconeConflictError'
-        )
-      ) {
+      if (!(
+        suppressConflicts &&
+        e instanceof Error &&
+        e.name === 'PineconeConflictError'
+      )) {
         throw e;
       }
     }
