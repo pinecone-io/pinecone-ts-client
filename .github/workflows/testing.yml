@@ -129,6 +129,27 @@ jobs:
           CI: true
         run: npm run test:unit -- --coverage
 
+  smoke-mocked:
+    name: Smoke (mocked, no key)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # No PINECONE_API_KEY in env: proves the mocked critical path needs none.
+      # The dedicated smoke config targets only src/smoke and does NOT set
+      # --passWithNoTests, so the job fails (jest exits 1) if that suite ever
+      # collects zero tests, rather than silently passing by running nothing.
+      - name: Run mocked critical-path smoke test
+        env:
+          CI: true
+        run: npm run test:smoke:mocked
+
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest
@@ -173,12 +194,13 @@ jobs:
           cp -r pinecone-ts-client/ts-compilation-test ts-compilation-test
           cd ts-compilation-test
           npm install typescript@${{ matrix.tsVersion }} --no-cache
-          # Pin @types/node to the 22.x line (matching the SDK's own devDependency).
-          # An unpinned install floats to the latest @types/node, and @types/node >=25
-          # dropped the type fallbacks that keep it compatible with TypeScript <=5.5,
-          # which breaks the older entries in the tsVersion matrix. The 22.x line
-          # compiles cleanly across the entire matrix.
-          npm install @types/node@^22 --no-cache
+          # Pin @types/node to the major that matches this job's Node runtime
+          # (node-version: 20.x above). The unpinned "@types/node" pulled the
+          # latest major, whose iterator-helper types (IteratorObject,
+          # BuiltinIteratorReturn, ...) require TypeScript >= 5.6 and broke the
+          # TS 5.2-5.5 matrix legs. Pinning aligns the type defs with the Node
+          # version actually under test. See #396.
+          npm install @types/node@20 --no-cache
           npm install '../pinecone-ts-client' --no-cache
           cat package.json
           cat package-lock.json

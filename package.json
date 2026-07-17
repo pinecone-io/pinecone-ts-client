@@ -31,7 +31,8 @@
     "test:integration:local:edge": "./scripts/run-integration-tests-local.sh edge",
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
-    "test:unit": "jest src/"
+    "test:unit": "jest src/",
+    "test:smoke:mocked": "jest -c jest.config.smoke.js"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -40,7 +41,7 @@
     "@edge-runtime/jest-environment": "^2.3.10",
     "@edge-runtime/types": "^2.2.9",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.19.7",
+    "@types/node": "22.19.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "dotenv": "^16.6.1",

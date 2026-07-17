@@ -130,13 +130,11 @@ export const createIndexForModel = (api: ManageIndexesApi) => {
       }
       return createResponse;
     } catch (e) {
-      if (
-        !(
-          suppressConflicts &&
-          e instanceof Error &&
-          e.name === 'PineconeConflictError'
-        )
-      ) {
+      if (!(
+        suppressConflicts &&
+        e instanceof Error &&
+        e.name === 'PineconeConflictError'
+      )) {
         throw e;
       }
     }
