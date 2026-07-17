@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@edge-runtime/jest-environment": "^2.3.10",
-    "@edge-runtime/types": "^2.2.9",
+    "@edge-runtime/types": "^4.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "22.19.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
