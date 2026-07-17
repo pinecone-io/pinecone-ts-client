@@ -6,6 +6,7 @@ import {
   PineconeNotFoundError,
   PineconeMethodNotAllowedError,
   PineconeConflictError,
+  PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeNotImplementedError,
   PineconeUnavailableError,
@@ -103,6 +104,20 @@ describe('mapHttpStatusError', () => {
     expect(err.name).toBe('PineconeConflictError');
   });
 
+  test('422 → PineconeUnprocessableEntityError', () => {
+    const err = mapHttpStatusError({ status: 422, url, message: 'invalid' });
+    expect(err).toBeInstanceOf(PineconeUnprocessableEntityError);
+    expect(err.name).toBe('PineconeUnprocessableEntityError');
+    expect(err.message).toContain('422');
+    expect(err.message).toContain(url);
+  });
+
+  test('422 without url still produces PineconeUnprocessableEntityError', () => {
+    const err = mapHttpStatusError({ status: 422 });
+    expect(err).toBeInstanceOf(PineconeUnprocessableEntityError);
+    expect(err.message).toContain('invalid');
+  });
+
   test('500 → PineconeInternalServerError', () => {
     const err = mapHttpStatusError({ status: 500, url });
     expect(err).toBeInstanceOf(PineconeInternalServerError);
@@ -128,7 +143,7 @@ describe('mapHttpStatusError', () => {
   });
 
   test('all returned errors extend BasePineconeError', () => {
-    const statuses = [400, 401, 403, 404, 405, 409, 500, 501, 503];
+    const statuses = [400, 401, 403, 404, 405, 409, 422, 500, 501, 503];
     for (const status of statuses) {
       const err = mapHttpStatusError({ status, url });
       expect(err).toBeInstanceOf(BasePineconeError);

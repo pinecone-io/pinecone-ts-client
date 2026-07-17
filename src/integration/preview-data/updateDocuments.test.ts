@@ -13,7 +13,6 @@ beforeAll(async () => {
     name: indexName,
     schema: {
       fields: {
-        title: { type: 'string' },
         content: { type: 'string', fullTextSearch: {} },
       },
     },
