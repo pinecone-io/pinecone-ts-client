@@ -1,5 +1,5 @@
 import { Pinecone } from '../../index';
-import { randomName } from '../test-helpers';
+import { randomName, assertWithRetries } from '../test-helpers';
 
 let pc: Pinecone;
 let indexName: string;
@@ -25,8 +25,16 @@ beforeAll(async () => {
     ],
   });
 
-  // Wait for propagation
-  await new Promise((resolve) => setTimeout(resolve, 8000));
+  // Poll until the upserted document is retrievable
+  await assertWithRetries(
+    () =>
+      pc.preview
+        .index({ name: indexName })
+        .fetchDocuments(namespace, { ids: ['doc-1'] }),
+    (result) => {
+      expect(result.documents['doc-1']).toBeDefined();
+    },
+  );
 }, 300000);
 
 afterAll(async () => {
@@ -45,16 +53,18 @@ describe('preview updateDocuments', () => {
       ],
     });
 
-    // Wait for propagation
-    await new Promise((resolve) => setTimeout(resolve, 8000));
-
-    const result = await pc.preview
-      .index({ name: indexName })
-      .fetchDocuments(namespace, { ids: ['doc-1'] });
-
-    const doc = result.documents['doc-1'];
-    expect(doc).toBeDefined();
-    expect(doc.content).toBe('Updated content');
-    expect(doc.title).toBeUndefined();
+    // Poll until the update has propagated
+    await assertWithRetries(
+      () =>
+        pc.preview
+          .index({ name: indexName })
+          .fetchDocuments(namespace, { ids: ['doc-1'] }),
+      (result) => {
+        const doc = result.documents['doc-1'];
+        expect(doc).toBeDefined();
+        expect(doc.content).toBe('Updated content');
+        expect(doc.title).toBeUndefined();
+      },
+    );
   });
 });

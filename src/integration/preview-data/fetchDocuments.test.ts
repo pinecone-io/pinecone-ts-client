@@ -1,5 +1,5 @@
 import { Pinecone } from '../../index';
-import { randomName } from '../test-helpers';
+import { randomName, assertWithRetries } from '../test-helpers';
 
 let pc: Pinecone;
 let indexName: string;
@@ -26,8 +26,17 @@ beforeAll(async () => {
     ],
   });
 
-  // Wait for propagation
-  await new Promise((resolve) => setTimeout(resolve, 8000));
+  // Poll until the upserted documents are retrievable
+  await assertWithRetries(
+    () =>
+      pc.preview
+        .index({ name: indexName })
+        .fetchDocuments(namespace, { ids: ['doc-1', 'doc-2'] }),
+    (result) => {
+      expect(result.documents['doc-1']).toBeDefined();
+      expect(result.documents['doc-2']).toBeDefined();
+    },
+  );
 }, 300000);
 
 afterAll(async () => {
