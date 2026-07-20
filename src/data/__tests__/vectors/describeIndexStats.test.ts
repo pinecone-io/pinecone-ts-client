@@ -67,9 +67,7 @@ describe('describeIndexStats', () => {
     const toThrow = async () => {
       await describeIndexStatsFn({ filter: { someKey: '' } });
     };
-    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow).rejects.toThrowError(
-      '`filter` property cannot be empty',
-    );
+    await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow('`filter` property cannot be empty');
   });
 });

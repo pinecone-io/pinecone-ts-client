@@ -61,7 +61,7 @@ describe('update', () => {
         metadata: { genre: 'ambient' },
       });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'You must pass a non-empty string for the `id` field or a `filter` object in order to update records.',
     );
   });
@@ -74,7 +74,7 @@ describe('update', () => {
         filter: { genre: 'ambient' },
       });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'You cannot pass both an `id` and a `filter` object to update records. Use either `id` to update a single record, or `filter` to update multiple records.',
     );
   });

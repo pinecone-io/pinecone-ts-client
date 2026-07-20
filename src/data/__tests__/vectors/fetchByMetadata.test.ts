@@ -55,7 +55,7 @@ describe('fetchByMetadata', () => {
       // @ts-expect-error when filter is missing
       await cmd.run({});
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'You must pass a non-empty object for the `filter` field in order to fetch by metadata.',
     );
   });

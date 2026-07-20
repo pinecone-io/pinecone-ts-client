@@ -72,8 +72,8 @@ describe('createCollection', () => {
         await createCollection(IOA)();
       };
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty object with `name` and `source` fields in order to create a collection.',
       );
     });
@@ -85,8 +85,8 @@ describe('createCollection', () => {
         await createCollection(IOA)({});
       };
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'The argument to createCollection must have required properties: `name`, `source`.',
       );
     });
@@ -100,8 +100,8 @@ describe('createCollection', () => {
         });
       };
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty string for `name` in order to create a collection.',
       );
     });
@@ -113,8 +113,8 @@ describe('createCollection', () => {
         await createCollection(IOA)({ name: 'collection-name' });
       };
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty string for `source` in order to create a collection.',
       );
     });
@@ -128,8 +128,8 @@ describe('createCollection', () => {
         });
       };
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty string for `source` in order to create a collection.',
       );
     });

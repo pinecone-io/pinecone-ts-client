@@ -17,8 +17,8 @@ describe('deleteIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await deleteIndex(IOA)();
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `indexName` in order to delete an index',
       );
     });
@@ -29,8 +29,8 @@ describe('deleteIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await deleteIndex(IOA)('');
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `indexName` in order to delete an index',
       );
     });
