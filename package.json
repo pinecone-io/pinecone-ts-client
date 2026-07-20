@@ -45,7 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",
     "dotenv": "^17.4.2",
-    "eslint": "^8.57.1",
+    "eslint": "^10.7.0",
     "eslint-plugin-import": "^2.32.0",
     "jest": "30.4",
     "jest-progress-bar-reporter": "^1.0.25",
