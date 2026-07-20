@@ -75,6 +75,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
     throw new Error(
       `Failed to parse FIXTURES_JSON: ${error}\n` +
         `Value: ${fixturesJson.substring(0, 100)}...`,
+      { cause: error },
     );
   }
 
