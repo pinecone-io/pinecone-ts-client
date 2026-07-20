@@ -13,7 +13,7 @@ export const extractMessage = async (error: ResponseError): Promise<string> => {
     if (messageJSON.message) {
       message = messageJSON.message;
     }
-  } catch (e) {
+  } catch {
     // noop
   }
 
