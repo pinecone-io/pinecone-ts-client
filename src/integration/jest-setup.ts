@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
 
 // Load environment variables
-dotenv.config();
+config();
 
 // Validate required environment variables
 const requiredEnvVars = ['PINECONE_API_KEY'];

@@ -100,7 +100,7 @@ export const messagesValidation = (options: ChatOptions): MessageModel[] => {
     }
 
     // Cast messages after validating keys
-    return (messages = options.messages as MessageModel[]);
+    return options.messages as MessageModel[];
   }
 
   return messages;

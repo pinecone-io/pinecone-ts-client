@@ -42,7 +42,7 @@ describe('fetch', () => {
     const toThrow = async () => {
       await cmd.run({ ids: [] });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'Must pass in at least 1 recordID.',
     );
   });

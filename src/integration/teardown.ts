@@ -26,6 +26,7 @@ export const teardown = async () => {
   } catch (error) {
     throw new Error(
       `Failed to parse FIXTURES_JSON: ${error}. Value: ${fixturesJson}`,
+      { cause: error },
     );
   }
 

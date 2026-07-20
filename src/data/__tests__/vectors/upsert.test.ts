@@ -47,7 +47,7 @@ describe('upsert', () => {
       // @ts-ignore
       await cmd.run({ records: [] });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'Must pass in at least 1 record to upsert.',
     );
   });
@@ -60,7 +60,7 @@ describe('upsert', () => {
       // @ts-ignore
       await cmd.run({ records: [{ values: [1, 2, 3] }] });
     };
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(
       'Every record must include an `id` property in order to upsert.',
     );
   });
@@ -71,7 +71,7 @@ describe('upsert', () => {
       // @ts-ignore
       await cmd.run({ records: [{ id: '1' }] });
     };
-    expect(toThrow()).rejects.toThrowError(
+    expect(toThrow()).rejects.toThrow(
       'Every record must include either `values` or `sparseValues` in order to upsert.',
     );
   });

@@ -14,8 +14,8 @@ describe('configureIndex argument validations', () => {
       // @ts-expect-error - invalid options
       const toThrow = async () => await configureIndex(MIA)({});
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty string for `name` to configureIndex.',
       );
     });
@@ -24,8 +24,8 @@ describe('configureIndex argument validations', () => {
       const toThrow = async () =>
         await configureIndex(MIA)({ name: '', podReplicas: 2 });
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass a non-empty string for `name` to configureIndex.',
       );
     });
@@ -34,8 +34,8 @@ describe('configureIndex argument validations', () => {
       const toThrowSpec = async () =>
         await configureIndex(MIA)({ name: 'index-name' });
 
-      await expect(toThrowSpec).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrowSpec).rejects.toThrowError(
+      await expect(toThrowSpec).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrowSpec).rejects.toThrow(
         'You must pass at least one configuration option to configureIndex.',
       );
     });
@@ -44,8 +44,8 @@ describe('configureIndex argument validations', () => {
       const toThrow = async () =>
         await configureIndex(MIA)({ name: 'index-name' });
 
-      await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(toThrow).rejects.toThrowError(
+      await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(toThrow).rejects.toThrow(
         'You must pass at least one configuration option to configureIndex.',
       );
     });

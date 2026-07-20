@@ -11,7 +11,7 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest", "@edge-runtime/types"],
+    "types": ["node", "jest"],
     "noImplicitAny": false,
     "resolveJsonModule": true
   },

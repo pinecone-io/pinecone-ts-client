@@ -32,8 +32,8 @@ describe('deleteCollection', () => {
       // @ts-ignore
       const expectToThrow = async () => await deleteCollection(IOA)();
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `collectionName`',
       );
     });
@@ -43,8 +43,8 @@ describe('deleteCollection', () => {
       // @ts-ignore
       const expectToThrow = async () => await deleteCollection(IOA)('');
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `collectionName`',
       );
     });
