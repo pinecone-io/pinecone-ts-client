@@ -124,7 +124,9 @@ export const waitUntilIndexReady = async (indexName: string) => {
         await sleep(sleepIntervalMs);
       }
     } catch (error) {
-      throw new Error(`Error while waiting for index to be ready: ${error}`);
+      throw new Error(`Error while waiting for index to be ready: ${error}`, {
+        cause: error,
+      });
     }
   }
 };
@@ -145,6 +147,7 @@ export const waitUntilAssistantReady = async (assistantName: string) => {
     } catch (error) {
       throw new Error(
         `Error while waiting for assistant to be ready: ${error}`,
+        { cause: error },
       );
     }
   }
@@ -171,6 +174,7 @@ export const waitUntilAssistantFileReady = async (
     } catch (error) {
       throw new Error(
         `Error while waiting for assistant file to be ready: ${error}`,
+        { cause: error },
       );
     }
   }
