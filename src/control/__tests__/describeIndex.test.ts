@@ -56,8 +56,8 @@ describe('describeIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)();
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `name` in order to describe an index',
       );
     });
@@ -68,8 +68,8 @@ describe('describeIndex', () => {
       // @ts-ignore
       const expectToThrow = async () => await describeIndex(IOA)('');
 
-      await expect(expectToThrow).rejects.toThrowError(PineconeArgumentError);
-      await expect(expectToThrow).rejects.toThrowError(
+      await expect(expectToThrow).rejects.toThrow(PineconeArgumentError);
+      await expect(expectToThrow).rejects.toThrow(
         'You must pass a non-empty string for `name` in order to describe an index',
       );
     });

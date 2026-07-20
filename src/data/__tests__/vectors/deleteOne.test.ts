@@ -43,8 +43,8 @@ describe('deleteOne', () => {
     const toThrow = async () => {
       await deleteOneFn({ id: '' });
     };
-    await expect(toThrow).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow).rejects.toThrowError(
+    await expect(toThrow).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow).rejects.toThrow(
       'You must pass a non-empty string for `id` in order to delete a record.',
     );
   });

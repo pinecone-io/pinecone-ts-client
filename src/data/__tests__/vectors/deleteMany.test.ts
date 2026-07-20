@@ -36,8 +36,8 @@ describe('deleteMany', () => {
     const toThrow = async () => {
       await deleteManyFn({ filter: { some: '' } });
     };
-    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrow(
       '`filter` property cannot be empty',
     );
   });
@@ -48,8 +48,8 @@ describe('deleteMany', () => {
     const toThrow = async () => {
       await deleteManyFn({ ids: [] });
     };
-    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrow(
       'Must pass in at least 1 record ID.',
     );
   });
@@ -60,8 +60,8 @@ describe('deleteMany', () => {
     const toThrow = async () => {
       await deleteManyFn({ ids: ['123'], filter: { genre: 'ambient' } });
     };
-    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrow(
       'Cannot provide both `ids` and `filter`',
     );
   });
@@ -72,8 +72,8 @@ describe('deleteMany', () => {
     const toThrow = async () => {
       await deleteManyFn({});
     };
-    await expect(toThrow()).rejects.toThrowError(PineconeArgumentError);
-    await expect(toThrow()).rejects.toThrowError(
+    await expect(toThrow()).rejects.toThrow(PineconeArgumentError);
+    await expect(toThrow()).rejects.toThrow(
       'Either `ids` or `filter` must be provided',
     );
   });
