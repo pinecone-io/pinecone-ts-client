@@ -10,6 +10,7 @@ export {
   PineconeNotFoundError,
   PineconeMethodNotAllowedError,
   PineconeConflictError,
+  PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeMaxRetriesExceededError,
   PineconeUnavailableError,

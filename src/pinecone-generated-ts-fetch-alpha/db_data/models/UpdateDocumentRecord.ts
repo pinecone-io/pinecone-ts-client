@@ -25,13 +25,13 @@ export interface UpdateDocumentRecord {
      * @type {string}
      * @memberof UpdateDocumentRecord
      */
-    id: string;
+    _id: string;
     /**
      * A list of field names to delete from the document.
      * @type {Array<string>}
      * @memberof UpdateDocumentRecord
      */
-    removeFields?: Array<string>;
+    _remove_fields?: Array<string>;
 }
 
 /**
@@ -39,7 +39,7 @@ export interface UpdateDocumentRecord {
  */
 export function instanceOfUpdateDocumentRecord(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "id" in value;
+    isInstance = isInstance && "_id" in value;
 
     return isInstance;
 }
@@ -55,8 +55,8 @@ export function UpdateDocumentRecordFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
             ...json,
-        'id': json['_id'],
-        'removeFields': !exists(json, '_remove_fields') ? undefined : json['_remove_fields'],
+        '_id': json['_id'],
+        '_remove_fields': !exists(json, '_remove_fields') ? undefined : json['_remove_fields'],
     };
 }
 
@@ -70,8 +70,8 @@ export function UpdateDocumentRecordToJSON(value?: UpdateDocumentRecord | null):
     return {
         
             ...value,
-        '_id': value.id,
-        '_remove_fields': value.removeFields,
+        '_id': value._id,
+        '_remove_fields': value._remove_fields,
     };
 }
 

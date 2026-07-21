@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ResponseStringFieldFullTextSearchNgram } from './ResponseStringFieldFullTextSearchNgram';
+import {
+    ResponseStringFieldFullTextSearchNgramFromJSON,
+    ResponseStringFieldFullTextSearchNgramFromJSONTyped,
+    ResponseStringFieldFullTextSearchNgramToJSON,
+} from './ResponseStringFieldFullTextSearchNgram';
+
 /**
  * Full-text search configuration. Present when the field is indexed for full-text search.
  * @export
@@ -37,6 +44,12 @@ export interface ResponseStringFieldFullTextSearch {
      * @memberof ResponseStringFieldFullTextSearch
      */
     stopWords: boolean;
+    /**
+     * 
+     * @type {ResponseStringFieldFullTextSearchNgram}
+     * @memberof ResponseStringFieldFullTextSearch
+     */
+    ngram?: ResponseStringFieldFullTextSearchNgram;
 }
 
 /**
@@ -64,6 +77,7 @@ export function ResponseStringFieldFullTextSearchFromJSONTyped(json: any, ignore
         'language': json['language'],
         'stemming': json['stemming'],
         'stopWords': json['stop_words'],
+        'ngram': !exists(json, 'ngram') ? undefined : ResponseStringFieldFullTextSearchNgramFromJSON(json['ngram']),
     };
 }
 
@@ -79,6 +93,7 @@ export function ResponseStringFieldFullTextSearchToJSON(value?: ResponseStringFi
         'language': value.language,
         'stemming': value.stemming,
         'stop_words': value.stopWords,
+        'ngram': ResponseStringFieldFullTextSearchNgramToJSON(value.ngram),
     };
 }
 

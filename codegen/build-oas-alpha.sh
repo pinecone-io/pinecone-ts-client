@@ -80,6 +80,23 @@ fix_score_field() {
 		"$file"
 }
 
+# The generator also camel-cases the spec's `_remove_fields` property to
+# `removeFields` (stripping the leading underscore). Restore the original
+# name so the property is not duplicated in the request body by the `...value`
+# spread in the model's ToJSON. The `[?]*` group preserves an optional marker
+# on the property declaration.
+fix_remove_fields_field() {
+	local file=$1
+	sedi \
+		-e 's/\([^a-zA-Z0-9_]\)removeFields\([?]*\):/\1_remove_fields\2:/g' \
+		-e 's/^removeFields\([?]*\):/_remove_fields\1:/' \
+		-e "s/'removeFields'/'_remove_fields'/g" \
+		-e 's/"removeFields"/"_remove_fields"/g' \
+		-e 's/\.removeFields\([^a-zA-Z0-9_]\)/\._remove_fields\1/g' \
+		-e 's/\.removeFields$/\._remove_fields/' \
+		"$file"
+}
+
 # IndexSchemaField is spec'd as anyOf: [TypedIndexSchemaField, LegacyMetadataField].
 # The generator can't model this correctly: it collapses the anyOf into a concrete
 # interface matching only LegacyMetadataField's shape. Rewrite the file to express
@@ -161,9 +178,11 @@ clean_oas_underscore_manipulation() {
 		fix_score_field "${models_dir}/${file}"
 	done
 
-	for file in UpsertRecord.ts DocumentRecord.ts FetchedDocumentRecord.ts; do
+	for file in UpsertRecord.ts DocumentRecord.ts FetchedDocumentRecord.ts UpdateDocumentRecord.ts ListedDocumentRecord.ts; do
 		fix_id_field "${models_dir}/${file}"
 	done
+
+	fix_remove_fields_field "${models_dir}/UpdateDocumentRecord.ts"
 }
 
 update_apis_repo

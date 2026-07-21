@@ -84,6 +84,31 @@ export class PineconeConflictError extends BasePineconeError {
 }
 
 /**
+ * This error is thrown when API requests return with status 422
+ * (Unprocessable Entity). The request was well-formed, but the server was
+ * unable to process it because its contents are semantically invalid.
+ *
+ * A common cause is a request body that does not match the schema expected by
+ * the endpoint, such as creating an index with a field configuration that is
+ * not permitted.
+ */
+export class PineconeUnprocessableEntityError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 422 (Unprocessable Entity). ${message ? message : ''}`.trim(),
+      );
+    } else {
+      super(
+        `The request could not be processed because its contents are invalid. ${message ? message : ''}`.trim(),
+      );
+    }
+    this.name = 'PineconeUnprocessableEntityError';
+  }
+}
+
+/**
  * This error indicates API responses are returning with status 500 and
  * something is wrong with Pinecone. Check the [status page](https://status.pinecone.io/)
  * for information about current or recent outages.
@@ -256,6 +281,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeMethodNotAllowedError(failedRequestInfo);
     case 409:
       return new PineconeConflictError(failedRequestInfo);
+    case 422:
+      return new PineconeUnprocessableEntityError(failedRequestInfo);
     case 500:
       return new PineconeInternalServerError(failedRequestInfo);
     case 501:
