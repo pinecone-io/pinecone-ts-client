@@ -142,6 +142,7 @@ export interface ListCollectionsRequest {
 export interface ListIndexBackupsRequest {
     xPineconeApiVersion: string;
     indexName: string;
+    includeDeleted?: boolean;
     limit?: number;
     paginationToken?: string;
 }
@@ -411,7 +412,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup.
+     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperationRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
@@ -453,7 +454,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup.
+     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperation(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {
@@ -807,7 +808,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all backups for an index.
+     * When `include_deleted` is false (or omitted), `index_name` must resolve to an active index in the project. If no active index by that name exists—including the case where only deleted indexes have used the name—the API returns **404**, not an empty list. When `include_deleted` is true, the API returns backups from every index in the project that has ever used this name (active and deleted). The `source_index_deleted_at` field is present only when the backup is from a deleted index. **404** is returned only when no index by that name has ever existed in the project (active or deleted).
      * List backups for an index
      */
     async listIndexBackupsRaw(requestParameters: ListIndexBackupsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupList>> {
@@ -820,6 +821,10 @@ export class ManageIndexesApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters.includeDeleted !== undefined) {
+            queryParameters['include_deleted'] = requestParameters.includeDeleted;
+        }
 
         if (requestParameters.limit !== undefined) {
             queryParameters['limit'] = requestParameters.limit;
@@ -850,7 +855,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all backups for an index.
+     * When `include_deleted` is false (or omitted), `index_name` must resolve to an active index in the project. If no active index by that name exists—including the case where only deleted indexes have used the name—the API returns **404**, not an empty list. When `include_deleted` is true, the API returns backups from every index in the project that has ever used this name (active and deleted). The `source_index_deleted_at` field is present only when the backup is from a deleted index. **404** is returned only when no index by that name has ever existed in the project (active or deleted).
      * List backups for an index
      */
     async listIndexBackups(requestParameters: ListIndexBackupsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupList> {

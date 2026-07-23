@@ -23,31 +23,31 @@ import {
 /**
  * Updated configuration for serverless indexes
  * @export
- * @interface Serverless1Serverless
+ * @interface ServerlessServerless
  */
-export interface Serverless1Serverless {
+export interface ServerlessServerless {
     /**
      * 
      * @type {ReadCapacity}
-     * @memberof Serverless1Serverless
+     * @memberof ServerlessServerless
      */
     readCapacity?: ReadCapacity;
 }
 
 /**
- * Check if a given object implements the Serverless1Serverless interface.
+ * Check if a given object implements the ServerlessServerless interface.
  */
-export function instanceOfServerless1Serverless(value: object): boolean {
+export function instanceOfServerlessServerless(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function Serverless1ServerlessFromJSON(json: any): Serverless1Serverless {
-    return Serverless1ServerlessFromJSONTyped(json, false);
+export function ServerlessServerlessFromJSON(json: any): ServerlessServerless {
+    return ServerlessServerlessFromJSONTyped(json, false);
 }
 
-export function Serverless1ServerlessFromJSONTyped(json: any, ignoreDiscriminator: boolean): Serverless1Serverless {
+export function ServerlessServerlessFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServerlessServerless {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -57,7 +57,7 @@ export function Serverless1ServerlessFromJSONTyped(json: any, ignoreDiscriminato
     };
 }
 
-export function Serverless1ServerlessToJSON(value?: Serverless1Serverless | null): any {
+export function ServerlessServerlessToJSON(value?: ServerlessServerless | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ServerlessSpec } from './ServerlessSpec';
+import type { ServerlessServerless } from './ServerlessServerless';
 import {
-    ServerlessSpecFromJSON,
-    ServerlessSpecFromJSONTyped,
-    ServerlessSpecToJSON,
-} from './ServerlessSpec';
+    ServerlessServerlessFromJSON,
+    ServerlessServerlessFromJSONTyped,
+    ServerlessServerlessToJSON,
+} from './ServerlessServerless';
 
 /**
  * 
@@ -28,10 +28,10 @@ import {
 export interface Serverless {
     /**
      * 
-     * @type {ServerlessSpec}
+     * @type {ServerlessServerless}
      * @memberof Serverless
      */
-    serverless: ServerlessSpec;
+    serverless: ServerlessServerless;
 }
 
 /**
@@ -54,7 +54,7 @@ export function ServerlessFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'serverless': ServerlessSpecFromJSON(json['serverless']),
+        'serverless': ServerlessServerlessFromJSON(json['serverless']),
     };
 }
 
@@ -67,7 +67,7 @@ export function ServerlessToJSON(value?: Serverless | null): any {
     }
     return {
         
-        'serverless': ServerlessSpecToJSON(value.serverless),
+        'serverless': ServerlessServerlessToJSON(value.serverless),
     };
 }
 

@@ -13,33 +13,33 @@
  */
 
 import {
-    BYOC2,
-    instanceOfBYOC2,
-    BYOC2FromJSON,
-    BYOC2FromJSONTyped,
-    BYOC2ToJSON,
-} from './BYOC2';
+    BYOC1,
+    instanceOfBYOC1,
+    BYOC1FromJSON,
+    BYOC1FromJSONTyped,
+    BYOC1ToJSON,
+} from './BYOC1';
 import {
-    PodBased,
-    instanceOfPodBased,
-    PodBasedFromJSON,
-    PodBasedFromJSONTyped,
-    PodBasedToJSON,
-} from './PodBased';
+    PodBased1,
+    instanceOfPodBased1,
+    PodBased1FromJSON,
+    PodBased1FromJSONTyped,
+    PodBased1ToJSON,
+} from './PodBased1';
 import {
-    Serverless2,
-    instanceOfServerless2,
-    Serverless2FromJSON,
-    Serverless2FromJSONTyped,
-    Serverless2ToJSON,
-} from './Serverless2';
+    Serverless1,
+    instanceOfServerless1,
+    Serverless1FromJSON,
+    Serverless1FromJSONTyped,
+    Serverless1ToJSON,
+} from './Serverless1';
 
 /**
  * @type IndexModelSpec
  * The spec object defines how the index should be deployed.
  * @export
  */
-export type IndexModelSpec = BYOC2 | PodBased | Serverless2;
+export type IndexModelSpec = BYOC1 | PodBased1 | Serverless1;
 
 export function IndexModelSpecFromJSON(json: any): IndexModelSpec {
     return IndexModelSpecFromJSONTyped(json, false);
@@ -49,7 +49,7 @@ export function IndexModelSpecFromJSONTyped(json: any, ignoreDiscriminator: bool
     if ((json === undefined) || (json === null)) {
         return json;
     }
-    return { ...BYOC2FromJSONTyped(json, true), ...PodBasedFromJSONTyped(json, true), ...Serverless2FromJSONTyped(json, true) };
+    return { ...BYOC1FromJSONTyped(json, true), ...PodBased1FromJSONTyped(json, true), ...Serverless1FromJSONTyped(json, true) };
 }
 
 export function IndexModelSpecToJSON(value?: IndexModelSpec | null): any {
@@ -60,14 +60,14 @@ export function IndexModelSpecToJSON(value?: IndexModelSpec | null): any {
         return null;
     }
 
-    if (instanceOfBYOC2(value)) {
-        return BYOC2ToJSON(value as BYOC2);
+    if (instanceOfBYOC1(value)) {
+        return BYOC1ToJSON(value as BYOC1);
     }
-    if (instanceOfPodBased(value)) {
-        return PodBasedToJSON(value as PodBased);
+    if (instanceOfPodBased1(value)) {
+        return PodBased1ToJSON(value as PodBased1);
     }
-    if (instanceOfServerless2(value)) {
-        return Serverless2ToJSON(value as Serverless2);
+    if (instanceOfServerless1(value)) {
+        return Serverless1ToJSON(value as Serverless1);
     }
 
     return {};

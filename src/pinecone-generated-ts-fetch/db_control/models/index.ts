@@ -2,8 +2,8 @@
 /* eslint-disable */
 export * from './BYOC';
 export * from './BYOC1';
-export * from './BYOC1Byoc';
 export * from './BYOC2';
+export * from './BYOCByoc';
 export * from './BackupList';
 export * from './BackupModel';
 export * from './ByocSpec';
@@ -33,7 +33,7 @@ export * from './ModelIndexEmbed';
 export * from './PaginationResponse';
 export * from './PodBased';
 export * from './PodBased1';
-export * from './PodBased1Pod';
+export * from './PodBasedPod';
 export * from './PodSpec';
 export * from './PodSpecMetadataConfig';
 export * from './ReadCapacity';
@@ -49,7 +49,7 @@ export * from './RestoreJobModel';
 export * from './ScalingConfigManual';
 export * from './Serverless';
 export * from './Serverless1';
-export * from './Serverless1Serverless';
 export * from './Serverless2';
+export * from './ServerlessServerless';
 export * from './ServerlessSpec';
 export * from './ServerlessSpecResponse';

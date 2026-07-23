@@ -212,10 +212,12 @@ export type {
   IndexModelStatus,
   ModelIndexEmbed,
   // Members of the `IndexModelSpec` discriminated union (`spec` field on a
-  // described/created index).
-  Serverless2,
-  PodBased,
-  BYOC2,
+  // described/created index). Aliased to stable public names because the
+  // generator's numeric suffixes reshuffle across regens — re-point the
+  // left-hand side after each regen; the public names stay fixed.
+  Serverless1 as Serverless2,
+  PodBased1 as PodBased,
+  BYOC1 as BYOC2,
   MetadataSchema,
   MetadataSchemaFieldsValue,
   PodSpec,
