@@ -62,7 +62,9 @@ export const createIndexFromBackup = (api: ManageIndexesApi) => {
         name: createIndexFromBackupOptions.name,
         tags: createIndexFromBackupOptions.tags,
         deletionProtection: createIndexFromBackupOptions.deletionProtection,
-        readCapacity: toApiReadCapacity(createIndexFromBackupOptions.readCapacity),
+        readCapacity: toApiReadCapacity(
+          createIndexFromBackupOptions.readCapacity,
+        ),
       },
     });
   };
