@@ -45,6 +45,12 @@ export interface BackupModel {
      */
     sourceIndexId: string;
     /**
+     * The deletion timestamp when the source index has been deleted. Not present for backups associated with an active index.
+     * @type {Date}
+     * @memberof BackupModel
+     */
+    sourceIndexDeletedAt?: Date;
+    /**
      * Optional user-defined name for the backup.
      * @type {string}
      * @memberof BackupModel
@@ -153,6 +159,7 @@ export function BackupModelFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'backupId': json['backup_id'],
         'sourceIndexName': json['source_index_name'],
         'sourceIndexId': json['source_index_id'],
+        'sourceIndexDeletedAt': !exists(json, 'source_index_deleted_at') ? undefined : (new Date(json['source_index_deleted_at'])),
         'name': !exists(json, 'name') ? undefined : json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
         'status': json['status'],
@@ -181,6 +188,7 @@ export function BackupModelToJSON(value?: BackupModel | null): any {
         'backup_id': value.backupId,
         'source_index_name': value.sourceIndexName,
         'source_index_id': value.sourceIndexId,
+        'source_index_deleted_at': value.sourceIndexDeletedAt === undefined ? undefined : (value.sourceIndexDeletedAt.toISOString()),
         'name': value.name,
         'description': value.description,
         'status': value.status,

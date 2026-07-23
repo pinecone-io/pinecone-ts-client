@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PodSpec } from './PodSpec';
+import type { PodBasedPod } from './PodBasedPod';
 import {
-    PodSpecFromJSON,
-    PodSpecFromJSONTyped,
-    PodSpecToJSON,
-} from './PodSpec';
+    PodBasedPodFromJSON,
+    PodBasedPodFromJSONTyped,
+    PodBasedPodToJSON,
+} from './PodBasedPod';
 
 /**
  * 
@@ -28,10 +28,10 @@ import {
 export interface PodBased {
     /**
      * 
-     * @type {PodSpec}
+     * @type {PodBasedPod}
      * @memberof PodBased
      */
-    pod: PodSpec;
+    pod: PodBasedPod;
 }
 
 /**
@@ -54,7 +54,7 @@ export function PodBasedFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'pod': PodSpecFromJSON(json['pod']),
+        'pod': PodBasedPodFromJSON(json['pod']),
     };
 }
 
@@ -67,7 +67,7 @@ export function PodBasedToJSON(value?: PodBased | null): any {
     }
     return {
         
-        'pod': PodSpecToJSON(value.pod),
+        'pod': PodBasedPodToJSON(value.pod),
     };
 }
 

@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ByocSpec } from './ByocSpec';
+import type { BYOCByoc } from './BYOCByoc';
 import {
-    ByocSpecFromJSON,
-    ByocSpecFromJSONTyped,
-    ByocSpecToJSON,
-} from './ByocSpec';
+    BYOCByocFromJSON,
+    BYOCByocFromJSONTyped,
+    BYOCByocToJSON,
+} from './BYOCByoc';
 
 /**
  * 
@@ -28,10 +28,10 @@ import {
 export interface BYOC {
     /**
      * 
-     * @type {ByocSpec}
+     * @type {BYOCByoc}
      * @memberof BYOC
      */
-    byoc: ByocSpec;
+    byoc: BYOCByoc;
 }
 
 /**
@@ -54,7 +54,7 @@ export function BYOCFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC
     }
     return {
         
-        'byoc': ByocSpecFromJSON(json['byoc']),
+        'byoc': BYOCByocFromJSON(json['byoc']),
     };
 }
 
@@ -67,7 +67,7 @@ export function BYOCToJSON(value?: BYOC | null): any {
     }
     return {
         
-        'byoc': ByocSpecToJSON(value.byoc),
+        'byoc': BYOCByocToJSON(value.byoc),
     };
 }
 

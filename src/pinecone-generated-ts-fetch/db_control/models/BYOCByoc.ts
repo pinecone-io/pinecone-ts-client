@@ -23,31 +23,31 @@ import {
 /**
  * Updated configuration for a BYOC index
  * @export
- * @interface BYOC1Byoc
+ * @interface BYOCByoc
  */
-export interface BYOC1Byoc {
+export interface BYOCByoc {
     /**
      * 
      * @type {ReadCapacity}
-     * @memberof BYOC1Byoc
+     * @memberof BYOCByoc
      */
     readCapacity?: ReadCapacity;
 }
 
 /**
- * Check if a given object implements the BYOC1Byoc interface.
+ * Check if a given object implements the BYOCByoc interface.
  */
-export function instanceOfBYOC1Byoc(value: object): boolean {
+export function instanceOfBYOCByoc(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function BYOC1ByocFromJSON(json: any): BYOC1Byoc {
-    return BYOC1ByocFromJSONTyped(json, false);
+export function BYOCByocFromJSON(json: any): BYOCByoc {
+    return BYOCByocFromJSONTyped(json, false);
 }
 
-export function BYOC1ByocFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOC1Byoc {
+export function BYOCByocFromJSONTyped(json: any, ignoreDiscriminator: boolean): BYOCByoc {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -57,7 +57,7 @@ export function BYOC1ByocFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function BYOC1ByocToJSON(value?: BYOC1Byoc | null): any {
+export function BYOCByocToJSON(value?: BYOCByoc | null): any {
     if (value === undefined) {
         return undefined;
     }

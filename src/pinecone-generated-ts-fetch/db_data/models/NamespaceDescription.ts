@@ -56,6 +56,12 @@ export interface NamespaceDescription {
      * @memberof NamespaceDescription
      */
     indexedFields?: NamespaceDescriptionIndexedFields;
+    /**
+     * The total size of the namespace's data, in bytes.
+     * @type {number}
+     * @memberof NamespaceDescription
+     */
+    sizeBytes?: number;
 }
 
 /**
@@ -81,6 +87,7 @@ export function NamespaceDescriptionFromJSONTyped(json: any, ignoreDiscriminator
         'recordCount': !exists(json, 'record_count') ? undefined : json['record_count'],
         'schema': !exists(json, 'schema') ? undefined : CreateNamespaceRequestSchemaFromJSON(json['schema']),
         'indexedFields': !exists(json, 'indexed_fields') ? undefined : NamespaceDescriptionIndexedFieldsFromJSON(json['indexed_fields']),
+        'sizeBytes': !exists(json, 'size_bytes') ? undefined : json['size_bytes'],
     };
 }
 
@@ -97,6 +104,7 @@ export function NamespaceDescriptionToJSON(value?: NamespaceDescription | null):
         'record_count': value.recordCount,
         'schema': CreateNamespaceRequestSchemaToJSON(value.schema),
         'indexed_fields': NamespaceDescriptionIndexedFieldsToJSON(value.indexedFields),
+        'size_bytes': value.sizeBytes,
     };
 }
 

@@ -3,6 +3,11 @@ import {
   X_PINECONE_API_VERSION,
   ManageIndexesApi,
 } from '../pinecone-generated-ts-fetch/db_control';
+import {
+  CreateIndexReadCapacity,
+  toApiReadCapacity,
+  validateReadCapacity,
+} from './createIndex';
 import { PineconeArgumentError } from '../errors';
 
 /**
@@ -27,6 +32,11 @@ export interface CreateIndexFromBackupOptions {
    * Allows configuring deletion protection for the new index: 'enabled' or 'disabled'. Defaults to 'disabled'.
    */
   deletionProtection?: string;
+  /**
+   * Optional read capacity configuration for the restored index. For serverless backups, set this to create the
+   * restored index with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
+   */
+  readCapacity?: CreateIndexReadCapacity;
 }
 
 export const createIndexFromBackup = (api: ManageIndexesApi) => {
@@ -43,6 +53,8 @@ export const createIndexFromBackup = (api: ManageIndexesApi) => {
       );
     }
 
+    validateReadCapacity(createIndexFromBackupOptions.readCapacity);
+
     return await api.createIndexFromBackupOperation({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       backupId: createIndexFromBackupOptions.backupId,
@@ -50,6 +62,7 @@ export const createIndexFromBackup = (api: ManageIndexesApi) => {
         name: createIndexFromBackupOptions.name,
         tags: createIndexFromBackupOptions.tags,
         deletionProtection: createIndexFromBackupOptions.deletionProtection,
+        readCapacity: toApiReadCapacity(createIndexFromBackupOptions.readCapacity),
       },
     });
   };

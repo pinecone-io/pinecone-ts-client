@@ -16,37 +16,37 @@ import { exists, mapValues } from '../runtime';
 /**
  * Updated configuration for pod-based indexes
  * @export
- * @interface PodBased1Pod
+ * @interface PodBasedPod
  */
-export interface PodBased1Pod {
+export interface PodBasedPod {
     /**
      * The number of replicas. Replicas duplicate your index. They provide higher availability and throughput. Replicas can be scaled up or down as your needs change.
      * @type {number}
-     * @memberof PodBased1Pod
+     * @memberof PodBasedPod
      */
     replicas?: number;
     /**
      * The type of pod to use. One of `s1`, `p1`, or `p2` appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
      * @type {string}
-     * @memberof PodBased1Pod
+     * @memberof PodBasedPod
      */
     podType?: string;
 }
 
 /**
- * Check if a given object implements the PodBased1Pod interface.
+ * Check if a given object implements the PodBasedPod interface.
  */
-export function instanceOfPodBased1Pod(value: object): boolean {
+export function instanceOfPodBasedPod(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function PodBased1PodFromJSON(json: any): PodBased1Pod {
-    return PodBased1PodFromJSONTyped(json, false);
+export function PodBasedPodFromJSON(json: any): PodBasedPod {
+    return PodBasedPodFromJSONTyped(json, false);
 }
 
-export function PodBased1PodFromJSONTyped(json: any, ignoreDiscriminator: boolean): PodBased1Pod {
+export function PodBasedPodFromJSONTyped(json: any, ignoreDiscriminator: boolean): PodBasedPod {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -57,7 +57,7 @@ export function PodBased1PodFromJSONTyped(json: any, ignoreDiscriminator: boolea
     };
 }
 
-export function PodBased1PodToJSON(value?: PodBased1Pod | null): any {
+export function PodBasedPodToJSON(value?: PodBasedPod | null): any {
     if (value === undefined) {
         return undefined;
     }
