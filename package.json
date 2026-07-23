@@ -52,6 +52,7 @@
     "globals": "^16.0.0",
     "jest": "30.4",
     "jest-progress-bar-reporter": "^1.0.25",
+    "jest-util": "^30.4.1",
     "prettier": "^3.4.2",
     "ts-jest": "^29.4.6",
     "tsx": "^4.23.1",
