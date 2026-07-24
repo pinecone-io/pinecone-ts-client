@@ -146,7 +146,9 @@ describe('TokenProvider', () => {
       PineconeAuthorizationError,
     );
     // The message must describe the OAuth credentials, not an Api-Key, and surface the server detail.
-    await expect(provider.getToken()).rejects.toThrow(/clientId and clientSecret/);
+    await expect(provider.getToken()).rejects.toThrow(
+      /clientId and clientSecret/,
+    );
     await expect(provider.getToken()).rejects.toThrow(/bad creds/);
   });
 
