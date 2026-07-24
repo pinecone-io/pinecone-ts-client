@@ -11,39 +11,39 @@ export {
   OAUTH_AUDIENCE,
 } from './tokenProvider';
 
-export { ProjectsNamespace } from './namespaces/projects';
+export { ProjectsNamespace } from './resources/projects';
 export type {
   CreateProjectOptions,
   UpdateProjectOptions,
-} from './namespaces/projects';
+} from './resources/projects';
 
-export { OrganizationsNamespace } from './namespaces/organizations';
-export type { UpdateOrganizationOptions } from './namespaces/organizations';
+export { OrganizationsNamespace } from './resources/organizations';
+export type { UpdateOrganizationOptions } from './resources/organizations';
 
-export { ApiKeysNamespace } from './namespaces/apiKeys';
+export { ApiKeysNamespace } from './resources/apiKeys';
 export type {
   CreateApiKeyOptions,
   UpdateApiKeyOptions,
-} from './namespaces/apiKeys';
+} from './resources/apiKeys';
 
-export { ServiceAccountsNamespace } from './namespaces/serviceAccounts';
+export { ServiceAccountsNamespace } from './resources/serviceAccounts';
 export type {
   CreateServiceAccountOptions,
   UpdateServiceAccountOptions,
   ListServiceAccountsOptions,
-} from './namespaces/serviceAccounts';
+} from './resources/serviceAccounts';
 
-export { RoleBindingsNamespace } from './namespaces/roleBindings';
+export { RoleBindingsNamespace } from './resources/roleBindings';
 export type {
   CreateRoleBindingOptions,
   ListRoleBindingsOptions,
-} from './namespaces/roleBindings';
+} from './resources/roleBindings';
 
-export { InvitesNamespace } from './namespaces/invites';
+export { InvitesNamespace } from './resources/invites';
 export type {
   CreateInviteOptions,
   ListInvitesOptions,
-} from './namespaces/invites';
+} from './resources/invites';
 
-export { UsersNamespace } from './namespaces/users';
-export type { ListUsersOptions } from './namespaces/users';
+export { UsersNamespace } from './resources/users';
+export type { ListUsersOptions } from './resources/users';

@@ -3,13 +3,13 @@ import {
   resolveAdminClientConfiguration,
 } from './adminClientConfiguration';
 import { adminOperationsBuilder } from './adminOperationsBuilder';
-import { ProjectsNamespace } from './namespaces/projects';
-import { OrganizationsNamespace } from './namespaces/organizations';
-import { ApiKeysNamespace } from './namespaces/apiKeys';
-import { ServiceAccountsNamespace } from './namespaces/serviceAccounts';
-import { RoleBindingsNamespace } from './namespaces/roleBindings';
-import { InvitesNamespace } from './namespaces/invites';
-import { UsersNamespace } from './namespaces/users';
+import { ProjectsNamespace } from './resources/projects';
+import { OrganizationsNamespace } from './resources/organizations';
+import { ApiKeysNamespace } from './resources/apiKeys';
+import { ServiceAccountsNamespace } from './resources/serviceAccounts';
+import { RoleBindingsNamespace } from './resources/roleBindings';
+import { InvitesNamespace } from './resources/invites';
+import { UsersNamespace } from './resources/users';
 
 /**
  * The `AdminClient` class is the entrypoint for the Pinecone **Admin API**, which manages an
