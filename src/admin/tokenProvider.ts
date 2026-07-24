@@ -11,12 +11,6 @@ export const OAUTH_TOKEN_URL = 'https://login.pinecone.io/oauth/token';
 /** The audience the minted token is scoped to. Note the trailing slash, which the server requires. */
 export const OAUTH_AUDIENCE = 'https://api.pinecone.io/';
 
-/**
- * Refresh the cached token this many milliseconds before it actually expires, so a token is never
- * used right as it lapses (e.g. due to clock skew or in-flight request latency).
- */
-const EXPIRY_BUFFER_MS = 60_000;
-
 /** The shape of a successful response from the OAuth token endpoint. */
 interface TokenResponse {
   access_token: string;
@@ -28,10 +22,12 @@ interface TokenResponse {
  * Obtains and caches an OAuth2 bearer token for the Admin API using the service-account
  * client-credentials flow.
  *
- * The token is fetched lazily on the first call to {@link TokenProvider.getToken}, cached, and
- * automatically refreshed once it is within {@link EXPIRY_BUFFER_MS} of expiring. Concurrent callers
- * during a refresh share a single in-flight request (single-flight) rather than each triggering
- * their own exchange.
+ * The token is fetched lazily on the first call to {@link TokenProvider.getToken} and cached for the
+ * lifetime of the owning {@link AdminClient} — one exchange per client, mirroring the Python and Go
+ * SDKs. There is no proactive refresh, so an `AdminClient` kept alive past the token's server-side
+ * expiry (~30 minutes) will need to be recreated; admin operations are expected to run within a
+ * time-bounded session. Concurrent callers during the initial exchange share a single in-flight
+ * request (single-flight) rather than each triggering their own.
  *
  * @internal
  */
@@ -42,8 +38,6 @@ export class TokenProvider {
   private readonly userAgent: string;
 
   private token?: string;
-  /** Epoch milliseconds at which the cached token expires. */
-  private expiresAt = 0;
   /** The in-flight token exchange, if one is currently running (single-flight guard). */
   private inflight?: Promise<string>;
 
@@ -60,15 +54,16 @@ export class TokenProvider {
   }
 
   /**
-   * Returns a valid bearer token, fetching or refreshing it as needed. Suitable for use directly as
-   * the generated `Configuration.accessToken` callback.
+   * Returns the bearer token, performing the credential exchange on first use and returning the
+   * cached value thereafter. Suitable for use directly as the generated `Configuration.accessToken`
+   * callback.
    */
   async getToken(): Promise<string> {
-    if (this.token && Date.now() < this.expiresAt - EXPIRY_BUFFER_MS) {
+    if (this.token) {
       return this.token;
     }
 
-    // If a refresh is already running, join it instead of starting another.
+    // If the initial exchange is already running, join it instead of starting another.
     if (this.inflight) {
       return this.inflight;
     }
@@ -79,7 +74,7 @@ export class TokenProvider {
     return this.inflight;
   }
 
-  /** Exchanges the service-account credentials for a fresh token and updates the cache. */
+  /** Exchanges the service-account credentials for a token and caches it. */
   private async fetchToken(): Promise<string> {
     const response = await this.fetchApi(OAUTH_TOKEN_URL, {
       method: 'POST',
@@ -122,10 +117,6 @@ export class TokenProvider {
     }
 
     this.token = data.access_token;
-    // `expires_in` is in seconds; fall back to a conservative window if it is missing.
-    const expiresInMs = (data.expires_in ?? 0) * 1000;
-    this.expiresAt = Date.now() + expiresInMs;
-
     return this.token;
   }
 
@@ -146,11 +137,16 @@ export class TokenProvider {
 
     // A rejected credential is by far the most common failure and maps cleanly to an auth error,
     // keeping `instanceof PineconeAuthorizationError` working the same as for the data-plane APIs.
+    // The default Api-Key wording does not apply here, so we pass admin-specific wording that also
+    // surfaces the server's `error_description` when present.
     if (response.status === 401 || response.status === 403) {
-      return new PineconeAuthorizationError({
-        status: response.status,
-        url: OAUTH_TOKEN_URL,
-      });
+      const detail = description ? ` (${description})` : '';
+      return new PineconeAuthorizationError(
+        { status: response.status, url: OAUTH_TOKEN_URL },
+        `The clientId and clientSecret you provided were rejected during the OAuth token exchange` +
+          `${detail}. Please check your service account credentials and try again. You can manage` +
+          ` service accounts in the Pinecone console at https://app.pinecone.io.`,
+      );
     }
 
     return new PineconeUnexpectedResponseError(

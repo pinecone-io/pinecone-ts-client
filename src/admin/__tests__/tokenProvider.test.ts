@@ -83,7 +83,8 @@ describe('TokenProvider', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  test('refreshes the token once it is within the expiry buffer', async () => {
+  test('caches for the lifetime of the client and never proactively refreshes', async () => {
+    // A second token is queued to prove it is never requested; one exchange should serve every call.
     const fetchMock: FetchMock = jest
       .fn()
       .mockResolvedValueOnce(makeResponse(tokenBody('tok-1', 1800)))
@@ -95,17 +96,10 @@ describe('TokenProvider', () => {
       'ua',
     );
 
-    const nowSpy = jest.spyOn(Date, 'now');
-
-    // t=0: first fetch, token valid for 1800s.
-    nowSpy.mockReturnValue(0);
-    expect(await provider.getToken()).toBe('tok-1');
-
-    // t=1700s: within the 60s buffer of the 1800s expiry -> refresh.
-    nowSpy.mockReturnValue(1_750_000);
-    expect(await provider.getToken()).toBe('tok-2');
-
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    for (let i = 0; i < 5; i++) {
+      expect(await provider.getToken()).toBe('tok-1');
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   test('coalesces concurrent refreshes into a single request (single-flight)', async () => {
@@ -151,6 +145,9 @@ describe('TokenProvider', () => {
     await expect(provider.getToken()).rejects.toThrow(
       PineconeAuthorizationError,
     );
+    // The message must describe the OAuth credentials, not an Api-Key, and surface the server detail.
+    await expect(provider.getToken()).rejects.toThrow(/clientId and clientSecret/);
+    await expect(provider.getToken()).rejects.toThrow(/bad creds/);
   });
 
   test('throws PineconeUnexpectedResponseError on other non-2xx statuses', async () => {

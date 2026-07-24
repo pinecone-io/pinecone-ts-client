@@ -32,9 +32,13 @@ export class PineconeBadRequestError extends BasePineconeError {
  * client using the correct values.
  */
 export class PineconeAuthorizationError extends BasePineconeError {
-  constructor(failedRequest: FailedRequestInfo) {
+  constructor(failedRequest: FailedRequestInfo, messageOverride?: string) {
     const { url } = failedRequest;
-    if (url) {
+    if (messageOverride) {
+      // Allows callers whose credentials are not an Api-Key (e.g. the Admin API's service-account
+      // OAuth flow) to supply accurate wording instead of the default Api-Key message.
+      super(messageOverride);
+    } else if (url) {
       super(
         `The API key you provided was rejected while calling ${url}. Please check your configuration values and try again. ${CONFIG_HELP}`,
       );
