@@ -19,7 +19,7 @@ export interface ListUsersOptions {
 /**
  * Operations for managing users within the organization. Accessed via {@link AdminClient.users}.
  */
-export class UsersNamespace {
+export class UsersResource {
   private readonly _api: UsersApi;
 
   constructor(api: UsersApi) {

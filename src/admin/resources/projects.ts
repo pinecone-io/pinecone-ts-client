@@ -36,7 +36,7 @@ export interface UpdateProjectOptions {
  * Operations for managing Pinecone projects within the organization associated with your service
  * account. Accessed via {@link AdminClient.projects}.
  */
-export class ProjectsNamespace {
+export class ProjectsResource {
   private readonly _api: ProjectsApi;
 
   constructor(api: ProjectsApi) {

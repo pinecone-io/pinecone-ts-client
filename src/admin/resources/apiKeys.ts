@@ -33,7 +33,7 @@ export interface UpdateApiKeyOptions {
 /**
  * Operations for managing API keys within a project. Accessed via {@link AdminClient.apiKeys}.
  */
-export class ApiKeysNamespace {
+export class ApiKeysResource {
   private readonly _api: APIKeysApi;
 
   constructor(api: APIKeysApi) {

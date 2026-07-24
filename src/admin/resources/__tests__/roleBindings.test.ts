@@ -1,4 +1,4 @@
-import { RoleBindingsNamespace } from '../roleBindings';
+import { RoleBindingsResource } from '../roleBindings';
 import {
   type RoleBindingsApi,
   X_PINECONE_API_VERSION,
@@ -12,10 +12,10 @@ const setup = () => {
     listRoleBindings: jest.fn().mockResolvedValue({ data: [] }),
     deleteRoleBinding: jest.fn().mockResolvedValue(undefined),
   } as unknown as RoleBindingsApi;
-  return { api, roleBindings: new RoleBindingsNamespace(api) };
+  return { api, roleBindings: new RoleBindingsResource(api) };
 };
 
-describe('RoleBindingsNamespace', () => {
+describe('RoleBindingsResource', () => {
   test('create passes all required fields through', async () => {
     const { api, roleBindings } = setup();
     await roleBindings.create({

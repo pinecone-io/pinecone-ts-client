@@ -1,4 +1,4 @@
-import { ProjectsNamespace } from '../projects';
+import { ProjectsResource } from '../projects';
 import {
   type ProjectsApi,
   X_PINECONE_API_VERSION,
@@ -13,10 +13,10 @@ const setup = () => {
     updateProject: jest.fn().mockResolvedValue({ id: 'p-1' }),
     deleteProject: jest.fn().mockResolvedValue(undefined),
   } as unknown as ProjectsApi;
-  return { api, projects: new ProjectsNamespace(api) };
+  return { api, projects: new ProjectsResource(api) };
 };
 
-describe('ProjectsNamespace', () => {
+describe('ProjectsResource', () => {
   test('create passes name and options through with the API version', async () => {
     const { api, projects } = setup();
     await projects.create({ name: 'my-project', maxPods: 2 });

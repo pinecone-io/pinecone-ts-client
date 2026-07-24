@@ -37,7 +37,7 @@ export interface ListServiceAccountsOptions {
  * Operations for managing service accounts within the organization. Accessed via
  * {@link AdminClient.serviceAccounts}.
  */
-export class ServiceAccountsNamespace {
+export class ServiceAccountsResource {
   private readonly _api: ServiceAccountsApi;
 
   constructor(api: ServiceAccountsApi) {

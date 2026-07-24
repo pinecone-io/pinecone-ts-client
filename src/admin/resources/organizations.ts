@@ -16,7 +16,7 @@ export interface UpdateOrganizationOptions {
  * Operations for managing the organizations available to your service account. Accessed via
  * {@link AdminClient.organizations}.
  */
-export class OrganizationsNamespace {
+export class OrganizationsResource {
   private readonly _api: OrganizationsApi;
 
   constructor(api: OrganizationsApi) {

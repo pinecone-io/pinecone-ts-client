@@ -31,7 +31,7 @@ export interface ListInvitesOptions {
  * Operations for managing invitations to join the organization. Accessed via
  * {@link AdminClient.invites}.
  */
-export class InvitesNamespace {
+export class InvitesResource {
   private readonly _api: InvitesApi;
 
   constructor(api: InvitesApi) {

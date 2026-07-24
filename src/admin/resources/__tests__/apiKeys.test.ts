@@ -1,4 +1,4 @@
-import { ApiKeysNamespace } from '../apiKeys';
+import { ApiKeysResource } from '../apiKeys';
 import {
   type APIKeysApi,
   X_PINECONE_API_VERSION,
@@ -13,10 +13,10 @@ const setup = () => {
     updateApiKey: jest.fn().mockResolvedValue({ id: 'k-1' }),
     deleteApiKey: jest.fn().mockResolvedValue(undefined),
   } as unknown as APIKeysApi;
-  return { api, apiKeys: new ApiKeysNamespace(api) };
+  return { api, apiKeys: new ApiKeysResource(api) };
 };
 
-describe('ApiKeysNamespace', () => {
+describe('ApiKeysResource', () => {
   test('create passes projectId and body through', async () => {
     const { api, apiKeys } = setup();
     await apiKeys.create('proj-1', {

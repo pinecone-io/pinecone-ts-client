@@ -3,13 +3,13 @@ import {
   resolveAdminClientConfiguration,
 } from './adminClientConfiguration';
 import { adminOperationsBuilder } from './adminOperationsBuilder';
-import { ProjectsNamespace } from './resources/projects';
-import { OrganizationsNamespace } from './resources/organizations';
-import { ApiKeysNamespace } from './resources/apiKeys';
-import { ServiceAccountsNamespace } from './resources/serviceAccounts';
-import { RoleBindingsNamespace } from './resources/roleBindings';
-import { InvitesNamespace } from './resources/invites';
-import { UsersNamespace } from './resources/users';
+import { ProjectsResource } from './resources/projects';
+import { OrganizationsResource } from './resources/organizations';
+import { ApiKeysResource } from './resources/apiKeys';
+import { ServiceAccountsResource } from './resources/serviceAccounts';
+import { RoleBindingsResource } from './resources/roleBindings';
+import { InvitesResource } from './resources/invites';
+import { UsersResource } from './resources/users';
 
 /**
  * The `AdminClient` class is the entrypoint for the Pinecone **Admin API**, which manages an
@@ -68,19 +68,19 @@ import { UsersNamespace } from './resources/users';
  */
 export class AdminClient {
   /** Operations for managing projects. */
-  readonly projects: ProjectsNamespace;
+  readonly projects: ProjectsResource;
   /** Operations for managing organizations. */
-  readonly organizations: OrganizationsNamespace;
+  readonly organizations: OrganizationsResource;
   /** Operations for managing API keys within a project. */
-  readonly apiKeys: ApiKeysNamespace;
+  readonly apiKeys: ApiKeysResource;
   /** Operations for managing service accounts within the organization. */
-  readonly serviceAccounts: ServiceAccountsNamespace;
+  readonly serviceAccounts: ServiceAccountsResource;
   /** Operations for managing role bindings. */
-  readonly roleBindings: RoleBindingsNamespace;
+  readonly roleBindings: RoleBindingsResource;
   /** Operations for managing invitations to join the organization. */
-  readonly invites: InvitesNamespace;
+  readonly invites: InvitesResource;
   /** Operations for managing users within the organization. */
-  readonly users: UsersNamespace;
+  readonly users: UsersResource;
 
   /**
    * @param config - Optional {@link AdminClientConfiguration}. When omitted, `clientId` and
@@ -92,12 +92,12 @@ export class AdminClient {
     const resolvedConfig = resolveAdminClientConfiguration(config);
     const apis = adminOperationsBuilder(resolvedConfig);
 
-    this.projects = new ProjectsNamespace(apis.projects);
-    this.organizations = new OrganizationsNamespace(apis.organizations);
-    this.apiKeys = new ApiKeysNamespace(apis.apiKeys);
-    this.serviceAccounts = new ServiceAccountsNamespace(apis.serviceAccounts);
-    this.roleBindings = new RoleBindingsNamespace(apis.roleBindings);
-    this.invites = new InvitesNamespace(apis.invites);
-    this.users = new UsersNamespace(apis.users);
+    this.projects = new ProjectsResource(apis.projects);
+    this.organizations = new OrganizationsResource(apis.organizations);
+    this.apiKeys = new ApiKeysResource(apis.apiKeys);
+    this.serviceAccounts = new ServiceAccountsResource(apis.serviceAccounts);
+    this.roleBindings = new RoleBindingsResource(apis.roleBindings);
+    this.invites = new InvitesResource(apis.invites);
+    this.users = new UsersResource(apis.users);
   }
 }

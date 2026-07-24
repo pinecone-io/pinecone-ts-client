@@ -46,7 +46,7 @@ export interface ListRoleBindingsOptions {
  * API keys, and invites) at an organization or project scope. Accessed via
  * {@link AdminClient.roleBindings}.
  */
-export class RoleBindingsNamespace {
+export class RoleBindingsResource {
   private readonly _api: RoleBindingsApi;
 
   constructor(api: RoleBindingsApi) {
