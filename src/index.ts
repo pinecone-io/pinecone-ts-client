@@ -330,3 +330,46 @@ export type {
   // Shared data-plane types
   PreviewSparseValues,
 } from './preview';
+
+// --- Admin API exports (2026-04) ---
+export { AdminClient } from './admin';
+export type {
+  AdminClientConfiguration,
+  CreateProjectOptions,
+  UpdateProjectOptions,
+  UpdateOrganizationOptions,
+  CreateApiKeyOptions,
+  UpdateApiKeyOptions,
+  CreateServiceAccountOptions,
+  UpdateServiceAccountOptions,
+  ListServiceAccountsOptions,
+  CreateRoleBindingOptions,
+  ListRoleBindingsOptions,
+  CreateInviteOptions,
+  ListInvitesOptions,
+  ListUsersOptions,
+} from './admin';
+export type {
+  Project,
+  ProjectList,
+  Organization,
+  OrganizationList,
+  APIKey,
+  APIKeyWithSecret,
+  ListApiKeysResponse,
+  ServiceAccount,
+  ServiceAccountWithSecret,
+  ServiceAccountList,
+  RoleBinding,
+  RoleBindingInput,
+  RoleBindingList,
+  Invite,
+  InviteList,
+  InviteListPagination,
+  User,
+  UserList,
+  // Admin has its own generically-named error types. Aliased to avoid colliding with
+  // identically-named types other modules may export in the future.
+  ErrorResponse as AdminErrorResponse,
+  ErrorResponseError as AdminErrorResponseError,
+} from './pinecone-generated-ts-fetch/admin';
