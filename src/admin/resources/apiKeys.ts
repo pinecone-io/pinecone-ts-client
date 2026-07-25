@@ -2,33 +2,27 @@ import {
   type APIKey,
   type APIKeysApi,
   type APIKeyWithSecret,
+  type CreateAPIKeyRequest,
   type ListApiKeysResponse,
+  type UpdateAPIKeyRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for creating a new API key. */
-export interface CreateApiKeyOptions {
-  /** The name of the API key. Must be 1-80 characters long. */
-  name: string;
-  /**
-   * The roles to create the API key with. Defaults to `['ProjectEditor']`. Expected values:
-   * `ProjectEditor`, `ProjectViewer`, `ControlPlaneEditor`, `ControlPlaneViewer`,
-   * `DataPlaneEditor`, `DataPlaneViewer`.
-   */
-  roles?: Array<string>;
-}
+/**
+ * Options for creating a new API key (the body of `admin.apiKeys.create`). Aliased from the
+ * generated {@link CreateAPIKeyRequest}. Valid `roles` values are `ProjectEditor`, `ProjectViewer`,
+ * `ControlPlaneEditor`, `ControlPlaneViewer`, `DataPlaneEditor`, and `DataPlaneViewer`; defaults to
+ * `['ProjectEditor']`.
+ */
+export type CreateApiKeyOptions = CreateAPIKeyRequest;
 
-/** The options for updating an existing API key. */
-export interface UpdateApiKeyOptions {
-  /** A new name for the API key. Must be 1-80 characters long. If omitted, the name is unchanged. */
-  name?: string;
-  /**
-   * A new set of roles for the API key. Existing roles are removed if not included. If omitted, the
-   * roles are unchanged.
-   */
-  roles?: Array<string>;
-}
+/**
+ * Options for updating an existing API key (the body of `admin.apiKeys.update`). Aliased from the
+ * generated {@link UpdateAPIKeyRequest}. Any field omitted is left unchanged; supplying `roles`
+ * replaces the existing set.
+ */
+export type UpdateApiKeyOptions = UpdateAPIKeyRequest;
 
 /**
  * Operations for managing API keys within a project. Accessed via {@link AdminClient.apiKeys}.
@@ -61,10 +55,7 @@ export class ApiKeysResource {
     return await this._api.createApiKey({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       projectId,
-      createAPIKeyRequest: {
-        name: options.name,
-        roles: options.roles,
-      },
+      createAPIKeyRequest: options,
     });
   }
 
@@ -107,10 +98,7 @@ export class ApiKeysResource {
     return await this._api.updateApiKey({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       apiKeyId,
-      updateAPIKeyRequest: {
-        name: options?.name,
-        roles: options?.roles,
-      },
+      updateAPIKeyRequest: options ?? {},
     });
   }
 

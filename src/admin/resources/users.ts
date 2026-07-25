@@ -1,4 +1,5 @@
 import {
+  type ListUsersRequest,
   type User,
   type UserList,
   type UsersApi,
@@ -6,15 +7,11 @@ import {
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for listing users. */
-export interface ListUsersOptions {
-  /** Filter by email address. */
-  email?: string;
-  /** The maximum number of users to return per page. */
-  limit?: number;
-  /** Token used for pagination to retrieve the next page of results. */
-  paginationToken?: string;
-}
+/**
+ * Options for listing users (the filter and pagination query of `admin.users.list`). Aliased from
+ * the generated {@link ListUsersRequest} with the SDK-managed API-version header removed.
+ */
+export type ListUsersOptions = Omit<ListUsersRequest, 'xPineconeApiVersion'>;
 
 /**
  * Operations for managing users within the organization. Accessed via {@link AdminClient.users}.
@@ -42,10 +39,8 @@ export class UsersResource {
   /** List users in the organization, optionally filtered by email. */
   async list(options: ListUsersOptions = {}): Promise<UserList> {
     return await this._api.listUsers({
+      ...options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      email: options.email,
-      limit: options.limit,
-      paginationToken: options.paginationToken,
     });
   }
 

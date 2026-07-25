@@ -333,6 +333,17 @@ export type {
 
 // --- Admin API exports (2026-04) ---
 export { AdminClient } from './admin';
+// Per-resource classes backing the `admin.*` sub-clients (e.g. `admin.projects`), exported so they
+// can be referenced in type annotations, mirroring `Inference` / `Preview` / `Assistant`.
+export {
+  ProjectsResource,
+  OrganizationsResource,
+  ApiKeysResource,
+  ServiceAccountsResource,
+  RoleBindingsResource,
+  InvitesResource,
+  UsersResource,
+} from './admin';
 export type {
   AdminClientConfiguration,
   CreateProjectOptions,

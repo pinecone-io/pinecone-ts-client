@@ -1,31 +1,29 @@
 import {
+  type CreateInviteRequest,
   type Invite,
   type InviteList,
   type InvitesApi,
-  type RoleBindingInput,
+  type ListInvitesRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for creating and sending a new invite. */
-export interface CreateInviteOptions {
-  /** The email address to invite. */
-  email: string;
-  /**
-   * Role bindings for the invitee. Must include at least one organization-scoped binding that
-   * grants organization membership (e.g. `OrgOwner`, `OrgManager`, `OrgBillingAdmin`, or
-   * `OrgMember`); project-scoped bindings are optional.
-   */
-  roleBindings: Array<RoleBindingInput>;
-}
+/**
+ * Options for creating and sending a new invite (the body of `admin.invites.create`). Aliased from
+ * the generated {@link CreateInviteRequest}. `roleBindings` must include at least one
+ * organization-scoped binding that grants organization membership (e.g. `OrgOwner`, `OrgManager`,
+ * `OrgBillingAdmin`, or `OrgMember`); project-scoped bindings are optional.
+ */
+export type CreateInviteOptions = CreateInviteRequest;
 
-/** The options for listing invites. */
-export interface ListInvitesOptions {
-  /** The maximum number of invites to return per page. */
-  limit?: number;
-  /** Token used for pagination to retrieve the next page of results. */
-  paginationToken?: string;
-}
+/**
+ * Options for listing invites (the pagination query of `admin.invites.list`). Aliased from the
+ * generated {@link ListInvitesRequest} with the SDK-managed API-version header removed.
+ */
+export type ListInvitesOptions = Omit<
+  ListInvitesRequest,
+  'xPineconeApiVersion'
+>;
 
 /**
  * Operations for managing invitations to join the organization. Accessed via
@@ -52,10 +50,7 @@ export class InvitesResource {
     }
     return await this._api.createInvite({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      createInviteRequest: {
-        email: options.email,
-        roleBindings: options.roleBindings,
-      },
+      createInviteRequest: options,
     });
   }
 
@@ -75,9 +70,8 @@ export class InvitesResource {
   /** List invites in the organization. */
   async list(options: ListInvitesOptions = {}): Promise<InviteList> {
     return await this._api.listInvites({
+      ...options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      limit: options.limit,
-      paginationToken: options.paginationToken,
     });
   }
 

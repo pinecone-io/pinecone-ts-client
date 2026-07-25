@@ -1,4 +1,6 @@
 import {
+  type CreateRoleBindingRequest,
+  type ListRoleBindingsRequest,
   type RoleBinding,
   type RoleBindingList,
   type RoleBindingsApi,
@@ -6,40 +8,24 @@ import {
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for creating a new role binding. */
-export interface CreateRoleBindingOptions {
-  /** The kind of principal that receives permissions from the role binding. */
-  principalType: string;
-  /** The ID of the principal to grant the role to. The format depends on `principalType`. */
-  principalId: string;
-  /** The kind of resource scope the role binding applies to. */
-  resourceType: string;
-  /**
-   * The ID of the project the binding applies to. Required when `resourceType` is `project`; omit
-   * for `organization` scope.
-   */
-  resourceId?: string;
-  /** The role to assign to the principal at the resource scope. */
-  role: string;
-}
+/**
+ * Options for creating a new role binding (the body of `admin.roleBindings.create`). Aliased from
+ * the generated {@link CreateRoleBindingRequest}. `principalType` is one of `user`,
+ * `service_account`, `api_key`, or `invite`; `resourceType` is `organization` or `project`
+ * (`resourceId` is required for `project` scope and omitted for `organization` scope).
+ */
+export type CreateRoleBindingOptions = CreateRoleBindingRequest;
 
-/** The options for listing role bindings. All fields are optional filters. */
-export interface ListRoleBindingsOptions {
-  /** Filter by principal type. Required when `principalId` is set. */
-  principalType?: string;
-  /** Filter by principal ID. Requires `principalType`. */
-  principalId?: string;
-  /** Filter by resource type. Required when `resourceId` is set. */
-  resourceType?: string;
-  /** Filter by resource ID. Requires `resourceType`. */
-  resourceId?: string;
-  /** Filter by role. */
-  role?: string;
-  /** The maximum number of role bindings to return per page. */
-  limit?: number;
-  /** Token used for pagination to retrieve the next page of results. */
-  paginationToken?: string;
-}
+/**
+ * Options for listing role bindings (the filters and pagination query of `admin.roleBindings.list`).
+ * Aliased from the generated {@link ListRoleBindingsRequest} with the SDK-managed API-version header
+ * removed. All fields are optional filters; `principalType` is required alongside `principalId`, and
+ * `resourceType` alongside `resourceId`.
+ */
+export type ListRoleBindingsOptions = Omit<
+  ListRoleBindingsRequest,
+  'xPineconeApiVersion'
+>;
 
 /**
  * Operations for managing role bindings, which grant roles to principals (users, service accounts,
@@ -77,13 +63,7 @@ export class RoleBindingsResource {
     }
     return await this._api.createRoleBinding({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      createRoleBindingRequest: {
-        principalType: options.principalType,
-        principalId: options.principalId,
-        resourceType: options.resourceType,
-        resourceId: options.resourceId,
-        role: options.role,
-      },
+      createRoleBindingRequest: options,
     });
   }
 
@@ -103,14 +83,8 @@ export class RoleBindingsResource {
   /** List role bindings, optionally filtered by principal, resource, or role. */
   async list(options: ListRoleBindingsOptions = {}): Promise<RoleBindingList> {
     return await this._api.listRoleBindings({
+      ...options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      principalType: options.principalType,
-      principalId: options.principalId,
-      resourceType: options.resourceType,
-      resourceId: options.resourceId,
-      role: options.role,
-      limit: options.limit,
-      paginationToken: options.paginationToken,
     });
   }
 

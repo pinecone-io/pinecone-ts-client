@@ -24,8 +24,10 @@ import { UsersResource } from './resources/users';
  * `PINECONE_CLIENT_SECRET` environment variables. Create a service account and its credentials in the
  * [Pinecone console](https://app.pinecone.io) under Organization Settings → Service Accounts.
  *
- * The bearer token is fetched lazily on the first admin request, cached, and refreshed automatically
- * before it expires — no token management is required by the caller.
+ * The bearer token is fetched lazily on the first admin request and cached for the lifetime of the
+ * `AdminClient`, mirroring the Python and Go SDKs. It is not proactively refreshed, so a client kept
+ * alive past the token's server-side expiry (~30 minutes) should be recreated; admin operations are
+ * expected to run within a time-bounded session.
  *
  * ### Using environment variables
  *

@@ -1,36 +1,25 @@
 import {
+  type CreateProjectRequest,
   type Project,
   type ProjectList,
   type ProjectsApi,
+  type UpdateProjectRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for creating a new project. */
-export interface CreateProjectOptions {
-  /** The name of the new project. */
-  name: string;
-  /** The maximum number of Pods that can be created in the project. Defaults to `0` (serverless only). */
-  maxPods?: number;
-  /**
-   * Whether to force encryption with a customer-managed encryption key (CMEK). Defaults to `false`.
-   * Once enabled, CMEK encryption cannot be disabled.
-   */
-  forceEncryptionWithCmek?: boolean;
-}
+/**
+ * Options for creating a new project (the body of `admin.projects.create`). Aliased from the
+ * generated {@link CreateProjectRequest} so the field set stays in sync with the API on each
+ * regeneration.
+ */
+export type CreateProjectOptions = CreateProjectRequest;
 
-/** The options for updating an existing project. */
-export interface UpdateProjectOptions {
-  /** A new name for the project. */
-  name?: string;
-  /** The maximum number of Pods that can be created in the project. */
-  maxPods?: number;
-  /**
-   * Whether to force encryption with a customer-managed encryption key (CMEK). Once enabled, CMEK
-   * encryption cannot be disabled.
-   */
-  forceEncryptionWithCmek?: boolean;
-}
+/**
+ * Options for updating an existing project (the body of `admin.projects.update`). Aliased from the
+ * generated {@link UpdateProjectRequest}.
+ */
+export type UpdateProjectOptions = UpdateProjectRequest;
 
 /**
  * Operations for managing Pinecone projects within the organization associated with your service
@@ -52,11 +41,7 @@ export class ProjectsResource {
     }
     return await this._api.createProject({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      createProjectRequest: {
-        name: options.name,
-        maxPods: options.maxPods,
-        forceEncryptionWithCmek: options.forceEncryptionWithCmek,
-      },
+      createProjectRequest: options,
     });
   }
 
@@ -93,11 +78,7 @@ export class ProjectsResource {
     return await this._api.updateProject({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       projectId,
-      updateProjectRequest: {
-        name: options?.name,
-        maxPods: options?.maxPods,
-        forceEncryptionWithCmek: options?.forceEncryptionWithCmek,
-      },
+      updateProjectRequest: options ?? {},
     });
   }
 

@@ -2,15 +2,16 @@ import {
   type Organization,
   type OrganizationList,
   type OrganizationsApi,
+  type UpdateOrganizationRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for updating an existing organization. */
-export interface UpdateOrganizationOptions {
-  /** A new name for the organization. */
-  name?: string;
-}
+/**
+ * Options for updating an existing organization (the body of `admin.organizations.update`). Aliased
+ * from the generated {@link UpdateOrganizationRequest}.
+ */
+export type UpdateOrganizationOptions = UpdateOrganizationRequest;
 
 /**
  * Operations for managing the organizations available to your service account. Accessed via
@@ -56,9 +57,7 @@ export class OrganizationsResource {
     return await this._api.updateOrganization({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       organizationId,
-      updateOrganizationRequest: {
-        name: options?.name,
-      },
+      updateOrganizationRequest: options ?? {},
     });
   }
 

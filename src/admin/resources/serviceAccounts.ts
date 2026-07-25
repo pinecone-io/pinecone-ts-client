@@ -1,37 +1,37 @@
 import {
-  type RoleBindingInput,
+  type CreateServiceAccountRequest,
+  type ListServiceAccountsRequest,
   type ServiceAccount,
   type ServiceAccountList,
   type ServiceAccountsApi,
   type ServiceAccountWithSecret,
+  type UpdateServiceAccountRequest,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/admin';
 import { PineconeArgumentError } from '../../errors';
 
-/** The options for creating a new service account. */
-export interface CreateServiceAccountOptions {
-  /** The human-readable name of the service account. Must be 1-80 characters long. */
-  name: string;
-  /**
-   * Initial role bindings for the service account. Omitting this creates the service account with
-   * no role bindings; roles can be added later via {@link AdminClient.roleBindings}.
-   */
-  roleBindings?: Array<RoleBindingInput>;
-}
+/**
+ * Options for creating a new service account (the body of `admin.serviceAccounts.create`). Aliased
+ * from the generated {@link CreateServiceAccountRequest}. Omitting `roleBindings` creates the
+ * service account with no role bindings; roles can be added later via {@link AdminClient.roleBindings}.
+ */
+export type CreateServiceAccountOptions = CreateServiceAccountRequest;
 
-/** The options for updating an existing service account. */
-export interface UpdateServiceAccountOptions {
-  /** A new name for the service account. Must be 1-80 characters long. If omitted, the name is unchanged. */
-  name?: string;
-}
+/**
+ * Options for updating an existing service account (the body of `admin.serviceAccounts.update`).
+ * Aliased from the generated {@link UpdateServiceAccountRequest}.
+ */
+export type UpdateServiceAccountOptions = UpdateServiceAccountRequest;
 
-/** The options for listing service accounts. */
-export interface ListServiceAccountsOptions {
-  /** The maximum number of service accounts to return per page. */
-  limit?: number;
-  /** Token used for pagination to retrieve the next page of results. */
-  paginationToken?: string;
-}
+/**
+ * Options for listing service accounts (the pagination query of `admin.serviceAccounts.list`).
+ * Aliased from the generated {@link ListServiceAccountsRequest} with the SDK-managed API-version
+ * header removed.
+ */
+export type ListServiceAccountsOptions = Omit<
+  ListServiceAccountsRequest,
+  'xPineconeApiVersion'
+>;
 
 /**
  * Operations for managing service accounts within the organization. Accessed via
@@ -58,10 +58,7 @@ export class ServiceAccountsResource {
     }
     return await this._api.createServiceAccount({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      createServiceAccountRequest: {
-        name: options.name,
-        roleBindings: options.roleBindings,
-      },
+      createServiceAccountRequest: options,
     });
   }
 
@@ -83,9 +80,8 @@ export class ServiceAccountsResource {
     options: ListServiceAccountsOptions = {},
   ): Promise<ServiceAccountList> {
     return await this._api.listServiceAccounts({
+      ...options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
-      limit: options.limit,
-      paginationToken: options.paginationToken,
     });
   }
 
@@ -102,9 +98,7 @@ export class ServiceAccountsResource {
     return await this._api.updateServiceAccount({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
       serviceAccountId,
-      updateServiceAccountRequest: {
-        name: options?.name,
-      },
+      updateServiceAccountRequest: options ?? {},
     });
   }
 
