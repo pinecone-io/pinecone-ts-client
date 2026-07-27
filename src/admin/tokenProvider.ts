@@ -23,11 +23,10 @@ interface TokenResponse {
  * client-credentials flow.
  *
  * The token is fetched lazily on the first call to {@link TokenProvider.getToken} and cached for the
- * lifetime of the owning {@link AdminClient} — one exchange per client, mirroring the Python and Go
- * SDKs. There is no proactive refresh, so an `AdminClient` kept alive past the token's server-side
- * expiry (~30 minutes) will need to be recreated; admin operations are expected to run within a
- * time-bounded session. Concurrent callers during the initial exchange share a single in-flight
- * request (single-flight) rather than each triggering their own.
+ * lifetime of the owning {@link AdminClient} — one exchange per client. There is no proactive refresh,
+ * so an `AdminClient` kept alive past the token's server-side expiry (~30 minutes) will need to be
+ * recreated; admin operations are expected to run within a time-bounded session. Concurrent callers
+ * during the initial exchange share a single in-flight request rather than each triggering their own.
  *
  * @internal
  */
@@ -122,7 +121,7 @@ export class TokenProvider {
 
   /**
    * Builds an informative error from a failed token exchange. The OAuth endpoint returns a body of
-   * the form `{ error, error_description }`, which we surface when available.
+   * the form `{ error, error_description }` (RFC 6749 §5.2), which we surface when available.
    */
   private async buildTokenError(response: Response): Promise<Error> {
     let body = '';

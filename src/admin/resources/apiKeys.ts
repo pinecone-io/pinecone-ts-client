@@ -10,17 +10,15 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating a new API key (the body of `admin.apiKeys.create`). Aliased from the
- * generated {@link CreateAPIKeyRequest}. Valid `roles` values are `ProjectEditor`, `ProjectViewer`,
- * `ControlPlaneEditor`, `ControlPlaneViewer`, `DataPlaneEditor`, and `DataPlaneViewer`; defaults to
- * `['ProjectEditor']`.
+ * Options for creating a new API key (the body of `admin.apiKeys.create`). Valid `roles` values are
+ * `ProjectEditor`, `ProjectViewer`, `ControlPlaneEditor`, `ControlPlaneViewer`, `DataPlaneEditor`,
+ * and `DataPlaneViewer`; defaults to `['ProjectEditor']`.
  */
 export type CreateApiKeyOptions = CreateAPIKeyRequest;
 
 /**
- * Options for updating an existing API key (the body of `admin.apiKeys.update`). Aliased from the
- * generated {@link UpdateAPIKeyRequest}. Any field omitted is left unchanged; supplying `roles`
- * replaces the existing set.
+ * Options for updating an existing API key (the body of `admin.apiKeys.update`). Any field omitted
+ * is left unchanged; supplying `roles` replaces the existing set.
  */
 export type UpdateApiKeyOptions = UpdateAPIKeyRequest;
 

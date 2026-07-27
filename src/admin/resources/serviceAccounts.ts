@@ -25,8 +25,6 @@ export type UpdateServiceAccountOptions = UpdateServiceAccountRequest;
 
 /**
  * Options for listing service accounts (the pagination query of `admin.serviceAccounts.list`).
- * Aliased from the generated {@link ListServiceAccountsRequest} with the SDK-managed API-version
- * header removed.
  */
 export type ListServiceAccountsOptions = Omit<
   ListServiceAccountsRequest,

@@ -134,7 +134,9 @@ const delay = (ms: number): Promise<void> =>
  * 2. Wraps it with retry logic for 5xx errors
  * 3. Returns the wrapped fetch for use throughout the SDK
  */
-export const getFetch = (config: PineconeConfiguration) => {
+export const getFetch = (
+  config: Pick<PineconeConfiguration, 'fetchApi' | 'maxRetries'>,
+) => {
   const baseFetch = getBaseFetch(config);
 
   // Wrap with retry logic
@@ -150,7 +152,9 @@ export const getFetch = (config: PineconeConfiguration) => {
  * such as streaming uploads where the ReadableStream is consumed after the
  * first read.
  */
-export const getNonRetryingFetch = (config: PineconeConfiguration) => {
+export const getNonRetryingFetch = (
+  config: Pick<PineconeConfiguration, 'fetchApi'>,
+) => {
   return getBaseFetch(config);
 };
 
@@ -158,7 +162,7 @@ export const getNonRetryingFetch = (config: PineconeConfiguration) => {
  * Gets the base fetch implementation without retry wrapping.
  */
 function getBaseFetch(
-  config: PineconeConfiguration,
+  config: Pick<PineconeConfiguration, 'fetchApi'>,
 ): (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> {
   if (config.fetchApi) {
     // User-provided fetch implementation, if any, takes precedence.

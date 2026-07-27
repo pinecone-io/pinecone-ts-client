@@ -2,7 +2,9 @@ import { isEdge } from './environment';
 import type { PineconeConfiguration } from '../data';
 import * as packageInfo from '../version.json';
 
-export const buildUserAgent = (config: PineconeConfiguration) => {
+export const buildUserAgent = (
+  config: Pick<PineconeConfiguration, 'sourceTag' | 'caller'>,
+) => {
   // We always want to include the package name and version
   // along with the langauge name to help distinguish these
   // requests from those emitted by other clients

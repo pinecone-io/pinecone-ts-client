@@ -9,17 +9,15 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating a new role binding (the body of `admin.roleBindings.create`). Aliased from
- * the generated {@link CreateRoleBindingRequest}. `principalType` is one of `user`,
- * `service_account`, `api_key`, or `invite`; `resourceType` is `organization` or `project`
+ * Options for creating a new role binding (the body of `admin.roleBindings.create`). `principalType`
+ * is one of `user`, `service_account`, `api_key`, or `invite`; `resourceType` is `organization` or `project`
  * (`resourceId` is required for `project` scope and omitted for `organization` scope).
  */
 export type CreateRoleBindingOptions = CreateRoleBindingRequest;
 
 /**
  * Options for listing role bindings (the filters and pagination query of `admin.roleBindings.list`).
- * Aliased from the generated {@link ListRoleBindingsRequest} with the SDK-managed API-version header
- * removed. All fields are optional filters; `principalType` is required alongside `principalId`, and
+ * All fields are optional filters; `principalType` is required alongside `principalId`, and
  * `resourceType` alongside `resourceId`.
  */
 export type ListRoleBindingsOptions = Omit<

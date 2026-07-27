@@ -9,16 +9,14 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating and sending a new invite (the body of `admin.invites.create`). Aliased from
- * the generated {@link CreateInviteRequest}. `roleBindings` must include at least one
- * organization-scoped binding that grants organization membership (e.g. `OrgOwner`, `OrgManager`,
- * `OrgBillingAdmin`, or `OrgMember`); project-scoped bindings are optional.
+ * Options for creating and sending a new invite (the body of `admin.invites.create`). `roleBindings`
+ * must include at least one organization-scoped binding that grants organization membership
+ * (e.g. `OrgOwner`, `OrgManager`, `OrgBillingAdmin`, or `OrgMember`); project-scoped bindings are optional.
  */
 export type CreateInviteOptions = CreateInviteRequest;
 
 /**
- * Options for listing invites (the pagination query of `admin.invites.list`). Aliased from the
- * generated {@link ListInvitesRequest} with the SDK-managed API-version header removed.
+ * Options for listing invites (the pagination query of `admin.invites.list`).
  */
 export type ListInvitesOptions = Omit<
   ListInvitesRequest,

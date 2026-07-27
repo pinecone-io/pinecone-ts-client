@@ -8,8 +8,7 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for updating an existing organization (the body of `admin.organizations.update`). Aliased
- * from the generated {@link UpdateOrganizationRequest}.
+ * Options for updating an existing organization (the body of `admin.organizations.update`).
  */
 export type UpdateOrganizationOptions = UpdateOrganizationRequest;
 

@@ -9,15 +9,12 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating a new project (the body of `admin.projects.create`). Aliased from the
- * generated {@link CreateProjectRequest} so the field set stays in sync with the API on each
- * regeneration.
+ * Options for creating a new project (the body of `admin.projects.create`).
  */
 export type CreateProjectOptions = CreateProjectRequest;
 
 /**
- * Options for updating an existing project (the body of `admin.projects.update`). Aliased from the
- * generated {@link UpdateProjectRequest}.
+ * Options for updating an existing project (the body of `admin.projects.update`).
  */
 export type UpdateProjectOptions = UpdateProjectRequest;
 

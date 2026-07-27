@@ -2,7 +2,6 @@ import type {
   FetchAPI,
   HTTPHeaders,
 } from '../pinecone-generated-ts-fetch/admin';
-import type { PineconeConfiguration } from '../data';
 import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
@@ -143,22 +142,3 @@ const readAdminEnvironmentConfig = (): {
     clientSecret: process.env.PINECONE_CLIENT_SECRET || '',
   };
 };
-
-/**
- * Builds a {@link PineconeConfiguration}-shaped object from an {@link AdminClientConfiguration} so
- * the shared `buildUserAgent` / `getFetch` utilities (which expect a `PineconeConfiguration`) can be
- * reused. The Admin API does not authenticate with an `apiKey`, so it is intentionally left empty.
- *
- * @internal
- */
-export const toPineconeConfigShim = (
-  config: AdminClientConfiguration,
-): PineconeConfiguration => ({
-  apiKey: '',
-  controllerHostUrl: config.controllerHostUrl,
-  fetchApi: config.fetchApi,
-  additionalHeaders: config.additionalHeaders,
-  sourceTag: config.sourceTag,
-  caller: config.caller,
-  maxRetries: config.maxRetries,
-});

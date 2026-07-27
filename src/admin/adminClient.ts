@@ -13,7 +13,7 @@ import { UsersResource } from './resources/users';
 
 /**
  * The `AdminClient` class is the entrypoint for the Pinecone **Admin API**, which manages an
- * organization and its resources: projects, API keys, organization users and invites, service
+ * organization and its resources: projects, API keys, users and invites, service
  * accounts, and role bindings.
  *
  * ### Authentication

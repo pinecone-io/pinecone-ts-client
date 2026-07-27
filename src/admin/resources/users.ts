@@ -8,8 +8,7 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for listing users (the filter and pagination query of `admin.users.list`). Aliased from
- * the generated {@link ListUsersRequest} with the SDK-managed API-version header removed.
+ * Options for listing users (the filter and pagination query of `admin.users.list`).
  */
 export type ListUsersOptions = Omit<ListUsersRequest, 'xPineconeApiVersion'>;
 

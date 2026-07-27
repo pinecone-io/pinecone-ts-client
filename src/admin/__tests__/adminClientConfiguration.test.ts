@@ -1,7 +1,4 @@
-import {
-  resolveAdminClientConfiguration,
-  toPineconeConfigShim,
-} from '../adminClientConfiguration';
+import { resolveAdminClientConfiguration } from '../adminClientConfiguration';
 import { PineconeConfigurationError } from '../../errors';
 
 describe('resolveAdminClientConfiguration', () => {
@@ -57,21 +54,5 @@ describe('resolveAdminClientConfiguration', () => {
     expect(() =>
       resolveAdminClientConfiguration({ clientId: 'only-id' }),
     ).toThrow(/clientSecret/);
-  });
-});
-
-describe('toPineconeConfigShim', () => {
-  test('maps shared fields and leaves apiKey empty', () => {
-    const shim = toPineconeConfigShim({
-      clientId: 'id',
-      clientSecret: 'secret',
-      sourceTag: 'my-tag',
-      maxRetries: 5,
-      controllerHostUrl: 'https://example.com',
-    });
-    expect(shim.apiKey).toBe('');
-    expect(shim.sourceTag).toBe('my-tag');
-    expect(shim.maxRetries).toBe(5);
-    expect(shim.controllerHostUrl).toBe('https://example.com');
   });
 });
