@@ -6,7 +6,7 @@ describe('user-agent', () => {
   describe('buildUserAgent', () => {
     test('applies Edge Runtime when running in an edge environment', () => {
       jest.spyOn(EnvironmentModule, 'isEdge').mockReturnValue(true);
-      const config = { apiKey: 'test-api-key' };
+      const config: PineconeConfiguration = { apiKey: 'test-api-key' };
       const userAgent = buildUserAgent(config);
 
       expect(userAgent).toContain('Edge Runtime');
@@ -48,7 +48,7 @@ describe('user-agent', () => {
     });
 
     test('does not include caller when not provided via PineconeConfiguration', () => {
-      const config = {
+      const config: PineconeConfiguration = {
         apiKey: 'test-api-key',
       };
 
