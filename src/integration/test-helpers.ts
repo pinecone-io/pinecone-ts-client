@@ -184,16 +184,29 @@ export const waitUntilRecordsReady = async (
   index: Index,
   namespace: string,
   recordIds: string[],
+  maxWaitMs = 90_000,
 ): Promise<IndexStatsDescription> => {
   const sleepIntervalMs = 1000; // Reduced from 3000ms for faster polling
+  const deadline = Date.now() + maxWaitMs;
   let indexStats = await index.describeIndexStats();
 
-  // if namespace is empty or the record count is not equal to the number of records we expect
-  while (
+  const notReady = () =>
     (indexStats.namespaces && !indexStats.namespaces[namespace]) ||
     (indexStats.namespaces &&
-      indexStats.namespaces[namespace]?.recordCount !== recordIds.length)
-  ) {
+      indexStats.namespaces[namespace]?.recordCount !== recordIds.length);
+
+  // if namespace is empty or the record count is not equal to the number of records we expect
+  while (notReady()) {
+    // Bounded so that writes which never land surface as a clear failure here
+    // rather than hanging until the CI job times out.
+    if (Date.now() >= deadline) {
+      const observed = indexStats.namespaces?.[namespace]?.recordCount;
+      throw new Error(
+        `Timed out after ${maxWaitMs}ms waiting for records to be ready in ` +
+          `namespace '${namespace}': expected ${recordIds.length} record(s), ` +
+          `observed ${observed ?? 'no namespace'}.`,
+      );
+    }
     await sleep(sleepIntervalMs);
     indexStats = await index.describeIndexStats();
   }
