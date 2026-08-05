@@ -9,14 +9,16 @@ describe('bulk import', () => {
 
   beforeAll(async () => {
     pinecone = new Pinecone();
-    await pinecone.createIndex({
+    await pinecone.indexes.create({
       name: indexName,
-      dimension: 10,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          region: 'us-west-2',
-          cloud: 'aws',
+      deployment: {
+        deploymentType: 'managed',
+        cloud: 'aws',
+        region: 'us-west-2',
+      },
+      schema: {
+        fields: {
+          embedding: { type: 'dense_vector', dimension: 10, metric: 'cosine' },
         },
       },
       waitUntilReady: true,

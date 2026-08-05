@@ -114,7 +114,7 @@ export const waitUntilIndexReady = async (indexName: string) => {
 
   while (!isReady) {
     try {
-      const description = await p.describeIndex(indexName);
+      const description = await p.indexes.describe(indexName);
       if (
         description.status?.ready === true &&
         description.status?.state === 'Ready'
@@ -248,7 +248,7 @@ export const getRecordIds = async (index) => {
 
 export const retryDeletes = async (pc: Pinecone, indexName: string) => {
   try {
-    await pc.deleteIndex(indexName);
+    await pc.indexes.delete(indexName);
   } catch (e) {
     console.log(
       `Encountered error when trying to delete index: ${e}`,

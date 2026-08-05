@@ -16,7 +16,7 @@ import type { ErrorContext } from '../pinecone-generated-ts-fetch/db_control';
  * const p = new Pinecone({ apiKey: 'invalid-api-key-value' })
  *
  * try {
- *  await p.listIndexes();
+ *  await p.indexes.list();
  * } catch (e) {
  *  console.log(e.name); // PineconeConnectionError
  *  console.log(e.cause); // Error [FetchError]: The request failed and the interceptors did not return an alternative response

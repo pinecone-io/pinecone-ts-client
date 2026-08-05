@@ -16,14 +16,16 @@ beforeAll(async () => {
   pinecone = new Pinecone();
   serverlessIndexName = randomName('integration-test-serverless-delete');
 
-  await pinecone.createIndex({
+  await pinecone.indexes.create({
     name: serverlessIndexName,
-    dimension: 5,
-    metric: 'cosine',
-    spec: {
-      serverless: {
-        region: 'us-west-2',
-        cloud: 'aws',
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+    schema: {
+      fields: {
+        embedding: { type: 'dense_vector', dimension: 5, metric: 'cosine' },
       },
     },
     waitUntilReady: true,
@@ -43,7 +45,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await waitUntilIndexReady(serverlessIndexName);
-  await pinecone.deleteIndex(serverlessIndexName);
+  await pinecone.indexes.delete(serverlessIndexName);
 });
 
 describe('delete', () => {

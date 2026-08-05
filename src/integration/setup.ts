@@ -74,19 +74,21 @@ export const setup = async () => {
     `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
   );
 
-  await pc.createIndex({
+  // NOTE: metadata fields are no longer declared at index-creation time. As of
+  // `2026-07` the create-time schema only accepts primary field types
+  // (`dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
+  // `full_text_search`); plain metadata values are indexed automatically at
+  // upsert. `metadataKeys` is therefore only used to pick a filter key below.
+  await pc.indexes.create({
     name: indexName,
-    dimension: 2,
-    metric: 'dotproduct',
-    spec: {
-      serverless: {
-        cloud: 'aws',
-        region: 'us-west-2',
-        schema: {
-          fields: Object.fromEntries(
-            metadataKeys.map((key) => [key, { filterable: true }]),
-          ),
-        },
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+    schema: {
+      fields: {
+        embedding: { type: 'dense_vector', dimension: 2, metric: 'dotproduct' },
       },
     },
     waitUntilReady: true,

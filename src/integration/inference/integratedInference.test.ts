@@ -10,20 +10,23 @@ describe('Integrated Inference API tests', () => {
     indexName = randomName('int-inf');
 
     // create integrated inference index for testing
-    await pinecone.createIndexForModel({
+    await pinecone.indexes.createForModel({
       name: indexName,
-      cloud: 'aws',
-      region: 'us-east-1',
-      embed: {
-        model: 'multilingual-e5-large',
-        fieldMap: { text: 'chunk_text' },
+      deployment: {
+        deploymentType: 'managed',
+        cloud: 'aws',
+        region: 'us-east-1',
       },
+      // `field` names the `semantic_text` schema field directly, replacing the
+      // old `embed.fieldMap` indirection.
+      field: 'chunk_text',
+      model: 'multilingual-e5-large',
       waitUntilReady: true,
     });
   });
 
   afterAll(async () => {
-    await pinecone.deleteIndex(indexName);
+    await pinecone.indexes.delete(indexName);
   });
 
   test('test upserting and searching records', async () => {

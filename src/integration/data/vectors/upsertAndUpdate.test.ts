@@ -25,31 +25,34 @@ beforeAll(async () => {
   srvrlssIndexDenseName = randomName('test-srvrlss-dense-upsert-update');
   srvrlssIndexSparseName = randomName('test-srvrlss-sparse-upsert-update');
 
-  const densePromise = pinecone.createIndex({
+  const densePromise = pinecone.indexes.create({
     name: srvrlssIndexDenseName,
-    dimension: 2,
-    metric: 'cosine',
-    spec: {
-      serverless: {
-        region: 'us-east-1',
-        cloud: 'aws',
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-east-1',
+    },
+    schema: {
+      fields: {
+        embedding: { type: 'dense_vector', dimension: 2, metric: 'cosine' },
       },
     },
-    vectorType: 'dense',
     waitUntilReady: true,
     suppressConflicts: true,
   });
 
-  const sparsePromise = pinecone.createIndex({
+  const sparsePromise = pinecone.indexes.create({
     name: srvrlssIndexSparseName,
-    metric: 'dotproduct',
-    spec: {
-      serverless: {
-        region: 'us-east-1',
-        cloud: 'aws',
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-east-1',
+    },
+    schema: {
+      fields: {
+        sparse_embedding: { type: 'sparse_vector' },
       },
     },
-    vectorType: 'sparse',
     waitUntilReady: true,
     suppressConflicts: true,
   });
@@ -107,8 +110,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const deleteDense = pinecone.deleteIndex(srvrlssIndexDenseName);
-  const deleteSparse = pinecone.deleteIndex(srvrlssIndexSparseName);
+  const deleteDense = pinecone.indexes.delete(srvrlssIndexDenseName);
+  const deleteSparse = pinecone.indexes.delete(srvrlssIndexSparseName);
 
   await Promise.all([deleteDense, deleteSparse]);
 });
