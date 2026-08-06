@@ -2,6 +2,10 @@
 export { Pinecone } from './pinecone';
 export { Index } from './data';
 export { Indexes } from './control/indexes';
+export { Collections } from './control/collections';
+export { Backups } from './control/backups';
+export { RestoreJobs } from './control/restoreJobs';
+export { Assistants } from './assistant/control/assistants';
 export { Inference } from './inference';
 export { Assistant, ChatStream } from './assistant';
 export * as Errors from './errors';
@@ -174,7 +178,8 @@ export type {
   ReadCapacityOnDemandSpecResponse,
   ReadCapacityStatus,
   ScalingConfigManual,
-  // Backups & restore jobs
+} from './control/indexes';
+export type {
   BackupModel,
   BackupList,
   BackupListPagination,
@@ -183,14 +188,17 @@ export type {
   ListProjectBackupsOptions,
   CreateIndexFromBackupOptions,
   CreateIndexFromBackupResponse,
+} from './control/backups';
+export type {
   ListRestoreJobsOptions,
   RestoreJobList,
   RestoreJobModel,
-  // Collections
+} from './control/restoreJobs';
+export type {
   CollectionList,
   CollectionModel,
   CreateCollectionOptions,
-} from './control/indexes';
+} from './control/collections';
 export type { IndexOptions, AssistantOptions } from './types';
 export type {
   CreateNamespaceOptions,

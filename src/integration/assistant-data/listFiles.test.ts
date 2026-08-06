@@ -18,7 +18,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 
   // Upload few more files with metadata to the assistant
   const content = 'This is test content for file upload';

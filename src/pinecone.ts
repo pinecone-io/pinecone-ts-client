@@ -1,15 +1,8 @@
 import { Indexes } from './control/indexes';
-import {
-  createAssistant,
-  CreateAssistantOptions,
-  deleteAssistant,
-  describeAssistant,
-  updateAssistant,
-  UpdateAssistantOptions,
-  listAssistants,
-  evaluate,
-} from './assistant/control';
-import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
+import { Collections } from './control/collections';
+import { Backups } from './control/backups';
+import { RestoreJobs } from './control/restoreJobs';
+import { Assistants } from './assistant/control/assistants';
 import type { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
 import {
   PineconeConfigurationError,
@@ -19,8 +12,6 @@ import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
-import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
-import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
 import { Assistant } from './assistant';
 import { IndexOptions, AssistantOptions } from './types';
 
@@ -67,19 +58,6 @@ import { IndexOptions, AssistantOptions } from './types';
  * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
-  /** @hidden */
-  private _createAssistant: ReturnType<typeof createAssistant>;
-  /** @hidden */
-  private _deleteAssistant: ReturnType<typeof deleteAssistant>;
-  /** @hidden */
-  private _updateAssistant: ReturnType<typeof updateAssistant>;
-  /** @hidden */
-  private _describeAssistant: ReturnType<typeof describeAssistant>;
-  /** @hidden */
-  private _listAssistants: ReturnType<typeof listAssistants>;
-  /** @hidden */
-  private _evaluate: ReturnType<typeof evaluate>;
-
   public inference: Inference;
   /**
    * Control-plane operations for indexes, backups, restore jobs, and collections.
@@ -91,6 +69,42 @@ export class Pinecone {
    * ```
    */
   public indexes: Indexes;
+  /**
+   * Control-plane operations for collections.
+   *
+   * @example
+   * ```typescript
+   * const collections = await pc.collections.list();
+   * ```
+   */
+  public collections: Collections;
+  /**
+   * Control-plane operations for index backups.
+   *
+   * @example
+   * ```typescript
+   * const backups = await pc.backups.list();
+   * ```
+   */
+  public backups: Backups;
+  /**
+   * Control-plane operations for restore jobs.
+   *
+   * @example
+   * ```typescript
+   * const jobs = await pc.restoreJobs.list();
+   * ```
+   */
+  public restoreJobs: RestoreJobs;
+  /**
+   * Control-plane operations for assistants.
+   *
+   * @example
+   * ```typescript
+   * const assistants = await pc.assistants.list();
+   * ```
+   */
+  public assistants: Assistants;
 
   /**
    * @example
@@ -120,19 +134,14 @@ export class Pinecone {
 
     this._checkForBrowser();
 
-    const asstControlApi = asstControlOperationsBuilder(this.config);
-    const asstMetricsApi = asstMetricsOperationsBuilder(this.config);
-
-    // Control-plane index operations
+    // Control-plane operations, grouped by resource
     this.indexes = new Indexes(this.config);
+    this.collections = new Collections(this.config);
+    this.backups = new Backups(this.config);
+    this.restoreJobs = new RestoreJobs(this.config);
+    this.assistants = new Assistants(this.config);
 
     // Assistant operations
-    this._createAssistant = createAssistant(asstControlApi);
-    this._deleteAssistant = deleteAssistant(asstControlApi);
-    this._updateAssistant = updateAssistant(asstControlApi);
-    this._describeAssistant = describeAssistant(asstControlApi);
-    this._listAssistants = listAssistants(asstControlApi);
-    this._evaluate = evaluate(asstMetricsApi);
 
     // Inference operations
     this.inference = new Inference(this.config);
@@ -191,205 +200,6 @@ export class Pinecone {
 
   /** @hidden */
   private config: PineconeConfiguration;
-
-  /**
-   * Creates a new Assistant.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.createAssistant({name: 'test1'});
-   * // {
-   * //  name: 'test11',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Initializing',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:52:49.652Z,
-   * //  updatedAt: 2025-01-08T22:52:49.652Z
-   * // }
-   * ```
-   *
-   * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
-   * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
-   * and determines where the Assistant will be hosted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
-   */
-  async createAssistant(options: CreateAssistantOptions) {
-    const assistant = await this._createAssistant(options);
-
-    if (assistant.host) {
-      AssistantHostSingleton._set(this.config, assistant.name, assistant.host);
-    }
-
-    return Promise.resolve(assistant);
-  }
-
-  /**
-   * Deletes an Assistant by name.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.deleteAssistant('test1');
-   * ```
-   *
-   * @param assistantName - The name of the Assistant to be deleted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   */
-  async deleteAssistant(assistantName: string) {
-    await this._deleteAssistant(assistantName);
-    AssistantHostSingleton._delete(this.config, assistantName);
-    return Promise.resolve();
-  }
-
-  /**
-   * Retrieves information about an Assistant by name, including its current
-   * status (e.g. whether it is still initializing or ready to use).
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const test = await pc.describeAssistant('test1');
-   * console.log(test);
-   * // {
-   * //  name: 'test1',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Ready',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:24:50.525Z,
-   * //  updatedAt: 2025-01-08T22:24:52.303Z
-   * // }
-   * ```
-   *
-   * @param assistantName - The name of the Assistant to retrieve.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
-   */
-  async describeAssistant(assistantName: string) {
-    const assistant = await this._describeAssistant(assistantName);
-
-    if (assistant.host) {
-      AssistantHostSingleton._set(this.config, assistantName, assistant.host);
-    }
-
-    return Promise.resolve(assistant);
-  }
-
-  /**
-   * Retrieves a list of all Assistants for a given Pinecone API key.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const assistants = await pc.listAssistants();
-   * console.log(assistants);
-   * // {
-   * //  assistants: [
-   * //    {
-   * //      name: 'test2',
-   * //      instructions: 'test-instructions',
-   * //      metadata: [Object],
-   * //      status: 'Ready',
-   * //      host: 'https://prod-1-data.ke.pinecone.io',
-   * //      createdAt: 2025-01-06T19:14:18.633Z,
-   * //      updatedAt: 2025-01-06T19:14:36.977Z
-   * //    },
-   * //  ]
-   * // }
-   * ```
-   *
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
-   */
-  async listAssistants() {
-    const assistantList = await this._listAssistants();
-
-    // For any listAssistants calls we want to update the AssistantHostSingleton cache.
-    // This prevents unneeded calls to describeAssistant for resolving the host for assistant operations.
-    if (assistantList.assistants && assistantList.assistants.length > 0) {
-      for (let i = 0; i < assistantList.assistants.length; i++) {
-        const assistant = assistantList.assistants[i];
-        if (assistant.host) {
-          AssistantHostSingleton._set(
-            this.config,
-            assistant.name,
-            assistant.host,
-          );
-        }
-      }
-    }
-
-    return Promise.resolve(assistantList);
-  }
-
-  /**
-   * Updates an Assistant by name.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.updateAssistant({ name: 'test1', instructions: 'some new instructions!'});
-   * // {
-   * //  assistantName: test1,
-   * //  instructions: 'some new instructions!',
-   * //  metadata: undefined
-   * // }
-   * ```
-   *
-   * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
-   * optional instructions and metadata.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link UpdateAssistantResponse} object.
-   */
-  updateAssistant(options: UpdateAssistantOptions) {
-    return this._updateAssistant(options);
-  }
-
-  /**
-   * Evaluates the alignment of a generated answer against a ground truth answer.
-   * Returns metrics for correctness (precision), completeness (recall), and alignment (harmonic mean).
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const result = await pc.evaluate({
-   *   question: "What is the capital of France?",
-   *   answer: "The capital of France is Paris.",
-   *   groundTruth: "Paris is the capital and most populous city of France."
-   * });
-   * console.log(result);
-   * // {
-   * //   metrics: {
-   * //     correctness: 0.95,
-   * //     completeness: 0.90,
-   * //     alignment: 0.92
-   * //   },
-   * //   reasoning: { evaluatedFacts: [...] },
-   * //   usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 }
-   * // }
-   * ```
-   *
-   * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
-   */
-  evaluate(options: { question: string; answer: string; groundTruth: string }) {
-    return this._evaluate(options);
-  }
 
   /** @internal */
   _checkForBrowser() {
@@ -553,30 +363,6 @@ export class Pinecone {
   }
 
   /**
-   * {@inheritDoc index}
-   */
-  // Alias method to match the Python SDK capitalization
-  Index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions,
-  ): Index<T>;
-  /**
-   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
-   * This signature will be removed in the next major version.
-   */
-  Index<T extends RecordMetadata = RecordMetadata>(
-    indexName: string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders,
-  ): Index<T>;
-  Index<T extends RecordMetadata = RecordMetadata>(
-    optionsOrName: IndexOptions | string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders,
-  ): Index<T> {
-    return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
-  }
-
-  /**
    * Targets a specific assistant for performing operations.
    *
    * Once an assistant is targeted, you can perform operations such as uploading files,
@@ -653,22 +439,5 @@ export class Pinecone {
 
     // Handle new options-based API
     return new Assistant(optionsOrName, this.config);
-  }
-
-  /**
-   * {@inheritDoc assistant}
-   */
-  // Alias method
-  Assistant(options: AssistantOptions): Assistant;
-  /**
-   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
-   * This signature will be removed in the next major version.
-   */
-  Assistant(name: string, host?: string): Assistant;
-  Assistant(
-    optionsOrName: AssistantOptions | string,
-    host?: string,
-  ): Assistant {
-    return this.assistant(optionsOrName as any, host);
   }
 }

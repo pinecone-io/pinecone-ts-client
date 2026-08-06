@@ -184,7 +184,7 @@ export const waitUntilAssistantReady = async (assistantName: string) => {
 
   while (!isReady) {
     try {
-      const description = await p.describeAssistant(assistantName);
+      const description = await p.assistants.describe(assistantName);
       if (description.status === 'Ready') {
         isReady = true;
       } else {
@@ -210,7 +210,7 @@ export const waitUntilAssistantFileReady = async (
   while (!isReady) {
     try {
       const description = await p
-        .Assistant({ name: assistantName })
+        .assistant({ name: assistantName })
         .describeFile(fileId, true);
       if (description.status === 'Available') {
         isReady = true;

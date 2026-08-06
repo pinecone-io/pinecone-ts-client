@@ -16,7 +16,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 
   tempFile = `test-operations-${Date.now()}.txt`;
   tempFilePath = path.join(os.tmpdir(), tempFile);

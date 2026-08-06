@@ -8,3 +8,6 @@ export type {
 } from './types';
 
 export * from './indexes';
+export * from './collections';
+export * from './backups';
+export * from './restoreJobs';

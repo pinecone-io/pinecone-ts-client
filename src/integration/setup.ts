@@ -121,7 +121,7 @@ export const setup = async () => {
   const assistantName = `test-assistant-${Date.now()}`;
   console.error(`🤖 Creating assistant: ${assistantName}`);
 
-  await pc.createAssistant({
+  await pc.assistants.create({
     name: assistantName,
     metadata: {
       test: 'integration-test',
@@ -130,7 +130,7 @@ export const setup = async () => {
 
   await waitUntilAssistantReady(assistantName);
 
-  const assistant = pc.Assistant({ name: assistantName });
+  const assistant = pc.assistant({ name: assistantName });
 
   // Upload test file
   const testFilePath = path.join(os.tmpdir(), `test-file-${Date.now()}.txt`);
