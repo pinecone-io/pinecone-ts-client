@@ -1,9 +1,10 @@
 import { Pinecone, Index } from '../../../index';
 import {
-  generateRecords,
+  generateDocuments,
   waitUntilRecordsReady,
   globalNamespaceOne,
   randomName,
+  vectorFieldName,
   waitUntilIndexReady,
 } from '../../test-helpers';
 
@@ -25,7 +26,11 @@ beforeAll(async () => {
     },
     schema: {
       fields: {
-        embedding: { type: 'dense_vector', dimension: 5, metric: 'cosine' },
+        [vectorFieldName]: {
+          type: 'dense_vector',
+          dimension: 5,
+          metric: 'cosine',
+        },
       },
     },
     waitUntilReady: true,
@@ -38,9 +43,9 @@ beforeAll(async () => {
   });
 
   // Seed index
-  const recordsToUpsert = generateRecords({ dimension: 5, quantity: 5 });
-  recordIds = recordsToUpsert.map((r) => r.id);
-  await serverlessIndex.upsert({ records: recordsToUpsert });
+  const documentsToUpsert = generateDocuments({ dimension: 5, quantity: 5 });
+  recordIds = documentsToUpsert.map((d) => d._id);
+  await serverlessIndex.upsertDocuments({ documents: documentsToUpsert });
 });
 
 afterAll(async () => {
@@ -48,24 +53,27 @@ afterAll(async () => {
   await pinecone.indexes.delete(serverlessIndexName);
 });
 
-describe('delete', () => {
+// `deleteOne`, `deleteMany`, and `deleteAll` collapse into a single
+// `deleteDocuments` accepting `ids`, `filter`, or `deleteAll`.
+describe('deleteDocuments', () => {
   test('verify delete with an id', async () => {
-    // Await record freshness, and check record upserted
+    // Await record freshness, and check documents upserted
     await waitUntilRecordsReady(serverlessIndex, globalNamespaceOne, recordIds);
 
     const deleteSpy = jest
-      .spyOn(serverlessIndex, 'deleteOne')
+      .spyOn(serverlessIndex, 'deleteDocuments')
       .mockResolvedValue(undefined);
-    await serverlessIndex.deleteOne({ id: recordIds[0] });
-    expect(deleteSpy).toHaveBeenCalledWith({ id: recordIds[0] });
+    await serverlessIndex.deleteDocuments({ ids: [recordIds[0]] });
+    expect(deleteSpy).toHaveBeenCalledWith({ ids: [recordIds[0]] });
     expect(deleteSpy).toHaveBeenCalledTimes(1);
+    deleteSpy.mockRestore();
   });
 
-  test('verify deleteMany with multiple ids', async () => {
+  test('verify delete with multiple ids', async () => {
     const deleteManySpy = jest
-      .spyOn(serverlessIndex, 'deleteMany')
+      .spyOn(serverlessIndex, 'deleteDocuments')
       .mockResolvedValue(undefined);
-    await serverlessIndex.deleteMany({ ids: recordIds.slice(1, 3) });
+    await serverlessIndex.deleteDocuments({ ids: recordIds.slice(1, 3) });
     expect(deleteManySpy).toHaveBeenCalledWith({ ids: recordIds.slice(1, 3) });
     expect(deleteManySpy).toHaveBeenCalledTimes(1);
     deleteManySpy.mockRestore();

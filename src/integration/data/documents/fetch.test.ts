@@ -17,16 +17,17 @@ beforeAll(async () => {
   recordIds = await getRecordIds(serverlessIndex);
 });
 
-describe('fetch; serverless index, global namespace one', () => {
+describe('fetchDocuments; serverless index, global namespace one', () => {
   test('fetch by id', async () => {
     if (recordIds) {
-      const results = await serverlessIndex.fetch({
+      const results = await serverlessIndex.fetchDocuments({
         ids: recordIds.slice(0, 3),
       });
-      expect(results.records[recordIds[0]].id).toBeDefined();
-      expect(results.records[recordIds[1]].id).toBeDefined();
-      expect(results.records[recordIds[2]].id).toBeDefined();
-      expect(results.usage?.readUnits).toBeDefined();
+      expect(results.documents[recordIds[0]]._id).toBeDefined();
+      expect(results.documents[recordIds[1]]._id).toBeDefined();
+      expect(results.documents[recordIds[2]]._id).toBeDefined();
+      expect(results.namespace).toEqual(globalNamespaceOne);
+      expect(results.usage).toBeDefined();
     }
   });
 });

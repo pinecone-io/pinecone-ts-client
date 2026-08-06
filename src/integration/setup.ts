@@ -1,6 +1,6 @@
 import { Pinecone } from '../pinecone';
 import {
-  generateRecords,
+  generateDocuments,
   globalNamespaceOne,
   prefix,
   diffPrefix,
@@ -8,6 +8,7 @@ import {
   waitUntilAssistantReady,
   waitUntilAssistantFileReady,
   waitUntilRecordsReady,
+  vectorFieldName,
 } from './test-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -40,35 +41,36 @@ export const setup = async () => {
   const indexName = randomName(prefix);
   console.error(`📦 Creating serverless index: ${indexName}`);
 
-  // Generate test data first to extract metadata for schema
+  // Generate test data first to extract metadata for filtering
   console.error(`\tGenerating test data...`);
-  const recordsToUpsert = generateRecords({
+  const documentsToUpsert = generateDocuments({
     prefix: prefix,
     dimension: 2,
     quantity: 10,
-    withSparseValues: false,
     withMetadata: true,
   });
 
-  const oneRecordWithDiffPrefix = generateRecords({
+  const oneDocumentWithDiffPrefix = generateDocuments({
     prefix: diffPrefix,
     dimension: 2,
     quantity: 1,
-    withSparseValues: false,
     withMetadata: true,
   });
 
-  const allRecords = [...oneRecordWithDiffPrefix, ...recordsToUpsert];
-  const recordIds = allRecords.map((record) => record.id);
+  const allDocuments = [...oneDocumentWithDiffPrefix, ...documentsToUpsert];
+  const recordIds = allDocuments.map((doc) => doc._id);
 
-  // Extract a metadata key-value pair from the first record for filtering tests
-  const firstRecordMetadata = allRecords[0].metadata || {};
-  const metadataKeys = Object.keys(firstRecordMetadata);
+  // Extract a metadata key-value pair from the first document for filtering
+  // tests. Document metadata lives in top-level fields, so exclude `_id` and
+  // the vector field.
+  const metadataKeys = Object.keys(allDocuments[0]).filter(
+    (k) => k !== '_id' && k !== vectorFieldName,
+  );
   if (metadataKeys.length === 0) {
-    throw new Error('Generated records have no metadata');
+    throw new Error('Generated documents have no metadata');
   }
   const metadataFilterKey = metadataKeys[0];
-  const metadataFilterValue = firstRecordMetadata[metadataFilterKey];
+  const metadataFilterValue = allDocuments[0][metadataFilterKey];
 
   console.error(
     `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
@@ -88,26 +90,31 @@ export const setup = async () => {
     },
     schema: {
       fields: {
-        embedding: { type: 'dense_vector', dimension: 2, metric: 'dotproduct' },
+        [vectorFieldName]: {
+          type: 'dense_vector',
+          dimension: 2,
+          metric: 'dotproduct',
+        },
       },
     },
     waitUntilReady: true,
     tags: { project: 'pinecone-integration-tests' },
   });
 
-  // Seed with test data
+  // Seed with test data. Schema-based indexes must be written through the
+  // documents API; the vectors and records APIs are rejected for them.
   console.error(`\tSeeding index ${indexName} with test data...`);
 
   await pc
     .index({ name: indexName, namespace: globalNamespaceOne })
-    .upsert({ records: allRecords });
+    .upsertDocuments({ documents: allDocuments });
 
   // Wait for data to be indexed
   console.error('\tWaiting for data to be indexed...');
   await waitUntilRecordsReady(
     pc.index({ name: indexName, namespace: globalNamespaceOne }),
     globalNamespaceOne,
-    allRecords.map((record) => record.id),
+    recordIds,
   );
 
   // Create assistant
@@ -146,6 +153,7 @@ export const setup = async () => {
       name: indexName,
       dimension: 2,
       metric: 'dotproduct',
+      vectorFieldName,
       metadataFilter: {
         key: metadataFilterKey,
         value: metadataFilterValue,

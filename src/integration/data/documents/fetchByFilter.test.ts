@@ -3,6 +3,9 @@ import { Pinecone } from '../../../pinecone';
 import { globalNamespaceOne } from '../../test-helpers';
 import { getTestContext } from '../../test-context';
 
+// `fetchByMetadata` folded into `fetchDocuments`, which accepts either `ids` or
+// a `filter`. Document metadata lives in top-level fields rather than under a
+// nested `metadata` object.
 let pinecone: Pinecone,
   serverlessIndex: Index,
   metadataKey: string,
@@ -21,13 +24,16 @@ beforeAll(async () => {
   metadataValue = fixtures.serverlessIndex.metadataFilter.value;
 });
 
-describe('fetch by metadata', () => {
+describe('fetchDocuments by filter', () => {
   test('fetch by metadata filter', async () => {
-    const result = await serverlessIndex.fetchByMetadata({
+    const result = await serverlessIndex.fetchDocuments({
       filter: { [metadataKey]: { $eq: metadataValue } },
+      includeFields: [metadataKey],
     });
-    Object.values(result.records).forEach((record) => {
-      expect(record.metadata).toMatchObject({ [metadataKey]: metadataValue });
+    const documents = Object.values(result.documents);
+    expect(documents.length).toBeGreaterThan(0);
+    documents.forEach((doc) => {
+      expect(doc).toMatchObject({ [metadataKey]: metadataValue });
     });
   });
 });
