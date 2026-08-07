@@ -48,12 +48,13 @@ export class Indexes {
    * //   indexes: [
    * //     {
    * //       name: 'my-schema-index',
-   * //       metric: 'cosine',
    * //       host: 'my-schema-index-abc123.svc.pinecone.io',
+   * //       deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
    * //       schema: {
    * //         fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
    * //       },
-   * //       status: { ready: true, state: 'Ready' }
+   * //       status: { ready: true, state: 'Ready' },
+   * //       deletionProtection: 'disabled'
    * //     }
    * //   ]
    * // }
@@ -94,7 +95,8 @@ export class Indexes {
    *   },
    *   waitUntilReady: true,
    * });
-   * console.log(indexModel.name);
+   * // `indexModel` is `undefined` only when `suppressConflicts` swallowed a conflict.
+   * console.log(indexModel?.name);
    * // 'my-schema-index'
    * ```
    *
@@ -120,10 +122,10 @@ export class Indexes {
   /**
    * Creates an index with an integrated embedding model.
    *
-   * A convenience wrapper around {@link create}: the server builds a
+   * A convenience wrapper around {@link Indexes.create}: the server builds a
    * `semantic_text` schema field named `field` from the model parameters you
    * provide. For full control over schema composition — for example combining
-   * semantic text with additional metadata fields — use {@link create} directly.
+   * semantic text with additional metadata fields — use {@link Indexes.create} directly.
    *
    * Integrated-embedding indexes are serverless only; omit `deployment` to
    * default to managed (serverless) on AWS `us-east-1`.
@@ -139,7 +141,8 @@ export class Indexes {
    *   model: 'multilingual-e5-large',
    *   waitUntilReady: true,
    * });
-   * console.log(indexModel.name);
+   * // `indexModel` is `undefined` only when `suppressConflicts` swallowed a conflict.
+   * console.log(indexModel?.name);
    * // 'my-model-index'
    * ```
    *
@@ -174,12 +177,13 @@ export class Indexes {
    * console.log(indexModel);
    * // {
    * //   name: 'my-schema-index',
-   * //   metric: 'cosine',
    * //   host: 'my-schema-index-abc123.svc.pinecone.io',
+   * //   deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
    * //   schema: {
    * //     fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
    * //   },
-   * //   status: { ready: true, state: 'Ready' }
+   * //   status: { ready: true, state: 'Ready' },
+   * //   deletionProtection: 'disabled'
    * // }
    * ```
    *
@@ -230,7 +234,7 @@ export class Indexes {
    * const pc = new Pinecone();
    *
    * const indexModel = await pc.indexes.configure('my-schema-index', {
-   *   deletion_protection: 'enabled',
+   *   deletionProtection: 'enabled',
    *   tags: { team: 'ml-platform' },
    * });
    * console.log(indexModel.name);

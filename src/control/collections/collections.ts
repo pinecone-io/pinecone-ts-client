@@ -47,8 +47,8 @@ export class Collections {
    * //       size: 10000000,
    * //       status: 'Ready',
    * //       dimension: 1536,
-   * //       recordCount: 120000,
-   * //       source: 'my-pod-index'
+   * //       vectorCount: 120000,
+   * //       environment: 'us-east-1-aws'
    * //     }
    * //   ]
    * // }
@@ -81,7 +81,7 @@ export class Collections {
    * // {
    * //   name: 'my-collection',
    * //   status: 'Initializing',
-   * //   source: 'my-pod-index'
+   * //   environment: 'us-east-1-aws'
    * // }
    * ```
    *
@@ -113,8 +113,8 @@ export class Collections {
    * //   size: 10000000,
    * //   status: 'Ready',
    * //   dimension: 1536,
-   * //   recordCount: 120000,
-   * //   source: 'my-pod-index'
+   * //   vectorCount: 120000,
+   * //   environment: 'us-east-1-aws'
    * // }
    * ```
    *
