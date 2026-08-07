@@ -138,6 +138,7 @@ export type {
   CreateIndexOptions,
   CreateIndexSchema,
   CreateIndexSchemaField,
+  FullTextSearchStringField,
   CreateIndexForModelOptions,
   ConfigureIndexOptions,
   IndexList,
@@ -170,8 +171,15 @@ export type {
   ResponseStringFieldFullTextSearchNgram,
   PatchIndexSchema,
   PatchSemanticTextField,
-  // Read capacity
+  // Read capacity (request side; hand-rolled)
   ReadCapacity,
+  ReadCapacityOnDemand,
+  ReadCapacityDedicated,
+  ReadCapacityDedicatedSettings,
+  ScalingConfigManualInput,
+  DedicatedNodeType,
+  ReadCapacityScaling,
+  // Read capacity (response side; generated)
   ReadCapacityResponse,
   ReadCapacityDedicatedConfig,
   ReadCapacityDedicatedSpecResponse,
@@ -268,8 +276,6 @@ export type {
   DescribeCollectionRequest,
   DescribeIndexRequest,
   FetchAPI,
-  ReadCapacityDedicatedSpec,
-  ReadCapacityOnDemandSpec,
 } from './pinecone-generated-ts-fetch/db_control';
 
 // --- Admin API exports (2026-04) ---

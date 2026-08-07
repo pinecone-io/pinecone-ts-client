@@ -6,6 +6,7 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import type { ReadCapacity } from '../types';
 
 /**
  * Options for configuring an index.
@@ -13,7 +14,15 @@ import { handleApiError } from '../../errors/handling';
  * All fields are optional — send only those you want to change.
  *
  */
-export type ConfigureIndexOptions = ConfigureIndexRequest;
+export type ConfigureIndexOptions = Omit<
+  ConfigureIndexRequest,
+  'readCapacity'
+> & {
+  /**
+   * The read capacity configuration to apply. Omit to leave it unchanged.
+   */
+  readCapacity?: ReadCapacity;
+};
 
 export type {
   PatchIndexDeploymentRequest,

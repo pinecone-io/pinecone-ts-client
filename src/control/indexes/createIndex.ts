@@ -2,16 +2,20 @@ import type {
   ManageIndexesApi,
   CreateIndexRequest,
   IndexModel,
+  DenseVectorField,
+  SparseVectorField,
+  SemanticTextField,
+  StringField,
+  StringFieldFullTextSearch,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
+import type { ReadCapacity } from '../types';
 
 // Re-export generated types for indexes
 export type {
-  CreateIndexSchema,
-  CreateIndexSchemaField,
   IndexDeploymentRequest,
   IndexDeployment,
   ManagedDeployment,
@@ -26,16 +30,97 @@ export type {
   StringListField,
   StringFieldFullTextSearch,
   StringFieldFullTextSearchNgram,
-  ReadCapacity,
 } from '../../pinecone-generated-ts-fetch/db_control';
+
+// Re-export read capacity types, shared with `configureIndex`,
+// `createIndexForModel`, and `createIndexFromBackup`.
+export type {
+  ReadCapacity,
+  ReadCapacityOnDemand,
+  ReadCapacityDedicated,
+  ReadCapacityDedicatedSettings,
+  ScalingConfigManualInput,
+  DedicatedNodeType,
+  ReadCapacityScaling,
+} from '../types';
+
+/**
+ * A `string` field indexed for full-text search.
+ *
+ * `fullTextSearch` is what makes the field searchable, so it is required. Pass
+ * an empty object to accept the defaults (`language: 'en'`, no stemming, no
+ * stop-word filtering), or set the text analysis options explicitly.
+ *
+ * ```typescript
+ * const field: FullTextSearchStringField = {
+ *   type: 'string',
+ *   fullTextSearch: {},
+ * };
+ * ```
+ */
+export type FullTextSearchStringField = StringField & {
+  type: 'string';
+  fullTextSearch: StringFieldFullTextSearch;
+};
+
+/**
+ * The configuration of a single field in the schema of a new index.
+ *
+ * A schema declares the searchable fields of the index. One of four field types:
+ *
+ * - `dense_vector` — fixed-dimension vectors for semantic search.
+ * - `sparse_vector` — sparse vectors for keyword or hybrid search.
+ * - `semantic_text` — text embedded by an integrated model.
+ * - `string` with `fullTextSearch` — see {@link FullTextSearchStringField}.
+ *
+ * Values you only need to filter on — numbers, booleans, string lists, and
+ * plain strings — do not belong in the schema. Send them as document metadata
+ * instead: they are indexed automatically at upsert time and appear on the
+ * described index's {@link IndexSchema}.
+ *
+ * An index may declare at most one `dense_vector`, one `sparse_vector`, and one
+ * `semantic_text` field, and must declare at least one field. A `semantic_text`
+ * field cannot be combined with `dense_vector`, `sparse_vector`, or a full-text
+ * search string field.
+ *
+ * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
+ */
+export type CreateIndexSchemaField =
+  // `type` is re-narrowed here because the generated `DenseVectorField` accepts
+  // every field-type value. Redundant once the generator emits a single-value enum.
+  | (DenseVectorField & { type: 'dense_vector' })
+  | SparseVectorField
+  | SemanticTextField
+  | FullTextSearchStringField;
+
+/**
+ * The schema of a new index: a map of field names to their configurations.
+ *
+ * Field names must be unique, non-empty strings, and cannot use the reserved
+ * names `_id`, `_values`, or `_sparse_values`.
+ *
+ * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
+ */
+export interface CreateIndexSchema {
+  fields: { [fieldName: string]: CreateIndexSchemaField };
+}
 
 /**
  * Options for creating a schema-based index.
  *
  */
-export interface CreateIndexOptions extends Omit<CreateIndexRequest, 'name'> {
+export interface CreateIndexOptions extends Omit<
+  CreateIndexRequest,
+  'name' | 'schema' | 'readCapacity'
+> {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
+  /** The typed fields stored in each document. See {@link CreateIndexSchema}. */
+  schema: CreateIndexSchema;
+  /**
+   * The read capacity configuration for the index. Omit for on-demand capacity.
+   */
+  readCapacity?: ReadCapacity;
   /**
    * When true, polls until the index is ready before returning.
    */

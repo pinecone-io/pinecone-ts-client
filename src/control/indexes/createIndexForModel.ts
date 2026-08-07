@@ -8,6 +8,8 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 
+import type { ReadCapacity } from '../types';
+
 export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_control';
 
 /**
@@ -22,10 +24,14 @@ export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_con
  */
 export interface CreateIndexForModelOptions extends Omit<
   CreateIndexForModelRequest,
-  'name'
+  'name' | 'readCapacity'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
+  /**
+   * The read capacity configuration for the index. Omit for on-demand capacity.
+   */
+  readCapacity?: ReadCapacity;
   /**
    * When true, polls until the index is ready before returning.
    */

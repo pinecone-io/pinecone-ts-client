@@ -1,8 +1,8 @@
 import type {
   ManageIndexesApi,
   CreateIndexFromBackupResponse,
-  ReadCapacity,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import type { ReadCapacity } from '../types';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';

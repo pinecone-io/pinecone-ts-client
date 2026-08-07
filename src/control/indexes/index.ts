@@ -4,6 +4,7 @@ export type {
   CreateIndexOptions,
   CreateIndexSchema,
   CreateIndexSchemaField,
+  FullTextSearchStringField,
   IndexDeploymentRequest,
   IndexDeployment,
   ManagedDeployment,
@@ -19,6 +20,12 @@ export type {
   StringFieldFullTextSearch,
   StringFieldFullTextSearchNgram,
   ReadCapacity,
+  ReadCapacityOnDemand,
+  ReadCapacityDedicated,
+  ReadCapacityDedicatedSettings,
+  ScalingConfigManualInput,
+  DedicatedNodeType,
+  ReadCapacityScaling,
 } from './createIndex';
 export type { CreateIndexForModelOptions } from './createIndexForModel';
 export type {
