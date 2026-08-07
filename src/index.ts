@@ -278,7 +278,7 @@ export type {
   FetchAPI,
 } from './pinecone-generated-ts-fetch/db_control';
 
-// --- Admin API exports (2026-04) ---
+// --- Admin API exports ---
 export { AdminClient } from './admin';
 // Per-resource classes backing the `admin.*` sub-clients (e.g. `admin.projects`), exported so they
 // can be referenced in type annotations, mirroring `Inference` / `Indexes` / `Assistant`.
