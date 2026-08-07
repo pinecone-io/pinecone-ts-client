@@ -1,7 +1,7 @@
 import { ListNamespacesResponse, Pinecone } from '../../../index';
 import {
   assertWithRetries,
-  generateRecords,
+  generateDocuments,
   sleep,
   randomName,
 } from '../../test-helpers';
@@ -29,9 +29,13 @@ describe('namespaces operations', () => {
     });
 
     // Seed indexes
-    const recordsToUpsert = generateRecords({ dimension: 2, quantity: 5 });
-    await serverlessIndexNsOne.upsert({ records: recordsToUpsert });
-    await serverlessIndexNsTwo.upsert({ records: recordsToUpsert });
+    const documentsToUpsert = generateDocuments({ dimension: 2, quantity: 5 });
+    await serverlessIndexNsOne.upsertDocuments({
+      documents: documentsToUpsert,
+    });
+    await serverlessIndexNsTwo.upsertDocuments({
+      documents: documentsToUpsert,
+    });
     await sleep(2000); // Wait for the upsert operations to complete
   });
 

@@ -10,7 +10,7 @@ beforeAll(async () => {
 describe('createAssistant happy path', () => {
   test('simple create', async () => {
     const assistantName = randomString(5);
-    await pinecone.createAssistant({
+    await pinecone.assistants.create({
       name: assistantName,
       instructions: 'test-instructions',
       metadata: { key: 'value', keyTwo: 'valueTwo' },
@@ -20,12 +20,12 @@ describe('createAssistant happy path', () => {
     // Wait for assistant to be ready instead of fixed sleep
     await waitUntilAssistantReady(assistantName);
 
-    const description = await pinecone.describeAssistant(assistantName);
+    const description = await pinecone.assistants.describe(assistantName);
     expect(description.name).toEqual(assistantName);
     expect(description.instructions).toEqual('test-instructions');
     expect(description.metadata).toEqual({ key: 'value', keyTwo: 'valueTwo' });
 
-    await pinecone.deleteAssistant(assistantName);
+    await pinecone.assistants.delete(assistantName);
   });
 });
 
@@ -33,7 +33,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with too much metadata', async () => {
     const assistantName = randomString(5);
     await expect(
-      pinecone.createAssistant({
+      pinecone.assistants.create({
         name: assistantName,
         metadata: { key: 'a'.repeat(1000000) },
       }),
@@ -43,7 +43,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with invalid region', async () => {
     const assistantName = randomString(5);
     await expect(
-      pinecone.createAssistant({
+      pinecone.assistants.create({
         name: assistantName,
         region: 'invalid-region',
       }),
@@ -53,7 +53,7 @@ describe('createAssistant error paths', () => {
   test('createAssistant with empty assistant name', async () => {
     const assistantName = '';
     await expect(
-      pinecone.createAssistant({
+      pinecone.assistants.create({
         name: assistantName,
       }),
     ).rejects.toThrow('Invalid assistant name');
@@ -61,15 +61,15 @@ describe('createAssistant error paths', () => {
 
   test('createAssistant with duplicate name', async () => {
     const assistantName = randomString(5);
-    await pinecone.createAssistant({
+    await pinecone.assistants.create({
       name: assistantName,
     });
     await expect(
-      pinecone.createAssistant({
+      pinecone.assistants.create({
         name: assistantName,
       }),
     ).rejects.toThrow();
 
-    await pinecone.deleteAssistant(assistantName);
+    await pinecone.assistants.delete(assistantName);
   });
 });

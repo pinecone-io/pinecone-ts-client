@@ -36,6 +36,35 @@ import { DescribeImportCommand } from './bulk/describeImport';
 import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
+import { DocumentOperationsProvider } from './documents/documentOperationsProvider';
+import {
+  upsertDocuments,
+  UpsertDocumentsOptions,
+  UpsertDocumentsResponse,
+} from './documents/upsertDocuments';
+import {
+  searchDocuments,
+  SearchDocumentsOptions,
+  SearchDocumentsResponse,
+} from './documents/searchDocuments';
+import {
+  fetchDocuments,
+  FetchDocumentsOptions,
+  FetchDocumentsResponse,
+} from './documents/fetchDocuments';
+import {
+  deleteDocuments,
+  DeleteDocumentsOptions,
+} from './documents/deleteDocuments';
+import {
+  listDocuments,
+  ListDocumentsOptions,
+  ListDocumentsResponse,
+} from './documents/listDocuments';
+import {
+  updateDocuments,
+  UpdateDocumentsOptions,
+} from './documents/updateDocuments';
 import { createNamespace } from './namespaces/createNamespace';
 import type { CreateNamespaceOptions } from './namespaces/createNamespace';
 import {
@@ -92,6 +121,37 @@ export type {
 export type { CreateNamespaceOptions } from './namespaces/createNamespace';
 export type { ListNamespacesOptions } from './namespaces/listNamespaces';
 export type { StartImportOptions } from './bulk/startImport';
+export type {
+  DocumentRecord,
+  UpsertDocumentsOptions,
+  UpsertDocumentsResponse,
+} from './documents/upsertDocuments';
+export type {
+  DocumentScoringMethod,
+  SearchDocumentsOptions,
+  DocumentSearchMatch,
+  SearchDocumentsResponse,
+  DocumentSearchUsage,
+  SparseValues,
+} from './documents/searchDocuments';
+export type {
+  FetchDocumentsOptions,
+  FetchedDocument,
+  FetchDocumentsResponse,
+  DocumentFetchUsage,
+} from './documents/fetchDocuments';
+export type { DeleteDocumentsOptions } from './documents/deleteDocuments';
+export type {
+  ListDocumentsOptions,
+  ListDocumentsResponse,
+  ListedDocumentRecord,
+  DocumentListUsage,
+  DocumentPagination,
+} from './documents/listDocuments';
+export type {
+  UpdateDocumentsOptions,
+  UpdateDocumentRecord,
+} from './documents/updateDocuments';
 
 /**
  * The `Index` class is used to perform data operations (upsert, query, etc)
@@ -103,7 +163,7 @@ export type { StartImportOptions } from './bulk/startImport';
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone()
  *
- * const indexModel = await pc.describeIndex('index-name');
+ * const indexModel = await pc.indexes.describe('index-name');
  * const index = pc.index({ host: indexModel.host })
  * ```
  *
@@ -183,6 +243,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
   /** @hidden */
+  private _documentProvider: DocumentOperationsProvider;
+
   private _upsertRecordsCommand: UpsertRecordsCommand<T>;
   /** @hidden */
   private _searchRecordsCommand: SearchRecordsCommand;
@@ -226,11 +288,11 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const pc = new Pinecone();
    *
    * // Get host from describeIndex
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * // Or get host from createIndex response
-   * const indexModel = await pc.createIndex({
+   * const indexModel = await pc.indexes.create({
    *   name: 'my-index',
    *   dimension: 1536,
    *   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } }
@@ -327,6 +389,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
     this._describeNamespaceCommand = describeNamespace(namespaceApiProvider);
     this._deleteNamespaceCommand = deleteNamespace(namespaceApiProvider);
+
+    // document operations
+    this._documentProvider = new DocumentOperationsProvider(
+      config,
+      this.target.indexName,
+      this.target.indexHostUrl,
+      options.additionalHeaders,
+    );
   }
 
   /**
@@ -337,7 +407,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   * ```js
   * import { Pinecone } from '@pinecone-database/pinecone';
   * const pc = new Pinecone();
-  * const indexModel = await pc.describeIndex('my-index');
+  * const indexModel = await pc.indexes.describe('my-index');
   * const index = pc.index({ host: indexModel.host });
   *
   * await index.describeIndexStats();
@@ -375,7 +445,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * await index.deleteMany({ ids: ['record-1', 'record-2'] });
@@ -399,7 +469,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
@@ -420,7 +490,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * await index.describeIndexStats();
@@ -454,7 +524,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * const results = await index.listPaginated({ prefix: 'doc1#' });
@@ -498,7 +568,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * // Upsert to default namespace
@@ -538,7 +608,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * // Fetch from default namespace
@@ -563,7 +633,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * await index.fetchByMetadata({ filter: { genre: 'classical' } });
@@ -587,7 +657,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-index');
+   * const indexModel = await pc.indexes.describe('my-index');
    * const index = pc.index({ host: indexModel.host });
    *
    * // Query by id
@@ -620,7 +690,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('imdb-movies');
+   * const indexModel = await pc.indexes.describe('imdb-movies');
    * const index = pc.index({ host: indexModel.host });
    *
    * await index.update({
@@ -649,7 +719,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    *
-   * const indexModel = await pc.describeIndex('integrated-index');
+   * const indexModel = await pc.indexes.describe('integrated-index');
    * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * await namespace.upsertRecords({
@@ -725,7 +795,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('integrated-index');
+   * const indexModel = await pc.indexes.describe('integrated-index');
    * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
    *
    * const response = await namespace.searchRecords({
@@ -784,7 +854,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
    *
@@ -807,7 +877,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.listImports(10));
    *
@@ -844,7 +914,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.describeImport('import-id'));
    *
@@ -873,7 +943,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.cancelImport('import-id'));
    *
@@ -894,7 +964,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * await index.createNamespace({
    *   name: 'my-namespace',
@@ -924,7 +994,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.listNamespaces({ limit: 10 }));
    *
@@ -953,7 +1023,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * console.log(await index.describeNamespace('ns-1'));
    *
@@ -975,7 +1045,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * ```js
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.describeIndex('my-serverless-index');
+   * const indexModel = await pc.indexes.describe('my-serverless-index');
    * const index = pc.index({ host: indexModel.host });
    * await index.deleteNamespace('ns-1');
    * ```
@@ -1024,5 +1094,160 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       },
       this.config,
     );
+  }
+
+  /**
+   * Upserts documents into a schema-based index.
+   *
+   * Documents are written to the namespace this client is scoped to. Chain
+   * `.namespace()` to target a namespace other than `__default__`.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.index('my-schema-index').namespace('my-namespace').upsertDocuments({
+   *   documents: [{ _id: 'doc-1', chunk_text: 'Hello world' }],
+   * });
+   * ```
+   *
+   * @param options - The {@link UpsertDocumentsOptions} containing the `documents` array (1–1000 entries). Each entry must have a required `_id` field.
+   * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or not provided.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to an {@link UpsertDocumentsResponse}.
+   */
+  async upsertDocuments(
+    options: UpsertDocumentsOptions,
+  ): Promise<UpsertDocumentsResponse> {
+    const api = await this._documentProvider.provide();
+    return upsertDocuments(api, this.target.namespace, options);
+  }
+
+  /**
+   * Searches for documents using one or more scoring methods.
+   *
+   * The `scoreBy` array specifies how documents are ranked. Supported scoring
+   * method types are `text` (BM25), `dense_vector`, `sparse_vector`, and
+   * `query_string`. Multiple scoring methods can be combined for hybrid search.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const results = await pc.index('my-schema-index')
+   *   .namespace('my-namespace')
+   *   .searchDocuments({
+   *     scoreBy: [{ type: 'text', field: 'chunk_text', query: 'machine learning' }],
+   *     topK: 5,
+   *     includeFields: ['chunk_text'],
+   *   });
+   * ```
+   *
+   * @param options - The {@link SearchDocumentsOptions} for the search, including `scoreBy` (required), `topK` (required), and optional `includeFields`.
+   * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is empty or `topK` is less than 1.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link SearchDocumentsResponse} containing `matches`, `namespace`, and `usage`.
+   */
+  async searchDocuments(
+    options: SearchDocumentsOptions,
+  ): Promise<SearchDocumentsResponse> {
+    const api = await this._documentProvider.provide();
+    return searchDocuments(api, this.target.namespace, options);
+  }
+
+  /**
+   * Fetches documents by ID.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const result = await pc.index('my-schema-index')
+   *   .namespace('my-namespace')
+   *   .fetchDocuments({ ids: ['doc-1', 'doc-2'] });
+   * ```
+   *
+   * @param options - The {@link FetchDocumentsOptions} identifying the documents to fetch.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link FetchDocumentsResponse}.
+   */
+  async fetchDocuments(
+    options: FetchDocumentsOptions,
+  ): Promise<FetchDocumentsResponse> {
+    const api = await this._documentProvider.provide();
+    return fetchDocuments(api, this.target.namespace, options);
+  }
+
+  /**
+   * Deletes documents by ID or filter.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.index('my-schema-index')
+   *   .namespace('my-namespace')
+   *   .deleteDocuments({ ids: ['doc-1'] });
+   * ```
+   *
+   * @param options - The {@link DeleteDocumentsOptions} identifying the documents to delete.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the delete request is accepted.
+   */
+  async deleteDocuments(options: DeleteDocumentsOptions): Promise<void> {
+    const api = await this._documentProvider.provide();
+    return deleteDocuments(api, this.target.namespace, options);
+  }
+
+  /**
+   * Lists documents in the targeted namespace.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * const result = await pc.index('my-schema-index')
+   *   .namespace('my-namespace')
+   *   .listDocuments({ limit: 10 });
+   * ```
+   *
+   * @param options - The {@link ListDocumentsOptions} for pagination and filtering.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves to a {@link ListDocumentsResponse}.
+   */
+  async listDocuments(
+    options: ListDocumentsOptions,
+  ): Promise<ListDocumentsResponse> {
+    const api = await this._documentProvider.provide();
+    return listDocuments(api, this.target.namespace, options);
+  }
+
+  /**
+   * Updates existing documents.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   *
+   * await pc.index('my-schema-index')
+   *   .namespace('my-namespace')
+   *   .updateDocuments({
+   *     documents: [{ _id: 'doc-1', chunk_text: 'Updated text' }],
+   *   });
+   * ```
+   *
+   * @param options - The {@link UpdateDocumentsOptions} containing the documents to update.
+   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
+   * @returns A promise that resolves when the update request is accepted.
+   */
+  async updateDocuments(options: UpdateDocumentsOptions): Promise<void> {
+    const api = await this._documentProvider.provide();
+    return updateDocuments(api, this.target.namespace, options);
   }
 }

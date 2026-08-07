@@ -1,0 +1,39 @@
+import type { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
+import type { CollectionModel } from './listCollections';
+import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
+import { PineconeArgumentError } from '../../errors';
+import { handleApiError } from '../../errors/handling';
+
+/**
+ * Retrieves metadata for a single named collection.
+ *
+ * Collections are only supported for pod-based indexes; serverless indexes do
+ * not support collections.
+ *
+ * @param api - The manage-indexes API client.
+ * @param collectionName - The name of the collection to describe.
+ * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
+ */
+export async function describeCollection(
+  api: ManageIndexesApi,
+  collectionName: string,
+): Promise<CollectionModel> {
+  if (!collectionName) {
+    throw new PineconeArgumentError(
+      'You must pass a non-empty string for `collectionName` in order to describe a collection.',
+    );
+  }
+
+  try {
+    return await api.describeCollection({
+      collectionName,
+      xPineconeApiVersion: X_PINECONE_API_VERSION,
+    });
+  } catch (e) {
+    throw await handleApiError(
+      e,
+      async (_, rawMessageText) =>
+        `Error describing collection ${collectionName}: ${rawMessageText}`,
+    );
+  }
+}

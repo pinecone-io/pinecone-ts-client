@@ -1,6 +1,7 @@
 import type { PineconeConfiguration } from './vectors/types';
-import type { IndexName } from '../control';
-import { describeIndex, indexOperationsBuilder } from '../control';
+import type { IndexName } from '../control/types';
+import { indexOperationsBuilder } from '../control/indexOperationsBuilder';
+import { describeIndex } from '../control/indexes/describeIndex';
 import { PineconeUnableToResolveHostError } from '../errors';
 import { normalizeUrl } from '../utils';
 
@@ -15,7 +16,7 @@ export const IndexHostSingleton = (function () {
     indexName: IndexName,
   ): Promise<string> => {
     const indexOperationsApi = indexOperationsBuilder(config);
-    const describeResponse = await describeIndex(indexOperationsApi)(indexName);
+    const describeResponse = await describeIndex(indexOperationsApi, indexName);
     const host = describeResponse.host;
     const privateHost = describeResponse.privateHost;
 

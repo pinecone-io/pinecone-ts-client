@@ -20,7 +20,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 });
 
 describe('non-streaming chat success paths', () => {
@@ -204,7 +204,7 @@ describe('Chat error paths', () => {
 
   test.each(chatMethods)('%s with nonexistent assistant', async (method) => {
     await expect(
-      pinecone.Assistant({ name: 'nonexistent' })[method]({
+      pinecone.assistant({ name: 'nonexistent' })[method]({
         messages: [{ role: 'user', content: 'Hello' }],
       }),
     ).rejects.toThrow(

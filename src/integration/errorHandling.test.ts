@@ -10,7 +10,7 @@ describe('Error handling', () => {
 
       expect.assertions(2);
       try {
-        await p.listIndexes();
+        await p.indexes.list();
       } catch (e) {
         const err = e as PineconeConnectionError;
         expect(err.name).toEqual('PineconeAuthorizationError');
@@ -51,7 +51,7 @@ describe('Error handling', () => {
       test('calling control plane', async () => {
         expect.assertions(4);
         try {
-          await p.listIndexes();
+          await p.indexes.list();
         } catch (e) {
           const err = e as PineconeConnectionError;
           expect(err.name).toEqual('PineconeConnectionError');
