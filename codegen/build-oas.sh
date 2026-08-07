@@ -46,6 +46,33 @@ verify_directory_exists() {
 	fi
 }
 
+# The `X-Pinecone-Api-Version` header a module should send. Defaults to the
+# generated spec version, but a module can be pinned lower when the service
+# backing it does not yet serve that version.
+#
+# The Assistant service (svc-knowledge-engine) has 2026-07 routes on main
+# (pinecone-db #16771), but the deployed fleet still rejects the header with
+# 403 "Invalid API version". Its 2026-07 spec is byte-identical to 2026-04, and
+# 2026-07 dispatches to the 2026-04 handlers server-side, so the pin changes
+# only the header — the generated models are still built from `$version`.
+#
+# Drop a module from this case once its service is rolled out.
+#
+# NOTE: a `case` rather than an associative array; macOS ships bash 3.2, which
+# has no `declare -A`.
+header_api_version() {
+	local module_name=$1
+
+	case "$module_name" in
+		assistant_control | assistant_data | assistant_evaluation)
+			echo "2026-04"
+			;;
+		*)
+			echo "$version"
+			;;
+	esac
+}
+
 generate_client() {
 	local module_name=$1
 
@@ -68,7 +95,13 @@ generate_client() {
 	mkdir -p "${destination}/${module_name}"
 	cp -r ${build_dir}/* "${destination}/${module_name}"
 
-	echo "export const X_PINECONE_API_VERSION = '${version}';" > ${destination}/${module_name}/api_version.ts
+	local header_version
+	header_version=$(header_api_version "$module_name")
+	if [ "$header_version" != "$version" ]; then
+		echo "Pinning ${module_name} API version header to ${header_version} (spec: ${version})"
+	fi
+
+	echo "export const X_PINECONE_API_VERSION = '${header_version}';" > ${destination}/${module_name}/api_version.ts
 	echo "export * from './api_version';" >> ${destination}/${module_name}/index.ts
 }
 
