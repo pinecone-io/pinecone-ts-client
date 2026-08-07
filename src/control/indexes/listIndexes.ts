@@ -20,9 +20,14 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { handleApiError } from '../../errors/handling';
 import type {
+  ByocDeployment,
+  CloudProvider,
   DeletionProtection,
   IndexMetric,
   IndexState,
+  ManagedDeployment,
+  PodDeployment,
+  PodType,
   ReadCapacityState,
 } from '../types';
 
@@ -35,6 +40,38 @@ export type {
   ReadCapacityDedicatedConfig,
   ScalingConfigManual,
 } from '../../pinecone-generated-ts-fetch/db_control';
+
+/**
+ * A managed (serverless) deployment, as reported on an existing index.
+ */
+export interface ManagedDeploymentResponse extends Omit<
+  ManagedDeployment,
+  'cloud'
+> {
+  /** The public cloud the index is hosted in. */
+  cloud: CloudProvider | (string & {});
+}
+
+/**
+ * A pod-based deployment, as reported on an existing index.
+ */
+export interface PodDeploymentResponse extends Omit<PodDeployment, 'podType'> {
+  /** The size of pod the index runs on. */
+  podType: PodType | (string & {});
+}
+
+/**
+ * How an index is deployed. Check `deploymentType` to narrow to a specific
+ * deployment.
+ *
+ * ```typescript
+ * if (index.deployment.deploymentType === 'managed') {
+ *   console.log(index.deployment.cloud, index.deployment.region);
+ * }
+ * ```
+ */
+export type IndexDeployment =
+  ManagedDeploymentResponse | PodDeploymentResponse | ByocDeployment;
 
 /**
  * The status of an index.
@@ -150,10 +187,12 @@ export interface IndexSchema extends Omit<GeneratedIndexSchema, 'fields'> {
  */
 export interface IndexModel extends Omit<
   GeneratedIndexModel,
-  'status' | 'schema' | 'readCapacity' | 'deletionProtection'
+  'status' | 'schema' | 'readCapacity' | 'deletionProtection' | 'deployment'
 > {
   /** The current status of the index. */
   status: IndexModelStatus;
+  /** How the index is deployed. */
+  deployment: IndexDeployment;
   /** The typed fields stored in each document. */
   schema: IndexSchema;
   /** The read capacity configuration of the index. */

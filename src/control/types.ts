@@ -216,3 +216,87 @@ export interface ReadCapacityDedicated {
  * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
  */
 export type ReadCapacity = ReadCapacityOnDemand | ReadCapacityDedicated;
+
+// Hand-rolled so `cloud` and `podType` carry their real value sets, and so the
+// `deploymentType` discriminant can be written as a literal.
+
+/**
+ * The public cloud an index is hosted in.
+ *
+ * @see [Cloud regions](http://docs.pinecone.io/guides/index-data/create-an-index#cloud-regions)
+ */
+export type CloudProvider = 'aws' | 'gcp' | 'azure';
+
+/**
+ * A managed (serverless) deployment. Pinecone runs the index in the cloud and
+ * region you choose, scaling it for you. This is the default for a new index.
+ *
+ * @see [Serverless indexes](https://docs.pinecone.io/guides/index-data/indexing-overview)
+ */
+export interface ManagedDeployment {
+  deploymentType: 'managed';
+  /** The public cloud to host the index in. */
+  cloud: CloudProvider;
+  /** The region to host the index in, such as `us-east-1`. */
+  region: string;
+}
+
+/**
+ * A pod-based deployment. You choose the pod size and how many of them to run.
+ *
+ * @see [Pod-based indexes](https://docs.pinecone.io/guides/index-data/indexing-overview)
+ */
+export interface PodDeployment {
+  deploymentType: 'pod';
+  /** The environment to host the index in, such as `us-east-1-aws`. */
+  environment: string;
+  /** The size of pod to use. */
+  podType: PodType;
+  /**
+   * The number of replicas. Replicas duplicate the index, providing higher
+   * availability and throughput. Can be scaled up or down later.
+   */
+  replicas?: number;
+  /**
+   * The number of shards. Shards split data across multiple pods so more data
+   * fits in one index.
+   */
+  shards?: number;
+}
+
+/**
+ * A Bring Your Own Cloud deployment, hosted in your own cloud environment.
+ *
+ * @see [Bring Your Own Cloud](https://docs.pinecone.io/guides/production/bring-your-own-cloud)
+ */
+export interface ByocDeployment {
+  deploymentType: 'byoc';
+  /** The BYOC environment to host the index in. */
+  environment: string;
+}
+
+/**
+ * How an index should be deployed. Omit it when creating an index to get a
+ * managed (serverless) deployment on AWS `us-east-1`.
+ *
+ * ```typescript
+ * const deployment: IndexDeploymentRequest = {
+ *   deploymentType: 'managed',
+ *   cloud: 'aws',
+ *   region: 'us-east-1',
+ * };
+ * ```
+ */
+export type IndexDeploymentRequest =
+  ManagedDeployment | PodDeployment | ByocDeployment;
+
+/**
+ * The pod settings to change on an existing index. Applies to pod-based
+ * indexes only; omit a field to leave it unchanged.
+ */
+export interface ConfigureIndexDeployment {
+  /** The number of replicas to scale to. */
+  replicas?: number;
+  /** The pod size to scale to. */
+  podType?: PodType;
+}

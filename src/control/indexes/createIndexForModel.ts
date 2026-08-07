@@ -8,9 +8,14 @@ import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 
 import type { IndexModel } from './listIndexes';
-import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
+import type {
+  ReadCapacity,
+  DeletionProtection,
+  IndexMetric,
+  ManagedDeployment,
+} from '../types';
 
-export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_control';
+export type { ManagedDeployment } from '../types';
 
 /**
  * Options for creating an index with an integrated embedding model.
@@ -24,10 +29,15 @@ export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_con
  */
 export interface CreateIndexForModelOptions extends Omit<
   CreateIndexForModelRequest,
-  'name' | 'readCapacity' | 'deletionProtection' | 'metric'
+  'name' | 'readCapacity' | 'deletionProtection' | 'metric' | 'deployment'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
+  /**
+   * Where to deploy the index. Integrated-embedding indexes are serverless
+   * only. Defaults to AWS `us-east-1`.
+   */
+  deployment?: ManagedDeployment;
   /**
    * The read capacity configuration for the index. Omit for on-demand capacity.
    */

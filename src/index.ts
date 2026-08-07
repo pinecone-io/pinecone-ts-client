@@ -155,13 +155,17 @@ export type {
   IndexSchemaField,
   TypedIndexSchemaField,
   LegacyMetadataField,
-  // Deployment (`deployment` on a created/described index)
-  IndexDeployment,
+  // Deployment — what you send when creating an index
   IndexDeploymentRequest,
   ManagedDeployment,
   ByocDeployment,
   PodDeployment,
-  PatchIndexDeploymentRequest,
+  CloudProvider,
+  ConfigureIndexDeployment,
+  // Deployment — what a described index reports
+  IndexDeployment,
+  ManagedDeploymentResponse,
+  PodDeploymentResponse,
   // Schema field variants
   BooleanField,
   DenseVectorField,
@@ -280,8 +284,6 @@ export type {
   CreateCollectionRequest,
   CreateIndexForModelRequest,
   CreateIndexRequest,
-  DescribeCollectionRequest,
-  DescribeIndexRequest,
   FetchAPI,
 } from './pinecone-generated-ts-fetch/db_control';
 

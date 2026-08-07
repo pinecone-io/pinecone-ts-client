@@ -12,15 +12,15 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 import type { IndexModel } from './listIndexes';
-import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
+import type {
+  ReadCapacity,
+  DeletionProtection,
+  IndexMetric,
+  IndexDeploymentRequest,
+} from '../types';
 
 // Re-export generated types for indexes
 export type {
-  IndexDeploymentRequest,
-  IndexDeployment,
-  ManagedDeployment,
-  ByocDeployment,
-  PodDeployment,
   BooleanField,
   DenseVectorField,
   FloatField,
@@ -32,7 +32,7 @@ export type {
   StringFieldFullTextSearchNgram,
 } from '../../pinecone-generated-ts-fetch/db_control';
 
-// Re-export read capacity types, shared with `configureIndex`,
+// Re-export read capacity and deployment types, shared with `configureIndex`,
 // `createIndexForModel`, and `createIndexFromBackup`.
 export type {
   ReadCapacity,
@@ -42,6 +42,11 @@ export type {
   ScalingConfigManualInput,
   DedicatedNodeType,
   ReadCapacityScaling,
+  IndexDeploymentRequest,
+  ManagedDeployment,
+  PodDeployment,
+  ByocDeployment,
+  CloudProvider,
 } from '../types';
 
 /**
@@ -110,10 +115,15 @@ export interface CreateIndexSchema {
  */
 export interface CreateIndexOptions extends Omit<
   CreateIndexRequest,
-  'name' | 'schema' | 'readCapacity' | 'deletionProtection'
+  'name' | 'schema' | 'readCapacity' | 'deletionProtection' | 'deployment'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
+  /**
+   * How to deploy the index. Defaults to a managed (serverless) deployment on
+   * AWS `us-east-1`.
+   */
+  deployment?: IndexDeploymentRequest;
   /** The typed fields stored in each document. See {@link CreateIndexSchema}. */
   schema: CreateIndexSchema;
   /**

@@ -6,7 +6,11 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_con
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import type { IndexModel } from './listIndexes';
-import type { ReadCapacity, DeletionProtection } from '../types';
+import type {
+  ReadCapacity,
+  DeletionProtection,
+  ConfigureIndexDeployment,
+} from '../types';
 
 /**
  * Options for configuring an index.
@@ -16,7 +20,7 @@ import type { ReadCapacity, DeletionProtection } from '../types';
  */
 export type ConfigureIndexOptions = Omit<
   ConfigureIndexRequest,
-  'readCapacity' | 'deletionProtection'
+  'readCapacity' | 'deletionProtection' | 'deployment'
 > & {
   /**
    * The read capacity configuration to apply. Omit to leave it unchanged.
@@ -24,10 +28,15 @@ export type ConfigureIndexOptions = Omit<
   readCapacity?: ReadCapacity;
   /** Whether to enable deletion protection. Omit to leave it unchanged. */
   deletionProtection?: DeletionProtection;
+  /**
+   * Pod settings to change. Pod-based indexes only; omit to leave unchanged.
+   */
+  deployment?: ConfigureIndexDeployment;
 };
 
+export type { ConfigureIndexDeployment } from '../types';
+
 export type {
-  PatchIndexDeploymentRequest,
   PatchIndexSchema,
   PatchSemanticTextField,
 } from '../../pinecone-generated-ts-fetch/db_control';

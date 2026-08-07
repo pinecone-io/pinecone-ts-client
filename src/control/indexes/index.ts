@@ -6,10 +6,10 @@ export type {
   CreateIndexSchemaField,
   FullTextSearchStringField,
   IndexDeploymentRequest,
-  IndexDeployment,
   ManagedDeployment,
   ByocDeployment,
   PodDeployment,
+  CloudProvider,
   BooleanField,
   DenseVectorField,
   FloatField,
@@ -32,6 +32,9 @@ export type {
   IndexList,
   IndexModel,
   IndexModelStatus,
+  IndexDeployment,
+  ManagedDeploymentResponse,
+  PodDeploymentResponse,
   IndexSchema,
   IndexSchemaField,
   TypedIndexSchemaField,
@@ -49,7 +52,7 @@ export type {
 } from './listIndexes';
 export type {
   ConfigureIndexOptions,
-  PatchIndexDeploymentRequest,
+  ConfigureIndexDeployment,
   PatchIndexSchema,
   PatchSemanticTextField,
 } from './configureIndex';
