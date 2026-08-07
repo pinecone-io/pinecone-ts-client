@@ -1,14 +1,14 @@
 import type {
   ManageIndexesApi,
   CreateIndexForModelRequest,
-  IndexModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 
-import type { ReadCapacity } from '../types';
+import type { IndexModel } from './listIndexes';
+import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
 export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_control';
 
@@ -24,7 +24,7 @@ export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_con
  */
 export interface CreateIndexForModelOptions extends Omit<
   CreateIndexForModelRequest,
-  'name' | 'readCapacity'
+  'name' | 'readCapacity' | 'deletionProtection' | 'metric'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
@@ -32,6 +32,13 @@ export interface CreateIndexForModelOptions extends Omit<
    * The read capacity configuration for the index. Omit for on-demand capacity.
    */
   readCapacity?: ReadCapacity;
+  /** Whether to enable deletion protection. Defaults to `disabled`. */
+  deletionProtection?: DeletionProtection;
+  /**
+   * The distance metric to use for similarity search. Defaults to the model's
+   * preferred metric.
+   */
+  metric?: IndexMetric;
   /**
    * When true, polls until the index is ready before returning.
    */

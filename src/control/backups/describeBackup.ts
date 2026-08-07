@@ -1,12 +1,27 @@
 import type {
   ManageIndexesApi,
-  BackupModel,
+  BackupModel as GeneratedBackupModel,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import type { BackupStatus } from '../types';
+import type { IndexSchema } from '../indexes/listIndexes';
 
-export type { BackupModel } from '../../pinecone-generated-ts-fetch/db_control';
+/**
+ * The configuration and status of a backup.
+ *
+ * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+ */
+export interface BackupModel extends Omit<
+  GeneratedBackupModel,
+  'status' | 'schema'
+> {
+  /** The current status of the backup. */
+  status: BackupStatus;
+  /** The schema of the index the backup was taken from. */
+  schema?: IndexSchema;
+}
 
 /**
  * Retrieves the configuration and status of a Pinecone backup.

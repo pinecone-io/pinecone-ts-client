@@ -1,7 +1,5 @@
-import type {
-  ManageIndexesApi,
-  BackupModel,
-} from '../../pinecone-generated-ts-fetch/db_control';
+import type { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
+import type { BackupModel } from './describeBackup';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';

@@ -1,11 +1,8 @@
-import type {
-  ManageIndexesApi,
-  CollectionList,
-  CollectionModel,
-} from '../../pinecone-generated-ts-fetch/db_control';
+import type { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { indexOperationsBuilder } from '../indexOperationsBuilder';
 import { listCollections } from './listCollections';
+import type { CollectionList, CollectionModel } from './listCollections';
 import { createCollection, CreateCollectionOptions } from './createCollection';
 import { describeCollection } from './describeCollection';
 import { deleteCollection } from './deleteCollection';

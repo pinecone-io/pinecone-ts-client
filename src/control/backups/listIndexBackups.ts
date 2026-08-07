@@ -1,16 +1,26 @@
 import type {
   ManageIndexesApi,
-  BackupList,
+  BackupList as GeneratedBackupList,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import type { BackupModel } from './describeBackup';
 
 export type {
-  BackupList,
-  // Pagination cursor on `BackupList`.
+  // The pagination cursor on a `BackupList`.
   BackupListPagination,
 } from '../../pinecone-generated-ts-fetch/db_control';
+
+/**
+ * A page of backups. When `pagination` is present, pass its `next` value as
+ * `paginationToken` to fetch the following page.
+ *
+ * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+ */
+export interface BackupList extends Omit<GeneratedBackupList, 'data'> {
+  data?: Array<BackupModel>;
+}
 
 /**
  * Options for listing backups of an index.

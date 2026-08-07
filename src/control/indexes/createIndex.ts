@@ -1,7 +1,6 @@
 import type {
   ManageIndexesApi,
   CreateIndexRequest,
-  IndexModel,
   DenseVectorField,
   SparseVectorField,
   SemanticTextField,
@@ -12,7 +11,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_con
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
-import type { ReadCapacity } from '../types';
+import type { IndexModel } from './listIndexes';
+import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
 // Re-export generated types for indexes
 export type {
@@ -86,11 +86,10 @@ export type FullTextSearchStringField = StringField & {
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
 export type CreateIndexSchemaField =
-  // `type` is re-narrowed here because the generated `DenseVectorField` accepts
-  // every field-type value. Redundant once the generator emits a single-value enum.
-  | (DenseVectorField & { type: 'dense_vector' })
+  // `type` re-narrowed: the generated DenseVectorField accepts any field type.
+  | (DenseVectorField & { type: 'dense_vector'; metric: IndexMetric })
   | SparseVectorField
-  | SemanticTextField
+  | (SemanticTextField & { metric?: IndexMetric })
   | FullTextSearchStringField;
 
 /**
@@ -111,7 +110,7 @@ export interface CreateIndexSchema {
  */
 export interface CreateIndexOptions extends Omit<
   CreateIndexRequest,
-  'name' | 'schema' | 'readCapacity'
+  'name' | 'schema' | 'readCapacity' | 'deletionProtection'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
@@ -121,6 +120,8 @@ export interface CreateIndexOptions extends Omit<
    * The read capacity configuration for the index. Omit for on-demand capacity.
    */
   readCapacity?: ReadCapacity;
+  /** Whether to enable deletion protection. Defaults to `disabled`. */
+  deletionProtection?: DeletionProtection;
   /**
    * When true, polls until the index is ready before returning.
    */

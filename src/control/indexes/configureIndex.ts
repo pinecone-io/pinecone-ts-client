@@ -1,12 +1,12 @@
 import type {
   ManageIndexesApi,
-  IndexModel,
   ConfigureIndexRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
-import type { ReadCapacity } from '../types';
+import type { IndexModel } from './listIndexes';
+import type { ReadCapacity, DeletionProtection } from '../types';
 
 /**
  * Options for configuring an index.
@@ -16,12 +16,14 @@ import type { ReadCapacity } from '../types';
  */
 export type ConfigureIndexOptions = Omit<
   ConfigureIndexRequest,
-  'readCapacity'
+  'readCapacity' | 'deletionProtection'
 > & {
   /**
    * The read capacity configuration to apply. Omit to leave it unchanged.
    */
   readCapacity?: ReadCapacity;
+  /** Whether to enable deletion protection. Omit to leave it unchanged. */
+  deletionProtection?: DeletionProtection;
 };
 
 export type {

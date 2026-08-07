@@ -5,6 +5,12 @@ export type {
   BackupId,
   RestoreJobId,
   PodType,
+  DeletionProtection,
+  IndexMetric,
+  IndexState,
+  CollectionStatus,
+  BackupStatus,
+  ReadCapacityState,
 } from './types';
 
 export * from './indexes';

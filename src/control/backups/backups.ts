@@ -1,9 +1,9 @@
 import type {
   ManageIndexesApi,
-  BackupModel,
-  BackupList,
   CreateIndexFromBackupResponse,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import type { BackupModel } from './describeBackup';
+import type { BackupList } from './listIndexBackups';
 import type { PineconeConfiguration } from '../../data';
 import { indexOperationsBuilder } from '../indexOperationsBuilder';
 import { createBackup, CreateBackupOptions } from './createBackup';

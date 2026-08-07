@@ -30,6 +30,66 @@ export type BackupId = string;
 /** The unique identifier representing a restore job. */
 export type RestoreJobId = string;
 
+// Values sent to the API are exact unions; values read back also accept
+// `string`, so a status added server-side cannot break a pinned client.
+
+/**
+ * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection)
+ * is enabled for an index. An index cannot be deleted while it is `enabled`.
+ */
+export type DeletionProtection = 'enabled' | 'disabled';
+
+/**
+ * The distance metric used for similarity search.
+ *
+ * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
+ */
+export type IndexMetric = 'cosine' | 'euclidean' | 'dotproduct';
+
+/**
+ * The current state of an index.
+ *
+ * An index is ready for data operations once `Ready`. `InitializationFailed` is
+ * terminal; the rest are transitional.
+ */
+export type IndexState =
+  | 'Initializing'
+  | 'InitializationFailed'
+  | 'ScalingUp'
+  | 'ScalingDown'
+  | 'ScalingUpPodSize'
+  | 'ScalingDownPodSize'
+  | 'Terminating'
+  | 'Ready'
+  | 'Disabled'
+  | (string & {});
+
+/**
+ * The current status of a collection.
+ *
+ * @see [Understanding collections](https://docs.pinecone.io/docs/collections)
+ */
+export type CollectionStatus =
+  'Initializing' | 'Ready' | 'Terminating' | (string & {});
+
+/**
+ * The current status of a backup.
+ *
+ * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+ */
+export type BackupStatus = 'Initializing' | 'Ready' | 'Failed' | (string & {});
+
+/**
+ * The state of an index's read capacity.
+ *
+ * `Scaling` follows a change to the replica or shard count, `Migrating` a change
+ * to the node type. On `Error`, see `errorMessage` for details.
+ *
+ * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
+ */
+export type ReadCapacityState =
+  'Ready' | 'Scaling' | 'Migrating' | 'Error' | (string & {});
+
 /**
  * @see [Understanding indexes](https://docs.pinecone.io/docs/indexes)
  */
@@ -62,9 +122,8 @@ export const ValidPodTypes: PodType[] = [
   'p2.x8',
 ];
 
-// Read capacity request types are defined here rather than re-exported from the
-// generated client, so that the `Dedicated` variant requires the settings it
-// needs. Re-check against the spec after each `npm run generate:openapi`.
+// Hand-rolled so the `Dedicated` variant requires the settings it needs.
+// Re-check against the spec after each `npm run generate:openapi`.
 
 /**
  * The type of machines to use for dedicated read nodes. `t1` includes increased

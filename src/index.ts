@@ -132,6 +132,13 @@ export type {
   CollectionName,
   IndexName,
   PodType,
+  // Enumerated values restated as unions; see `src/control/types.ts`.
+  DeletionProtection,
+  IndexMetric,
+  IndexState,
+  CollectionStatus,
+  BackupStatus,
+  ReadCapacityState,
 } from './control';
 export type {
   // Indexes

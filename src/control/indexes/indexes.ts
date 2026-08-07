@@ -1,11 +1,8 @@
-import type {
-  ManageIndexesApi,
-  IndexList,
-  IndexModel,
-} from '../../pinecone-generated-ts-fetch/db_control';
+import type { ManageIndexesApi } from '../../pinecone-generated-ts-fetch/db_control';
 import type { PineconeConfiguration } from '../../data';
 import { indexOperationsBuilder } from '../indexOperationsBuilder';
 import { listIndexes } from './listIndexes';
+import type { IndexList, IndexModel } from './listIndexes';
 import { createIndex, CreateIndexOptions } from './createIndex';
 import {
   createIndexForModel,

@@ -2,7 +2,7 @@ import type {
   ManageIndexesApi,
   CreateIndexFromBackupResponse,
 } from '../../pinecone-generated-ts-fetch/db_control';
-import type { ReadCapacity } from '../types';
+import type { ReadCapacity, DeletionProtection } from '../types';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
@@ -20,7 +20,7 @@ export interface CreateIndexFromBackupOptions {
   /** Optional tags to apply to the created index. Overrides backup tags if provided. */
   tags?: Record<string, string>;
   /** Whether to enable deletion protection on the created index. */
-  deletionProtection?: string;
+  deletionProtection?: DeletionProtection;
   /** Optional read capacity configuration for the created index. */
   readCapacity?: ReadCapacity;
 }
