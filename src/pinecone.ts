@@ -56,7 +56,6 @@ import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOpe
 import { Assistant } from './assistant';
 import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
-import { Preview } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -149,17 +148,6 @@ export class Pinecone {
   private _listRestoreJobs: ReturnType<typeof listRestoreJobs>;
 
   public inference: Inference;
-  /**
-   * Provides access to alpha preview operations using the 2026-01.alpha API.
-   *
-   * @example
-   * ```typescript
-   * const list = await pc.preview.indexes.list();
-   * const idx = pc.preview.index('my-schema-index');
-   * ```
-   * @alpha
-   */
-  public preview: Preview;
 
   /**
    * @example
@@ -222,9 +210,6 @@ export class Pinecone {
 
     // Inference operations
     this.inference = new Inference(this.config);
-
-    // Preview (alpha) operations
-    this.preview = new Preview(this.config);
   }
 
   /**
