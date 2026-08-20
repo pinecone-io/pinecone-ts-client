@@ -9,7 +9,7 @@ beforeAll(async () => {
 
 describe('evaluate happy path', () => {
   test('evaluate with valid question, answer, and groundTruth', async () => {
-    const result: AlignmentResponse = await pinecone.evaluate({
+    const result: AlignmentResponse = await pinecone.assistants.evaluate({
       question: 'What is the capital of France?',
       answer: 'The capital of France is Paris.',
       groundTruth: 'Paris is the capital and most populous city of France.',
@@ -37,7 +37,7 @@ describe('evaluate happy path', () => {
   });
 
   test('evaluate with correct answer has high alignment', async () => {
-    const result: AlignmentResponse = await pinecone.evaluate({
+    const result: AlignmentResponse = await pinecone.assistants.evaluate({
       question: 'What is 2 + 2?',
       answer: '4',
       groundTruth: 'The answer is 4.',
@@ -51,7 +51,7 @@ describe('evaluate happy path', () => {
   });
 
   test('evaluate with incorrect answer has low alignment', async () => {
-    const result: AlignmentResponse = await pinecone.evaluate({
+    const result: AlignmentResponse = await pinecone.assistants.evaluate({
       question: 'What is the capital of France?',
       answer: 'The capital of France is London.',
       groundTruth: 'Paris is the capital and most populous city of France.',
@@ -68,21 +68,21 @@ describe('evaluate happy path', () => {
 describe('evaluate error paths', () => {
   test('evaluate with null options', async () => {
     // @ts-expect-error - invalid options
-    await expect(pinecone.evaluate(null)).rejects.toThrow(
+    await expect(pinecone.assistants.evaluate(null)).rejects.toThrow(
       'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
     );
   });
 
   test('evaluate with undefined options', async () => {
     // @ts-expect-error - invalid options
-    await expect(pinecone.evaluate(undefined)).rejects.toThrow(
+    await expect(pinecone.assistants.evaluate(undefined)).rejects.toThrow(
       'You must pass an object with required properties (`question`, `answer`, `groundTruth`) to evaluate.',
     );
   });
 
   test('evaluate with empty question', async () => {
     await expect(
-      pinecone.evaluate({
+      pinecone.assistants.evaluate({
         question: '',
         answer: 'Paris',
         groundTruth: 'Paris is the capital of France.',
@@ -94,7 +94,7 @@ describe('evaluate error paths', () => {
 
   test('evaluate with empty answer', async () => {
     await expect(
-      pinecone.evaluate({
+      pinecone.assistants.evaluate({
         question: 'What is the capital of France?',
         answer: '',
         groundTruth: 'Paris is the capital of France.',
@@ -106,7 +106,7 @@ describe('evaluate error paths', () => {
 
   test('evaluate with empty groundTruth', async () => {
     await expect(
-      pinecone.evaluate({
+      pinecone.assistants.evaluate({
         question: 'What is the capital of France?',
         answer: 'Paris',
         groundTruth: '',

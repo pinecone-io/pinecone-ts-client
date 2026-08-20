@@ -10,7 +10,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 });
 
 describe('Context happy path', () => {
@@ -43,7 +43,7 @@ describe('Context error paths', () => {
 
   test('Context with nonexistent assistant', async () => {
     await expect(
-      pinecone.Assistant({ name: 'nonexistent' }).context({
+      pinecone.assistant({ name: 'nonexistent' }).context({
         query: 'What is in the file?',
       }),
     ).rejects.toThrow(/404/);

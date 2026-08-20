@@ -9,18 +9,18 @@ beforeAll(async () => {
   pinecone = new Pinecone();
   assistantNameOne = randomString(5);
   assistantNameTwo = randomString(5);
-  await pinecone.createAssistant({ name: assistantNameOne });
-  await pinecone.createAssistant({ name: assistantNameTwo });
+  await pinecone.assistants.create({ name: assistantNameOne });
+  await pinecone.assistants.create({ name: assistantNameTwo });
 });
 
 afterAll(async () => {
-  await pinecone.deleteAssistant(assistantNameOne);
-  await pinecone.deleteAssistant(assistantNameTwo);
+  await pinecone.assistants.delete(assistantNameOne);
+  await pinecone.assistants.delete(assistantNameTwo);
 });
 
 describe('listAssistant happy path', () => {
   test('list existing Assistants', async () => {
-    const assistants = await pinecone.listAssistants();
+    const assistants = await pinecone.assistants.list();
     expect(assistants.assistants).toBeDefined();
     if (assistants.assistants) {
       const assistantNames = assistants.assistants.map(

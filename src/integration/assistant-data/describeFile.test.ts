@@ -11,7 +11,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 
   const files = await assistant.listFiles({
     filter: { key: 'valueOne' },
@@ -51,7 +51,7 @@ describe('Describe file error paths', () => {
 
   test('Describe file with nonexistent assistant', async () => {
     await expect(
-      pinecone.Assistant({ name: 'nonexistent' }).describeFile(fileId),
+      pinecone.assistant({ name: 'nonexistent' }).describeFile(fileId),
     ).rejects.toThrow(/404/);
   });
 });

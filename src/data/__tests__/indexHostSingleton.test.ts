@@ -3,14 +3,15 @@ import { IndexHostSingleton } from '../indexHostSingleton';
 const mockDescribeIndex = jest.fn();
 const mockIndexOperationsBuilder = jest.fn();
 
-jest.mock('../../control', () => {
-  const realControl = jest.requireActual('../../control');
-  return {
-    ...realControl,
-    describeIndex: () => mockDescribeIndex,
-    indexOperationsBuilder: (config) => mockIndexOperationsBuilder(config),
-  };
-});
+// Plain arrow delegates (not `jest.fn()`s) so the global `jest.resetAllMocks()`
+// in scripts/globalUnitTestSetup.ts cannot strip them; the inner mocks are
+// configured per-test, after that reset runs.
+jest.mock('../../control/indexes/describeIndex', () => ({
+  describeIndex: (api, indexName) => mockDescribeIndex(api, indexName),
+}));
+jest.mock('../../control/indexOperationsBuilder', () => ({
+  indexOperationsBuilder: (config) => mockIndexOperationsBuilder(config),
+}));
 
 describe('IndexHostSingleton', () => {
   afterEach(() => {
@@ -27,10 +28,13 @@ describe('IndexHostSingleton', () => {
     };
     mockDescribeIndex.mockResolvedValue({
       name: 'index-1',
-      dimensions: 10,
-      metric: 'cosine',
+
       host: testHost,
-      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      deployment: {
+        deploymentType: 'pod',
+        environment: 'us-east-1-aws',
+        podType: 'p1.x1',
+      },
       status: { ready: true, state: 'Ready' },
     });
 
@@ -39,7 +43,7 @@ describe('IndexHostSingleton', () => {
       testIndex,
     );
     expect(hostUrl).toEqual(`https://${testHost}`);
-    expect(mockDescribeIndex).toHaveBeenCalledWith(testIndex);
+    expect(mockDescribeIndex.mock.calls[0][1]).toEqual(testIndex);
   });
 
   test('calls describeIndex once per apiKey and indexName', async () => {
@@ -53,18 +57,24 @@ describe('IndexHostSingleton', () => {
     mockDescribeIndex
       .mockResolvedValueOnce({
         name: testIndex,
-        dimensions: 10,
-        metric: 'cosine',
+
         host: testHost,
-        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        deployment: {
+          deploymentType: 'pod',
+          environment: 'us-east-1-aws',
+          podType: 'p1.x1',
+        },
         status: { ready: true, state: 'Ready' },
       })
       .mockResolvedValueOnce({
         name: testIndex2,
-        dimensions: 10,
-        metric: 'cosine',
+
         host: testHost2,
-        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        deployment: {
+          deploymentType: 'pod',
+          environment: 'us-east-1-aws',
+          podType: 'p1.x1',
+        },
         status: { ready: true, state: 'Ready' },
       });
 
@@ -98,10 +108,13 @@ describe('IndexHostSingleton', () => {
 
     mockDescribeIndex.mockResolvedValue({
       name: 'index-1',
-      dimensions: 10,
-      metric: 'cosine',
+
       host: 'test-host',
-      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      deployment: {
+        deploymentType: 'pod',
+        environment: 'us-east-1-aws',
+        podType: 'p1.x1',
+      },
       status: { ready: true, state: 'Ready' },
     });
 
@@ -129,10 +142,13 @@ describe('IndexHostSingleton', () => {
 
     mockDescribeIndex.mockResolvedValue({
       name: 'index-1',
-      dimensions: 10,
-      metric: 'cosine',
+
       host: 'test-host',
-      spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+      deployment: {
+        deploymentType: 'pod',
+        environment: 'us-east-1-aws',
+        podType: 'p1.x1',
+      },
       status: { ready: true, state: 'Ready' },
     });
 
@@ -150,18 +166,24 @@ describe('IndexHostSingleton', () => {
     mockDescribeIndex
       .mockResolvedValueOnce({
         name: 'index-1',
-        dimensions: 10,
-        metric: 'cosine',
+
         host: 'test-host-1',
-        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        deployment: {
+          deploymentType: 'pod',
+          environment: 'us-east-1-aws',
+          podType: 'p1.x1',
+        },
         status: { ready: true, state: 'Ready' },
       })
       .mockResolvedValueOnce({
         name: 'index-2',
-        dimensions: 10,
-        metric: 'cosine',
+
         host: 'test-host-2',
-        spec: { pod: { pods: 1, replicas: 1, shards: 1, podType: 'p1.x1' } },
+        deployment: {
+          deploymentType: 'pod',
+          environment: 'us-east-1-aws',
+          podType: 'p1.x1',
+        },
         status: { ready: true, state: 'Ready' },
       });
     mockIndexOperationsBuilder.mockReturnValue({ test: 'one', test2: 'two' });
@@ -170,8 +192,9 @@ describe('IndexHostSingleton', () => {
     await IndexHostSingleton.getHostUrl(pineconeConfig2, 'index-2');
 
     expect(mockDescribeIndex).toHaveBeenCalledTimes(2);
-    expect(mockDescribeIndex).toHaveBeenNthCalledWith(1, 'index-1');
-    expect(mockDescribeIndex).toHaveBeenNthCalledWith(2, 'index-2');
+    const builtApi = { test: 'one', test2: 'two' };
+    expect(mockDescribeIndex).toHaveBeenNthCalledWith(1, builtApi, 'index-1');
+    expect(mockDescribeIndex).toHaveBeenNthCalledWith(2, builtApi, 'index-2');
 
     expect(mockIndexOperationsBuilder).toHaveBeenCalledTimes(2);
     expect(mockIndexOperationsBuilder).toHaveBeenNthCalledWith(
