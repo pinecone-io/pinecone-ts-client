@@ -189,6 +189,12 @@ describe('create index', () => {
             deploymentType: 'pod',
             environment: 'us-east-1-aws',
             podType: 'p1.x1',
+            // The 2026-07 spec marks these optional, but the deployed API
+            // rejects pod deployments that omit them ("missing field
+            // `replicas`", HTTP 422). Explicit until the contract mismatch is
+            // resolved; see pinecone-ts-client-internal#12.
+            replicas: 1,
+            shards: 1,
           },
           schema: {
             fields: {
@@ -228,6 +234,12 @@ describe('create index', () => {
               deploymentType: 'pod',
               environment: 'us-east-1-aws',
               podType: 'p1.x1',
+              // The 2026-07 spec marks these optional, but the deployed API
+              // rejects pod deployments that omit them ("missing field
+              // `replicas`", HTTP 422). Explicit until the contract mismatch is
+              // resolved; see pinecone-ts-client-internal#12.
+              replicas: 1,
+              shards: 1,
             },
             schema: {
               fields: {
