@@ -132,7 +132,10 @@ describe('updateDocuments', () => {
   describe('dense indexes', () => {
     test('verify update by id', async () => {
       const recordId = denseRecordIds[0];
-      const newValues = [0.5, 0.4];
+      // Values must be exactly representable in float32: the service stores
+      // vectors as f32, so e.g. 0.4 comes back as 0.4000000059604645 and a
+      // deep-equality assertion never converges.
+      const newValues = [0.5, 0.25];
       const newMetadata = { flavor: 'chocolate' };
 
       await srvrlssIndexDense.updateDocuments({
@@ -185,7 +188,8 @@ describe('updateDocuments', () => {
   describe('sparse indexes', () => {
     test('verify update by id', async () => {
       const recordId = sparseRecordIds[0];
-      const newSparseValues = { indices: [0, 1], values: [0.5, 0.4] };
+      // float32-exact values; see the dense test above.
+      const newSparseValues = { indices: [0, 1], values: [0.5, 0.25] };
       const newMetadata = { flavor: 'chocolate' };
 
       await srvrlssIndexSparse.updateDocuments({
