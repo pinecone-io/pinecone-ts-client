@@ -159,7 +159,11 @@ describe('updateDocuments', () => {
       );
     });
 
-    test('verify update by metadata (filter)', async () => {
+    // Prod rejects update-by-filter on 2026-07 ("Document update by 'filter'
+    // is not implemented yet", HTTP 400) even though the spec and SDK support
+    // it. Un-skip when the fleet rolls it out; see
+    // pinecone-ts-client-internal#15.
+    test.skip('verify update by metadata (filter)', async () => {
       const metadataKey = Object.keys(denseMetadata)[0];
       const metadataValue = denseMetadata[metadataKey];
       const newMetadata = { flavor: 'vanilla' };
@@ -213,7 +217,11 @@ describe('updateDocuments', () => {
       );
     });
 
-    test('verify update by metadata (filter)', async () => {
+    // Prod rejects update-by-filter on 2026-07 ("Document update by 'filter'
+    // is not implemented yet", HTTP 400) even though the spec and SDK support
+    // it. Un-skip when the fleet rolls it out; see
+    // pinecone-ts-client-internal#15.
+    test.skip('verify update by metadata (filter)', async () => {
       const metadataKey = Object.keys(sparseMetadata)[0];
       const metadataValue = sparseMetadata[metadataKey];
       const newMetadata = { flavor: 'vanilla' };
