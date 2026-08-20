@@ -64,7 +64,7 @@ header_api_version() {
 	local module_name=$1
 
 	case "$module_name" in
-		assistant_control | assistant_data | assistant_evaluation)
+		assistant_control | assistant_data | assistant_evaluation | inference)
 			echo "2026-04"
 			;;
 		*)
