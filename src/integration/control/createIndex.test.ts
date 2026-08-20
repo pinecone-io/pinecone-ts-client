@@ -224,7 +224,11 @@ describe('create index', () => {
     });
 
     describe('error cases', () => {
-      test('create from non-existent collection', async () => {
+      // Prod rejects create-from-collection on 2026-07 outright ("Creating an
+      // index from collection or backup is not yet supported", HTTP 400), so
+      // the not-found validation this test asserts on cannot run yet. Un-skip
+      // when the fleet supports it; see pinecone-ts-client-internal#14.
+      test.skip('create from non-existent collection', async () => {
         const indexName = randomName('collection-error');
 
         try {
