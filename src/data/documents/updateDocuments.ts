@@ -16,9 +16,25 @@ export const updateDocuments = async (
   namespace: string,
   options: UpdateDocumentsRequest,
 ): Promise<void> => {
-  if (!options.documents || options.documents.length === 0) {
+  const hasDocuments = !!options.documents && options.documents.length > 0;
+  const hasFilter = options.filter !== undefined;
+  const hasFieldChanges =
+    (!!options.setFields && Object.keys(options.setFields).length > 0) ||
+    (!!options.removeFields && options.removeFields.length > 0);
+
+  if (hasDocuments && hasFilter) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty `documents` array to updateDocuments.',
+      '`documents` and `filter` are mutually exclusive in updateDocuments; pass one or the other.',
+    );
+  }
+  if (!hasDocuments && !hasFilter) {
+    throw new PineconeArgumentError(
+      'You must pass either a non-empty `documents` array or a `filter` with `setFields` and/or `removeFields` to updateDocuments.',
+    );
+  }
+  if (hasFilter && !hasFieldChanges) {
+    throw new PineconeArgumentError(
+      'A `filter` update requires a non-empty `setFields` and/or `removeFields`.',
     );
   }
   try {
