@@ -17,51 +17,38 @@ jest.mock('../utils', () => {
 jest.mock('../data/vectors/fetch');
 jest.mock('../data/vectors/upsert');
 jest.mock('../data/indexHostSingleton');
-jest.mock('../control', () => {
-  const realControl = jest.requireActual('../control');
-  return {
-    ...realControl,
-    describeIndex: () =>
-      jest.fn().mockResolvedValue({
-        name: 'fake-index',
-        dimension: 1,
-        metric: 'cosine',
-        host: fakeHost,
-        spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-        status: { ready: true, state: 'Ready' },
-      }),
-    deleteIndex: () => jest.fn().mockResolvedValue(undefined),
-    listIndexes: () =>
-      jest.fn().mockResolvedValue({
-        indexes: [
-          {
-            name: 'fake-index1',
-            dimension: 1,
-            metric: 'cosine',
-            host: fakeHost,
-            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-            status: { ready: true, state: 'Ready' },
-          },
-          {
-            name: 'fake-index2',
-            dimension: 1,
-            metric: 'cosine',
-            host: fakeHost,
-            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-            status: { ready: true, state: 'Ready' },
-          },
-          {
-            name: 'fake-index3',
-            dimension: 1,
-            metric: 'cosine',
-            host: fakeHost,
-            spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-            status: { ready: true, state: 'Ready' },
-          },
-        ],
-      }),
-  };
+const fakeIndexModel = (name: string) => ({
+  name,
+  host: '123-456.pinecone.io',
+  deletionProtection: 'disabled',
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
+  schema: {
+    fields: {
+      embedding: { type: 'dense_vector', dimension: 1, metric: 'cosine' },
+    },
+  },
+  status: { ready: true, state: 'Ready' },
 });
+
+// NOTE: these factories return plain arrow functions rather than `jest.fn()`s.
+// `scripts/globalUnitTestSetup.ts` runs `jest.resetAllMocks()` in a global
+// `beforeEach`, which would strip an implementation baked into a `jest.fn`.
+jest.mock('../control/indexes/describeIndex', () => ({
+  describeIndex: () => Promise.resolve(fakeIndexModel('fake-index')),
+}));
+jest.mock('../control/indexes/deleteIndex', () => ({
+  deleteIndex: () => Promise.resolve(undefined),
+}));
+jest.mock('../control/indexes/listIndexes', () => ({
+  listIndexes: () =>
+    Promise.resolve({
+      indexes: [
+        fakeIndexModel('fake-index1'),
+        fakeIndexModel('fake-index2'),
+        fakeIndexModel('fake-index3'),
+      ],
+    }),
+}));
 
 describe('Pinecone', () => {
   describe('constructor', () => {
@@ -198,7 +185,7 @@ describe('Pinecone', () => {
   describe('control plane operations', () => {
     test('describeIndex triggers calling IndexHostSingleton._set', async () => {
       const p = new Pinecone({ apiKey: 'foo' });
-      await p.describeIndex('test-index');
+      await p.indexes.describe('test-index');
 
       expect(IndexHostSingleton._set).toHaveBeenCalledWith(
         { apiKey: 'foo' },
@@ -209,7 +196,7 @@ describe('Pinecone', () => {
 
     test('listIndexes triggers calling IndexHostSingleton._set', async () => {
       const p = new Pinecone({ apiKey: 'foo' });
-      await p.listIndexes();
+      await p.indexes.list();
 
       expect(IndexHostSingleton._set).toHaveBeenNthCalledWith(
         1,
@@ -233,7 +220,7 @@ describe('Pinecone', () => {
 
     test('deleteIndex trigger calling IndexHostSingleton._delete', async () => {
       const p = new Pinecone({ apiKey: 'foo' });
-      await p.deleteIndex('test-index');
+      await p.indexes.delete('test-index');
 
       expect(IndexHostSingleton._delete).toHaveBeenCalledWith(
         { apiKey: 'foo' },

@@ -31,11 +31,28 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
+          # Capture the exit code rather than letting `bash -e` abort on the
+          # assignment; otherwise a failing setup kills the step before the
+          # output below is ever printed, leaving only "exit code 1".
+          set +e
           SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
-          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
-          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
-          # Show setup logs (not the JSON line)
+          SETUP_EXIT=$?
+          set -e
+
+          # Always surface the setup logs (minus the fixtures line) first.
           echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
+
+          if [ "$SETUP_EXIT" -ne 0 ]; then
+            echo "::error::setup.ts failed with exit code $SETUP_EXIT"
+            exit "$SETUP_EXIT"
+          fi
+
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
+          if [ -z "$FIXTURES_JSON" ]; then
+            echo "::error::setup.ts exited 0 but emitted no FIXTURES_JSON line"
+            exit 1
+          fi
+          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
 
   integration-tests:
     needs: [setup]

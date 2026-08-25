@@ -46,11 +46,38 @@ verify_directory_exists() {
 	fi
 }
 
+# The `X-Pinecone-Api-Version` header a module should send. Defaults to the
+# generated spec version, but a module can be pinned lower when the service
+# backing it does not yet serve that version.
+#
+# The Assistant service (svc-knowledge-engine) has 2026-07 routes on main
+# (pinecone-db #16771), but the deployed fleet still rejects the header with
+# 403 "Invalid API version". Its 2026-07 spec is byte-identical to 2026-04, and
+# 2026-07 dispatches to the 2026-04 handlers server-side, so the pin changes
+# only the header — the generated models are still built from `$version`.
+#
+# Drop a module from this case once its service is rolled out.
+#
+# NOTE: a `case` rather than an associative array; macOS ships bash 3.2, which
+# has no `declare -A`.
+header_api_version() {
+	local module_name=$1
+
+	case "$module_name" in
+		assistant_control | assistant_data | assistant_evaluation)
+			echo "2026-04"
+			;;
+		*)
+			echo "$version"
+			;;
+	esac
+}
+
 generate_client() {
 	local module_name=$1
 
 	oas_file="codegen/apis/_build/${version}/${module_name}_${version}.oas.yaml"
-	
+
 	verify_file_exists $oas_file
 
 	# Cleanup previous build files
@@ -68,9 +95,22 @@ generate_client() {
 	mkdir -p "${destination}/${module_name}"
 	cp -r ${build_dir}/* "${destination}/${module_name}"
 
-	echo "export const X_PINECONE_API_VERSION = '${version}';" > ${destination}/${module_name}/api_version.ts
+	local header_version
+	header_version=$(header_api_version "$module_name")
+	if [ "$header_version" != "$version" ]; then
+		echo "Pinning ${module_name} API version header to ${header_version} (spec: ${version})"
+	fi
+
+	echo "export const X_PINECONE_API_VERSION = '${header_version}';" > ${destination}/${module_name}/api_version.ts
 	echo "export * from './api_version';" >> ${destination}/${module_name}/index.ts
 }
+
+# BSD sed (macOS) requires an explicit empty string for in-place edits; GNU sed does not.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sedi() { sed -i '' "$@"; }
+else
+	sedi() { sed -i "$@"; }
+fi
 
 # Generated TypeScript code attempts to internally map OpenAPI fields that begin
 # with "_" to a non-underscored alternative. Along with a polymorphic object,
@@ -78,20 +118,144 @@ generate_client() {
 # maintain the original field names from the OpenAPI spec and circumvent
 # the remapping behavior as this is simpler for now than creating a fully
 # custom java generator class.
-clean_oas_underscore_manipulation() {
-	db_data_destination="${destination}/db_data/models"
+#
+# The `\([^a-zA-Z0-9_]\)` guards keep these substitutions from matching inside
+# longer identifiers (e.g. `backup_id:`, `.sourceIndexId`), and make them
+# idempotent so re-running against already-patched files is a no-op.
+fix_id_field() {
+	local file=$1
+	sedi \
+		-e 's/\([^a-zA-Z0-9_]\)id:/\1_id:/g' \
+		-e 's/^id:/_id:/' \
+		-e "s/'id'/'_id'/g" \
+		-e 's/"id"/"_id"/g' \
+		-e 's/\.id\([^a-zA-Z0-9_]\)/\._id\1/g' \
+		-e 's/\.id$/\._id/' \
+		"$file"
+}
 
-	# echo "cleaning up Hit.ts"
-	sed -i '' \
-	-e 's/id:/_id:/g' \
-	-e 's/score:/_score:/g' \
-	-e "s/'id'/'_id'/g" \
-	-e "s/'score'/'_score'/g" \
-	-e 's/"id"/"_id"/g' \
-	-e 's/"score"/"_score"/g' \
-	-e 's/\.id/\._id/g' \
-	-e 's/\.score/\._score/g' \
-	"${db_data_destination}/Hit.ts"
+fix_score_field() {
+	local file=$1
+	sedi \
+		-e 's/\([^a-zA-Z0-9_]\)score:/\1_score:/g' \
+		-e 's/^score:/_score:/' \
+		-e "s/'score'/'_score'/g" \
+		-e 's/"score"/"_score"/g' \
+		-e 's/\.score\([^a-zA-Z0-9_]\)/\._score\1/g' \
+		-e 's/\.score$/\._score/' \
+		"$file"
+}
+
+# The generator also camel-cases the spec's `_remove_fields` property to
+# `removeFields` (stripping the leading underscore). Restore the original
+# name so the property is not duplicated in the request body by the `...value`
+# spread in the model's ToJSON. The `[?]*` group preserves an optional marker
+# on the property declaration.
+fix_remove_fields_field() {
+	local file=$1
+	sedi \
+		-e 's/\([^a-zA-Z0-9_]\)removeFields\([?]*\):/\1_remove_fields\2:/g' \
+		-e 's/^removeFields\([?]*\):/_remove_fields\1:/' \
+		-e "s/'removeFields'/'_remove_fields'/g" \
+		-e 's/"removeFields"/"_remove_fields"/g' \
+		-e 's/\.removeFields\([^a-zA-Z0-9_]\)/\._remove_fields\1/g' \
+		-e 's/\.removeFields$/\._remove_fields/' \
+		"$file"
+}
+
+# Models are skipped when absent so that regenerating older spec versions
+# (which predate the document operations) does not fail under `set -e`.
+clean_oas_underscore_manipulation() {
+	local models_dir="${destination}/db_data/models"
+
+	for file in Hit.ts DocumentSearchMatch.ts; do
+		[ -f "${models_dir}/${file}" ] || continue
+		fix_id_field "${models_dir}/${file}"
+		fix_score_field "${models_dir}/${file}"
+	done
+
+	for file in UpsertRecord.ts DocumentRecord.ts FetchedDocumentRecord.ts UpdateDocumentRecord.ts ListedDocumentRecord.ts; do
+		[ -f "${models_dir}/${file}" ] || continue
+		fix_id_field "${models_dir}/${file}"
+	done
+
+	if [ -f "${models_dir}/UpdateDocumentRecord.ts" ]; then
+		fix_remove_fields_field "${models_dir}/UpdateDocumentRecord.ts"
+	fi
+}
+
+# IndexSchemaField is spec'd as anyOf: [TypedIndexSchemaField, LegacyMetadataField].
+# The generator can't model this correctly: it collapses the anyOf into a concrete
+# interface matching only LegacyMetadataField's shape, which silently drops every
+# other property (type, dimension, metric, model, fullTextSearch) at deserialization
+# time. Rewrite the file to express the union properly and dispatch on the presence
+# of `type` at runtime.
+fix_index_schema_field_legacy() {
+	local file="${destination}/db_control/models/IndexSchemaField.ts"
+	[ -f "$file" ] || return 0
+	cat > "$file" << TYPESCRIPT
+/* tslint:disable */
+/* eslint-disable */
+/**
+ * Pinecone Control Plane API
+ * Pinecone is a vector database that makes it easy to search and retrieve billions of high-dimensional vectors.
+ *
+ * The version of the OpenAPI document: ${version}
+ * Contact: support@pinecone.io
+ *
+ * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).
+ * https://openapi-generator.tech
+ * Do not edit the class manually.
+ */
+
+import type { LegacyMetadataField } from './LegacyMetadataField';
+import {
+    LegacyMetadataFieldFromJSONTyped,
+    LegacyMetadataFieldToJSON,
+} from './LegacyMetadataField';
+import type { TypedIndexSchemaField } from './TypedIndexSchemaField';
+import {
+    TypedIndexSchemaFieldFromJSONTyped,
+    TypedIndexSchemaFieldToJSON,
+} from './TypedIndexSchemaField';
+
+/**
+ * @type IndexSchemaField
+ * The configuration of a single field in the index schema.
+ * Typed fields (all current field types) carry a \`type\` discriminator property.
+ * Legacy fields from indexes created before typed schemas were introduced carry
+ * no \`type\` property and are represented as {@link LegacyMetadataField}.
+ * @export
+ */
+export type IndexSchemaField = TypedIndexSchemaField | LegacyMetadataField;
+
+export function IndexSchemaFieldFromJSON(json: any): IndexSchemaField {
+    return IndexSchemaFieldFromJSONTyped(json, false);
+}
+
+export function IndexSchemaFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean): IndexSchemaField {
+    if ((json === undefined) || (json === null)) {
+        return json;
+    }
+    if ('type' in json) {
+        return TypedIndexSchemaFieldFromJSONTyped(json, ignoreDiscriminator);
+    }
+    return LegacyMetadataFieldFromJSONTyped(json, ignoreDiscriminator);
+}
+
+export function IndexSchemaFieldToJSON(value?: IndexSchemaField | null): any {
+    if (value === undefined) {
+        return undefined;
+    }
+    if (value === null) {
+        return null;
+    }
+    if ('type' in value) {
+        return TypedIndexSchemaFieldToJSON(value as TypedIndexSchemaField);
+    }
+    return LegacyMetadataFieldToJSON(value as LegacyMetadataField);
+}
+TYPESCRIPT
 }
 
 update_apis_repo
@@ -106,3 +270,4 @@ for module in "${modules[@]}"; do
 done
 
 clean_oas_underscore_manipulation
+fix_index_schema_field_legacy

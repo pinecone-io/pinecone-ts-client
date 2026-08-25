@@ -1,48 +1,9 @@
-import {
-  configureIndex,
-  createBackup,
-  createCollection,
-  createIndex,
-  createIndexForModel,
-  createIndexFromBackup,
-  deleteBackup,
-  deleteCollection,
-  deleteIndex,
-  describeBackup,
-  describeCollection,
-  describeIndex,
-  describeRestoreJob,
-  indexOperationsBuilder,
-  listBackups,
-  listCollections,
-  listIndexes,
-  listRestoreJobs,
-  CollectionName,
-  CreateBackupOptions,
-  CreateIndexFromBackupOptions,
-  DeleteBackupOptions,
-  DescribeBackupOptions,
-  ListBackupsOptions,
-  ListRestoreJobsOptions,
-  CreateIndexForModelOptions,
-  CreateIndexOptions,
-  IndexName,
-  DescribeRestoreJobOptions,
-} from './control';
-import {
-  createAssistant,
-  CreateAssistantOptions,
-  deleteAssistant,
-  describeAssistant,
-  updateAssistant,
-  UpdateAssistantOptions,
-  listAssistants,
-  evaluate,
-} from './assistant/control';
-import { AssistantHostSingleton } from './assistant/assistantHostSingleton';
-import type { CreateCollectionRequest } from './pinecone-generated-ts-fetch/db_control';
+import { Indexes } from './control/indexes';
+import { Collections } from './control/collections';
+import { Backups } from './control/backups';
+import { RestoreJobs } from './control/restoreJobs';
+import { Assistants } from './assistant/control/assistants';
 import type { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
-import { IndexHostSingleton } from './data/indexHostSingleton';
 import {
   PineconeConfigurationError,
   PineconeEnvironmentVarsNotSupportedError,
@@ -51,12 +12,8 @@ import { Index } from './data';
 import type { PineconeConfiguration, RecordMetadata } from './data';
 import { Inference } from './inference';
 import { isBrowser } from './utils/environment';
-import { asstControlOperationsBuilder } from './assistant/control/asstControlOperationsBuilder';
-import { asstMetricsOperationsBuilder } from './assistant/control/asstMetricsOperationsBuilder';
 import { Assistant } from './assistant';
-import { ConfigureIndexOptions } from './control/configureIndex';
 import { IndexOptions, AssistantOptions } from './types';
-import { Preview } from './preview';
 
 /**
  * The `Pinecone` class is the main entrypoint to this sdk. You will use
@@ -101,65 +58,53 @@ import { Preview } from './preview';
  * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
-  /** @hidden */
-  private _configureIndex: ReturnType<typeof configureIndex>;
-  /** @hidden */
-  private _createCollection: ReturnType<typeof createCollection>;
-  /** @hidden */
-  private _createIndex: ReturnType<typeof createIndex>;
-  /** @hidden */
-  private _createIndexForModel: ReturnType<typeof createIndexForModel>;
-  /** @hidden */
-  private _describeCollection: ReturnType<typeof describeCollection>;
-  /** @hidden */
-  private _describeIndex: ReturnType<typeof describeIndex>;
-  /** @hidden */
-  private _deleteCollection: ReturnType<typeof deleteCollection>;
-  /** @hidden */
-  private _deleteIndex: ReturnType<typeof deleteIndex>;
-  /** @hidden */
-  private _listCollections: ReturnType<typeof listCollections>;
-  /** @hidden */
-  private _listIndexes: ReturnType<typeof listIndexes>;
-  /** @hidden */
-  private _createAssistant: ReturnType<typeof createAssistant>;
-  /** @hidden */
-  private _deleteAssistant: ReturnType<typeof deleteAssistant>;
-  /** @hidden */
-  private _updateAssistant: ReturnType<typeof updateAssistant>;
-  /** @hidden */
-  private _describeAssistant: ReturnType<typeof describeAssistant>;
-  /** @hidden */
-  private _listAssistants: ReturnType<typeof listAssistants>;
-  /** @hidden */
-  private _evaluate: ReturnType<typeof evaluate>;
-  /** @hidden */
-  private _createBackup: ReturnType<typeof createBackup>;
-  /** @hidden */
-  private _createIndexFromBackup: ReturnType<typeof createIndexFromBackup>;
-  /** @hidden */
-  private _describeBackup: ReturnType<typeof describeBackup>;
-  /** @hidden */
-  private _describeRestoreJob: ReturnType<typeof describeRestoreJob>;
-  /** @hidden */
-  private _deleteBackup: ReturnType<typeof deleteBackup>;
-  /** @hidden */
-  private _listBackups: ReturnType<typeof listBackups>;
-  /** @hidden */
-  private _listRestoreJobs: ReturnType<typeof listRestoreJobs>;
-
   public inference: Inference;
   /**
-   * Provides access to alpha preview operations using the 2026-01.alpha API.
+   * Control-plane operations for indexes, backups, restore jobs, and collections.
    *
    * @example
    * ```typescript
-   * const list = await pc.preview.indexes.list();
-   * const idx = pc.preview.index('my-schema-index');
+   * const list = await pc.indexes.list();
+   * const indexModel = await pc.indexes.describe('my-index');
    * ```
-   * @alpha
    */
-  public preview: Preview;
+  public indexes: Indexes;
+  /**
+   * Control-plane operations for collections.
+   *
+   * @example
+   * ```typescript
+   * const collections = await pc.collections.list();
+   * ```
+   */
+  public collections: Collections;
+  /**
+   * Control-plane operations for index backups.
+   *
+   * @example
+   * ```typescript
+   * const backups = await pc.backups.list();
+   * ```
+   */
+  public backups: Backups;
+  /**
+   * Control-plane operations for restore jobs.
+   *
+   * @example
+   * ```typescript
+   * const jobs = await pc.restoreJobs.list();
+   * ```
+   */
+  public restoreJobs: RestoreJobs;
+  /**
+   * Control-plane operations for assistants.
+   *
+   * @example
+   * ```typescript
+   * const assistants = await pc.assistants.list();
+   * ```
+   */
+  public assistants: Assistants;
 
   /**
    * @example
@@ -189,42 +134,17 @@ export class Pinecone {
 
     this._checkForBrowser();
 
-    const api = indexOperationsBuilder(this.config);
-    const asstControlApi = asstControlOperationsBuilder(this.config);
-    const asstMetricsApi = asstMetricsOperationsBuilder(this.config);
-
-    // Index operations
-    this._configureIndex = configureIndex(api);
-    this._createCollection = createCollection(api);
-    this._createIndex = createIndex(api);
-    this._createIndexForModel = createIndexForModel(api);
-    this._describeCollection = describeCollection(api);
-    this._deleteCollection = deleteCollection(api);
-    this._describeIndex = describeIndex(api);
-    this._deleteIndex = deleteIndex(api);
-    this._listCollections = listCollections(api);
-    this._listIndexes = listIndexes(api);
-    this._createBackup = createBackup(api);
-    this._createIndexFromBackup = createIndexFromBackup(api);
-    this._describeBackup = describeBackup(api);
-    this._describeRestoreJob = describeRestoreJob(api);
-    this._deleteBackup = deleteBackup(api);
-    this._listBackups = listBackups(api);
-    this._listRestoreJobs = listRestoreJobs(api);
+    // Control-plane operations, grouped by resource
+    this.indexes = new Indexes(this.config);
+    this.collections = new Collections(this.config);
+    this.backups = new Backups(this.config);
+    this.restoreJobs = new RestoreJobs(this.config);
+    this.assistants = new Assistants(this.config);
 
     // Assistant operations
-    this._createAssistant = createAssistant(asstControlApi);
-    this._deleteAssistant = deleteAssistant(asstControlApi);
-    this._updateAssistant = updateAssistant(asstControlApi);
-    this._describeAssistant = describeAssistant(asstControlApi);
-    this._listAssistants = listAssistants(asstControlApi);
-    this._evaluate = evaluate(asstMetricsApi);
 
     // Inference operations
     this.inference = new Inference(this.config);
-
-    // Preview (alpha) operations
-    this.preview = new Preview(this.config);
   }
 
   /**
@@ -281,623 +201,6 @@ export class Pinecone {
   /** @hidden */
   private config: PineconeConfiguration;
 
-  /**
-   * Describe a Pinecone index
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const indexModel = await pc.describeIndex('my-index')
-   * console.log(indexModel)
-   * // {
-   * //     name: 'sample-index-1',
-   * //     dimension: 3,
-   * //     metric: 'cosine',
-   * //     host: 'sample-index-1-1390950.svc.apw5-4e34-81fa.pinecone.io',
-   * //     spec: {
-   * //           pod: undefined,
-   * //           serverless: {
-   * //               cloud: 'aws',
-   * //               region: 'us-west-2'
-   * //           }
-   * //     },
-   * //     status: {
-   * //           ready: true,
-   * //           state: 'Ready'
-   * //     }
-   * // }
-   * ```
-   *
-   * @param indexName - The name of the index to describe.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexModel}.
-   */
-  async describeIndex(indexName: IndexName) {
-    const indexModel = await this._describeIndex(indexName);
-
-    // For any describeIndex calls we want to update the IndexHostSingleton cache.
-    // This prevents unneeded calls to describeIndex for resolving the host for vector operations.
-    const host = indexModel.privateHost || indexModel.host;
-    IndexHostSingleton._set(this.config, indexName, host);
-
-    return Promise.resolve(indexModel);
-  }
-
-  /**
-   * List all Pinecone indexes
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const indexList = await pc.listIndexes()
-   * console.log(indexList)
-   * // {
-   * //     indexes: [
-   * //       {
-   * //         name: "sample-index-1",
-   * //         dimension: 3,
-   * //         metric: "cosine",
-   * //         host: "sample-index-1-1234567.svc.apw5-2e18-32fa.pinecone.io",
-   * //         spec: {
-   * //           serverless: {
-   * //             cloud: "aws",
-   * //             region: "us-west-2"
-   * //           }
-   * //         },
-   * //         status: {
-   * //           ready: true,
-   * //           state: "Ready"
-   * //         }
-   * //       },
-   * //       {
-   * //         name: "sample-index-2",
-   * //         dimension: 3,
-   * //         metric: "cosine",
-   * //         host: "sample-index-2-1234567.svc.apw2-5e76-83fa.pinecone.io",
-   * //         spec: {
-   * //           serverless: {
-   * //             cloud: "aws",
-   * //             region: "us-west-2"
-   * //           }
-   * //         },
-   * //         status: {
-   * //           ready: true,
-   * //           state: "Ready"
-   * //         }
-   * //       }
-   * //     ]
-   * //   }
-   * ```
-   *
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexList}.
-   */
-  async listIndexes() {
-    const indexList = await this._listIndexes();
-
-    // For any listIndexes calls we want to update the IndexHostSingleton cache.
-    // This prevents unneeded calls to describeIndex for resolving the host for index operations.
-    if (indexList.indexes && indexList.indexes.length > 0) {
-      for (let i = 0; i < indexList.indexes.length; i++) {
-        const index = indexList.indexes[i];
-        const host = index.privateHost || index.host;
-        IndexHostSingleton._set(this.config, index.name, host);
-      }
-    }
-
-    return Promise.resolve(indexList);
-  }
-
-  /**
-   * Creates a new index.
-   *
-   * @example
-   * The minimum required configuration to create an index is the index `name`, `dimension`, and `spec`.
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndex({ name: 'my-index', dimension: 128, spec: { serverless: { cloud: 'aws', region: 'us-west-2' }}})
-   * ```
-   *
-   * @example
-   * The `spec` object defines how the index should be deployed. For serverless indexes, you define only the cloud and region where the index should be hosted.
-   * For pod-based indexes, you define the environment where the index should be hosted, the pod type and size to use, and other index characteristics.
-   * In a different example, you can create a pod-based index by specifying the `pod` spec object with the `environment`, `pods`, `podType`, and `metric` properties.
-   * For more information on creating indexes, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes).
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndex({
-   *  name: 'my-index',
-   *  dimension: 1536,
-   *  metric: 'cosine',
-   *  spec: {
-   *    pod: {
-   *      environment: 'us-west-2-gcp',
-   *      pods: 1,
-   *      podType: 'p1.x1'
-   *    }
-   *   },
-   *  tags: { 'team': 'data-science' }
-   * })
-   * ```
-   *
-   * @example
-   * If you would like to create the index only if it does not already exist, you can use the `suppressConflicts` boolean option.
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndex({
-   *   name: 'my-index',
-   *   dimension: 1536,
-   *   spec: {
-   *     serverless: {
-   *       cloud: 'aws',
-   *       region: 'us-west-2'
-   *     }
-   *   },
-   *   suppressConflicts: true,
-   *   tags: { 'team': 'data-science' }
-   * })
-   * ```
-   *
-   * @example
-   * If you plan to begin upserting immediately after index creation is complete, you should use the `waitUntilReady` option. Otherwise, the index may not be ready to receive data operations when you attempt to upsert.
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const indexModel = await pc.createIndex({
-   *  name: 'my-index',
-   *   spec: {
-   *     serverless: {
-   *       cloud: 'aws',
-   *       region: 'us-west-2'
-   *     }
-   *   },
-   *  waitUntilReady: true,
-   *  tags: { 'team': 'data-science' }
-   * });
-   *
-   * const records = [
-   *   // PineconeRecord objects with your embedding values
-   * ]
-   * const index = pc.index({ host: indexModel.host });
-   * await index.upsert({ records })
-   * ```
-   *
-   * @example
-   * By default all metadata fields are indexed when records are upserted with metadata, but if you want to improve performance you can specify the specific fields you want to index. This example is showing a few hypothetical metadata fields, but the values you'd use depend on what metadata you plan to store with records in your Pinecone index.
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndex({
-   *   name: 'my-index',
-   *   dimension: 1536,
-   *   spec: {
-   *     serverless: {
-   *       cloud: 'aws',
-   *       region: 'us-west-2',
-   *       metadataConfig: { 'indexed' : ['productName', 'productDescription'] }
-   *     }
-   *   },
-   *  tags: { 'team': 'data-science' }
-   * })
-   * ```
-   *
-   * @param options - The {@link CreateIndexOptions} for creating the index.
-   * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
-   * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
-   * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
-   */
-  async createIndex(options: CreateIndexOptions) {
-    const indexModel = await this._createIndex(options);
-    if (indexModel) {
-      const host = indexModel.privateHost || indexModel.host;
-      IndexHostSingleton._set(this.config, indexModel.name, host);
-    }
-    return indexModel;
-  }
-
-  /**
-   * Creates a new integrated index which allows working with integrated inference capabilities.
-   * @see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference)
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.createIndexForModel({
-   *   name: 'integrated-index',
-   *   cloud: 'aws',
-   *   region: 'us-east-1',
-   *   embed: {
-   *     model: 'multilingual-e5-large',
-   *     fieldMap: { text: 'chunk_text' },
-   *   },
-   *   waitUntilReady: true,
-   * });
-   * ```
-   *
-   * @param options - The {@link CreateIndexForModelOptions} for creating the index.
-   * @see [Distance metrics](https://docs.pinecone.io/docs/indexes#distance-metrics)
-   * @see [Pod types and sizes](https://docs.pinecone.io/docs/indexes#pods-pod-types-and-pod-sizes)
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters being specified or other problem such as project quotas limiting the creation of any additional indexes.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in your project.
-   * @returns A promise that resolves to {@link IndexModel} when the request to create the index is completed. Note that the index is not immediately ready to use. You can use the {@link describeIndex} function to check the status of the index.
-   */
-  async createIndexForModel(options: CreateIndexForModelOptions) {
-    const indexModel = await this._createIndexForModel(options);
-    if (indexModel) {
-      const host = indexModel.privateHost || indexModel.host;
-      IndexHostSingleton._set(this.config, indexModel.name, host);
-    }
-    return indexModel;
-  }
-
-  /**
-   * Deletes an index
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.deleteIndex('my-index')
-   * ```
-   *
-   * @param indexName - The name of the index to delete.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @returns A promise that resolves when the request to delete the index is completed.
-   */
-  async deleteIndex(indexName: IndexName) {
-    await this._deleteIndex(indexName);
-
-    // When an index is deleted, we need to evict the host from the IndexHostSingleton cache.
-    IndexHostSingleton._delete(this.config, indexName);
-
-    return Promise.resolve();
-  }
-
-  /**
-   * Configure an index
-   *
-   * Use this method to update configuration on an existing index. For both pod-based and serverless indexes you can update
-   * the deletionProtection status of an index and/or change any index tags. For pod-based indexes you can also
-   * configure the number of replicas and pod type. For serverless and BYOC indexes you can configure the read capacity,
-   * and for indexes with integrated inference you can update the embedding configuration.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.configureIndex({
-   *   name: 'my-index',
-   *   deletionProtection: 'enabled',
-   *   podReplicas: 2,
-   *   podType: 'p1.x2'
-   * });
-   * ```
-   *
-   * @param options - The {@link ConfigureIndexOptions} for configuring the index.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexModel} when the request to configure the index is completed.
-   */
-  configureIndex(options: ConfigureIndexOptions) {
-    return this._configureIndex(options);
-  }
-
-  /**
-   * Create a new collection from an existing index.
-   *
-   * Note: collections are only supported for pod-based indexes; serverless
-   * indexes do not support collections.
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const indexList = await pc.listIndexes()
-   * const indexName = indexList.indexes[0].name;
-   * await pc.createCollection({
-   *  name: 'my-collection',
-   *  source: indexName
-   * })
-   * ```
-   *
-   * @param options - The collection configuration.
-   * @param options.name - The name of the collection. Must be unique within the project and contain alphanumeric and hyphen characters. The name must start and end with alphanumeric characters.
-   * @param options.source - The name of the index to use as the source for the collection.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns a promise that resolves to {@link CollectionModel} when the request to create the collection is completed.
-   */
-  createCollection(options: CreateCollectionRequest) {
-    return this._createCollection(options);
-  }
-
-  /**
-   * List all collections in a project
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.listCollections()
-   * ```
-   *
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link CollectionList}.
-   */
-  listCollections() {
-    return this._listCollections();
-  }
-
-  /**
-   * Delete a collection by collection name
-   *
-   * @example
-   * ```
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const collectionList = await pc.listCollections()
-   * const collectionName = collectionList.collections[0].name;
-   * await pc.deleteCollection(collectionName)
-   * ```
-   *
-   * @param collectionName - The name of the collection to delete.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the request to delete the collection is completed.
-   */
-  deleteCollection(collectionName: CollectionName) {
-    return this._deleteCollection(collectionName);
-  }
-
-  /**
-   * Describe a collection
-   *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.describeCollection('my-collection')
-   * ```
-   *
-   * @param collectionName - The name of the collection to describe.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link CollectionModel}.
-   */
-  describeCollection(collectionName: CollectionName) {
-    return this._describeCollection(collectionName);
-  }
-
-  /**
-   * Creates a new Assistant.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.createAssistant({name: 'test1'});
-   * // {
-   * //  name: 'test11',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Initializing',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:52:49.652Z,
-   * //  updatedAt: 2025-01-08T22:52:49.652Z
-   * // }
-   * ```
-   *
-   * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
-   * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
-   * and determines where the Assistant will be hosted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
-   */
-  async createAssistant(options: CreateAssistantOptions) {
-    const assistant = await this._createAssistant(options);
-
-    if (assistant.host) {
-      AssistantHostSingleton._set(this.config, assistant.name, assistant.host);
-    }
-
-    return Promise.resolve(assistant);
-  }
-
-  /**
-   * Deletes an Assistant by name.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.deleteAssistant('test1');
-   * ```
-   *
-   * @param assistantName - The name of the Assistant to be deleted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   */
-  async deleteAssistant(assistantName: string) {
-    await this._deleteAssistant(assistantName);
-    AssistantHostSingleton._delete(this.config, assistantName);
-    return Promise.resolve();
-  }
-
-  /**
-   * Retrieves information about an Assistant by name, including its current
-   * status (e.g. whether it is still initializing or ready to use).
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const test = await pc.describeAssistant('test1');
-   * console.log(test);
-   * // {
-   * //  name: 'test1',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Ready',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:24:50.525Z,
-   * //  updatedAt: 2025-01-08T22:24:52.303Z
-   * // }
-   * ```
-   *
-   * @param assistantName - The name of the Assistant to retrieve.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
-   */
-  async describeAssistant(assistantName: string) {
-    const assistant = await this._describeAssistant(assistantName);
-
-    if (assistant.host) {
-      AssistantHostSingleton._set(this.config, assistantName, assistant.host);
-    }
-
-    return Promise.resolve(assistant);
-  }
-
-  /**
-   * Retrieves a list of all Assistants for a given Pinecone API key.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const assistants = await pc.listAssistants();
-   * console.log(assistants);
-   * // {
-   * //  assistants: [
-   * //    {
-   * //      name: 'test2',
-   * //      instructions: 'test-instructions',
-   * //      metadata: [Object],
-   * //      status: 'Ready',
-   * //      host: 'https://prod-1-data.ke.pinecone.io',
-   * //      createdAt: 2025-01-06T19:14:18.633Z,
-   * //      updatedAt: 2025-01-06T19:14:36.977Z
-   * //    },
-   * //  ]
-   * // }
-   * ```
-   *
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
-   */
-  async listAssistants() {
-    const assistantList = await this._listAssistants();
-
-    // For any listAssistants calls we want to update the AssistantHostSingleton cache.
-    // This prevents unneeded calls to describeAssistant for resolving the host for assistant operations.
-    if (assistantList.assistants && assistantList.assistants.length > 0) {
-      for (let i = 0; i < assistantList.assistants.length; i++) {
-        const assistant = assistantList.assistants[i];
-        if (assistant.host) {
-          AssistantHostSingleton._set(
-            this.config,
-            assistant.name,
-            assistant.host,
-          );
-        }
-      }
-    }
-
-    return Promise.resolve(assistantList);
-  }
-
-  /**
-   * Updates an Assistant by name.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.updateAssistant({ name: 'test1', instructions: 'some new instructions!'});
-   * // {
-   * //  assistantName: test1,
-   * //  instructions: 'some new instructions!',
-   * //  metadata: undefined
-   * // }
-   * ```
-   *
-   * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
-   * optional instructions and metadata.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link UpdateAssistantResponse} object.
-   */
-  updateAssistant(options: UpdateAssistantOptions) {
-    return this._updateAssistant(options);
-  }
-
-  /**
-   * Evaluates the alignment of a generated answer against a ground truth answer.
-   * Returns metrics for correctness (precision), completeness (recall), and alignment (harmonic mean).
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const result = await pc.evaluate({
-   *   question: "What is the capital of France?",
-   *   answer: "The capital of France is Paris.",
-   *   groundTruth: "Paris is the capital and most populous city of France."
-   * });
-   * console.log(result);
-   * // {
-   * //   metrics: {
-   * //     correctness: 0.95,
-   * //     completeness: 0.90,
-   * //     alignment: 0.92
-   * //   },
-   * //   reasoning: { evaluatedFacts: [...] },
-   * //   usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 }
-   * // }
-   * ```
-   *
-   * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
-   */
-  evaluate(options: { question: string; answer: string; groundTruth: string }) {
-    return this._evaluate(options);
-  }
-
   /** @internal */
   _checkForBrowser() {
     if (isBrowser()) {
@@ -915,270 +218,6 @@ export class Pinecone {
   }
 
   /**
-   * Creates a backup of an index.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const backup = await pc.createBackup({ indexName: 'my-index', name: 'my-index-backup-1', description: 'weekly backup' });
-   * console.log(backup);
-   * // {
-   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //   sourceIndexName: 'my-index',
-   * //   sourceIndexId: 'b480770b-600d-4c4e-bf19-799c933ae2bf',
-   * //   name: 'my-index-backup-1',
-   * //   description: 'weekly backup',
-   * //   status: 'Initializing',
-   * //   cloud: 'aws',
-   * //   region: 'us-east-1',
-   * //   dimension: 1024,
-   * //   metric: 'cosine',
-   * //   recordCount: 500,
-   * //   namespaceCount: 4,
-   * //   sizeBytes: 78294,
-   * //   tags: {},
-   * //   createdAt: '2025-05-07T03:11:11.722238160Z'
-   * // }
-   * ```
-   *
-   * @param options - A {@link CreateBackupOptions} object containing the indexName to backup, and an optional name
-   * and description for the backup.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link BackupModel} object.
-   */
-  createBackup(options: CreateBackupOptions) {
-    return this._createBackup(options);
-  }
-
-  /**
-   * Creates an index from an existing backup.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const response = await pc.createIndexFromBackup({ backupId: '11450b9f-96e5-47e5-9186-03f346b1f385', name: 'my-index-restore-1' });
-   * console.log(response);
-   * // {
-   * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
-   * //   indexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe'
-   * // }
-   * ```
-   *
-   * @param options - A {@link CreateIndexFromBackupOptions} object containing the backupId for the backup to restore
-   * the index from, and the name of the new index. Optionally, you can provide new tags or deletionProtection values for the index.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link CreateIndexFromBackupResponse} object.
-   */
-  createIndexFromBackup(options: CreateIndexFromBackupOptions) {
-    return this._createIndexFromBackup(options);
-  }
-
-  /**
-   * Describes a backup.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const backup = await pc.describeBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
-   * console.log(backup);
-   * // {
-   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //   sourceIndexName: 'my-index',
-   * //   sourceIndexId: 'b480770b-600d-4c4e-bf19-799c933ae2bf',
-   * //   name: 'my-index-backup-1',
-   * //   description: 'weekly backup',
-   * //   status: 'Initializing',
-   * //   cloud: 'aws',
-   * //   region: 'us-east-1',
-   * //   dimension: 1024,
-   * //   metric: 'cosine',
-   * //   recordCount: 500,
-   * //   namespaceCount: 4,
-   * //   sizeBytes: 78294,
-   * //   tags: {},
-   * //   createdAt: '2025-05-07T03:11:11.722238160Z'
-   * // }
-   * ```
-   *
-   * @param options - The backupId of the backup to describe.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link BackupModel} object.
-   */
-  describeBackup(backupName: DescribeBackupOptions) {
-    return this._describeBackup(backupName);
-  }
-
-  /**
-   * Describes a restore job.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const restoreJob = await pc.describeRestoreJob('4d4c8693-10fd-4204-a57b-1e3e626fca07');
-   * console.log(restoreJob);
-   * // {
-   * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
-   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //   targetIndexName: 'my-index-restore-1',
-   * //   targetIndexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe',
-   * //   status: 'Completed',
-   * //   createdAt: 2025-05-07T03:38:37.107Z,
-   * //   completedAt: 2025-05-07T03:40:23.687Z,
-   * //   percentComplete: 100
-   * // }
-   * ```
-   *
-   * @param options - The restoreJobId of the restore job to describe.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link RestoreJobModel} object.
-   */
-  describeRestoreJob(restoreJobId: DescribeRestoreJobOptions) {
-    return this._describeRestoreJob(restoreJobId);
-  }
-
-  /**
-   * Deletes a backup.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * await pc.deleteBackup('11450b9f-96e5-47e5-9186-03f346b1f385');
-   * ```
-   *
-   * @param options - The backupId of the backup to delete.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves when the request to delete the backup is completed.
-   */
-  deleteBackup(backupName: DeleteBackupOptions) {
-    return this._deleteBackup(backupName);
-  }
-
-  /**
-   * Lists backups within a project or a specific index. Pass an indexName to list backups for that index,
-   * otherwise the operation will return all backups in the project.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const backupsList = await pc.listBackups({ indexName: 'my-index', limit: 2 });
-   * console.log(backupsList);
-   * // {
-   * //   data: [
-   * //     {
-   * //       backupId: '6a00902c-d118-4ad3-931c-49328c26d558',
-   * //       sourceIndexName: 'my-index',
-   * //       sourceIndexId: '0888b4d9-0b7b-447e-a403-ab057ceee4d4',
-   * //       name: 'my-index-backup-2',
-   * //       description: undefined,
-   * //       status: 'Ready',
-   * //       cloud: 'aws',
-   * //       region: 'us-east-1',
-   * //       dimension: 5,
-   * //       metric: 'cosine',
-   * //       recordCount: 200,
-   * //       namespaceCount: 2,
-   * //       sizeBytes: 67284,
-   * //       tags: {},
-   * //       createdAt: '2025-05-07T18:34:13.626650Z'
-   * //     },
-   * //     {
-   * //       backupId: '2b362ea3-b7cf-4950-866f-0dff37ab781e',
-   * //       sourceIndexName: 'my-index',
-   * //       sourceIndexId: '0888b4d9-0b7b-447e-a403-ab057ceee4d4',
-   * //       name: 'my-index-backup-1',
-   * //       description: undefined,
-   * //       status: 'Ready',
-   * //       cloud: 'aws',
-   * //       region: 'us-east-1',
-   * //       dimension: 1024,
-   * //       metric: 'cosine',
-   * //       recordCount: 500,
-   * //       namespaceCount: 4,
-   * //       sizeBytes: 78294,
-   * //       tags: {},
-   * //       createdAt: '2025-05-07T18:33:59.888270Z'
-   * //     },
-   * //   ],
-   * //   pagination: undefined
-   * // }
-   * ```
-   *
-   * @param options - A {@link ListBackupsOptions} object containing the optional indexName, limit, and paginationToken values.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link BackupList} object.
-   */
-  listBackups(options: ListBackupsOptions) {
-    return this._listBackups(options);
-  }
-
-  /**
-   * Lists restore jobs within a project.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   * const restoreJobsList = await pc.listRestoreJobs({ limit: 3 });
-   * console.log(restoreJobsList);
-   * // {
-   * //   data: [
-   * //     {
-   * //       restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
-   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //       targetIndexName: 'my-index-restore-1',
-   * //       targetIndexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe',
-   * //       status: 'Completed',
-   * //       createdAt: 2025-05-07T03:38:37.107Z,
-   * //       completedAt: 2025-05-07T03:40:23.687Z,
-   * //       percentComplete: 100
-   * //     },
-   * //     {
-   * //       restoreJobId: 'c60a62e0-63b9-452a-88af-31d89c56c988',
-   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //       targetIndexName: 'my-index-restore-2',
-   * //       targetIndexId: 'f2c9a846-799f-4b19-81a4-f3096b3d6114',
-   * //       status: 'Completed',
-   * //       createdAt: 2025-05-07T21:42:38.971Z,
-   * //       completedAt: 2025-05-07T21:43:11.782Z,
-   * //       percentComplete: 100
-   * //     },
-   * //     {
-   * //       restoreJobId: '792837b7-8001-47bf-9c11-1859826b9c10',
-   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //       targetIndexName: 'my-index-restore-3',
-   * //       targetIndexId: '620dda62-c999-4dd1-b083-6beb087b31e7',
-   * //       status: 'Pending',
-   * //       createdAt: 2025-05-07T21:48:39.580Z,
-   * //       completedAt: 2025-05-07T21:49:12.084Z,
-   * //       percentComplete: 45
-   * //     }
-   * //   ],
-   * //   pagination: undefined
-   * // }
-   * ```
-   *
-   * @param options - A {@link ListRestoreJobsOptions} object containing the optional limit and paginationToken values.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to a {@link RestoreJobList} object.
-   */
-  listRestoreJobs(options: ListRestoreJobsOptions) {
-    return this._listRestoreJobs(options);
-  }
-
-  /**
    * Targets a specific index for performing data operations.
    *
    * You can target an index by providing its `name`, its `host`, or both. If only `name` is provided,
@@ -1192,7 +231,7 @@ export class Pinecone {
    * const pc = new Pinecone()
    *
    * // Get the host from describeIndex
-   * const indexModel = await pc.describeIndex('index-name');
+   * const indexModel = await pc.indexes.describe('index-name');
    * const index = pc.index({ host: indexModel.host })
    * ```
    *
@@ -1240,7 +279,7 @@ export class Pinecone {
    * }
    *
    * // Specify a custom metadata type while targeting the index
-   * const indexModel = await pc.describeIndex('test-index');
+   * const indexModel = await pc.indexes.describe('test-index');
    * const index = pc.index<MovieMetadata>({ host: indexModel.host });
    *
    * // Now you get type errors if upserting malformed metadata
@@ -1324,30 +363,6 @@ export class Pinecone {
   }
 
   /**
-   * {@inheritDoc index}
-   */
-  // Alias method to match the Python SDK capitalization
-  Index<T extends RecordMetadata = RecordMetadata>(
-    options: IndexOptions,
-  ): Index<T>;
-  /**
-   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
-   * This signature will be removed in the next major version.
-   */
-  Index<T extends RecordMetadata = RecordMetadata>(
-    indexName: string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders,
-  ): Index<T>;
-  Index<T extends RecordMetadata = RecordMetadata>(
-    optionsOrName: IndexOptions | string,
-    indexHostUrl?: string,
-    additionalHeaders?: HTTPHeaders,
-  ): Index<T> {
-    return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
-  }
-
-  /**
    * Targets a specific assistant for performing operations.
    *
    * Once an assistant is targeted, you can perform operations such as uploading files,
@@ -1424,22 +439,5 @@ export class Pinecone {
 
     // Handle new options-based API
     return new Assistant(optionsOrName, this.config);
-  }
-
-  /**
-   * {@inheritDoc assistant}
-   */
-  // Alias method
-  Assistant(options: AssistantOptions): Assistant;
-  /**
-   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
-   * This signature will be removed in the next major version.
-   */
-  Assistant(name: string, host?: string): Assistant;
-  Assistant(
-    optionsOrName: AssistantOptions | string,
-    host?: string,
-  ): Assistant {
-    return this.assistant(optionsOrName as any, host);
   }
 }

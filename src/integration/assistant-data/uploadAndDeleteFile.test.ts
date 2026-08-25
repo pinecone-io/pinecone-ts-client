@@ -21,7 +21,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   assistantName = fixtures.assistant.name;
-  assistant = pinecone.Assistant({ name: assistantName });
+  assistant = pinecone.assistant({ name: assistantName });
 
   const content = 'This is test content for file upload';
 
@@ -228,7 +228,7 @@ describe('Upload file error paths', () => {
 
   test('Upload to nonexistent assistant', async () => {
     await expect(
-      pinecone.Assistant({ name: 'nonexistent' }).uploadFile({
+      pinecone.assistant({ name: 'nonexistent' }).uploadFile({
         path: tempFileWithMetadataPath,
       }),
     ).rejects.toThrow(/404/);

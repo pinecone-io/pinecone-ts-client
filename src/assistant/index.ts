@@ -432,7 +432,7 @@ export class Assistant {
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistant = pc.Assistant({ name: 'my-assistant' });
+   * const assistant = pc.assistant({ name: 'my-assistant' });
    * await assistant.uploadFile({ path: 'report.pdf', metadata: { category: 'reports' } });
    * ```
    *

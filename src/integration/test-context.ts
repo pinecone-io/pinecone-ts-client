@@ -9,6 +9,12 @@ export interface IntegrationFixtures {
     name: string;
     dimension: number;
     metric: string;
+    /**
+     * Name of the `dense_vector` schema field holding the seeded vectors.
+     * Document operations address vectors by field name, so tests read this
+     * rather than hardcoding it.
+     */
+    vectorFieldName: string;
     metadataFilter: {
       key: string;
       value: any;
@@ -113,6 +119,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
       name: data.serverlessIndex.name,
       dimension: data.serverlessIndex.dimension || 2,
       metric: data.serverlessIndex.metric || 'dotproduct',
+      vectorFieldName: data.serverlessIndex.vectorFieldName || 'embedding',
       metadataFilter,
       recordIds,
     },
