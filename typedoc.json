@@ -3,6 +3,7 @@
   "entryPoints": ["src/index.ts"],
   "exclude": [],
   "projectDocuments": ["guides/**/*.md"],
+  "alwaysCreateEntryPointModule": false,
   "hideGenerator": true,
   "includeVersion": true,
   "excludeInternal": true,
