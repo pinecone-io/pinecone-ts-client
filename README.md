@@ -23,7 +23,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
   - [Using integrated inference](#using-integrated-inference)
 - [Pinecone Assistant](#pinecone-assistant)
 - [More Information](#more-information-on-usage)
-- [Issues & Bugs](#issues--bugs)
+- [Issues and Bugs](#issues-and-bugs)
 - [Contributing](#contributing)
 
 ## Documentation
@@ -34,7 +34,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 ### Upgrading the SDK
 
 > [!NOTE]
-> For notes on breaking changes between versions, see the [migration guides](./guides/upgrading/).
+> For notes on breaking changes between versions, see the [migration guides](./guides/README.md#upgrading).
 
 ## Prerequisites
 
@@ -268,7 +268,7 @@ Detailed information on specific ways of using the SDK are covered in these guid
 
 - [FAQ](./guides/faq.md) - Frequently asked questions and troubleshooting
 
-# Issues & Bugs
+# Issues and Bugs
 
 If you notice bugs or have feedback, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues).
 
