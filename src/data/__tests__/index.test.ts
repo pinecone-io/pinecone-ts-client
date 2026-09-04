@@ -3,6 +3,10 @@ import { QueryCommand } from '../vectors/query';
 import { UpdateCommand } from '../vectors/update';
 import { UpsertCommand } from '../vectors/upsert';
 import { VectorOperationsProvider } from '../vectors/vectorOperationsProvider';
+import { BulkOperationsProvider } from '../bulk/bulkOperationsProvider';
+import { NamespaceOperationsProvider } from '../namespaces/namespacesOperationsProvider';
+import { DocumentOperationsProvider } from '../documents/documentOperationsProvider';
+import { listDocuments } from '../documents/listDocuments';
 import { Index } from '../index';
 import type { ScoredPineconeRecord } from '../vectors/query';
 
@@ -11,6 +15,10 @@ jest.mock('../vectors/query');
 jest.mock('../vectors/update');
 jest.mock('../vectors/upsert');
 jest.mock('../vectors/vectorOperationsProvider');
+jest.mock('../bulk/bulkOperationsProvider');
+jest.mock('../namespaces/namespacesOperationsProvider');
+jest.mock('../documents/documentOperationsProvider');
+jest.mock('../documents/listDocuments');
 
 describe('Index', () => {
   let config;
@@ -360,6 +368,100 @@ describe('Index', () => {
         customHost,
         undefined,
       );
+    });
+
+    test('carries per-index additionalHeaders forward to every provider', () => {
+      const additionalHeaders = { 'x-custom-header': 'custom-value' };
+      const index = new Index(
+        {
+          name: 'index-name',
+          host: 'https://custom-host.pinecone.io',
+          additionalHeaders,
+        },
+        config,
+      );
+
+      (VectorOperationsProvider as jest.Mock).mockClear();
+      (BulkOperationsProvider as jest.Mock).mockClear();
+      (NamespaceOperationsProvider as jest.Mock).mockClear();
+      (DocumentOperationsProvider as jest.Mock).mockClear();
+
+      index.namespace('my-namespace');
+
+      const expectedArgs = [
+        config,
+        'index-name',
+        'https://custom-host.pinecone.io',
+        additionalHeaders,
+      ];
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(...expectedArgs);
+      expect(BulkOperationsProvider).toHaveBeenCalledWith(...expectedArgs);
+      expect(NamespaceOperationsProvider).toHaveBeenCalledWith(...expectedArgs);
+      expect(DocumentOperationsProvider).toHaveBeenCalledWith(...expectedArgs);
+    });
+
+    test('carries per-index additionalHeaders forward through repeated chaining', () => {
+      const additionalHeaders = { 'x-custom-header': 'custom-value' };
+      const index = new Index(
+        { name: 'index-name', additionalHeaders },
+        config,
+      );
+
+      (VectorOperationsProvider as jest.Mock).mockClear();
+
+      index.namespace('ns-1').namespace('ns-2');
+
+      for (const call of (VectorOperationsProvider as jest.Mock).mock.calls) {
+        expect(call[3]).toEqual(additionalHeaders);
+      }
+      expect(VectorOperationsProvider).toHaveBeenCalledTimes(2);
+    });
+
+    test('does not inject client-level config headers the instance was not built with', () => {
+      const configWithHeaders = {
+        ...config,
+        additionalHeaders: { 'x-client-header': 'client-value' },
+      };
+      const index = new Index({ name: 'index-name' }, configWithHeaders);
+
+      (VectorOperationsProvider as jest.Mock).mockClear();
+      (DocumentOperationsProvider as jest.Mock).mockClear();
+
+      index.namespace('my-namespace');
+
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        configWithHeaders,
+        'index-name',
+        undefined,
+        undefined,
+      );
+      expect(DocumentOperationsProvider).toHaveBeenCalledWith(
+        configWithHeaders,
+        'index-name',
+        undefined,
+        undefined,
+      );
+    });
+  });
+
+  describe('listDocuments()', () => {
+    test('can be called with no arguments and defaults options to {}', async () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      await index.listDocuments();
+
+      expect(listDocuments).toHaveBeenCalledWith(undefined, '__default__', {});
+    });
+
+    test('still accepts options when provided', async () => {
+      const index = new Index({ name: 'index-name' }, config);
+
+      (listDocuments as jest.Mock).mockClear();
+      await index.listDocuments({ limit: 10 });
+
+      expect(listDocuments).toHaveBeenCalledWith(undefined, '__default__', {
+        limit: 10,
+      });
     });
   });
 });
