@@ -184,7 +184,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install npm packages
         run: |
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
         shell: bash
       - name: Build TypeScript for Pinecone
         run: npm run build
@@ -241,7 +241,7 @@ jobs:
         shell: bash
         run: |
           cd pinecone-ts-client
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
           npm run build
       - name: Install and build sample app
         shell: bash
