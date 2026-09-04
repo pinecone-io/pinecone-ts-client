@@ -74,6 +74,7 @@ import {
 import { describeNamespace } from './namespaces/describeNamespace';
 import { deleteNamespace } from './namespaces/deleteNamespace';
 import { IndexOptions } from '../types';
+import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../errors';
 
 export type {
@@ -278,6 +279,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     /** An optional host address override for data operations. */
     indexHostUrl?: string;
   };
+  /**
+   * The per-index headers this instance was constructed with, retained so that
+   * {@link Index.namespace} can carry them forward to the new instance.
+   *
+   * @internal
+   */
+  private additionalHeaders?: HTTPHeaders;
 
   /**
    * Instantiation of Index is handled by {@link Pinecone}
@@ -317,13 +325,14 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       namespace: options.namespace || '__default__',
       indexHostUrl: options.host,
     };
+    this.additionalHeaders = options.additionalHeaders;
 
     // vector & record operations
     const dataOperationsProvider = new VectorOperationsProvider(
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders,
+      this.additionalHeaders,
     );
     this._deleteAll = deleteAll(dataOperationsProvider, this.target.namespace);
     this._deleteMany = deleteMany(
@@ -371,7 +380,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders,
+      this.additionalHeaders,
     );
     this._startImportCommand = new StartImportCommand(bulkApiProvider);
     this._listImportsCommand = new ListImportsCommand(bulkApiProvider);
@@ -383,7 +392,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders,
+      this.additionalHeaders,
     );
     this._createNamespaceCommand = createNamespace(namespaceApiProvider);
     this._listNamespacesCommand = listNamespaces(namespaceApiProvider);
@@ -395,7 +404,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       config,
       this.target.indexName,
       this.target.indexHostUrl,
-      options.additionalHeaders,
+      this.additionalHeaders,
     );
   }
 
@@ -1090,7 +1099,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
         name: this.target.indexName,
         namespace,
         host: this.target.indexHostUrl,
-        additionalHeaders: this.config.additionalHeaders,
+        additionalHeaders: this.additionalHeaders,
       },
       this.config,
     );
@@ -1214,14 +1223,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const result = await pc.index('my-schema-index')
    *   .namespace('my-namespace')
    *   .listDocuments({ limit: 10 });
+   *
+   * // Omit options to list the first page with no prefix filter
+   * const firstPage = await pc.index('my-schema-index').listDocuments();
    * ```
    *
-   * @param options - The {@link ListDocumentsOptions} for pagination and filtering.
+   * @param options - Optional {@link ListDocumentsOptions} for pagination and filtering. Defaults to `{}`, which lists the first page of documents in the targeted namespace.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link ListDocumentsResponse}.
    */
   async listDocuments(
-    options: ListDocumentsOptions,
+    options: ListDocumentsOptions = {},
   ): Promise<ListDocumentsResponse> {
     const api = await this._documentProvider.provide();
     return listDocuments(api, this.target.namespace, options);

@@ -5,6 +5,7 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import { assertNonEmptyArray } from './documentValidation';
 
 export type { DeleteDocumentsRequest as DeleteDocumentsOptions } from '../../pinecone-generated-ts-fetch/db_data';
 
@@ -14,7 +15,7 @@ export const deleteDocuments = async (
   options: DeleteDocumentsRequest,
 ): Promise<void> => {
   const given = [
-    !!options.ids,
+    options.ids !== undefined,
     options.filter !== undefined,
     !!options.deleteAll,
   ].filter(Boolean).length;
@@ -29,11 +30,7 @@ export const deleteDocuments = async (
       '`ids`, `filter`, and `deleteAll` are mutually exclusive in deleteDocuments; pass exactly one.',
     );
   }
-  if (options.ids && options.ids.length === 0) {
-    throw new PineconeArgumentError(
-      '`ids` must contain at least one document ID in deleteDocuments.',
-    );
-  }
+  assertNonEmptyArray(options.ids, 'ids', 'document ID', 'deleteDocuments');
   try {
     await api.deleteDocuments({
       namespace,
