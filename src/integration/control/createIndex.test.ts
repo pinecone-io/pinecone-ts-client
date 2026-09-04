@@ -179,7 +179,11 @@ describe('create index', () => {
     });
   });
 
-  describe('pod index tests', () => {
+  // Prod rejects pod deployments on 2026-07 outright ("deployment_type 'pod'
+  // is not supported on this API version", HTTP 400) even though the 2026-07
+  // spec still models `PodDeployment`. Un-skip when the fleet supports it, or
+  // delete if pod is confirmed dropped; see pinecone-ts-client-internal#68.
+  describe.skip('pod index tests', () => {
     describe('happy path', () => {
       test('create pod index', async () => {
         const indexName = randomName('test-pod-create');
