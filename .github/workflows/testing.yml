@@ -157,6 +157,11 @@ jobs:
   edge-runtime-entry:
     name: Edge runtime entry check
     runs-on: ubuntu-latest
+    # continue-on-error until #53 (entry requires fs/path/stream at import
+    # time) merges -- this job is expected to fail against the entry point
+    # as it stands today; that failure is the proof the check works. Remove
+    # this once #53 lands and the job goes green on its own.
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v7

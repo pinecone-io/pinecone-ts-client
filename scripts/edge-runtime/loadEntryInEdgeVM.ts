@@ -19,8 +19,12 @@ import fs from 'fs';
 import path from 'path';
 import { EdgeVM } from '@edge-runtime/vm';
 
-const DIST_DIR = path.join(__dirname, '..', '..', 'dist');
-const ENTRY = path.join(DIST_DIR, 'index.js');
+const PACKAGE_ROOT = path.join(__dirname, '..', '..');
+const PACKAGE_JSON = JSON.parse(
+  fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf-8'),
+) as { main: string };
+const ENTRY = path.join(PACKAGE_ROOT, PACKAGE_JSON.main);
+const DIST_DIR = path.dirname(ENTRY);
 
 function fail(message: string): never {
   console.error(`FAIL: ${message}`);
@@ -101,17 +105,18 @@ function makeRequire(fromFile: string) {
 let entryExports: Record<string, unknown>;
 try {
   entryExports = makeRequire(path.join(DIST_DIR, '<entry>'))(
-    './index.js',
+    `./${path.basename(ENTRY)}`,
   ) as Record<string, unknown>;
 } catch (err) {
   fail(
-    `dist/index.js did not load under a real Edge runtime sandbox: ${(err as Error).message}`,
+    `${path.relative(PACKAGE_ROOT, ENTRY)} did not load under a real Edge runtime sandbox: ${(err as Error).message}`,
   );
 }
 
+const ENTRY_LABEL = path.relative(PACKAGE_ROOT, ENTRY);
 const PineconeCtor = entryExports.Pinecone;
 if (typeof PineconeCtor !== 'function') {
-  fail('dist/index.js loaded but did not export a Pinecone constructor.');
+  fail(`${ENTRY_LABEL} loaded but did not export a Pinecone constructor.`);
 }
 
 try {
@@ -128,5 +133,5 @@ try {
 }
 
 console.log(
-  'PASS: dist/index.js loads and `new Pinecone(...)` constructs under a real Edge runtime sandbox.',
+  `PASS: ${ENTRY_LABEL} loads and \`new Pinecone(...)\` constructs under a real Edge runtime sandbox.`,
 );
