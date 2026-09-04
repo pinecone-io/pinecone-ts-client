@@ -265,8 +265,13 @@ jobs:
   external-app:
     name: external-app
     runs-on: ubuntu-latest
-    # No secrets on Dependabot PRs; see the `setup` job.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # VERCEL_TOKEN only exists in the public repo, and this job deploys to
+    # Vercel production on the shared pinecone-io scope, so it cannot pass from
+    # the internal mirror for anyone. The Dependabot clause covers the public
+    # repo, where the token exists but Dependabot runs cannot read it.
+    if: >-
+      github.repository == 'pinecone-io/pinecone-ts-client' &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
