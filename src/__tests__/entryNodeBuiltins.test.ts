@@ -12,9 +12,16 @@
  * built-in module.
  */
 import { execFileSync } from 'child_process';
+import fs from 'fs';
 import path from 'path';
 
 const DIST_ENTRY = path.join(__dirname, '..', '..', 'dist', 'index.js');
+
+if (!fs.existsSync(DIST_ENTRY)) {
+  throw new Error(
+    `${DIST_ENTRY} does not exist — run \`npm run build\` first.`,
+  );
+}
 
 const PROBE = `
 const Module = require('module');
