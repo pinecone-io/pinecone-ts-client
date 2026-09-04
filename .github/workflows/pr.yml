@@ -18,6 +18,13 @@ on:
       VERCEL_TOKEN:
         required: true
 
+# Cancel a superseded run on the same PR; group by run ID outside of a PR so
+# main pushes, workflow_dispatch, and release.yml's workflow_call never share
+# a group and cancel each other.
+concurrency:
+  group: pr-${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
