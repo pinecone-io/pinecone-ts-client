@@ -82,10 +82,7 @@ async function uploadFromPath(
   metadata?: Record<string, string | number>,
 ): Promise<OperationModel> {
   const fetch = getFetch(config);
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const fs = require('fs') as typeof import('fs');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const path = require('path') as typeof import('path');
+  const [fs, path] = await Promise.all([import('fs'), import('path')]);
   const fileBuffer = await fs.promises.readFile(filePath);
   const fileName = path.basename(filePath);
   const mimeType = getMimeType(fileName);
@@ -156,7 +153,7 @@ async function uploadFromFile(
 
   // Node.js ReadableStream — stream is consumed on first read, no retries
   const fetch = getNonRetryingFetch(config);
-  const { body, contentType } = buildMultipartBody(
+  const { body, contentType } = await buildMultipartBody(
     file,
     fileName,
     mimeType,
@@ -233,14 +230,13 @@ async function parseResponse(
  * buffering the file content. The returned body and contentType header should
  * be passed directly to fetch().
  */
-function buildMultipartBody(
+async function buildMultipartBody(
   stream: NodeJS.ReadableStream,
   fileName: string,
   mimeType: string,
   metadata?: Record<string, string | number>,
-): { body: ReadableStream<Uint8Array>; contentType: string } {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Readable } = require('stream') as typeof import('stream');
+): Promise<{ body: ReadableStream<Uint8Array>; contentType: string }> {
+  const { Readable } = await import('stream');
   const boundary = `----PineconeBoundary${Math.random().toString(36).slice(2)}`;
   const encoder = new TextEncoder();
 

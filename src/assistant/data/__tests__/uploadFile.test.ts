@@ -114,11 +114,8 @@ describe('path input', () => {
   let fs: typeof import('fs');
   let path: typeof import('path');
 
-  beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    fs = require('fs');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    path = require('path');
+  beforeEach(async () => {
+    [fs, path] = await Promise.all([import('fs'), import('path')]);
     (fs.promises.readFile as jest.Mock).mockResolvedValue(mockFileContent);
     (path.basename as jest.Mock).mockReturnValue('test.txt');
     buildMockFetchResponse(

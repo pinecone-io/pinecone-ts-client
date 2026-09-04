@@ -51,11 +51,8 @@ export const chatCompletionStream = (
     });
 
     if (response.ok && response.body) {
-      const streamModule =
-        require('node:stream') as typeof import('node:stream'); // eslint-disable-line @typescript-eslint/no-require-imports
-      const nodeReadable = streamModule.Readable.fromWeb(
-        response.body as ReadableStream,
-      );
+      const { Readable } = await import('node:stream');
+      const nodeReadable = Readable.fromWeb(response.body as ReadableStream);
       return new ChatStream<StreamedChatCompletionResponse>(nodeReadable);
     } else {
       const err = await handleApiError(
