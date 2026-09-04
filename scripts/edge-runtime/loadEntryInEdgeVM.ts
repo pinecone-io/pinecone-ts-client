@@ -1,0 +1,132 @@
+/**
+ * Loads the built entry point (`dist/index.js`) and constructs a client
+ * inside a real Web-standard sandbox with no Node module system, no Node
+ * built-ins (`fs`, `path`, `stream`, ...), and no `process`/`Buffer`
+ * globals -- the shape of Vercel Edge or a Cloudflare Worker.
+ *
+ * `@edge-runtime/jest-environment` (the `test:integration:edge` leg) cannot
+ * catch a Node built-in creeping into the entry point: it patches
+ * `globalThis` but still runs test files through Jest's own Node-based
+ * module loader, so `require('fs')` resolves normally regardless (#54).
+ * `@edge-runtime/vm`'s `EdgeVM` is the same engine used correctly instead:
+ * the entry point's compiled source runs *inside* the sandboxed V8 context
+ * via `vm.runInContext`, through a `require` that resolves only relative
+ * files under `dist/`. A bare specifier such as 'fs' or 'node:stream' is as
+ * unresolvable here as it would be on Workers or Edge with no Node
+ * compatibility shim, and fails with that specifier named.
+ */
+import fs from 'fs';
+import path from 'path';
+import { EdgeVM } from '@edge-runtime/vm';
+
+const DIST_DIR = path.join(__dirname, '..', '..', 'dist');
+const ENTRY = path.join(DIST_DIR, 'index.js');
+
+function fail(message: string): never {
+  console.error(`FAIL: ${message}`);
+  process.exit(1);
+}
+
+if (!fs.existsSync(ENTRY)) {
+  fail(`${ENTRY} does not exist -- run \`npm run build\` first.`);
+}
+
+const vm = new EdgeVM();
+
+type CjsModule = { exports: Record<string, unknown> };
+const moduleCache = new Map<string, CjsModule>();
+
+function resolveFile(fromDir: string, specifier: string): string {
+  const resolved = path.resolve(fromDir, specifier);
+  if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+    return resolved;
+  }
+  if (fs.existsSync(`${resolved}.js`)) {
+    return `${resolved}.js`;
+  }
+  return path.join(resolved, 'index.js');
+}
+
+function makeRequire(fromFile: string) {
+  return function sandboxedRequire(specifier: string): unknown {
+    if (!specifier.startsWith('.')) {
+      throw new Error(
+        `'${path.relative(DIST_DIR, fromFile)}' requires '${specifier}', which is not ` +
+          `a relative import inside dist/. A real Edge/Workers runtime has no Node ` +
+          `built-ins and no bundled node_modules here, so this specifier cannot resolve.`,
+      );
+    }
+
+    const resolved = resolveFile(path.dirname(fromFile), specifier);
+    const cached = moduleCache.get(resolved);
+    if (cached) {
+      return cached.exports;
+    }
+
+    if (resolved.endsWith('.json')) {
+      const mod: CjsModule = {
+        exports: JSON.parse(fs.readFileSync(resolved, 'utf-8')),
+      };
+      moduleCache.set(resolved, mod);
+      return mod.exports;
+    }
+
+    const source = fs.readFileSync(resolved, 'utf-8');
+    const mod: CjsModule = { exports: {} };
+    moduleCache.set(resolved, mod);
+
+    const wrapperSource = `(function (module, exports, require, __filename, __dirname) {\n${source}\n});`;
+    const factory =
+      vm.evaluate<
+        (
+          module: CjsModule,
+          exports: Record<string, unknown>,
+          require: (specifier: string) => unknown,
+          filename: string,
+          dirname: string,
+        ) => void
+      >(wrapperSource);
+    factory.call(
+      mod.exports,
+      mod,
+      mod.exports,
+      makeRequire(resolved),
+      resolved,
+      path.dirname(resolved),
+    );
+    return mod.exports;
+  };
+}
+
+let entryExports: Record<string, unknown>;
+try {
+  entryExports = makeRequire(path.join(DIST_DIR, '<entry>'))(
+    './index.js',
+  ) as Record<string, unknown>;
+} catch (err) {
+  fail(
+    `dist/index.js did not load under a real Edge runtime sandbox: ${(err as Error).message}`,
+  );
+}
+
+const PineconeCtor = entryExports.Pinecone;
+if (typeof PineconeCtor !== 'function') {
+  fail('dist/index.js loaded but did not export a Pinecone constructor.');
+}
+
+try {
+  const client = new (PineconeCtor as new (config: unknown) => unknown)({
+    apiKey: 'edge-runtime-smoke-test-key',
+  });
+  if (!client) {
+    throw new Error('constructor returned a falsy value');
+  }
+} catch (err) {
+  fail(
+    `Constructing \`new Pinecone(...)\` failed under a real Edge runtime sandbox: ${(err as Error).message}`,
+  );
+}
+
+console.log(
+  'PASS: dist/index.js loads and `new Pinecone(...)` constructs under a real Edge runtime sandbox.',
+);
