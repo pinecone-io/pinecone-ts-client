@@ -22,6 +22,29 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.filter.outputs.docs_only == 'true' }}
+    steps:
+      # No checkout: without a local clone, dorny/paths-filter fetches the
+      # changed-file list from the GitHub API for pull_request events, which
+      # needs no fetch depth. Only pull_request has a base to diff against;
+      # push/dispatch/workflow_call (release.yml's gate) leave this step
+      # skipped, so docs_only stays false and every job below runs as it
+      # does today.
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          predicate-quantifier: every
+          filters: |
+            docs_only:
+              - '**/*.md'
+              - 'guides/**'
+
   basic-hygiene:
     name: Linting, formatting, documentation, etc
     runs-on: ubuntu-latest
@@ -50,7 +73,9 @@ jobs:
         uses: ./.github/actions/build-docs
 
   testing:
+    needs: [changes]
     uses: './.github/workflows/testing.yml'
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
+      docs_only: ${{ needs.changes.outputs.docs_only == 'true' }}
