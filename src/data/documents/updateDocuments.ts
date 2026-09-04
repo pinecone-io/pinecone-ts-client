@@ -5,6 +5,7 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import { assertNonEmptyArray } from './documentValidation';
 
 export type {
   UpdateDocumentsRequest as UpdateDocumentsOptions,
@@ -16,7 +17,7 @@ export const updateDocuments = async (
   namespace: string,
   options: UpdateDocumentsRequest,
 ): Promise<void> => {
-  const hasDocuments = !!options.documents && options.documents.length > 0;
+  const hasDocuments = options.documents !== undefined;
   const hasFilter = options.filter !== undefined;
   const hasFieldChanges =
     (!!options.setFields && Object.keys(options.setFields).length > 0) ||
@@ -32,9 +33,20 @@ export const updateDocuments = async (
       'You must pass either a non-empty `documents` array or a `filter` with `setFields` and/or `removeFields` to updateDocuments.',
     );
   }
+  assertNonEmptyArray(
+    options.documents,
+    'documents',
+    'document update',
+    'updateDocuments',
+  );
   if (hasFilter && !hasFieldChanges) {
     throw new PineconeArgumentError(
       'A `filter` update requires a non-empty `setFields` and/or `removeFields`.',
+    );
+  }
+  if (hasDocuments && hasFieldChanges) {
+    throw new PineconeArgumentError(
+      '`setFields` and `removeFields` are only valid together with `filter` in updateDocuments; they cannot be combined with `documents`.',
     );
   }
   try {
