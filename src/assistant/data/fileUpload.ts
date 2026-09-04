@@ -9,9 +9,6 @@ import { handleApiError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, getNonRetryingFetch } from '../../utils';
 import type { Uploadable } from './types';
-import fs from 'fs';
-import path from 'path';
-import { Readable } from 'stream';
 
 /**
  * The file content portion of a multipart upload. Provide either `path` (a
@@ -85,6 +82,10 @@ async function uploadFromPath(
   metadata?: Record<string, string | number>,
 ): Promise<OperationModel> {
   const fetch = getFetch(config);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs') as typeof import('fs');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const path = require('path') as typeof import('path');
   const fileBuffer = await fs.promises.readFile(filePath);
   const fileName = path.basename(filePath);
   const mimeType = getMimeType(fileName);
@@ -238,6 +239,8 @@ function buildMultipartBody(
   mimeType: string,
   metadata?: Record<string, string | number>,
 ): { body: ReadableStream<Uint8Array>; contentType: string } {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { Readable } = require('stream') as typeof import('stream');
   const boundary = `----PineconeBoundary${Math.random().toString(36).slice(2)}`;
   const encoder = new TextEncoder();
 

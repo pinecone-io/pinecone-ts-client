@@ -10,8 +10,7 @@ import type {
   StreamedChatCompletionResponse,
 } from './types';
 import { handleApiError } from '../../errors';
-import { ReadableStream } from 'node:stream/web';
-import { Readable } from 'node:stream';
+import type { ReadableStream } from 'node:stream/web';
 import {
   messagesValidation,
   modelValidation,
@@ -52,7 +51,11 @@ export const chatCompletionStream = (
     });
 
     if (response.ok && response.body) {
-      const nodeReadable = Readable.fromWeb(response.body as ReadableStream);
+      const streamModule =
+        require('node:stream') as typeof import('node:stream'); // eslint-disable-line @typescript-eslint/no-require-imports
+      const nodeReadable = streamModule.Readable.fromWeb(
+        response.body as ReadableStream,
+      );
       return new ChatStream<StreamedChatCompletionResponse>(nodeReadable);
     } else {
       const err = await handleApiError(

@@ -7,8 +7,7 @@ import { buildUserAgent, getFetch, ChatStream } from '../../utils';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type { ChatOptions, StreamedChatResponse } from './types';
 import { handleApiError } from '../../errors';
-import { ReadableStream } from 'node:stream/web';
-import { Readable } from 'node:stream';
+import type { ReadableStream } from 'node:stream/web';
 import {
   messagesValidation,
   modelValidation,
@@ -63,7 +62,11 @@ export const chatStream = (
     });
 
     if (response.ok && response.body) {
-      const nodeReadable = Readable.fromWeb(response.body as ReadableStream);
+      const streamModule =
+        require('node:stream') as typeof import('node:stream'); // eslint-disable-line @typescript-eslint/no-require-imports
+      const nodeReadable = streamModule.Readable.fromWeb(
+        response.body as ReadableStream,
+      );
       return new ChatStream<StreamedChatResponse>(nodeReadable);
     } else {
       const err = await handleApiError(
