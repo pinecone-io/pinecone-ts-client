@@ -6,8 +6,18 @@ const packageJson = JSON.parse(
 );
 
 describe('package.json lifecycle scripts', () => {
-  test('declares prepack, not prepare, so registry installs stay script-free', () => {
-    expect(packageJson.scripts.prepack).toBe('npm run build');
-    expect(packageJson.scripts.prepare).toBeUndefined();
+  test('declares no install-time lifecycle script, so registry installs stay script-free', () => {
+    for (const scriptName of [
+      'preinstall',
+      'install',
+      'postinstall',
+      'prepare',
+    ]) {
+      expect(packageJson.scripts[scriptName]).toBeUndefined();
+    }
+  });
+
+  test('builds before the package is packed or published', () => {
+    expect(packageJson.scripts.prepack).toMatch(/\bbuild\b/);
   });
 });
