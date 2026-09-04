@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       docs_only:
-        description: 'Diff touches only *.md/guides/**; skip the integration matrix and example apps'
+        description: 'Diff touches only *.md/guides/**; skip setup, integration-tests, teardown, example-app-semantic-search, external-app, and typescript-compilation-tests'
         required: false
         type: boolean
         default: false
@@ -166,6 +166,7 @@ jobs:
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest
+    if: ${{ !inputs.docs_only }}
     strategy:
       fail-fast: false
       matrix:
