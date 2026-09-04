@@ -28,7 +28,7 @@ runs:
       shell: bash
 
     - name: Clone Vercel app
-      uses: GuillaumeFalourd/clone-github-repo-action@main
+      uses: GuillaumeFalourd/clone-github-repo-action@19817562c346ff60f9935158dede6c5ece8fd0ac # v2.3
       with:
         owner: 'pinecone-io'
         repository: 'ts-client-test-external-app'
