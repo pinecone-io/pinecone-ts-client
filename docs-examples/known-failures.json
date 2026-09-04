@@ -1,0 +1,187 @@
+[
+  {
+    "file": "README.md",
+    "fenceIndex": 1,
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "README.md",
+    "fenceIndex": 2,
+    "reason": "createIndexForModel returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/assistant/chat.md",
+    "fenceIndex": 2,
+    "reason": "ChatModelEnum is a type-only export used as a value (#85)"
+  },
+  {
+    "file": "guides/assistant/chat.md",
+    "fenceIndex": 4,
+    "reason": "response.message is optional, read without a null check (#85)"
+  },
+  {
+    "file": "guides/assistant/chat.md",
+    "fenceIndex": 10,
+    "reason": "response1.message is optional, read without a null check (#85)"
+  },
+  {
+    "file": "guides/assistant/chat.md",
+    "fenceIndex": 12,
+    "reason": "two sequential snippets in one fence both declare const response (#85)"
+  },
+  {
+    "file": "guides/assistant/chat.md",
+    "fenceIndex": 15,
+    "reason": "ReferenceModel has no text property (#85)"
+  },
+  {
+    "file": "guides/assistant/file-management.md",
+    "fenceIndex": 4,
+    "reason": "describeOperation takes a bare string, not { operationId } (#85)"
+  },
+  {
+    "file": "guides/assistant/file-management.md",
+    "fenceIndex": 7,
+    "reason": "describeFile takes a bare string, not { fileId } (#85)"
+  },
+  {
+    "file": "guides/assistant/file-management.md",
+    "fenceIndex": 9,
+    "reason": "describeOperation takes a bare string, not { operationId } (#85)"
+  },
+  {
+    "file": "guides/assistant/getting-started.md",
+    "fenceIndex": 8,
+    "reason": "files.files and response.message are optional, read without null checks (#85)"
+  },
+  {
+    "file": "guides/data-operations/bulk-import.md",
+    "fenceIndex": 1,
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/data-operations/bulk-import.md",
+    "fenceIndex": 3,
+    "reason": "listImports expects a numeric page size, not the string paginationToken (#85)"
+  },
+  {
+    "file": "guides/data-operations/bulk-import.md",
+    "fenceIndex": 6,
+    "reason": "describeImport's id is string | undefined; ImportModel has no errorMessage (#85)"
+  },
+  {
+    "file": "guides/data-operations/metadata-filtering.md",
+    "fenceIndex": 9,
+    "reason": "its @ts-expect-error directive is unused; the guarded line no longer errors (#85)"
+  },
+  {
+    "file": "guides/data-operations/working-with-vectors.md",
+    "fenceIndex": 2,
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/data-operations/working-with-vectors.md",
+    "fenceIndex": 11,
+    "reason": "UpdateOptions has metadata, not setMetadata (#85)"
+  },
+  {
+    "file": "guides/faq.md",
+    "fenceIndex": 6,
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/faq.md",
+    "fenceIndex": 7,
+    "reason": "indexes.indexes is optional, read without a null check (#85)"
+  },
+  {
+    "file": "guides/index-management/pod-indexes.md",
+    "fenceIndex": 3,
+    "reason": "CreateIndexPodSpec requires podType (#85)"
+  },
+  {
+    "file": "guides/index-management/serverless-indexes.md",
+    "fenceIndex": 5,
+    "reason": "dedicated is not a key of ReadCapacityDedicatedParams (#85)"
+  },
+  {
+    "file": "guides/index-management/serverless-indexes.md",
+    "fenceIndex": 6,
+    "reason": "dedicated is not a key of ReadCapacityDedicatedParams (#85)"
+  },
+  {
+    "file": "guides/index-management/serverless-indexes.md",
+    "fenceIndex": 7,
+    "reason": "genre is not a valid MetadataSchema field shape (#85)"
+  },
+  {
+    "file": "guides/inference/inference-api.md",
+    "fenceIndex": 3,
+    "reason": "the sparse branch of the Embedding union has no values property (#85)"
+  },
+  {
+    "file": "guides/inference/inference-api.md",
+    "fenceIndex": 5,
+    "reason": "the sparse branch of the Embedding union has no values property (#85)"
+  },
+  {
+    "file": "guides/typescript-features/async-patterns.md",
+    "fenceIndex": 2,
+    "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/async-patterns.md",
+    "fenceIndex": 6,
+    "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 1,
+    "reason": "PineconeAuthorizationError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 2,
+    "reason": "BasePineconeError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 3,
+    "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 5,
+    "reason": "PineconeArgumentError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 6,
+    "reason": "PineconeAuthorizationError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 9,
+    "reason": "PineconeConflictError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/error-handling.md",
+    "fenceIndex": 10,
+    "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
+  },
+  {
+    "file": "guides/typescript-features/type-safety.md",
+    "fenceIndex": 5,
+    "reason": "ArticleMetadata's author field doesn't satisfy RecordMetadata's value constraint (#85)"
+  },
+  {
+    "file": "guides/typescript-features/type-safety.md",
+    "fenceIndex": 7,
+    "reason": "ArticleMetadata is a value, used here as a generic type argument (#85)"
+  },
+  {
+    "file": "guides/typescript-features/type-safety.md",
+    "fenceIndex": 8,
+    "reason": "UpdateOptions has metadata, not setMetadata (#85)"
+  }
+]

@@ -87,6 +87,8 @@ jobs:
           fi
       - name: ESLint
         run: npm run lint
+      - name: Compile documented examples
+        run: npm run docs:examples
       - name: TypeDoc
         uses: ./.github/actions/build-docs
 
