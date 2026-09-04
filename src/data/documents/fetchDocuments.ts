@@ -6,6 +6,7 @@ import type {
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import { assertNonEmptyArray } from './documentValidation';
 
 export type {
   FetchDocumentsRequest as FetchDocumentsOptions,
@@ -19,7 +20,7 @@ export const fetchDocuments = async (
   namespace: string,
   options: FetchDocumentsRequest,
 ): Promise<FetchDocumentsResponse> => {
-  const hasIds = !!options.ids && options.ids.length > 0;
+  const hasIds = options.ids !== undefined;
   const hasFilter = options.filter !== undefined;
 
   if (hasIds && hasFilter) {
@@ -32,6 +33,7 @@ export const fetchDocuments = async (
       'You must pass either a non-empty `ids` array or a `filter` to fetchDocuments.',
     );
   }
+  assertNonEmptyArray(options.ids, 'ids', 'document ID', 'fetchDocuments');
   if (options.paginationToken !== undefined && !hasFilter) {
     throw new PineconeArgumentError(
       '`paginationToken` is only valid together with `filter` in fetchDocuments.',

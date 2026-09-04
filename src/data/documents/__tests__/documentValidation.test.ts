@@ -78,6 +78,57 @@ describe('updateDocuments argument validation', () => {
     ).rejects.toThrow(PineconeArgumentError);
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
+
+  test('rejects documents combined with setFields', async () => {
+    await expect(
+      updateDocuments(api, 'ns', {
+        documents: [{ _id: '1' }],
+        setFields: { flavor: 'vanilla' },
+      }),
+    ).rejects.toThrow(
+      '`setFields` and `removeFields` are only valid together with `filter` in updateDocuments; they cannot be combined with `documents`.',
+    );
+    expect(fakeUpdate).not.toHaveBeenCalled();
+  });
+
+  test('rejects documents combined with removeFields', async () => {
+    await expect(
+      updateDocuments(api, 'ns', {
+        documents: [{ _id: '1' }],
+        removeFields: ['flavor'],
+      }),
+    ).rejects.toThrow(PineconeArgumentError);
+    expect(fakeUpdate).not.toHaveBeenCalled();
+  });
+
+  test('accepts documents alongside empty setFields and removeFields', async () => {
+    await updateDocuments(api, 'ns', {
+      documents: [{ _id: '1', flavor: 'chocolate' }],
+      setFields: {},
+      removeFields: [],
+    });
+    expect(fakeUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  test('rejects an empty documents array combined with filter', async () => {
+    await expect(
+      updateDocuments(api, 'ns', {
+        documents: [],
+        filter: { flavor: { $eq: 'strawberry' } },
+        setFields: { flavor: 'vanilla' },
+      }),
+    ).rejects.toThrow(
+      '`documents` and `filter` are mutually exclusive in updateDocuments; pass one or the other.',
+    );
+    expect(fakeUpdate).not.toHaveBeenCalled();
+  });
+
+  test('rejects an empty documents array as an empty selection', async () => {
+    await expect(updateDocuments(api, 'ns', { documents: [] })).rejects.toThrow(
+      '`documents` must contain at least one document update in updateDocuments.',
+    );
+    expect(fakeUpdate).not.toHaveBeenCalled();
+  });
 });
 
 import { fetchDocuments } from '../fetchDocuments';
@@ -135,6 +186,25 @@ describe('fetchDocuments argument validation', () => {
       fetchDocuments(api, 'ns', { ids: ['1'], paginationToken: 'tok' }),
     ).rejects.toThrow(PineconeArgumentError);
   });
+
+  test('rejects an empty ids array combined with filter', async () => {
+    await expect(
+      fetchDocuments(api, 'ns', {
+        ids: [],
+        filter: { flavor: { $eq: 'mint' } },
+      }),
+    ).rejects.toThrow(
+      '`ids` and `filter` are mutually exclusive in fetchDocuments; pass one or the other.',
+    );
+    expect(fakeFetch).not.toHaveBeenCalled();
+  });
+
+  test('rejects an empty ids array as an empty selection', async () => {
+    await expect(fetchDocuments(api, 'ns', { ids: [] })).rejects.toThrow(
+      '`ids` must contain at least one document ID in fetchDocuments.',
+    );
+    expect(fakeFetch).not.toHaveBeenCalled();
+  });
 });
 
 describe('deleteDocuments argument validation', () => {
@@ -190,5 +260,29 @@ describe('deleteDocuments argument validation', () => {
     await expect(deleteDocuments(api, 'ns', { ids: [] })).rejects.toThrow(
       PineconeArgumentError,
     );
+  });
+
+  test('rejects an empty ids array combined with filter', async () => {
+    await expect(
+      deleteDocuments(api, 'ns', {
+        ids: [],
+        filter: { flavor: { $eq: 'mint' } },
+      }),
+    ).rejects.toThrow(
+      '`ids`, `filter`, and `deleteAll` are mutually exclusive in deleteDocuments; pass exactly one.',
+    );
+    expect(fakeDelete).not.toHaveBeenCalled();
+  });
+
+  test('rejects an empty ids array with a specific message', async () => {
+    await expect(deleteDocuments(api, 'ns', { ids: [] })).rejects.toThrow(
+      '`ids` must contain at least one document ID in deleteDocuments.',
+    );
+    expect(fakeDelete).not.toHaveBeenCalled();
+  });
+
+  test('accepts ids alongside deleteAll set to false', async () => {
+    await deleteDocuments(api, 'ns', { ids: ['1'], deleteAll: false });
+    expect(fakeDelete).toHaveBeenCalledTimes(1);
   });
 });
