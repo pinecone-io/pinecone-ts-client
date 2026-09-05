@@ -2,7 +2,7 @@ import {
   classifyExclusion,
   extractBlocksFromText,
   checkBlocks,
-  keyFor,
+  codeHash,
 } from '../check-doc-examples';
 
 describe('extractBlocksFromText', () => {
@@ -136,37 +136,61 @@ describe('checkBlocks', () => {
   });
 
   test('a failure listed in the known-failures baseline is suppressed', () => {
-    const failingBlock = block({
-      code: [
-        "import { Pinecone } from '@pinecone-database/pinecone';",
-        "const pc = new Pinecone({ apiKey: 'x' });",
-        'const n: number = pc;',
-      ].join('\n'),
-    });
+    const code = [
+      "import { Pinecone } from '@pinecone-database/pinecone';",
+      "const pc = new Pinecone({ apiKey: 'x' });",
+      'const n: number = pc;',
+    ].join('\n');
     const result = checkBlocks(
-      [failingBlock],
-      [{ file: 'doc.md', fenceIndex: 1, reason: 'tracked elsewhere' }],
+      [block({ code })],
+      [
+        {
+          file: 'doc.md',
+          codeHash: codeHash(code),
+          reason: 'tracked elsewhere',
+        },
+      ],
     );
     expect(result.newFailures).toHaveLength(0);
-    expect(result.stillFailingKnownKeys.has(keyFor('doc.md', 1))).toBe(true);
+    expect(result.stillFailingKnownKeys.has(`doc.md#${codeHash(code)}`)).toBe(
+      true,
+    );
     expect(result.resolvedKnownFailures).toHaveLength(0);
+    expect(result.unmatchedKnownFailures).toHaveLength(0);
   });
 
   test('a baseline entry whose example now compiles is flagged for removal', () => {
-    const nowPassingBlock = block({
-      code: [
-        "import { Pinecone } from '@pinecone-database/pinecone';",
-        "const pc = new Pinecone({ apiKey: 'x' });",
-        'void pc;',
-      ].join('\n'),
-    });
+    const code = [
+      "import { Pinecone } from '@pinecone-database/pinecone';",
+      "const pc = new Pinecone({ apiKey: 'x' });",
+      'void pc;',
+    ].join('\n');
+    const entry = {
+      file: 'doc.md',
+      codeHash: codeHash(code),
+      reason: 'used to fail',
+    };
+    const result = checkBlocks([block({ code })], [entry]);
+    expect(result.resolvedKnownFailures).toEqual([entry]);
+    expect(result.unmatchedKnownFailures).toHaveLength(0);
+  });
+
+  test('a baseline entry matching no checked example is unmatched, not "resolved"', () => {
+    const entry = {
+      file: 'doc.md',
+      codeHash: 'does-not-exist',
+      reason: 'stale after an edit',
+    };
     const result = checkBlocks(
-      [nowPassingBlock],
-      [{ file: 'doc.md', fenceIndex: 1, reason: 'used to fail' }],
+      [
+        block({
+          code: "import { Pinecone } from '@pinecone-database/pinecone';",
+        }),
+      ],
+      [entry],
     );
-    expect(result.resolvedKnownFailures).toEqual([
-      { file: 'doc.md', fenceIndex: 1, reason: 'used to fail' },
-    ]);
+    expect(result.resolvedKnownFailures).toHaveLength(0);
+    expect(result.unmatchedKnownFailures).toEqual([entry]);
   });
 
   test('excluded blocks are never checked', () => {

@@ -60,9 +60,11 @@ npm run docs:examples
 
 A block that documents a prior major version (marked `**Before` in a migration guide, or
 importing the removed `PineconeClient` class) is skipped. Anything else that fails to compile
-must either be fixed or added to `docs-examples/known-failures.json` with the file, the fence's
-1-based index within that file, and the tracking issue. An entry left in that file after its
-example starts compiling fails the check, so the list only grows for real, tracked drift.
+must either be fixed or added to `docs-examples/known-failures.json`. The failure output prints
+a ready-to-paste entry, keyed by the file and a hash of the block's own content so an unrelated
+edit elsewhere in the file can't shift which block an entry points at. An entry whose example
+starts compiling, or whose hash no longer matches anything (the example was edited, moved, or
+excluded), fails the check, so the list only grows for real, tracked drift.
 
 ## Local testing
 

@@ -1,187 +1,187 @@
 [
   {
     "file": "README.md",
-    "fenceIndex": 1,
+    "codeHash": "65f6479f1857",
     "reason": "createIndex returns IndexModel | void (#56)"
   },
   {
     "file": "README.md",
-    "fenceIndex": 2,
+    "codeHash": "6357a07a91b9",
     "reason": "createIndexForModel returns IndexModel | void (#56)"
   },
   {
     "file": "guides/assistant/chat.md",
-    "fenceIndex": 2,
+    "codeHash": "07ebd5e29aab",
     "reason": "ChatModelEnum is a type-only export used as a value (#85)"
   },
   {
     "file": "guides/assistant/chat.md",
-    "fenceIndex": 4,
+    "codeHash": "cd19b03f907b",
     "reason": "response.message is optional, read without a null check (#85)"
   },
   {
     "file": "guides/assistant/chat.md",
-    "fenceIndex": 10,
+    "codeHash": "2fc951f41bec",
     "reason": "response1.message is optional, read without a null check (#85)"
   },
   {
     "file": "guides/assistant/chat.md",
-    "fenceIndex": 12,
+    "codeHash": "3386e79f876f",
     "reason": "two sequential snippets in one fence both declare const response (#85)"
   },
   {
     "file": "guides/assistant/chat.md",
-    "fenceIndex": 15,
+    "codeHash": "45e1b16d11bc",
     "reason": "ReferenceModel has no text property (#85)"
   },
   {
     "file": "guides/assistant/file-management.md",
-    "fenceIndex": 4,
+    "codeHash": "03774b2635f4",
     "reason": "describeOperation takes a bare string, not { operationId } (#85)"
   },
   {
     "file": "guides/assistant/file-management.md",
-    "fenceIndex": 7,
+    "codeHash": "30f2207c7f3d",
     "reason": "describeFile takes a bare string, not { fileId } (#85)"
   },
   {
     "file": "guides/assistant/file-management.md",
-    "fenceIndex": 9,
+    "codeHash": "cf1e6fe6035a",
     "reason": "describeOperation takes a bare string, not { operationId } (#85)"
   },
   {
     "file": "guides/assistant/getting-started.md",
-    "fenceIndex": 8,
+    "codeHash": "cd89c87b9dc9",
     "reason": "files.files and response.message are optional, read without null checks (#85)"
   },
   {
     "file": "guides/data-operations/bulk-import.md",
-    "fenceIndex": 1,
+    "codeHash": "f05dfa1a6f81",
     "reason": "createIndex returns IndexModel | void (#56)"
   },
   {
     "file": "guides/data-operations/bulk-import.md",
-    "fenceIndex": 3,
+    "codeHash": "b8bd058f0ab4",
     "reason": "listImports expects a numeric page size, not the string paginationToken (#85)"
   },
   {
     "file": "guides/data-operations/bulk-import.md",
-    "fenceIndex": 6,
+    "codeHash": "3d27a78e810e",
     "reason": "describeImport's id is string | undefined; ImportModel has no errorMessage (#85)"
   },
   {
     "file": "guides/data-operations/metadata-filtering.md",
-    "fenceIndex": 9,
+    "codeHash": "7bc62513e61e",
     "reason": "its @ts-expect-error directive is unused; the guarded line no longer errors (#85)"
   },
   {
     "file": "guides/data-operations/working-with-vectors.md",
-    "fenceIndex": 2,
+    "codeHash": "e5b3e150bead",
     "reason": "createIndex returns IndexModel | void (#56)"
   },
   {
     "file": "guides/data-operations/working-with-vectors.md",
-    "fenceIndex": 11,
+    "codeHash": "8fce84fe5e3e",
     "reason": "UpdateOptions has metadata, not setMetadata (#85)"
   },
   {
     "file": "guides/faq.md",
-    "fenceIndex": 6,
+    "codeHash": "07cb7e727188",
     "reason": "createIndex returns IndexModel | void (#56)"
   },
   {
     "file": "guides/faq.md",
-    "fenceIndex": 7,
+    "codeHash": "23286600a142",
     "reason": "indexes.indexes is optional, read without a null check (#85)"
   },
   {
     "file": "guides/index-management/pod-indexes.md",
-    "fenceIndex": 3,
+    "codeHash": "9f1c9e99c0c1",
     "reason": "CreateIndexPodSpec requires podType (#85)"
   },
   {
     "file": "guides/index-management/serverless-indexes.md",
-    "fenceIndex": 5,
+    "codeHash": "2aab7c69a9e4",
     "reason": "dedicated is not a key of ReadCapacityDedicatedParams (#85)"
   },
   {
     "file": "guides/index-management/serverless-indexes.md",
-    "fenceIndex": 6,
+    "codeHash": "d4c6ed2f5746",
     "reason": "dedicated is not a key of ReadCapacityDedicatedParams (#85)"
   },
   {
     "file": "guides/index-management/serverless-indexes.md",
-    "fenceIndex": 7,
+    "codeHash": "4765d00bb454",
     "reason": "genre is not a valid MetadataSchema field shape (#85)"
   },
   {
     "file": "guides/inference/inference-api.md",
-    "fenceIndex": 3,
+    "codeHash": "eb6a833c24cb",
     "reason": "the sparse branch of the Embedding union has no values property (#85)"
   },
   {
     "file": "guides/inference/inference-api.md",
-    "fenceIndex": 5,
+    "codeHash": "2100e29c9d99",
     "reason": "the sparse branch of the Embedding union has no values property (#85)"
   },
   {
     "file": "guides/typescript-features/async-patterns.md",
-    "fenceIndex": 2,
+    "codeHash": "c4c3e5443bd2",
     "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/async-patterns.md",
-    "fenceIndex": 6,
+    "codeHash": "48bb6aa26dc4",
     "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 1,
+    "codeHash": "42c3bddf61c6",
     "reason": "PineconeAuthorizationError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 2,
+    "codeHash": "12f243532e93",
     "reason": "BasePineconeError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 3,
+    "codeHash": "670ff8a804f7",
     "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 5,
+    "codeHash": "2daf8708f63e",
     "reason": "PineconeArgumentError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 6,
+    "codeHash": "cfbb900bca66",
     "reason": "PineconeAuthorizationError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 9,
+    "codeHash": "608211fec280",
     "reason": "PineconeConflictError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/error-handling.md",
-    "fenceIndex": 10,
+    "codeHash": "b92683df54e2",
     "reason": "PineconeConnectionError is not exported from src/index.ts (#85)"
   },
   {
     "file": "guides/typescript-features/type-safety.md",
-    "fenceIndex": 5,
+    "codeHash": "21f8848ffc41",
     "reason": "ArticleMetadata's author field doesn't satisfy RecordMetadata's value constraint (#85)"
   },
   {
     "file": "guides/typescript-features/type-safety.md",
-    "fenceIndex": 7,
+    "codeHash": "2d1039502fa5",
     "reason": "ArticleMetadata is a value, used here as a generic type argument (#85)"
   },
   {
     "file": "guides/typescript-features/type-safety.md",
-    "fenceIndex": 8,
+    "codeHash": "dc109c11028b",
     "reason": "UpdateOptions has metadata, not setMetadata (#85)"
   }
 ]

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -22,7 +23,7 @@ export interface CodeBlock {
 
 export interface KnownFailure {
   file: string;
-  fenceIndex: number;
+  codeHash: string;
   reason: string;
 }
 
@@ -32,6 +33,8 @@ export interface CheckResult {
   newFailures: { block: CodeBlock; diagnostics: readonly ts.Diagnostic[] }[];
   stillFailingKnownKeys: Set<string>;
   resolvedKnownFailures: KnownFailure[];
+  unmatchedKnownFailures: KnownFailure[];
+  anyShimmedNames: Set<string>;
 }
 
 export function findMarkdownFiles(root: string): string[] {
@@ -196,7 +199,11 @@ function undeclaredNamesIn(diagnostics: readonly ts.Diagnostic[]): Set<string> {
 
 const CLIENT_VARIABLE_NAMES = new Set(['pc', 'pinecone']);
 
-function asStandaloneModule(code: string, freeNames: Set<string>): string {
+function asStandaloneModule(
+  code: string,
+  freeNames: Set<string>,
+  anyShimmedNames: Set<string>,
+): string {
   const sortedNames = [...freeNames].sort();
   const needsClientType = sortedNames.some((name) =>
     CLIENT_VARIABLE_NAMES.has(name),
@@ -207,18 +214,23 @@ function asStandaloneModule(code: string, freeNames: Set<string>): string {
           `import type { Pinecone as __Pinecone } from '@pinecone-database/pinecone';`,
         ]
       : []),
-    ...sortedNames.map((name) =>
-      CLIENT_VARIABLE_NAMES.has(name)
-        ? `declare const ${name}: __Pinecone;`
-        : `declare const ${name}: any;`,
-    ),
+    ...sortedNames.map((name) => {
+      if (CLIENT_VARIABLE_NAMES.has(name))
+        return `declare const ${name}: __Pinecone;`;
+      anyShimmedNames.add(name);
+      return `declare const ${name}: any;`;
+    }),
   ];
   const withShims = preamble.length ? `${preamble.join('\n')}\n${code}` : code;
   return `${withShims}\nexport {};\n`;
 }
 
-export function keyFor(file: string, fenceIndex: number): string {
-  return `${file}#${fenceIndex}`;
+export function codeHash(code: string): string {
+  return crypto.createHash('sha1').update(code).digest('hex').slice(0, 12);
+}
+
+export function keyFor(file: string, code: string): string {
+  return `${file}#${codeHash(code)}`;
 }
 
 export function loadKnownFailures(filePath: string): KnownFailure[] {
@@ -241,15 +253,22 @@ export function checkBlocks(
   }
   const firstPass = compileVirtualFiles(unshimmed);
 
+  const anyShimmedNames = new Set<string>();
   const shimmed = new Map<string, string>();
   for (const [fileName, block] of nameByFile) {
     const freeNames = undeclaredNamesIn(firstPass.get(fileName) ?? []);
-    shimmed.set(fileName, asStandaloneModule(block.code, freeNames));
+    shimmed.set(
+      fileName,
+      asStandaloneModule(block.code, freeNames, anyShimmedNames),
+    );
   }
   const secondPass = compileVirtualFiles(shimmed);
 
+  const checkedKeys = new Set(
+    [...nameByFile.values()].map((b) => keyFor(b.sourceFile, b.code)),
+  );
   const knownFailureKeys = new Set(
-    knownFailures.map((k) => keyFor(k.file, k.fenceIndex)),
+    knownFailures.map((k) => `${k.file}#${k.codeHash}`),
   );
   const stillFailingKnownKeys = new Set<string>();
   const newFailures: CheckResult['newFailures'] = [];
@@ -257,16 +276,22 @@ export function checkBlocks(
   for (const [fileName, block] of nameByFile) {
     const diagnostics = secondPass.get(fileName) ?? [];
     if (diagnostics.length === 0) continue;
-    const key = keyFor(block.sourceFile, block.fenceIndex);
+    const key = keyFor(block.sourceFile, block.code);
     if (knownFailureKeys.has(key)) {
       stillFailingKnownKeys.add(key);
     } else {
       newFailures.push({ block, diagnostics });
     }
   }
-  const resolvedKnownFailures = knownFailures.filter(
-    (k) => !stillFailingKnownKeys.has(keyFor(k.file, k.fenceIndex)),
-  );
+
+  const resolvedKnownFailures: KnownFailure[] = [];
+  const unmatchedKnownFailures: KnownFailure[] = [];
+  for (const k of knownFailures) {
+    const key = `${k.file}#${k.codeHash}`;
+    if (stillFailingKnownKeys.has(key)) continue;
+    if (checkedKeys.has(key)) resolvedKnownFailures.push(k);
+    else unmatchedKnownFailures.push(k);
+  }
 
   return {
     checkedCount: checkedBlocks.length,
@@ -274,6 +299,8 @@ export function checkBlocks(
     newFailures,
     stillFailingKnownKeys,
     resolvedKnownFailures,
+    unmatchedKnownFailures,
+    anyShimmedNames,
   };
 }
 
@@ -299,19 +326,30 @@ function main() {
   console.log(
     `${result.stillFailingKnownKeys.size} known failure(s) tracked in ${relKnownFailuresPath}.`,
   );
+  if (result.anyShimmedNames.size > 0) {
+    console.log(
+      `Fragments left ${result.anyShimmedNames.size} free identifier(s) type-checked as ` +
+        `any: ${[...result.anyShimmedNames].sort().join(', ')}.`,
+    );
+  }
 
   let ok = true;
 
   if (result.newFailures.length > 0) {
     ok = false;
     console.error(
-      `\n${result.newFailures.length} example(s) fail to compile:\n`,
+      `\n${result.newFailures.length} example(s) fail to compile. If this is tracked drift ` +
+        `rather than a new bug, add an entry to ${relKnownFailuresPath}:\n`,
     );
     for (const { block, diagnostics } of result.newFailures) {
       console.error(
         `${block.sourceFile}:${block.startLine} (fence #${block.fenceIndex})`,
       );
       console.error(formatDiagnostics(diagnostics));
+      console.error(
+        `  known-failures.json entry: { "file": "${block.sourceFile}", "codeHash": ` +
+          `"${codeHash(block.code)}", "reason": "..." }\n`,
+      );
     }
   }
 
@@ -322,7 +360,19 @@ function main() {
         `now compile cleanly and must be removed:\n`,
     );
     for (const k of result.resolvedKnownFailures) {
-      console.error(`  ${k.file}#${k.fenceIndex} (${k.reason})`);
+      console.error(`  ${k.file}#${k.codeHash} (${k.reason})`);
+    }
+  }
+
+  if (result.unmatchedKnownFailures.length > 0) {
+    ok = false;
+    console.error(
+      `\n${result.unmatchedKnownFailures.length} entries in ${relKnownFailuresPath} ` +
+        `no longer match any checked example (edited, moved, or now excluded) and must be ` +
+        `updated or removed:\n`,
+    );
+    for (const k of result.unmatchedKnownFailures) {
+      console.error(`  ${k.file}#${k.codeHash} (${k.reason})`);
     }
   }
 
