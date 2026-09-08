@@ -32,7 +32,8 @@
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
     "test:unit": "jest src/",
-    "test:smoke:mocked": "jest -c jest.config.smoke.js"
+    "test:smoke:mocked": "jest -c jest.config.smoke.js",
+    "verify:sourcemaps": "tsx scripts/verify-source-maps.ts"
   },
   "engines": {
     "node": ">=20.0.0"
