@@ -89,6 +89,12 @@ jobs:
         run: npm run lint
       - name: Compile documented examples
         run: npm run docs:examples
+      # ./.github/actions/setup already ran `npm run build`, so dist/ is
+      # present; this asserts every shipped map embeds its source text,
+      # since `files` publishes only /dist and a map pointing at ../src
+      # cannot resolve for a consumer.
+      - name: Verify published source maps
+        run: npm run verify:sourcemaps
       - name: TypeDoc
         uses: ./.github/actions/build-docs
 
