@@ -198,6 +198,143 @@ export class Pinecone {
     return environmentConfig as PineconeConfiguration;
   }
 
+  /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(options: Parameters<Indexes['create']>[0]) {
+    return this.indexes.create(options);
+  }
+
+  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(options: Parameters<Indexes['createForModel']>[0]) {
+    return this.indexes.createForModel(options);
+  }
+
+  /** @deprecated Use `pc.indexes.describe()` instead. */
+  describeIndex(indexName: Parameters<Indexes['describe']>[0]) {
+    return this.indexes.describe(indexName);
+  }
+
+  /** @deprecated Use `pc.indexes.list()` instead. */
+  listIndexes() {
+    return this.indexes.list();
+  }
+
+  /** @deprecated Use `pc.indexes.delete()` instead. */
+  deleteIndex(indexName: Parameters<Indexes['delete']>[0]) {
+    return this.indexes.delete(indexName);
+  }
+
+  /** @deprecated Use `pc.collections.create()` instead. */
+  createCollection(options: Parameters<Collections['create']>[0]) {
+    return this.collections.create(options);
+  }
+
+  /** @deprecated Use `pc.collections.list()` instead. */
+  listCollections() {
+    return this.collections.list();
+  }
+
+  /** @deprecated Use `pc.collections.describe()` instead. */
+  describeCollection(collectionName: Parameters<Collections['describe']>[0]) {
+    return this.collections.describe(collectionName);
+  }
+
+  /** @deprecated Use `pc.collections.delete()` instead. */
+  deleteCollection(collectionName: Parameters<Collections['delete']>[0]) {
+    return this.collections.delete(collectionName);
+  }
+
+  /** @deprecated Use `pc.backups.create(indexName, options)` instead. */
+  createBackup(
+    options: Parameters<Backups['create']>[1] & { indexName: string },
+  ) {
+    const { indexName, ...rest } = options;
+    return this.backups.create(indexName, rest);
+  }
+
+  /** @deprecated Use `pc.backups.describe()` instead. */
+  describeBackup(backupId: Parameters<Backups['describe']>[0]) {
+    return this.backups.describe(backupId);
+  }
+
+  /** @deprecated Use `pc.backups.delete()` instead. */
+  deleteBackup(backupId: Parameters<Backups['delete']>[0]) {
+    return this.backups.delete(backupId);
+  }
+
+  /** @deprecated Use `pc.backups.createIndex(backupId, options)` instead. */
+  createIndexFromBackup(
+    options: Parameters<Backups['createIndex']>[1] & { backupId: string },
+  ) {
+    const { backupId, ...rest } = options;
+    return this.backups.createIndex(backupId, rest);
+  }
+
+  /** @deprecated Use `pc.restoreJobs.describe()` instead. */
+  describeRestoreJob(restoreJobId: Parameters<RestoreJobs['describe']>[0]) {
+    return this.restoreJobs.describe(restoreJobId);
+  }
+
+  /** @deprecated Use `pc.restoreJobs.list()` instead. */
+  listRestoreJobs(options?: Parameters<RestoreJobs['list']>[0]) {
+    return this.restoreJobs.list(options);
+  }
+
+  /** @deprecated Use `pc.assistants.create()` instead. */
+  createAssistant(options: Parameters<Assistants['create']>[0]) {
+    return this.assistants.create(options);
+  }
+
+  /** @deprecated Use `pc.assistants.describe()` instead. */
+  describeAssistant(assistantName: Parameters<Assistants['describe']>[0]) {
+    return this.assistants.describe(assistantName);
+  }
+
+  /** @deprecated Use `pc.assistants.list()` instead. */
+  listAssistants() {
+    return this.assistants.list();
+  }
+
+  /** @deprecated Use `pc.assistants.delete()` instead. */
+  deleteAssistant(assistantName: Parameters<Assistants['delete']>[0]) {
+    return this.assistants.delete(assistantName);
+  }
+
+  /** @deprecated Use `pc.assistants.update()` instead. */
+  updateAssistant(options: Parameters<Assistants['update']>[0]) {
+    return this.assistants.update(options);
+  }
+
+  /** @deprecated Use `pc.assistants.evaluate()` instead. */
+  evaluate(options: Parameters<Assistants['evaluate']>[0]) {
+    return this.assistants.evaluate(options);
+  }
+
+  /**
+   * @deprecated Use `pc.indexes.configure(name, options)` instead.
+   */
+  configureIndex(
+    options: Parameters<Indexes['configure']>[1] & { name: string },
+  ) {
+    const { name, ...rest } = options;
+    return this.indexes.configure(name, rest);
+  }
+
+  /**
+   * @deprecated Use `pc.backups.listByIndex(indexName, options)` for an index,
+   * or `pc.backups.list(options)` for all project backups.
+   */
+  listBackups(
+    options: Parameters<Backups['listByIndex']>[1] & {
+      indexName?: string;
+    } = {},
+  ) {
+    const { indexName, includeDeleted, ...rest } = options;
+    if (indexName) {
+      return this.backups.listByIndex(indexName, { ...rest, includeDeleted });
+    }
+    return this.backups.list(rest);
+  }
+
   /** @hidden */
   private config: PineconeConfiguration;
 
