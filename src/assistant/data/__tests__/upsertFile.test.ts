@@ -1,6 +1,4 @@
 import { upsertFile } from '../upsertFile';
-import fs from 'fs';
-import path from 'path';
 import { Readable } from 'stream';
 import { AsstDataOperationsProvider } from '../asstDataOperationsProvider';
 
@@ -107,8 +105,14 @@ describe('validation', () => {
 
 describe('path input', () => {
   const mockFileContent = Buffer.from('test file content');
+  // upsertFile.ts requires 'fs'/'path' lazily, inside the function that uses
+  // them, so they must be fetched here after the global jest.resetModules()
+  // (scripts/globalUnitTestSetup.ts) rather than via a module-level import.
+  let fs: typeof import('fs');
+  let path: typeof import('path');
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    [fs, path] = await Promise.all([import('fs'), import('path')]);
     (fs.promises.readFile as jest.Mock).mockResolvedValue(mockFileContent);
     (path.basename as jest.Mock).mockReturnValue('test.txt');
     buildMockFetchResponse(
