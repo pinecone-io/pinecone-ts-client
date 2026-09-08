@@ -1,6 +1,7 @@
 import type {
   ManageIndexesApi,
   CreateIndexForModelRequest,
+  CreateIndexForModelRequestEmbed,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
@@ -10,35 +11,62 @@ import { pollUntilIndexIsReady } from '../../utils';
 import type { IndexModel } from './listIndexes';
 import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
-export type { ManagedDeployment } from '../../pinecone-generated-ts-fetch/db_control';
+/**
+ * The integrated embedding configuration for a new index.
+ *
+ * @see [Create an index with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding)
+ */
+export interface CreateIndexForModelEmbed extends Omit<
+  CreateIndexForModelRequestEmbed,
+  'metric' | 'fieldMap'
+> {
+  /**
+   * The name of the embedding model to use, for example
+   * `multilingual-e5-large`. Call {@link Inference.listModels} to see the
+   * models available to your project.
+   */
+  model: string;
+  /**
+   * Maps the model's input to a field of your documents. Pass
+   * `{ text: 'chunk_text' }` to embed the `chunk_text` field of every document
+   * you upsert.
+   */
+  fieldMap: Record<string, string>;
+  /**
+   * The distance metric to use for similarity search. Defaults to the model's
+   * preferred metric.
+   */
+  metric?: IndexMetric;
+}
 
 /**
  * Options for creating an index with an integrated embedding model.
  *
- * This is a convenience wrapper around {@link Indexes.create}: the server builds a
- * `semantic_text` schema field named `field` from the model parameters provided
- * here. For full control over schema composition — for example combining semantic
- * text with additional metadata fields — use {@link Indexes.create} directly.
+ * The server builds a `semantic_text` schema field from the `embed` parameters
+ * given here, so text you upsert is embedded for you. For full control over
+ * schema composition — combining a dense or sparse vector field with full-text
+ * search, for example — use {@link Indexes.create} directly.
  *
  * @see [Create an index with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding)
  */
 export interface CreateIndexForModelOptions extends Omit<
   CreateIndexForModelRequest,
-  'name' | 'readCapacity' | 'deletionProtection' | 'metric'
+  'name' | 'readCapacity' | 'deletionProtection' | 'embed'
 > {
   /** The name of the index to create. Must be unique within the project. */
   name: string;
+  /** The public cloud to host the index on: `aws`, `gcp`, or `azure`. */
+  cloud: string;
+  /** The cloud region to create the index in, for example `us-east-1`. */
+  region: string;
+  /** The embedding model and the document field it reads. */
+  embed: CreateIndexForModelEmbed;
   /**
    * The read capacity configuration for the index. Omit for on-demand capacity.
    */
   readCapacity?: ReadCapacity;
   /** Whether to enable deletion protection. Defaults to `disabled`. */
   deletionProtection?: DeletionProtection;
-  /**
-   * The distance metric to use for similarity search. Defaults to the model's
-   * preferred metric.
-   */
-  metric?: IndexMetric;
   /**
    * When true, polls until the index is ready before returning.
    */
@@ -58,8 +86,8 @@ export interface CreateIndexForModelOptions extends Omit<
 /**
  * Creates an index with an integrated embedding model.
  *
- * Integrated-embedding indexes are serverless only; pod and BYOC deployments are
- * not supported. Omit `deployment` to default to managed (serverless).
+ * Integrated-embedding indexes are serverless only; pod and BYOC deployments
+ * are not supported, and the deployment is chosen for you.
  *
  * @param api - The manage-indexes API client.
  * @param options - The {@link CreateIndexForModelOptions} for the index.
@@ -70,7 +98,7 @@ export async function createIndexForModel(
 ): Promise<IndexModel | void> {
   if (!options) {
     throw new PineconeArgumentError(
-      'You must pass an object with required properties (`name`, `field`, `model`) to create an index for a model.',
+      'You must pass an object with required properties (`name`, `cloud`, `region`, `embed`) to create an index for a model.',
     );
   }
   if (!options.name) {
@@ -78,24 +106,42 @@ export async function createIndexForModel(
       'You must pass a non-empty string for `name` in order to create an index.',
     );
   }
-  if (!options.field) {
+  if (!options.cloud) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `field` in order to create an index for a model.',
+      'You must pass a non-empty string for `cloud` in order to create an index.',
     );
   }
-  if (!options.model) {
+  if (!options.region) {
     throw new PineconeArgumentError(
-      'You must pass a non-empty string for `model` in order to create an index for a model.',
+      'You must pass a non-empty string for `region` in order to create an index.',
+    );
+  }
+  if (!options.embed) {
+    throw new PineconeArgumentError(
+      'You must pass an `embed` object in order to create an index for a model.',
+    );
+  }
+  if (!options.embed.model) {
+    throw new PineconeArgumentError(
+      'You must pass a non-empty string for `embed.model` in order to create an index for a model.',
     );
   }
   if (
-    options.metric &&
+    !options.embed.fieldMap ||
+    Object.keys(options.embed.fieldMap).length === 0
+  ) {
+    throw new PineconeArgumentError(
+      'You must pass a non-empty `embed.fieldMap` object in order to create an index for a model.',
+    );
+  }
+  if (
+    options.embed.metric &&
     !['cosine', 'euclidean', 'dotproduct'].includes(
-      options.metric.toLowerCase(),
+      options.embed.metric.toLowerCase(),
     )
   ) {
     throw new PineconeArgumentError(
-      `Invalid metric value: ${options.metric}. Valid values are: cosine, euclidean, or dotproduct.`,
+      `Invalid metric value: ${options.embed.metric}. Valid values are: cosine, euclidean, or dotproduct.`,
     );
   }
 

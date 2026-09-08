@@ -1,6 +1,7 @@
 import type {
   DocumentOperationsApi,
   UpdateDocumentsRequest,
+  UpdateDocumentsResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
@@ -9,6 +10,7 @@ import { assertNonEmptyArray } from './documentValidation';
 
 export type {
   UpdateDocumentsRequest as UpdateDocumentsOptions,
+  UpdateDocumentsResponse,
   UpdateDocumentRecord,
 } from '../../pinecone-generated-ts-fetch/db_data';
 
@@ -16,7 +18,7 @@ export const updateDocuments = async (
   api: DocumentOperationsApi,
   namespace: string,
   options: UpdateDocumentsRequest,
-): Promise<void> => {
+): Promise<UpdateDocumentsResponse> => {
   const hasDocuments = options.documents !== undefined;
   const hasFilter = options.filter !== undefined;
   const hasFieldChanges =
@@ -50,7 +52,7 @@ export const updateDocuments = async (
     );
   }
   try {
-    await api.updateDocuments({
+    return await api.updateDocuments({
       namespace,
       updateDocumentsRequest: options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,

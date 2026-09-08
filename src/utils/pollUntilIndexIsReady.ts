@@ -9,7 +9,7 @@ export type IndexReadinessResponse = {
   status?: { ready?: boolean; state?: string };
 };
 
-const TERMINAL_FAILED_STATES = new Set(['InitializationFailed']);
+const TERMINAL_FAILED_STATES = new Set(['InitializationFailed', 'Failed']);
 const TERMINAL_TERMINATED_STATES = new Set(['Terminating', 'Disabled']);
 
 /**
