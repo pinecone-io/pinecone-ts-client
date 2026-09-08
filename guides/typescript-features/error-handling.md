@@ -1,12 +1,28 @@
 # Error Handling
 
-The Pinecone TypeScript SDK provides a hierarchy of error classes to help you handle different failure scenarios appropriately. All custom errors extend `BasePineconeError`.
+The Pinecone TypeScript SDK provides a hierarchy of error classes to help you handle different failure scenarios appropriately. All custom errors extend `Errors.BasePineconeError`.
 
 For more information on error handling in production, see [Error handling](https://docs.pinecone.io/guides/production/error-handling).
 
+## Importing error classes
+
+The error classes are not top-level exports. They are grouped under a single `Errors` namespace, which _is_ a top-level export of the package:
+
+```typescript
+import { Errors } from '@pinecone-database/pinecone';
+
+function isNotFound(error: unknown): boolean {
+  return error instanceof Errors.PineconeNotFoundError;
+}
+```
+
+Every class listed below is reached through that namespace, for example `Errors.PineconeNotFoundError`. The examples in this guide follow that convention.
+
+Note also that under TypeScript's `strict` mode a `catch (error)` binding has type `unknown`, so you cannot read `error.message` or `error.name` until you have narrowed the type. An `instanceof` check against one of these classes performs that narrowing, which is why every example below reads error properties only inside an `instanceof` branch.
+
 ## Error class hierarchy
 
-The SDK includes the following error classes:
+The SDK includes the following error classes, all reachable as `Errors.<ClassName>`:
 
 ### HTTP Errors
 
@@ -40,13 +56,7 @@ The SDK includes the following error classes:
 Catch and handle specific errors to implement appropriate recovery strategies:
 
 ```typescript
-import {
-  Pinecone,
-  PineconeAuthorizationError,
-  PineconeNotFoundError,
-  PineconeConnectionError,
-  PineconeBadRequestError,
-} from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function handleSpecificErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -60,16 +70,16 @@ async function handleSpecificErrors() {
     });
     console.log(results);
   } catch (error) {
-    if (error instanceof PineconeAuthorizationError) {
+    if (error instanceof Errors.PineconeAuthorizationError) {
       console.error('Invalid API key. Please check your credentials.');
       // Prompt user to update API key
-    } else if (error instanceof PineconeNotFoundError) {
+    } else if (error instanceof Errors.PineconeNotFoundError) {
       console.error('Index not found. Please create the index first.');
       // Create the index or use different index name
-    } else if (error instanceof PineconeConnectionError) {
+    } else if (error instanceof Errors.PineconeConnectionError) {
       console.error('Connection failed. Retrying...');
       // Implement retry logic
-    } else if (error instanceof PineconeBadRequestError) {
+    } else if (error instanceof Errors.PineconeBadRequestError) {
       console.error('Invalid request parameters:', error.message);
       // Fix request parameters
     } else {
@@ -87,7 +97,7 @@ handleSpecificErrors();
 All Pinecone errors include helpful properties:
 
 ```typescript
-import { Pinecone, BasePineconeError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function examineErrorProperties() {
   const pc = new Pinecone({ apiKey: 'INVALID_KEY' });
@@ -95,7 +105,7 @@ async function examineErrorProperties() {
   try {
     await pc.listIndexes();
   } catch (error) {
-    if (error instanceof BasePineconeError) {
+    if (error instanceof Errors.BasePineconeError) {
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
@@ -116,12 +126,7 @@ examineErrorProperties();
 Implement retry logic for transient failures:
 
 ```typescript
-import {
-  Pinecone,
-  PineconeConnectionError,
-  PineconeInternalServerError,
-  PineconeUnavailableError,
-} from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function retryableOperation<T>(
   operation: () => Promise<T>,
@@ -137,9 +142,9 @@ async function retryableOperation<T>(
 
       // Only retry on transient errors
       const isRetryable =
-        error instanceof PineconeConnectionError ||
-        error instanceof PineconeInternalServerError ||
-        error instanceof PineconeUnavailableError;
+        error instanceof Errors.PineconeConnectionError ||
+        error instanceof Errors.PineconeInternalServerError ||
+        error instanceof Errors.PineconeUnavailableError;
 
       if (isRetryable && attempt < maxRetries - 1) {
         const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
@@ -195,10 +200,10 @@ await index.upsert({
 
 ## Validation errors
 
-`PineconeArgumentError` is thrown when function arguments are invalid:
+`Errors.PineconeArgumentError` is thrown when arguments fail the client's runtime validation. Many of those same mistakes are also caught by the type system before the code ever runs, so the example below has to defeat the compiler deliberately in order to reach the runtime check. Keep the runtime handler for arguments that TypeScript cannot see, such as records assembled from JSON or from a JavaScript caller.
 
 ```typescript
-import { Pinecone, PineconeArgumentError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function handleValidationErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -209,14 +214,14 @@ async function handleValidationErrors() {
     // Missing required 'id' field
     await index.upsert({
       records: [
+        // @ts-expect-error - missing id
         {
-          // @ts-expect-error - missing id
           values: [0.1, 0.2, 0.3],
         },
       ],
     });
   } catch (error) {
-    if (error instanceof PineconeArgumentError) {
+    if (error instanceof Errors.PineconeArgumentError) {
       console.error('Invalid arguments:', error.message);
       // Fix the arguments and retry
     }
@@ -231,15 +236,7 @@ handleValidationErrors();
 Here's a comprehensive example showing robust error handling:
 
 ```typescript
-import {
-  Pinecone,
-  PineconeAuthorizationError,
-  PineconeNotFoundError,
-  PineconeConnectionError,
-  PineconeBadRequestError,
-  PineconeConflictError,
-  BasePineconeError,
-} from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function robustIndexOperation() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY', maxRetries: 3 });
@@ -269,22 +266,22 @@ async function robustIndexOperation() {
 
     return results;
   } catch (error) {
-    if (error instanceof PineconeAuthorizationError) {
+    if (error instanceof Errors.PineconeAuthorizationError) {
       console.error('Authentication failed. Check your API key.');
       process.exit(1);
-    } else if (error instanceof PineconeNotFoundError) {
+    } else if (error instanceof Errors.PineconeNotFoundError) {
       console.error('Resource not found.');
       // Could create the resource here
-    } else if (error instanceof PineconeConnectionError) {
+    } else if (error instanceof Errors.PineconeConnectionError) {
       console.error('Connection failed. Check your network.');
       // Could retry or use fallback
-    } else if (error instanceof PineconeBadRequestError) {
+    } else if (error instanceof Errors.PineconeBadRequestError) {
       console.error('Invalid request:', error.message);
       // Fix request parameters
-    } else if (error instanceof PineconeConflictError) {
+    } else if (error instanceof Errors.PineconeConflictError) {
       console.log('Resource already exists, continuing...');
       // Not necessarily an error
-    } else if (error instanceof BasePineconeError) {
+    } else if (error instanceof Errors.BasePineconeError) {
       console.error('Pinecone error:', error.message);
       throw error;
     } else {
@@ -335,7 +332,7 @@ process.env.PINECONE_DEBUG_CURL = 'true';
 ### Create index with fallback
 
 ```typescript
-import { Pinecone, PineconeConflictError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function createOrUseExisting(name: string) {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -353,21 +350,21 @@ async function createOrUseExisting(name: string) {
     });
     console.log('Index created successfully');
   } catch (error) {
-    if (error instanceof PineconeConflictError) {
+    if (error instanceof Errors.PineconeConflictError) {
       console.log('Index already exists, using existing index');
     } else {
       throw error;
     }
   }
 
-  return pc.index({ host });
+  return pc.index({ name });
 }
 ```
 
 ### Graceful degradation
 
 ```typescript
-import { Pinecone, PineconeConnectionError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function queryWithFallback() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -381,7 +378,7 @@ async function queryWithFallback() {
     });
     return results;
   } catch (error) {
-    if (error instanceof PineconeConnectionError) {
+    if (error instanceof Errors.PineconeConnectionError) {
       console.warn('Pinecone unavailable, using cached results');
       // Return cached results or empty response
       return { matches: [], namespace: '', usage: { readUnits: 0 } };

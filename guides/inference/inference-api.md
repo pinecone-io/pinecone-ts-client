@@ -90,7 +90,9 @@ console.log(queryEmbeddings);
 
 ## Upsert embeddings
 
-You can upsert the generated embeddings into your index:
+You can upsert the generated embeddings into your index.
+
+`embed` returns an `EmbeddingsList` whose `data` entries are of type `Embedding`, a union discriminated on `vectorType`: a `'dense'` embedding carries `values`, while a `'sparse'` embedding carries `sparseValues` and `sparseIndices` instead. TypeScript will not let you read `values` until you have narrowed the union, so check `vectorType` first. The example below uses `multilingual-e5-large`, which is a dense model, so anything other than `'dense'` is unexpected:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -115,11 +117,18 @@ const embeddings = await pc.inference.embed({
 const indexModel = await pc.describeIndex('my-index');
 const index = pc.index({ host: indexModel.host });
 await index.upsert({
-  records: embeddings.data.map((embedding, i) => ({
-    id: `doc-${i}`,
-    values: embedding.values,
-    metadata: { text: documents[i] },
-  })),
+  records: embeddings.data.map((embedding, i) => {
+    if (embedding.vectorType !== 'dense') {
+      throw new Error(
+        `Expected a dense embedding, received '${embedding.vectorType}'`,
+      );
+    }
+    return {
+      id: `doc-${i}`,
+      values: embedding.values,
+      metadata: { text: documents[i] },
+    };
+  }),
 });
 ```
 
@@ -234,11 +243,18 @@ const docEmbeddings = await pc.inference.embed({
 const indexModel = await pc.describeIndex('my-index');
 const index = pc.index({ host: indexModel.host });
 await index.upsert({
-  records: docEmbeddings.data.map((embedding, i) => ({
-    id: `doc-${i}`,
-    values: embedding.values,
-    metadata: { text: documents[i] },
-  })),
+  records: docEmbeddings.data.map((embedding, i) => {
+    if (embedding.vectorType !== 'dense') {
+      throw new Error(
+        `Expected a dense embedding, received '${embedding.vectorType}'`,
+      );
+    }
+    return {
+      id: `doc-${i}`,
+      values: embedding.values,
+      metadata: { text: documents[i] },
+    };
+  }),
 });
 
 // 2. Generate query embedding and search
@@ -249,8 +265,15 @@ const queryEmbedding = await pc.inference.embed({
   parameters: { inputType: 'query' },
 });
 
+const queryVector = queryEmbedding.data[0];
+if (queryVector.vectorType !== 'dense') {
+  throw new Error(
+    `Expected a dense embedding, received '${queryVector.vectorType}'`,
+  );
+}
+
 const searchResults = await index.query({
-  vector: queryEmbedding.data[0].values,
+  vector: queryVector.values,
   topK: 10,
   includeMetadata: true,
 });

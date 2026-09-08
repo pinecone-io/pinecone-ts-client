@@ -186,13 +186,19 @@ async function assistantQuickstart() {
   const assistant = pc.assistant({ name: 'my-assistant' });
 
   // 3. Upload a file
-  await assistant.uploadFile({
+  const operation = await assistant.uploadFile({
     path: 'knowledge-base.txt',
   });
 
   // 4. Wait for file to be processed (check status)
-  const files = await assistant.listFiles();
-  console.log(files.files[0].status); // 'Available' when ready
+  let op = operation;
+  while (op.status === 'Processing') {
+    await new Promise((r) => setTimeout(r, 2000));
+    op = await assistant.describeOperation(operation.id);
+  }
+  if (op.status !== 'Completed') {
+    throw new Error(`Upload failed: ${op.errorMessage}`);
+  }
 
   // 5. Chat with the assistant
   const response = await assistant.chat({
@@ -204,7 +210,9 @@ async function assistantQuickstart() {
     ],
   });
 
-  console.log(response.message.content);
+  if (response.message?.content) {
+    console.log(response.message.content);
+  }
 }
 
 assistantQuickstart();

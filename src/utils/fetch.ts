@@ -167,12 +167,12 @@ function getBaseFetch(
   if (config.fetchApi) {
     // User-provided fetch implementation, if any, takes precedence.
     return config.fetchApi;
-  } else if (global.fetch) {
+  } else if (globalThis.fetch) {
     // If a fetch implementation is present in the global scope (will work with native fetch in Node18+, Edge runtimes,
     // etc.), use that. This should prevent confusing failures in
     // Next.js projects where @vercel/fetch is mandated and
     // other implementations are stubbed out.
-    return global.fetch;
+    return globalThis.fetch;
   } else {
     // If no fetch implementation is found, throw an error.
     throw new PineconeConfigurationError(
