@@ -38,7 +38,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 
 ## Prerequisites
 
-- The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node.js >=20.0.0. Node 20 reached [end-of-life](https://github.com/nodejs/Release#release-schedule) on 2026-04-30 and no longer receives security patches, so new projects should use Node 22 or later.
+- The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node.js >=22.0.0. Node 20 reached [end-of-life](https://github.com/nodejs/Release#release-schedule) on 2026-04-30 and no longer receives security patches, so it is no longer supported. CI exercises Node 22.x and 24.x.
 - Before you can use the Pinecone SDK, you must sign up for an account and find your API key in the Pinecone console dashboard at [https://app.pinecone.io](https://app.pinecone.io).
 
 **Note for TypeScript users:** This SDK uses Node.js built-in modules in its type definitions. If you're using TypeScript, ensure you have `@types/node` installed in your project:

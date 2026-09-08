@@ -36,6 +36,8 @@ Detailed guides for using the Pinecone TypeScript SDK.
 
 ## Upgrading
 
+- [v9 Migration Guide](./upgrading/v9-migration.md) - Upgrading from v8.x to v9.x
+- [v8 Migration Guide](./upgrading/v8-migration.md) - Upgrading from v7.x to v8.x
 - [v2 Migration Guide](./upgrading/v2-migration.md) - Upgrading from v1.x to v2.x
 - [v1 Migration Guide](./upgrading/v1-migration.md) - Upgrading from v0.x to v1.x
 
