@@ -272,7 +272,7 @@ const index = pc.index({ host: indexModel.host });
 await index.update({
   id: 'vec1',
   values: [0.1, 0.2, 0.3, 0.4],
-  setMetadata: { genre: 'drama' },
+  metadata: { genre: 'drama' },
   namespace: 'example-namespace',
 });
 ```

@@ -117,7 +117,7 @@ You can configure the read capacity mode for your serverless index. By default, 
 
 ### Dedicated Read Capacity
 
-Dedicated mode allocates dedicated read nodes for your workload. You must specify `nodeType`, `scaling`, and scaling configuration.
+Dedicated mode allocates dedicated read nodes for your workload. Alongside `mode: 'Dedicated'` you must specify a `nodeType` (`'b1'` or `'t1'`) and a `manual` object giving the number of `shards` and `replicas`.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -134,13 +134,10 @@ await pc.createIndex({
       region: 'us-central1',
       readCapacity: {
         mode: 'Dedicated',
-        dedicated: {
-          nodeType: 't1',
-          scaling: 'Manual',
-          manual: {
-            shards: 2,
-            replicas: 2,
-          },
+        nodeType: 't1',
+        manual: {
+          shards: 2,
+          replicas: 2,
         },
       },
     },
@@ -171,13 +168,10 @@ await pc.configureIndex({
   name: 'my-index',
   readCapacity: {
     mode: 'Dedicated',
-    dedicated: {
-      nodeType: 't1',
-      scaling: 'Manual',
-      manual: {
-        shards: 3,
-        replicas: 2,
-      },
+    nodeType: 't1',
+    manual: {
+      shards: 3,
+      replicas: 2,
     },
   },
 });
@@ -187,13 +181,10 @@ await pc.configureIndex({
   name: 'my-index',
   readCapacity: {
     mode: 'Dedicated',
-    dedicated: {
-      nodeType: 't1',
-      scaling: 'Manual',
-      manual: {
-        shards: 4,
-        replicas: 3,
-      },
+    nodeType: 't1',
+    manual: {
+      shards: 4,
+      replicas: 3,
     },
   },
 });
@@ -205,7 +196,7 @@ When you change read capacity configuration, the index will transition to the ne
 
 You can configure which metadata fields are filterable by specifying a metadata schema. By default, all metadata fields are indexed. However, large amounts of metadata can cause slower index building as well as slower query execution, particularly when data is not cached in a query executor's memory and local SSD and must be fetched from object storage.
 
-To prevent performance issues due to excessive metadata, you can limit metadata indexing to the fields that you plan to use for query filtering. When you specify a metadata schema, only fields marked as `filterable: true` are indexed and can be used in filters.
+To prevent performance issues due to excessive metadata, you can limit metadata indexing to the fields that you plan to use for query filtering. The schema is an object with a `fields` map keyed by metadata field name. When you specify a metadata schema, only fields listed in `fields` with `filterable: true` are indexed and can be used in filters. Note that `filterable: false` is not currently supported; omit the field instead.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -221,9 +212,11 @@ await pc.createIndex({
       cloud: 'aws',
       region: 'us-west-2',
       schema: {
-        genre: { filterable: true },
-        year: { filterable: true },
-        description: { filterable: true },
+        fields: {
+          genre: { filterable: true },
+          year: { filterable: true },
+          description: { filterable: true },
+        },
       },
     },
   },
