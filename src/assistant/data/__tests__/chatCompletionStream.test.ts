@@ -55,7 +55,7 @@ describe('chatCompletionStream', () => {
         headers: expect.objectContaining({
           'Api-Key': 'test-api-key',
           'User-Agent': 'TestUserAgent',
-          'X-Pinecone-Api-Version': expect.any(String),
+          'X-Pinecone-Api-Version': '2026-07',
         }),
         body: JSON.stringify({
           messages: [{ role: 'user', content: 'Hello' }],

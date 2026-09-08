@@ -42,7 +42,7 @@ with `--update-pin` as its second argument, then run `build` and `format` yourse
 path bypasses `npm run generate:openapi`:
 
 ```bash
-./codegen/build-oas.sh 2026-04 --update-pin
+./codegen/build-oas.sh 2026-07 --update-pin
 npm run build
 npm run format
 ```
