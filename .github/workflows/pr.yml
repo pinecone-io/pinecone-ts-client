@@ -18,10 +18,51 @@ on:
       VERCEL_TOKEN:
         required: true
 
+# Cancel a superseded run on the same PR; group by run ID outside of a PR so
+# main pushes, workflow_dispatch, and release.yml's workflow_call never share
+# a group and cancel each other.
+concurrency:
+  group: pr-${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    # No checkout, so dorny/paths-filter fetches the changed-file list from
+    # the GitHub API instead of local git; that call needs its own grant
+    # since the workflow-level `permissions` above zeroes out everything it
+    # doesn't list.
+    permissions:
+      pull-requests: read
+    outputs:
+      # Only pull_request has a base to diff against, so the `if` below
+      # guards this too: on push/dispatch/workflow_call (release.yml's
+      # gate) docs_only is always false and every job runs as it does
+      # today, regardless of the unset `non_docs` output.
+      #
+      # `non_docs` counts a changed file only once it fails every negated
+      # pattern (predicate-quantifier: every), i.e. it's neither markdown
+      # nor under guides/ - matching any *.md/guides/** file here would
+      # invert the result. The filter fires ('true') if any changed file
+      # counts as non_docs, so docs_only is "no non-doc file exists".
+      docs_only: ${{ github.event_name == 'pull_request' && steps.filter.outputs.non_docs != 'true' }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          predicate-quantifier: every
+          filters: |
+            non_docs:
+              - '**'
+              - '!**/*.md'
+              - '!guides/**'
+
   basic-hygiene:
     name: Linting, formatting, documentation, etc
     runs-on: ubuntu-latest
@@ -50,7 +91,14 @@ jobs:
         uses: ./.github/actions/build-docs
 
   testing:
+    needs: [changes]
+    # Fail open: if `changes` itself fails (e.g. the GitHub API call it
+    # depends on), still run every job below rather than skipping the whole
+    # reusable workflow, which would leave #49's required checks with no
+    # run to report against.
+    if: ${{ !cancelled() }}
     uses: './.github/workflows/testing.yml'
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
+      docs_only: ${{ needs.changes.result == 'success' && needs.changes.outputs.docs_only == 'true' }}

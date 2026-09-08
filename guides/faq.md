@@ -165,6 +165,15 @@ Enable strict null checking in `tsconfig.json`:
 }
 ```
 
+### "Cannot find name 'RequestCredentials'" or similar DOM-type errors
+
+The SDK's published type declarations reference DOM lib types (for example `RequestCredentials`,
+`WindowOrWorkerGlobalScope`, used by the `fetchApi` configuration option and its underlying
+`FetchAPI` type). A `tsconfig.json` that doesn't set `"skipLibCheck": true` and whose `lib` array
+omits `"dom"` and `"webworker"` will fail to compile against these declarations, even though the
+SDK itself runs fine in Node.js. Add `"webworker"` (or `"dom"`) to `lib`, or set `"skipLibCheck":
+true`, to resolve this.
+
 ## Can I use this SDK in the browser?
 
 **No.** The Pinecone TypeScript SDK is intended for server-side use only. Using the SDK in a browser can expose your API key.
