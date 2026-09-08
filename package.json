@@ -37,7 +37,7 @@
     "verify:sourcemaps": "tsx scripts/verify-source-maps.ts"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@edge-runtime/jest-environment": "^4.0.0",

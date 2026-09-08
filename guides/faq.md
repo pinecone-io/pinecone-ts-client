@@ -123,7 +123,7 @@ verifyConnection();
 
 ## What TypeScript version is required?
 
-The SDK requires TypeScript >=5.2.0 and Node.js >=20.0.0.
+The SDK requires TypeScript >=5.2.0 and Node.js >=22.0.0.
 
 You must also have `@types/node` installed as a dev dependency:
 
@@ -183,7 +183,7 @@ true`, to resolve this.
 
 Supported environments:
 
-- ✅ Node.js (>=20.0.0)
+- ✅ Node.js (>=22.0.0)
 - ✅ Edge runtimes (Vercel Edge Functions, Cloudflare Workers)
 - ❌ Browser (client-side)
 
