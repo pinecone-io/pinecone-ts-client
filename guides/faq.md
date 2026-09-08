@@ -109,7 +109,10 @@ async function verifyConnection() {
   try {
     const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
     const indexes = await pc.listIndexes();
-    console.log('Connection successful! Indexes:', indexes.indexes.length);
+    console.log(
+      'Connection successful! Indexes:',
+      indexes.indexes?.length ?? 0,
+    );
   } catch (error) {
     console.error('Connection failed:', error);
   }
