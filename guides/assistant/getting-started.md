@@ -42,26 +42,21 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'product-assistant' });
 
-const operation = await assistant.uploadFile({
+await assistant.uploadFile({
   path: 'product-catalog.txt',
   metadata: { source: 'catalog', version: '2025-01' },
 });
 
-console.log(operation);
 // {
-//   id: 'op-921ad74c-...',
-//   operationType: 'upload',
-//   fileId: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+//   name: 'product-catalog.txt',
+//   id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
+//   metadata: { source: 'catalog', version: '2025-01' },
+//   createdOn: '2025-01-06T19:14:21.969Z',
+//   updatedOn: '2025-01-06T19:14:21.969Z',
 //   status: 'Processing',
-//   createdOn: 2025-01-06T19:14:21.969Z,
-//   percentComplete: 0
+//   percentDone: null
 // }
 ```
-
-Uploads are processed asynchronously. `uploadFile` returns an `OperationModel`
-immediately; poll it with `assistant.describeOperation(operation.id)` until its
-`status` is `'Completed'` before chatting with the assistant. See
-[File Management](./file-management.md) for the full polling pattern.
 
 ## Chat with an Assistant
 
@@ -195,7 +190,7 @@ async function assistantQuickstart() {
     path: 'knowledge-base.txt',
   });
 
-  // 4. Poll the upload operation until the file is ready
+  // 4. Wait for file to be processed (check status)
   let op = operation;
   while (op.status === 'Processing') {
     await new Promise((r) => setTimeout(r, 2000));

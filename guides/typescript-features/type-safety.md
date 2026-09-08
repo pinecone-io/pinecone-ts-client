@@ -193,11 +193,8 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 type ArticleMetadata = {
   title: string;
-  // A nested `author: { name, email }` object is not a valid metadata value,
-  // so flatten it into scalar fields
   authorName: string;
   authorEmail: string;
-  // Arrays of strings are valid
   tags: string[];
   publishedAt: string; // ISO date string
   views: number;
@@ -225,7 +222,7 @@ await index.upsert({
   ],
 });
 
-// Filters reference the same flat field names
+// Query with type-safe access
 const results = await index.query({
   vector: [0.1, 0.2, 0.3],
   topK: 5,

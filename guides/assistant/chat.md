@@ -68,7 +68,7 @@ const response = await assistant.chat({
     },
   ],
   model: 'claude-sonnet-4-5',
-  // Other options: 'gpt-4o', 'gpt-4.1', 'gpt-5', 'o4-mini', 'gemini-2.5-pro'
+  // Other options: 'gpt-4o', 'gpt-4.1', 'o4-mini', 'gemini-2.5-pro'
 });
 ```
 
@@ -113,8 +113,7 @@ const response = await assistant.chat({
   jsonResponse: true,
 });
 
-// `message` is optional on the response, so check it before parsing.
-// When present, `content` is valid JSON.
+// The response.message.content will be valid JSON
 if (response.message?.content) {
   const metrics = JSON.parse(response.message.content);
   console.log(metrics);
@@ -300,8 +299,6 @@ const response1 = await assistant.chat({
   ],
 });
 
-// `message` is optional on the response, so make sure there is an answer to
-// feed back into the next turn.
 const previousAnswer = response1.message?.content;
 if (!previousAnswer) {
   throw new Error('The assistant did not return a message.');
@@ -454,8 +451,6 @@ response.citations?.forEach((citation) => {
   citation.references?.forEach((ref) => {
     console.log(`  File: ${ref.file?.name}`);
     console.log(`  Pages: ${ref.pages?.join(', ') ?? 'n/a'}`);
-    // `highlight` is only populated when the chat request set
-    // `includeHighlights: true`.
     if (ref.highlight) {
       console.log(`  Highlight: ${ref.highlight.content}`);
     }

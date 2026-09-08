@@ -218,17 +218,11 @@ const index = pc.index<MovieMetadata>({ name: 'movies' });
 const results = await index.query({
   vector: [0.1, 0.2, 0.3, 0.4],
   topK: 10,
-  includeMetadata: true,
   filter: {
     genre: { $eq: 'drama' },
     year: { $gte: 2020 },
   },
 });
-
-// Metadata on each match is typed as MovieMetadata
-for (const match of results.matches) {
-  console.log(match.metadata?.genre);
-}
 ```
 
 ## Performance considerations

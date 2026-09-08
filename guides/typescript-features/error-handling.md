@@ -211,20 +211,16 @@ async function handleValidationErrors() {
   const index = pc.index({ host: indexModel.host });
 
   try {
+    // Missing required 'id' field
     await index.upsert({
       records: [
-        // A record literal with no `id` does not satisfy `PineconeRecord`, so
-        // TypeScript rejects it at compile time. The directive below asserts
-        // that the error is really there.
-        // @ts-expect-error - Property 'id' is missing in type '{ values: number[]; }'
+        // @ts-expect-error - missing id
         {
           values: [0.1, 0.2, 0.3],
         },
       ],
     });
   } catch (error) {
-    // Thrown at runtime by the client: 'Every record must include an `id`
-    // property in order to upsert.'
     if (error instanceof Errors.PineconeArgumentError) {
       console.error('Invalid arguments:', error.message);
       // Fix the arguments and retry

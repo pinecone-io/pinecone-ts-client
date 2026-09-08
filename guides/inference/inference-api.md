@@ -242,8 +242,6 @@ const docEmbeddings = await pc.inference.embed({
 
 const indexModel = await pc.describeIndex('my-index');
 const index = pc.index({ host: indexModel.host });
-// `Embedding` is a union discriminated on `vectorType`; narrow it before
-// reading `values`, which only exists on dense embeddings.
 await index.upsert({
   records: docEmbeddings.data.map((embedding, i) => {
     if (embedding.vectorType !== 'dense') {
