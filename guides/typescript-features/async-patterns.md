@@ -22,10 +22,13 @@ basicExample();
 
 ## Error handling with try/catch
 
-Wrap async operations in try/catch blocks to handle errors:
+Wrap async operations in try/catch blocks to handle errors. The SDK's error
+classes are exported under the `Errors` namespace, and under `strict` mode a
+`catch` binding is typed `unknown`, so narrow it with `instanceof` before
+reading any properties off it:
 
 ```typescript
-import { Pinecone, PineconeConnectionError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function errorHandlingExample() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -39,7 +42,7 @@ async function errorHandlingExample() {
     });
     console.log(results);
   } catch (error) {
-    if (error instanceof PineconeConnectionError) {
+    if (error instanceof Errors.PineconeConnectionError) {
       console.error('Failed to connect to Pinecone:', error.message);
       // Handle connection error
     } else {
@@ -162,14 +165,14 @@ sequentialOperations();
 Implement custom retry logic for transient failures:
 
 ```typescript
-import { Pinecone, PineconeConnectionError } from '@pinecone-database/pinecone';
+import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function retryOperation<T>(
   operation: () => Promise<T>,
   maxRetries: number = 3,
   delayMs: number = 1000,
 ): Promise<T> {
-  let lastError: Error;
+  let lastError: Error | undefined;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -178,7 +181,7 @@ async function retryOperation<T>(
       lastError = error as Error;
 
       if (
-        error instanceof PineconeConnectionError &&
+        error instanceof Errors.PineconeConnectionError &&
         attempt < maxRetries - 1
       ) {
         console.log(
@@ -192,7 +195,7 @@ async function retryOperation<T>(
     }
   }
 
-  throw lastError!;
+  throw lastError ?? new Error('Operation failed after all retry attempts');
 }
 
 // Usage

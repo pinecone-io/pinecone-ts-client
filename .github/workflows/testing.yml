@@ -7,6 +7,11 @@ on:
         description: 'Branch name or SHA to checkout'
         required: false
         type: string
+      docs_only:
+        description: 'Diff touches only *.md/guides/**; skip setup, integration-tests, teardown, example-app-semantic-search, external-app, and typescript-compilation-tests'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,7 +24,9 @@ jobs:
     # PINECONE_API_KEY and VERCEL_TOKEN are not set. Skip the jobs that need
     # a live key; lint, unit tests, mocked smoke, and the TS compile matrix
     # still gate the bump, and integration coverage runs on merge to main.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # docs_only skips it too: a *.md/guides/** diff can't touch the surface
+    # these tests exercise.
+    if: github.event.pull_request.user.login != 'dependabot[bot]' && !inputs.docs_only
     outputs:
       fixturesJson: ${{ steps.setup.outputs.FIXTURES_JSON }}
     steps:
@@ -44,6 +51,7 @@ jobs:
 
   integration-tests:
     needs: [setup]
+    if: ${{ !inputs.docs_only }}
     name: Run integration tests
     runs-on: ubuntu-latest
     outputs:
@@ -55,7 +63,7 @@ jobs:
         pinecone_env:
           - prod
           # - staging
-        node_version: [20.x, 22.x]
+        node_version: [20.x, 22.x, 24.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },
@@ -100,7 +108,7 @@ jobs:
   teardown:
     name: Teardown shared resources
     needs: [integration-tests]
-    if: success()
+    if: success() && !inputs.docs_only
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -158,6 +166,7 @@ jobs:
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest
+    if: ${{ !inputs.docs_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -223,8 +232,9 @@ jobs:
   example-app-semantic-search:
     name: 'Example app: semantic search'
     runs-on: ubuntu-latest
-    # No secrets on Dependabot PRs; see the `setup` job.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # No secrets on Dependabot PRs; see the `setup` job. docs_only skips it
+    # for the same reason as `setup` above.
+    if: github.event.pull_request.user.login != 'dependabot[bot]' && !inputs.docs_only
     steps:
       - name: Checkout pinecone-ts-client
         uses: actions/checkout@v7
@@ -271,7 +281,8 @@ jobs:
     # repo, where the token exists but Dependabot runs cannot read it.
     if: >-
       github.repository == 'pinecone-io/pinecone-ts-client' &&
-      github.event.pull_request.user.login != 'dependabot[bot]'
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      !inputs.docs_only
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
