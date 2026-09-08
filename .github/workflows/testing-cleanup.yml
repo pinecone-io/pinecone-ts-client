@@ -1,7 +1,11 @@
 name: 'Cleanup test resources'
 
+# See testing-cleanup.md in this directory for the working theory on why the schedule below
+# never fired (#57) and how to trigger this manually until it's confirmed fixed.
 on:
   workflow_dispatch: {}
+  repository_dispatch:
+    types: [cleanup-test-resources]
   schedule:
     - cron: '0 0 * * *'
 

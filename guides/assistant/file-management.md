@@ -97,7 +97,7 @@ const operation = await assistant.uploadFile({ path: 'report.pdf' });
 let op = operation;
 while (op.status === 'Processing') {
   await new Promise((r) => setTimeout(r, 2000));
-  op = await assistant.describeOperation({ operationId: operation.id });
+  op = await assistant.describeOperation(operation.id);
 }
 
 if (op.status === 'Completed') {
@@ -172,9 +172,9 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
 
-const fileInfo = await assistant.describeFile({
-  fileId: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
-});
+const fileInfo = await assistant.describeFile(
+  '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+);
 
 console.log(fileInfo);
 // {
@@ -233,7 +233,7 @@ async function fileManagementWorkflow() {
     let current = op;
     while (current.status === 'Processing') {
       await new Promise((r) => setTimeout(r, 2000));
-      current = await assistant.describeOperation({ operationId: op.id });
+      current = await assistant.describeOperation(op.id);
     }
     if (current.status === 'Failed') {
       throw new Error(`Upload failed: ${current.errorMessage}`);

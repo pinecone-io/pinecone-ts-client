@@ -50,6 +50,22 @@ npm run format
 `--update-pin` only changes what's checked out in your working tree. To keep the new `apis`
 commit, commit the updated `codegen/apis` pointer in this repository as its own step.
 
+## Documented examples
+
+Every fenced `typescript` block in `README.md` and `guides/**/*.md` is type-checked in CI:
+
+```bash
+npm run docs:examples
+```
+
+A block that documents a prior major version (marked `**Before` in a migration guide, or
+importing the removed `PineconeClient` class) is skipped. Anything else that fails to compile
+must either be fixed or added to `docs-examples/known-failures.json`. The failure output prints
+a ready-to-paste entry, keyed by the file and a hash of the block's own content so an unrelated
+edit elsewhere in the file can't shift which block an entry points at. An entry whose example
+starts compiling, or whose hash no longer matches anything (the example was edited, moved, or
+excluded), fails the check, so the list only grows for real, tracked drift.
+
 ## Local testing
 
 To run all tests locally, excluding the unit tests, you will need to set your Pinecone API key to an environment

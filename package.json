@@ -33,7 +33,8 @@
     "test:external-app-local": "chmod +x ts-external-app-test/local-external-app.sh && ts-external-app-test/local-external-app.sh",
     "test:unit": "jest src/",
     "test:smoke:mocked": "jest -c jest.config.smoke.js",
-    "test:edge-runtime": "tsx scripts/edge-runtime/loadEntryInEdgeVM.ts"
+    "test:edge-runtime": "tsx scripts/edge-runtime/loadEntryInEdgeVM.ts",
+    "docs:examples": "jest --config jest.config.js scripts/__tests__/check-doc-examples.test.ts && tsx scripts/check-doc-examples.ts"
   },
   "engines": {
     "node": ">=20.0.0"
