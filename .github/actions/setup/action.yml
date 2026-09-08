@@ -20,7 +20,7 @@ runs:
         key: npm-${{ hashFiles('package-lock.json') }}
     - name: Install npm packages
       run: |
-        npm install
+        npm ci
       shell: bash
     - name: Build typescript
       run: npm run build

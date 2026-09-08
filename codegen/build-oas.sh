@@ -3,17 +3,49 @@
 set -eux -o pipefail
 
 version=$1 # e.g. 2024-07
+update_pin=${2:-} # pass --update-pin to check out the apis repo's latest main
 modules=("db_control" "db_data" "inference" "assistant_control" "assistant_data" "assistant_evaluation" "admin")
 
 destination="src/pinecone-generated-ts-fetch"
 build_dir="build"
 
+case "$update_pin" in
+"" | "--update-pin") ;;
+*)
+	echo "Unrecognized argument: $update_pin (expected --update-pin or nothing)" >&2
+	exit 1
+	;;
+esac
+
+require_apis_submodule_initialized() {
+	# An uninitialized submodule leaves codegen/apis as an empty directory. `pushd`
+	# into it still succeeds, and git then walks up to this repository's own
+	# .git, so any git command run from there would operate on the client repo
+	# instead of the submodule. Fail before that can happen.
+	if [ ! -e "codegen/apis/.git" ]; then
+		echo "codegen/apis is not initialized (submodule directory is empty)." >&2
+		echo "Run 'git submodule update --init' and re-run this script." >&2
+		exit 1
+	fi
+}
+
 update_apis_repo() {
-	echo "Updating apis repo"
+	require_apis_submodule_initialized
+
+	if [ "$update_pin" = "--update-pin" ]; then
+		echo "Checking out codegen/apis at the apis repo's latest main"
+		echo "This does not update this repository's recorded pin -- commit the new codegen/apis pointer separately if you want to keep it"
+		pushd codegen/apis
+			git fetch
+			git checkout main
+			git pull
+		popd
+	else
+		echo "Checking out codegen/apis at the commit pinned by this repository"
+		git submodule update --init -- codegen/apis
+	fi
+
 	pushd codegen/apis
-		git fetch
-		git checkout main
-		git pull
 		just clean
 		just build
 	popd

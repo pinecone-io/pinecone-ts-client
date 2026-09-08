@@ -231,6 +231,9 @@ export interface ContextOptions {
  * memory — for example, when forwarding an incoming HTTP upload directly to
  * the assistant without buffering on disk.
  *
+ * `Buffer` and `Blob` work on any runtime, including Edge and Workers.
+ * `ReadableStream` requires a Node.js runtime.
+ *
  * Note: `ReadableStream` inputs are sent in a single attempt. Automatic
  * retries are not supported because the stream is consumed after the first
  * read and cannot be replayed.
@@ -257,6 +260,7 @@ export type UploadFileOptions = {
   | {
       /**
        * The local path to the file to upload. The file is read asynchronously.
+       * Requires a Node.js runtime; use `file` on Edge or Workers runtimes.
        */
       path: string;
       file?: never;
@@ -305,6 +309,7 @@ export type UpsertFileOptions = {
   | {
       /**
        * The local path to the file to upload. The file is read asynchronously.
+       * Requires a Node.js runtime; use `file` on Edge or Workers runtimes.
        */
       path: string;
       file?: never;
