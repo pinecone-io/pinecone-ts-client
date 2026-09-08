@@ -363,6 +363,30 @@ export class Pinecone {
   }
 
   /**
+   * {@inheritDoc index}
+   */
+  // Alias method to match the Python SDK capitalization
+  Index<T extends RecordMetadata = RecordMetadata>(
+    options: IndexOptions,
+  ): Index<T>;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Index<T extends RecordMetadata = RecordMetadata>(
+    indexName: string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders,
+  ): Index<T>;
+  Index<T extends RecordMetadata = RecordMetadata>(
+    optionsOrName: IndexOptions | string,
+    indexHostUrl?: string,
+    additionalHeaders?: HTTPHeaders,
+  ): Index<T> {
+    return this.index<T>(optionsOrName as any, indexHostUrl, additionalHeaders);
+  }
+
+  /**
    * Targets a specific assistant for performing operations.
    *
    * Once an assistant is targeted, you can perform operations such as uploading files,
@@ -439,5 +463,22 @@ export class Pinecone {
 
     // Handle new options-based API
     return new Assistant(optionsOrName, this.config);
+  }
+
+  /**
+   * {@inheritDoc assistant}
+   */
+  // Alias method
+  Assistant(options: AssistantOptions): Assistant;
+  /**
+   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
+   * This signature will be removed in the next major version.
+   */
+  Assistant(name: string, host?: string): Assistant;
+  Assistant(
+    optionsOrName: AssistantOptions | string,
+    host?: string,
+  ): Assistant {
+    return this.assistant(optionsOrName as any, host);
   }
 }
