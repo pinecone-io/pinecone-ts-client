@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Control Plane API
+ * Pinecone Data Plane API
  * Pinecone is a vector database that makes it easy to search and retrieve billions of high-dimensional vectors.
  *
  * The version of the OpenAPI document: 2026-07
@@ -21,23 +21,17 @@ import { exists, mapValues } from '../runtime';
 export interface ErrorResponseError {
     /**
      * The error code.
-     * Possible values: `OK`, `UNKNOWN`, `INVALID_ARGUMENT`, `DEADLINE_EXCEEDED`, `NOT_FOUND`, `ALREADY_EXISTS`, `PERMISSION_DENIED`, `UNAUTHENTICATED`, `RESOURCE_EXHAUSTED`, `FAILED_PRECONDITION`, `ABORTED`, `OUT_OF_RANGE`, `INTERNAL`, `FORBIDDEN`, `PAYMENT_REQUIRED`, `SERVICE_UNAVAILABLE`, `PAYLOAD_TOO_LARGE`, or `UNPROCESSABLE_ENTITY`.
+     * Possible values: `OK`, `UNKNOWN`, `INVALID_ARGUMENT`, `DEADLINE_EXCEEDED`, `NOT_FOUND`, `ALREADY_EXISTS`, `PERMISSION_DENIED`, `UNAUTHENTICATED`, `RESOURCE_EXHAUSTED`, `FAILED_PRECONDITION`, `ABORTED`, `OUT_OF_RANGE`, `INTERNAL`, `FORBIDDEN`, `PAYMENT_REQUIRED`, `SERVICE_UNAVAILABLE`, or `PAYLOAD_TOO_LARGE`.
      * @type {string}
      * @memberof ErrorResponseError
      */
     code: string;
     /**
-     * A human-readable description of the error
+     * A human-readable description of the error, including how to correct the request where possible.
      * @type {string}
      * @memberof ErrorResponseError
      */
     message: string;
-    /**
-     * Additional information about the error. This field is not guaranteed to be present.
-     * @type {object}
-     * @memberof ErrorResponseError
-     */
-    details?: object;
 }
 
 /**
@@ -63,7 +57,6 @@ export function ErrorResponseErrorFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'code': json['code'],
         'message': json['message'],
-        'details': !exists(json, 'details') ? undefined : json['details'],
     };
 }
 
@@ -78,7 +71,6 @@ export function ErrorResponseErrorToJSON(value?: ErrorResponseError | null): any
         
         'code': value.code,
         'message': value.message,
-        'details': value.details,
     };
 }
 

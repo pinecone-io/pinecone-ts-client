@@ -26,7 +26,8 @@ export interface SearchRecordsRequestRerank {
      */
     model: string;
     /**
-     * The field(s) to consider for reranking. If not provided, the default is `["text"]`.
+     * The field(s) to consider for reranking. Every returned record must contain each
+     * listed field; otherwise the request is rejected with `400`.
      * 
      * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/search/rerank-results#reranking-models).
      * @type {Array<string>}
@@ -46,7 +47,7 @@ export interface SearchRecordsRequestRerank {
      */
     parameters?: { [key: string]: any; };
     /**
-     * The query to rerank documents against. If a specific rerank query is specified,  it overwrites the query input that was provided at the top level.
+     * The query to rerank documents against. If a specific rerank query is specified, it overwrites the query input that was provided at the top level. Required when the search uses `vector` or `id`, since there is no query text to rerank against; omitting it in that case is rejected with `400`.
      * @type {string}
      * @memberof SearchRecordsRequestRerank
      */

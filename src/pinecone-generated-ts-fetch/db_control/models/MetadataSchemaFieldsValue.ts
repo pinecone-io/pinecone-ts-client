@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Data Plane API
+ * Pinecone Control Plane API
  * Pinecone is a vector database that makes it easy to search and retrieve billions of high-dimensional vectors.
  *
  * The version of the OpenAPI document: 2026-07
@@ -16,32 +16,32 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface CreateNamespaceRequestSchemaFieldsValue
+ * @interface MetadataSchemaFieldsValue
  */
-export interface CreateNamespaceRequestSchemaFieldsValue {
+export interface MetadataSchemaFieldsValue {
     /**
      * Whether the field is indexed and can be used in filters. Must be present and must be `true`: omitting it, or sending `false` or `null`, is rejected with `Field '<name>' is set to filterable: false. Only filterable: true is supported.` To leave a field unindexed, omit it from `fields` entirely.
      * @type {boolean}
-     * @memberof CreateNamespaceRequestSchemaFieldsValue
+     * @memberof MetadataSchemaFieldsValue
      */
     filterable: boolean;
 }
 
 /**
- * Check if a given object implements the CreateNamespaceRequestSchemaFieldsValue interface.
+ * Check if a given object implements the MetadataSchemaFieldsValue interface.
  */
-export function instanceOfCreateNamespaceRequestSchemaFieldsValue(value: object): boolean {
+export function instanceOfMetadataSchemaFieldsValue(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "filterable" in value;
 
     return isInstance;
 }
 
-export function CreateNamespaceRequestSchemaFieldsValueFromJSON(json: any): CreateNamespaceRequestSchemaFieldsValue {
-    return CreateNamespaceRequestSchemaFieldsValueFromJSONTyped(json, false);
+export function MetadataSchemaFieldsValueFromJSON(json: any): MetadataSchemaFieldsValue {
+    return MetadataSchemaFieldsValueFromJSONTyped(json, false);
 }
 
-export function CreateNamespaceRequestSchemaFieldsValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateNamespaceRequestSchemaFieldsValue {
+export function MetadataSchemaFieldsValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetadataSchemaFieldsValue {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -51,7 +51,7 @@ export function CreateNamespaceRequestSchemaFieldsValueFromJSONTyped(json: any, 
     };
 }
 
-export function CreateNamespaceRequestSchemaFieldsValueToJSON(value?: CreateNamespaceRequestSchemaFieldsValue | null): any {
+export function MetadataSchemaFieldsValueToJSON(value?: MetadataSchemaFieldsValue | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -26,7 +26,6 @@ import {
  * @interface ReadCapacityDedicatedSpec
  */
 export interface ReadCapacityDedicatedSpec {
-    [key: string]: any | any;
     /**
      * The mode of the index. Possible values: `OnDemand` or `Dedicated`. Defaults to `OnDemand`. If set to `Dedicated`, `dedicated.node_type`, and `dedicated.scaling` must be specified.
      * @type {string}
@@ -62,7 +61,6 @@ export function ReadCapacityDedicatedSpecFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-            ...json,
         'mode': json['mode'],
         'dedicated': ReadCapacityDedicatedConfigFromJSON(json['dedicated']),
     };
@@ -77,7 +75,6 @@ export function ReadCapacityDedicatedSpecToJSON(value?: ReadCapacityDedicatedSpe
     }
     return {
         
-            ...value,
         'mode': value.mode,
         'dedicated': ReadCapacityDedicatedConfigToJSON(value.dedicated),
     };

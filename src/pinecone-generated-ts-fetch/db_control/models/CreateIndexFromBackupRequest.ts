@@ -33,11 +33,11 @@ export interface CreateIndexFromBackupRequest {
      */
     name: string;
     /**
-     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
+     * Custom user tags added to an index, at most 20 per index. Keys must be 80 characters or less and alphanumeric, '_', or '-'. Values must be 120 characters or less and consist of printable ASCII characters or spaces. To unset a key, set the value to be an empty string. `null` in responses when the index has no tags.
      * @type {{ [key: string]: string; }}
      * @memberof CreateIndexFromBackupRequest
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
      * Possible values: `disabled` or `enabled`.

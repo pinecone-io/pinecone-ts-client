@@ -194,7 +194,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
+     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of namespaces. When the response has no `pagination`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * List namespaces
      */
     async listNamespacesOperationRaw(requestParameters: ListNamespacesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListNamespacesResponse>> {
@@ -237,7 +237,7 @@ export class NamespaceOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response also includes a `pagination_token` that you can use to get the next batch of namespaces. When the response does not include a `pagination_token`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
+     * List all namespaces in a serverless index.  Up to 100 namespaces are returned at a time by default, in sorted order (bitwise “C” collation). If the `limit` parameter is set, up to that number of namespaces are returned instead. Whenever there are additional namespaces to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of namespaces. When the response has no `pagination`, there are no more namespaces to return.  For guidance and examples, see [Manage namespaces](https://docs.pinecone.io/guides/manage-data/manage-namespaces).  **Note:** This operation is not supported for pod-based indexes.
      * List namespaces
      */
     async listNamespacesOperation(requestParameters: ListNamespacesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListNamespacesResponse> {

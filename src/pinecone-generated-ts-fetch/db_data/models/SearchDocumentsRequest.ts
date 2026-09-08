@@ -28,6 +28,8 @@ import {
 export interface SearchDocumentsRequest {
     /**
      * The list of scoring methods to use for ranking documents.
+     * 
+     * A single clause of any type is always valid. Several clauses may be combined only when every one of them is `text` or `query_string`; a `dense_vector` or `sparse_vector` clause must appear on its own.
      * @type {Array<DocumentScoringMethod>}
      * @memberof SearchDocumentsRequest
      */
@@ -39,7 +41,7 @@ export interface SearchDocumentsRequest {
      */
     topK: number;
     /**
-     * The document fields to include in the search results.
+     * The document fields to return on each match alongside `_id` and `_score`. When omitted or empty, no fields are returned. Pass `["*"]` to return every field.
      * @type {Array<string>}
      * @memberof SearchDocumentsRequest
      */

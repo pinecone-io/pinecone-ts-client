@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DocumentFieldValue } from './DocumentFieldValue';
+import {
+    DocumentFieldValueFromJSON,
+    DocumentFieldValueFromJSONTyped,
+    DocumentFieldValueToJSON,
+} from './DocumentFieldValue';
 import type { UpdateDocumentRecord } from './UpdateDocumentRecord';
 import {
     UpdateDocumentRecordFromJSON,
@@ -24,6 +30,8 @@ import {
  * The request for the `update_documents` operation. Either `documents` or `filter` must be specified, and they are mutually exclusive. A `filter` must be accompanied by a non-empty `set_fields` and/or `remove_fields`.
  * 
  * An empty `set_fields` or `remove_fields` asks for no change, so it does not make a request by-filter: it is ignored, and a request that also has `documents` is still a valid per-ID update.
+ * 
+ * A by-filter patch is checked against the index schema the same way a per-ID patch is: a value must match the type its field declares, a field cannot be both set and removed, and a required field cannot be removed.
  * @export
  * @interface UpdateDocumentsRequest
  */
@@ -35,17 +43,17 @@ export interface UpdateDocumentsRequest {
      */
     documents?: Array<UpdateDocumentRecord>;
     /**
-     * A metadata filter expression selecting the documents to patch with `set_fields` and `remove_fields`. Must not be empty; an empty filter is rejected rather than matching every document. Mutually exclusive with `documents`.
+     * A metadata filter expression selecting the documents to patch with `set_fields` and `remove_fields`. Must not be empty; an empty filter is rejected rather than matching every document. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported here, since documents are selected on metadata alone. Mutually exclusive with `documents`.
      * @type {object}
      * @memberof UpdateDocumentsRequest
      */
     filter?: object;
     /**
      * The fields to set on every document matching `filter`, and the values to set them to. When non-empty, only valid together with `filter`; an empty object asks for no change and is ignored.
-     * @type {{ [key: string]: any; }}
+     * @type {{ [key: string]: DocumentFieldValue; }}
      * @memberof UpdateDocumentsRequest
      */
-    setFields?: { [key: string]: any; };
+    setFields?: { [key: string]: DocumentFieldValue; };
     /**
      * The names of the fields to remove from every document matching `filter`. When non-empty, only valid together with `filter`; an empty list asks for no change and is ignored.
      * @type {Array<string>}
@@ -75,7 +83,7 @@ export function UpdateDocumentsRequestFromJSONTyped(json: any, ignoreDiscriminat
         
         'documents': !exists(json, 'documents') ? undefined : ((json['documents'] as Array<any>).map(UpdateDocumentRecordFromJSON)),
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
-        'setFields': !exists(json, 'set_fields') ? undefined : json['set_fields'],
+        'setFields': !exists(json, 'set_fields') ? undefined : (mapValues(json['set_fields'], DocumentFieldValueFromJSON)),
         'removeFields': !exists(json, 'remove_fields') ? undefined : json['remove_fields'],
     };
 }
@@ -91,7 +99,7 @@ export function UpdateDocumentsRequestToJSON(value?: UpdateDocumentsRequest | nu
         
         'documents': value.documents === undefined ? undefined : ((value.documents as Array<any>).map(UpdateDocumentRecordToJSON)),
         'filter': value.filter,
-        'set_fields': value.setFields,
+        'set_fields': value.setFields === undefined ? undefined : (mapValues(value.setFields, DocumentFieldValueToJSON)),
         'remove_fields': value.removeFields,
     };
 }

@@ -33,7 +33,7 @@ export interface StringField {
      */
     type: StringFieldTypeEnum;
     /**
-     * Optional description for this field.
+     * Optional description for this field, at most 256 bytes.
      * @type {string}
      * @memberof StringField
      */
@@ -43,7 +43,7 @@ export interface StringField {
      * @type {StringFieldFullTextSearch}
      * @memberof StringField
      */
-    fullTextSearch?: StringFieldFullTextSearch;
+    fullTextSearch: StringFieldFullTextSearch;
 }
 
 
@@ -62,6 +62,7 @@ export type StringFieldTypeEnum = typeof StringFieldTypeEnum[keyof typeof String
 export function instanceOfStringField(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
+    isInstance = isInstance && "fullTextSearch" in value;
 
     return isInstance;
 }
@@ -78,7 +79,7 @@ export function StringFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'type': json['type'],
         'description': !exists(json, 'description') ? undefined : json['description'],
-        'fullTextSearch': !exists(json, 'full_text_search') ? undefined : StringFieldFullTextSearchFromJSON(json['full_text_search']),
+        'fullTextSearch': StringFieldFullTextSearchFromJSON(json['full_text_search']),
     };
 }
 

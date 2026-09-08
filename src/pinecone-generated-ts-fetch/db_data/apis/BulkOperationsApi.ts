@@ -149,7 +149,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all recent and ongoing import operations.  By default, `list_imports` returns up to 100 imports per page. If the `limit` parameter is set, `list` returns up to that number of imports instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of imports. When the response does not include a `pagination_token`, there are no more imports to return.  For guidance and examples, see [Import data](https://docs.pinecone.io/guides/index-data/import-data).
+     * List all recent and ongoing import operations.  By default, `list_imports` returns up to 100 imports per page. If the `limit` parameter is set, `list` returns up to that number of imports instead. Whenever there are additional IDs to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of imports. When the response has no `pagination`, there are no more imports to return.  For guidance and examples, see [Import data](https://docs.pinecone.io/guides/index-data/import-data).
      * List imports
      */
     async listBulkImportsRaw(requestParameters: ListBulkImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListImportsResponse>> {
@@ -188,7 +188,7 @@ export class BulkOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all recent and ongoing import operations.  By default, `list_imports` returns up to 100 imports per page. If the `limit` parameter is set, `list` returns up to that number of imports instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of imports. When the response does not include a `pagination_token`, there are no more imports to return.  For guidance and examples, see [Import data](https://docs.pinecone.io/guides/index-data/import-data).
+     * List all recent and ongoing import operations.  By default, `list_imports` returns up to 100 imports per page. If the `limit` parameter is set, `list` returns up to that number of imports instead. Whenever there are additional IDs to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of imports. When the response has no `pagination`, there are no more imports to return.  For guidance and examples, see [Import data](https://docs.pinecone.io/guides/index-data/import-data).
      * List imports
      */
     async listBulkImports(requestParameters: ListBulkImportsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListImportsResponse> {

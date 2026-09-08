@@ -39,11 +39,11 @@ export interface NamespaceDescription {
      */
     name?: string;
     /**
-     * The total amount of records within the namespace.
-     * @type {number}
+     * The total number of records in the namespace. A 64-bit integer, serialized as a decimal string.
+     * @type {string}
      * @memberof NamespaceDescription
      */
-    recordCount?: number;
+    recordCount?: string;
     /**
      * 
      * @type {CreateNamespaceRequestSchema}
@@ -57,11 +57,11 @@ export interface NamespaceDescription {
      */
     indexedFields?: NamespaceDescriptionIndexedFields;
     /**
-     * The total size of the namespace's data, in bytes.
-     * @type {number}
+     * The total size of the namespace's data, in bytes, as a 64-bit integer serialized as a decimal string. Approximate: data written before size tracking reads as 0, and recently deleted data may still be counted; compaction converges the value.
+     * @type {string}
      * @memberof NamespaceDescription
      */
-    sizeBytes?: number;
+    sizeBytes?: string;
 }
 
 /**

@@ -13,13 +13,20 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DocumentFieldValue } from './DocumentFieldValue';
+import {
+    DocumentFieldValueFromJSON,
+    DocumentFieldValueFromJSONTyped,
+    DocumentFieldValueToJSON,
+} from './DocumentFieldValue';
+
 /**
- * A document with a unique identifier and arbitrary field values.
+ * A document with a unique identifier and field values. Fields named in the index schema are validated against it; any other field is stored as filterable metadata. Every document must carry at least one schema field and every schema field the index marks required; a document with only `_id` and metadata is rejected. Limits: 2 MB per document and per request, 100 KB and 10,000 tokens per full-text-search field value.
  * @export
  * @interface DocumentRecord
  */
 export interface DocumentRecord {
-    [key: string]: any | any;
+    [key: string]: DocumentFieldValue | any;
     /**
      * The unique identifier for the document.
      * @type {string}

@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pinecone Data Plane API
+ * Pinecone Control Plane API
  * Pinecone is a vector database that makes it easy to search and retrieve billions of high-dimensional vectors.
  *
  * The version of the OpenAPI document: 2026-07
@@ -13,52 +13,52 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CreateNamespaceRequestSchemaFieldsValue } from './CreateNamespaceRequestSchemaFieldsValue';
+import type { MetadataSchemaFieldsValue } from './MetadataSchemaFieldsValue';
 import {
-    CreateNamespaceRequestSchemaFieldsValueFromJSON,
-    CreateNamespaceRequestSchemaFieldsValueFromJSONTyped,
-    CreateNamespaceRequestSchemaFieldsValueToJSON,
-} from './CreateNamespaceRequestSchemaFieldsValue';
+    MetadataSchemaFieldsValueFromJSON,
+    MetadataSchemaFieldsValueFromJSONTyped,
+    MetadataSchemaFieldsValueToJSON,
+} from './MetadataSchemaFieldsValue';
 
 /**
  * Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported.
  * @export
- * @interface CreateNamespaceRequestSchema
+ * @interface MetadataSchema
  */
-export interface CreateNamespaceRequestSchema {
+export interface MetadataSchema {
     /**
      * A map of metadata field names to their configuration. The field name must be a valid metadata field name. The field name must be unique. At most 50 fields may be declared.
      * Field names may not begin with `$`, which introduces a filter operator. When declared at index creation, names beginning with `_` are also rejected (reserved for internal use).
-     * @type {{ [key: string]: CreateNamespaceRequestSchemaFieldsValue; }}
-     * @memberof CreateNamespaceRequestSchema
+     * @type {{ [key: string]: MetadataSchemaFieldsValue; }}
+     * @memberof MetadataSchema
      */
-    fields?: { [key: string]: CreateNamespaceRequestSchemaFieldsValue; };
+    fields?: { [key: string]: MetadataSchemaFieldsValue; };
 }
 
 /**
- * Check if a given object implements the CreateNamespaceRequestSchema interface.
+ * Check if a given object implements the MetadataSchema interface.
  */
-export function instanceOfCreateNamespaceRequestSchema(value: object): boolean {
+export function instanceOfMetadataSchema(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function CreateNamespaceRequestSchemaFromJSON(json: any): CreateNamespaceRequestSchema {
-    return CreateNamespaceRequestSchemaFromJSONTyped(json, false);
+export function MetadataSchemaFromJSON(json: any): MetadataSchema {
+    return MetadataSchemaFromJSONTyped(json, false);
 }
 
-export function CreateNamespaceRequestSchemaFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateNamespaceRequestSchema {
+export function MetadataSchemaFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetadataSchema {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'fields': !exists(json, 'fields') ? undefined : (mapValues(json['fields'], CreateNamespaceRequestSchemaFieldsValueFromJSON)),
+        'fields': !exists(json, 'fields') ? undefined : (mapValues(json['fields'], MetadataSchemaFieldsValueFromJSON)),
     };
 }
 
-export function CreateNamespaceRequestSchemaToJSON(value?: CreateNamespaceRequestSchema | null): any {
+export function MetadataSchemaToJSON(value?: MetadataSchema | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -67,7 +67,7 @@ export function CreateNamespaceRequestSchemaToJSON(value?: CreateNamespaceReques
     }
     return {
         
-        'fields': value.fields === undefined ? undefined : (mapValues(value.fields, CreateNamespaceRequestSchemaFieldsValueToJSON)),
+        'fields': value.fields === undefined ? undefined : (mapValues(value.fields, MetadataSchemaFieldsValueToJSON)),
     };
 }
 

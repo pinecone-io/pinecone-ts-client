@@ -27,7 +27,9 @@ import {
  */
 export interface CreateNamespaceRequest {
     /**
-     * The name of the namespace.
+     * The name of the namespace. Must be ASCII, must not contain the NUL character, and must be 1-512 characters long.
+     * 
+     * `__default__` is reserved: it names the namespace requests address when they omit a namespace, so it always exists and cannot be created explicitly.
      * @type {string}
      * @memberof CreateNamespaceRequest
      */

@@ -26,11 +26,11 @@ export interface IntegerField {
      */
     type: IntegerFieldTypeEnum;
     /**
-     * Optional description for this field.
+     * Optional description for this field. `null` when none was set.
      * @type {string}
      * @memberof IntegerField
      */
-    description?: string;
+    description?: string | null;
     /**
      * Whether this field is indexed for metadata filtering.
      * @type {boolean}
