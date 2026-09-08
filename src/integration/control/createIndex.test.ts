@@ -9,116 +9,124 @@ beforeAll(async () => {
 });
 
 describe('create index', () => {
-  describe('serverless index tests', () => {
+  describe('managed (serverless) index tests', () => {
     describe('happy path', () => {
       test('create dense index', async () => {
         const indexName = randomName('serverless-create');
-        await pinecone.createIndex({
+        await pinecone.indexes.create({
           name: indexName,
-          dimension: 5,
-          metric: 'cosine',
-          spec: {
-            serverless: {
-              cloud: 'aws',
-              region: 'us-west-2',
-            },
+          deployment: {
+            deploymentType: 'managed',
+            cloud: 'aws',
+            region: 'us-west-2',
           },
-          waitUntilReady: true,
-          tags: { project: 'pinecone-integration-tests' },
-        });
-        const description = await pinecone.describeIndex(indexName);
-        expect(description.name).toEqual(indexName);
-        expect(description.dimension).toEqual(5);
-        // defaults to 'cosine'
-        expect(description.metric).toEqual('cosine');
-        expect(description.host).toBeDefined();
-        // defaults to 'dense'
-        expect(description.vectorType).toEqual('dense');
-        expect(description.tags).toEqual({
-          project: 'pinecone-integration-tests',
-        });
-        // defaults to OnDemand read capacity
-        expect('serverless' in description.spec).toBe(true);
-        if ('serverless' in description.spec) {
-          expect(description.spec.serverless?.readCapacity.mode).toEqual(
-            'OnDemand',
-          );
-        }
-
-        await pinecone.deleteIndex(indexName);
-      });
-
-      test('create serverless index with Dedicated read capacity', async () => {
-        const indexName = randomName('svrlss-dedicated');
-        await pinecone.createIndex({
-          name: indexName,
-          dimension: 5,
-          spec: {
-            serverless: {
-              cloud: 'aws',
-              region: 'us-east-1',
-              readCapacity: {
-                mode: 'Dedicated',
-                nodeType: 'b1',
-                manual: {
-                  replicas: 2,
-                  shards: 1,
-                },
+          schema: {
+            fields: {
+              embedding: {
+                type: 'dense_vector',
+                dimension: 5,
+                metric: 'cosine',
               },
             },
           },
           waitUntilReady: true,
           tags: { project: 'pinecone-integration-tests' },
         });
-        const description = await pinecone.describeIndex(indexName);
+        const description = await pinecone.indexes.describe(indexName);
         expect(description.name).toEqual(indexName);
-        expect(description.dimension).toEqual(5);
-        // defaults to 'cosine'
-        expect(description.metric).toEqual('cosine');
         expect(description.host).toBeDefined();
-        // defaults to 'dense'
-        expect(description.vectorType).toEqual('dense');
         expect(description.tags).toEqual({
           project: 'pinecone-integration-tests',
         });
 
-        // Dedicated read capacity
-        expect('serverless' in description.spec).toBe(true);
-        if ('serverless' in description.spec) {
-          const readCapacity = description.spec.serverless?.readCapacity;
-          expect(readCapacity.mode).toEqual('Dedicated');
+        // `dimension` and `metric` now live on the `dense_vector` schema field.
+        const embedding = description.schema.fields['embedding'];
+        if (!('type' in embedding) || embedding.type !== 'dense_vector') {
+          throw new Error('expected `embedding` to be a dense_vector field');
+        }
+        expect(embedding.dimension).toEqual(5);
+        expect(embedding.metric).toEqual('cosine');
 
-          if (readCapacity.mode === 'Dedicated') {
-            expect(readCapacity.dedicated?.nodeType).toEqual('b1');
-            expect(readCapacity.dedicated?.manual?.replicas).toEqual(2);
-            expect(readCapacity.dedicated?.manual?.shards).toEqual(1);
-          }
+        expect(description.deployment.deploymentType).toEqual('managed');
+
+        // `readCapacity` is a top-level property and defaults to OnDemand.
+        expect(description.readCapacity?.mode).toEqual('OnDemand');
+
+        await pinecone.indexes.delete(indexName);
+      });
+
+      test('create index with Dedicated read capacity', async () => {
+        const indexName = randomName('svrlss-dedicated');
+        await pinecone.indexes.create({
+          name: indexName,
+          deployment: {
+            deploymentType: 'managed',
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+          schema: {
+            fields: {
+              embedding: {
+                type: 'dense_vector',
+                dimension: 5,
+                metric: 'cosine',
+              },
+            },
+          },
+          // `readCapacity` moved out of the old `spec.serverless` envelope to the
+          // top level, and takes the API's nested `dedicated` shape.
+          readCapacity: {
+            mode: 'Dedicated',
+            dedicated: {
+              nodeType: 'b1',
+              scaling: 'Manual',
+              manual: { replicas: 2, shards: 1 },
+            },
+          },
+          waitUntilReady: true,
+          tags: { project: 'pinecone-integration-tests' },
+        });
+        const description = await pinecone.indexes.describe(indexName);
+        expect(description.name).toEqual(indexName);
+        expect(description.host).toBeDefined();
+
+        const readCapacity = description.readCapacity;
+        expect(readCapacity?.mode).toEqual('Dedicated');
+        if (readCapacity && readCapacity.mode === 'Dedicated') {
+          expect(readCapacity.dedicated?.nodeType).toEqual('b1');
+          expect(readCapacity.dedicated?.manual?.replicas).toEqual(2);
+          expect(readCapacity.dedicated?.manual?.shards).toEqual(1);
         }
 
-        await pinecone.deleteIndex(indexName);
+        await pinecone.indexes.delete(indexName);
       });
 
       test('create sparse index', async () => {
         const indexName = randomName('svrlss-sparse-create');
 
-        await pinecone.createIndex({
+        await pinecone.indexes.create({
           name: indexName,
-          vectorType: 'sparse',
-          spec: {
-            serverless: {
-              cloud: 'aws',
-              region: 'us-east-1',
+          deployment: {
+            deploymentType: 'managed',
+            cloud: 'aws',
+            region: 'us-east-1',
+          },
+          // A `sparse_vector` field carries neither `dimension` nor `metric`.
+          schema: {
+            fields: {
+              sparse_embedding: { type: 'sparse_vector' },
             },
           },
         });
 
-        const description = await pinecone.describeIndex(indexName);
+        const description = await pinecone.indexes.describe(indexName);
         expect(description.name).toEqual(indexName);
-        expect(description.vectorType).toEqual('sparse');
         expect(description.host).toBeDefined();
-        expect(description.metric).toEqual('dotproduct');
 
-        await pinecone.deleteIndex(indexName);
+        const sparse = description.schema.fields['sparse_embedding'];
+        expect('type' in sparse && sparse.type).toEqual('sparse_vector');
+
+        await pinecone.indexes.delete(indexName);
       });
     });
 
@@ -127,14 +135,20 @@ describe('create index', () => {
         try {
           const indexName = randomName('serverless-create');
 
-          await pinecone.createIndex({
+          await pinecone.indexes.create({
             name: indexName + '-',
-            dimension: 5,
-            metric: 'cosine',
-            spec: {
-              serverless: {
-                cloud: 'aws',
-                region: 'us-west-2',
+            deployment: {
+              deploymentType: 'managed',
+              cloud: 'aws',
+              region: 'us-west-2',
+            },
+            schema: {
+              fields: {
+                embedding: {
+                  type: 'dense_vector',
+                  dimension: 5,
+                  metric: 'cosine',
+                },
               },
             },
           });
@@ -145,130 +159,113 @@ describe('create index', () => {
         }
       });
 
-      test('create sparse index with invalid metric', async () => {
+      test('create index without a schema', async () => {
+        expect.assertions(2);
         try {
-          const indexName = randomName('sparse-error');
-          await pinecone.createIndex({
-            name: indexName,
-            metric: 'cosine',
-            vectorType: 'sparse',
-            spec: {
-              serverless: {
-                cloud: 'aws',
-                region: 'us-east-1',
-              },
+          await pinecone.indexes.create({
+            name: randomName('missing-schema'),
+            deployment: {
+              deploymentType: 'managed',
+              cloud: 'aws',
+              region: 'us-east-1',
             },
-          });
+          } as never);
         } catch (e) {
           const err = e as PineconeArgumentError;
           expect(err.name).toEqual('PineconeArgumentError');
-          expect(err.message).toContain(
-            'Sparse indexes must have a `metric` of `dotproduct`',
-          );
-        }
-      });
-
-      test('create sparse index with invalid dimension', async () => {
-        try {
-          const indexName = randomName('sparse-error');
-          await pinecone.createIndex({
-            name: indexName,
-            dimension: 5,
-            vectorType: 'sparse',
-            spec: {
-              serverless: {
-                cloud: 'aws',
-                region: 'us-east-1',
-              },
-            },
-          });
-        } catch (e) {
-          const err = e as PineconeArgumentError;
-          expect(err.name).toEqual('PineconeArgumentError');
-          expect(err.message).toContain(
-            'Sparse indexes cannot have a `dimension`',
-          );
+          expect(err.message).toContain('You must pass a `schema` object');
         }
       });
     });
   });
 
-  describe('pod index tests', () => {
+  // Prod rejects pod deployments on 2026-07 outright ("deployment_type 'pod'
+  // is not supported on this API version", HTTP 400) even though the 2026-07
+  // spec still models `PodDeployment`. Un-skip when the fleet supports it, or
+  // delete if pod is confirmed dropped; see pinecone-ts-client-internal#68.
+  describe.skip('pod index tests', () => {
     describe('happy path', () => {
       test('create pod index', async () => {
         const indexName = randomName('test-pod-create');
-        await pinecone.createIndex({
+        await pinecone.indexes.create({
           name: indexName,
-          dimension: 5,
-          metric: 'cosine',
-          spec: {
-            pod: {
-              environment: 'us-east-1-aws',
-              podType: 'p1.x1',
-              pods: 1,
+          deployment: {
+            deploymentType: 'pod',
+            environment: 'us-east-1-aws',
+            podType: 'p1.x1',
+            // The 2026-07 spec marks these optional, but the deployed API
+            // rejects pod deployments that omit them ("missing field
+            // `replicas`", HTTP 422). Explicit until the contract mismatch is
+            // resolved; see pinecone-ts-client-internal#12.
+            replicas: 1,
+            shards: 1,
+          },
+          schema: {
+            fields: {
+              embedding: {
+                type: 'dense_vector',
+                dimension: 5,
+                metric: 'cosine',
+              },
             },
           },
         });
 
-        const description = await pinecone.describeIndex(indexName);
+        const description = await pinecone.indexes.describe(indexName);
         expect(description.name).toEqual(indexName);
-        expect(description.dimension).toEqual(5);
-        expect(description.metric).toEqual('cosine');
         expect(description.host).toBeDefined();
-        expect(description.vectorType).toEqual('dense');
+        expect(description.deployment.deploymentType).toEqual('pod');
 
-        await pinecone.deleteIndex(indexName);
+        const embedding = description.schema.fields['embedding'];
+        if (!('type' in embedding) || embedding.type !== 'dense_vector') {
+          throw new Error('expected `embedding` to be a dense_vector field');
+        }
+        expect(embedding.dimension).toEqual(5);
+        expect(embedding.metric).toEqual('cosine');
+
+        await pinecone.indexes.delete(indexName);
       });
     });
 
     describe('error cases', () => {
-      test('create from non-existent collection', async () => {
+      // Prod rejects create-from-collection on 2026-07 outright ("Creating an
+      // index from collection or backup is not yet supported", HTTP 400), so
+      // the not-found validation this test asserts on cannot run yet. Un-skip
+      // when the fleet supports it; see pinecone-ts-client-internal#14.
+      test.skip('create from non-existent collection', async () => {
         const indexName = randomName('collection-error');
 
         try {
-          await pinecone.createIndex({
+          await pinecone.indexes.create({
             name: indexName,
-            dimension: 5,
-            metric: 'cosine',
-            spec: {
-              pod: {
-                environment: 'us-east-1-aws',
-                podType: 'p1.x1',
-                pods: 1,
-                sourceCollection: 'non-existent-collection',
+            deployment: {
+              deploymentType: 'pod',
+              environment: 'us-east-1-aws',
+              podType: 'p1.x1',
+              // The 2026-07 spec marks these optional, but the deployed API
+              // rejects pod deployments that omit them ("missing field
+              // `replicas`", HTTP 422). Explicit until the contract mismatch is
+              // resolved; see pinecone-ts-client-internal#12.
+              replicas: 1,
+              shards: 1,
+            },
+            schema: {
+              fields: {
+                embedding: {
+                  type: 'dense_vector',
+                  dimension: 5,
+                  metric: 'cosine',
+                },
               },
             },
+            // `sourceCollection` moved out of the old `spec.pod` envelope.
+            sourceCollection: 'non-existent-collection',
           });
         } catch (e) {
           const err = e as PineconeNotFoundError;
           expect(err.name).toEqual('PineconeBadRequestError');
           expect(err.message).toContain(
             'Resource non-existent-collection not found',
-          );
-        }
-      });
-
-      test('create sparse pod index', async () => {
-        try {
-          const indexName = randomName('sparse-error');
-          await pinecone.createIndex({
-            name: indexName,
-            dimension: 5,
-            vectorType: 'sparse',
-            spec: {
-              pod: {
-                environment: 'us-east-1-aws',
-                podType: 'p1.x1',
-                pods: 1,
-                sourceCollection: 'non-existent-collection',
-              },
-            },
-          });
-        } catch (e) {
-          const err = e as PineconeArgumentError;
-          expect(err.name).toEqual('PineconeArgumentError');
-          expect(err.message).toContain(
-            'Pod indexes must have a `vectorType` of `dense`',
           );
         }
       });

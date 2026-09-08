@@ -38,7 +38,7 @@ export const teardown = async () => {
   if (fixtures.serverlessIndex?.name) {
     try {
       console.error(`📦 Deleting index: ${fixtures.serverlessIndex.name}`);
-      await pc.deleteIndex(fixtures.serverlessIndex.name);
+      await pc.indexes.delete(fixtures.serverlessIndex.name);
       console.error('✅ Index deleted');
     } catch (error) {
       console.error('❌ Failed to delete index:', error);
@@ -52,7 +52,7 @@ export const teardown = async () => {
   if (fixtures.assistant?.name) {
     try {
       console.error(`🤖 Deleting assistant: ${fixtures.assistant.name}`);
-      await pc.deleteAssistant(fixtures.assistant.name);
+      await pc.assistants.delete(fixtures.assistant.name);
       console.error('✅ Assistant deleted');
     } catch (error) {
       console.error('❌ Failed to delete assistant:', error);

@@ -12,21 +12,21 @@ describe('deleteAssistant happy path', () => {
   test('simple delete', async () => {
     const assistantName = randomString(5);
 
-    await pinecone.createAssistant({
+    await pinecone.assistants.create({
       name: assistantName,
     });
 
     // Wait for assistant to be ready before deleting
     await waitUntilAssistantReady(assistantName);
 
-    await pinecone.deleteAssistant(assistantName);
+    await pinecone.assistants.delete(assistantName);
   });
 });
 
 describe('deleteAssistant error paths', () => {
   test('delete non-existent assistant', async () => {
     await expect(
-      pinecone.deleteAssistant('non-existent-assistant'),
+      pinecone.assistants.delete('non-existent-assistant'),
     ).rejects.toThrow(PineconeNotFoundError);
   });
 });

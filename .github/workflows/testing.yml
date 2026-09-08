@@ -43,11 +43,28 @@ jobs:
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
+          # Capture the exit code rather than letting `bash -e` abort on the
+          # assignment; otherwise a failing setup kills the step before the
+          # output below is ever printed, leaving only "exit code 1".
+          set +e
           SETUP_OUTPUT=$(npx ts-node ./src/integration/setup.ts 2>&1)
-          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
-          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
-          # Show setup logs (not the JSON line)
+          SETUP_EXIT=$?
+          set -e
+
+          # Always surface the setup logs (minus the fixtures line) first.
           echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
+
+          if [ "$SETUP_EXIT" -ne 0 ]; then
+            echo "::error::setup.ts failed with exit code $SETUP_EXIT"
+            exit "$SETUP_EXIT"
+          fi
+
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
+          if [ -z "$FIXTURES_JSON" ]; then
+            echo "::error::setup.ts exited 0 but emitted no FIXTURES_JSON line"
+            exit 1
+          fi
+          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
 
   integration-tests:
     needs: [setup]
@@ -218,6 +235,9 @@ jobs:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: |
           set -x
+          # $GITHUB_WORKSPACE, not a hardcoded directory name: the default
+          # checkout directory is the repository name, which differs between
+          # the public repo and the internal development mirror.
           cp -r "$GITHUB_WORKSPACE/ts-compilation-test" "$RUNNER_TEMP/ts-compilation-test"
           cd "$RUNNER_TEMP/ts-compilation-test"
           npm install typescript@${{ matrix.tsVersion }} --no-cache
@@ -245,10 +265,16 @@ jobs:
 
   example-app-semantic-search:
     name: 'Example app: semantic search'
+    # The sample app is a public repo that tracks the released client, so this
+    # job can only pass against the public repo at release time. Skip it in the
+    # internal development mirror (see pinecone-ts-client-internal#5). The
+    # Dependabot clause covers the public repo, where such runs cannot read the
+    # secrets this job needs; see the `setup` job.
+    if: >-
+      github.repository == 'pinecone-io/pinecone-ts-client' &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      !inputs.docs_only
     runs-on: ubuntu-latest
-    # No secrets on Dependabot PRs; see the `setup` job. docs_only skips it
-    # for the same reason as `setup` above.
-    if: github.event.pull_request.user.login != 'dependabot[bot]' && !inputs.docs_only
     steps:
       - name: Checkout pinecone-ts-client
         uses: actions/checkout@v7
@@ -291,8 +317,10 @@ jobs:
     runs-on: ubuntu-latest
     # VERCEL_TOKEN only exists in the public repo, and this job deploys to
     # Vercel production on the shared pinecone-io scope, so it cannot pass from
-    # the internal mirror for anyone. The Dependabot clause covers the public
-    # repo, where the token exists but Dependabot runs cannot read it.
+    # the internal mirror for anyone -- and would publish unreleased API
+    # surface if it did. See pinecone-ts-client-internal#5. The Dependabot
+    # clause covers the public repo, where the token exists but Dependabot runs
+    # cannot read it.
     if: >-
       github.repository == 'pinecone-io/pinecone-ts-client' &&
       github.event.pull_request.user.login != 'dependabot[bot]' &&

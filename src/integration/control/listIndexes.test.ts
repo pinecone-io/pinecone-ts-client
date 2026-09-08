@@ -11,7 +11,7 @@ beforeAll(async () => {
 
 describe('list indexes; serverless', () => {
   test('list indexes', async () => {
-    const response = await pinecone.listIndexes();
+    const response = await pinecone.indexes.list();
     expect(response.indexes).toBeDefined();
     expect(response.indexes?.length).toBeGreaterThan(0);
     expect(response.indexes?.map((i) => i.name)).toContain(serverlessIndexName);

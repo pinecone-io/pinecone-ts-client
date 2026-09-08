@@ -71,7 +71,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 2,
     });
 
-    mockServerlessIndex = pinecone.Index({
+    mockServerlessIndex = pinecone.index({
       name: indexName,
       host: 'http://localhost:4000',
       namespace: globalNamespaceOne,
@@ -95,7 +95,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 2,
     });
 
-    mockServerlessIndex = pinecone.Index({
+    mockServerlessIndex = pinecone.index({
       name: indexName,
       host: 'http://localhost:4000',
       namespace: globalNamespaceOne,
@@ -127,7 +127,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
       maxRetries: 3,
     });
 
-    mockServerlessIndex = pinecone.Index({
+    mockServerlessIndex = pinecone.index({
       name: indexName,
       host: 'http://localhost:4000',
       namespace: globalNamespaceOne,

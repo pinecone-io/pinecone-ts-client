@@ -10,14 +10,16 @@ describe('configure index', () => {
     serverlessIndexName = randomName('serverless-configure');
 
     // Create serverless index (removed unused pod index)
-    await pinecone.createIndex({
+    await pinecone.indexes.create({
       name: serverlessIndexName,
-      dimension: 5,
-      metric: 'cosine',
-      spec: {
-        serverless: {
-          cloud: 'aws',
-          region: 'us-east-1',
+      deployment: {
+        deploymentType: 'managed',
+        cloud: 'aws',
+        region: 'us-east-1',
+      },
+      schema: {
+        fields: {
+          embedding: { type: 'dense_vector', dimension: 5, metric: 'cosine' },
         },
       },
       waitUntilReady: true,
@@ -33,14 +35,13 @@ describe('configure index', () => {
 
   describe('serverless index', () => {
     test('enable and disable deletionProtection', async () => {
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
       await waitUntilIndexReady(serverlessIndexName);
 
       // verify we cannot delete the index
-      await pinecone.deleteIndex(serverlessIndexName).catch((e) => {
+      await pinecone.indexes.delete(serverlessIndexName).catch((e) => {
         const err = e as PineconeBadRequestError;
         expect(err.name).toEqual('PineconeBadRequestError');
         expect(err.message).toContain(
@@ -49,35 +50,32 @@ describe('configure index', () => {
       });
 
       // disable so we can clean the index up
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         deletionProtection: 'disabled',
       });
     });
 
     test('Add/remove index tag(s) on serverless index', async () => {
-      const description = await pinecone.describeIndex(serverlessIndexName);
+      const description = await pinecone.indexes.describe(serverlessIndexName);
       expect(description.tags).toEqual({
         project: 'pinecone-integration-tests',
       });
 
       // Add a tag
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         tags: { testTag: 'testValue' },
       });
-      const description2 = await pinecone.describeIndex(serverlessIndexName);
+      const description2 = await pinecone.indexes.describe(serverlessIndexName);
       expect(description2.tags).toEqual({
         project: 'pinecone-integration-tests',
         testTag: 'testValue',
       });
 
       // Remove that tag
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         tags: { testTag: '' }, // Passing null/undefined here is not allowed due to type safety (must eval to string)
       });
-      const description3 = await pinecone.describeIndex(serverlessIndexName);
+      const description3 = await pinecone.indexes.describe(serverlessIndexName);
       if (description3.tags != null) {
         expect(description3.tags['testTag']).toBeUndefined();
         expect(description3.tags['project']).toEqual(
@@ -86,11 +84,10 @@ describe('configure index', () => {
       }
 
       // Confirm when config'ing other things about the index, tags are not changed
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
-      const description4 = await pinecone.describeIndex(serverlessIndexName);
+      const description4 = await pinecone.indexes.describe(serverlessIndexName);
       if (description4.tags != null) {
         expect(description4.tags['testTag']).toBeUndefined();
         expect(description4.tags['project']).toEqual(
@@ -99,23 +96,21 @@ describe('configure index', () => {
       }
 
       // (Cleanup) Disable deletion protection
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         deletionProtection: 'disabled',
       });
     });
 
     test('Update a tag value in a serverless index', async () => {
-      const description = await pinecone.describeIndex(serverlessIndexName);
+      const description = await pinecone.indexes.describe(serverlessIndexName);
       expect(description.tags).toEqual({
         project: 'pinecone-integration-tests',
       });
 
-      await pinecone.configureIndex({
-        name: serverlessIndexName,
+      await pinecone.indexes.configure(serverlessIndexName, {
         tags: { project: 'updated-project' },
       });
-      const description2 = await pinecone.describeIndex(serverlessIndexName);
+      const description2 = await pinecone.indexes.describe(serverlessIndexName);
       if (description2.tags != null) {
         expect(description2.tags['project']).toEqual('updated-project');
       }

@@ -8,19 +8,19 @@ let assistantName: string;
 beforeAll(async () => {
   pinecone = new Pinecone();
   assistantName = randomString(5);
-  await pinecone.createAssistant({ name: assistantName });
+  await pinecone.assistants.create({ name: assistantName });
 
   // Wait for assistant to be ready instead of fixed sleep
   await waitUntilAssistantReady(assistantName);
 });
 
 afterAll(async () => {
-  await pinecone.deleteAssistant(assistantName);
+  await pinecone.assistants.delete(assistantName);
 });
 
 describe('describeAssistant happy path', () => {
   test('simple get', async () => {
-    const assistantInfo = await pinecone.describeAssistant(assistantName);
+    const assistantInfo = await pinecone.assistants.describe(assistantName);
     expect(assistantInfo.name).toEqual(assistantName);
     expect(assistantInfo.instructions).toBeUndefined();
     expect(assistantInfo.metadata).toBeUndefined();
@@ -34,7 +34,7 @@ describe('describeAssistant happy path', () => {
 describe('describeAssistant error paths', () => {
   test('get non-existent assistant', async () => {
     await expect(
-      pinecone.describeAssistant('non-existent-assistant'),
+      pinecone.assistants.describe('non-existent-assistant'),
     ).rejects.toThrow(PineconeNotFoundError);
   });
 });
