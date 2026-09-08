@@ -1,8 +1,38 @@
+import { scripts } from '../../package.json';
 import {
   UpdateDocumentsRequestToJSON,
   VectorToJSON,
 } from '../pinecone-generated-ts-fetch/db_data';
 import { IndexSchemaFieldFromJSON } from '../pinecone-generated-ts-fetch/db_control';
+
+import { X_PINECONE_API_VERSION as controlVersion } from '../pinecone-generated-ts-fetch/db_control/api_version';
+import { X_PINECONE_API_VERSION as dataVersion } from '../pinecone-generated-ts-fetch/db_data/api_version';
+import { X_PINECONE_API_VERSION as inferenceVersion } from '../pinecone-generated-ts-fetch/inference/api_version';
+import { X_PINECONE_API_VERSION as assistantControlVersion } from '../pinecone-generated-ts-fetch/assistant_control/api_version';
+import { X_PINECONE_API_VERSION as assistantDataVersion } from '../pinecone-generated-ts-fetch/assistant_data/api_version';
+import { X_PINECONE_API_VERSION as assistantEvaluationVersion } from '../pinecone-generated-ts-fetch/assistant_evaluation/api_version';
+import { X_PINECONE_API_VERSION as adminVersion } from '../pinecone-generated-ts-fetch/admin/api_version';
+
+// Regeneration must keep each module's request header aligned with the spec
+// selected by the generation command, including Assistant and inference.
+describe('generated API versions', () => {
+  const specVersion = scripts['generate:openapi'].match(
+    /build-oas\.sh (\d{4}-\d{2})/,
+  )?.[1];
+
+  test.each([
+    ['db_control', controlVersion],
+    ['db_data', dataVersion],
+    ['inference', inferenceVersion],
+    ['assistant_control', assistantControlVersion],
+    ['assistant_data', assistantDataVersion],
+    ['assistant_evaluation', assistantEvaluationVersion],
+    ['admin', adminVersion],
+  ])('%s sends the generated spec version', (_module, headerVersion) => {
+    expect(specVersion).toBeDefined();
+    expect(headerVersion).toBe(specVersion);
+  });
+});
 
 // Pins the post-generation fixups in `codegen/build-oas.sh`. Each fixup repairs
 // a union the generator collapsed into a single concrete interface; the
