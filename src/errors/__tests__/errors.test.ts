@@ -54,6 +54,36 @@ describe('extractMessage', () => {
     const msg = await extractMessage(error);
     expect(msg).toBe(body);
   });
+
+  test('unwraps the nested ErrorResponse envelope', async () => {
+    const body = JSON.stringify({
+      status: 400,
+      error: { code: 'INVALID_ARGUMENT', message: 'Only one rank field' },
+    });
+    const error = buildResponseError(400, body);
+    const msg = await extractMessage(error);
+    expect(msg).toBe('Only one rank field');
+  });
+
+  test('prefers the nested message when both shapes are present', async () => {
+    const body = JSON.stringify({
+      message: 'outer',
+      error: { code: 'INVALID_ARGUMENT', message: 'inner' },
+    });
+    const error = buildResponseError(400, body);
+    const msg = await extractMessage(error);
+    expect(msg).toBe('inner');
+  });
+
+  test('ignores a nested error object that carries no message', async () => {
+    const body = JSON.stringify({
+      message: 'outer',
+      error: { code: 'INVALID_ARGUMENT' },
+    });
+    const error = buildResponseError(400, body);
+    const msg = await extractMessage(error);
+    expect(msg).toBe('outer');
+  });
 });
 
 describe('mapHttpStatusError', () => {
