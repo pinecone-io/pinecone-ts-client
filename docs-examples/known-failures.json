@@ -1,0 +1,27 @@
+[
+  {
+    "file": "README.md",
+    "codeHash": "65f6479f1857",
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "README.md",
+    "codeHash": "6357a07a91b9",
+    "reason": "createIndexForModel returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/data-operations/bulk-import.md",
+    "codeHash": "f05dfa1a6f81",
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/data-operations/working-with-vectors.md",
+    "codeHash": "e5b3e150bead",
+    "reason": "createIndex returns IndexModel | void (#56)"
+  },
+  {
+    "file": "guides/faq.md",
+    "codeHash": "07cb7e727188",
+    "reason": "createIndex returns IndexModel | void (#56)"
+  }
+]

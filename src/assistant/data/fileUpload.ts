@@ -9,9 +9,6 @@ import { handleApiError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, getNonRetryingFetch } from '../../utils';
 import type { Uploadable } from './types';
-import fs from 'fs';
-import path from 'path';
-import { Readable } from 'stream';
 
 /**
  * The file content portion of a multipart upload. Provide either `path` (a
@@ -85,6 +82,7 @@ async function uploadFromPath(
   metadata?: Record<string, string | number>,
 ): Promise<OperationModel> {
   const fetch = getFetch(config);
+  const [fs, path] = await Promise.all([import('fs'), import('path')]);
   const fileBuffer = await fs.promises.readFile(filePath);
   const fileName = path.basename(filePath);
   const mimeType = getMimeType(fileName);
@@ -155,7 +153,7 @@ async function uploadFromFile(
 
   // Node.js ReadableStream — stream is consumed on first read, no retries
   const fetch = getNonRetryingFetch(config);
-  const { body, contentType } = buildMultipartBody(
+  const { body, contentType } = await buildMultipartBody(
     file,
     fileName,
     mimeType,
@@ -232,12 +230,13 @@ async function parseResponse(
  * buffering the file content. The returned body and contentType header should
  * be passed directly to fetch().
  */
-function buildMultipartBody(
+async function buildMultipartBody(
   stream: NodeJS.ReadableStream,
   fileName: string,
   mimeType: string,
   metadata?: Record<string, string | number>,
-): { body: ReadableStream<Uint8Array>; contentType: string } {
+): Promise<{ body: ReadableStream<Uint8Array>; contentType: string }> {
+  const { Readable } = await import('stream');
   const boundary = `----PineconeBoundary${Math.random().toString(36).slice(2)}`;
   const encoder = new TextEncoder();
 

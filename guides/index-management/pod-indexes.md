@@ -105,6 +105,7 @@ await pc.createIndex({
   spec: {
     pod: {
       environment: 'us-west1-gcp',
+      podType: 'p1.x1',
       sourceCollection: 'name-of-collection',
     },
   },
