@@ -165,9 +165,6 @@ jobs:
   edge-runtime-entry:
     name: Edge runtime entry check
     runs-on: ubuntu-latest
-    # Expected to fail until #53 (entry requires Node built-ins) lands.
-    # Remove continue-on-error once it goes green.
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v7
