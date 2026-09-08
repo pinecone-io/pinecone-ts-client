@@ -12,23 +12,12 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
 /**
- * The value of a single metadata field. Nested objects and mixed-type lists are rejected: "Metadata value must be a string, number, boolean or list of strings".
+ * @type MetadataValue
+ * The value of a single metadata field. Nested objects and mixed-type lists are rejected by the API.
  * @export
- * @interface MetadataValue
  */
-export interface MetadataValue {
-}
-
-/**
- * Check if a given object implements the MetadataValue interface.
- */
-export function instanceOfMetadataValue(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
-}
+export type MetadataValue = string | number | boolean | Array<string>;
 
 export function MetadataValueFromJSON(json: any): MetadataValue {
     return MetadataValueFromJSONTyped(json, false);
@@ -41,4 +30,3 @@ export function MetadataValueFromJSONTyped(json: any, ignoreDiscriminator: boole
 export function MetadataValueToJSON(value?: MetadataValue | null): any {
     return value;
 }
-

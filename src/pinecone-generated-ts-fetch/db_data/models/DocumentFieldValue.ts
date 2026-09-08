@@ -12,71 +12,23 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
 import type { SparseValues } from './SparseValues';
-import {
-    SparseValuesFromJSON,
-    SparseValuesFromJSONTyped,
-    SparseValuesToJSON,
-} from './SparseValues';
 
 /**
- * The value of a single document field. Scalar fields carry the same types as metadata ("must be a boolean, number, string, or array of strings"); a field declared in the index schema as `dense_vector` carries an array of numbers, and one declared `sparse_vector` carries sparse values. Which names are vector fields is a property of the index, not of this request.
+ * @type DocumentFieldValue
+ * The value of a single document field. Scalar fields carry the same types as metadata; a field declared in the index schema as a dense vector carries an array of numbers, and one declared a sparse vector carries sparse values.
  * @export
- * @interface DocumentFieldValue
  */
-export interface DocumentFieldValue {
-    /**
-     * The indices of the sparse data.
-     * @type {Array<number>}
-     * @memberof DocumentFieldValue
-     */
-    indices: Array<number>;
-    /**
-     * The corresponding values of the sparse data, which must be with the same length as the indices.
-     * @type {Array<number>}
-     * @memberof DocumentFieldValue
-     */
-    values: Array<number>;
-}
-
-/**
- * Check if a given object implements the DocumentFieldValue interface.
- */
-export function instanceOfDocumentFieldValue(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "indices" in value;
-    isInstance = isInstance && "values" in value;
-
-    return isInstance;
-}
+export type DocumentFieldValue = string | number | boolean | Array<string> | Array<number> | SparseValues;
 
 export function DocumentFieldValueFromJSON(json: any): DocumentFieldValue {
     return DocumentFieldValueFromJSONTyped(json, false);
 }
 
 export function DocumentFieldValueFromJSONTyped(json: any, ignoreDiscriminator: boolean): DocumentFieldValue {
-    if ((json === undefined) || (json === null)) {
-        return json;
-    }
-    return {
-        
-        'indices': json['indices'],
-        'values': json['values'],
-    };
+    return json;
 }
 
 export function DocumentFieldValueToJSON(value?: DocumentFieldValue | null): any {
-    if (value === undefined) {
-        return undefined;
-    }
-    if (value === null) {
-        return null;
-    }
-    return {
-        
-        'indices': value.indices,
-        'values': value.values,
-    };
+    return value;
 }
-
