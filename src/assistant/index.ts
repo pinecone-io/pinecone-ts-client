@@ -234,6 +234,8 @@ export class Assistant {
   /**
    * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatResponse>}. Retries the request if the server fails.
    *
+   * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
+   *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
@@ -309,6 +311,8 @@ export class Assistant {
   /**
    * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatCompletionResponse>}. Response is compatible with
    * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   *
+   * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
    *
    * @example
    * ```typescript

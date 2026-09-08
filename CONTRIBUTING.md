@@ -22,13 +22,49 @@ npm run format
 
 ## Regenerating types from the OpenAPI spec
 
+The OpenAPI specs live in the `codegen/apis` git submodule, which is not checked out by a plain
+`git clone`. Initialize it first:
+
+```bash
+git submodule update --init
+```
+
 If you need to regenerate the TypeScript types from the OpenAPI spec (e.g. after a spec update), run:
 
 ```bash
 npm run generate:openapi
 ```
 
-This rebuilds the generated code under `src/pinecone-generated-ts-fetch/`, then runs `build` and `format` automatically.
+This checks out `codegen/apis` at the commit pinned by this repository, rebuilds the generated
+code under `src/pinecone-generated-ts-fetch/`, then runs `build` and `format` automatically. To
+check out the `apis` repo's latest `main` instead of the pinned commit, run the script directly
+with `--update-pin` as its second argument, then run `build` and `format` yourself, since this
+path bypasses `npm run generate:openapi`:
+
+```bash
+./codegen/build-oas.sh 2026-04 --update-pin
+npm run build
+npm run format
+```
+
+`--update-pin` only changes what's checked out in your working tree. To keep the new `apis`
+commit, commit the updated `codegen/apis` pointer in this repository as its own step.
+
+## Documented examples
+
+Every fenced `typescript` block in `README.md` and `guides/**/*.md` is type-checked in CI:
+
+```bash
+npm run docs:examples
+```
+
+A block that documents a prior major version (marked `**Before` in a migration guide, or
+importing the removed `PineconeClient` class) is skipped. Anything else that fails to compile
+must either be fixed or added to `docs-examples/known-failures.json`. The failure output prints
+a ready-to-paste entry, keyed by the file and a hash of the block's own content so an unrelated
+edit elsewhere in the file can't shift which block an entry points at. An entry whose example
+starts compiling, or whose hash no longer matches anything (the example was edited, moved, or
+excluded), fails the check, so the list only grows for real, tracked drift.
 
 ## Local testing
 
