@@ -67,7 +67,6 @@ jobs:
         config:
           [
             { runner: 'npm', jest_env: 'node' },
-            { runner: 'npm', jest_env: 'edge' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.2' },
           ]
 
@@ -162,6 +161,21 @@ jobs:
         env:
           CI: true
         run: npm run test:smoke:mocked
+
+  edge-runtime-entry:
+    name: Edge runtime entry check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Load built entry and construct a client under a real Edge runtime sandbox
+        run: npm run test:edge-runtime
 
   typescript-compilation-tests:
     name: TS compile
