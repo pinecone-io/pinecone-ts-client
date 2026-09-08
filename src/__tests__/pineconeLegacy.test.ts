@@ -13,7 +13,12 @@ const createOptions: Parameters<Pinecone['createIndex']>[0] = {
   name: 'index',
   schema: { fields: { text: { type: 'string', fullTextSearch: {} } } },
 };
-const modelOptions = { name: 'index', field: 'text', model: 'model' };
+const modelOptions = {
+  name: 'index',
+  cloud: 'aws',
+  region: 'us-east-1',
+  embed: { model: 'model', fieldMap: { text: 'text' } },
+};
 const collectionOptions = { name: 'collection', source: 'index' };
 const backupOptions = { name: 'backup', description: 'weekly' };
 const restoreOptions = { name: 'restored' };
@@ -270,11 +275,9 @@ describe('deprecated flat control-plane methods', () => {
       .spyOn(client.backups, 'listByIndex')
       .mockResolvedValue({});
     client.listBackups({ indexName: 'index' });
-    expect(listByIndex).toHaveBeenCalledWith('index', {
-      limit: undefined,
-      paginationToken: undefined,
-      includeDeleted: undefined,
-    });
+    expect(listByIndex.mock.calls).toStrictEqual([
+      ['index', { includeDeleted: undefined }],
+    ]);
   });
 
   test.each([undefined, {}, { indexName: '' }, { includeDeleted: true }])(
@@ -283,10 +286,7 @@ describe('deprecated flat control-plane methods', () => {
       const list = jest.spyOn(client.backups, 'list').mockResolvedValue({});
       const listByIndex = jest.spyOn(client.backups, 'listByIndex');
       client.listBackups(options);
-      expect(list).toHaveBeenCalledWith({
-        limit: undefined,
-        paginationToken: undefined,
-      });
+      expect(list.mock.calls).toStrictEqual([[{}]]);
       expect(listByIndex).not.toHaveBeenCalled();
     },
   );

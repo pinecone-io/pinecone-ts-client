@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 
 // Preserve the restored surface and its migration guidance. Argument and return
 // compatibility are additionally checked against the packed declarations in
-// ts-compilation-test/src/legacy-control-plane.ts.
+// ts-compilation-test/src/index.ts.
 const legacyMethods = {
   createIndex: 'indexes.create',
   createIndexForModel: 'indexes.createForModel',
@@ -44,19 +44,6 @@ const client = source.statements.find(
 )!;
 
 describe('legacy control-plane public surface', () => {
-  test('restored method signatures remain stable', () => {
-    const signatures = client.members
-      .filter(
-        (member) => member.name && member.name.getText(source) in legacyMethods,
-      )
-      .map((member) => {
-        if (!ts.isMethodDeclaration(member))
-          throw new Error('Expected a method');
-        return `${member.name.getText(source)}(${member.parameters.map((parameter) => parameter.getText(source).replace(/\s+/g, ' ')).join(', ')})`;
-      })
-      .sort();
-    expect(signatures).toMatchSnapshot();
-  });
   test.each(Object.entries(legacyMethods))(
     '%s remains public with migration guidance',
     (name, replacement) => {

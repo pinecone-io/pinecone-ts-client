@@ -105,16 +105,6 @@
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
-    "file": "guides/inference/integrated-inference.md",
-    "codeHash": "11ad33bee325",
-    "reason": "Legacy top-level cloud option differs from the 2026-07 createIndexForModel request schema (#42/#43)"
-  },
-  {
-    "file": "guides/inference/integrated-inference.md",
-    "codeHash": "06c55eef4893",
-    "reason": "Legacy top-level cloud option differs from the 2026-07 createIndexForModel request schema (#42/#43)"
-  },
-  {
     "file": "guides/typescript-features/async-patterns.md",
     "codeHash": "79e4474f1fda",
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
@@ -133,10 +123,5 @@
     "file": "guides/typescript-features/error-handling.md",
     "codeHash": "15ae50719353",
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/typescript-features/type-safety.md",
-    "codeHash": "523981d8f2c6",
-    "reason": "Legacy top-level cloud option differs from the 2026-07 createIndexForModel request schema (#42/#43)"
   }
 ]

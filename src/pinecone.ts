@@ -1,3 +1,18 @@
+import type {
+  CreateIndexOptions,
+  CreateIndexForModelOptions,
+  ConfigureIndexOptions,
+  CreateCollectionOptions,
+  CreateBackupOptions,
+  CreateIndexFromBackupOptions,
+  ListIndexBackupsOptions,
+  ListRestoreJobsOptions,
+} from './control';
+import type {
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+  EvaluateOptions,
+} from './assistant/control';
 import { Indexes } from './control/indexes';
 import { Collections } from './control/collections';
 import { Backups } from './control/backups';
@@ -199,17 +214,17 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.indexes.create()` instead. */
-  createIndex(options: Parameters<Indexes['create']>[0]) {
+  createIndex(options: CreateIndexOptions) {
     return this.indexes.create(options);
   }
 
   /** @deprecated Use `pc.indexes.createForModel()` instead. */
-  createIndexForModel(options: Parameters<Indexes['createForModel']>[0]) {
+  createIndexForModel(options: CreateIndexForModelOptions) {
     return this.indexes.createForModel(options);
   }
 
   /** @deprecated Use `pc.indexes.describe()` instead. */
-  describeIndex(indexName: Parameters<Indexes['describe']>[0]) {
+  describeIndex(indexName: string) {
     return this.indexes.describe(indexName);
   }
 
@@ -219,12 +234,12 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.indexes.delete()` instead. */
-  deleteIndex(indexName: Parameters<Indexes['delete']>[0]) {
+  deleteIndex(indexName: string) {
     return this.indexes.delete(indexName);
   }
 
   /** @deprecated Use `pc.collections.create()` instead. */
-  createCollection(options: Parameters<Collections['create']>[0]) {
+  createCollection(options: CreateCollectionOptions) {
     return this.collections.create(options);
   }
 
@@ -234,58 +249,56 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.collections.describe()` instead. */
-  describeCollection(collectionName: Parameters<Collections['describe']>[0]) {
+  describeCollection(collectionName: string) {
     return this.collections.describe(collectionName);
   }
 
   /** @deprecated Use `pc.collections.delete()` instead. */
-  deleteCollection(collectionName: Parameters<Collections['delete']>[0]) {
+  deleteCollection(collectionName: string) {
     return this.collections.delete(collectionName);
   }
 
   /** @deprecated Use `pc.backups.create(indexName, options)` instead. */
-  createBackup(
-    options: Parameters<Backups['create']>[1] & { indexName: string },
-  ) {
+  createBackup(options: CreateBackupOptions & { indexName: string }) {
     const { indexName, ...rest } = options;
     return this.backups.create(indexName, rest);
   }
 
   /** @deprecated Use `pc.backups.describe()` instead. */
-  describeBackup(backupId: Parameters<Backups['describe']>[0]) {
+  describeBackup(backupId: string) {
     return this.backups.describe(backupId);
   }
 
   /** @deprecated Use `pc.backups.delete()` instead. */
-  deleteBackup(backupId: Parameters<Backups['delete']>[0]) {
+  deleteBackup(backupId: string) {
     return this.backups.delete(backupId);
   }
 
   /** @deprecated Use `pc.backups.createIndex(backupId, options)` instead. */
   createIndexFromBackup(
-    options: Parameters<Backups['createIndex']>[1] & { backupId: string },
+    options: CreateIndexFromBackupOptions & { backupId: string },
   ) {
     const { backupId, ...rest } = options;
     return this.backups.createIndex(backupId, rest);
   }
 
   /** @deprecated Use `pc.restoreJobs.describe()` instead. */
-  describeRestoreJob(restoreJobId: Parameters<RestoreJobs['describe']>[0]) {
+  describeRestoreJob(restoreJobId: string) {
     return this.restoreJobs.describe(restoreJobId);
   }
 
   /** @deprecated Use `pc.restoreJobs.list()` instead. */
-  listRestoreJobs(options?: Parameters<RestoreJobs['list']>[0]) {
+  listRestoreJobs(options?: ListRestoreJobsOptions) {
     return this.restoreJobs.list(options);
   }
 
   /** @deprecated Use `pc.assistants.create()` instead. */
-  createAssistant(options: Parameters<Assistants['create']>[0]) {
+  createAssistant(options: CreateAssistantOptions) {
     return this.assistants.create(options);
   }
 
   /** @deprecated Use `pc.assistants.describe()` instead. */
-  describeAssistant(assistantName: Parameters<Assistants['describe']>[0]) {
+  describeAssistant(assistantName: string) {
     return this.assistants.describe(assistantName);
   }
 
@@ -295,26 +308,24 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.assistants.delete()` instead. */
-  deleteAssistant(assistantName: Parameters<Assistants['delete']>[0]) {
+  deleteAssistant(assistantName: string) {
     return this.assistants.delete(assistantName);
   }
 
   /** @deprecated Use `pc.assistants.update()` instead. */
-  updateAssistant(options: Parameters<Assistants['update']>[0]) {
+  updateAssistant(options: UpdateAssistantOptions) {
     return this.assistants.update(options);
   }
 
   /** @deprecated Use `pc.assistants.evaluate()` instead. */
-  evaluate(options: Parameters<Assistants['evaluate']>[0]) {
+  evaluate(options: EvaluateOptions) {
     return this.assistants.evaluate(options);
   }
 
   /**
    * @deprecated Use `pc.indexes.configure(name, options)` instead.
    */
-  configureIndex(
-    options: Parameters<Indexes['configure']>[1] & { name: string },
-  ) {
+  configureIndex(options: ConfigureIndexOptions & { name: string }) {
     const { name, ...rest } = options;
     return this.indexes.configure(name, rest);
   }
@@ -324,7 +335,7 @@ export class Pinecone {
    * or `pc.backups.list(options)` for all project backups.
    */
   listBackups(
-    options: Parameters<Backups['listByIndex']>[1] & {
+    options: ListIndexBackupsOptions & {
       indexName?: string;
     } = {},
   ) {
