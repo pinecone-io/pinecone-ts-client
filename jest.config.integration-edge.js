@@ -1,9 +1,6 @@
-// Local/manual use only -- not run in CI (see #54). This patches Edge
-// globals onto an ordinary Node process and test files still load through
-// Jest's own Node-based module resolution, so it cannot catch a Node
-// built-in dependency the way scripts/edge-runtime/loadEntryInEdgeVM.ts
-// does, and no integration assertion here observes the one behavior that
-// does differ (buildUserAgent's "Edge Runtime" tag).
+// Local use only, not run in CI (#54): this patches Edge globals onto a Node
+// process but still loads modules through Node, so it cannot catch a Node
+// built-in dependency. scripts/edge-runtime/loadEntryInEdgeVM.ts does.
 const config = require('./jest.config.integration-node');
 
 module.exports = {

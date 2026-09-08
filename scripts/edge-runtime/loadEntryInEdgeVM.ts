@@ -1,19 +1,11 @@
 /**
- * Loads the built entry point (`dist/index.js`) and constructs a client
- * inside a real Web-standard sandbox with no Node module system, no Node
- * built-ins (`fs`, `path`, `stream`, ...), and no `process`/`Buffer`
- * globals -- the shape of Vercel Edge or a Cloudflare Worker.
+ * Loads `dist/index.js` and constructs a client inside an `EdgeVM` sandbox:
+ * no Node built-ins, no `process`/`Buffer`, and a `require` that resolves
+ * only relative files under `dist/`. A bare specifier like 'fs' fails here
+ * exactly as it would on Vercel Edge or Cloudflare Workers.
  *
- * `@edge-runtime/jest-environment` (the `test:integration:edge` leg) cannot
- * catch a Node built-in creeping into the entry point: it patches
- * `globalThis` but still runs test files through Jest's own Node-based
- * module loader, so `require('fs')` resolves normally regardless (#54).
- * `@edge-runtime/vm`'s `EdgeVM` is the same engine used correctly instead:
- * the entry point's compiled source runs *inside* the sandboxed V8 context
- * via `vm.runInContext`, through a `require` that resolves only relative
- * files under `dist/`. A bare specifier such as 'fs' or 'node:stream' is as
- * unresolvable here as it would be on Workers or Edge with no Node
- * compatibility shim, and fails with that specifier named.
+ * The Jest `edge` environment cannot catch this: it patches globals but
+ * still loads modules through Node, so `require('fs')` succeeds (#54).
  */
 import fs from 'fs';
 import path from 'path';
@@ -55,9 +47,8 @@ function makeRequire(fromFile: string) {
   return function sandboxedRequire(specifier: string): unknown {
     if (!specifier.startsWith('.')) {
       throw new Error(
-        `'${path.relative(DIST_DIR, fromFile)}' requires '${specifier}', which is not ` +
-          `a relative import inside dist/. A real Edge/Workers runtime has no Node ` +
-          `built-ins and no bundled node_modules here, so this specifier cannot resolve.`,
+        `'${path.relative(DIST_DIR, fromFile)}' requires '${specifier}', which an ` +
+          `Edge/Workers runtime cannot resolve (only relative imports inside dist/ are allowed).`,
       );
     }
 
