@@ -42,21 +42,26 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'product-assistant' });
 
-await assistant.uploadFile({
+const operation = await assistant.uploadFile({
   path: 'product-catalog.txt',
   metadata: { source: 'catalog', version: '2025-01' },
 });
 
+console.log(operation);
 // {
-//   name: 'product-catalog.txt',
-//   id: '921ad74c-2421-413a-8c86-fca81ceabc5c',
-//   metadata: { source: 'catalog', version: '2025-01' },
-//   createdOn: '2025-01-06T19:14:21.969Z',
-//   updatedOn: '2025-01-06T19:14:21.969Z',
+//   id: 'op-921ad74c-...',
+//   operationType: 'upload',
+//   fileId: '921ad74c-2421-413a-8c86-fca81ceabc5c',
 //   status: 'Processing',
-//   percentDone: null
+//   createdOn: 2025-01-06T19:14:21.969Z,
+//   percentComplete: 0
 // }
 ```
+
+Uploads are processed asynchronously. `uploadFile` returns an `OperationModel`
+immediately; poll it with `assistant.describeOperation(operation.id)` until its
+`status` is `'Completed'` before chatting with the assistant. See
+[File Management](./file-management.md) for the full polling pattern.
 
 ## Chat with an Assistant
 
@@ -186,13 +191,19 @@ async function assistantQuickstart() {
   const assistant = pc.assistant({ name: 'my-assistant' });
 
   // 3. Upload a file
-  await assistant.uploadFile({
+  const operation = await assistant.uploadFile({
     path: 'knowledge-base.txt',
   });
 
-  // 4. Wait for file to be processed (check status)
-  const files = await assistant.listFiles();
-  console.log(files.files[0].status); // 'Available' when ready
+  // 4. Poll the upload operation until the file is ready
+  let op = operation;
+  while (op.status === 'Processing') {
+    await new Promise((r) => setTimeout(r, 2000));
+    op = await assistant.describeOperation(operation.id);
+  }
+  if (op.status !== 'Completed') {
+    throw new Error(`Upload failed: ${op.errorMessage}`);
+  }
 
   // 5. Chat with the assistant
   const response = await assistant.chat({
@@ -204,7 +215,9 @@ async function assistantQuickstart() {
     ],
   });
 
-  console.log(response.message.content);
+  if (response.message?.content) {
+    console.log(response.message.content);
+  }
 }
 
 assistantQuickstart();

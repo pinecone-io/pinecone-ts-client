@@ -52,10 +52,10 @@ For chat applications, GPT models (`gpt-4o`, `gpt-4.1`, `gpt-5`, or `o4-mini`) t
 
 **Note:** Anthropic has deprecated the Claude 3.5 Sonnet and Claude 3.7 Sonnet models. Assistant automatically routes chat requests that specify `claude-3-5-sonnet` or `claude-3-7-sonnet` to `claude-sonnet-4-5` at the same price.
 
-The SDK provides a `ChatModelEnum` for convenience:
+Pass the model name to the `model` parameter. It accepts any string, so models released after your installed SDK version still work:
 
 ```typescript
-import { Pinecone, ChatModelEnum } from '@pinecone-database/pinecone';
+import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const assistant = pc.assistant({ name: 'my-assistant' });
@@ -67,8 +67,8 @@ const response = await assistant.chat({
       content: 'Summarize this document',
     },
   ],
-  model: ChatModelEnum.ClaudeSonnet45, // 'claude-sonnet-4-5'
-  // Other options: 'gpt-4o', 'gpt-4.1', 'o4-mini', 'gemini-2.5-pro'
+  model: 'claude-sonnet-4-5',
+  // Other options: 'gpt-4o', 'gpt-4.1', 'gpt-5', 'o4-mini', 'gemini-2.5-pro'
 });
 ```
 
@@ -113,8 +113,12 @@ const response = await assistant.chat({
   jsonResponse: true,
 });
 
-// The response.message.content will be valid JSON
-const metrics = JSON.parse(response.message.content);
+// `message` is optional on the response, so check it before parsing.
+// When present, `content` is valid JSON.
+if (response.message?.content) {
+  const metrics = JSON.parse(response.message.content);
+  console.log(metrics);
+}
 ```
 
 ## Include document highlights
@@ -296,6 +300,13 @@ const response1 = await assistant.chat({
   ],
 });
 
+// `message` is optional on the response, so make sure there is an answer to
+// feed back into the next turn.
+const previousAnswer = response1.message?.content;
+if (!previousAnswer) {
+  throw new Error('The assistant did not return a message.');
+}
+
 // Continue the conversation
 const response2 = await assistant.chat({
   messages: [
@@ -305,7 +316,7 @@ const response2 = await assistant.chat({
     },
     {
       role: 'assistant',
-      content: response1.message.content,
+      content: previousAnswer,
     },
     {
       role: 'user',
@@ -352,8 +363,11 @@ const response = await assistant.chat({
   messages: ['Tell me about nature films'],
   filter: { genre: { $eq: 'documentary' } },
 });
+```
 
-// Filter using $in operator
+The `$in` operator matches any one of several values:
+
+```typescript
 const response = await assistant.chat({
   messages: ['Summarize recent research'],
   filter: { genre: { $in: ['research', 'academic', 'technical'] } },
@@ -439,9 +453,16 @@ response.citations?.forEach((citation) => {
   console.log(`Position: ${citation.position}`);
   citation.references?.forEach((ref) => {
     console.log(`  File: ${ref.file?.name}`);
-    console.log(`  Text: ${ref.text}`);
+    console.log(`  Pages: ${ref.pages?.join(', ') ?? 'n/a'}`);
+    // `highlight` is only populated when the chat request set
+    // `includeHighlights: true`.
+    if (ref.highlight) {
+      console.log(`  Highlight: ${ref.highlight.content}`);
+    }
   });
 });
 ```
+
+Each reference points at the source file (`file`), the pages within it (`pages`), and, when highlights were requested, the supporting excerpt (`highlight`).
 
 For more details on file management, see [File Management](./file-management.md).

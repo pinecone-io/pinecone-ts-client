@@ -72,7 +72,7 @@ console.log(importStatus);
 //   createdAt: '2025-01-15T10:30:00Z',
 //   percentComplete: 45,
 //   recordsImported: 450000,
-//   errorMessage: undefined
+//   error: undefined
 // }
 ```
 
@@ -115,10 +115,9 @@ console.log(imports);
 //   }
 // }
 
-// List with pagination
-const nextPage = await index.listImports({
-  paginationToken: imports.pagination?.next,
-});
+// List with pagination: `listImports` takes a page size and, optionally, the
+// pagination token returned with the previous page.
+const nextPage = await index.listImports(10, imports.pagination?.next);
 ```
 
 ## Cancel an import
@@ -181,8 +180,13 @@ const { id } = await index.startImport({
   errorMode: 'continue',
 });
 
+// Every field on the import responses is optional, so narrow before using it
+if (!id) {
+  throw new Error('startImport did not return an import id');
+}
+
 // Poll until complete
-let status = 'InProgress';
+let status: string | undefined = 'InProgress';
 while (status === 'InProgress' || status === 'Pending') {
   const importStatus = await index.describeImport(id);
   status = importStatus.status;
@@ -201,7 +205,7 @@ if (status === 'Completed') {
   console.log('Import completed successfully!');
 } else if (status === 'Failed') {
   const importStatus = await index.describeImport(id);
-  console.error(`Import failed: ${importStatus.errorMessage}`);
+  console.error(`Import failed: ${importStatus.error}`);
 }
 ```
 
