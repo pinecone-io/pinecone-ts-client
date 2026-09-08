@@ -177,25 +177,28 @@ const results = await index.query({
 });
 ```
 
-## Complex metadata types
+## Metadata is flat
 
-You can use nested objects and arrays in your metadata:
+Pinecone metadata is a flat map of scalars. Every value must be a `string`,
+`number`, `boolean`, or `string[]` — that union is exported as
+`RecordMetadataValue`, and `RecordMetadata` is `Record<string, RecordMetadataValue>`.
+
+The type parameter on `pc.index<T>()` is constrained to `RecordMetadata`, so a
+metadata type with a nested object field is rejected at compile time rather
+than failing at request time. Model nested data by flattening it into
+individual scalar fields:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 type ArticleMetadata = {
   title: string;
-  author: {
-    name: string;
-    email: string;
-  };
+  authorName: string;
+  authorEmail: string;
   tags: string[];
   publishedAt: string; // ISO date string
-  stats: {
-    views: number;
-    likes: number;
-  };
+  views: number;
+  likes: number;
 };
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
@@ -208,16 +211,12 @@ await index.upsert({
       values: [0.1, 0.2, 0.3],
       metadata: {
         title: 'Introduction to Vector Databases',
-        author: {
-          name: 'Jane Doe',
-          email: 'jane@example.com',
-        },
+        authorName: 'Jane Doe',
+        authorEmail: 'jane@example.com',
         tags: ['database', 'vector', 'ai'],
         publishedAt: '2025-01-15T10:00:00Z',
-        stats: {
-          views: 1250,
-          likes: 89,
-        },
+        views: 1250,
+        likes: 89,
       },
     },
   ],
@@ -229,15 +228,15 @@ const results = await index.query({
   topK: 5,
   includeMetadata: true,
   filter: {
-    'stats.views': { $gte: 1000 },
+    views: { $gte: 1000 },
     tags: { $in: ['ai', 'ml'] },
   },
 });
 
 results.matches.forEach((match) => {
   if (match.metadata) {
-    console.log(match.metadata.author.name); // Properly typed!
-    console.log(match.metadata.stats.views);
+    console.log(match.metadata.authorName); // Properly typed!
+    console.log(match.metadata.views);
   }
 });
 ```
@@ -283,13 +282,12 @@ results.matches.forEach((match) => {
 
 ## Inference with types
 
-When using integrated inference with `upsertRecords`, you can also define types for your records:
+When using integrated inference with `upsertRecords`, you can also define types for your records. `IntegratedRecord<T>` adds the `id` / `_id` field to your metadata type, so define the metadata type and let `IntegratedRecord` supply the identifier:
 
 ```typescript
 import { Pinecone, IntegratedRecord } from '@pinecone-database/pinecone';
 
-type ArticleRecord = {
-  id: string;
+type ArticleMetadata = {
   content: string; // Field to be embedded
   category: string;
   publishedAt: string;
@@ -310,7 +308,7 @@ await pc.createIndexForModel({
 
 const index = pc.index<ArticleMetadata>({ name: 'articles' });
 
-const articles: ArticleRecord[] = [
+const articles: IntegratedRecord<ArticleMetadata>[] = [
   {
     id: 'art1',
     content: 'Machine learning is transforming healthcare...',
@@ -334,7 +332,7 @@ await index.upsertRecords({ records: articles });
 
 ### Partial metadata updates
 
-When updating metadata, you may want to use `Partial<>`:
+`UpdateOptions<T>` already types its `metadata` field as `Partial<T>`, so you can pass an object holding only the fields you want to change:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -356,7 +354,7 @@ const partialUpdate: Partial<MovieMetadata> = {
 
 await index.update({
   id: 'movie1',
-  setMetadata: partialUpdate,
+  metadata: partialUpdate,
 });
 ```
 

@@ -195,16 +195,16 @@ const results = await index.query({
 });
 ```
 
-## Type-safe filtering with TypeScript
+## Typed metadata with TypeScript
 
-When you use typed metadata, TypeScript will help you construct valid filters:
+Passing a metadata type to `pc.index<T>()` types the metadata you write with `upsert` and `update`, and the metadata you read back on query matches.
+
+Filters are not covered by that type. The `filter` property is typed as `object`, so TypeScript does not check the field names or comparison values inside a filter — a misspelled field name still compiles. Check filter fields against your metadata schema yourself.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-const indexModel = await pc.describeIndex('my-index');
 
 type MovieMetadata = {
   genre: 'comedy' | 'horror' | 'drama' | 'action';
@@ -221,8 +221,6 @@ const results = await index.query({
   filter: {
     genre: { $eq: 'drama' },
     year: { $gte: 2020 },
-    // @ts-expect-error - TypeScript will catch invalid field names
-    invalid_field: { $eq: 'value' },
   },
 });
 ```

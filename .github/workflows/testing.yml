@@ -7,6 +7,11 @@ on:
         description: 'Branch name or SHA to checkout'
         required: false
         type: string
+      docs_only:
+        description: 'Diff touches only *.md/guides/**; skip setup, integration-tests, teardown, example-app-semantic-search, external-app, and typescript-compilation-tests'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,7 +24,9 @@ jobs:
     # PINECONE_API_KEY and VERCEL_TOKEN are not set. Skip the jobs that need
     # a live key; lint, unit tests, mocked smoke, and the TS compile matrix
     # still gate the bump, and integration coverage runs on merge to main.
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    # docs_only skips it too: a *.md/guides/** diff can't touch the surface
+    # these tests exercise.
+    if: github.event.pull_request.user.login != 'dependabot[bot]' && !inputs.docs_only
     outputs:
       fixturesJson: ${{ steps.setup.outputs.FIXTURES_JSON }}
     steps:
@@ -61,6 +68,7 @@ jobs:
 
   integration-tests:
     needs: [setup]
+    if: ${{ !inputs.docs_only }}
     name: Run integration tests
     runs-on: ubuntu-latest
     outputs:
@@ -72,11 +80,10 @@ jobs:
         pinecone_env:
           - prod
           # - staging
-        node_version: [20.x, 22.x]
+        node_version: [20.x, 22.x, 24.x]
         config:
           [
             { runner: 'npm', jest_env: 'node' },
-            { runner: 'npm', jest_env: 'edge' },
             { runner: 'bun', jest_env: 'node', bun_version: '1.2' },
           ]
 
@@ -117,7 +124,7 @@ jobs:
   teardown:
     name: Teardown shared resources
     needs: [integration-tests]
-    if: success()
+    if: success() && !inputs.docs_only
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -172,9 +179,25 @@ jobs:
           CI: true
         run: npm run test:smoke:mocked
 
+  edge-runtime-entry:
+    name: Edge runtime entry check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Load built entry and construct a client under a real Edge runtime sandbox
+        run: npm run test:edge-runtime
+
   typescript-compilation-tests:
     name: TS compile
     runs-on: ubuntu-latest
+    if: ${{ !inputs.docs_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -201,7 +224,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install npm packages
         run: |
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
         shell: bash
       - name: Build TypeScript for Pinecone
         run: npm run build
@@ -249,7 +272,8 @@ jobs:
     # secrets this job needs; see the `setup` job.
     if: >-
       github.repository == 'pinecone-io/pinecone-ts-client' &&
-      github.event.pull_request.user.login != 'dependabot[bot]'
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      !inputs.docs_only
     runs-on: ubuntu-latest
     steps:
       - name: Checkout pinecone-ts-client
@@ -267,7 +291,7 @@ jobs:
         shell: bash
         run: |
           cd pinecone-ts-client
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
           npm run build
       - name: Install and build sample app
         shell: bash
@@ -299,7 +323,8 @@ jobs:
     # cannot read it.
     if: >-
       github.repository == 'pinecone-io/pinecone-ts-client' &&
-      github.event.pull_request.user.login != 'dependabot[bot]'
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      !inputs.docs_only
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
