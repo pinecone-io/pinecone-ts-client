@@ -13,33 +13,12 @@
  */
 
 import {
-    BooleanField,
-    instanceOfBooleanField,
-    BooleanFieldFromJSON,
-    BooleanFieldFromJSONTyped,
-    BooleanFieldToJSON,
-} from './BooleanField';
-import {
     DenseVectorField,
     instanceOfDenseVectorField,
     DenseVectorFieldFromJSON,
     DenseVectorFieldFromJSONTyped,
     DenseVectorFieldToJSON,
 } from './DenseVectorField';
-import {
-    FloatField,
-    instanceOfFloatField,
-    FloatFieldFromJSON,
-    FloatFieldFromJSONTyped,
-    FloatFieldToJSON,
-} from './FloatField';
-import {
-    SemanticTextField,
-    instanceOfSemanticTextField,
-    SemanticTextFieldFromJSON,
-    SemanticTextFieldFromJSONTyped,
-    SemanticTextFieldToJSON,
-} from './SemanticTextField';
 import {
     SparseVectorField,
     instanceOfSparseVectorField,
@@ -54,38 +33,31 @@ import {
     StringFieldFromJSONTyped,
     StringFieldToJSON,
 } from './StringField';
-import {
-    StringListField,
-    instanceOfStringListField,
-    StringListFieldFromJSON,
-    StringListFieldFromJSONTyped,
-    StringListFieldToJSON,
-} from './StringListField';
 
 /**
  * @type CreateIndexSchemaField
  * The configuration of a single field in the index schema at creation time. The `type` property determines how the field is stored and searched.
- * Supported field types:
- * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `semantic_text`: Text field backed by an integrated embedding model. - `string`: String field for full-text search (use `full_text_search` object)
- * 
- *   or metadata filtering.
- * - `string_list`: String array field for metadata filtering. - `float`: Numeric field for metadata filtering. Also accepts `"number"` as the type value. - `boolean`: Boolean field for metadata filtering.
+ * Field types accepted at creation time:
+ * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `string` with a `full_text_search` object: String field for full-text search.
  * Schema constraints enforced at creation time:
- * - At most one `dense_vector` field. - At most one `sparse_vector` field. - At most one `semantic_text` field; `semantic_text` cannot be combined with
+ * - At most one `dense_vector` field. - At most one `sparse_vector` field. - At least one of `dense_vector`, `sparse_vector`, or a `string` field with
  * 
- *   `dense_vector`, `sparse_vector`, or full-text search string fields.
- * - At least one primary field (`dense_vector`, `sparse_vector`, `semantic_text`,
+ *   `full_text_search` must be present.
  * 
- *   or a `string` field with `full_text_search`) must be present.
- * - Only `dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
+ * Other field types seen in `IndexSchemaField` responses cannot be declared here:
+ * - `semantic_text` cannot be declared in a schema. Create an index with an
  * 
- *   `full_text_search` are accepted. The types `float`, `boolean`,
- *   `string_list`, and `string` without `full_text_search` are not supported
- *   and will be rejected. Include those values as document metadata instead —
- *   they are indexed automatically at upsert time.
+ *   integrated embedding model through the create-for-model operation instead;
+ *   it appears as a `semantic_text` field when the index is described.
+ * - `float` (also spelled `number`), `boolean`, `string_list`, and `string`
+ * 
+ *   without `full_text_search` are metadata types and are rejected. Include the
+ *   values as document metadata and they are indexed for filtering automatically.
+ * 
+ * Every field accepts an optional `description` of at most 256 bytes.
  * @export
  */
-export type CreateIndexSchemaField = { type: 'boolean' } & BooleanField | { type: 'dense_vector' } & DenseVectorField | { type: 'float' } & FloatField | { type: 'semantic_text' } & SemanticTextField | { type: 'sparse_vector' } & SparseVectorField | { type: 'string' } & StringField | { type: 'string_list' } & StringListField;
+export type CreateIndexSchemaField = { type: 'dense_vector' } & DenseVectorField | { type: 'sparse_vector' } & SparseVectorField | { type: 'string' } & StringField;
 
 export function CreateIndexSchemaFieldFromJSON(json: any): CreateIndexSchemaField {
     return CreateIndexSchemaFieldFromJSONTyped(json, false);
@@ -96,20 +68,12 @@ export function CreateIndexSchemaFieldFromJSONTyped(json: any, ignoreDiscriminat
         return json;
     }
     switch (json['type']) {
-        case 'boolean':
-            return {...BooleanFieldFromJSONTyped(json, true), type: 'boolean'};
         case 'dense_vector':
             return {...DenseVectorFieldFromJSONTyped(json, true), type: 'dense_vector'};
-        case 'float':
-            return {...FloatFieldFromJSONTyped(json, true), type: 'float'};
-        case 'semantic_text':
-            return {...SemanticTextFieldFromJSONTyped(json, true), type: 'semantic_text'};
         case 'sparse_vector':
             return {...SparseVectorFieldFromJSONTyped(json, true), type: 'sparse_vector'};
         case 'string':
             return {...StringFieldFromJSONTyped(json, true), type: 'string'};
-        case 'string_list':
-            return {...StringListFieldFromJSONTyped(json, true), type: 'string_list'};
         default:
             throw new Error(`No variant of CreateIndexSchemaField exists with 'type=${json['type']}'`);
     }
@@ -123,20 +87,12 @@ export function CreateIndexSchemaFieldToJSON(value?: CreateIndexSchemaField | nu
         return null;
     }
     switch (value['type']) {
-        case 'boolean':
-            return BooleanFieldToJSON(value);
         case 'dense_vector':
             return DenseVectorFieldToJSON(value);
-        case 'float':
-            return FloatFieldToJSON(value);
-        case 'semantic_text':
-            return SemanticTextFieldToJSON(value);
         case 'sparse_vector':
             return SparseVectorFieldToJSON(value);
         case 'string':
             return StringFieldToJSON(value);
-        case 'string_list':
-            return StringListFieldToJSON(value);
         default:
             throw new Error(`No variant of CreateIndexSchemaField exists with 'type=${value['type']}'`);
     }

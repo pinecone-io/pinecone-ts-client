@@ -27,11 +27,12 @@ import {
  */
 export interface CreateNamespaceRequestSchema {
     /**
-     * A map of metadata field names to their configuration. The field name must be a valid metadata field name. The field name must be unique.
+     * A map of metadata field names to their configuration. The field name must be a valid metadata field name. The field name must be unique. At most 50 fields may be declared.
+     * Field names may not begin with `$`, which introduces a filter operator. When declared at index creation, names beginning with `_` are also rejected (reserved for internal use).
      * @type {{ [key: string]: CreateNamespaceRequestSchemaFieldsValue; }}
      * @memberof CreateNamespaceRequestSchema
      */
-    fields: { [key: string]: CreateNamespaceRequestSchemaFieldsValue; };
+    fields?: { [key: string]: CreateNamespaceRequestSchemaFieldsValue; };
 }
 
 /**
@@ -39,7 +40,6 @@ export interface CreateNamespaceRequestSchema {
  */
 export function instanceOfCreateNamespaceRequestSchema(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "fields" in value;
 
     return isInstance;
 }
@@ -54,7 +54,7 @@ export function CreateNamespaceRequestSchemaFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'fields': (mapValues(json['fields'], CreateNamespaceRequestSchemaFieldsValueFromJSON)),
+        'fields': !exists(json, 'fields') ? undefined : (mapValues(json['fields'], CreateNamespaceRequestSchemaFieldsValueFromJSON)),
     };
 }
 
@@ -67,7 +67,7 @@ export function CreateNamespaceRequestSchemaToJSON(value?: CreateNamespaceReques
     }
     return {
         
-        'fields': (mapValues(value.fields, CreateNamespaceRequestSchemaFieldsValueToJSON)),
+        'fields': value.fields === undefined ? undefined : (mapValues(value.fields, CreateNamespaceRequestSchemaFieldsValueToJSON)),
     };
 }
 

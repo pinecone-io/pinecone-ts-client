@@ -25,6 +25,12 @@ export interface SparseVectorField {
      * @memberof SparseVectorField
      */
     type: SparseVectorFieldTypeEnum;
+    /**
+     * Optional description for this field, at most 256 bytes. `null` in responses when none was set.
+     * @type {string}
+     * @memberof SparseVectorField
+     */
+    description?: string | null;
 }
 
 
@@ -58,6 +64,7 @@ export function SparseVectorFieldFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'type': json['type'],
+        'description': !exists(json, 'description') ? undefined : json['description'],
     };
 }
 
@@ -71,6 +78,7 @@ export function SparseVectorFieldToJSON(value?: SparseVectorField | null): any {
     return {
         
         'type': value.type,
+        'description': value.description,
     };
 }
 

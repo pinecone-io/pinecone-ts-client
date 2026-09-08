@@ -22,7 +22,7 @@ export interface DescribeIndexStatsRequest {
     /**
      * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * 
-     * Serverless indexes do not support filtering `describe_index_stats` by metadata.
+     * Serverless and Starter indexes do not support filtering `describe_index_stats` by metadata, and reject a request carrying a non-empty filter.
      * @type {object}
      * @memberof DescribeIndexStatsRequest
      */

@@ -26,24 +26,17 @@ import {
     ManagedDeploymentFromJSONTyped,
     ManagedDeploymentToJSON,
 } from './ManagedDeployment';
-import {
-    PodDeployment,
-    instanceOfPodDeployment,
-    PodDeploymentFromJSON,
-    PodDeploymentFromJSONTyped,
-    PodDeploymentToJSON,
-} from './PodDeployment';
 
 /**
  * @type IndexDeploymentRequest
  * The deployment configuration for index creation. The `deployment_type` field selects the infrastructure model. Defaults to `managed` (serverless) in `us-east-1` on `aws` if omitted.
- * - `pod`: Dedicated pod-based infrastructure. - `managed`: Serverless infrastructure managed by Pinecone, including
+ * - `managed`: Serverless infrastructure managed by Pinecone, including
  * 
  *   full-text search indexes.
  * - `byoc`: Bring-your-own-compute.
  * @export
  */
-export type IndexDeploymentRequest = { deploymentType: 'byoc' } & ByocDeployment | { deploymentType: 'managed' } & ManagedDeployment | { deploymentType: 'pod' } & PodDeployment;
+export type IndexDeploymentRequest = { deploymentType: 'byoc' } & ByocDeployment | { deploymentType: 'managed' } & ManagedDeployment;
 
 export function IndexDeploymentRequestFromJSON(json: any): IndexDeploymentRequest {
     return IndexDeploymentRequestFromJSONTyped(json, false);
@@ -58,8 +51,6 @@ export function IndexDeploymentRequestFromJSONTyped(json: any, ignoreDiscriminat
             return {...ByocDeploymentFromJSONTyped(json, true), deploymentType: 'byoc'};
         case 'managed':
             return {...ManagedDeploymentFromJSONTyped(json, true), deploymentType: 'managed'};
-        case 'pod':
-            return {...PodDeploymentFromJSONTyped(json, true), deploymentType: 'pod'};
         default:
             throw new Error(`No variant of IndexDeploymentRequest exists with 'deploymentType=${json['deploymentType']}'`);
     }
@@ -77,8 +68,6 @@ export function IndexDeploymentRequestToJSON(value?: IndexDeploymentRequest | nu
             return ByocDeploymentToJSON(value);
         case 'managed':
             return ManagedDeploymentToJSON(value);
-        case 'pod':
-            return PodDeploymentToJSON(value);
         default:
             throw new Error(`No variant of IndexDeploymentRequest exists with 'deploymentType=${value['deploymentType']}'`);
     }

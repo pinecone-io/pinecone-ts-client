@@ -24,7 +24,7 @@ export interface Pagination {
      * @type {string}
      * @memberof Pagination
      */
-    next?: string;
+    next: string;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface Pagination {
  */
 export function instanceOfPagination(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "next" in value;
 
     return isInstance;
 }
@@ -46,7 +47,7 @@ export function PaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'next': !exists(json, 'next') ? undefined : json['next'],
+        'next': json['next'],
     };
 }
 

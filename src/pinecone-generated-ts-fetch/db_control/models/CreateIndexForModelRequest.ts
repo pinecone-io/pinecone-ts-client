@@ -13,12 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { ManagedDeployment } from './ManagedDeployment';
+import type { CreateIndexForModelRequestEmbed } from './CreateIndexForModelRequestEmbed';
 import {
-    ManagedDeploymentFromJSON,
-    ManagedDeploymentFromJSONTyped,
-    ManagedDeploymentToJSON,
-} from './ManagedDeployment';
+    CreateIndexForModelRequestEmbedFromJSON,
+    CreateIndexForModelRequestEmbedFromJSONTyped,
+    CreateIndexForModelRequestEmbedToJSON,
+} from './CreateIndexForModelRequestEmbed';
+import type { MetadataSchema } from './MetadataSchema';
+import {
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 import type { ReadCapacity } from './ReadCapacity';
 import {
     ReadCapacityFromJSON,
@@ -27,66 +33,30 @@ import {
 } from './ReadCapacity';
 
 /**
- * Configuration for creating an index with an integrated embedding model. The server constructs a `semantic_text` schema field named `field` using the provided model parameters.
+ * The desired configuration for the index and associated embedding model.
  * @export
  * @interface CreateIndexForModelRequest
  */
 export interface CreateIndexForModelRequest {
     /**
-     * The name of the index. Auto-generated if not provided. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'. Callers that require retry-safe behavior should provide an explicit name — a duplicate request with the same name returns 409, making success detectable on retry.
+     * The name of the index. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
      * @type {string}
      * @memberof CreateIndexForModelRequest
      */
-    name?: string;
+    name: string;
     /**
-     * 
-     * @type {ManagedDeployment}
-     * @memberof CreateIndexForModelRequest
-     */
-    deployment?: ManagedDeployment;
-    /**
-     * The name of the schema field that will hold the embedded text. This becomes a `semantic_text` field in the index schema.
+     * The public cloud where you would like your index hosted.
+     * Possible values: `gcp`, `aws`, or `azure`.
      * @type {string}
      * @memberof CreateIndexForModelRequest
      */
-    field: string;
+    cloud: string;
     /**
-     * The name of the embedding model to use. Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available models and details.
+     * The region where you would like your index to be created.
      * @type {string}
      * @memberof CreateIndexForModelRequest
      */
-    model: string;
-    /**
-     * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If the 'vector_type' is 'sparse', the metric must be 'dotproduct'. If the `vector_type` is `dense`, the metric defaults to 'cosine'.
-     * Possible values: `cosine`, `euclidean`, or `dotproduct`.
-     * @type {string}
-     * @memberof CreateIndexForModelRequest
-     */
-    metric?: string;
-    /**
-     * Model-specific parameters applied when embedding documents at write time.
-     * @type {object}
-     * @memberof CreateIndexForModelRequest
-     */
-    writeParameters?: object;
-    /**
-     * Model-specific parameters applied when embedding queries at read time.
-     * @type {object}
-     * @memberof CreateIndexForModelRequest
-     */
-    readParameters?: object;
-    /**
-     * 
-     * @type {ReadCapacity}
-     * @memberof CreateIndexForModelRequest
-     */
-    readCapacity?: ReadCapacity;
-    /**
-     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
-     * @type {{ [key: string]: string; }}
-     * @memberof CreateIndexForModelRequest
-     */
-    tags?: { [key: string]: string; };
+    region: string;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
      * Possible values: `disabled` or `enabled`.
@@ -94,6 +64,30 @@ export interface CreateIndexForModelRequest {
      * @memberof CreateIndexForModelRequest
      */
     deletionProtection?: string;
+    /**
+     * Custom user tags added to an index, at most 20 per index. Keys must be 80 characters or less and alphanumeric, '_', or '-'. Values must be 120 characters or less and consist of printable ASCII characters or spaces. To unset a key, set the value to be an empty string. `null` in responses when the index has no tags.
+     * @type {{ [key: string]: string; }}
+     * @memberof CreateIndexForModelRequest
+     */
+    tags?: { [key: string]: string; } | null;
+    /**
+     * 
+     * @type {MetadataSchema}
+     * @memberof CreateIndexForModelRequest
+     */
+    schema?: MetadataSchema;
+    /**
+     * 
+     * @type {ReadCapacity}
+     * @memberof CreateIndexForModelRequest
+     */
+    readCapacity?: ReadCapacity;
+    /**
+     * 
+     * @type {CreateIndexForModelRequestEmbed}
+     * @memberof CreateIndexForModelRequest
+     */
+    embed: CreateIndexForModelRequestEmbed;
 }
 
 /**
@@ -101,8 +95,10 @@ export interface CreateIndexForModelRequest {
  */
 export function instanceOfCreateIndexForModelRequest(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "field" in value;
-    isInstance = isInstance && "model" in value;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "cloud" in value;
+    isInstance = isInstance && "region" in value;
+    isInstance = isInstance && "embed" in value;
 
     return isInstance;
 }
@@ -117,16 +113,14 @@ export function CreateIndexForModelRequestFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'deployment': !exists(json, 'deployment') ? undefined : ManagedDeploymentFromJSON(json['deployment']),
-        'field': json['field'],
-        'model': json['model'],
-        'metric': !exists(json, 'metric') ? undefined : json['metric'],
-        'writeParameters': !exists(json, 'write_parameters') ? undefined : json['write_parameters'],
-        'readParameters': !exists(json, 'read_parameters') ? undefined : json['read_parameters'],
-        'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
-        'tags': !exists(json, 'tags') ? undefined : json['tags'],
+        'name': json['name'],
+        'cloud': json['cloud'],
+        'region': json['region'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : json['deletion_protection'],
+        'tags': !exists(json, 'tags') ? undefined : json['tags'],
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
+        'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
+        'embed': CreateIndexForModelRequestEmbedFromJSON(json['embed']),
     };
 }
 
@@ -140,15 +134,13 @@ export function CreateIndexForModelRequestToJSON(value?: CreateIndexForModelRequ
     return {
         
         'name': value.name,
-        'deployment': ManagedDeploymentToJSON(value.deployment),
-        'field': value.field,
-        'model': value.model,
-        'metric': value.metric,
-        'write_parameters': value.writeParameters,
-        'read_parameters': value.readParameters,
-        'read_capacity': ReadCapacityToJSON(value.readCapacity),
-        'tags': value.tags,
+        'cloud': value.cloud,
+        'region': value.region,
         'deletion_protection': value.deletionProtection,
+        'tags': value.tags,
+        'schema': MetadataSchemaToJSON(value.schema),
+        'read_capacity': ReadCapacityToJSON(value.readCapacity),
+        'embed': CreateIndexForModelRequestEmbedToJSON(value.embed),
     };
 }
 

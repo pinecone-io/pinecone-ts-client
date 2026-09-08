@@ -25,12 +25,12 @@ import {
     PatchIndexSchemaFromJSONTyped,
     PatchIndexSchemaToJSON,
 } from './PatchIndexSchema';
-import type { ReadCapacity } from './ReadCapacity';
+import type { ReadCapacityPatch } from './ReadCapacityPatch';
 import {
-    ReadCapacityFromJSON,
-    ReadCapacityFromJSONTyped,
-    ReadCapacityToJSON,
-} from './ReadCapacity';
+    ReadCapacityPatchFromJSON,
+    ReadCapacityPatchFromJSONTyped,
+    ReadCapacityPatchToJSON,
+} from './ReadCapacityPatch';
 
 /**
  * Configuration updates to apply to an existing index. All fields are optional; only the fields you include are modified.
@@ -66,16 +66,16 @@ export interface ConfigureIndexRequest {
     schema?: PatchIndexSchema;
     /**
      * 
-     * @type {ReadCapacity}
+     * @type {ReadCapacityPatch}
      * @memberof ConfigureIndexRequest
      */
-    readCapacity?: ReadCapacity;
+    readCapacity?: ReadCapacityPatch;
     /**
-     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
+     * Custom user tags added to an index, at most 20 per index. Keys must be 80 characters or less and alphanumeric, '_', or '-'. Values must be 120 characters or less and consist of printable ASCII characters or spaces. To unset a key, set the value to be an empty string. `null` in responses when the index has no tags.
      * @type {{ [key: string]: string; }}
      * @memberof ConfigureIndexRequest
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
      * Possible values: `disabled` or `enabled`.
@@ -106,7 +106,7 @@ export function ConfigureIndexRequestFromJSONTyped(json: any, ignoreDiscriminato
         
         'deployment': !exists(json, 'deployment') ? undefined : PatchIndexDeploymentRequestFromJSON(json['deployment']),
         'schema': !exists(json, 'schema') ? undefined : PatchIndexSchemaFromJSON(json['schema']),
-        'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
+        'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityPatchFromJSON(json['read_capacity']),
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
         'deletionProtection': !exists(json, 'deletion_protection') ? undefined : json['deletion_protection'],
     };
@@ -123,7 +123,7 @@ export function ConfigureIndexRequestToJSON(value?: ConfigureIndexRequest | null
         
         'deployment': PatchIndexDeploymentRequestToJSON(value.deployment),
         'schema': PatchIndexSchemaToJSON(value.schema),
-        'read_capacity': ReadCapacityToJSON(value.readCapacity),
+        'read_capacity': ReadCapacityPatchToJSON(value.readCapacity),
         'tags': value.tags,
         'deletion_protection': value.deletionProtection,
     };

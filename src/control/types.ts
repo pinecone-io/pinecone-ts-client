@@ -49,16 +49,19 @@ export type IndexMetric = 'cosine' | 'euclidean' | 'dotproduct';
 /**
  * The current state of an index.
  *
- * An index is ready for data operations once `Ready`. `InitializationFailed` is
- * terminal; the rest are transitional.
+ * An index is ready for data operations once `Ready`. `InitializationFailed`
+ * and `Failed` are terminal: the first means the index never finished building,
+ * the second that a previously healthy index has since failed. Neither
+ * recovers, and {@link Indexes.create} with `waitUntilReady` throws on both.
+ * The rest are transitional.
  */
 export type IndexState =
   | 'Initializing'
   | 'InitializationFailed'
+  | 'Failed'
   | 'ScalingUp'
   | 'ScalingDown'
   | 'ScalingUpPodSize'
-  | 'ScalingDownPodSize'
   | 'Terminating'
   | 'Ready'
   | 'Disabled'
@@ -77,7 +80,8 @@ export type CollectionStatus =
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
-export type BackupStatus = 'Initializing' | 'Ready' | 'Failed' | (string & {});
+export type BackupStatus =
+  'Initializing' | 'Ready' | 'InitializationFailed' | (string & {});
 
 /**
  * The state of an index's read capacity.
@@ -141,7 +145,8 @@ export type ReadCapacityScaling = 'Manual' | (string & {});
 
 /**
  * The replica and shard counts to use for manually scaled dedicated read
- * capacity. Omitted values are assigned defaults.
+ * capacity. Both are required when creating an index; to change one of them on
+ * an existing index, see {@link ScalingConfigManualPatchInput}.
  *
  * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
  */
@@ -152,12 +157,12 @@ export interface ScalingConfigManualInput {
    * replicas to 0 disables the index but can be used to reduce costs while usage
    * is paused.
    */
-  replicas?: number;
+  replicas: number;
   /**
    * The number of shards to use. Shards determine the storage capacity of an
    * index, with each shard providing 250 GB of storage.
    */
-  shards?: number;
+  shards: number;
 }
 
 /**

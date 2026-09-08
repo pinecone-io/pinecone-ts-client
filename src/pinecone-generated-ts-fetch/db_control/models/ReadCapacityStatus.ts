@@ -32,17 +32,17 @@ export interface ReadCapacityStatus {
      */
     state: string;
     /**
-     * The number of replicas. Each replica has dedicated  compute resources and data storage. Increasing this number  will increase the total throughput of the index.
+     * The number of replicas. Each replica has dedicated compute resources and data storage. Increasing this number will increase the total throughput of the index. `null` for `OnDemand` indexes and for a `Dedicated` index that has not finished provisioning.
      * @type {number}
      * @memberof ReadCapacityStatus
      */
-    currentReplicas?: number;
+    currentReplicas?: number | null;
     /**
-     * The number of shards. Each shard has dedicated storage.  Increasing shards alleiviates index fullness. 
+     * The number of shards. Each shard has dedicated storage. Increasing shards alleviates index fullness. `null` for `OnDemand` indexes and for a `Dedicated` index that has not finished provisioning.
      * @type {number}
      * @memberof ReadCapacityStatus
      */
-    currentShards?: number;
+    currentShards?: number | null;
     /**
      * An optional error message indicating any issues with your read capacity configuration
      * @type {string}

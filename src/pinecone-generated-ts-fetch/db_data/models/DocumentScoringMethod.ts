@@ -24,9 +24,9 @@ import {
  * A scoring method that defines how documents are scored against a query.
  * 
  * The `type` field determines which other fields are used:
- * - `dense_vector`: Score by dense vector similarity. Requires `field` or `fields`, and a `values` array.
- * - `sparse_vector`: Score by sparse vector similarity. Requires `field` or `fields`, and `sparse_values`.
- * - `text`: Score by BM25 text similarity against a single field. Requires `field` or `fields`, and `query`.
+ * - `dense_vector`: Score by dense vector similarity. Requires either `field` or `fields` naming exactly one field, and a `values` array.
+ * - `sparse_vector`: Score by sparse vector similarity. Requires either `field` or `fields` naming exactly one field, and `sparse_values`.
+ * - `text`: Score by BM25 text similarity. Requires either `field` or `fields` naming one or more fields, and `query`. Naming several fields scores the query against all of them.
  * - `query_string`: Score using a Lucene query string. Use field qualifiers (`field:(clause)`) to target a field, or omit field qualifiers to search against all text-searchable fields. Errors if `field` or `fields` is provided.
  * @export
  * @interface DocumentScoringMethod
@@ -40,15 +40,22 @@ export interface DocumentScoringMethod {
      */
     type: string;
     /**
-     * The field to score against.
+     * The fields to score against.
      * 
-     * Required for `dense_vector`, `sparse_vector`, and `text` scoring types. Must not be provided for `query_string`.
+     * Either `fields` or `field` must be provided for `dense_vector`, `sparse_vector`, and `text` scoring types, and neither may be provided for `query_string`. `dense_vector` and `sparse_vector` accept exactly one field; `text` accepts one or more.
+     * @type {Array<string>}
+     * @memberof DocumentScoringMethod
+     */
+    fields?: Array<string>;
+    /**
+     * A single field to score against. Equivalent to a one-element `fields`; prefer `fields`, which can also name more than one field. Either `field` or `fields` must be provided for `dense_vector`, `sparse_vector`, and `text` scoring types, but not both.
      * @type {string}
      * @memberof DocumentScoringMethod
+     * @deprecated
      */
     field?: string;
     /**
-     * The text query to use for `text` and `query_string` scoring types.
+     * The text query to use for `text` and `query_string` scoring types. Leading and trailing whitespace is trimmed; a query that is empty after trimming is rejected. At most 10 KB.
      * @type {string}
      * @memberof DocumentScoringMethod
      */
@@ -88,6 +95,7 @@ export function DocumentScoringMethodFromJSONTyped(json: any, ignoreDiscriminato
     return {
         
         'type': json['type'],
+        'fields': !exists(json, 'fields') ? undefined : json['fields'],
         'field': !exists(json, 'field') ? undefined : json['field'],
         'query': !exists(json, 'query') ? undefined : json['query'],
         'values': !exists(json, 'values') ? undefined : json['values'],
@@ -105,6 +113,7 @@ export function DocumentScoringMethodToJSON(value?: DocumentScoringMethod | null
     return {
         
         'type': value.type,
+        'fields': value.fields,
         'field': value.field,
         'query': value.query,
         'values': value.values,

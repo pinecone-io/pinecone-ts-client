@@ -13,12 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { QueryVector } from './QueryVector';
-import {
-    QueryVectorFromJSON,
-    QueryVectorFromJSONTyped,
-    QueryVectorToJSON,
-} from './QueryVector';
 import type { SparseValues } from './SparseValues';
 import {
     SparseValuesFromJSON,
@@ -63,14 +57,9 @@ export interface QueryRequest {
      */
     includeMetadata?: boolean;
     /**
-     * DEPRECATED. Use `vector` or `id` instead.
-     * @type {Array<QueryVector>}
-     * @memberof QueryRequest
-     * @deprecated
-     */
-    queries?: Array<QueryVector>;
-    /**
      * The query vector. This should be the same length as the dimension of the index being queried. Each `query` request can contain only one of the parameters `id` or `vector`.
+     * 
+     * Whether `vector` and `sparseVector` may be sent together depends on the index: an index that supports only a single query predicate rejects the combination.
      * @type {Array<number>}
      * @memberof QueryRequest
      */
@@ -82,7 +71,7 @@ export interface QueryRequest {
      */
     sparseVector?: SparseValues;
     /**
-     * The unique ID of the vector to be used as a query vector. Each request can contain either the `vector` or `id` parameter.
+     * The unique ID of the vector to be used as a query vector. It is mutually exclusive with both vector forms: a request naming `id` may not also carry `vector` or `sparseVector`.
      * @type {string}
      * @memberof QueryRequest
      */
@@ -128,7 +117,6 @@ export function QueryRequestFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
         'includeValues': !exists(json, 'includeValues') ? undefined : json['includeValues'],
         'includeMetadata': !exists(json, 'includeMetadata') ? undefined : json['includeMetadata'],
-        'queries': !exists(json, 'queries') ? undefined : ((json['queries'] as Array<any>).map(QueryVectorFromJSON)),
         'vector': !exists(json, 'vector') ? undefined : json['vector'],
         'sparseVector': !exists(json, 'sparseVector') ? undefined : SparseValuesFromJSON(json['sparseVector']),
         'id': !exists(json, 'id') ? undefined : json['id'],
@@ -151,7 +139,6 @@ export function QueryRequestToJSON(value?: QueryRequest | null): any {
         'filter': value.filter,
         'includeValues': value.includeValues,
         'includeMetadata': value.includeMetadata,
-        'queries': value.queries === undefined ? undefined : ((value.queries as Array<any>).map(QueryVectorToJSON)),
         'vector': value.vector,
         'sparseVector': SparseValuesToJSON(value.sparseVector),
         'id': value.id,

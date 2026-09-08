@@ -79,7 +79,9 @@ export class UpdateCommand<T extends RecordMetadata = RecordMetadata> {
       id: options['id'],
       values: options['values'],
       sparseValues: options['sparseValues'],
-      setMetadata: options['metadata'],
+      // `Partial<T>` allows `undefined` values, which `MetadataValue` does not.
+      // `JSON.stringify` drops those keys, so the request is well-formed.
+      setMetadata: options['metadata'] as UpdateRequest['setMetadata'],
       filter: options['filter'],
       namespace,
     };

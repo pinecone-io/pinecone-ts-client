@@ -27,7 +27,10 @@ export type {
   DedicatedNodeType,
   ReadCapacityScaling,
 } from './createIndex';
-export type { CreateIndexForModelOptions } from './createIndexForModel';
+export type {
+  CreateIndexForModelOptions,
+  CreateIndexForModelEmbed,
+} from './createIndexForModel';
 export type {
   IndexList,
   IndexModel,

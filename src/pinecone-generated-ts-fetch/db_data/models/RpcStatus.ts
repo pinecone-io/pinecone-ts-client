@@ -21,7 +21,7 @@ import {
 } from './ProtobufAny';
 
 /**
- * 
+ * The error response shape returned by the vector and bulk operations. Requests rejected by the authentication and rate-limiting layer before they reach the service (`401`, and the `400`, `403`, and `429` it produces) return a plain-text body instead.
  * @export
  * @interface RpcStatus
  */

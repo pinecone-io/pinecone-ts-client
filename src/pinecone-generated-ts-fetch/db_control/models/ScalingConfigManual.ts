@@ -24,13 +24,13 @@ export interface ScalingConfigManual {
      * @type {number}
      * @memberof ScalingConfigManual
      */
-    replicas?: number;
+    replicas: number;
     /**
      * The number of shards to use. Shards determine the storage capacity of an index, with each shard providing 250 GB of storage.
      * @type {number}
      * @memberof ScalingConfigManual
      */
-    shards?: number;
+    shards: number;
 }
 
 /**
@@ -38,6 +38,8 @@ export interface ScalingConfigManual {
  */
 export function instanceOfScalingConfigManual(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "replicas" in value;
+    isInstance = isInstance && "shards" in value;
 
     return isInstance;
 }
@@ -52,8 +54,8 @@ export function ScalingConfigManualFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'replicas': !exists(json, 'replicas') ? undefined : json['replicas'],
-        'shards': !exists(json, 'shards') ? undefined : json['shards'],
+        'replicas': json['replicas'],
+        'shards': json['shards'],
     };
 }
 
