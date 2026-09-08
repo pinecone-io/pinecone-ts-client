@@ -3,9 +3,7 @@ import type {
   CreateIndexRequest,
   DenseVectorField,
   SparseVectorField,
-  SemanticTextField,
   StringField,
-  StringFieldFullTextSearch,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
@@ -58,30 +56,31 @@ export type {
  * };
  * ```
  */
-export type FullTextSearchStringField = StringField & {
-  type: 'string';
-  fullTextSearch: StringFieldFullTextSearch;
-};
+export type FullTextSearchStringField = StringField;
 
 /**
  * The configuration of a single field in the schema of a new index.
  *
- * A schema declares the searchable fields of the index. One of four field types:
+ * A schema declares the searchable fields of the index. One of three creatable
+ * field types:
  *
  * - `dense_vector` — fixed-dimension vectors for semantic search.
  * - `sparse_vector` — sparse vectors for keyword or hybrid search.
- * - `semantic_text` — text embedded by an integrated model.
  * - `string` with `fullTextSearch` — see {@link FullTextSearchStringField}.
+ *
+ * A `semantic_text` field — text embedded by an integrated model — cannot be
+ * declared here. Use {@link Indexes.createForModel} instead, which builds the
+ * field from the model parameters you supply. `semantic_text` still appears on
+ * the schema of an index you describe, as one of the {@link IndexSchemaField}
+ * types.
  *
  * Values you only need to filter on — numbers, booleans, string lists, and
  * plain strings — do not belong in the schema. Send them as document metadata
  * instead: they are indexed automatically at upsert time and appear on the
  * described index's {@link IndexSchema}.
  *
- * An index may declare at most one `dense_vector`, one `sparse_vector`, and one
- * `semantic_text` field, and must declare at least one field. A `semantic_text`
- * field cannot be combined with `dense_vector`, `sparse_vector`, or a full-text
- * search string field.
+ * An index may declare at most one `dense_vector` and one `sparse_vector`
+ * field, and must declare at least one field.
  *
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
@@ -89,7 +88,6 @@ export type CreateIndexSchemaField =
   // `type` re-narrowed: the generated DenseVectorField accepts any field type.
   | (DenseVectorField & { type: 'dense_vector'; metric: IndexMetric })
   | SparseVectorField
-  | (SemanticTextField & { metric?: IndexMetric })
   | FullTextSearchStringField;
 
 /**

@@ -27,7 +27,7 @@ import {
  */
 export interface IndexDescription {
     /**
-     * A mapping for each namespace in the index from the namespace name to a summary of its contents. If a metadata filter expression is present, the summary will reflect only vectors matching that expression.
+     * A mapping for each namespace in the index from the namespace name to a summary of its contents.
      * @type {{ [key: string]: NamespaceSummary; }}
      * @memberof IndexDescription
      */
@@ -39,7 +39,7 @@ export interface IndexDescription {
      */
     dimension?: number;
     /**
-     * The fullness of the index, regardless of whether a metadata filter expression was passed. The granularity of this metric is 10%.
+     * The fullness of the index, reported to a granularity of 1% and capped at `1.0`. Always `0` for indexes with on-demand read capacity.
      * 
      * Serverless indexes scale automatically as needed, so index fullness  is relevant only for pod-based indexes.
      * 
@@ -105,8 +105,8 @@ export function IndexDescriptionFromJSONTyped(json: any, ignoreDiscriminator: bo
         'totalVectorCount': !exists(json, 'totalVectorCount') ? undefined : json['totalVectorCount'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'vectorType': !exists(json, 'vectorType') ? undefined : json['vectorType'],
-        'memoryFullness': !exists(json, 'memory_fullness') ? undefined : json['memory_fullness'],
-        'storageFullness': !exists(json, 'storage_fullness') ? undefined : json['storage_fullness'],
+        'memoryFullness': !exists(json, 'memoryFullness') ? undefined : json['memoryFullness'],
+        'storageFullness': !exists(json, 'storageFullness') ? undefined : json['storageFullness'],
     };
 }
 
@@ -125,8 +125,8 @@ export function IndexDescriptionToJSON(value?: IndexDescription | null): any {
         'totalVectorCount': value.totalVectorCount,
         'metric': value.metric,
         'vectorType': value.vectorType,
-        'memory_fullness': value.memoryFullness,
-        'storage_fullness': value.storageFullness,
+        'memoryFullness': value.memoryFullness,
+        'storageFullness': value.storageFullness,
     };
 }
 

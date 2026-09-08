@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { MetadataValue } from './MetadataValue';
+import {
+    MetadataValueFromJSON,
+    MetadataValueFromJSONTyped,
+    MetadataValueToJSON,
+} from './MetadataValue';
 import type { SparseValues } from './SparseValues';
 import {
     SparseValuesFromJSON,
@@ -33,7 +39,9 @@ export interface Vector {
      */
     id: string;
     /**
-     * This is the vector data included in the request.
+     * This is the vector data. On a request it must be non-empty, and at least one value must have a magnitude of `1e-8` or greater — a vector whose values are all smaller than that is rejected as containing only zeros.
+     * 
+     * On a response this is an empty array whenever the record has no dense data to return: on a sparse index, and on any index when values were not requested. The array is therefore not constrained here, because this schema describes both directions.
      * @type {Array<number>}
      * @memberof Vector
      */
@@ -45,11 +53,11 @@ export interface Vector {
      */
     sparseValues?: SparseValues;
     /**
-     * This is the metadata included in the request.
-     * @type {object}
+     * This is the metadata included in the request. Field names may not begin with `$`, which is reserved for filter operators. Every other name is accepted, including names that are empty, non-ASCII, or begin with `_`.
+     * @type {{ [key: string]: MetadataValue; }}
      * @memberof Vector
      */
-    metadata?: object;
+    metadata?: { [key: string]: MetadataValue; };
 }
 
 /**
@@ -75,7 +83,7 @@ export function VectorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ve
         'id': json['id'],
         'values': !exists(json, 'values') ? undefined : json['values'],
         'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
-        'metadata': !exists(json, 'metadata') ? undefined : json['metadata'],
+        'metadata': !exists(json, 'metadata') ? undefined : (mapValues(json['metadata'], MetadataValueFromJSON)),
     };
 }
 
@@ -91,7 +99,7 @@ export function VectorToJSON(value?: Vector | null): any {
         'id': value.id,
         'values': value.values,
         'sparseValues': SparseValuesToJSON(value.sparseValues),
-        'metadata': value.metadata,
+        'metadata': value.metadata === undefined ? undefined : (mapValues(value.metadata, MetadataValueToJSON)),
     };
 }
 

@@ -33,7 +33,7 @@ export interface CollectionModel {
     size?: number;
     /**
      * The status of the collection.
-     * Possible values: `Initializing`, `Ready`, or `Terminating`.
+     * Possible values: `Initializing`, `Ready`, `Terminating`, or `Terminated`.
      * @type {string}
      * @memberof CollectionModel
      */

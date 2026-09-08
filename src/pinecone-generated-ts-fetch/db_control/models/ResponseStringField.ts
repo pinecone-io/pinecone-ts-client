@@ -33,11 +33,11 @@ export interface ResponseStringField {
      */
     type: ResponseStringFieldTypeEnum;
     /**
-     * Optional description for this field.
+     * Optional description for this field. `null` when none was set.
      * @type {string}
      * @memberof ResponseStringField
      */
-    description?: string;
+    description?: string | null;
     /**
      * 
      * @type {ResponseStringFieldFullTextSearch}

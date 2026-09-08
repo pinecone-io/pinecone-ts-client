@@ -26,13 +26,13 @@ export interface DeleteDocumentsRequest {
      */
     ids?: Array<string>;
     /**
-     * A metadata filter expression selecting the documents to delete. Must not be empty; an empty filter is rejected rather than matching every document. To delete every document in the namespace, set `delete_all`. Mutually exclusive with `ids` and `delete_all`.
+     * A metadata filter expression selecting the documents to delete. Must not be empty; an empty filter is rejected rather than matching every document. To delete every document in the namespace, set `delete_all`. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported here, since documents are selected on metadata alone. Mutually exclusive with `ids` and `delete_all`.
      * @type {object}
      * @memberof DeleteDocumentsRequest
      */
     filter?: object;
     /**
-     * If `true`, delete all documents in the namespace. Mutually exclusive with `ids` and `filter`.
+     * If `true`, delete all documents in the namespace. Mutually exclusive with `ids` and `filter`. `false` is treated as if the field were omitted.
      * @type {boolean}
      * @memberof DeleteDocumentsRequest
      */

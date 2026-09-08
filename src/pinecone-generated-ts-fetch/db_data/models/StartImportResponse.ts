@@ -24,7 +24,7 @@ export interface StartImportResponse {
      * @type {string}
      * @memberof StartImportResponse
      */
-    id?: string;
+    id: string;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface StartImportResponse {
  */
 export function instanceOfStartImportResponse(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
 
     return isInstance;
 }
@@ -46,7 +47,7 @@ export function StartImportResponseFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
+        'id': json['id'],
     };
 }
 

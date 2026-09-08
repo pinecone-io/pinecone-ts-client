@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { MetadataValue } from './MetadataValue';
+import {
+    MetadataValueFromJSON,
+    MetadataValueFromJSONTyped,
+    MetadataValueToJSON,
+} from './MetadataValue';
 import type { SparseValues } from './SparseValues';
 import {
     SparseValuesFromJSON,
@@ -45,11 +51,11 @@ export interface UpdateRequest {
      */
     sparseValues?: SparseValues;
     /**
-     * Metadata to set for the record.
-     * @type {object}
+     * Metadata to set for the record. Field names may not begin with `$`, which is reserved for filter operators.
+     * @type {{ [key: string]: MetadataValue; }}
      * @memberof UpdateRequest
      */
-    setMetadata?: object;
+    setMetadata?: { [key: string]: MetadataValue; };
     /**
      * The namespace containing the record to update.
      * @type {string}
@@ -57,13 +63,13 @@ export interface UpdateRequest {
      */
     namespace?: string;
     /**
-     * A metadata filter expression. When updating metadata across records in a namespace,  the update is applied to all records that match the filter.  See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
+     * A metadata filter expression. When updating metadata across records in a namespace, the update is applied to all records that match the filter. See [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata).
      * @type {object}
      * @memberof UpdateRequest
      */
     filter?: object;
     /**
-     * If `true`, return the number of records that match the `filter`, but do not execute the update.  Default is `false`.
+     * If `true`, return the number of records that match the `filter`, but do not execute the update. Default is `false`.
      * @type {boolean}
      * @memberof UpdateRequest
      */
@@ -92,7 +98,7 @@ export function UpdateRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         'id': !exists(json, 'id') ? undefined : json['id'],
         'values': !exists(json, 'values') ? undefined : json['values'],
         'sparseValues': !exists(json, 'sparseValues') ? undefined : SparseValuesFromJSON(json['sparseValues']),
-        'setMetadata': !exists(json, 'setMetadata') ? undefined : json['setMetadata'],
+        'setMetadata': !exists(json, 'setMetadata') ? undefined : (mapValues(json['setMetadata'], MetadataValueFromJSON)),
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
         'dryRun': !exists(json, 'dryRun') ? undefined : json['dryRun'],
@@ -111,7 +117,7 @@ export function UpdateRequestToJSON(value?: UpdateRequest | null): any {
         'id': value.id,
         'values': value.values,
         'sparseValues': SparseValuesToJSON(value.sparseValues),
-        'setMetadata': value.setMetadata,
+        'setMetadata': value.setMetadata === undefined ? undefined : (mapValues(value.setMetadata, MetadataValueToJSON)),
         'namespace': value.namespace,
         'filter': value.filter,
         'dryRun': value.dryRun,

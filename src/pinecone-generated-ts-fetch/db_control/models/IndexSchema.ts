@@ -27,7 +27,8 @@ import {
  */
 export interface IndexSchema {
     /**
-     * A map of field names to their configurations. Field names must be unique, non-empty strings and must not use the reserved names `_id`, `_values`, or `_sparse_values`.
+     * A map of field names to their configurations.
+     * Indexes that are served by the vectors API — created with the reserved `_values` / `_sparse_values` schema, or created by an earlier API version from `dimension`, `metric`, and `vector_type` — report their vector fields under the reserved names `_values` (dense) and `_sparse_values` (sparse), and any metadata fields configured for filtering as legacy fields carrying only `filterable`. Dense vectors-API indexes always report both `_values` and `_sparse_values`, regardless of how they were created.
      * @type {{ [key: string]: IndexSchemaField; }}
      * @memberof IndexSchema
      */

@@ -38,6 +38,12 @@ export interface ManagedDeployment {
      * @memberof ManagedDeployment
      */
     region: string;
+    /**
+     * The Pinecone environment hosting the index. Returned in responses; do not set it when creating an index.
+     * @type {string}
+     * @memberof ManagedDeployment
+     */
+    readonly environment?: string;
 }
 
 
@@ -75,6 +81,7 @@ export function ManagedDeploymentFromJSONTyped(json: any, ignoreDiscriminator: b
         'deploymentType': json['deployment_type'],
         'cloud': json['cloud'],
         'region': json['region'],
+        'environment': !exists(json, 'environment') ? undefined : json['environment'],
     };
 }
 

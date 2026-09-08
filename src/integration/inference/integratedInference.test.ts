@@ -2,10 +2,10 @@ import { Pinecone } from '../../pinecone';
 import { SearchDocumentsResponse } from '../../pinecone-generated-ts-fetch/db_data';
 import { assertWithRetries, randomName } from '../test-helpers';
 
-// Prod's create-for-model endpoint still expects the pre-2026-07 request
-// shape (flat cloud/region + embed) and 422s the spec-conformant deployment
-// envelope this client now sends. Un-skip when the fleet rolls the 2026-07
-// contract; see pinecone-ts-client-internal#16.
+// The 2026-07 spec restored the legacy create-for-model shape (apis 5f808858),
+// so this client now sends exactly what #16 recorded prod asking for. Still
+// skipped only because that has not been confirmed against a live fleet:
+// run it once with an API key and un-skip; see pinecone-ts-client-internal#16.
 describe.skip('Integrated Inference API tests', () => {
   let pinecone: Pinecone;
   let indexName: string;
@@ -16,15 +16,12 @@ describe.skip('Integrated Inference API tests', () => {
     // create integrated inference index for testing
     await pinecone.indexes.createForModel({
       name: indexName,
-      deployment: {
-        deploymentType: 'managed',
-        cloud: 'aws',
-        region: 'us-east-1',
+      cloud: 'aws',
+      region: 'us-east-1',
+      embed: {
+        model: 'multilingual-e5-large',
+        fieldMap: { text: 'chunk_text' },
       },
-      // `field` names the `semantic_text` schema field directly, replacing the
-      // old `embed.fieldMap` indirection.
-      field: 'chunk_text',
-      model: 'multilingual-e5-large',
       waitUntilReady: true,
     });
   });

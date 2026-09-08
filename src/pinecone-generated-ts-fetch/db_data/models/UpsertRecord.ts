@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface UpsertRecord {
     /**
-     * The unique ID of the record to upsert. Note that `id` can be used as an alias for `_id`.
+     * The unique ID of the record to upsert. The service also accepts `id` as an alias, which this schema does not model.
      * @type {string}
      * @memberof UpsertRecord
      */

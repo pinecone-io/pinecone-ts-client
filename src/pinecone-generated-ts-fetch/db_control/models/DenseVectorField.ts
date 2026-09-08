@@ -26,6 +26,12 @@ export interface DenseVectorField {
      */
     type: DenseVectorFieldTypeEnum;
     /**
+     * Optional description for this field, at most 256 bytes. `null` in responses when none was set.
+     * @type {string}
+     * @memberof DenseVectorField
+     */
+    description?: string | null;
+    /**
      * The number of dimensions in the dense vectors stored in this field.
      * @type {number}
      * @memberof DenseVectorField
@@ -47,11 +53,7 @@ export interface DenseVectorField {
 export const DenseVectorFieldTypeEnum = {
     DenseVector: 'dense_vector',
     SparseVector: 'sparse_vector',
-    SemanticText: 'semantic_text',
-    String: 'string',
-    StringList: 'string_list',
-    Float: 'float',
-    Boolean: 'boolean'
+    String: 'string'
 } as const;
 export type DenseVectorFieldTypeEnum = typeof DenseVectorFieldTypeEnum[keyof typeof DenseVectorFieldTypeEnum];
 
@@ -79,6 +81,7 @@ export function DenseVectorFieldFromJSONTyped(json: any, ignoreDiscriminator: bo
     return {
         
         'type': json['type'],
+        'description': !exists(json, 'description') ? undefined : json['description'],
         'dimension': json['dimension'],
         'metric': json['metric'],
     };
@@ -94,6 +97,7 @@ export function DenseVectorFieldToJSON(value?: DenseVectorField | null): any {
     return {
         
         'type': value.type,
+        'description': value.description,
         'dimension': value.dimension,
         'metric': value.metric,
     };

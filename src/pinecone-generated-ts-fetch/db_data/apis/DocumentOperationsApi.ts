@@ -16,20 +16,26 @@
 import * as runtime from '../runtime';
 import type {
   DeleteDocumentsRequest,
+  DeleteDocumentsResponse,
+  ErrorResponse,
   FetchDocumentsRequest,
   FetchDocumentsResponse,
   ListDocumentsRequest,
   ListDocumentsResponse,
-  RpcStatus,
   SearchDocumentsRequest,
   SearchDocumentsResponse,
   UpdateDocumentsRequest,
+  UpdateDocumentsResponse,
   UpsertDocumentsRequest,
   UpsertDocumentsResponse,
 } from '../models/index';
 import {
     DeleteDocumentsRequestFromJSON,
     DeleteDocumentsRequestToJSON,
+    DeleteDocumentsResponseFromJSON,
+    DeleteDocumentsResponseToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
     FetchDocumentsRequestFromJSON,
     FetchDocumentsRequestToJSON,
     FetchDocumentsResponseFromJSON,
@@ -38,14 +44,14 @@ import {
     ListDocumentsRequestToJSON,
     ListDocumentsResponseFromJSON,
     ListDocumentsResponseToJSON,
-    RpcStatusFromJSON,
-    RpcStatusToJSON,
     SearchDocumentsRequestFromJSON,
     SearchDocumentsRequestToJSON,
     SearchDocumentsResponseFromJSON,
     SearchDocumentsResponseToJSON,
     UpdateDocumentsRequestFromJSON,
     UpdateDocumentsRequestToJSON,
+    UpdateDocumentsResponseFromJSON,
+    UpdateDocumentsResponseToJSON,
     UpsertDocumentsRequestFromJSON,
     UpsertDocumentsRequestToJSON,
     UpsertDocumentsResponseFromJSON,
@@ -55,13 +61,13 @@ import {
 export interface DeleteDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    deleteDocumentsRequest: DeleteDocumentsRequest;
+    deleteDocumentsRequest: DeleteDocumentsRequest | null;
 }
 
 export interface FetchDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    fetchDocumentsRequest: FetchDocumentsRequest;
+    fetchDocumentsRequest: FetchDocumentsRequest | null;
 }
 
 export interface ListDocumentsOperationRequest {
@@ -79,7 +85,7 @@ export interface SearchDocumentsOperationRequest {
 export interface UpdateDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    updateDocumentsRequest: UpdateDocumentsRequest;
+    updateDocumentsRequest: UpdateDocumentsRequest | null;
 }
 
 export interface UpsertDocumentsOperationRequest {
@@ -94,10 +100,10 @@ export interface UpsertDocumentsOperationRequest {
 export class DocumentOperationsApi extends runtime.BaseAPI {
 
     /**
-     * Delete documents from a namespace. Exactly one of `ids`, `filter`, or `delete_all` must be specified.  - `ids`: Delete documents with the given IDs. - `filter`: Delete every document matching a metadata filter expression. - `delete_all`: Delete all documents in the namespace.
+     * Delete documents from a namespace. Exactly one of `ids`, `filter`, or `delete_all` must be specified.  - `ids`: Delete documents with the given IDs. - `filter`: Delete every document matching a metadata filter expression. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered delete; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched. - `delete_all`: Delete all documents in the namespace.
      * Delete documents
      */
-    async deleteDocumentsRaw(requestParameters: DeleteDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async deleteDocumentsRaw(requestParameters: DeleteDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteDocumentsResponse>> {
         if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
             throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling deleteDocuments.');
         }
@@ -132,20 +138,20 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             body: DeleteDocumentsRequestToJSON(requestParameters.deleteDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
-     * Delete documents from a namespace. Exactly one of `ids`, `filter`, or `delete_all` must be specified.  - `ids`: Delete documents with the given IDs. - `filter`: Delete every document matching a metadata filter expression. - `delete_all`: Delete all documents in the namespace.
+     * Delete documents from a namespace. Exactly one of `ids`, `filter`, or `delete_all` must be specified.  - `ids`: Delete documents with the given IDs. - `filter`: Delete every document matching a metadata filter expression. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered delete; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched. - `delete_all`: Delete all documents in the namespace.
      * Delete documents
      */
-    async deleteDocuments(requestParameters: DeleteDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+    async deleteDocuments(requestParameters: DeleteDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteDocumentsResponse> {
         const response = await this.deleteDocumentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Fetch documents from a namespace. Returns the specified fields for each document. Exactly one of `ids` or `filter` must be specified.  - `ids`: Fetch the documents with the given IDs. - `filter`: Fetch every document matching a metadata filter expression. Results are returned a page at a time, up to 10000 documents per page. The page size is fixed and cannot be set per request. When there are more documents to return, the response includes a `pagination` token you can pass back as `pagination_token` to retrieve the next page. When no `pagination` token is returned, there are no more documents to fetch.
+     * Fetch documents from a namespace. Returns the specified fields for each document. Exactly one of `ids` or `filter` must be specified.  - `ids`: Fetch the documents with the given IDs. - `filter`: Fetch every document matching a metadata filter expression. Results are returned a page at a time, holding `limit` documents per page (100 by default, 10000 at most). When there are more documents to return, the response includes a `pagination` token you can pass back as `pagination_token` to retrieve the next page. When no `pagination` token is returned, there are no more documents to fetch.
      * Fetch documents
      */
     async fetchDocumentsRaw(requestParameters: FetchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchDocumentsResponse>> {
@@ -187,7 +193,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Fetch documents from a namespace. Returns the specified fields for each document. Exactly one of `ids` or `filter` must be specified.  - `ids`: Fetch the documents with the given IDs. - `filter`: Fetch every document matching a metadata filter expression. Results are returned a page at a time, up to 10000 documents per page. The page size is fixed and cannot be set per request. When there are more documents to return, the response includes a `pagination` token you can pass back as `pagination_token` to retrieve the next page. When no `pagination` token is returned, there are no more documents to fetch.
+     * Fetch documents from a namespace. Returns the specified fields for each document. Exactly one of `ids` or `filter` must be specified.  - `ids`: Fetch the documents with the given IDs. - `filter`: Fetch every document matching a metadata filter expression. Results are returned a page at a time, holding `limit` documents per page (100 by default, 10000 at most). When there are more documents to return, the response includes a `pagination` token you can pass back as `pagination_token` to retrieve the next page. When no `pagination` token is returned, there are no more documents to fetch.
      * Fetch documents
      */
     async fetchDocuments(requestParameters: FetchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchDocumentsResponse> {
@@ -298,10 +304,10 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
+     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
      * Update documents
      */
-    async updateDocumentsRaw(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+    async updateDocumentsRaw(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateDocumentsResponse>> {
         if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
             throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling updateDocuments.');
         }
@@ -336,20 +342,20 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
             body: UpdateDocumentsRequestToJSON(requestParameters.updateDocumentsRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateDocumentsResponseFromJSON(jsonValue));
     }
 
     /**
-     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
+     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
      * Update documents
      */
-    async updateDocuments(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+    async updateDocuments(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateDocumentsResponse> {
         const response = await this.updateDocumentsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Upsert documents into a namespace.  Each document must include an `_id` field along with fields defined in the index schema, or metadata fields provided at upsert. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
+     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
      * Upsert documents
      */
     async upsertDocumentsRaw(requestParameters: UpsertDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertDocumentsResponse>> {
@@ -391,7 +397,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert documents into a namespace.  Each document must include an `_id` field along with fields defined in the index schema, or metadata fields provided at upsert. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
+     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
      * Upsert documents
      */
     async upsertDocuments(requestParameters: UpsertDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertDocumentsResponse> {

@@ -132,7 +132,7 @@ describe('Integration Test: Pinecone Inference API rerank endpoint', () => {
     ).rejects.toThrow(
       expect.objectContaining({
         message: expect.stringContaining(
-          '"Only one rank field is supported for model',
+          'Only one rank field is supported for model',
         ),
       }),
     );

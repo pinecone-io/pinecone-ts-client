@@ -77,7 +77,7 @@ describe('namespaces operations', () => {
       });
 
     expect(response.name).toEqual(namespaceThree);
-    expect(response.schema?.fields.test.filterable).toBe(true);
+    expect(response.schema?.fields?.test.filterable).toBe(true);
   });
 
   test('list namespaces', async () => {

@@ -147,6 +147,7 @@ export type {
   CreateIndexSchemaField,
   FullTextSearchStringField,
   CreateIndexForModelOptions,
+  CreateIndexForModelEmbed,
   ConfigureIndexOptions,
   IndexList,
   IndexModel,
@@ -267,12 +268,14 @@ export type {
   FetchDocumentsResponse,
   DocumentFetchUsage,
   DeleteDocumentsOptions,
+  DeleteDocumentsResponse,
   ListDocumentsOptions,
   ListDocumentsResponse,
   ListedDocumentRecord,
   DocumentListUsage,
   DocumentPagination,
   UpdateDocumentsOptions,
+  UpdateDocumentsResponse,
   UpdateDocumentRecord,
 } from './data';
 export type {
