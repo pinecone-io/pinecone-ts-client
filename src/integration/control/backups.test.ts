@@ -9,6 +9,7 @@ import {
   cleanupResources,
   randomName,
   retryDelete,
+  sleep,
   waitUntilIndexReady,
 } from '../test-helpers';
 
@@ -39,7 +40,7 @@ async function findInPages<T>(
 describe('backup and restore lifecycle', () => {
   const pc = new Pinecone();
 
-  test('restores seeded records and explicit read capacity through a restore job', async () => {
+  const runLifecycle = async (verifyRestoredContents: boolean) => {
     // Every matrix leg owns both indexes; shared fixtures must never be deleted.
     const sourceName = randomName('backup-source');
     const restoredName = randomName('backup-restored');
@@ -88,6 +89,12 @@ describe('backup and restore lifecycle', () => {
             expect(result.records[record.id]).toMatchObject(record);
         },
       );
+      if (verifyRestoredContents) {
+        // Backups only include vectors at least 15 minutes old. Fetch/stats
+        // visibility is not a durability barrier. This explicit age requirement
+        // belongs only to the opt-in long test; readiness below is still polled.
+        await sleep(15 * 60_000);
+      }
       const backup = await pc.backups.create(sourceName, {
         name: randomName('integration-backup'),
         description: 'SDK backup restore integration test',
@@ -103,6 +110,7 @@ describe('backup and restore lifecycle', () => {
         (result: BackupModel) => {
           expect(result.status).toBe('Ready');
         },
+        verifyRestoredContents ? 900_000 : 180_000,
       );
       await assertWithRetries(
         () =>
@@ -139,53 +147,76 @@ describe('backup and restore lifecycle', () => {
       expect(restore.restoreJobId.length).toBeGreaterThan(0);
       expect(restore.indexId).toEqual(expect.any(String));
       expect(restore.indexId.length).toBeGreaterThan(0);
-      await assertWithRetries(
-        () => pc.restoreJobs.describe(restore.restoreJobId),
-        (job: RestoreJobModel) => {
-          expect(job).toMatchObject({
-            restoreJobId: restore.restoreJobId,
-            backupId: id,
-            targetIndexName: restoredName,
-            targetIndexId: restore.indexId,
-            status: 'Completed',
-            percentComplete: 100,
-          });
-        },
-        600_000,
-        5000,
-      );
+      const job = await pc.restoreJobs.describe(restore.restoreJobId);
+      expect(job).toMatchObject({
+        restoreJobId: restore.restoreJobId,
+        backupId: id,
+        targetIndexName: restoredName,
+        targetIndexId: restore.indexId,
+      });
+      expect(['Pending', 'Completed']).toContain(job.status);
       await assertWithRetries(
         () =>
           findInPages(
             (paginationToken) =>
               pc.restoreJobs.list({ limit: 100, paginationToken }),
-            (job) => job.restoreJobId === restore.restoreJobId,
+            (item) => item.restoreJobId === restore.restoreJobId,
           ),
-        (job) =>
-          expect(job).toMatchObject({ backupId: id, status: 'Completed' }),
+        (item) =>
+          expect(item).toMatchObject({
+            backupId: id,
+            targetIndexName: restoredName,
+          }),
       );
-      await waitUntilIndexReady(restoredName);
-      const restoredDescription = await pc.indexes.describe(restoredName);
-      expect(restoredDescription.readCapacity).toMatchObject({
-        mode: 'OnDemand',
-      });
-      const restored = pc.index({ name: restoredName, namespace });
-      await assertWithRetries(
-        () => restored.describeIndexStats(),
-        (stats) => {
-          expect(stats.totalRecordCount).toBe(records.length);
-          expect(stats.namespaces?.[namespace]?.recordCount).toBe(
-            records.length,
-          );
-        },
-      );
-      await assertWithRetries(
-        () => restored.fetch({ ids: records.map(({ id }) => id) }),
-        (result) => {
-          for (const record of records)
-            expect(result.records[record.id]).toMatchObject(record);
-        },
-      );
+      if (verifyRestoredContents) {
+        await assertWithRetries(
+          () => pc.restoreJobs.describe(restore.restoreJobId),
+          (job: RestoreJobModel) => {
+            expect(job).toMatchObject({
+              restoreJobId: restore.restoreJobId,
+              backupId: id,
+              targetIndexName: restoredName,
+              targetIndexId: restore.indexId,
+              status: 'Completed',
+              percentComplete: 100,
+            });
+          },
+          900_000,
+          5000,
+        );
+        await assertWithRetries(
+          () =>
+            findInPages(
+              (paginationToken) =>
+                pc.restoreJobs.list({ limit: 100, paginationToken }),
+              (job) => job.restoreJobId === restore.restoreJobId,
+            ),
+          (job) =>
+            expect(job).toMatchObject({ backupId: id, status: 'Completed' }),
+        );
+        await waitUntilIndexReady(restoredName);
+        const restoredDescription = await pc.indexes.describe(restoredName);
+        expect(restoredDescription.readCapacity).toMatchObject({
+          mode: 'OnDemand',
+        });
+        const restored = pc.index({ name: restoredName, namespace });
+        await assertWithRetries(
+          () => restored.describeIndexStats(),
+          (stats) => {
+            expect(stats.totalRecordCount).toBe(records.length);
+            expect(stats.namespaces?.[namespace]?.recordCount).toBe(
+              records.length,
+            );
+          },
+        );
+        await assertWithRetries(
+          () => restored.fetch({ ids: records.map(({ id }) => id) }),
+          (result) => {
+            for (const record of records)
+              expect(result.records[record.id]).toMatchObject(record);
+          },
+        );
+      }
       await pc.backups.delete(id);
       await assertWithRetries(
         async () => {
@@ -223,7 +254,18 @@ describe('backup and restore lifecycle', () => {
         failures,
         `Backup integration failed: ${failures.map(String).join('; ')}`,
       );
-  }, 1_800_000);
+  };
+
+  test('accepts a backup restore and exposes its job through describe and list', () =>
+    runLifecycle(false));
+
+  const testFullRestore =
+    process.env.PINECONE_LONG_RUNNING_INTEGRATION === '1' ? test : test.skip;
+  testFullRestore(
+    'restores aged seeded records and explicit read capacity end to end',
+    () => runLifecycle(true),
+    3_600_000,
+  );
 
   test('unknown backup IDs return not-found for describe and delete', async () => {
     const missingId = crypto.randomUUID();
