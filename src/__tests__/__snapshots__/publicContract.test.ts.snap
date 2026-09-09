@@ -18,11 +18,18 @@ exports[`public package contract pins the runtime barrel exports 1`] = `
   "InvitesResource",
   "OrganizationsResource",
   "Pinecone",
+  "PineconeIndexPropertyError",
   "ProjectsResource",
   "RestoreJobs",
   "RoleBindingsResource",
   "ServiceAccountsResource",
   "UsersResource",
+  "classifyIndexShape",
+  "deriveDimension",
+  "deriveEmbed",
+  "deriveMetric",
+  "deriveSpec",
+  "deriveVectorType",
 ]
 `;
 
@@ -40,6 +47,7 @@ exports[`public package contract pins the runtime barrel exports 2`] = `
   "PineconeEnvironmentVarsNotSupportedError",
   "PineconeFailedPreconditionError",
   "PineconeIndexInitializationFailedError",
+  "PineconeIndexPropertyError",
   "PineconeIndexTerminatedError",
   "PineconeInternalServerError",
   "PineconeMaxRetriesExceededError",

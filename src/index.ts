@@ -381,6 +381,7 @@ export type {
   PodSpec,
   LegacyIndexProperties,
   LegacyIndexSpec,
+  DerivedLegacyIndexSpec,
   LegacyIndexEmbed,
   LegacyServerlessSpec,
   LegacyByocSpec,

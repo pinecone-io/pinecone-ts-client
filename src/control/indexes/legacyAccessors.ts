@@ -103,6 +103,21 @@ export interface LegacyIndexSpec {
   /** BYOC deployment settings, when applicable. */
   byoc?: LegacyByocSpec;
 }
+/** Pure deployment projection before missing-capacity accessors are installed. */
+export interface DerivedLegacyIndexSpec {
+  /** Serverless fields, including the raw optional API read capacity. */
+  serverless?: Omit<LegacyServerlessSpec, 'readCapacity'> & {
+    /** Raw API read capacity, which an out-of-contract response may omit. */
+    readCapacity?: ReadCapacityResponse;
+  };
+  /** Pod deployment fields, which never carry read capacity. */
+  pod?: LegacyPodSpec;
+  /** BYOC fields, including the raw optional API read capacity. */
+  byoc?: Omit<LegacyByocSpec, 'readCapacity'> & {
+    /** Raw API read capacity, which an out-of-contract response may omit. */
+    readCapacity?: ReadCapacityResponse;
+  };
+}
 /** Integrated embedding settings derived from a semantic text field. */
 export interface LegacyIndexEmbed {
   /** Integrated embedding model identifier. */
@@ -264,7 +279,9 @@ export function deriveVectorType(
   );
 }
 /** Reverse the deployment envelope; read capacity is the same object reported by the API. */
-export function deriveSpec(model: IndexModelData): Derived<LegacyIndexSpec> {
+export function deriveSpec(
+  model: IndexModelData,
+): Derived<DerivedLegacyIndexSpec> {
   const deployment = model.deployment;
   // Legacy spec.schema means MetadataSchema, not the searchable-field schema.
   // Never populate that similarly named field from model.schema.
@@ -273,7 +290,7 @@ export function deriveSpec(model: IndexModelData): Derived<LegacyIndexSpec> {
       serverless: {
         cloud: deployment.cloud,
         region: deployment.region,
-        readCapacity: model.readCapacity as ReadCapacityResponse,
+        readCapacity: model.readCapacity,
         sourceCollection: model.sourceCollection,
       },
     });
@@ -281,7 +298,7 @@ export function deriveSpec(model: IndexModelData): Derived<LegacyIndexSpec> {
     return value({
       byoc: {
         environment: deployment.environment,
-        readCapacity: model.readCapacity as ReadCapacityResponse,
+        readCapacity: model.readCapacity,
       },
     });
   if (deployment.deploymentType === 'pod')
