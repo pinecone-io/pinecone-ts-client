@@ -685,10 +685,13 @@ schema/deployment types when adopting the new request shape.
 | `ReadCapacityDedicatedSpec`, `ReadCapacityDedicatedParams` | `ReadCapacityDedicated`, `ReadCapacityDedicatedSettings`                                                                                                                    |
 | `ReadCapacityOnDemandSpec`, `ReadCapacityOnDemandParams`   | `ReadCapacityOnDemand`                                                                                                                                                      |
 
-### Options objects replaced by positional arguments
+### Removed identifier and listing option aliases
 
-Several methods that took an options object with a single identifying field
-now take that field as a plain argument instead:
+The seven describe/delete option types below were string aliases in v8,
+not objects containing an identifier. Those methods already accepted strings;
+the removed type names require an import migration, not a change from an
+object to a string. `ListBackupsOptions` was a structured options type and
+now has separate index-scoped and project-scoped resource equivalents:
 
 | Removed export              | Replacement                                                                                       |
 | --------------------------- | ------------------------------------------------------------------------------------------------- |
