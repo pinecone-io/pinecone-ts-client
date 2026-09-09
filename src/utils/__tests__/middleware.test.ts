@@ -31,14 +31,17 @@ describe('shared request middleware', () => {
     debug.mockRestore();
   });
 
-  test('installs path safety and error handling when debug flags are absent', () => {
-    expect(createMiddlewareArray()).toHaveLength(2);
+  test('installs path safety before error handling when debug flags are absent', () => {
+    const middleware = createMiddlewareArray();
+    expect(middleware).toHaveLength(2);
+    expect(middleware[0].pre).toEqual(expect.any(Function));
+    expect(middleware[1].onError).toEqual(expect.any(Function));
   });
 
   test('preserves the exact retry-exhaustion error', async () => {
     const error = new PineconeMaxRetriesExceededError(3);
     await expect(
-      createMiddlewareArray()[1].onError!({
+      createMiddlewareArray().find((entry) => entry.onError)!.onError!({
         error,
         url,
         init,
@@ -49,7 +52,8 @@ describe('shared request middleware', () => {
 
   test('wraps transport failures and retains their cause', async () => {
     const error = new TypeError('connection refused');
-    const result = createMiddlewareArray()[1].onError!({
+    const result = createMiddlewareArray().find((entry) => entry.onError)!
+      .onError!({
       error,
       url,
       init,
@@ -64,7 +68,7 @@ describe('shared request middleware', () => {
     async (status) => {
       const response = new Response(status === 204 ? null : 'body', { status });
       expect(
-        await createMiddlewareArray()[1].post!({
+        await createMiddlewareArray().find((entry) => entry.post)!.post!({
           response,
           url,
           init,
@@ -76,7 +80,7 @@ describe('shared request middleware', () => {
   );
 
   test('maps a plain-text authorization error using the request URL', async () => {
-    const result = createMiddlewareArray()[1].post!({
+    const result = createMiddlewareArray().find((entry) => entry.post)!.post!({
       response: new Response('Invalid API key', { status: 401 }),
       url,
       init,
@@ -154,8 +158,9 @@ describe('shared request middleware', () => {
         body: '{"name":"test"}',
       },
     };
-    await middleware[1].pre!(request);
-    await middleware[2].post!({ ...request, response: new Response('{}') });
+    for (const entry of middleware) await entry.pre?.(request);
+    for (const entry of middleware)
+      await entry.post?.({ ...request, response: new Response('{}') });
     const logs = debug.mock.calls.flat().join('\n');
     expect(logs).toContain('>>> Body: {"name":"test"}');
     expect(logs).toContain(
