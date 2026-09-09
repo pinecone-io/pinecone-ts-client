@@ -87,12 +87,15 @@ test.each(operations)(
       apiKey: 'mock-key',
       fetchApi: transport,
       maxRetries: 0,
-    }).index({ host });
+    })
+      .index({ host, additionalHeaders: { 'x-tenant': 'customer' } })
+      .namespace('scoped');
     await expect(operation.call(index)).resolves.toEqual(operation.expected);
     expect(transport).toHaveBeenCalledTimes(1);
     const [url, init] = transport.mock.calls[0];
     expect(url).toBe(`${host}${operation.path}`);
     expect(init.method).toBe(operation.method);
+    expect(new Headers(init.headers).get('x-tenant')).toBe('customer');
     expect(new Headers(init.headers).get('X-Pinecone-Api-Version')).toBe(
       '2026-07',
     );

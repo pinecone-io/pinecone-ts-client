@@ -52,8 +52,15 @@ const operations: Operation[] = [
       index.fetchDocuments({
         filter: { category: 'news' },
         paginationToken: 'fetch-cursor',
+        includeFields: ['title'],
+        limit: 1,
       }),
-    body: { filter: { category: 'news' }, pagination_token: 'fetch-cursor' },
+    body: {
+      filter: { category: 'news' },
+      pagination_token: 'fetch-cursor',
+      include_fields: ['title'],
+      limit: 1,
+    },
     response: {
       documents: { 'doc-1': document },
       namespace,
@@ -121,7 +128,7 @@ const json = (body: object, status = 200) =>
   });
 const client = (fetchApi: typeof fetch, maxRetries = 0) =>
   new Pinecone({ apiKey: 'mock-wire-key', fetchApi, maxRetries })
-    .index({ host })
+    .index({ host, additionalHeaders: { 'x-tenant': 'customer' } })
     .namespace(namespace);
 const expectWire = (mock: jest.Mock, operation: Operation) => {
   for (const [url, init] of mock.mock.calls) {
@@ -129,6 +136,7 @@ const expectWire = (mock: jest.Mock, operation: Operation) => {
       `${host}/namespaces/${encodeURIComponent(namespace)}/documents/${operation.name}`,
     );
     expect(init.method).toBe('POST');
+    expect(new Headers(init.headers).get('x-tenant')).toBe('customer');
     expect(new Headers(init.headers).get('X-Pinecone-Api-Version')).toBe(
       '2026-07',
     );
