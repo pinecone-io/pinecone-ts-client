@@ -37,33 +37,28 @@ import { CancelImportCommand } from './bulk/cancelImport';
 import { BulkOperationsProvider } from './bulk/bulkOperationsProvider';
 import { NamespaceOperationsProvider } from './namespaces/namespacesOperationsProvider';
 import { DocumentOperationsProvider } from './documents/documentOperationsProvider';
-import {
-  upsertDocuments,
+import { Documents } from './documents/documents';
+import type {
   UpsertDocumentsOptions,
   UpsertDocumentsResponse,
 } from './documents/upsertDocuments';
-import {
-  searchDocuments,
+import type {
   SearchDocumentsOptions,
   SearchDocumentsResponse,
 } from './documents/searchDocuments';
-import {
-  fetchDocuments,
+import type {
   FetchDocumentsOptions,
   FetchDocumentsResponse,
 } from './documents/fetchDocuments';
-import {
-  deleteDocuments,
+import type {
   DeleteDocumentsOptions,
   DeleteDocumentsResponse,
 } from './documents/deleteDocuments';
-import {
-  listDocuments,
+import type {
   ListDocumentsOptions,
   ListDocumentsResponse,
 } from './documents/listDocuments';
-import {
-  updateDocuments,
+import type {
   UpdateDocumentsOptions,
   UpdateDocumentsResponse,
 } from './documents/updateDocuments';
@@ -78,6 +73,8 @@ import { deleteNamespace } from './namespaces/deleteNamespace';
 import { IndexOptions } from '../types';
 import type { HTTPHeaders } from '../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../errors';
+
+export { Documents } from './documents/documents';
 
 export type {
   OperationUsage,
@@ -249,8 +246,17 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private _updateCommand: UpdateCommand<T>;
   /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
-  /** @hidden */
-  private _documentProvider: DocumentOperationsProvider;
+  /**
+   * Document operations for schema-based indexes, scoped to the namespace this
+   * `Index` targets.
+   *
+   * ```typescript
+   * await index.documents.upsert({
+   *   documents: [{ _id: 'doc-1', chunk_text: 'Hello world' }],
+   * });
+   * ```
+   */
+  public documents: Documents;
 
   private _upsertRecordsCommand: UpsertRecordsCommand<T>;
   /** @hidden */
@@ -405,12 +411,13 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     this._deleteNamespaceCommand = deleteNamespace(namespaceApiProvider);
 
     // document operations
-    this._documentProvider = new DocumentOperationsProvider(
+    const documentApiProvider = new DocumentOperationsProvider(
       config,
       this.target.indexName,
       this.target.indexHostUrl,
       this.additionalHeaders,
     );
+    this.documents = new Documents(documentApiProvider, this.target.namespace);
   }
 
   /**
@@ -1110,167 +1117,45 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     );
   }
 
-  /**
-   * Upserts documents into a schema-based index.
-   *
-   * Documents are written to the namespace this client is scoped to. Chain
-   * `.namespace()` to target a namespace other than `__default__`.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.index('my-schema-index').namespace('my-namespace').upsertDocuments({
-   *   documents: [{ _id: 'doc-1', chunk_text: 'Hello world' }],
-   * });
-   * ```
-   *
-   * @param options - The {@link UpsertDocumentsOptions} containing the `documents` array (1–1000 entries). Each entry must have a required `_id` field.
-   * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or not provided.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to an {@link UpsertDocumentsResponse}.
-   */
-  async upsertDocuments(
+  /** @deprecated Use `index.documents.upsert()` instead. */
+  upsertDocuments(
     options: UpsertDocumentsOptions,
   ): Promise<UpsertDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return upsertDocuments(api, this.target.namespace, options);
+    return this.documents.upsert(options);
   }
 
-  /**
-   * Searches for documents using one or more scoring methods.
-   *
-   * The `scoreBy` array specifies how documents are ranked. Supported scoring
-   * method types are `text` (BM25), `dense_vector`, `sparse_vector`, and
-   * `query_string`. Multiple scoring methods can be combined for hybrid search.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const results = await pc.index('my-schema-index')
-   *   .namespace('my-namespace')
-   *   .searchDocuments({
-   *     scoreBy: [{ type: 'text', field: 'chunk_text', query: 'machine learning' }],
-   *     topK: 5,
-   *     includeFields: ['chunk_text'],
-   *   });
-   * ```
-   *
-   * @param options - The {@link SearchDocumentsOptions} for the search, including `scoreBy` (required), `topK` (required), and optional `includeFields`.
-   * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is empty or `topK` is less than 1.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link SearchDocumentsResponse} containing `matches`, `namespace`, and `usage`.
-   */
-  async searchDocuments(
+  /** @deprecated Use `index.documents.search()` instead. */
+  searchDocuments(
     options: SearchDocumentsOptions,
   ): Promise<SearchDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return searchDocuments(api, this.target.namespace, options);
+    return this.documents.search(options);
   }
 
-  /**
-   * Fetches documents by ID.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const result = await pc.index('my-schema-index')
-   *   .namespace('my-namespace')
-   *   .fetchDocuments({ ids: ['doc-1', 'doc-2'] });
-   * ```
-   *
-   * @param options - The {@link FetchDocumentsOptions} identifying the documents to fetch.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link FetchDocumentsResponse}.
-   */
-  async fetchDocuments(
+  /** @deprecated Use `index.documents.fetch()` instead. */
+  fetchDocuments(
     options: FetchDocumentsOptions,
   ): Promise<FetchDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return fetchDocuments(api, this.target.namespace, options);
+    return this.documents.fetch(options);
   }
 
-  /**
-   * Deletes documents by ID or filter.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.index('my-schema-index')
-   *   .namespace('my-namespace')
-   *   .deleteDocuments({ ids: ['doc-1'] });
-   * ```
-   *
-   * @param options - The {@link DeleteDocumentsOptions} identifying the documents to delete.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link DeleteDocumentsResponse} whose
-   * `matchedRecords` reports how many documents the request matched.
-   */
-  async deleteDocuments(
+  /** @deprecated Use `index.documents.delete()` instead. */
+  deleteDocuments(
     options: DeleteDocumentsOptions,
   ): Promise<DeleteDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return deleteDocuments(api, this.target.namespace, options);
+    return this.documents.delete(options);
   }
 
-  /**
-   * Lists documents in the targeted namespace.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * const result = await pc.index('my-schema-index')
-   *   .namespace('my-namespace')
-   *   .listDocuments({ limit: 10 });
-   *
-   * // Omit options to list the first page with no prefix filter
-   * const firstPage = await pc.index('my-schema-index').listDocuments();
-   * ```
-   *
-   * @param options - Optional {@link ListDocumentsOptions} for pagination and filtering. Defaults to `{}`, which lists the first page of documents in the targeted namespace.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link ListDocumentsResponse}.
-   */
-  async listDocuments(
+  /** @deprecated Use `index.documents.list()` instead. */
+  listDocuments(
     options: ListDocumentsOptions = {},
   ): Promise<ListDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return listDocuments(api, this.target.namespace, options);
+    return this.documents.list(options);
   }
 
-  /**
-   * Updates existing documents.
-   *
-   * @example
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * await pc.index('my-schema-index')
-   *   .namespace('my-namespace')
-   *   .updateDocuments({
-   *     documents: [{ _id: 'doc-1', chunk_text: 'Updated text' }],
-   *   });
-   * ```
-   *
-   * @param options - The {@link UpdateDocumentsOptions} containing the documents to update.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to an {@link UpdateDocumentsResponse} whose
-   * `matchedRecords` reports how many documents the request matched.
-   */
-  async updateDocuments(
+  /** @deprecated Use `index.documents.update()` instead. */
+  updateDocuments(
     options: UpdateDocumentsOptions,
   ): Promise<UpdateDocumentsResponse> {
-    const api = await this._documentProvider.provide();
-    return updateDocuments(api, this.target.namespace, options);
+    return this.documents.update(options);
   }
 }

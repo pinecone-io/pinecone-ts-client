@@ -91,4 +91,39 @@ export async function compileOnlySurfaceCoverage(): Promise<void> {
   const wrongResponse: Promise<string> = p.describeIndex('index');
   void wrongResponse;
   void methods;
+
+  const docIndex = p.index('compilation-test');
+  const scoped = docIndex.namespace('ns-1');
+
+  // Preserve flat argument and return types alongside the documents accessor.
+  const documentMethods: {
+    upsertDocuments: (typeof docIndex)['documents']['upsert'];
+    searchDocuments: (typeof docIndex)['documents']['search'];
+    fetchDocuments: (typeof docIndex)['documents']['fetch'];
+    updateDocuments: (typeof docIndex)['documents']['update'];
+    listDocuments: (typeof docIndex)['documents']['list'];
+    deleteDocuments: (typeof docIndex)['documents']['delete'];
+  } = docIndex;
+
+  const documents = [{ _id: 'doc-1', chunk_text: 'Hello world' }];
+  await scoped.documents.upsert({ documents });
+  await scoped.upsertDocuments({ documents });
+  await docIndex.documents.list();
+  await docIndex.listDocuments();
+
+  const searchResults = await scoped.documents.search({
+    scoreBy: [{ type: 'text', fields: ['chunk_text'], query: 'hello' }],
+    topK: 5,
+  });
+  const matchCount: number = searchResults.matches.length;
+  console.log(`Matches: ${matchCount}`);
+
+  // @ts-expect-error the accessor still requires the documents payload
+  await docIndex.documents.upsert();
+  // @ts-expect-error the accessor preserves typed response models
+  const wrongDocumentResponse: Promise<string> = docIndex.documents.fetch({
+    ids: ['a'],
+  });
+  void wrongDocumentResponse;
+  void documentMethods;
 }
