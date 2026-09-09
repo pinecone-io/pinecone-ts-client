@@ -24,9 +24,16 @@ for (const envVar of ['PINECONE_API_KEY']) {
   console.time('create-index-duration');
   await pinecone.createIndex({
     name: INDEX_NAME,
-    dimension: 5,
-    metric: 'cosine',
-    spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+    schema: {
+      fields: {
+        _values: { type: 'dense_vector', dimension: 5, metric: 'cosine' },
+      },
+    },
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-east-1',
+    },
     suppressConflicts: true,
     waitUntilReady: true,
   });
