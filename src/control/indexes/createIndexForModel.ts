@@ -164,22 +164,28 @@ export async function createIndexForModel(
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
     if (waitUntilReady) {
+      // A missing response name must not turn a successful create into an
+      // invalid describe request. The input name has already been validated.
+      const indexName =
+        typeof result.name === 'string' && result.name.length > 0
+          ? result.name
+          : options.name;
       return await pollUntilIndexIsReady(
         async () => {
           try {
             return await api.describeIndex({
-              indexName: result.name,
+              indexName,
               xPineconeApiVersion: X_PINECONE_API_VERSION,
             });
           } catch (e) {
             throw await handleApiError(
               e,
               async (_, rawMessageText) =>
-                `Error waiting for index ${result.name} to be ready: ${rawMessageText}`,
+                `Error waiting for index ${indexName} to be ready: ${rawMessageText}`,
             );
           }
         },
-        result.name,
+        indexName,
         timeout,
       );
     }

@@ -297,6 +297,25 @@ describe('createIndexForModel', () => {
       xPineconeApiVersion: '2026-07',
     });
   });
+  it.each([undefined, ''])(
+    'uses the requested name when creation returns %s',
+    async (name) => {
+      const ready: IndexModel = {
+        ...created,
+        name: options.name,
+        status: { ready: true, state: 'Ready' },
+      };
+      create.mockResolvedValue({ ...created, name });
+      describeIndex.mockResolvedValue(ready);
+      await expect(
+        createIndexForModel(api, { ...options, waitUntilReady: true }),
+      ).resolves.toBe(ready);
+      expect(describeIndex).toHaveBeenCalledWith({
+        indexName: options.name,
+        xPineconeApiVersion: '2026-07',
+      });
+    },
+  );
   it.each(['cosine', 'euclidean', 'dotproduct', undefined] as const)(
     'accepts metric %s',
     async (metric) => {
