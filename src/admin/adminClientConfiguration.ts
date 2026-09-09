@@ -44,6 +44,12 @@ export type AdminClientConfiguration = {
 
   /**
    * Optional headers to be included in all requests.
+   *
+   * Applied after the headers the SDK sets, so an entry keyed exactly
+   * `X-Pinecone-Api-Version` pins every Admin API request to that API version, and one keyed
+   * exactly `Authorization` replaces the OAuth bearer token on those requests. Matching is
+   * case-sensitive. The token exchange that mints the bearer token sends the SDK's own
+   * headers and is unaffected.
    */
   additionalHeaders?: HTTPHeaders;
 

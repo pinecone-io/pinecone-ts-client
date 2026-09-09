@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../../data';
 import {
   ManageAssistantsApi as ManageAssistantsDataApi,
@@ -68,7 +69,7 @@ export class AsstDataOperationsProvider {
   buildAsstDataOperationsConfig() {
     const { apiKey } = this.config;
     const hostUrl = this.asstHostUrl;
-    const headers = this.additionalHeaders || null;
+    const headers = withoutContentType(this.additionalHeaders);
     const apiConfig: AssistantOperationsApiConfigurationParameters = {
       basePath: hostUrl,
       apiKey,
@@ -79,7 +80,7 @@ export class AsstDataOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
 
     return new ManageAssistantsDataApi(new DataConfiguration(apiConfig));

@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../../data';
 import {
   Configuration,
@@ -18,7 +19,7 @@ export const asstMetricsOperationsBuilder = (
     hostUrl = 'https://prod-eu-data.ke.pinecone.io/assistant';
   }
 
-  const headers = config.additionalHeaders || null;
+  const headers = withoutContentType(config.additionalHeaders);
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: hostUrl,
     apiKey,
@@ -29,7 +30,7 @@ export const asstMetricsOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   return new MetricsApi(new Configuration(apiConfig));

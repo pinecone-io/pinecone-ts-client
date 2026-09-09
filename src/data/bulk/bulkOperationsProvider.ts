@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../vectors/types';
 import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
@@ -62,7 +63,7 @@ export class BulkOperationsProvider {
   }
 
   buildBulkOperationsConfig() {
-    const headers = this.additionalHeaders || null;
+    const headers = withoutContentType(this.additionalHeaders);
 
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: this.indexHostUrl,
@@ -74,7 +75,7 @@ export class BulkOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

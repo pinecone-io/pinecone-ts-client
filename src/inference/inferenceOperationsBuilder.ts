@@ -1,3 +1,4 @@
+import { withoutContentType } from '../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../data';
 import {
   InferenceApi,
@@ -19,7 +20,7 @@ export const inferenceOperationsBuilder = (
   const { apiKey } = config;
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io';
-  const headers = config.additionalHeaders || null;
+  const headers = withoutContentType(config.additionalHeaders);
   const apiConfig: IndexOperationsApiConfigurationParameters = {
     basePath: controllerPath,
     apiKey,
@@ -30,7 +31,7 @@ export const inferenceOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   return new InferenceApi(new Configuration(apiConfig));

@@ -417,10 +417,11 @@ describe('Index', () => {
       expect(VectorOperationsProvider).toHaveBeenCalledTimes(2);
     });
 
-    test('does not inject client-level config headers the instance was not built with', () => {
+    test('carries client-level config headers forward into a namespaced instance', () => {
+      const clientHeaders = { 'x-client-header': 'client-value' };
       const configWithHeaders = {
         ...config,
-        additionalHeaders: { 'x-client-header': 'client-value' },
+        additionalHeaders: clientHeaders,
       };
       const index = new Index({ name: 'index-name' }, configWithHeaders);
 
@@ -433,13 +434,38 @@ describe('Index', () => {
         configWithHeaders,
         'index-name',
         undefined,
-        undefined,
+        clientHeaders,
       );
       expect(DocumentOperationsProvider).toHaveBeenCalledWith(
         configWithHeaders,
         'index-name',
         undefined,
+        clientHeaders,
+      );
+    });
+
+    test('per-index headers win over client-level headers of the same name', () => {
+      const configWithHeaders = {
+        ...config,
+        additionalHeaders: { 'x-shared': 'client-value', 'x-client': 'yes' },
+      };
+      const index = new Index(
+        {
+          name: 'index-name',
+          additionalHeaders: { 'x-shared': 'index-value' },
+        },
+        configWithHeaders,
+      );
+
+      (VectorOperationsProvider as jest.Mock).mockClear();
+
+      index.namespace('my-namespace');
+
+      expect(VectorOperationsProvider).toHaveBeenCalledWith(
+        configWithHeaders,
+        'index-name',
         undefined,
+        { 'x-shared': 'index-value', 'x-client': 'yes' },
       );
     });
   });

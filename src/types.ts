@@ -28,6 +28,15 @@ export interface IndexOptions {
 
   /**
    * Optional additional HTTP headers to include with each request to the index.
+   *
+   * These are merged over the `additionalHeaders` configured on the Pinecone client, so an
+   * entry here wins on an exact key match and the client's other headers still apply.
+   * Everything sent to this index is then headed by the merged set, applied after the
+   * headers the SDK sets: an entry keyed exactly `X-Pinecone-Api-Version` pins these
+   * requests to that API version. Matching is case-sensitive.
+   *
+   * The control-plane call that resolves an unknown host takes the client's headers, not
+   * these, so pin at the client level to cover host resolution as well.
    */
   additionalHeaders?: HTTPHeaders;
 }
@@ -49,6 +58,12 @@ export interface AssistantOptions {
 
   /**
    * Optional additional HTTP headers to include with each request to the assistant.
+   *
+   * These are merged over the `additionalHeaders` configured on the Pinecone client, so an
+   * entry here wins on an exact key match and the client's other headers still apply.
+   * Everything sent to this assistant is then headed by the merged set, applied after the
+   * headers the SDK sets: an entry keyed exactly `X-Pinecone-Api-Version` pins these
+   * requests to that API version. Matching is case-sensitive.
    */
   additionalHeaders?: HTTPHeaders;
 }

@@ -19,6 +19,7 @@ import {
   DescribeIndexStatsOptions,
 } from './vectors/describeIndexStats';
 import { VectorOperationsProvider } from './vectors/vectorOperationsProvider';
+import { mergeAdditionalHeaders } from '../utils/additionalHeaders';
 import type { ListOptions } from './vectors/list';
 import { listPaginated } from './vectors/list';
 import {
@@ -269,7 +270,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       namespace: options.namespace || '__default__',
       indexHostUrl: options.host,
     };
-    this.additionalHeaders = options.additionalHeaders;
+    this.additionalHeaders = mergeAdditionalHeaders(
+      config.additionalHeaders,
+      options.additionalHeaders,
+    );
 
     // vector & record operations
     const dataOperationsProvider = new VectorOperationsProvider(
@@ -313,6 +317,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
       dataOperationsProvider,
       this.target.namespace,
       config,
+      this.additionalHeaders,
     );
     this._searchRecordsCommand = new SearchRecordsCommand(
       dataOperationsProvider,

@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../../data';
 import {
   ManageAssistantsApi as ManageAssistantsControlApi,
@@ -20,7 +21,7 @@ export const asstControlOperationsBuilder = (
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) ||
     'https://api.pinecone.io/assistant';
-  const headers = config.additionalHeaders || null;
+  const headers = withoutContentType(config.additionalHeaders);
   const apiConfig: AssistantOperationsApiConfigurationParameters = {
     basePath: controllerPath,
     apiKey,
@@ -31,7 +32,7 @@ export const asstControlOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
   return new ManageAssistantsControlApi(new Configuration(apiConfig));
 };
