@@ -1,3 +1,4 @@
+import { decorateIndexModel } from './decorateIndexModel';
 import type {
   ManageIndexesApi,
   ConfigureIndexRequest,
@@ -86,11 +87,13 @@ export async function configureIndex(
     );
   }
   try {
-    return await api.configureIndex({
-      indexName: name,
-      configureIndexRequest: normalized,
-      xPineconeApiVersion: X_PINECONE_API_VERSION,
-    });
+    return decorateIndexModel(
+      await api.configureIndex({
+        indexName: name,
+        configureIndexRequest: normalized,
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+      }),
+    );
   } catch (e) {
     throw await handleApiError(
       e,

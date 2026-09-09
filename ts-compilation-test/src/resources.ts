@@ -47,7 +47,7 @@ export async function compileResourceSurface(pc: Pinecone): Promise<void> {
     .index<{ category: string }>('documents')
     .namespace('tenant');
   const documents: DocumentRecord[] = [
-    { _id: 'doc', fields: { embedding: [1, 0], category: 'books' } },
+    { _id: 'doc', embedding: [1, 0], category: 'books' },
   ];
   await index.upsertDocuments({ documents });
   const search: SearchDocumentsOptions = {

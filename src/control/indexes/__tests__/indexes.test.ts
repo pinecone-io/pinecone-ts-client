@@ -1,3 +1,4 @@
+import { decorateIndexModel } from '../decorateIndexModel';
 import { Indexes } from '../indexes';
 import { createIndex, CreateIndexOptions } from '../createIndex';
 import {
@@ -20,15 +21,20 @@ jest.mock('../deleteIndex');
 jest.mock('../configureIndex');
 jest.mock('../../indexOperationsBuilder');
 
-const model = (name: string, privateHost?: string): IndexModel => ({
-  name,
-  host: `${name}.example`,
-  privateHost,
-  status: { ready: true, state: 'Ready' },
-  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
-  schema: { fields: {} },
-  deletionProtection: 'disabled',
-});
+const model = (name: string, privateHost?: string): IndexModel =>
+  decorateIndexModel({
+    name,
+    host: `${name}.example`,
+    privateHost,
+    status: { ready: true, state: 'Ready' },
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-east-1',
+    },
+    schema: { fields: {} },
+    deletionProtection: 'disabled',
+  });
 
 describe('Indexes facade and host cache', () => {
   const config = { apiKey: 'key' };

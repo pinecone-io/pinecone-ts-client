@@ -1,3 +1,4 @@
+import { decorateIndexModel } from './decorateIndexModel';
 import type {
   ManageIndexesApi,
   CreateIndexRequest,
@@ -205,10 +206,12 @@ export async function createIndex(
       return await pollUntilIndexIsReady(
         async () => {
           try {
-            return await api.describeIndex({
-              indexName: options.name,
-              xPineconeApiVersion: X_PINECONE_API_VERSION,
-            });
+            return decorateIndexModel(
+              await api.describeIndex({
+                indexName: options.name,
+                xPineconeApiVersion: X_PINECONE_API_VERSION,
+              }),
+            );
           } catch (e) {
             throw await handleApiError(
               e,
@@ -221,7 +224,7 @@ export async function createIndex(
         timeout,
       );
     }
-    return result;
+    return decorateIndexModel(result);
   } catch (e) {
     if (
       suppressConflicts &&

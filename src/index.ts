@@ -165,6 +165,7 @@ export type {
   LegacyConfigureIndexOptions,
   IndexList,
   IndexModel,
+  IndexModelData,
   IndexModelStatus,
   IndexSchema,
   IndexSchemaField,
@@ -371,3 +372,32 @@ export type {
   ErrorResponse as AdminErrorResponse,
   ErrorResponseError as AdminErrorResponseError,
 } from './pinecone-generated-ts-fetch/admin';
+
+export type {
+  IndexModelSpec,
+  ModelIndexEmbed,
+  ServerlessSpecResponse,
+  ByocSpecResponse,
+  PodSpec,
+  LegacyIndexProperties,
+  LegacyIndexSpec,
+  DerivedLegacyIndexSpec,
+  LegacyIndexEmbed,
+  LegacyServerlessSpec,
+  LegacyByocSpec,
+  LegacyPodSpec,
+  Derived,
+  DeriveFailure,
+  DeriveFailureReason,
+  IndexShape,
+} from './control/indexes/legacyAccessors';
+export {
+  classifyIndexShape,
+  deriveDimension,
+  deriveMetric,
+  deriveVectorType,
+  deriveSpec,
+  deriveEmbed,
+} from './control/indexes/legacyAccessors';
+
+export { PineconeIndexPropertyError } from './errors/indexProperty';

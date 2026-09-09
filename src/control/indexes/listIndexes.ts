@@ -1,3 +1,5 @@
+import type { LegacyIndexProperties } from './legacyAccessors';
+import { decorateIndexList } from './decorateIndexModel';
 import type {
   ManageIndexesApi,
   IndexList as GeneratedIndexList,
@@ -189,7 +191,7 @@ export interface IndexSchema extends Omit<GeneratedIndexSchema, 'fields'> {
  * The configuration and status of an index, as returned by
  * {@link Indexes.describe}, {@link Indexes.create}, and {@link Indexes.configure}.
  */
-export interface IndexModel extends Omit<
+export interface IndexModelData extends Omit<
   GeneratedIndexModel,
   'status' | 'schema' | 'readCapacity' | 'deletionProtection'
 > {
@@ -202,6 +204,9 @@ export interface IndexModel extends Omit<
   /** Whether deletion protection is enabled for the index. */
   deletionProtection: DeletionProtection | (string & {});
 }
+
+/** An index response with non-enumerable legacy compatibility accessors. */
+export interface IndexModel extends IndexModelData, LegacyIndexProperties {}
 
 /**
  * The indexes in a project, as returned by {@link Indexes.list}.
@@ -217,9 +222,11 @@ export interface IndexList extends Omit<GeneratedIndexList, 'indexes'> {
  */
 export async function listIndexes(api: ManageIndexesApi): Promise<IndexList> {
   try {
-    return await api.listIndexes({
-      xPineconeApiVersion: X_PINECONE_API_VERSION,
-    });
+    return decorateIndexList(
+      await api.listIndexes({
+        xPineconeApiVersion: X_PINECONE_API_VERSION,
+      }),
+    );
   } catch (e) {
     throw await handleApiError(
       e,

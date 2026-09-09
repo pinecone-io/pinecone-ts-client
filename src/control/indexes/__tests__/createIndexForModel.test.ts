@@ -6,7 +6,7 @@ import {
   ManageIndexesApi,
   ResponseError,
 } from '../../../pinecone-generated-ts-fetch/db_control';
-import type { IndexModel } from '../listIndexes';
+import type { IndexModelData as IndexModel } from '../listIndexes';
 import {
   PineconeArgumentError,
   PineconeConflictError,
