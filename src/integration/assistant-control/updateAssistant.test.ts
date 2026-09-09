@@ -4,9 +4,13 @@ import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
 const assistantNames: string[] = [];
-afterEach(async () => {
-  await cleanupResources(pinecone, [], assistantNames.splice(0));
-}, 60_000);
+const cleanupTrackedResources = async () => {
+  await cleanupResources(pinecone, [], assistantNames);
+  // Retain names after failure so a later hook can retry the deletion.
+  assistantNames.length = 0;
+};
+afterEach(cleanupTrackedResources, 60_000);
+afterAll(cleanupTrackedResources, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
