@@ -1,6 +1,7 @@
 import { Index, QueryResponse, PineconeRecord } from '../../../index';
 import { getTestContext } from '../../test-context';
 import { assertWithRetries, randomName } from '../../test-helpers';
+import { PineconeBadRequestError } from '../../../errors';
 
 let index: Index;
 let namespace: string;
@@ -34,6 +35,12 @@ beforeAll(async () => {
 });
 
 describe('legacy dense query', () => {
+  test('rejects documents-plane fetches against a legacy vectors index', async () => {
+    const response = index.fetchDocuments({ ids: ['first'] });
+    await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+    await expect(response).rejects.toThrow(/vectors API/i);
+  });
+
   test('returns topK matches ordered by dotproduct score', async () => {
     const result = await index.query({ vector: [1, 0], topK: 2 });
     expect(result.namespace).toBe(namespace);

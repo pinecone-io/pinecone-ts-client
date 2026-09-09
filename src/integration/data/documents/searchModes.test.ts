@@ -8,7 +8,7 @@ import {
   DocumentScoringMethod,
   SearchDocumentsResponse,
 } from '../../../index';
-import { assertWithRetries, randomName } from '../../test-helpers';
+import { assertWithRetries, randomName, retryDelete } from '../../test-helpers';
 
 const denseScoreBy: DocumentScoringMethod[] = [
   { type: 'dense_vector', fields: ['dense'], values: [1, 0] },
@@ -27,6 +27,11 @@ const modes: {
   {
     name: 'query string',
     scoreBy: [{ type: 'query_string', query: 'text:apple' }],
+    ids: ['apple'],
+  },
+  {
+    name: 'unqualified query string',
+    scoreBy: [{ type: 'query_string', query: 'apple' }],
     ids: ['apple'],
   },
   {
@@ -165,6 +170,67 @@ describe('document search scoring modes', () => {
   });
 
   test.each([
+    { _id: 'metadata-only', group: 'fruit' },
+    { _id: 'wrong-dense-type', dense: 'not a vector' },
+  ])(
+    'rejects a document that violates its index schema: $_id',
+    async (document) => {
+      await expect(
+        index.upsertDocuments({ documents: [document] }),
+      ).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
+  test('rejects a vectors-plane query against a documents index', async () => {
+    await expect(
+      index.query({ vector: [1, 0], topK: 1 }),
+    ).rejects.toBeInstanceOf(PineconeBadRequestError);
+  });
+
+  test.each(['update', 'delete'] as const)(
+    'rejects search-only text-match operators in %s filters',
+    async (operation) => {
+      const filter = { text: { $match_phrase: 'apple' } };
+      const response =
+        operation === 'update'
+          ? index.updateDocuments({ filter, setFields: { group: 'changed' } })
+          : index.deleteDocuments({ filter });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
+  test.each(
+    [
+      [
+        ...denseScoreBy,
+        {
+          type: 'sparse_vector',
+          fields: ['sparse'],
+          sparseValues: { indices: [1], values: [1] },
+        },
+      ],
+      [{ type: 'query_string', fields: ['text'], query: 'apple' }],
+      [{ type: 'text', fields: ['text'], query: '' }],
+      [{ type: 'text', fields: ['text'], query: '   ' }],
+    ].map((scoreBy, position) => ({
+      scoreBy,
+      reason: [
+        "clauses must appear alone in 'score_by'",
+        "must not specify 'field' or 'fields'",
+        'Text query must not be empty',
+        'Text query must not be empty',
+      ][position],
+    })),
+  )(
+    'rejects invalid scoring clauses: $scoreBy',
+    async ({ scoreBy, reason }) => {
+      const response = index.searchDocuments({ scoreBy, topK: 1 });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+      await expect(response).rejects.toThrow(reason);
+    },
+  );
+
+  test.each([
     { includeFields: undefined },
     { includeFields: [] },
     { includeFields: ['*'] },
@@ -222,25 +288,117 @@ describe('document search scoring modes', () => {
     ).rejects.toBeInstanceOf(PineconeBadRequestError);
   });
 
+  test('fetches every filtered document across distinct limit-one pages', async () => {
+    const options = {
+      filter: { group: { $eq: 'fruit' } },
+      includeFields: ['group'],
+      limit: 1,
+    };
+    await assertWithRetries(
+      async () => {
+        const first = await index.fetchDocuments(options);
+        expect(Object.keys(first.documents)).toHaveLength(1);
+        expect(first.pagination?.next).toEqual(expect.any(String));
+        expect(first.pagination!.next!.length).toBeGreaterThan(0);
+        const second = await index.fetchDocuments({
+          ...options,
+          paginationToken: first.pagination!.next,
+        });
+        expect(Object.keys(second.documents)).toHaveLength(1);
+        return [first, second];
+      },
+      (pages) => {
+        const fetched = pages.flatMap((page) => Object.values(page.documents));
+        expect(fetched).toHaveLength(2);
+        expect(fetched.map((document) => document._id).sort()).toEqual([
+          'apple',
+          'pear',
+        ]);
+        for (const document of fetched) {
+          expect(Object.keys(document).sort()).toEqual(['_id', 'group']);
+          expect(document.group).toBe('fruit');
+        }
+      },
+    );
+  });
+
+  test('lists only the requested namespace prefix across limit-one pages', async () => {
+    // Reuse this suite's private index; never add namespaces to CI's shared fixture.
+    const prefix = 'pagination-';
+    const names = [`${prefix}one`, `${prefix}two`];
+    const failures: unknown[] = [];
+    try {
+      for (const name of names) await index.createNamespace({ name });
+      await assertWithRetries(
+        async () => {
+          const first = await index.listNamespaces({ prefix, limit: 1 });
+          expect(first.namespaces).toHaveLength(1);
+          expect(first.pagination?.next).toEqual(expect.any(String));
+          expect(first.pagination!.next!.length).toBeGreaterThan(0);
+          const second = await index.listNamespaces({
+            prefix,
+            limit: 1,
+            paginationToken: first.pagination!.next,
+          });
+          expect(second.namespaces).toHaveLength(1);
+          return [...first.namespaces!, ...second.namespaces!];
+        },
+        (listed) => {
+          expect(listed.map(({ name }) => name).sort()).toEqual(names);
+        },
+      );
+    } catch (error) {
+      failures.push(error);
+    } finally {
+      const results = await Promise.allSettled(
+        names.map((name) =>
+          retryDelete(() => index.deleteNamespace(name), `namespace '${name}'`),
+        ),
+      );
+      failures.push(
+        ...results.flatMap((result) =>
+          result.status === 'rejected' ? [result.reason] : [],
+        ),
+      );
+    }
+    if (failures.length === 1) throw failures[0];
+    if (failures.length)
+      throw new AggregateError(
+        failures,
+        'Namespace pagination lifecycle failed',
+      );
+  });
+
   test.each(modes)(
     '$name ranks real documents and honors topK',
     async ({ scoreBy, ids }) => {
-      const result = await index.searchDocuments({
-        scoreBy,
-        topK: 3,
-        includeFields: ['*'],
-      });
-      expect(result.namespace).toBe(namespace);
-      expect(result.usage).toBeDefined();
-      expect(result.matches.map(({ _id }) => _id)).toEqual(ids);
-      for (const match of result.matches) {
-        expect(match).toMatchObject(
-          documents.find((document) => document._id === match._id)!,
-        );
-        expect(match._score).toEqual(expect.any(Number));
-      }
-      const top = await index.searchDocuments({ scoreBy, topK: 1 });
-      expect(top.matches.map(({ _id }) => _id)).toEqual([ids[0]]);
+      // A successful readiness probe does not guarantee the next replica/read
+      // has caught up. Keep every positive assertion behind bounded polling.
+      await assertWithRetries(
+        () =>
+          index.searchDocuments({
+            scoreBy,
+            topK: documents.length + 1,
+            includeFields: ['*'],
+          }),
+        (result: SearchDocumentsResponse) => {
+          expect(result.namespace).toBe(namespace);
+          expect(result.usage).toBeDefined();
+          expect(result.matches.map(({ _id }) => _id)).toEqual(ids);
+          for (const match of result.matches) {
+            expect(match).toMatchObject(
+              documents.find((document) => document._id === match._id)!,
+            );
+            expect(match._score).toEqual(expect.any(Number));
+          }
+        },
+      );
+      await assertWithRetries(
+        () => index.searchDocuments({ scoreBy, topK: 1 }),
+        (top: SearchDocumentsResponse) => {
+          expect(top.matches.map(({ _id }) => _id)).toEqual([ids[0]]);
+        },
+      );
     },
   );
 
@@ -249,18 +407,25 @@ describe('document search scoring modes', () => {
     { includeFields: [] },
     { includeFields: ['group'] },
   ])('projects only requested fields: %j', async ({ includeFields }) => {
-    const result = await index.searchDocuments({
-      scoreBy: denseScoreBy,
-      topK: 1,
-      includeFields,
-    });
-    expect(result.matches).toHaveLength(1);
-    const match = result.matches[0];
-    expect(match._id).toBe('apple');
-    expect(Object.keys(match).sort()).toEqual(
-      includeFields?.length ? ['_id', '_score', 'group'] : ['_id', '_score'],
+    await assertWithRetries(
+      () =>
+        index.searchDocuments({
+          scoreBy: denseScoreBy,
+          topK: 1,
+          includeFields,
+        }),
+      (result: SearchDocumentsResponse) => {
+        expect(result.matches).toHaveLength(1);
+        const match = result.matches[0];
+        expect(match._id).toBe('apple');
+        expect(Object.keys(match).sort()).toEqual(
+          includeFields?.length
+            ? ['_id', '_score', 'group']
+            : ['_id', '_score'],
+        );
+        if (includeFields?.length) expect(match.group).toBe('fruit');
+      },
     );
-    if (includeFields?.length) expect(match.group).toBe('fruit');
   });
 
   test('filters candidates with a positive control before a no-match filter', async () => {
