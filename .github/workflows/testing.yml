@@ -57,17 +57,20 @@ jobs:
           # Always surface the setup logs (minus the fixtures line) first.
           echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | sed -n 's/^FIXTURES_JSON=//p' | tail -n 1)
+          if [ -n "$FIXTURES_JSON" ]; then
+            echo "FIXTURES_JSON=$FIXTURES_JSON" >> "$GITHUB_OUTPUT"
+          fi
+
           if [ "$SETUP_EXIT" -ne 0 ]; then
             echo "::error::setup.ts failed with exit code $SETUP_EXIT"
             exit "$SETUP_EXIT"
           fi
 
-          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
           if [ -z "$FIXTURES_JSON" ]; then
             echo "::error::setup.ts exited 0 but emitted no FIXTURES_JSON line"
             exit 1
           fi
-          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
 
   lockfile:
     name: Validate lockfile
@@ -135,10 +138,8 @@ jobs:
   teardown:
     name: Teardown shared resources
     needs: [setup, integration-tests]
-    # Preserve cleanup on test failure or PR supersession, but only when setup
-    # completed and produced fixtures. Read its output directly: a cancelled
-    # matrix job cannot reliably forward the fixture names.
-    if: ${{ always() && !inputs.docs_only && needs.setup.result == 'success' && needs.setup.outputs.fixturesJson != '' }}
+    # Setup emits partial fixtures on failure so cleanup can reclaim them too.
+    if: ${{ always() && !inputs.docs_only && needs.setup.outputs.fixturesJson != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

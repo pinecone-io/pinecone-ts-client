@@ -1,5 +1,5 @@
 import { Pinecone } from '../../pinecone';
-import { randomString } from '../test-helpers';
+import { cleanupResources, randomString } from '../test-helpers';
 
 let pinecone: Pinecone;
 let assistantNameOne: string;
@@ -14,9 +14,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await pinecone.assistants.delete(assistantNameOne);
-  await pinecone.assistants.delete(assistantNameTwo);
-});
+  await cleanupResources(
+    pinecone,
+    [],
+    [assistantNameOne, assistantNameTwo].filter(Boolean),
+  );
+}, 60_000);
 
 describe('listAssistant happy path', () => {
   test('list existing Assistants', async () => {

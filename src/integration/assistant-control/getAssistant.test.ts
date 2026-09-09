@@ -1,5 +1,9 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, waitUntilAssistantReady } from '../test-helpers';
+import {
+  cleanupResources,
+  randomString,
+  waitUntilAssistantReady,
+} from '../test-helpers';
 import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
@@ -15,8 +19,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await pinecone.assistants.delete(assistantName);
-});
+  await cleanupResources(pinecone, [], assistantName ? [assistantName] : []);
+}, 60_000);
 
 describe('describeAssistant happy path', () => {
   test('simple get', async () => {

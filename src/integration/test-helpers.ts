@@ -7,6 +7,7 @@ import type {
   RecordValues,
 } from '../data';
 import { Index, Pinecone } from '../index';
+import { PineconeNotFoundError } from '../errors';
 
 const metadataMap = {
   genre: ['action', 'comedy', 'drama', 'horror', 'romance', 'thriller'],
@@ -153,77 +154,92 @@ export const sleep = async (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const waitUntilIndexReady = async (indexName: string) => {
-  const p = new Pinecone();
-  const sleepIntervalMs = 1000;
-  let isReady = false;
-
-  while (!isReady) {
-    try {
-      const description = await p.indexes.describe(indexName);
-      if (
-        description.status?.ready === true &&
-        description.status?.state === 'Ready'
-      ) {
-        isReady = true;
-      } else {
-        await sleep(sleepIntervalMs);
-      }
-    } catch (error) {
-      throw new Error(`Error while waiting for index to be ready: ${error}`, {
-        cause: error,
-      });
+// These deadlines bound integration polling without changing SDK defaults.
+export const waitForReady = async (
+  describe: () => Promise<{ ready: boolean; state?: string }>,
+  resource: string,
+  maxWaitMs = 180_000,
+) => {
+  const deadline = Date.now() + maxWaitMs;
+  let state: string | undefined;
+  while (true) {
+    const result = await describe();
+    state = result.state;
+    if (result.ready) return;
+    if (
+      ['InitializationFailed', 'Failed', 'Terminating', 'Disabled'].includes(
+        state ?? '',
+      )
+    ) {
+      throw new Error(`${resource} entered terminal state '${state}'`);
     }
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) {
+      throw new Error(
+        `Timed out after ${maxWaitMs}ms waiting for ${resource}; last state: ${state ?? 'unknown'}`,
+      );
+    }
+    await sleep(Math.min(1000, remaining));
   }
 };
 
-export const waitUntilAssistantReady = async (assistantName: string) => {
+export const waitUntilIndexReady = async (
+  indexName: string,
+  maxWaitMs = 180_000,
+) => {
   const p = new Pinecone();
-  const sleepIntervalMs = 1000;
-  let isReady = false;
+  await waitForReady(
+    async () => {
+      const description = await p.indexes.describe(indexName);
+      return {
+        ready:
+          description.status?.ready === true &&
+          description.status?.state === 'Ready',
+        state: description.status?.state,
+      };
+    },
+    `index '${indexName}'`,
+    maxWaitMs,
+  );
+};
 
-  while (!isReady) {
-    try {
+export const waitUntilAssistantReady = async (
+  assistantName: string,
+  maxWaitMs = 180_000,
+) => {
+  const p = new Pinecone();
+  await waitForReady(
+    async () => {
       const description = await p.assistants.describe(assistantName);
-      if (description.status === 'Ready') {
-        isReady = true;
-      } else {
-        await sleep(sleepIntervalMs);
-      }
-    } catch (error) {
-      throw new Error(
-        `Error while waiting for assistant to be ready: ${error}`,
-        { cause: error },
-      );
-    }
-  }
+      return {
+        ready: description.status === 'Ready',
+        state: description.status,
+      };
+    },
+    `assistant '${assistantName}'`,
+    maxWaitMs,
+  );
 };
 
 export const waitUntilAssistantFileReady = async (
   assistantName: string,
   fileId: string,
+  maxWaitMs = 180_000,
 ) => {
   const p = new Pinecone();
-  const sleepIntervalMs = 1000;
-  let isReady = false;
-
-  while (!isReady) {
-    try {
+  await waitForReady(
+    async () => {
       const description = await p
         .assistant({ name: assistantName })
         .describeFile(fileId, true);
-      if (description.status === 'Available') {
-        isReady = true;
-      } else {
-        await sleep(sleepIntervalMs);
-      }
-    } catch (error) {
-      throw new Error(
-        `Error while waiting for assistant file to be ready: ${error}`,
-        { cause: error },
-      );
-    }
-  }
+      return {
+        ready: description.status === 'Available',
+        state: description.status,
+      };
+    },
+    `assistant file '${fileId}'`,
+    maxWaitMs,
+  );
 };
 
 export const waitUntilRecordsReady = async (
@@ -237,9 +253,7 @@ export const waitUntilRecordsReady = async (
   let indexStats = await index.describeIndexStats();
 
   const notReady = () =>
-    (indexStats.namespaces && !indexStats.namespaces[namespace]) ||
-    (indexStats.namespaces &&
-      indexStats.namespaces[namespace]?.recordCount !== recordIds.length);
+    indexStats.namespaces?.[namespace]?.recordCount !== recordIds.length;
 
   // if namespace is empty or the record count is not equal to the number of records we expect
   while (notReady()) {
@@ -269,16 +283,19 @@ export const assertWithRetries = async (
   totalMsWait: number = 180000,
   delay: number = 3000,
 ) => {
+  if (totalMsWait <= 0 || delay <= 0)
+    throw new Error('Retry timeout and delay must be positive');
   let lastError: any = null;
+  const deadline = Date.now() + totalMsWait;
 
-  for (let msElapsed = 0; msElapsed < totalMsWait; msElapsed += delay) {
+  while (Date.now() < deadline) {
     try {
       const result = await asyncFn();
       assertionsFn(result);
       return;
     } catch (error) {
       lastError = error;
-      await sleep(delay);
+      await sleep(Math.min(delay, Math.max(0, deadline - Date.now())));
     }
   }
 
@@ -303,15 +320,63 @@ export const getRecordIds = async (index: Index) => {
   }
 };
 
-export const retryDeletes = async (pc: Pinecone, indexName: string) => {
-  try {
-    await pc.indexes.delete(indexName);
-  } catch (e) {
-    console.log(
-      `Encountered error when trying to delete index: ${e}`,
-      '\n\nSleeping for 1s and retrying...\n\n',
-    );
-    await sleep(1000);
-    await retryDeletes(pc, indexName);
+export const retryDelete = async (
+  remove: () => Promise<unknown>,
+  resource: string,
+  maxWaitMs = 30_000,
+) => {
+  const deadline = Date.now() + maxWaitMs;
+  while (true) {
+    try {
+      await remove();
+      return;
+    } catch (error) {
+      if (error instanceof PineconeNotFoundError) return;
+      // Configuration/permission failures will not improve by retrying.
+      const retryable =
+        error instanceof Error &&
+        [
+          'PineconeConflictError',
+          'PineconeInternalServerError',
+          'PineconeUnavailableError',
+          'PineconeMaxRetriesExceededError',
+          'PineconeConnectionError',
+        ].includes(error.name);
+      const remaining = deadline - Date.now();
+      if (!retryable || remaining <= 0) {
+        throw new Error(`Failed to delete ${resource}`, { cause: error });
+      }
+      await sleep(Math.min(1000, remaining));
+    }
   }
+};
+
+export const retryDeletes = async (
+  pc: Pinecone,
+  indexName: string,
+  maxWaitMs = 30_000,
+) =>
+  retryDelete(
+    () => pc.indexes.delete(indexName),
+    `index '${indexName}'`,
+    maxWaitMs,
+  );
+
+// All registered resources are attempted, even when an earlier deletion fails.
+export const cleanupResources = async (
+  pc: Pinecone,
+  indexes: string[] = [],
+  assistants: string[] = [],
+) => {
+  const results = await Promise.allSettled([
+    ...indexes.map((name) => retryDeletes(pc, name)),
+    ...assistants.map((name) =>
+      retryDelete(() => pc.assistants.delete(name), `assistant '${name}'`),
+    ),
+  ]);
+  const failures = results.flatMap((result) =>
+    result.status === 'rejected' ? [result.reason] : [],
+  );
+  if (failures.length)
+    throw new AggregateError(failures, 'Integration resource cleanup failed');
 };

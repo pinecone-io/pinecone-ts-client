@@ -9,10 +9,12 @@ import {
   waitUntilAssistantFileReady,
   waitUntilRecordsReady,
   vectorFieldName,
+  cleanupResources,
 } from './test-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { createLegacyVectorIndex } from './legacyVectorFixtures';
 
 /**
  * Integration Test Setup Script
@@ -37,146 +39,184 @@ export const setup = async () => {
 
   console.error('🎛️ Setting up integration test resources...');
 
-  // Create serverless index
-  const indexName = randomName(prefix);
-  console.error(`📦 Creating serverless index: ${indexName}`);
-
-  // Generate test data first to extract metadata for filtering
-  console.error(`\tGenerating test data...`);
-  const documentsToUpsert = generateDocuments({
-    prefix: prefix,
-    dimension: 2,
-    quantity: 10,
-    withMetadata: true,
-  });
-
-  const oneDocumentWithDiffPrefix = generateDocuments({
-    prefix: diffPrefix,
-    dimension: 2,
-    quantity: 1,
-    withMetadata: true,
-  });
-
-  const allDocuments = [...oneDocumentWithDiffPrefix, ...documentsToUpsert];
-  const recordIds = allDocuments.map((doc) => doc._id);
-
-  // Extract a metadata key-value pair from the first document for filtering
-  // tests. Document metadata lives in top-level fields, so exclude `_id` and
-  // the vector field.
-  const metadataKeys = Object.keys(allDocuments[0]).filter(
-    (k) => k !== '_id' && k !== vectorFieldName,
-  );
-  if (metadataKeys.length === 0) {
-    throw new Error('Generated documents have no metadata');
-  }
-  const metadataFilterKey = metadataKeys[0];
-  const metadataFilterValue = allDocuments[0][metadataFilterKey];
-
-  console.error(
-    `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
-  );
-
-  // NOTE: metadata fields are no longer declared at index-creation time. As of
-  // `2026-07` the create-time schema only accepts primary field types
-  // (`dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
-  // `full_text_search`); plain metadata values are indexed automatically at
-  // upsert. `metadataKeys` is therefore only used to pick a filter key below.
-  const deployment = {
-    deploymentType: 'managed' as const,
-    cloud: 'aws',
-    region: 'us-west-2',
+  const indexes: string[] = [];
+  const assistants: string[] = [];
+  const legacyVectors = {
+    dense: { name: randomName('integration-legacy-dense') },
+    sparse: { name: randomName('integration-legacy-sparse') },
   };
-  await pc.indexes.create({
-    name: indexName,
-    deployment,
-    schema: {
-      fields: {
-        [vectorFieldName]: {
-          type: 'dense_vector',
-          dimension: 2,
-          metric: 'dotproduct',
-        },
-      },
-    },
-    waitUntilReady: true,
-    tags: { project: 'pinecone-integration-tests' },
-  });
+  let testFilePath: string | undefined;
+  try {
+    // Create serverless index
+    const indexName = randomName(prefix);
+    console.error(`📦 Creating serverless index: ${indexName}`);
 
-  // Seed with test data. Schema-based indexes must be written through the
-  // documents API; the vectors and records APIs are rejected for them.
-  console.error(`\tSeeding index ${indexName} with test data...`);
+    // Generate test data first to extract metadata for filtering
+    console.error(`\tGenerating test data...`);
+    const documentsToUpsert = generateDocuments({
+      prefix: prefix,
+      dimension: 2,
+      quantity: 10,
+      withMetadata: true,
+    });
 
-  await pc
-    .index({ name: indexName, namespace: globalNamespaceOne })
-    .upsertDocuments({ documents: allDocuments });
+    const oneDocumentWithDiffPrefix = generateDocuments({
+      prefix: diffPrefix,
+      dimension: 2,
+      quantity: 1,
+      withMetadata: true,
+    });
 
-  // Wait for data to be indexed
-  console.error('\tWaiting for data to be indexed...');
-  await waitUntilRecordsReady(
-    pc.index({ name: indexName, namespace: globalNamespaceOne }),
-    globalNamespaceOne,
-    recordIds,
-  );
+    const allDocuments = [...oneDocumentWithDiffPrefix, ...documentsToUpsert];
+    const recordIds = allDocuments.map((doc) => doc._id);
 
-  // Create assistant
-  const assistantName = `test-assistant-${Date.now()}`;
-  console.error(`🤖 Creating assistant: ${assistantName}`);
+    // Extract a metadata key-value pair from the first document for filtering
+    // tests. Document metadata lives in top-level fields, so exclude `_id` and
+    // the vector field.
+    const metadataKeys = Object.keys(allDocuments[0]).filter(
+      (k) => k !== '_id' && k !== vectorFieldName,
+    );
+    if (metadataKeys.length === 0) {
+      throw new Error('Generated documents have no metadata');
+    }
+    const metadataFilterKey = metadataKeys[0];
+    const metadataFilterValue = allDocuments[0][metadataFilterKey];
 
-  await pc.assistants.create({
-    name: assistantName,
-    metadata: {
-      test: 'integration-test',
-    },
-  });
+    console.error(
+      `\tUsing metadata filter: ${metadataFilterKey}=${metadataFilterValue}`,
+    );
 
-  await waitUntilAssistantReady(assistantName);
-
-  const assistant = pc.assistant({ name: assistantName });
-
-  // Upload test file
-  const testFilePath = path.join(os.tmpdir(), `test-file-${Date.now()}.txt`);
-  fs.writeFileSync(testFilePath, 'Sample content for assistant file testing');
-
-  console.error(`\tUploading test file: ${testFilePath}`);
-  const uploadOp = await assistant.uploadFile({
-    path: testFilePath,
-    metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
-  });
-
-  if (!uploadOp.fileId) {
-    throw new Error('Upload operation did not return a file ID');
-  }
-  await waitUntilAssistantFileReady(assistantName, uploadOp.fileId);
-
-  // Build fixtures object
-  const fixtures = {
-    serverlessIndex: {
+    // NOTE: metadata fields are no longer declared at index-creation time. As of
+    // `2026-07` the create-time schema only accepts primary field types
+    // (`dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
+    // `full_text_search`); plain metadata values are indexed automatically at
+    // upsert. `metadataKeys` is therefore only used to pick a filter key below.
+    const deployment = {
+      deploymentType: 'managed' as const,
+      cloud: 'aws',
+      region: 'us-west-2',
+    };
+    indexes.push(indexName);
+    await pc.indexes.create({
       name: indexName,
       deployment,
-      dimension: 2,
-      metric: 'dotproduct',
-      vectorFieldName,
-      metadataFilter: {
-        key: metadataFilterKey,
-        value: metadataFilterValue,
+      schema: {
+        fields: {
+          [vectorFieldName]: {
+            type: 'dense_vector',
+            dimension: 2,
+            metric: 'dotproduct',
+          },
+        },
       },
+      waitUntilReady: true,
+      timeout: 180_000,
+      tags: { project: 'pinecone-integration-tests' },
+    });
+
+    // Seed with test data. Schema-based indexes must be written through the
+    // documents API; the vectors and records APIs are rejected for them.
+    console.error(`\tSeeding index ${indexName} with test data...`);
+
+    await pc
+      .index({ name: indexName, namespace: globalNamespaceOne })
+      .upsertDocuments({ documents: allDocuments });
+
+    // Wait for data to be indexed
+    console.error('\tWaiting for data to be indexed...');
+    await waitUntilRecordsReady(
+      pc.index({ name: indexName, namespace: globalNamespaceOne }),
+      globalNamespaceOne,
       recordIds,
-    },
-    assistant: {
+    );
+
+    // Keep both legacy planes available to every matrix job. Register names
+    // before creating so an accepted request followed by a timeout is cleaned.
+    for (const kind of ['dense', 'sparse'] as const) {
+      const name = legacyVectors[kind].name;
+      indexes.push(name);
+      await createLegacyVectorIndex(pc, name, kind);
+    }
+
+    // Create assistant
+    const assistantName = `test-assistant-${Date.now()}`;
+    console.error(`🤖 Creating assistant: ${assistantName}`);
+
+    assistants.push(assistantName);
+    await pc.assistants.create({
       name: assistantName,
-      testFilePath: testFilePath,
-    },
-  };
+      metadata: {
+        test: 'integration-test',
+      },
+    });
 
-  // Output as single JSON (use stdout for capture, stderr for logs)
-  console.log(`FIXTURES_JSON=${JSON.stringify(fixtures)}`);
+    await waitUntilAssistantReady(assistantName);
 
-  console.error('✅ Integration setup complete');
-  console.error('');
-  console.error('To use these fixtures, set the environment variable:');
-  console.error(`  export FIXTURES_JSON='${JSON.stringify(fixtures)}'`);
+    const assistant = pc.assistant({ name: assistantName });
 
-  return fixtures;
+    // Upload test file
+    testFilePath = path.join(os.tmpdir(), `test-file-${Date.now()}.txt`);
+    fs.writeFileSync(testFilePath, 'Sample content for assistant file testing');
+
+    console.error(`\tUploading test file: ${testFilePath}`);
+    const uploadOp = await assistant.uploadFile({
+      path: testFilePath,
+      metadata: { key: 'valueOne', keyTwo: 'valueTwo' },
+    });
+
+    if (!uploadOp.fileId) {
+      throw new Error('Upload operation did not return a file ID');
+    }
+    await waitUntilAssistantFileReady(assistantName, uploadOp.fileId);
+
+    // Build fixtures object
+    const fixtures = {
+      legacyVectors,
+      serverlessIndex: {
+        name: indexName,
+        deployment,
+        dimension: 2,
+        metric: 'dotproduct',
+        vectorFieldName,
+        metadataFilter: {
+          key: metadataFilterKey,
+          value: metadataFilterValue,
+        },
+        recordIds,
+      },
+      assistant: {
+        name: assistantName,
+        testFilePath: testFilePath,
+      },
+    };
+
+    // Output as single JSON (use stdout for capture, stderr for logs)
+    console.log(`FIXTURES_JSON=${JSON.stringify(fixtures)}`);
+
+    console.error('✅ Integration setup complete');
+    console.error('');
+    console.error('To use these fixtures, set the environment variable:');
+    console.error(`  export FIXTURES_JSON='${JSON.stringify(fixtures)}'`);
+
+    return fixtures;
+  } catch (error) {
+    // Publish names even on failure so CI can retry cleanup if this attempt fails.
+    console.log(
+      `FIXTURES_JSON=${JSON.stringify({ cleanupIndexes: indexes, serverlessIndex: { name: indexes[0] }, assistant: { name: assistants[0] } })}`,
+    );
+    try {
+      await cleanupResources(pc, indexes, assistants);
+    } catch (cleanupError) {
+      throw new AggregateError(
+        [error, cleanupError],
+        'Setup and cleanup failed',
+        { cause: cleanupError },
+      );
+    }
+    throw error;
+  } finally {
+    if (testFilePath) fs.rmSync(testFilePath, { force: true });
+  }
 };
 
 // Run setup when executed directly

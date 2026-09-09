@@ -1,10 +1,12 @@
 import { Pinecone } from '../index';
+import type { LegacyVectorFixtures } from './legacyVectorFixtures';
 
 /**
  * Integration test fixtures interface
  */
 export interface IntegrationFixtures {
   client: Pinecone;
+  legacyVectors: LegacyVectorFixtures;
   serverlessIndex: {
     name: string;
     dimension: number;
@@ -93,6 +95,9 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
   if (!data.assistant?.name) {
     throw new Error('FIXTURES_JSON missing assistant.name');
   }
+  if (!data.legacyVectors?.dense?.name || !data.legacyVectors?.sparse?.name) {
+    throw new Error('FIXTURES_JSON missing legacyVectors.dense/sparse.name');
+  }
 
   const apiKey = process.env.PINECONE_API_KEY;
   if (!apiKey) {
@@ -116,6 +121,7 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
 
   return {
     client,
+    legacyVectors: data.legacyVectors,
     serverlessIndex: {
       name: data.serverlessIndex.name,
       deployment: data.serverlessIndex.deployment || {
