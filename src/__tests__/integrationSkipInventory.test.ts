@@ -35,8 +35,10 @@ function trackingComment(
       const match = text.match(
         /@integration-skip\s+#([1-9]\d*):\s*(\S[^\r\n]*)/,
       );
-      if (match)
-        return `#${match[1]}: ${match[2].replace(/\s*\*\/$/, '').trim()}`;
+      if (match) {
+        const reason = match[2].replace(/\s*\*\/$/, '').trim();
+        if (reason) return `#${match[1]}: ${reason}`;
+      }
     }
   }
   return undefined;
@@ -77,12 +79,12 @@ function inventory(text: string): Skip[] {
   return skips;
 }
 
-function testFiles(directory: string): string[] {
+function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const name = path.join(directory, entry.name);
     return entry.isDirectory()
-      ? testFiles(name)
-      : name.endsWith('.test.ts')
+      ? sourceFiles(name)
+      : /\.[cm]?[jt]sx?$/.test(name)
         ? [name]
         : [];
   });
@@ -91,7 +93,7 @@ function testFiles(directory: string): string[] {
 describe('integration skip accountability', () => {
   test('every disabled suite/test and conditional skip has a tracked reason', () => {
     const root = path.resolve(__dirname, '../integration');
-    const files = testFiles(root);
+    const files = sourceFiles(root);
     expect(files.length).toBeGreaterThan(0);
     const untracked = files.flatMap((file) =>
       inventory(readFileSync(file, 'utf8'))
@@ -149,11 +151,14 @@ describe('integration skip accountability', () => {
       // @integration-skip #35: only this suite is tracked
       describe('tracked', () => { test.skip('inside', () => {}); });
       test.skip('outside', () => {});
+      /* @integration-skip #35: */
+      test.skip('empty reason', () => {});
       helper.skip();
     `;
     expect(inventory(source).map((skip) => Boolean(skip.tracking))).toEqual([
       false,
       true,
+      false,
       false,
     ]);
   });
