@@ -2,6 +2,8 @@ import type {
   ManageIndexesApi,
   CreateIndexFromBackupResponse,
 } from '../../pinecone-generated-ts-fetch/db_control';
+import { normalizeReadCapacity } from '../indexes/legacyTranslation';
+import type { CreateIndexReadCapacity } from '../indexes/legacyTypes';
 import type { ReadCapacity, DeletionProtection } from '../types';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
@@ -10,20 +12,30 @@ import { handleApiError } from '../../errors/handling';
 export type { CreateIndexFromBackupResponse } from '../../pinecone-generated-ts-fetch/db_control';
 
 /**
- * Options for creating an index from a backup.
+ * Options for the deprecated flat backup restore method.
+ *
+ * @deprecated Use {@link CreateIndexFromBackupResourceOptions} with {@link Backups.createIndex}.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export interface CreateIndexFromBackupOptions {
+  /** The ID of the backup to restore. */
+  backupId: string;
   /** The new index name, such as `product-catalog-restored`. Must be unique within the project. */
   name: string;
   /** Optional tags to apply to the created index. Overrides backup tags if provided. */
   tags?: Record<string, string>;
   /** Whether to enable deletion protection on the created index. */
   deletionProtection?: DeletionProtection;
-  /** Optional read capacity configuration for the created index. */
-  readCapacity?: ReadCapacity;
+  /** Native nested or deprecated flat read capacity configuration. Omit for on-demand capacity. */
+  readCapacity?: ReadCapacity | CreateIndexReadCapacity;
 }
+
+/** Options for {@link Backups.createIndex}; pass the backup ID separately. */
+export type CreateIndexFromBackupResourceOptions = Omit<
+  CreateIndexFromBackupOptions,
+  'backupId'
+>;
 
 /**
  * Creates an index from a Pinecone backup.
@@ -40,7 +52,7 @@ export interface CreateIndexFromBackupOptions {
 export const createIndexFromBackup = async (
   api: ManageIndexesApi,
   backupId: string,
-  options: CreateIndexFromBackupOptions,
+  options: CreateIndexFromBackupResourceOptions,
 ): Promise<CreateIndexFromBackupResponse> => {
   if (!backupId) {
     throw new PineconeArgumentError(
@@ -52,6 +64,7 @@ export const createIndexFromBackup = async (
       'You must pass a non-empty string for `name` to create an index from a backup.',
     );
   }
+  const readCapacity = normalizeReadCapacity(options.readCapacity);
   try {
     return await api.createIndexFromBackupOperation({
       backupId,
@@ -59,7 +72,7 @@ export const createIndexFromBackup = async (
         name: options.name,
         tags: options.tags,
         deletionProtection: options.deletionProtection,
-        readCapacity: options.readCapacity,
+        readCapacity,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

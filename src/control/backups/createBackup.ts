@@ -5,15 +5,24 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
 /**
- * Options for creating a backup of an index.
+ * Options for the deprecated flat backup creation method.
  *
+ * @deprecated Use {@link CreateBackupResourceOptions} with {@link Backups.create}.
  */
 export interface CreateBackupOptions {
+  /** The name of the index to back up. */
+  indexName: string;
   /** Optional user-defined name for the backup. */
   name?: string;
   /** Optional description providing context for the backup. */
   description?: string;
 }
+
+/** Options for {@link Backups.create}; pass the index name separately. */
+export type CreateBackupResourceOptions = Omit<
+  CreateBackupOptions,
+  'indexName'
+>;
 
 /**
  * Creates a backup of an index.
@@ -23,7 +32,7 @@ export interface CreateBackupOptions {
 export async function createBackup(
   api: ManageIndexesApi,
   indexName: string,
-  options: CreateBackupOptions = {},
+  options: CreateBackupResourceOptions = {},
 ): Promise<BackupModel> {
   if (!indexName) {
     throw new PineconeArgumentError(

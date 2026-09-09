@@ -21,6 +21,24 @@ export type CreateIndexReadCapacity =
       };
     };
 
+/** @deprecated Use {@link ReadCapacityOnDemand} with nested read capacity. */
+export type ReadCapacityOnDemandParams = Extract<
+  CreateIndexReadCapacity,
+  {
+    /** Selects the legacy on-demand variant. */
+    mode?: 'OnDemand';
+  }
+>;
+
+/** @deprecated Use {@link ReadCapacityDedicated} with nested read capacity. */
+export type ReadCapacityDedicatedParams = Extract<
+  CreateIndexReadCapacity,
+  {
+    /** Selects the legacy dedicated variant. */
+    nodeType: DedicatedNodeType;
+  }
+>;
+
 /** @deprecated Use `deployment` and top-level `readCapacity`. */
 export interface CreateIndexServerlessSpec {
   /** @deprecated Use `deployment.cloud`. */
