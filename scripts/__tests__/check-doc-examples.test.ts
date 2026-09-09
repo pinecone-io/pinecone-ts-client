@@ -208,3 +208,48 @@ describe('checkBlocks', () => {
     expect(result.newFailures).toHaveLength(0);
   });
 });
+
+it('preserves precise index creation return types across both public entry points', () => {
+  const code = `
+import { Pinecone, IndexModel, CreateIndexOptions, CreateIndexForModelOptions } from '@pinecone-database/pinecone';
+const pc = new Pinecone({ apiKey: 'test-key' });
+declare const dynamic: boolean;
+declare const genericOptions: CreateIndexOptions;
+declare const genericModelOptions: CreateIndexForModelOptions;
+${[
+  'pc.createIndex',
+  'pc.indexes.create',
+  'pc.createIndexForModel',
+  'pc.indexes.createForModel',
+]
+  .map((method) => {
+    const model = /[Ff]orModel/.test(method);
+    const options = model
+      ? "name: 'test', cloud: 'aws', region: 'us-east-1', embed: { model: 'test-model', fieldMap: { text: 'text' } }"
+      : "name: 'test', schema: { fields: { vector: { type: 'dense_vector', dimension: 8, metric: 'cosine' } } }";
+    return `
+{
+  const ordinary: IndexModel = await ${method}({ ${options} });
+  const waiting: IndexModel = await ${method}({ ${options}, waitUntilReady: true });
+  const immediate: IndexModel = await ${method}({ ${options}, waitUntilReady: false });
+  const explicit: IndexModel = await ${method}({ ${options}, suppressConflicts: false });
+  const optional: IndexModel | void = await ${method}({ ${options}, suppressConflicts: true });
+  // @ts-expect-error A suppressed conflict may return undefined, even when waiting.
+  const suppressed: IndexModel = await ${method}({ ${options}, suppressConflicts: true, waitUntilReady: true });
+  // @ts-expect-error A dynamic suppression flag may return undefined.
+  const unknown: IndexModel = await ${method}({ ${options}, suppressConflicts: dynamic });
+  // @ts-expect-error Broadly typed options may suppress conflicts.
+  const generic: IndexModel = await ${method}(${model ? 'genericModelOptions' : 'genericOptions'});
+}`;
+  })
+  .join('\n')}`;
+  const result = checkBlocks(
+    extractBlocksFromText(
+      'return-types.md',
+      '```typescript\n' + code + '\n```',
+    ),
+    [],
+  );
+  expect(result.newFailures).toEqual([]);
+  expect(result.anyShimmedNames.size).toBe(0);
+});

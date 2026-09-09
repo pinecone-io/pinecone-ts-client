@@ -103,8 +103,12 @@ export class Indexes {
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted. Use `waitUntilReady: true` to block until the index is ready for data operations.
+   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict. Use `waitUntilReady: true` to block until the index is ready for data operations.
    */
+  create(
+    options: CreateIndexOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  create(options: CreateIndexOptions): Promise<IndexModel | void>;
   async create(options: CreateIndexOptions): Promise<IndexModel | void> {
     const indexModel = await createIndex(this._api, options);
     // `createIndex` resolves to `void` when `suppressConflicts` swallowed a
@@ -153,8 +157,14 @@ export class Indexes {
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted.
+   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict.
    */
+  createForModel(
+    options: CreateIndexForModelOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  createForModel(
+    options: CreateIndexForModelOptions,
+  ): Promise<IndexModel | void>;
   async createForModel(
     options: CreateIndexForModelOptions,
   ): Promise<IndexModel | void> {
