@@ -211,6 +211,21 @@ describe('path input', () => {
       }),
     );
   });
+
+  test.each(['Content-Type', 'content-type', 'CONTENT-TYPE'])(
+    'drops %s from the FormData request',
+    async (name) => {
+      const upload = uploadFile(mockAssistantName, mockApiProvider, {
+        ...mockConfig,
+        additionalHeaders: { [name]: 'application/json' },
+      });
+      await upload({ path: 'test.txt' });
+
+      const [, init] = mockRetryingFetch.mock.calls[0];
+      expect(init.headers).not.toHaveProperty('Content-Type');
+      expect(new Headers(init.headers).has('content-type')).toBe(false);
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -336,15 +351,21 @@ describe('ReadableStream input', () => {
     );
   });
 
-  test('sets multipart Content-Type header with boundary', async () => {
-    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
-    const stream = Readable.from(['pdf content']);
-    await upload({ file: stream, fileName: 'doc.pdf' });
-    const [, init] = mockNonRetryingFetch.mock.calls[0];
-    expect(init.headers['Content-Type']).toMatch(
-      /^multipart\/form-data; boundary=/,
-    );
-  });
+  test.each(['Content-Type', 'content-type', 'CONTENT-TYPE'])(
+    'sets multipart boundary despite %s override',
+    async (name) => {
+      const upload = uploadFile(mockAssistantName, mockApiProvider, {
+        ...mockConfig,
+        additionalHeaders: { [name]: 'text/plain' },
+      });
+      const stream = Readable.from(['pdf content']);
+      await upload({ file: stream, fileName: 'doc.pdf' });
+      const [, init] = mockNonRetryingFetch.mock.calls[0];
+      expect(new Headers(init.headers).get('content-type')).toMatch(
+        /^multipart\/form-data; boundary=[^,]+$/,
+      );
+    },
+  );
 
   test('escapes special characters in fileName for Content-Disposition header', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);

@@ -1,3 +1,4 @@
+import { withoutContentType } from '../utils/additionalHeaders';
 import {
   APIKeysApi,
   Configuration,
@@ -47,7 +48,7 @@ export const adminOperationsBuilder = (
 ): AdminApis => {
   const controllerPath =
     normalizeUrl(config.controllerHostUrl) || 'https://api.pinecone.io';
-  const headers = config.additionalHeaders || null;
+  const headers = withoutContentType(config.additionalHeaders);
 
   // `buildUserAgent` and `getFetch` read only User-Agent / fetch-related fields, so the admin config
   // can be passed directly — no `apiKey`-shaped adapter is needed. The credential difference (OAuth
@@ -69,7 +70,7 @@ export const adminOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   const configuration = new Configuration(apiConfig);

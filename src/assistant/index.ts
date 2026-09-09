@@ -23,6 +23,7 @@ import { AsstDataOperationsProvider } from './data/asstDataOperationsProvider';
 import { context } from './data/context';
 import { AssistantOptions } from '../types';
 import { PineconeArgumentError } from '../errors';
+import { mergeAdditionalHeaders } from '../utils/additionalHeaders';
 
 // Export input option types
 export type {
@@ -127,7 +128,9 @@ export class Assistant {
   /**
    * Creates an instance of the `Assistant` class.
    *
-   * @param options - The {@link AssistantOptions} for targeting the assistant.
+   * @param options - The {@link AssistantOptions} for targeting the assistant. Its
+   * `additionalHeaders` are merged over the client's, winning on an exact key match, and the
+   * result is sent with every request this assistant makes.
    * @param config - The Pinecone configuration object containing an API key and other configuration parameters
    * needed for API calls.
    *
@@ -140,12 +143,18 @@ export class Assistant {
       );
     }
 
-    this.config = config;
+    this.config = {
+      ...config,
+      additionalHeaders: mergeAdditionalHeaders(
+        config.additionalHeaders,
+        options.additionalHeaders,
+      ),
+    };
     const asstDataOperationsProvider = new AsstDataOperationsProvider(
       this.config,
       options.name,
       options.host,
-      options.additionalHeaders,
+      this.config.additionalHeaders,
     );
     this.assistantName = options.name;
 

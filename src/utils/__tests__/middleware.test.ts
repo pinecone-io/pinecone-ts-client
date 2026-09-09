@@ -31,14 +31,17 @@ describe('shared request middleware', () => {
     debug.mockRestore();
   });
 
-  test('installs only error handling when debug flags are absent', () => {
-    expect(createMiddlewareArray()).toHaveLength(1);
+  test('installs path safety before error handling when debug flags are absent', () => {
+    const middleware = createMiddlewareArray();
+    expect(middleware).toHaveLength(2);
+    expect(middleware[0].pre).toEqual(expect.any(Function));
+    expect(middleware[1].onError).toEqual(expect.any(Function));
   });
 
   test('preserves the exact retry-exhaustion error', async () => {
     const error = new PineconeMaxRetriesExceededError(3);
     await expect(
-      createMiddlewareArray()[0].onError!({
+      createMiddlewareArray().find((entry) => entry.onError)!.onError!({
         error,
         url,
         init,
@@ -49,7 +52,8 @@ describe('shared request middleware', () => {
 
   test('wraps transport failures and retains their cause', async () => {
     const error = new TypeError('connection refused');
-    const result = createMiddlewareArray()[0].onError!({
+    const result = createMiddlewareArray().find((entry) => entry.onError)!
+      .onError!({
       error,
       url,
       init,
@@ -64,7 +68,7 @@ describe('shared request middleware', () => {
     async (status) => {
       const response = new Response(status === 204 ? null : 'body', { status });
       expect(
-        await createMiddlewareArray()[0].post!({
+        await createMiddlewareArray().find((entry) => entry.post)!.post!({
           response,
           url,
           init,
@@ -76,7 +80,7 @@ describe('shared request middleware', () => {
   );
 
   test('maps a plain-text authorization error using the request URL', async () => {
-    const result = createMiddlewareArray()[0].post!({
+    const result = createMiddlewareArray().find((entry) => entry.post)!.post!({
       response: new Response('Invalid API key', { status: 401 }),
       url,
       init,
@@ -141,7 +145,7 @@ describe('shared request middleware', () => {
     process.env.PINECONE_DEBUG = '1';
     process.env.PINECONE_DEBUG_CURL = '1';
     const middleware = createMiddlewareArray();
-    expect(middleware).toHaveLength(3);
+    expect(middleware).toHaveLength(4);
     const request = {
       url,
       fetch: jest.fn(),
@@ -154,8 +158,9 @@ describe('shared request middleware', () => {
         body: '{"name":"test"}',
       },
     };
-    await middleware[0].pre!(request);
-    await middleware[1].post!({ ...request, response: new Response('{}') });
+    for (const entry of middleware) await entry.pre?.(request);
+    for (const entry of middleware)
+      await entry.post?.({ ...request, response: new Response('{}') });
     const logs = debug.mock.calls.flat().join('\n');
     expect(logs).toContain('>>> Body: {"name":"test"}');
     expect(logs).toContain(
@@ -163,4 +168,33 @@ describe('shared request middleware', () => {
     );
     expect(logs.indexOf('>>> Body:')).toBeLessThan(logs.indexOf('curl -X'));
   });
+});
+
+describe('additional header content-type protection', () => {
+  test.each([
+    { 'Content-Type': 'application/json' },
+    [['content-type', 'application/json']],
+    new Headers({ 'Content-Type': 'application/json' }),
+  ] as RequestInit['headers'][])(
+    'preserves encoding for header container %p',
+    async (headers) => {
+      const middleware = createMiddlewareArray({
+        'Content-Type': 'text/plain',
+        'content-type': 'text/html',
+        'CONTENT-TYPE': 'application/xml',
+        'X-Custom': 'retained',
+      });
+      const result = await middleware[1].pre!({
+        url,
+        init: { headers },
+        fetch: jest.fn(),
+      });
+      expect(new Headers(result!.init.headers).get('content-type')).toBe(
+        'application/json',
+      );
+      expect(new Headers(result!.init.headers).get('x-custom')).toBe(
+        'retained',
+      );
+    },
+  );
 });

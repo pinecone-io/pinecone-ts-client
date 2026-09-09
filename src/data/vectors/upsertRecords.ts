@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import {
   IntegratedRecord,
@@ -8,6 +9,7 @@ import { handleApiError, PineconeArgumentError } from '../../errors';
 import { buildUserAgent, getFetch } from '../../utils';
 import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 import {
+  HTTPHeaders,
   ResponseError,
   X_PINECONE_API_VERSION,
 } from '../../pinecone-generated-ts-fetch/db_data';
@@ -31,15 +33,18 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
   apiProvider: VectorOperationsProvider;
   config: PineconeConfiguration;
   namespace: string;
+  additionalHeaders?: HTTPHeaders;
 
   constructor(
     apiProvider: VectorOperationsProvider,
     namespace: string,
     config: PineconeConfiguration,
+    additionalHeaders?: HTTPHeaders,
   ) {
     this.apiProvider = apiProvider;
     this.namespace = namespace;
     this.config = config;
+    this.additionalHeaders = additionalHeaders ?? config.additionalHeaders;
   }
 
   validator = (options: UpsertRecordsOptions<T>) => {
@@ -67,6 +72,8 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       'Api-Key': this.config.apiKey,
       'User-Agent': buildUserAgent(this.config),
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
+      ...withoutContentType(this.additionalHeaders),
+      'Content-Type': 'application/x-ndjson',
     };
 
     // Note: This operation uses direct fetch() with NDJSON format,
