@@ -16,7 +16,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 // Get the host from the describe response
-const indexModel = await pc.describeIndex('example-index');
+const indexModel = await pc.indexes.describe('example-index');
 const index = pc.index({ host: indexModel.host });
 
 // Now perform index operations
@@ -28,7 +28,7 @@ await index.upsert({
 Or get the host when creating an index:
 
 ```typescript
-const indexModel = await pc.createIndex({
+const indexModel = await pc.indexes.create({
   name: 'example-index',
   dimension: 1536,
   spec: {
@@ -45,7 +45,7 @@ const index = pc.index({ host: indexModel.host });
 
 ### Targeting by name (convenient for testing)
 
-When you provide only a name, the SDK will automatically call `describeIndex` to resolve the index host URL. This is convenient for testing but should be avoided in production:
+When you provide only a name, the SDK will automatically call `pc.indexes.describe` to resolve the index host URL. This is convenient for testing but should be avoided in production:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -102,7 +102,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('example-index');
+const indexModel = await pc.indexes.describe('example-index');
 const index = pc.index({ host: indexModel.host });
 
 const indexStats = await index.describeIndexStats();
@@ -139,7 +139,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('example-index');
+const indexModel = await pc.indexes.describe('example-index');
 const index = pc.index({ host: indexModel.host });
 
 const upsertResponse = await index.upsert({
@@ -173,7 +173,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const queryResponse = await index.query({
@@ -213,7 +213,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -231,7 +231,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const fetchResponse = await index.fetch({
@@ -266,7 +266,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 await index.update({
@@ -288,7 +288,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 await index.deleteMany({
@@ -327,7 +327,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host, namespace: 'foo-namespace' });
 
 await index.deleteAll();
@@ -344,7 +344,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
 
 // Fetch the first 3 vector IDs matching prefix 'doc1#'

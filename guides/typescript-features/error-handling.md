@@ -62,7 +62,7 @@ async function handleSpecificErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   try {
-    const indexModel = await pc.describeIndex('my-index');
+    const indexModel = await pc.indexes.describe('my-index');
     const index = pc.index({ host: indexModel.host });
     const results = await index.query({
       vector: [0.1, 0.2, 0.3],
@@ -103,7 +103,7 @@ async function examineErrorProperties() {
   const pc = new Pinecone({ apiKey: 'INVALID_KEY' });
 
   try {
-    await pc.listIndexes();
+    await pc.indexes.list();
   } catch (error) {
     if (error instanceof Errors.BasePineconeError) {
       console.error('Error name:', error.name);
@@ -162,7 +162,7 @@ async function retryableOperation<T>(
 // Usage
 async function queryWithRetry() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   const results = await retryableOperation(() =>
@@ -191,7 +191,7 @@ const pc = new Pinecone({
 });
 
 // Operations like upsert, update, and configureIndex will automatically retry
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 await index.upsert({
   records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
@@ -207,7 +207,7 @@ import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function handleValidationErrors() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   try {
@@ -243,7 +243,7 @@ async function robustIndexOperation() {
 
   try {
     // Try to create an index
-    await pc.createIndex({
+    await pc.indexes.create({
       name: 'my-index',
       dimension: 1536,
       spec: {
@@ -255,7 +255,7 @@ async function robustIndexOperation() {
       suppressConflicts: true, // Don't throw if index exists
     });
 
-    const indexModel = await pc.describeIndex('my-index');
+    const indexModel = await pc.indexes.describe('my-index');
     const index = pc.index({ host: indexModel.host });
 
     // Perform operations with proper error handling
@@ -307,7 +307,7 @@ process.env.PINECONE_DEBUG = 'true';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 // Operations will now log detailed information
-await pc.listIndexes();
+await pc.indexes.list();
 ```
 
 You can also enable CURL command logging:
@@ -321,7 +321,7 @@ process.env.PINECONE_DEBUG_CURL = 'true';
 
 1. **Catch specific errors**: Handle different error types appropriately
 2. **Retry transient failures**: Implement exponential backoff for connection errors
-3. **Use suppressConflicts**: For idempotent operations like `createIndex`
+3. **Use suppressConflicts**: For idempotent operations like `pc.indexes.create`
 4. **Log errors**: Log errors with context for debugging
 5. **Wrap errors**: When wrapping errors, preserve the original cause
 6. **Check status page**: For 500/503 errors, check [status.pinecone.io](https://status.pinecone.io/)
@@ -338,7 +338,7 @@ async function createOrUseExisting(name: string) {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   try {
-    await pc.createIndex({
+    await pc.indexes.create({
       name,
       dimension: 1536,
       spec: {
@@ -368,7 +368,7 @@ import { Pinecone, Errors } from '@pinecone-database/pinecone';
 
 async function queryWithFallback() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   try {

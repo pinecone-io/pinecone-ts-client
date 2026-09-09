@@ -13,7 +13,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('test-index');
+const indexModel = await pc.indexes.describe('test-index');
 const index = pc.index({ host: indexModel.host, namespace: 'ns1' });
 
 // Now all operations will use the 'ns1' namespace
@@ -27,7 +27,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('test-index');
+const indexModel = await pc.indexes.describe('test-index');
 const index = pc.index({ host: indexModel.host });
 
 // Query in a specific namespace
@@ -47,7 +47,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('test-index');
+const indexModel = await pc.indexes.describe('test-index');
 const index = pc.index({ host: indexModel.host });
 
 const namespaces = await index.listNamespaces();
@@ -66,7 +66,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('test-index');
+const indexModel = await pc.indexes.describe('test-index');
 const index = pc.index({ host: indexModel.host });
 
 const namespace = await index.describeNamespace('ns1');
@@ -86,7 +86,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('test-index');
+const indexModel = await pc.indexes.describe('test-index');
 const index = pc.index({ host: indexModel.host });
 
 await index.deleteNamespace('ns1');

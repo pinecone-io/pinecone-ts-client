@@ -295,7 +295,7 @@ type ArticleMetadata = {
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.createIndexForModel({
+await pc.indexes.createForModel({
   name: 'articles',
   cloud: 'aws',
   region: 'us-east-1',

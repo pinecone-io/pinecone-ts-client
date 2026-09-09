@@ -24,7 +24,7 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 const indexName = 'sample-index';
 
 // Ensure you have a serverless index
-const indexModel = await pc.createIndex({
+const indexModel = await pc.indexes.create({
   name: indexName,
   dimension: 10,
   spec: {
@@ -60,7 +60,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('sample-index');
+const indexModel = await pc.indexes.describe('sample-index');
 const index = pc.index({ host: indexModel.host });
 
 const importStatus = await index.describeImport('import-id');
@@ -85,7 +85,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('sample-index');
+const indexModel = await pc.indexes.describe('sample-index');
 const index = pc.index({ host: indexModel.host });
 
 const imports = await index.listImports();
@@ -128,7 +128,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('sample-index');
+const indexModel = await pc.indexes.describe('sample-index');
 const index = pc.index({ host: indexModel.host });
 
 await index.cancelImport('import-id');
@@ -145,7 +145,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('sample-index');
+const indexModel = await pc.indexes.describe('sample-index');
 const index = pc.index({ host: indexModel.host });
 
 // Continue on errors
@@ -170,7 +170,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('sample-index');
+const indexModel = await pc.indexes.describe('sample-index');
 const index = pc.index({ host: indexModel.host });
 
 // Start the import

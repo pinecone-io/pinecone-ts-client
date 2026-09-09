@@ -6,14 +6,14 @@ For more information, see [Upsert and search with integrated inference](https://
 
 ## Create an index for a model
 
-Integrated inference requires a serverless index configured for a specific embedding model. Use the `createIndexForModel` method to create an index that will automatically handle embeddings:
+Integrated inference requires a serverless index configured for a specific embedding model. Use the `pc.indexes.createForModel` method to create an index that will automatically handle embeddings:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.createIndexForModel({
+await pc.indexes.createForModel({
   name: 'integrated-index',
   cloud: 'aws',
   region: 'us-east-1',
@@ -211,7 +211,7 @@ async function integratedInferenceExample() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   // 1. Create an index for a model
-  await pc.createIndexForModel({
+  await pc.indexes.createForModel({
     name: 'my-integrated-index',
     cloud: 'aws',
     region: 'us-east-1',

@@ -13,7 +13,7 @@ async function basicExample() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   // Always await SDK operations
-  const list = await pc.listIndexes();
+  const list = await pc.indexes.list();
   console.log(list.indexes);
 }
 
@@ -34,7 +34,7 @@ async function errorHandlingExample() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   try {
-    const indexModel = await pc.describeIndex('my-index');
+    const indexModel = await pc.indexes.describe('my-index');
     const index = pc.index({ host: indexModel.host });
     const results = await index.query({
       vector: [0.1, 0.2, 0.3],
@@ -64,7 +64,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 async function parallelOperations() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   // Fetch multiple vectors in parallel
@@ -77,7 +77,7 @@ async function parallelOperations() {
   // Or perform different operations in parallel
   const [stats, description, namespaces] = await Promise.all([
     index.describeIndexStats(),
-    pc.describeIndex('my-index'),
+    pc.indexes.describe('my-index'),
     index.listNamespaces(),
   ]);
 
@@ -96,7 +96,7 @@ import { Pinecone, PineconeRecord } from '@pinecone-database/pinecone';
 
 async function batchOperations() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   // Prepare all records first
@@ -129,7 +129,7 @@ async function sequentialOperations() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   // Create index and wait for it to be ready
-  await pc.createIndex({
+  await pc.indexes.create({
     name: 'new-index',
     dimension: 1536,
     spec: {
@@ -201,7 +201,7 @@ async function retryOperation<T>(
 // Usage
 async function queryWithRetry() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   const results = await retryOperation(
@@ -240,7 +240,7 @@ async function withTimeout<T>(
 // Usage
 async function queryWithTimeout() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   try {
@@ -302,17 +302,18 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-pc.createIndex({
-  name: 'new-index',
-  dimension: 1536,
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-east-1',
+pc.indexes
+  .create({
+    name: 'new-index',
+    dimension: 1536,
+    spec: {
+      serverless: {
+        cloud: 'aws',
+        region: 'us-east-1',
+      },
     },
-  },
-  waitUntilReady: true,
-})
+    waitUntilReady: true,
+  })
   .then(() => {
     const index = pc.index({ name: 'new-index' });
     return index.upsert({

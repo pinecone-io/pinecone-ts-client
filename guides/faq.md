@@ -17,13 +17,13 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 async function query1() {
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.1, 0.2], topK: 10 });
 }
 
 async function query2() {
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.2, 0.3], topK: 10 });
 }
@@ -31,7 +31,7 @@ async function query2() {
 // ❌ Bad: Creating new client for each operation
 async function badQuery() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' }); // Don't do this repeatedly!
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
   return await index.query({ vector: [0.1, 0.2], topK: 10 });
 }
@@ -39,7 +39,7 @@ async function badQuery() {
 
 ## When are network requests made?
 
-No network requests are made when instantiating the client with `new Pinecone()`. Network requests only occur when you invoke operations like `upsert`, `query`, `listIndexes`, etc.
+No network requests are made when instantiating the client with `new Pinecone()`. Network requests only occur when you invoke operations like `upsert`, `query`, `pc.indexes.list`, etc.
 
 The SDK uses the native `fetch` API (available in Node.js 18+ and Edge runtimes), which handles HTTP connection management automatically.
 
@@ -81,14 +81,14 @@ const index = pc.index({ name: 'my-index' });
 For production, get the index host from `describeIndex()` or from the create response, then target by host directly:
 
 ```typescript
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 ```
 
 Or get the host when creating an index:
 
 ```typescript
-const indexModel = await pc.createIndex({
+const indexModel = await pc.indexes.create({
   name: 'my-index',
   dimension: 1536,
   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
@@ -108,7 +108,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 async function verifyConnection() {
   try {
     const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-    const indexes = await pc.listIndexes();
+    const indexes = await pc.indexes.list();
     console.log(
       'Connection successful! Indexes:',
       indexes.indexes?.length ?? 0,
@@ -196,7 +196,7 @@ import { Pinecone, PineconeRecord } from '@pinecone-database/pinecone';
 
 async function batchUpsert(records: PineconeRecord[], batchSize: number = 100) {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   for (let i = 0; i < records.length; i += batchSize) {
@@ -207,7 +207,7 @@ async function batchUpsert(records: PineconeRecord[], batchSize: number = 100) {
 }
 ```
 
-For very large datasets (millions of vectors), consider using the [bulk import](../data-operations/bulk-import.md) feature.
+For very large datasets (millions of vectors), consider using the [bulk import](./data-operations/bulk-import.md) feature.
 
 ## Why are my queries slow?
 
@@ -230,7 +230,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 async function concurrentQueries() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-  const indexModel = await pc.describeIndex('my-index');
+  const indexModel = await pc.indexes.describe('my-index');
   const index = pc.index({ host: indexModel.host });
 
   const queries = [
