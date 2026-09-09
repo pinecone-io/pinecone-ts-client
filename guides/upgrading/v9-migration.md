@@ -92,7 +92,7 @@ older version of the API, pass the header through `additionalHeaders`:
 
 ```typescript
 const pc = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY!,
+  apiKey: process.env.PINECONE_API_KEY || '',
   additionalHeaders: { 'X-Pinecone-Api-Version': '2026-01' },
 });
 ```
