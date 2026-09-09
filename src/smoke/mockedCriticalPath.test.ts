@@ -203,7 +203,10 @@ describe('mocked critical path (no API key)', () => {
     expect(result.dimension).toBe(3);
     expect(result.metric).toBe('cosine');
     expect(result.vectorType).toBe('dense');
-    expect(result.spec.serverless?.readCapacity).toBe(result.readCapacity);
+    expect('serverless' in result.spec).toBe(true);
+    if ('serverless' in result.spec) {
+      expect(result.spec.serverless.readCapacity).toBe(result.readCapacity);
+    }
     expect(result).toMatchObject({
       name: INDEX_NAME,
       host: DATA_HOST,

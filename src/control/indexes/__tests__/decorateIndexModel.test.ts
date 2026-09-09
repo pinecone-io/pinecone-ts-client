@@ -1,4 +1,5 @@
 import { decorateIndexModel } from '../decorateIndexModel';
+import type { IndexModel } from '../listIndexes';
 import { fixtures } from './fixtures/indexModels';
 import { ManageIndexesApi } from '../../../pinecone-generated-ts-fetch/db_control';
 import { describeIndex } from '../describeIndex';
@@ -7,6 +8,17 @@ import { createIndexForModel } from '../createIndexForModel';
 import { configureIndex } from '../configureIndex';
 import { listIndexes } from '../listIndexes';
 import { PineconeIndexPropertyError } from '../../../errors';
+
+function serverless(model: IndexModel) {
+  const spec = model.spec;
+  if (!('serverless' in spec)) throw new Error('Expected serverless');
+  return spec.serverless;
+}
+function podSpec(model: IndexModel) {
+  const spec = model.spec;
+  if (!('pod' in spec)) throw new Error('Expected pod');
+  return spec.pod;
+}
 
 const createOptions = {
   name: 'test-index',
@@ -97,13 +109,13 @@ describe('legacy accessors on every index response path', () => {
     const model = decorateIndexModel(
       structuredClone(fixtures.managedMissingReadCapacity),
     );
-    expect(model.spec.serverless?.cloud).toBe('aws');
-    expect(model.spec.serverless?.region).toBe('us-east-1');
-    expect(() => model.spec.serverless?.readCapacity).toThrow(
+    expect(serverless(model).cloud).toBe('aws');
+    expect(serverless(model).region).toBe('us-east-1');
+    expect(() => serverless(model).readCapacity).toThrow(
       PineconeIndexPropertyError,
     );
     try {
-      void model.spec.serverless?.readCapacity;
+      void serverless(model).readCapacity;
     } catch (error) {
       expect(error).toMatchObject({
         property: 'spec.serverless.readCapacity',
@@ -113,12 +125,12 @@ describe('legacy accessors on every index response path', () => {
     }
     expect(() => JSON.stringify(model.spec)).not.toThrow();
     const pod = decorateIndexModel(structuredClone(fixtures.podPartial));
-    expect(pod.spec.pod?.pods).toBeUndefined();
-    expect(pod.spec.serverless).toBeUndefined();
+    expect(podSpec(pod).pods).toBeUndefined();
+    expect('serverless' in pod.spec).toBe(false);
   });
   test('read capacity preserves API values and identity, without schema name collision', () => {
     const model = decorateIndexModel(structuredClone(fixtures.classicDense));
-    expect(model.spec.serverless?.readCapacity).toBe(model.readCapacity);
-    expect(model.spec.serverless?.schema).toBeUndefined();
+    expect(serverless(model).readCapacity).toBe(model.readCapacity);
+    expect(serverless(model).schema).toBeUndefined();
   });
 });

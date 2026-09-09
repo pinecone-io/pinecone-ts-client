@@ -134,7 +134,7 @@ export async function compileLegacyResponse(pc: Pinecone): Promise<void> {
   const dimension: number | undefined = model.dimension;
   const metric: string = model.metric;
   const vectorType: 'dense' | 'sparse' = model.vectorType;
-  if (model.spec.serverless) {
+  if ('serverless' in model.spec) {
     const mode: 'OnDemand' | 'Dedicated' =
       model.spec.serverless.readCapacity.mode;
     void mode;

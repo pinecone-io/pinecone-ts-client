@@ -95,14 +95,19 @@ export interface LegacyPodSpec {
   metadataConfig?: undefined;
 }
 /** Pre-2026-07 deployment envelope. Only the applicable variant is present. */
-export interface LegacyIndexSpec {
-  /** Serverless deployment settings, when applicable. */
-  serverless?: LegacyServerlessSpec;
-  /** Pod deployment settings, when applicable. */
-  pod?: LegacyPodSpec;
-  /** BYOC deployment settings, when applicable. */
-  byoc?: LegacyByocSpec;
-}
+export type LegacyIndexSpec =
+  | {
+      /** Serverless deployment settings. */
+      serverless: LegacyServerlessSpec;
+    }
+  | {
+      /** Pod deployment settings. */
+      pod: LegacyPodSpec;
+    }
+  | {
+      /** BYOC deployment settings. */
+      byoc: LegacyByocSpec;
+    };
 /** Pure deployment projection before missing-capacity accessors are installed. */
 export interface DerivedLegacyIndexSpec {
   /** Serverless fields, including the raw optional API read capacity. */
