@@ -1,15 +1,14 @@
-import { PineconeBadRequestError } from '../../../errors';
+import {
+  PineconeBadRequestError,
+  PineconeNotFoundError,
+} from '../../../errors';
 import {
   Pinecone,
   Index,
   DocumentScoringMethod,
   SearchDocumentsResponse,
 } from '../../../index';
-import {
-  assertWithRetries,
-  randomName,
-  retryDeletes,
-} from '../../test-helpers';
+import { assertWithRetries, randomName } from '../../test-helpers';
 
 const denseScoreBy: DocumentScoringMethod[] = [
   { type: 'dense_vector', fields: ['dense'], values: [1, 0] },
@@ -137,7 +136,18 @@ describe('document search scoring modes', () => {
   }, 1_500_000);
 
   afterAll(async () => {
-    await retryDeletes(pc, name);
+    await assertWithRetries(
+      async () => {
+        try {
+          await pc.indexes.delete(name);
+        } catch (error) {
+          if (!(error instanceof PineconeNotFoundError)) throw error;
+        }
+      },
+      () => {},
+      30_000,
+      1000,
+    );
   });
 
   test('upserts documents and reports the accepted document count', async () => {
