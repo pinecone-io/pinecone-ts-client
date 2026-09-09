@@ -7,7 +7,10 @@ let mockFetch: jest.Mock;
 const mockHostUrl = 'https://host-url.io';
 const mockNamepspace = 'mock-namespace';
 
-const setupCmd = (response: object) => {
+const setupCmd = (
+  response: object,
+  additionalHeaders?: Record<string, string>,
+) => {
   mockFetch = jest.fn().mockResolvedValue({
     ok: true,
     status: 200,
@@ -21,6 +24,7 @@ const setupCmd = (response: object) => {
   const config = {
     apiKey: 'api-key-test',
     fetchApi: mockFetch,
+    additionalHeaders,
   } as PineconeConfiguration;
 
   const cmd = new UpsertRecordsCommand(VectorProvider, mockNamepspace, config);
@@ -61,6 +65,23 @@ describe('upsertRecords', () => {
       `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
       expect.objectContaining({
         body: records.map((record) => JSON.stringify(record)).join('\n'),
+      }),
+    );
+  });
+
+  test('sends the ndjson Content-Type and ignores a caller override', async () => {
+    const { cmd, mockFetch } = setupCmd(
+      {},
+      { 'Content-Type': 'application/json' },
+    );
+
+    await cmd.run({ records: [{ id: '1', chunk_text: 'test' }] });
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${mockHostUrl}/records/namespaces/${mockNamepspace}/upsert`,
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Content-Type': 'application/x-ndjson',
+        }),
       }),
     );
   });

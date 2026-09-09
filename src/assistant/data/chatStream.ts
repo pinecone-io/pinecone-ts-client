@@ -35,6 +35,7 @@ export const chatStream = (
       'User-Agent': buildUserAgent(config),
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
       ...(config.additionalHeaders || {}),
+      'Content-Type': 'application/json',
     };
 
     // Format context options if any are provided

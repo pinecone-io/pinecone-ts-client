@@ -180,9 +180,17 @@ async function executeUpload(
   requestHeaders: Record<string, string>,
   body: FormData,
 ): Promise<OperationModel> {
+  // A FormData body must not carry an explicit Content-Type: the runtime generates the
+  // multipart boundary itself, and a caller's additionalHeaders entry would otherwise
+  // silently replace it and break the upload.
+  const headers = Object.fromEntries(
+    Object.entries(requestHeaders).filter(
+      ([key]) => key.toLowerCase() !== 'content-type',
+    ),
+  );
   const response = await fetch(url, {
     method,
-    headers: requestHeaders,
+    headers,
     body,
   });
   return parseResponse(response, url);

@@ -211,6 +211,18 @@ describe('path input', () => {
       }),
     );
   });
+
+  test('drops a Content-Type set via additionalHeaders from the FormData request', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, {
+      ...mockConfig,
+      additionalHeaders: { 'Content-Type': 'application/json' },
+    });
+    await upload({ path: 'test.txt' });
+
+    const [, init] = mockRetryingFetch.mock.calls[0];
+    expect(init.headers).not.toHaveProperty('Content-Type');
+    expect(init.headers).not.toHaveProperty('content-type');
+  });
 });
 
 // ---------------------------------------------------------------------------

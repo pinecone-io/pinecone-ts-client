@@ -72,6 +72,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       'User-Agent': buildUserAgent(this.config),
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
       ...(this.additionalHeaders || {}),
+      'Content-Type': 'application/x-ndjson',
     };
 
     // Note: This operation uses direct fetch() with NDJSON format,
