@@ -4,6 +4,7 @@ import { PineconeArgumentError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import type { UploadFileOptions } from './types';
 import { sendFileMultipart } from './fileUpload';
+import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 
 export const uploadFile = (
   assistantName: string,
@@ -15,6 +16,7 @@ export const uploadFile = (
 
     const hostUrl = await apiProvider.provideHostUrl();
     let filesUrl = `${hostUrl}/files/${encodeURIComponent(assistantName)}`;
+    assertRequestPathIsAddressable(filesUrl);
     if (options.multimodal !== undefined) {
       filesUrl += `?multimodal=${options.multimodal}`;
     }

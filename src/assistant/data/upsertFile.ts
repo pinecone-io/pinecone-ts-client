@@ -4,6 +4,7 @@ import { PineconeArgumentError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import type { UpsertFileOptions } from './types';
 import { sendFileMultipart } from './fileUpload';
+import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 
 /**
  * Creates or replaces a file on an Assistant at a caller-supplied file ID.
@@ -40,6 +41,7 @@ export const upsertFile = (
     let filesUrl = `${hostUrl}/files/${encodeURIComponent(
       assistantName,
     )}/${encodeURIComponent(options.assistantFileId)}`;
+    assertRequestPathIsAddressable(filesUrl);
     if (options.multimodal !== undefined) {
       filesUrl += `?multimodal=${options.multimodal}`;
     }
