@@ -8,6 +8,7 @@ import { randomName, retryDeletes } from '../../test-helpers';
 //
 // `describe.skip` (rather than commenting out the test body) also skips the
 // `beforeAll`/`afterAll` hooks, so no index is created and left orphaned.
+// @integration-skip #38: document import needs a provisioned JSONL fixture rather than this vector parquet dataset.
 describe.skip('bulk import', () => {
   let pinecone: Pinecone, index: Index;
 

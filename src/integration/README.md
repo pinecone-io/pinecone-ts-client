@@ -148,3 +148,18 @@ test('example', () => {
   // ... test code
 });
 ```
+
+## Disabled and opt-in coverage
+
+Every `test.skip`, `it.skip`, `describe.skip`, disabled shorthand (`xit`, `xtest`, `xdescribe`), or conditional alias that selects a Jest skip must have a tracked reason. Add a leading comment to the skipped statement, its enclosing suite, or the conditional alias declaration:
+
+```typescript
+// @integration-skip #35: dense-only indexes return empty results despite fetched documents.
+describe.skip('dense-only search', () => {
+  /* tests */
+});
+```
+
+The keyless `integrationSkipInventory.test.ts` unit test parses the integration TypeScript syntax without executing suites or provisioning resources. It recognizes parameterized/computed skips and opt-in gates. An annotation on an enclosing suite applies to its descendants; an unrelated adjacent suite's annotation does not. Remove the annotation when re-enabling the last skipped test in that scope. Issue numbers refer to this repository and the reason must explain what enables the coverage.
+
+The current dense-only search and filter-fetch limitations are tracked in #35 and #17. Integrated inference is active, so the old #16 skip is no longer inventoried. Document bulk import fixture provisioning remains #38. Slow backup-content and bulk-completion checks and the collections source-pod fixture are explicit opt-in coverage: their conditional skip declarations should name #117, #38, and #21 respectively and document the required environment variable next to the gate. Default lifecycle tests remain active.

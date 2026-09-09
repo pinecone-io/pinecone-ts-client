@@ -27,13 +27,14 @@ beforeAll(async () => {
 // NOTE: `searchDocuments` scores against supplied vector values and has no
 // query-by-id form. The vectors API's `query({ id })` has no equivalent in the
 // documents API and is intentionally not covered here.
+// @integration-skip #35: dense-only indexes return no search matches despite fetched documents; mixed-schema coverage is active separately.
 describe('searchDocuments tests on serverless index', () => {
   // Prod answers `dense_vector` scoring with HTTP 200 and an empty `matches`
   // array, even though the seeded namespace demonstrably holds 11 documents.
   // This is a server-side read-path gap, not a client bug: the request the SDK
   // sends is correct, and svc-docs-api validates the scoring field against the
   // index schema and forwards it (verified in pinecone-db at 8a4bfa3b10). There
-  // is nothing to fix here, so it is not tracked in this repo — un-skip once
+  // is no client fix here; #35 tracks the gap. Un-skip once
   // the read path serves vector scoring for schema-based indexes.
   test.skip('search with vector values', async () => {
     const topK = 1;
