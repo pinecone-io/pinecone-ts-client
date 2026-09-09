@@ -8,6 +8,7 @@ export interface IntegrationFixtures {
   serverlessIndex: {
     name: string;
     dimension: number;
+    deployment: { cloud: string; region: string };
     metric: string;
     /**
      * Name of the `dense_vector` schema field holding the seeded vectors.
@@ -117,6 +118,10 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
     client,
     serverlessIndex: {
       name: data.serverlessIndex.name,
+      deployment: data.serverlessIndex.deployment || {
+        cloud: 'aws',
+        region: 'us-west-2',
+      },
       dimension: data.serverlessIndex.dimension || 2,
       metric: data.serverlessIndex.metric || 'dotproduct',
       vectorFieldName: data.serverlessIndex.vectorFieldName || 'embedding',

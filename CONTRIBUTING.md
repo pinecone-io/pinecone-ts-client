@@ -136,6 +136,6 @@ The `npm` command runs the bash file located in the `src/external-app` directory
 Run `npm run docs:build` to validate and render the API reference. Handwritten
 comments must have no warnings: missing documentation and broken links fail the
 build. Generated models remain in the reference, but warnings whose source is
-under `src/pinecone-generated-ts-fetch/` or `src/pinecone-generated-ts-fetch-alpha/`
+under `src/pinecone-generated-ts-fetch/`
 are excluded by `assets/docs-validation.mjs`. Warnings without an identified
 generated source still fail, including handwritten links to generated types.

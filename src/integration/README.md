@@ -60,7 +60,9 @@ npm run integration:teardown
 
 ### In CI
 
-Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs share the same resources.
+Tests automatically use `FIXTURES_JSON` set by the setup job. The matrix runs Node 22 and 24 with npm and Bun. All matrix jobs share the same resources, so suites use unique namespaces and remove every namespace they create.
+
+Schema field names, dimensions, metrics, deployment location, and seeded record IDs are carried in the fixture JSON. Assertions should use those values instead of duplicating setup constants. Local HTTP retry tests use an ephemeral loopback port and a mock API key.
 
 ## CI Workflow
 
@@ -114,7 +116,11 @@ Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs sh
   "serverlessIndex": {
     "name": "test-index-1234567890",
     "dimension": 2,
-    "metric": "dotproduct"
+    "metric": "dotproduct",
+    "deployment": { "cloud": "aws", "region": "us-west-2" },
+    "vectorFieldName": "embedding",
+    "metadataFilter": { "key": "genre", "value": "comedy" },
+    "recordIds": ["record-1"]
   },
   "assistant": {
     "name": "test-assistant-1234567890",

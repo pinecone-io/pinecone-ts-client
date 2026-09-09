@@ -81,13 +81,14 @@ export const setup = async () => {
   // (`dense_vector`, `sparse_vector`, `semantic_text`, and `string` with
   // `full_text_search`); plain metadata values are indexed automatically at
   // upsert. `metadataKeys` is therefore only used to pick a filter key below.
+  const deployment = {
+    deploymentType: 'managed' as const,
+    cloud: 'aws',
+    region: 'us-west-2',
+  };
   await pc.indexes.create({
     name: indexName,
-    deployment: {
-      deploymentType: 'managed',
-      cloud: 'aws',
-      region: 'us-west-2',
-    },
+    deployment,
     schema: {
       fields: {
         [vectorFieldName]: {
@@ -151,6 +152,7 @@ export const setup = async () => {
   const fixtures = {
     serverlessIndex: {
       name: indexName,
+      deployment,
       dimension: 2,
       metric: 'dotproduct',
       vectorFieldName,
