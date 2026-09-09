@@ -1,3 +1,4 @@
+import { withoutContentType } from './additionalHeaders';
 import {
   HTTPHeaders,
   Middleware,
@@ -28,11 +29,7 @@ const mergeHeaders = (
   additionalHeaders: HTTPHeaders,
 ): HTTPHeaders => {
   const base = toHeaderRecord(existing);
-  const merged = { ...base, ...additionalHeaders };
-  if (base['Content-Type'] !== undefined) {
-    merged['Content-Type'] = base['Content-Type'];
-  }
-  return merged;
+  return { ...base, ...withoutContentType(additionalHeaders) };
 };
 
 const additionalHeadersMiddleware = (
@@ -57,7 +54,7 @@ const additionalHeadersMiddleware = (
  * operation's own headers. Matching is case-sensitive, so an entry keyed exactly
  * `X-Pinecone-Api-Version` takes precedence over the SDK's pinned version. `Content-Type`
  * is the one exception: the body is already encoded by the time these are applied, so the
- * operation's own value stands.
+ * operation's own value stands regardless of the caller's header casing.
  * @returns Array of middleware objects
  */
 export const createMiddlewareArray = (

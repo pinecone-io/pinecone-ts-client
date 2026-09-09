@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import {
   DocumentOperationsApi,
   Configuration,
@@ -58,7 +59,7 @@ export class DocumentOperationsProvider {
   }
 
   private _buildApi(): DocumentOperationsApi {
-    const headers = this.additionalHeaders || null;
+    const headers = withoutContentType(this.additionalHeaders);
     const apiConfig: ConfigurationParameters = {
       basePath: this.indexHostUrl,
       apiKey: this.config.apiKey,

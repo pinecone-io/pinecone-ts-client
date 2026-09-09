@@ -17,3 +17,11 @@ export const mergeAdditionalHeaders = (
   }
   return { ...clientHeaders, ...targetHeaders };
 };
+
+/** Removes caller content types so each operation retains its body encoding. */
+export const withoutContentType = (headers?: HTTPHeaders): HTTPHeaders =>
+  Object.fromEntries(
+    Object.entries(headers || {}).filter(
+      ([name]) => name.toLowerCase() !== 'content-type',
+    ),
+  );

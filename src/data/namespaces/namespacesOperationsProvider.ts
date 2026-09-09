@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import type { PineconeConfiguration } from '../vectors/types';
 import type { HTTPHeaders } from '../../pinecone-generated-ts-fetch/db_data';
 import {
@@ -62,7 +63,7 @@ export class NamespaceOperationsProvider {
   }
 
   buildNamespaceOperationsConfig() {
-    const headers = this.additionalHeaders || null;
+    const headers = withoutContentType(this.additionalHeaders);
 
     const indexConfigurationParameters: ConfigurationParameters = {
       basePath: this.indexHostUrl,

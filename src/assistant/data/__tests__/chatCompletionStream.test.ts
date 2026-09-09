@@ -68,28 +68,34 @@ describe('chatCompletionStream', () => {
     );
   });
 
-  test('sends the JSON Content-Type and ignores a caller override', async () => {
-    const configWithOverride = {
-      ...mockConfig,
-      additionalHeaders: { 'Content-Type': 'text/plain' },
-    } as PineconeConfiguration;
-    const streamFn = chatCompletionStream(
-      mockAssistantName,
-      mockApiProvider,
-      configWithOverride,
-    );
+  test.each(['Content-Type', 'content-type', 'CONTENT-TYPE'])(
+    'sends only the JSON Content-Type when %s is configured',
+    async (name) => {
+      const configWithOverride = {
+        ...mockConfig,
+        additionalHeaders: { [name]: 'text/plain' },
+      } as PineconeConfiguration;
+      const streamFn = chatCompletionStream(
+        mockAssistantName,
+        mockApiProvider,
+        configWithOverride,
+      );
 
-    await streamFn({ messages: [{ role: 'user', content: 'Hello' }] });
+      await streamFn({ messages: [{ role: 'user', content: 'Hello' }] });
+      expect(
+        new Headers(mockFetch.mock.calls[0][1].headers).get('content-type'),
+      ).toBe('application/json');
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
         }),
-      }),
-    );
-  });
+      );
+    },
+  );
 
   test('forwards temperature into the outgoing body', async () => {
     const streamFn = chatCompletionStream(

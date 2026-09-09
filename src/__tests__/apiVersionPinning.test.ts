@@ -108,14 +108,25 @@ describe('pinning the API version through additionalHeaders', () => {
     expect(captures[0].headers['x-pinecone-api-version']).toBe(PINNED);
   });
 
-  test('Content-Type stays with the encoding the operation chose', async () => {
-    const captures: Capture[] = [];
-    const pc = clientFor(captures, { 'Content-Type': 'text/plain' });
+  test.each(['Content-Type', 'content-type', 'CONTENT-TYPE'])(
+    '%s cannot change or duplicate the operation content type',
+    async (name) => {
+      const captures: Capture[] = [];
+      const pc = clientFor(captures, { [name]: 'text/plain' });
 
-    await pc.index({ name: INDEX_NAME, host: DATA_HOST }).deleteAll();
+      await pc.index({ name: INDEX_NAME, host: DATA_HOST }).deleteAll();
 
-    expect(captures[0].headers['Content-Type']).toBe('application/json');
-  });
+      expect(new Headers(captures[0].headers).get('content-type')).toBe(
+        'application/json',
+      );
+      await pc
+        .index({ name: INDEX_NAME, host: DATA_HOST })
+        .upsertRecords({ records: [{ id: '1', chunk_text: 'hello' }] });
+      expect(new Headers(captures[1].headers).get('content-type')).toBe(
+        'application/x-ndjson',
+      );
+    },
+  );
 
   test('headers the SDK does not set are still carried through', async () => {
     const captures: Capture[] = [];

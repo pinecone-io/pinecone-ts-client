@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import {
   ResponseError,
   X_PINECONE_API_VERSION,
@@ -39,7 +40,7 @@ export const chatCompletionStream = (
       'Api-Key': config.apiKey,
       'User-Agent': buildUserAgent(config),
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
-      ...(config.additionalHeaders || {}),
+      ...withoutContentType(config.additionalHeaders),
       'Content-Type': 'application/json',
     };
 

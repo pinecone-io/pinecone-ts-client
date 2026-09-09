@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import { VectorOperationsProvider } from './vectorOperationsProvider';
 import {
   IntegratedRecord,
@@ -71,7 +72,7 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
       'Api-Key': this.config.apiKey,
       'User-Agent': buildUserAgent(this.config),
       'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
-      ...(this.additionalHeaders || {}),
+      ...withoutContentType(this.additionalHeaders),
       'Content-Type': 'application/x-ndjson',
     };
 

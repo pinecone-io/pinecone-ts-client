@@ -1,3 +1,4 @@
+import { withoutContentType } from '../../utils/additionalHeaders';
 import {
   OperationModel,
   OperationModelFromJSON,
@@ -327,7 +328,7 @@ function buildRequestHeaders(
     'Api-Key': config.apiKey,
     'User-Agent': buildUserAgent(config),
     'X-Pinecone-Api-Version': X_PINECONE_API_VERSION,
-    ...(config.additionalHeaders || {}),
+    ...withoutContentType(config.additionalHeaders),
   };
 }
 

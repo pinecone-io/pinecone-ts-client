@@ -108,7 +108,7 @@ argument, are merged over the client's and win on an exact key match.
 
 Matching is case-sensitive, so `x-pinecone-api-version` is sent alongside the SDK's header
 rather than replacing it. `Api-Key`, `User-Agent`, and the Admin client's `Authorization`
-follow the same last-write-wins rule. `Content-Type` does not: the request body is already
+follow the same last-write-wins rule. `Content-Type` is protected regardless of header casing: the request body is already
 encoded by the time `additionalHeaders` are applied, so overriding it would only mislabel
 the body.
 
