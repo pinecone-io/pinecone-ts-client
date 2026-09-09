@@ -1,3 +1,4 @@
+import * as pureAccessors from '../legacyAccessors';
 import {
   classifyIndexShape,
   deriveDimension,
@@ -239,7 +240,7 @@ describe('pure legacy index derivations', () => {
     );
   });
   test('the pure module exposes only synchronous derivations and formatting', () => {
-    expect(Object.keys(require('../legacyAccessors')).sort()).toEqual([
+    expect(Object.keys(pureAccessors).sort()).toEqual([
       'classifyIndexShape',
       'deriveDimension',
       'deriveEmbed',

@@ -70,15 +70,13 @@ describe('legacy accessors on every index response path', () => {
     expect((await operation()).dimension).toBe(1536);
   });
   test('list decorates each index independently', async () => {
-    jest
-      .spyOn(api, 'listIndexes')
-      .mockResolvedValue({
-        indexes: [
-          structuredClone(fixtures.classicDense),
-          structuredClone(fixtures.fullTextOnly),
-          structuredClone(fixtures.namedDense),
-        ],
-      });
+    jest.spyOn(api, 'listIndexes').mockResolvedValue({
+      indexes: [
+        structuredClone(fixtures.classicDense),
+        structuredClone(fixtures.fullTextOnly),
+        structuredClone(fixtures.namedDense),
+      ],
+    });
     const indexes = (await listIndexes(api)).indexes!;
     expect(indexes[0].dimension).toBe(1536);
     expect(() => indexes[1].dimension).toThrow(PineconeIndexPropertyError);
