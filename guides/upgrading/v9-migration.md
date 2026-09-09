@@ -220,15 +220,16 @@ const namespace: NamespaceDescription = {
   recordCount: '9007199254740993',
   sizeBytes: '18014398509481986',
 };
-const records = namespace.recordCount === undefined
-  ? undefined
-  : BigInt(namespace.recordCount);
-const bytes = namespace.sizeBytes === undefined
-  ? undefined
-  : BigInt(namespace.sizeBytes);
-const bytesPerRecord = records !== undefined && records > 0n && bytes !== undefined
-  ? bytes / records // BigInt division truncates the fractional part.
-  : undefined;
+const records =
+  namespace.recordCount === undefined
+    ? undefined
+    : BigInt(namespace.recordCount);
+const bytes =
+  namespace.sizeBytes === undefined ? undefined : BigInt(namespace.sizeBytes);
+const bytesPerRecord =
+  records !== undefined && records > 0n && bytes !== undefined
+    ? bytes / records // BigInt division truncates the fractional part.
+    : undefined;
 
 function safeNumber(value: string | undefined): number | undefined {
   if (value === undefined) return undefined;
@@ -263,9 +264,10 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 const backup = await pc.backups.describe('backup-id');
 const createdAtIso = backup.createdAt?.toISOString();
-const createdBeforeToday = backup.createdAt === undefined
-  ? undefined
-  : backup.createdAt.getTime() < new Date().setUTCHours(0, 0, 0, 0);
+const createdBeforeToday =
+  backup.createdAt === undefined
+    ? undefined
+    : backup.createdAt.getTime() < new Date().setUTCHours(0, 0, 0, 0);
 
 for (const [name, field] of Object.entries(backup.schema?.fields ?? {})) {
   if ('type' in field && field.type === 'dense_vector') {
@@ -287,8 +289,12 @@ const stored: StoredBackup = {
   createdAt: '2026-09-09T00:00:00.000Z',
 };
 const parsed: unknown = JSON.parse(JSON.stringify(stored));
-if (typeof parsed !== 'object' || parsed === null ||
-    !('backupId' in parsed) || typeof parsed.backupId !== 'string') {
+if (
+  typeof parsed !== 'object' ||
+  parsed === null ||
+  !('backupId' in parsed) ||
+  typeof parsed.backupId !== 'string'
+) {
   throw new Error('Invalid stored backup');
 }
 const timestamp = 'createdAt' in parsed ? parsed.createdAt : undefined;
@@ -319,9 +325,10 @@ function restoreTiming(job: RestoreJobModel) {
   return {
     started: job.createdAt?.toISOString(),
     finished: job.completedAt?.toISOString(),
-    elapsedMs: job.createdAt != null && job.completedAt != null
-      ? job.completedAt.getTime() - job.createdAt.getTime()
-      : undefined,
+    elapsedMs:
+      job.createdAt != null && job.completedAt != null
+        ? job.completedAt.getTime() - job.createdAt.getTime()
+        : undefined,
   };
 }
 ```
@@ -335,15 +342,27 @@ chaining or `!= null`. Unknown capacity is not a measured zero.
 
 ```typescript
 import type {
-  BackupList, IndexModel, ReadCapacityStatus,
+  BackupList,
+  IndexModel,
+  ReadCapacityStatus,
 } from '@pinecone-database/pinecone';
 
-function responseSummary(index: IndexModel, backups: BackupList, capacity: ReadCapacityStatus) {
+function responseSummary(
+  index: IndexModel,
+  backups: BackupList,
+  capacity: ReadCapacityStatus,
+) {
   return {
     tags: Object.entries(index.tags ?? {}),
     nextBackupPage: backups.pagination?.next,
-    replicas: capacity.currentReplicas == null ? 'unknown' : String(capacity.currentReplicas),
-    shards: capacity.currentShards == null ? 'unknown' : String(capacity.currentShards),
+    replicas:
+      capacity.currentReplicas == null
+        ? 'unknown'
+        : String(capacity.currentReplicas),
+    shards:
+      capacity.currentShards == null
+        ? 'unknown'
+        : String(capacity.currentShards),
   };
 }
 ```
@@ -364,18 +383,28 @@ list response has another page. The backup envelope uses the separate
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
-import type { ListResponse, Pagination, SearchMatchTerms } from '@pinecone-database/pinecone';
+import type {
+  ListResponse,
+  Pagination,
+  SearchMatchTerms,
+} from '@pinecone-database/pinecone';
 
 const matchTerms: SearchMatchTerms = { strategy: 'all', terms: ['animal'] };
 const cursor: Pagination = { next: 'opaque-service-token' };
-const pageWithMore: ListResponse = { vectors: [{ id: 'a' }], pagination: cursor };
+const pageWithMore: ListResponse = {
+  vectors: [{ id: 'a' }],
+  pagination: cursor,
+};
 const finalPage: ListResponse = { vectors: [{ id: 'b' }] };
 
 const pc = new Pinecone();
 const index = pc.index('my-vector-index');
 let page = await index.listPaginated({ limit: 100 });
 while (page.pagination?.next) {
-  page = await index.listPaginated({ limit: 100, paginationToken: page.pagination.next });
+  page = await index.listPaginated({
+    limit: 100,
+    paginationToken: page.pagination.next,
+  });
 }
 console.log(matchTerms, pageWithMore, finalPage);
 ```
@@ -704,7 +733,8 @@ import type { IndexModel } from '@pinecone-database/pinecone';
 
 function denseVectorSnapshot(model: IndexModel, fieldName: string) {
   const field = model.schema.fields[fieldName];
-  if (!field || !('type' in field) || field.type !== 'dense_vector') return undefined;
+  if (!field || !('type' in field) || field.type !== 'dense_vector')
+    return undefined;
   return {
     name: model.name,
     fieldName,
