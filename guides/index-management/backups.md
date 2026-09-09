@@ -40,6 +40,66 @@ const response = await pc.backups.createIndex(
 console.log(response);
 ```
 
+## Schedule recurring backups
+
+A backup schedule backs up a serverless or BYOC index on a fixed cadence (`daily`, `weekly`, or `monthly`) and keeps each backup for a set number of days. Only one schedule per index can be enabled at a time. The backups it produces are ordinary backups, so `pc.backups.describe` and `pc.backups.listByIndex` work on them too.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+
+const schedule = await pc.backupSchedules.create('my-index', {
+  name: 'compliance-snapshots',
+  frequency: 'daily',
+  retentionDays: 90,
+});
+
+console.log(schedule);
+// {
+//   scheduleId: 'e88f7273-42aa-47e9-af73-593827136867',
+//   name: 'compliance-snapshots',
+//   indexId: 'b480770b-600d-4c4e-bf19-799c933ae2bf',
+//   projectId: '7f1c2a9e-3b4d-4c5e-8f6a-1b2c3d4e5f60',
+//   scheduleType: 'time-based',
+//   frequency: 'daily',
+//   retentionExpireAfterDays: 90,
+//   enabled: true,
+//   nextScheduledRun: 2026-04-03T06:00:00.000Z,
+//   createdAt: 2026-04-02T14:12:09.000Z
+// }
+```
+
+Schedules are listed per index. Pass the `scheduleId` to describe, update, or delete one, or to list the backups it has produced:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+
+const schedules = await pc.backupSchedules.list('my-index');
+const scheduleId = schedules.data[0].scheduleId;
+
+// Pause the schedule; nextScheduledRun becomes null until it is re-enabled.
+await pc.backupSchedules.update(scheduleId, { enabled: false });
+
+// Change the cadence and retention window. Omitted fields are left unchanged.
+await pc.backupSchedules.update(scheduleId, {
+  frequency: 'weekly',
+  retentionDays: 30,
+});
+
+// Backups the schedule has produced or planned. A row with status
+// 'Scheduled' has not run yet.
+const runs = await pc.backupSchedules.history(scheduleId, { limit: 10 });
+for (const run of runs.data) {
+  console.log(run.backupId, run.status, run.scheduledExecutionAt);
+}
+
+// Stop future runs. Backups already taken stay until their retention ends.
+await pc.backupSchedules.delete(scheduleId);
+```
+
 ## Describe a backup
 
 The 2026-07 backup model describes its fields under `schema`; it does not return legacy top-level `dimension` and `metric` fields.

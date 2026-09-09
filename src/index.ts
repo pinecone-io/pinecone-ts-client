@@ -5,6 +5,7 @@ export { Indexes } from './control/indexes';
 export { Collections } from './control/collections';
 export { Backups } from './control/backups';
 export { RestoreJobs } from './control/restoreJobs';
+export { BackupSchedules } from './control/backupSchedules';
 export { Assistants } from './assistant/control/assistants';
 export { Inference } from './inference';
 export { Assistant, ChatStream } from './assistant';
@@ -129,6 +130,7 @@ export type {
 export type {
   BackupId,
   RestoreJobId,
+  BackupScheduleId,
   CollectionName,
   IndexName,
   PodType,
@@ -138,6 +140,8 @@ export type {
   IndexState,
   CollectionStatus,
   BackupStatus,
+  ScheduledBackupStatus,
+  BackupScheduleFrequency,
   ReadCapacityState,
 } from './control';
 export type {
@@ -220,6 +224,15 @@ export type {
   RestoreJobList,
   RestoreJobModel,
 } from './control/restoreJobs';
+export type {
+  BackupScheduleModel,
+  BackupScheduleList,
+  BackupScheduleHistoryItem,
+  BackupScheduleHistoryList,
+  CreateBackupScheduleOptions,
+  UpdateBackupScheduleOptions,
+  ListBackupSchedulesOptions,
+} from './control/backupSchedules';
 export type {
   CollectionList,
   CollectionModel,
