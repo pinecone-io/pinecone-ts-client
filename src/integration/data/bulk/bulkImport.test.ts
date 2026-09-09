@@ -8,6 +8,8 @@ import {
 // This public parquet fixture serves legacy vector indexes. Document import
 // still needs a separate JSONL fixture tracked in #38.
 const testURI = 's3://dev-bulk-import-datasets-pub/10-records-dim-10/';
+// The fixture contains ten records in EACH of two namespaces.
+const expectedRecordCount = 20;
 
 describe('legacy vector bulk import', () => {
   const runImport = async (awaitCompletion: boolean) => {
@@ -51,7 +53,7 @@ describe('legacy vector bulk import', () => {
         },
       );
       if (awaitCompletion) {
-        // Every import takes at least ten minutes, even for tiny datasets.
+        // Import completion can take minutes even for tiny datasets.
         await assertWithRetries(
           () => index.describeImport(id),
           (job) => {
@@ -59,7 +61,7 @@ describe('legacy vector bulk import', () => {
               id,
               uri: testURI,
               status: 'Completed',
-              recordsImported: 10,
+              recordsImported: expectedRecordCount,
             });
           },
           1_800_000,
@@ -68,11 +70,15 @@ describe('legacy vector bulk import', () => {
         await assertWithRetries(
           () => index.describeIndexStats(),
           (stats) => {
-            expect(stats.totalRecordCount).toBe(10);
+            expect(stats.totalRecordCount).toBe(expectedRecordCount);
+            expect(stats.namespaces).toMatchObject({
+              namespace1: { recordCount: 10 },
+              namespace2: { recordCount: 10 },
+            });
           },
         );
       } else {
-        // The default matrix tests cancellation acceptance, not a 10m+ import.
+        // The default matrix exercises cancellation without waiting for completion.
         await index.cancelImport(id);
       }
     } finally {
@@ -82,11 +88,11 @@ describe('legacy vector bulk import', () => {
 
   test('starts, describes, lists and cancels a parquet import', () =>
     runImport(false));
-  // @integration-skip #38: full import completion takes at least ten minutes and requires explicit long-run opt-in.
+  // @integration-skip #38: full import completion has variable latency and requires explicit long-run opt-in.
   const testFullImport =
     process.env.PINECONE_LONG_RUNNING_INTEGRATION === '1' ? test : test.skip;
   testFullImport(
-    'completes a parquet import and exposes all ten records',
+    'completes a parquet import and exposes both ten-record namespaces',
     () => runImport(true),
     2_700_000,
   );
