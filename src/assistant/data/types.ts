@@ -263,19 +263,23 @@ export interface ContextOptions {
 }
 
 /**
- * An uploadable file value. Can be a Node.js `Buffer`, a `Blob`, or a Node.js
- * `ReadableStream`. Pass a `ReadableStream` to avoid loading the file into
+ * An uploadable file value. Can be a `Uint8Array` (including a Node.js
+ * `Buffer`), a `Blob`, or an async iterable of bytes or strings such as a
+ * Node.js `Readable` stream. Pass a stream to avoid loading the file into
  * memory — for example, when forwarding an incoming HTTP upload directly to
  * the assistant without buffering on disk.
  *
- * `Blob` works in browser-compatible runtimes. `Buffer` requires Buffer support;
+ * `Uint8Array` and `Blob` work in browser-compatible runtimes.
  * Node.js readable streams require a Node.js runtime.
  *
- * Note: `ReadableStream` inputs are sent in a single attempt. Automatic
- * retries are not supported because the stream is consumed after the first
- * read and cannot be replayed.
+ * Note: stream inputs are sent in a single attempt. Automatic retries are not
+ * supported because the stream is consumed after the first read and cannot be
+ * replayed.
+ *
+ * The type deliberately avoids Node-only names (`Buffer`, `NodeJS.*`) so the
+ * published declarations compile without `@types/node` in scope.
  */
-export type Uploadable = Buffer | Blob | NodeJS.ReadableStream;
+export type Uploadable = Uint8Array | Blob | AsyncIterable<Uint8Array | string>;
 
 /**
  * Options for uploading a file to an assistant.

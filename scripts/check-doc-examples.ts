@@ -209,11 +209,13 @@ function compileVirtualFiles(
     module: ts.ModuleKind.ESNext,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
     lib: ['lib.es2022.d.ts', 'lib.dom.d.ts'],
+    // TypeScript 6 defaults `types` to []; name the ambient packages the
+    // examples rely on instead of depending on automatic @types inclusion.
+    types: ['node', 'jest'],
     strict: true,
     esModuleInterop: true,
     skipLibCheck: true,
     noEmit: true,
-    baseUrl: repoRoot,
     paths: {
       '@pinecone-database/pinecone': [path.join(repoRoot, 'src/index.ts')],
     },

@@ -31,6 +31,18 @@ describe('ChatStream', () => {
     expect(convertKeysMock).toHaveBeenCalledTimes(2);
   });
 
+  test('decodes UTF-8 split across byte chunks from an async iterable', async () => {
+    const bytes = new TextEncoder().encode('data: {"key":"café 🌲"}\n');
+    async function* source() {
+      for (const byte of bytes) yield new Uint8Array([byte]);
+    }
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of new ChatStream<MockStreamData>(source())) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ key: 'café 🌲' }]);
+  });
+
   test('skips malformed chunks', async () => {
     const stream = Readable.from([
       'data: {"key": "value"}\n',

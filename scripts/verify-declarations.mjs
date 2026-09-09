@@ -1,5 +1,7 @@
 // Compile the actual published package with full library checking. Check every
 // declaration (including alpha runtimes), not only exports reachable from index.
+// The last configuration leaves `types` empty, which is the TypeScript 6+
+// default, to prove the declarations need no ambient Node types.
 import { execFileSync } from 'node:child_process';
 import {
   cpSync,
@@ -61,18 +63,23 @@ new Pinecone({ apiKey: 'test', fetchApi: fetch });
   cpSync(join(root, 'ts-compilation-test/src'), join(scratch, 'consumer'), {
     recursive: true,
   });
-  for (const lib of [['es2022'], ['es2022', 'dom'], ['es2022', 'webworker']]) {
+  const configurations = [
+    { lib: ['es2022'], types: ['node'] },
+    { lib: ['es2022', 'dom'], types: ['node'] },
+    { lib: ['es2022', 'webworker'], types: ['node'] },
+    { lib: ['es2022', 'dom'], types: [] },
+  ];
+  for (const { lib, types } of configurations) {
     writeFileSync(
       join(scratch, 'tsconfig.json'),
       JSON.stringify({
         compilerOptions: {
           lib,
-          types: ['node'],
+          types,
           skipLibCheck: false,
           strict: true,
           target: 'es2022',
-          module: 'commonjs',
-          moduleResolution: 'node',
+          module: 'node16',
           noEmit: true,
         },
         include: [
@@ -87,7 +94,9 @@ new Pinecone({ apiKey: 'test', fetchApi: fetch });
       [require.resolve('typescript/bin/tsc'), '-p', scratch],
       { cwd: scratch, stdio: 'inherit' },
     );
-    console.log(`Published declarations compile with lib: ${lib.join(', ')}.`);
+    console.log(
+      `Published declarations compile with lib: ${lib.join(', ')}; types: [${types.join(', ')}].`,
+    );
   }
 } finally {
   rmSync(scratch, { recursive: true, force: true });

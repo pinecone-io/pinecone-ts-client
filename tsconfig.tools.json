@@ -4,14 +4,14 @@
     "noEmit": true,
     "rootDir": ".",
     "moduleDetection": "force",
-    "baseUrl": ".",
     "paths": {
-      "@pinecone-database/pinecone": ["./dist"]
+      "@pinecone-database/pinecone": ["./dist/index.d.ts"]
     }
   },
   "include": [
     "scripts/**/*.ts",
     "ts-compilation-test/src/**/*.ts",
+    "ts-compilation-test/esm/src/**/*.ts",
     "ts-external-app-test/**/*.ts"
   ],
   "exclude": ["node_modules"]

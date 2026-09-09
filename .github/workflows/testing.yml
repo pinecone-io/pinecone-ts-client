@@ -197,6 +197,60 @@ jobs:
           CI: true
         run: npm run test:smoke:mocked
 
+  compatibility-package:
+    name: Build compatibility package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+      - name: Setup runtime
+        uses: ./.github/actions/setup-runtime
+      - name: Install build dependencies
+        run: npm ci
+      # prepack runs the production build. Every consumer below tests this
+      # same tarball, without rebuilding it under the consumer's runtime.
+      - name: Pack SDK
+        run: |
+          mkdir -p "$RUNNER_TEMP/compatibility-package"
+          npm pack --pack-destination "$RUNNER_TEMP/compatibility-package"
+      - name: Upload packed SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-package
+          path: ${{ runner.temp }}/compatibility-package/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+
+  package-consumers:
+    name: Package consumers (Node ${{ matrix.node_version }})
+    needs: [compatibility-package]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [22.x, 24.x]
+    steps:
+      - name: Checkout consumer fixtures
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+      # No repository dependencies or compiler in the runtime jobs. The
+      # consumer installer uses npm bundled with the selected Node release.
+      - name: Setup consumer runtime
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Download packed SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: compatibility-package
+          path: ${{ runner.temp }}/compatibility-package
+      - name: Run CommonJS and ESM consumers (no API key)
+        run: node scripts/test-package.mjs "$RUNNER_TEMP"/compatibility-package/*.tgz
+
   edge-runtime-entry:
     name: Edge runtime entry check
     runs-on: ubuntu-latest
@@ -228,6 +282,9 @@ jobs:
             '~5.6.0',
             '~5.7.0',
             '~5.8.0',
+            '~5.9.0',
+            '~6.0.0',
+            '~7.0.0',
             'latest',
           ]
     steps:
@@ -268,10 +325,15 @@ jobs:
           cat package-lock.json
           npm run tsc-version
           npm run build
-          # `npm run build` is the actual TS-version compatibility check and
-          # needs no credentials. `npm run start` calls listIndexes() against
-          # the live API, so it is skipped when no key is available (e.g.
-          # Dependabot PRs, which cannot read Actions secrets).
+          # Two more consumer shapes: the TypeScript 6+ default of an empty
+          # `types` list (no automatic @types inclusion), and an ESM project
+          # under `module: nodenext` with `verbatimModuleSyntax`.
+          npm run typecheck:default-types
+          npm run typecheck:esm
+          # `npm run build` and the typechecks are the actual TS-version
+          # compatibility check and need no credentials. `npm run start` calls
+          # listIndexes() against the live API, so it is skipped when no key is
+          # available (e.g. Dependabot PRs, which cannot read Actions secrets).
           if [ -n "$PINECONE_API_KEY" ]; then
             npm run start
           else

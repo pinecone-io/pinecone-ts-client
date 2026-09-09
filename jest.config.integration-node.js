@@ -9,6 +9,7 @@ module.exports = {
       {
         isolatedModules: false,
         tsconfig: './tsconfig.json',
+        diagnostics: { ignoreCodes: [151002] },
       },
     ],
   },

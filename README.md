@@ -38,16 +38,16 @@ Pinecone is a vector database that makes it easy to add vector search to product
 
 ## Prerequisites
 
-- The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0 and Node.js >=22.0.0. Node 20 reached [end-of-life](https://github.com/nodejs/Release#release-schedule) on 2026-04-30 and no longer receives security patches, so it is no longer supported. CI exercises Node 22.x and 24.x.
+- The Pinecone TypeScript SDK is compatible with TypeScript >=5.2.0, including the 6.x and 7.x releases, and Node.js >=22.0.0. Node 20 reached [end-of-life](https://github.com/nodejs/Release#release-schedule) on 2026-04-30 and no longer receives security patches, so it is no longer supported. CI exercises Node 22.x and 24.x.
 - Before you can use the Pinecone SDK, you must sign up for an account and find your API key in the Pinecone console dashboard at [https://app.pinecone.io](https://app.pinecone.io).
 
-**Note for TypeScript users:** This SDK uses Node.js built-in modules in its type definitions. If you're using TypeScript, ensure you have `@types/node` installed in your project:
+**Note for TypeScript users:** The published type declarations reference the global fetch types (`fetch`, `Request`, `Response`, `Blob`, `ReadableStream`). Those come from either `@types/node` or the `dom` lib, so a Node project needs `@types/node` installed:
 
 ```bash
 npm install --save-dev @types/node
 ```
 
-The published type declarations support Node-only TypeScript configurations with `lib: ["es2022"]`, `types: ["node"]`, and `skipLibCheck: false`. Use a current version of `@types/node` for your supported Node.js version so its built-in fetch types are available; adding `"dom"` or `"webworker"` to `lib` is not required.
+The declarations support Node-only TypeScript configurations with `lib: ["es2022"]`, `types: ["node"]`, and `skipLibCheck: false`; adding `"dom"` or `"webworker"` to `lib` is not required. They reference no Node-only types themselves, so they also compile under TypeScript 6 and 7, where `types` defaults to `[]` and `@types` packages are no longer included automatically. CI compiles a consumer project against TypeScript 5.2 through the current 7.x release, in CommonJS and ESM (`module: "nodenext"`) configurations.
 
 ## Installation
 

@@ -11,7 +11,9 @@ module.exports = {
     'jest-progress-bar-reporter',
   ],
   transform: {
-    '^.+\\.ts?$': 'ts-jest',
+    // ts-jest compiles tests as CommonJS regardless of the hybrid `module:
+    // nodenext` setting in tsconfig.json; silence its per-file reminder.
+    '^.+\\.ts?$': ['ts-jest', { diagnostics: { ignoreCodes: [151002] } }],
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   testMatch: ['<rootDir>/src/smoke/**/*.test.ts'],

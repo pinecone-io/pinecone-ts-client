@@ -139,6 +139,15 @@ describe('path input', () => {
     expect(mockNonRetryingFetch).not.toHaveBeenCalled();
   });
 
+  test('uploads only a Uint8Array view and uses retrying fetch', async () => {
+    const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+    const bytes = new TextEncoder().encode('before-content-after');
+    await upload({ file: bytes.subarray(7, 14), fileName: 'doc.txt' });
+    expect(mockNonRetryingFetch).not.toHaveBeenCalled();
+    const body = mockRetryingFetch.mock.calls[0][1].body as FormData;
+    expect(await (body.get('file') as Blob).text()).toBe('content');
+  });
+
   test('sends FormData body', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
     await upload({ path: 'test.txt' });
@@ -337,6 +346,26 @@ describe('ReadableStream input', () => {
     expect(mockNonRetryingFetch).toHaveBeenCalled();
     expect(mockRetryingFetch).not.toHaveBeenCalled();
   });
+
+  test.each(['async iterable', 'Node Readable'])(
+    'encodes string chunks from %s as multipart bytes',
+    async (source) => {
+      async function* chunks() {
+        yield 'café ';
+        yield new TextEncoder().encode('🌲');
+      }
+      const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);
+      await upload({
+        file: source === 'Node Readable' ? Readable.from(chunks()) : chunks(),
+        fileName: 'doc.txt',
+      });
+      expect(mockRetryingFetch).not.toHaveBeenCalled();
+      const [, init] = mockNonRetryingFetch.mock.calls[0];
+      const response = new Response(init.body, { headers: init.headers });
+      const form = await response.formData();
+      expect(await (form.get('file') as Blob).text()).toBe('café 🌲');
+    },
+  );
 
   test('sends a ReadableStream body (not FormData)', async () => {
     const upload = uploadFile(mockAssistantName, mockApiProvider, mockConfig);

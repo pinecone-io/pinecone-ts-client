@@ -129,10 +129,11 @@ async function uploadFromFile(
     return executeUpload(fetch, method, url, requestHeaders, formData);
   }
 
-  if (Buffer.isBuffer(file)) {
-    // Buffer is replayable — wrap in Blob and use retrying fetch.
-    // Extract the exact ArrayBuffer slice to satisfy BlobPart's
-    // ArrayBufferView<ArrayBuffer> constraint (Buffer uses ArrayBufferLike).
+  if (file instanceof Uint8Array) {
+    // In-memory bytes (Buffer or any Uint8Array) are replayable — wrap in
+    // Blob and use retrying fetch. Extract the exact ArrayBuffer slice to
+    // satisfy BlobPart's ArrayBufferView<ArrayBuffer> constraint (Buffer and
+    // other views may be backed by ArrayBufferLike).
     const fetch = getFetch(config);
     const fileBlob = new Blob(
       [
@@ -154,7 +155,7 @@ async function uploadFromFile(
     return executeUpload(fetch, method, url, requestHeaders, formData);
   }
 
-  // Node.js ReadableStream — stream is consumed on first read, no retries
+  // Async iterable (e.g. Node.js Readable) — consumed on first read, no retries
   const fetch = getNonRetryingFetch(config);
   const { body, contentType } = await buildMultipartBody(
     file,
@@ -242,7 +243,7 @@ async function parseResponse(
  * be passed directly to fetch().
  */
 async function buildMultipartBody(
-  stream: NodeJS.ReadableStream,
+  stream: AsyncIterable<Uint8Array | string>,
   fileName: string,
   mimeType: string,
   metadata?: Record<string, string | number>,
@@ -283,10 +284,10 @@ async function buildMultipartBody(
 
   const footer = encoder.encode(`\r\n--${boundary}--\r\n`);
 
-  // Convert Node.js ReadableStream to Web ReadableStream
+  // Convert the async iterable (or Node.js Readable) to a Web ReadableStream
   const webStream = Readable.toWeb(
     stream instanceof Readable ? stream : Readable.from(stream),
-  ) as ReadableStream<Uint8Array>;
+  ) as ReadableStream<Uint8Array | string>;
 
   const reader = webStream.getReader();
   let phase: 'header' | 'body' | 'done' = 'header';
@@ -308,7 +309,9 @@ async function buildMultipartBody(
         controller.close();
         phase = 'done';
       } else {
-        controller.enqueue(value);
+        controller.enqueue(
+          typeof value === 'string' ? encoder.encode(value) : value,
+        );
       }
     },
     cancel(reason) {
