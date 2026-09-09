@@ -27,6 +27,7 @@ export interface CollectionList extends Omit<
   GeneratedCollectionList,
   'collections'
 > {
+  /** Collections in the project. */
   collections?: Array<CollectionModel>;
 }
 

@@ -82,10 +82,15 @@ export interface ListOperationsOptions {
  * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
  */
 export const ChatModelEnum = {
+  /** OpenAI GPT-4o. */
   Gpt4o: 'gpt-4o',
+  /** OpenAI GPT-4.1. */
   Gpt41: 'gpt-4.1',
+  /** OpenAI o4-mini. */
   O4Mini: 'o4-mini',
+  /** Anthropic Claude Sonnet 4.5. */
   ClaudeSonnet45: 'claude-sonnet-4-5',
+  /** Google Gemini 2.5 Pro. */
   Gemini25Pro: 'gemini-2.5-pro',
 };
 
@@ -100,7 +105,9 @@ export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
  * Describes the format of a message in an assistant chat. The `role` key can only be one of `user` or `assistant`.
  */
 export interface MessageModel {
+  /** Author of the message: user or assistant. */
   role: string;
+  /** Text carried by this message or streamed chunk. */
   content: string;
 }
 
@@ -263,7 +270,9 @@ export type UploadFileOptions = {
        * Requires a Node.js runtime; use `file` on Edge or Workers runtimes.
        */
       path: string;
+      /** Unavailable when using the alternative file input. */
       file?: never;
+      /** Unavailable when using the alternative file input. */
       fileName?: never;
     }
   | {
@@ -278,6 +287,7 @@ export type UploadFileOptions = {
        * Required when using `file`.
        */
       fileName: string;
+      /** Unavailable when using the alternative file input. */
       path?: never;
     }
 );
@@ -312,7 +322,9 @@ export type UpsertFileOptions = {
        * Requires a Node.js runtime; use `file` on Edge or Workers runtimes.
        */
       path: string;
+      /** Unavailable when using the alternative file input. */
       file?: never;
+      /** Unavailable when using the alternative file input. */
       fileName?: never;
     }
   | {
@@ -327,6 +339,7 @@ export type UpsertFileOptions = {
        * Required when using `file`.
        */
       fileName: string;
+      /** Unavailable when using the alternative file input. */
       path?: never;
     }
 );
@@ -348,10 +361,15 @@ export type UpsertFileOptions = {
  * This enum is provided for convenience but is not enforced.
  */
 export const FinishReasonEnum = {
+  /** Generation reached a natural stopping point. */
   Stop: 'stop',
+  /** Generation reached the token limit. */
   Length: 'length',
+  /** Generation stopped because of content filtering. */
   ContentFilter: 'content_filter',
+  /** Generation requested a tool call. */
   ToolCalls: 'tool_calls',
+  /** Generation requested a function call. */
   FunctionCall: 'function_call',
 } as const;
 /**
@@ -398,6 +416,7 @@ export interface MessageStartChunk extends BaseChunk {
   /**
    * The role of the message sender. Either `user` or `assistant`.
    */
+  /** Author of the message: user or assistant. */
   role: string;
   /**
    * The number of context snippets used to generate the response.
@@ -421,6 +440,7 @@ export interface ContentChunk extends BaseChunk {
    * The content delta, representing a portion of the message content.
    */
   delta: {
+    /** Text carried by this message or streamed chunk. */
     content: string;
   };
   /**

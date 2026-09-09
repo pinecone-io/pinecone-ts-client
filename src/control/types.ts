@@ -146,7 +146,7 @@ export type ReadCapacityScaling = 'Manual' | (string & {});
 /**
  * The replica and shard counts to use for manually scaled dedicated read
  * capacity. Both are required when creating an index; to change one of them on
- * an existing index, see {@link ScalingConfigManualPatchInput}.
+ * an existing index, see {@link ConfigureIndexOptions}.
  *
  * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
  */

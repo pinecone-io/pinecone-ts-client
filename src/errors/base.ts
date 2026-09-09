@@ -1,3 +1,4 @@
+/** Base class for errors raised by the Pinecone SDK, with an optional underlying cause. */
 export class BasePineconeError extends Error {
   /** The underlying error, if any. */
   cause?: Error;

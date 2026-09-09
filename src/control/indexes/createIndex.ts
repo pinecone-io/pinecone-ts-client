@@ -86,7 +86,12 @@ export type FullTextSearchStringField = StringField;
  */
 export type CreateIndexSchemaField =
   // `type` re-narrowed: the generated DenseVectorField accepts any field type.
-  | (DenseVectorField & { type: 'dense_vector'; metric: IndexMetric })
+  | (DenseVectorField & {
+      /** Field kind used to narrow this schema variant. */
+      type: 'dense_vector';
+      /** Similarity metric used by the dense vector field. */
+      metric: IndexMetric;
+    })
   | SparseVectorField
   | FullTextSearchStringField;
 
@@ -99,6 +104,7 @@ export type CreateIndexSchemaField =
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
 export interface CreateIndexSchema {
+  /** Map of field names to their schema configurations. */
   fields: { [fieldName: string]: CreateIndexSchemaField };
 }
 

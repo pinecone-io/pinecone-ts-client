@@ -74,6 +74,7 @@ import { IndexOptions, AssistantOptions } from './types';
  * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
+  /** Generate embeddings, rerank documents, and discover inference models. */
   public inference: Inference;
   /**
    * Control-plane operations for indexes, backups, restore jobs, and collections.
@@ -132,7 +133,6 @@ export class Pinecone {
    * });
    * ```
    *
-   * @constructor
    * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {

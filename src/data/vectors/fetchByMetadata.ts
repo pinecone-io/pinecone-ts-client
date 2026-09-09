@@ -38,11 +38,15 @@ export type FetchByMetadataOptions = {
  */
 export type FetchByMetadataResponse<T extends RecordMetadata = RecordMetadata> =
   {
+    /** Records matching the filter, keyed by ID. */
     records: {
       [key: string]: PineconeRecord<T>;
     };
+    /** Namespace containing the records. */
     namespace: string;
+    /** Read units consumed by this request. */
     usage?: OperationUsage;
+    /** Information for retrieving the next page. */
     pagination?: Pagination;
   };
 

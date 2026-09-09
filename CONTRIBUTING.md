@@ -94,3 +94,12 @@ Run `npm run test:integration:local` to run all integration tests against the No
 Simply run `npm run test:external-app-local` to run all tests that integrate with the `ts-client-test-external-app` repo:
 
 The `npm` command runs the bash file located in the `src/external-app` directory.
+
+## API reference documentation
+
+Run `npm run docs:build` to validate and render the API reference. Handwritten
+comments must have no warnings: missing documentation and broken links fail the
+build. Generated models remain in the reference, but warnings whose source is
+under `src/pinecone-generated-ts-fetch/` or `src/pinecone-generated-ts-fetch-alpha/`
+are excluded by `assets/docs-validation.mjs`. Warnings without an identified
+generated source still fail, including handwritten links to generated types.

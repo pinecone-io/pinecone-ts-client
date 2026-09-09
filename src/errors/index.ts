@@ -22,6 +22,7 @@ export {
   mapHttpStatusError,
 } from './http';
 export { PineconeConnectionError, PineconeRequestError } from './request';
+export type { FailedRequestInfo } from './http';
 export { BasePineconeError } from './base';
 export { PineconeArgumentError } from './validation';
 export { extractMessage } from './utils';

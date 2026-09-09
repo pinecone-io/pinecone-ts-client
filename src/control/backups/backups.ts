@@ -200,7 +200,7 @@ export class Backups {
 
   /**
    * Creates an index from a backup. The creation is accepted asynchronously.
-   * Use the returned `restoreJobId` with {@link describeRestoreJob} to poll for completion.
+   * Use the returned `restoreJobId` with {@link RestoreJobs.describe} to poll for completion.
    *
    * @example
    * ```typescript

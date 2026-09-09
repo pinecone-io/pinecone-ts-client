@@ -17,7 +17,7 @@
     "prepack": "npm run build",
     "build": "rm -rf dist/ && tsc -p tsconfig.build.json && node scripts/fix-declaration-fetch-types.mjs",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
-    "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
+    "docs:build": "node --test assets/docs-validation.test.mjs && typedoc --plugin ./assets/docs-theme.mjs",
     "generate:openapi": "./codegen/build-oas.sh 2026-07 && npm run build && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src/",

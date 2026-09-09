@@ -34,7 +34,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 ### Upgrading the SDK
 
 > [!NOTE]
-> For notes on breaking changes between versions, see the [migration guides](./guides/upgrading/).
+> For notes on breaking changes between versions, see the [migration guides](https://github.com/pinecone-io/pinecone-ts-client/tree/main/guides/upgrading).
 
 ## Prerequisites
 
