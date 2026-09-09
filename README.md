@@ -47,7 +47,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 npm install --save-dev @types/node
 ```
 
-The published type declarations also reference DOM lib types (e.g. `RequestCredentials`, `WindowOrWorkerGlobalScope`, used by the `fetchApi` configuration option's `FetchAPI` type). If your `tsconfig.json` doesn't set `"skipLibCheck": true` and its `lib` array omits `"dom"` and `"webworker"` — which is the case for many Node-only configs, since `skipLibCheck` defaults to `false` — compiling against this SDK fails with `Cannot find name` errors even though the SDK itself runs fine in Node.js. Add `"webworker"` (or `"dom"`) to `lib`, or set `"skipLibCheck": true`, to avoid this.
+The published type declarations support Node-only TypeScript configurations with `lib: ["es2022"]`, `types: ["node"]`, and `skipLibCheck: false`. Use a current version of `@types/node` for your supported Node.js version so its built-in fetch types are available; adding `"dom"` or `"webworker"` to `lib` is not required.
 
 ## Installation
 

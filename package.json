@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "prepack": "npm run build",
-    "build": "rm -rf dist/ && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist/ && tsc -p tsconfig.build.json && node scripts/fix-declaration-fetch-types.mjs",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
     "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
     "generate:openapi": "./codegen/build-oas.sh 2026-07 && npm run build && npm run format",
@@ -34,7 +34,8 @@
     "test:smoke:mocked": "jest -c jest.config.smoke.js",
     "test:edge-runtime": "tsx scripts/edge-runtime/loadEntryInEdgeVM.ts",
     "docs:examples": "jest --config jest.config.js scripts/__tests__/check-doc-examples.test.ts && tsx scripts/check-doc-examples.ts",
-    "verify:sourcemaps": "tsx scripts/verify-source-maps.ts"
+    "verify:sourcemaps": "tsx scripts/verify-source-maps.ts",
+    "verify:declarations": "node scripts/verify-declarations.mjs"
   },
   "engines": {
     "node": ">=22.0.0"

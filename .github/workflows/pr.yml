@@ -95,6 +95,8 @@ jobs:
       # cannot resolve for a consumer.
       - name: Verify published source maps
         run: npm run verify:sourcemaps
+      - name: Verify published declarations
+        run: npm run verify:declarations
       - name: TypeDoc
         uses: ./.github/actions/build-docs
 
