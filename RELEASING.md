@@ -27,6 +27,23 @@ restricted to the public repository.
 
 ## Sync and publish
 
+Preview the sync from the internal checkout, then push at the coordinated time:
+
+```bash
+./scripts/sync_to_public.sh           # preview origin/main -> public/main
+./scripts/sync_to_public.sh --push    # confirm and push the previewed commit
+```
+
+Pass a branch name to sync a different branch, or `--push --yes` to skip the
+confirmation prompt. The script adds the `public` remote if absent and verifies
+that it targets `pinecone-io/pinecone-ts-client`. The default dry run fetches refs
+but does not push. Only the fetched `origin/<branch>` is synced; push reviewed
+local commits to the internal origin first. The complete reachable history is
+published without filtering files, so review it for internal-only content.
+The script pushes one branch, without tags, and refuses non-fast-forward updates.
+After a public release, bring its version commit back into the internal origin
+before the next sync. This script does not run the npm release workflow.
+
 1. Sync the reviewed candidate to public `main` at the coordinated release time,
    together with the prepared companion application changes. Run the public CI
    checks, including the sample applications, and inspect their results.
