@@ -22,7 +22,7 @@ for (const envVar of ['PINECONE_API_KEY']) {
   });
 
   console.time('create-index-duration');
-  await pinecone.createIndex({
+  await pinecone.indexes.create({
     name: INDEX_NAME,
     schema: {
       fields: {
