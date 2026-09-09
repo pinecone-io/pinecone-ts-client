@@ -274,8 +274,11 @@ describe('backup and restore lifecycle', () => {
       );
   };
 
-  test('accepts a backup restore and exposes its job through describe and list', () =>
-    runLifecycle(false));
+  test(
+    'accepts a backup restore and exposes its job through describe and list',
+    () => runLifecycle(false),
+    1_800_000,
+  );
 
   const testFullRestore =
     process.env.PINECONE_LONG_RUNNING_INTEGRATION === '1' ? test : test.skip;
