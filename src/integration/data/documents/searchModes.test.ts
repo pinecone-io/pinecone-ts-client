@@ -8,7 +8,7 @@ import {
   DocumentScoringMethod,
   SearchDocumentsResponse,
 } from '../../../index';
-import { assertWithRetries, randomName } from '../../test-helpers';
+import { assertWithRetries, randomName, retryDelete } from '../../test-helpers';
 
 const denseScoreBy: DocumentScoringMethod[] = [
   { type: 'dense_vector', fields: ['dense'], values: [1, 0] },
@@ -220,6 +220,87 @@ describe('document search scoring modes', () => {
         topK: 3,
       }),
     ).rejects.toBeInstanceOf(PineconeBadRequestError);
+  });
+
+  test('fetches every filtered document across distinct limit-one pages', async () => {
+    const options = {
+      filter: { group: { $eq: 'fruit' } },
+      includeFields: ['group'],
+      limit: 1,
+    };
+    await assertWithRetries(
+      async () => {
+        const first = await index.fetchDocuments(options);
+        expect(Object.keys(first.documents)).toHaveLength(1);
+        expect(first.pagination?.next).toEqual(expect.any(String));
+        expect(first.pagination!.next!.length).toBeGreaterThan(0);
+        const second = await index.fetchDocuments({
+          ...options,
+          paginationToken: first.pagination!.next,
+        });
+        expect(Object.keys(second.documents)).toHaveLength(1);
+        return [first, second];
+      },
+      (pages) => {
+        const fetched = pages.flatMap((page) => Object.values(page.documents));
+        expect(fetched).toHaveLength(2);
+        expect(fetched.map((document) => document._id).sort()).toEqual([
+          'apple',
+          'pear',
+        ]);
+        for (const document of fetched) {
+          expect(Object.keys(document).sort()).toEqual(['_id', 'group']);
+          expect(document.group).toBe('fruit');
+        }
+      },
+    );
+  });
+
+  test('lists only the requested namespace prefix across limit-one pages', async () => {
+    // Reuse this suite's private index; never add namespaces to CI's shared fixture.
+    const prefix = 'pagination-';
+    const names = [`${prefix}one`, `${prefix}two`];
+    const failures: unknown[] = [];
+    try {
+      for (const name of names) await index.createNamespace({ name });
+      await assertWithRetries(
+        async () => {
+          const first = await index.listNamespaces({ prefix, limit: 1 });
+          expect(first.namespaces).toHaveLength(1);
+          expect(first.pagination?.next).toEqual(expect.any(String));
+          expect(first.pagination!.next!.length).toBeGreaterThan(0);
+          const second = await index.listNamespaces({
+            prefix,
+            limit: 1,
+            paginationToken: first.pagination!.next,
+          });
+          expect(second.namespaces).toHaveLength(1);
+          return [...first.namespaces!, ...second.namespaces!];
+        },
+        (listed) => {
+          expect(listed.map(({ name }) => name).sort()).toEqual(names);
+        },
+      );
+    } catch (error) {
+      failures.push(error);
+    } finally {
+      const results = await Promise.allSettled(
+        names.map((name) =>
+          retryDelete(() => index.deleteNamespace(name), `namespace '${name}'`),
+        ),
+      );
+      failures.push(
+        ...results.flatMap((result) =>
+          result.status === 'rejected' ? [result.reason] : [],
+        ),
+      );
+    }
+    if (failures.length === 1) throw failures[0];
+    if (failures.length)
+      throw new AggregateError(
+        failures,
+        'Namespace pagination lifecycle failed',
+      );
   });
 
   test.each(modes)(
