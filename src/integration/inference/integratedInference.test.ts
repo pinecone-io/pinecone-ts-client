@@ -2,11 +2,7 @@ import { Pinecone } from '../../pinecone';
 import { SearchDocumentsResponse } from '../../pinecone-generated-ts-fetch/db_data';
 import { assertWithRetries, randomName } from '../test-helpers';
 
-// The 2026-07 spec restored the legacy create-for-model shape (apis 5f808858),
-// so this client now sends exactly what #16 recorded prod asking for. Still
-// skipped only because that has not been confirmed against a live fleet:
-// run it once with an API key and un-skip; see pinecone-ts-client-internal#16.
-describe.skip('Integrated Inference API tests', () => {
+describe('Integrated Inference API tests', () => {
   let pinecone: Pinecone;
   let indexName: string;
   beforeAll(async () => {

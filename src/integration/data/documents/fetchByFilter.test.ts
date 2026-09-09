@@ -24,11 +24,7 @@ beforeAll(async () => {
   metadataValue = fixtures.serverlessIndex.metadataFilter.value;
 });
 
-// Prod's data plane consistently 500s on filter-based fetch (retries
-// exhausted on every matrix leg) — the mode is in the 2026-07 spec and the
-// SDK supports it, but the fleet doesn't yet. Un-skip when it rolls out; see
-// pinecone-ts-client-internal#17.
-describe.skip('fetchDocuments by filter', () => {
+describe('fetchDocuments by filter', () => {
   test('fetch by metadata filter', async () => {
     const result = await serverlessIndex.fetchDocuments({
       filter: { [metadataKey]: { $eq: metadataValue } },
