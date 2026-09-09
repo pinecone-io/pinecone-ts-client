@@ -28,8 +28,12 @@ The SDK includes the following error classes, all reachable as `Errors.<ClassNam
 
 - **`PineconeBadRequestError`** (400, 403) - Invalid request parameters or insufficient quota
 - **`PineconeAuthorizationError`** (401) - Invalid or missing API key
+- **`PineconePaymentRequiredError`** (402) - Billing problem, such as quota exhaustion or a declined card
 - **`PineconeNotFoundError`** (404) - Resource not found
+- **`PineconeMethodNotAllowedError`** (405) - HTTP method not supported for this endpoint
 - **`PineconeConflictError`** (409) - Resource already exists
+- **`PineconeFailedPreconditionError`** (412) - A precondition the request depended on no longer holds
+- **`PineconeUnprocessableEntityError`** (422) - Request was well-formed but semantically invalid
 - **`PineconeInternalServerError`** (500) - Pinecone server error
 - **`PineconeNotImplementedError`** (501) - Feature not available on your plan
 - **`PineconeUnavailableError`** (503) - Service temporarily unavailable

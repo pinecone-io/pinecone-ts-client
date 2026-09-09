@@ -14,6 +14,8 @@ export type FailedRequestInfo = {
 
 const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io`;
 
+const BILLING_HELP = `You can review your plan and billing details in the Pinecone developer console at https://app.pinecone.io/organizations/-/settings/billing`;
+
 /** This error is thrown when API requests return with status 400. Typically this is due to some aspect of the request being incorrect or invalid.
  *
  * Some examples when this error could occur:
@@ -56,6 +58,30 @@ export class PineconeAuthorizationError extends BasePineconeError {
 }
 
 /**
+ * This error is thrown when API requests return with status 402 (Payment
+ * Required), signaling a billing problem such as quota exhaustion, a
+ * declined card, or a plan limit.
+ *
+ * Catch this error to surface the billing issue to the user rather than
+ * treating it as a generic unmapped error.
+ */
+export class PineconePaymentRequiredError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 402 (Payment Required). ${message ? message : ''} ${BILLING_HELP}`.trim(),
+      );
+    } else {
+      super(
+        `The request could not be completed due to a billing problem with your account. ${message ? message : ''} ${BILLING_HELP}`.trim(),
+      );
+    }
+    this.name = 'PineconePaymentRequiredError';
+  }
+}
+
+/**
  * This error is thrown when interacting with a resource such as an index or collection
  * that cannot be found.
  */
@@ -88,6 +114,29 @@ export class PineconeConflictError extends BasePineconeError {
     }
 
     this.name = 'PineconeConflictError';
+  }
+}
+
+/**
+ * This error is thrown when API requests return with status 412
+ * (Precondition Failed), meaning a precondition the request depended on -
+ * such as an expected resource state or a conditional header - no longer
+ * holds. For example, retrying a delete against a namespace that a prior
+ * request already deleted.
+ */
+export class PineconeFailedPreconditionError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 412 (Precondition Failed). ${message ? message : ''}`.trim(),
+      );
+    } else {
+      super(
+        `The request could not be completed because a precondition failed. ${message ? message : ''}`.trim(),
+      );
+    }
+    this.name = 'PineconeFailedPreconditionError';
   }
 }
 
@@ -276,12 +325,16 @@ export class PineconeUnmappedHttpError extends BasePineconeError {
 }
 
 /** @internal */
-export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
+export const mapHttpStatusError = (
+  failedRequestInfo: FailedRequestInfo,
+): BasePineconeError => {
   switch (failedRequestInfo.status) {
     case 400:
       return new PineconeBadRequestError(failedRequestInfo);
     case 401:
       return new PineconeAuthorizationError(failedRequestInfo);
+    case 402:
+      return new PineconePaymentRequiredError(failedRequestInfo);
     case 403:
       return new PineconeBadRequestError(failedRequestInfo);
     case 404:
@@ -290,6 +343,8 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
       return new PineconeMethodNotAllowedError(failedRequestInfo);
     case 409:
       return new PineconeConflictError(failedRequestInfo);
+    case 412:
+      return new PineconeFailedPreconditionError(failedRequestInfo);
     case 422:
       return new PineconeUnprocessableEntityError(failedRequestInfo);
     case 500:
@@ -299,6 +354,6 @@ export const mapHttpStatusError = (failedRequestInfo: FailedRequestInfo) => {
     case 503:
       return new PineconeUnavailableError(failedRequestInfo);
     default:
-      throw new PineconeUnmappedHttpError(failedRequestInfo);
+      return new PineconeUnmappedHttpError(failedRequestInfo);
   }
 };
