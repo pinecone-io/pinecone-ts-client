@@ -1,137 +1,350 @@
-/* 
-  The media query pattern here is mimicking what typedoc does within their default theme.
-  Currently you cannot disable the dark / light mode toggle easily, so this provides a
-  way of applying specific overrides in the context of their default styling.
-  
-  https://github.com/TypeStrong/typedoc/blob/master/static/style.css
+/*
+  Pinecone visual style for the TypeDoc-generated SDK reference.
+
+  Follows pinecone-docs-style.md, whose four load-bearing traits are the brand
+  blue, near-square (4px) corners, flat bordered surfaces, and the uppercase
+  letterspaced eyebrow above the page title.
+
+  TypeDoc ships its own stylesheet wrapped in `@layer typedoc`. Everything here
+  is unlayered, so it wins over the default theme regardless of specificity.
+  That means the token mapping in section 2 only has to be written once: it
+  overrides TypeDoc's resolved `--color-*` variables in every theme state
+  (explicit light, explicit dark, and `data-theme="os"` following the OS), and
+  the light/dark switch is handled entirely by the `--pc-*` blocks below.
 */
+
+/* ------------------------------------------------------------------ *
+ * 1. Palette
+ * ------------------------------------------------------------------ */
+
 :root {
-  /* Styles copied from docs.pinecone.io */
-  --font-family: 'MediumLLWeb', sans-serif;
-  --font-family-mono:
-    'JetBrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  --md-code-font:
-    'JetBrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  --base-font-size: 1rem;
+  --pc-brand-blue: #002bff;
+  --pc-primary-main: #002bff;
+  --pc-primary-dark: #222160;
 
-  /* light mode we override with Pinecone colors */
-  --md-code-background-light: #f6f8fa;
-  --tsd-member-header-light: #fbff54;
-  --p-code-border-light: lightgrey;
-  --color-alpha1-light: #030080;
-  --color-alpha2-light: #1c17ff;
-  --color-light1-light: #fff;
-  --color-body-light: #4c555a;
+  --pc-background: #fbfbfc;
+  --pc-paper: #ffffff;
+  --pc-surface: #f2f3f6;
+  --pc-border: #e7e5e4;
+  --pc-divider: #d8dddf;
 
-  /* dark mode inherit from typedoc and/or override */
-  --md-code-background-dark: inherit;
-  --tsd-member-header-dark: #2b2e33;
-  --p-code-border-dark: inherit;
-  --color-alpha1-dark: inherit;
-  --color-alpha2-dark: #4fc1ff;
-  --color-light1-dark: inherit;
-  --color-body-dark: inherit;
+  --pc-text-primary: #1c1917;
+  --pc-text-secondary: #72788d;
+  --pc-text-contrast: #ffffff;
+
+  --pc-error: #e31957;
+  --pc-warning: #dd815d;
+  --pc-success: #15b077;
+  --pc-info: #0028ff;
+
+  --pc-accent-tint: #f0f4ff;
+  --pc-accent-rule: var(--pc-brand-blue);
+
+  /* Depth appears on hover, in light mode only, tinted warm gray not black. */
+  --pc-card-hover-shadow:
+    0 5px 5px -3px rgba(163, 169, 175, 0.2),
+    0 8px 10px 1px rgba(163, 169, 175, 0.14),
+    0 3px 14px 2px rgba(163, 169, 175, 0.12);
+
+  --pc-font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+    sans-serif;
+  --pc-font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  --pc-radius: 0.25rem;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --md-code-background: var(--md-code-background-light);
-    --tsd-member-header: var(--tsd-member-header-light);
-    --p-code-border: var(--p-code-border-light);
-    --color-alpha1: var(--color-alpha1-light);
-    --color-alpha2: var(--color-alpha2-light);
-    --color-light1: var(--color-light1-light);
-    --color-body: var(--color-body-light);
-  }
-}
-
+/*
+  The brand blue swaps in dark mode and this is not optional: #002bff on
+  #171717 is ~2.4:1. #1e86ee is ~4.9:1. Solid blue button *fills* keep
+  #002bff in both themes, where white text on them clears 7.5:1.
+*/
 @media (prefers-color-scheme: dark) {
-  :root {
-    --md-code-background: var(--md-code-background-dark);
-    --tsd-member-header: var(--tsd-member-header-dark);
-    --p-code-border: var(--p-code-border-dark);
-    --color-alpha1: var(--color-alpha1-dark);
-    --color-alpha2: var(--color-alpha2-dark);
-    --color-light1: var(--color-light1-dark);
-    --color-body: var(--color-body-dark);
-  }
-}
+  :root:not([data-theme='light']) {
+    --pc-brand-blue: #1e86ee;
 
-:root[data-theme='light'] {
-  --md-code-background: var(--md-code-background-light);
-  --tsd-member-header: var(--tsd-member-header-light);
-  --p-code-border: var(--p-code-border-light);
-  --color-alpha1: var(--color-alpha1-light);
-  --color-alpha2: var(--color-alpha2-light);
-  --color-light1: var(--color-light1-light);
-  --color-body: var(--color-body-light);
+    --pc-background: #171717;
+    --pc-paper: #1e1e1e;
+    --pc-surface: #252525;
+    --pc-border: #303030;
+    --pc-divider: #2a2a2a;
+
+    --pc-text-primary: #ffffff;
+    --pc-text-secondary: #a0a0a0;
+
+    --pc-accent-tint: rgba(0, 43, 255, 0.08);
+    --pc-accent-rule: #4d6fff;
+    --pc-card-hover-shadow: none;
+  }
 }
 
 :root[data-theme='dark'] {
-  --md-code-background: var(--md-code-background-dark);
-  --tsd-member-header: var(--tsd-member-header-dark);
-  --p-code-border: var(--p-code-border-dark);
-  --color-alpha1: var(--color-alpha1-dark);
-  --color-alpha2: var(--color-alpha2-dark);
-  --color-light1: var(--color-light1-dark);
-  --color-body: var(--color-body-dark);
+  --pc-brand-blue: #1e86ee;
+
+  --pc-background: #171717;
+  --pc-paper: #1e1e1e;
+  --pc-surface: #252525;
+  --pc-border: #303030;
+  --pc-divider: #2a2a2a;
+
+  --pc-text-primary: #ffffff;
+  --pc-text-secondary: #a0a0a0;
+
+  --pc-accent-tint: rgba(0, 43, 255, 0.08);
+  --pc-accent-rule: #4d6fff;
+  --pc-card-hover-shadow: none;
 }
+
+/* ------------------------------------------------------------------ *
+ * 2. Remap TypeDoc's theme variables onto the tokens
+ * ------------------------------------------------------------------ */
+
+:root {
+  --color-background: var(--pc-background);
+  --color-background-secondary: var(--pc-surface);
+  --color-background-active: var(--pc-surface);
+  --color-active-menu-item: var(--pc-surface);
+  --color-icon-background: var(--pc-background);
+
+  --color-accent: var(--pc-border);
+
+  --color-text: var(--pc-text-primary);
+  --color-text-aside: var(--pc-text-secondary);
+  --color-icon-text: var(--pc-text-primary);
+  /*
+    TypeDoc uses `contrast-text` for text sitting on `background-active`, a
+    pale surface fill -- not for text on a brand-blue fill. It has to stay
+    readable on --pc-surface, so it maps to text-primary rather than
+    --pc-text-contrast.
+  */
+  --color-contrast-text: var(--pc-text-primary);
+
+  --color-link: var(--pc-brand-blue);
+  --color-focus-outline: var(--pc-brand-blue);
+
+  --color-comment-tag: var(--pc-surface);
+  --color-comment-tag-text: var(--pc-text-primary);
+
+  /*
+    Five TypeDoc admonitions collapsed onto the three docs-site severities:
+    warning (--pc-error), note (--pc-brand-blue), tip (--pc-success).
+  */
+  --color-alert-note: var(--pc-brand-blue);
+  --color-alert-important: var(--pc-brand-blue);
+  --color-alert-tip: var(--pc-success);
+  --color-alert-warning: var(--pc-error);
+  --color-alert-caution: var(--pc-error);
+
+  /* Code block fill, defined in TypeDoc's generated highlight.css. */
+  --code-background: var(--pc-paper);
+}
+
+/* ------------------------------------------------------------------ *
+ * 3. Typography
+ * ------------------------------------------------------------------ */
 
 body {
-  font-family: var(--font-family);
-  color: var(--color-body);
-  background-color: var(--color-light1);
-}
-
-a {
-  color: var(--color-alpha2);
+  font-family: var(--pc-font-sans);
+  font-size: 0.875rem;
+  line-height: 150%;
+  letter-spacing: 0.15px;
 }
 
 h1,
 h2,
 h3,
+h4,
+h5,
+h6 {
+  color: var(--pc-text-primary);
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: 0.15px;
+}
+
+/*
+  A flat scale. h2 at 1.25rem against 0.875rem body is a ~1.43 ratio; TypeDoc's
+  native scale is far more dramatic than the docs site's.
+*/
+h1 {
+  font-size: 2.125rem;
+}
+h2 {
+  font-size: 1.25rem;
+}
+h3 {
+  font-size: 1rem;
+}
 h4 {
-  color: var(--color-alpha1);
+  font-size: 0.9375rem;
+}
+h5,
+h6 {
+  font-size: 0.875rem;
 }
 
-h1 > a,
-h2 > a,
-h3 > a,
-h4 > a,
-h5 > a,
-h6 > a {
-  color: var(--color-alpha1);
+a {
+  font-weight: 400;
 }
 
-section.tsd-member > h3 {
-  margin-left: 0;
-  margin-right: 0;
+/* The eyebrow above the page title. */
+.tsd-breadcrumb {
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.tsd-member .tsd-anchor + h3 {
-  background-color: var(--tsd-member-header);
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  padding-left: 0.5em;
+/* Metadata and captions -- the only places text-secondary is safe at AA. */
+.tsd-sources,
+.tsd-page-navigation-section {
+  font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * 4. Shape and surface
+ * ------------------------------------------------------------------ */
+
+code,
+pre,
+.tsd-signature,
+.tsd-flag,
+#tsd-search[open],
+#tsd-search-input,
+#tsd-search-results > li,
+math[display='block'] {
+  border-radius: var(--pc-radius);
 }
 
 code,
-pre {
-  font-family: var(--md-code-font);
-  background-color: var(--md-code-background);
-}
-
-pre {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
-p > code {
-  padding: 2px 4px;
-  border: 1px solid lightgrey;
-  border-radius: 4px;
-}
-
+pre,
+.tsd-signature,
 .tsd-signature-type {
-  font-family: var(--md-code-font);
+  font-family: var(--pc-font-mono);
+}
+
+/* Inline code: a subtle chip on --pc-paper, no border, deliberately quiet. */
+:not(pre) > code {
+  background: var(--pc-paper);
+  border: none;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+pre {
+  background: var(--pc-paper);
+  border: 1px solid var(--pc-border);
+  padding: 1rem;
+  margin: 1em 0;
+  font-size: 0.8125rem;
+}
+
+.tsd-signature {
+  background: var(--pc-paper);
+  font-size: 0.8125rem;
+}
+
+/*
+  Member sections are the cards of a reference page: flat, bordered, on paper,
+  with depth only on hover and only in light mode. The shadow tint is a warm
+  gray rather than black.
+*/
+.tsd-panel.tsd-member {
+  background: var(--pc-paper);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius);
+  padding: 1.5rem;
+  box-shadow: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.tsd-panel.tsd-member:hover {
+  box-shadow: var(--pc-card-hover-shadow);
+}
+
+/* TypeDoc bleeds panel headings out to the panel edge; keep them inside. */
+.tsd-panel.tsd-member > h3 {
+  margin: 0 0 0.75rem 0;
+  padding: 0;
+}
+
+/* Header and sidebar are hairlines, not filled panels. */
+.tsd-page-toolbar {
+  background: var(--pc-background);
+}
+
+@media (min-width: 770px) {
+  .site-menu {
+    border-right: 1px solid var(--pc-border);
+    padding-right: 1rem;
+  }
+}
+
+/* Non-card interactive text hovers with opacity rather than a color change. */
+.tsd-breadcrumb a:hover,
+#tsd-toolbar-links a:hover,
+.tsd-navigation a:hover,
+.tsd-page-navigation a:hover {
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 94.5rem;
+}
+
+/* ------------------------------------------------------------------ *
+ * 5. Callouts and the primary button
+ * ------------------------------------------------------------------ */
+
+/* House callout: a left rule plus a tint, no full border. */
+.tsd-alert {
+  background: var(--pc-accent-tint);
+  border-left: 4px solid var(--alert-color, var(--pc-accent-rule));
+  border-radius: 0.375rem;
+  padding: 1rem 1.25rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+blockquote {
+  background: var(--pc-accent-tint);
+  border-left: 4px solid var(--pc-accent-rule);
+  border-radius: 0.375rem;
+  padding: 1rem 1.25rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* The deprecation / availability banner is a warning-severity callout. */
+.warning {
+  color: var(--pc-text-primary);
+  background: var(--pc-accent-tint);
+  border-left: 4px solid var(--pc-error);
+  border-radius: 0.375rem;
+  padding: 1rem 1.25rem;
+}
+
+/* The code-block copy button is the one primary button on these pages. */
+pre > button {
+  background: var(--pc-primary-main);
+  color: var(--pc-text-contrast);
+  border: none;
+  border-radius: var(--pc-radius);
+  padding: 0.375rem 1rem;
+  font-family: var(--pc-font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+}
+
+pre > button:hover {
+  background: var(--pc-primary-dark);
 }
