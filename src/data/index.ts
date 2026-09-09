@@ -314,7 +314,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const index = pc.index({ host: indexModel.host });
    * ```
    *
-   * @constructor
    * @param options - The {@link IndexOptions} for targeting the index.
    * @param config - The configuration from the Pinecone client.
    */

@@ -86,7 +86,12 @@ export type FullTextSearchStringField = StringField;
  */
 export type CreateIndexSchemaField =
   // `type` re-narrowed: the generated DenseVectorField accepts any field type.
-  | (DenseVectorField & { type: 'dense_vector'; metric: IndexMetric })
+  | (DenseVectorField & {
+      /** Field kind used to narrow this schema variant. */
+      type: 'dense_vector';
+      /** Similarity metric used by the dense vector field. */
+      metric: IndexMetric;
+    })
   | SparseVectorField
   | FullTextSearchStringField;
 
@@ -99,6 +104,7 @@ export type CreateIndexSchemaField =
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
 export interface CreateIndexSchema {
+  /** Map of field names to their schema configurations. */
   fields: { [fieldName: string]: CreateIndexSchemaField };
 }
 
@@ -131,7 +137,9 @@ export interface CreateIndexOptions extends Omit<
    */
   timeout?: number;
   /**
-   * When true, does not throw if an index with this name already exists.
+   * When true, returns `undefined` instead of throwing if an index with this
+   * name already exists. Otherwise creation always returns an index model,
+   * regardless of `waitUntilReady`.
    */
   suppressConflicts?: boolean;
 }
@@ -139,6 +147,14 @@ export interface CreateIndexOptions extends Omit<
 /**
  * Creates a schema-based index.
  */
+export function createIndex(
+  api: ManageIndexesApi,
+  options: CreateIndexOptions & { suppressConflicts?: false },
+): Promise<IndexModel>;
+export function createIndex(
+  api: ManageIndexesApi,
+  options: CreateIndexOptions,
+): Promise<IndexModel | void>;
 export async function createIndex(
   api: ManageIndexesApi,
   options: CreateIndexOptions,

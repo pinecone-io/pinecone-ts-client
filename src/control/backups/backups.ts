@@ -200,7 +200,7 @@ export class Backups {
 
   /**
    * Creates an index from a backup. The creation is accepted asynchronously.
-   * Use the returned `restoreJobId` with {@link describeRestoreJob} to poll for completion.
+   * Use the returned `restoreJobId` with {@link RestoreJobs.describe} to poll for completion.
    *
    * @example
    * ```typescript
@@ -218,7 +218,7 @@ export class Backups {
    * // }
    *
    * // Poll until the restore completes
-   * const job = await pc.indexes.describeRestoreJob('4d4c8693-10fd-4204-a57b-1e3e626fca07');
+   * const job = await pc.restoreJobs.describe('4d4c8693-10fd-4204-a57b-1e3e626fca07');
    * console.log(job.status);
    * // 'Completed'
    * ```

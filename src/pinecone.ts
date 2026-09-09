@@ -1,5 +1,6 @@
 import type {
   CreateIndexOptions,
+  IndexModel,
   CreateIndexForModelOptions,
   ConfigureIndexOptions,
   CreateCollectionOptions,
@@ -73,6 +74,7 @@ import { IndexOptions, AssistantOptions } from './types';
  * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
+  /** Generate embeddings, rerank documents, and discover inference models. */
   public inference: Inference;
   /**
    * Control-plane operations for indexes, backups, restore jobs, and collections.
@@ -131,7 +133,6 @@ export class Pinecone {
    * });
    * ```
    *
-   * @constructor
    * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {
@@ -214,11 +215,23 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(
+    options: CreateIndexOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(options: CreateIndexOptions): Promise<IndexModel | void>;
   createIndex(options: CreateIndexOptions) {
     return this.indexes.create(options);
   }
 
   /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions,
+  ): Promise<IndexModel | void>;
   createIndexForModel(options: CreateIndexForModelOptions) {
     return this.indexes.createForModel(options);
   }

@@ -12,14 +12,14 @@ import { PineconeArgumentError } from '../../errors';
 
 /**
  * Options for creating a new service account (the body of `admin.serviceAccounts.create`). Aliased
- * from the generated {@link CreateServiceAccountRequest}. Omitting `roleBindings` creates the
+ * from the generated `CreateServiceAccountRequest`. Omitting `roleBindings` creates the
  * service account with no role bindings; roles can be added later via {@link AdminClient.roleBindings}.
  */
 export type CreateServiceAccountOptions = CreateServiceAccountRequest;
 
 /**
  * Options for updating an existing service account (the body of `admin.serviceAccounts.update`).
- * Aliased from the generated {@link UpdateServiceAccountRequest}.
+ * Aliased from the generated `UpdateServiceAccountRequest`.
  */
 export type UpdateServiceAccountOptions = UpdateServiceAccountRequest;
 

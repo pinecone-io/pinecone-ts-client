@@ -19,6 +19,7 @@ export type {
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export interface BackupList extends Omit<GeneratedBackupList, 'data'> {
+  /** Backups returned by this page. */
   data?: Array<BackupModel>;
 }
 

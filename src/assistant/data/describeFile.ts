@@ -19,7 +19,7 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/assist
  * } else {
  *     fileId = '';
  * }
- * const resp = await assistant.describeFile({fileId: fileId})
+ * const resp = await assistant.describeFile(fileId)
  * console.log(resp);
  * // {
  * //  name: 'test-file.txt',

@@ -96,19 +96,32 @@ export { ChatStream } from './chatStream';
 export class Assistant {
   private config: PineconeConfiguration;
 
+  /** @internal */
   readonly _chat: ReturnType<typeof chat>;
+  /** @internal */
   readonly _chatStream: ReturnType<typeof chatStream>;
+  /** @internal */
   readonly _chatCompletion: ReturnType<typeof chatCompletion>;
+  /** @internal */
   readonly _chatCompletionStream: ReturnType<typeof chatCompletionStream>;
+  /** @internal */
   readonly _listFiles: ReturnType<typeof listFiles>;
+  /** @internal */
   readonly _describeFile: ReturnType<typeof describeFile>;
+  /** @internal */
   readonly _uploadFile: ReturnType<typeof uploadFile>;
+  /** @internal */
   readonly _upsertFile: ReturnType<typeof upsertFile>;
+  /** @internal */
   readonly _deleteFile: ReturnType<typeof deleteFile>;
+  /** @internal */
   readonly _describeOperation: ReturnType<typeof describeOperation>;
+  /** @internal */
   readonly _listOperations: ReturnType<typeof listOperations>;
+  /** @internal */
   readonly _context: ReturnType<typeof context>;
 
+  /** Name of the assistant targeted by this client. */
   assistantName: string;
 
   /**
@@ -232,7 +245,7 @@ export class Assistant {
   }
 
   /**
-   * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatResponse>}. Retries the request if the server fails.
+   * Sends a message to the assistant and receives a streamed response as {@link ChatStream} of {@link StreamedChatResponse}. Retries the request if the server fails.
    *
    * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
    *
@@ -257,7 +270,7 @@ export class Assistant {
    *
    * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
    * assistant.
-   * @returns A promise that resolves to a {@link ChatStream<StreamedChatResponse>}.
+   * @returns A promise that resolves to a {@link ChatStream} of {@link StreamedChatResponse}.
    */
   chatStream(options: ChatOptions) {
     return this._chatStream(options);
@@ -309,7 +322,7 @@ export class Assistant {
   }
 
   /**
-   * Sends a message to the assistant and receives a streamed response as {@link ChatStream<StreamedChatCompletionResponse>}. Response is compatible with
+   * Sends a message to the assistant and receives a streamed response as {@link ChatStream} of {@link StreamedChatCompletionResponse}. Response is compatible with
    * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
    *
    * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
@@ -336,7 +349,7 @@ export class Assistant {
    *
    * @param options - A {@link ChatCompletionOptions} object containing the message and optional parameters to send
    * to an assistant.
-   * @returns A promise that resolves to a {@link ChatStream<StreamedChatCompletionResponse>}.
+   * @returns A promise that resolves to a {@link ChatStream} of {@link StreamedChatCompletionResponse}.
    */
   chatCompletionStream(options: ChatCompletionOptions) {
     return this._chatCompletionStream(options);
@@ -400,7 +413,7 @@ export class Assistant {
    * } else {
    *     fileId = '';
    * }
-   * const resp = await assistant.describeFile({fileId: fileId})
+   * const resp = await assistant.describeFile(fileId)
    * console.log(resp);
    * // {
    * //  name: 'test-file.txt',

@@ -78,7 +78,9 @@ export interface CreateIndexForModelOptions extends Omit<
    */
   timeout?: number;
   /**
-   * When true, does not throw if an index with this name already exists.
+   * When true, returns `undefined` instead of throwing if an index with this
+   * name already exists. Otherwise creation always returns an index model,
+   * regardless of `waitUntilReady`.
    */
   suppressConflicts?: boolean;
 }
@@ -92,6 +94,14 @@ export interface CreateIndexForModelOptions extends Omit<
  * @param api - The manage-indexes API client.
  * @param options - The {@link CreateIndexForModelOptions} for the index.
  */
+export function createIndexForModel(
+  api: ManageIndexesApi,
+  options: CreateIndexForModelOptions & { suppressConflicts?: false },
+): Promise<IndexModel>;
+export function createIndexForModel(
+  api: ManageIndexesApi,
+  options: CreateIndexForModelOptions,
+): Promise<IndexModel | void>;
 export async function createIndexForModel(
   api: ManageIndexesApi,
   options: CreateIndexForModelOptions,

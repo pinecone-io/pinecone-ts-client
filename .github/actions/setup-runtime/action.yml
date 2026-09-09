@@ -1,0 +1,24 @@
+name: 'Setup runtime'
+description: 'Select Node.js and the exact npm resolver declared by this repository'
+inputs:
+  node_version:
+    description: 'Optional Node.js matrix override; defaults to .nvmrc'
+    required: false
+    default: ''
+  working_directory:
+    description: 'Repository directory containing .nvmrc and package.json'
+    required: false
+    default: '.'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: ${{ inputs.node_version }}
+        node-version-file: ${{ inputs.working_directory }}/.nvmrc
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install pinned npm
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
+      run: bash scripts/setup-npm.sh
