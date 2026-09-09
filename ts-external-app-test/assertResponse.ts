@@ -35,11 +35,13 @@ async function request(path: string, options: RequestOptions): Promise<any> {
       return JSON.parse(text);
     } catch (error) {
       throw new Error(
-        `Failed to parse JSON response from ${url}: ${error.message}`,
+        `Failed to parse JSON response from ${url}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   } catch (error) {
-    throw new Error(`Request to ${url} failed: ${error.message}`);
+    throw new Error(
+      `Request to ${url} failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
