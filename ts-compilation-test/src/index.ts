@@ -1,4 +1,10 @@
 import { Pinecone } from '@pinecone-database/pinecone';
+import {
+  CreateIndexReadCapacity,
+  CreateIndexForModelOptions,
+  CreateIndexFromBackupOptions,
+  ReadCapacity,
+} from '@pinecone-database/pinecone';
 
 const p = new Pinecone();
 
@@ -126,4 +132,38 @@ export async function compileOnlySurfaceCoverage(): Promise<void> {
   });
   void wrongDocumentResponse;
   void documentMethods;
+
+  // Creation capacity coverage stays inside this never-invoked fixture.
+  const capacities: (CreateIndexReadCapacity | ReadCapacity)[] = [
+    {},
+    { mode: 'OnDemand' },
+    { nodeType: 'b1', manual: { replicas: 1, shards: 1 } },
+    { mode: 'Dedicated', nodeType: 't1', manual: { replicas: 0, shards: 2 } },
+    {
+      mode: 'Dedicated',
+      dedicated: {
+        nodeType: 'b1',
+        scaling: 'FutureScaling',
+        manual: { replicas: 1, shards: 1 },
+      },
+    },
+  ];
+
+  for (const readCapacity of capacities) {
+    const model: CreateIndexForModelOptions = {
+      name: 'model-index',
+      cloud: 'aws',
+      region: 'us-east-1',
+      embed: { model: 'multilingual-e5-large', fieldMap: { text: 'text' } },
+      readCapacity,
+    };
+    const backup: CreateIndexFromBackupOptions = {
+      name: 'restored-index',
+      readCapacity,
+    };
+    void p.createIndexForModel(model);
+    void p.indexes.createForModel(model);
+    void p.createIndexFromBackup({ backupId: 'backup', ...backup });
+    void p.backups.createIndex('backup', backup);
+  }
 }
