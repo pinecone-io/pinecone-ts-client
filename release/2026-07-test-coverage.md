@@ -1,6 +1,6 @@
 # 2026-07 release test coverage audit
 
-Audited on 2026-09-09 against `main` at `c96f48b`, including backup/restore PR #136, plus the two pagination tests in [PR #150](https://github.com/pinecone-io/pinecone-ts-client-internal/pull/150) at `d271e97`. This is a source audit of executable assertions, not a claim that every release acceptance criterion passed live. The historical descriptions in #40, #35, and #21 predate much of the coverage now present. Python-parity tickets are outside this audit.
+Audited on 2026-09-09 against `main` at `c96f48b`, including backup/restore PR #136, plus five pagination/schema rejection tests in [PR #150](https://github.com/pinecone-io/pinecone-ts-client-internal/pull/150) at `72169ed`. This is a source audit of executable assertions, not a claim that every release acceptance criterion passed live. The historical descriptions in #40, #35, and #21 predate much of the coverage now present. Python-parity tickets are outside this audit.
 
 ## Documents and namespaces (#40)
 
@@ -18,9 +18,9 @@ Paths below are relative to the repository root. “Wire” means the public SDK
 | Namespace create/list/describe/delete | `src/data/__tests__/namespaces/` and `src/smoke/namespacesWire.test.ts` cover all four routes, schema/count response, list options and encoded namespace paths                                                                                                                                                          | `src/integration/data/namespaces/namespaces.test.ts` creates, lists by prefix, describes and explicitly deletes a namespace while retaining neighbors                                                                                                                                          | Live pagination status is recorded below                                                                 |
 | Retry and error behavior              | Each of six operations has wire tests for replay after 503, exhausted nested 5xx, and non-retried nested 400, plus successful response decoding                                                                                                                                                                         | `src/integration/retries.test.ts` also sends document-route requests to its local server                                                                                                                                                                                                       | These are deliberately deterministic transport tests; they do not simulate a real fleet outage           |
 
-### Live pagination verification
+### Live pagination and schema rejection verification
 
-PR #150 adds two tests to the existing private mixed-schema search fixture, without changing shared CI fixtures. Filtered fetch follows a real next token with `limit: 1`, checks distinct matching IDs and preserves field projection. Namespace listing creates two owned namespaces, follows a real next token with `limit: 1`, checks prefix isolation and distinct names, and cleans both up even on failure. The complete focused Node suite passed **21/21 tests in 25.5 seconds** on 2026-09-09, including these cases and index cleanup. TypeScript no-emit, targeted ESLint and Prettier also passed. Consult PR #150 for its subsequent matrix results; this local run alone is not a full-matrix claim.
+PR #150 adds five tests to the existing private mixed-schema search fixture, without changing shared CI fixtures. Filtered fetch follows a real next token with `limit: 1`, checks distinct matching IDs and preserves field projection. Namespace listing creates two owned namespaces, follows a real next token with `limit: 1`, checks prefix isolation and distinct names, and cleans both up even on failure. The suite also rejects metadata-only documents, incorrectly typed schema values, and vectors-plane queries against a documents index. The complete focused Node suite passed **24/24 tests in 23 seconds** on 2026-09-09, including these cases and index cleanup. TypeScript no-emit, targeted ESLint and Prettier also passed. Consult PR #150 for its subsequent matrix results; this local run alone is not a full-matrix claim.
 
 ### Semantic text is a records-plane capability today
 
@@ -43,7 +43,7 @@ See `src/integration/control/README.md` for the gates, commands and timeout budg
 
 ## Default skip denominator
 
-At audited base `c96f48b`, Jest registers **167 integration test cases in 37 suites**. PR #150 adds two enabled cases in an existing suite, producing **169 total, 161 enabled and eight explicitly disabled by default**, still across 37 suites. This counts expanded parameterized cases, not lines containing `test`, and counts the local mocked retry suite because the integration runner selects it. It does not count missing tests as passed coverage.
+At audited base `c96f48b`, Jest registers **167 integration test cases in 37 suites**. PR #150 adds five enabled cases in an existing suite, producing **172 total, 164 enabled and eight explicitly disabled by default**, still across 37 suites. This counts expanded parameterized cases, not lines containing `test`, and counts the local mocked retry suite because the integration runner selects it. It does not count missing tests as passed coverage.
 
 | Default-disabled cases                                                 | Count | Enablement condition                                                  |
 | ---------------------------------------------------------------------- | ----: | --------------------------------------------------------------------- |
@@ -66,6 +66,17 @@ PINECONE_API_KEY=collection-only-no-network TEST_ENV=node \
 
 The tracked-skip parser in `src/__tests__/integrationSkipInventory.test.ts` checks annotations for direct, parameterized, computed and conditional skips. It enforces accountability, not fleet coverage. Recompute totals after test additions and use the actual CI result for release pass/fail counts.
 
+## Remaining client-owned scenarios from #40
+
+These original plan cases are not presently covered by the inspected documents tests. They are additional work, not known fleet blockers and not part of the skipped-test denominator:
+
+- Live rejection of `$match_phrase` in update/delete filters; the existing schema-negative cases test missing and wrongly typed fields instead.
+- A documents operation against a legacy vectors index, with the error identifying the supported API. PR #150 covers the opposite direction; the semantic-text probe covers a records/integrated-inference index.
+- Unqualified `query_string` search, `topK` strictly greater than the corpus, and negative scoring inputs (dense plus sparse; `query_string` naming a field; empty/whitespace text query). Current live scoring tests cover supported qualified/multi-field combinations and vector-plus-text rejection.
+- Explicit mocked-wire 429 retry behavior and null `_score` deserialization. Current per-operation retry tests use 503/5xx/400 and the search response has a numeric score.
+
+The optional fixture consolidation suggested by #40 is also incomplete: mixed-schema search remains a private per-suite fixture and dense/sparse update fixtures remain separate. That does not erase their assertions, but their provisioning cost has not been amortized across the entire matrix.
+
 ## Release decision
 
-Prioritize the remaining fleet behavior (#35/#17), product scope for semantic-text documents, and required fixture/full-lifecycle execution (#21/#117/#38). Keyless coverage now protects the document envelopes, wire contract, namespace scoping, retry behavior and error paths that the old #40 matrix called absent. Green default CI is a useful gate, but it is not completion of the opt-in and unavailable scenarios above.
+Prioritize the remaining fleet behavior (#35/#17), product scope for semantic-text documents, required fixture/full-lifecycle execution (#21/#117/#38), and the client-owned cases above. Keyless coverage now protects the document envelopes, wire contract, namespace scoping, retry behavior and error paths that the old #40 matrix called absent. Green default CI is a useful gate, but it is not completion of every original #40 scenario or of the opt-in and unavailable scenarios above.
