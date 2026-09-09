@@ -252,3 +252,36 @@ describe('pure legacy index derivations', () => {
     ]);
   });
 });
+
+test('derives reported model settings from a live 2026-07 createForModel schema', () => {
+  // Observed on 2026-09-09 from createForModel and describe using
+  // multilingual-e5-large. This verifies the new API path, not a v8-created index.
+  const model = {
+    ...fixtures.integratedReportedDimension,
+    schema: {
+      fields: {
+        chunk_text: {
+          type: 'semantic_text' as const,
+          model: 'multilingual-e5-large',
+          dimension: 1024,
+          metric: 'cosine',
+          writeParameters: { input_type: 'passage', truncate: 'END' },
+          readParameters: { input_type: 'query', truncate: 'END' },
+        },
+      },
+    },
+  };
+  expect(deriveDimension(model)).toEqual(value(1024));
+  expect(deriveMetric(model)).toEqual(value('cosine'));
+  expect(deriveEmbed(model)).toEqual(
+    value({
+      model: 'multilingual-e5-large',
+      dimension: 1024,
+      metric: 'cosine',
+      fieldMap: { text: 'chunk_text' },
+      writeParameters: { input_type: 'passage', truncate: 'END' },
+      readParameters: { input_type: 'query', truncate: 'END' },
+    }),
+  );
+  expect(deriveVectorType(model)).toMatchObject(error('not-reported-by-api'));
+});
