@@ -17,6 +17,7 @@ import { Indexes } from './control/indexes';
 import { Collections } from './control/collections';
 import { Backups } from './control/backups';
 import { RestoreJobs } from './control/restoreJobs';
+import { BackupSchedules } from './control/backupSchedules';
 import { Assistants } from './assistant/control/assistants';
 import type { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
 import {
@@ -112,6 +113,15 @@ export class Pinecone {
    */
   public restoreJobs: RestoreJobs;
   /**
+   * Control-plane operations for backup schedules.
+   *
+   * @example
+   * ```typescript
+   * const schedules = await pc.backupSchedules.list('my-index');
+   * ```
+   */
+  public backupSchedules: BackupSchedules;
+  /**
    * Control-plane operations for assistants.
    *
    * @example
@@ -154,6 +164,7 @@ export class Pinecone {
     this.collections = new Collections(this.config);
     this.backups = new Backups(this.config);
     this.restoreJobs = new RestoreJobs(this.config);
+    this.backupSchedules = new BackupSchedules(this.config);
     this.assistants = new Assistants(this.config);
 
     // Assistant operations

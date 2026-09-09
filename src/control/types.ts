@@ -30,6 +30,9 @@ export type BackupId = string;
 /** The unique identifier representing a restore job. */
 export type RestoreJobId = string;
 
+/** The unique identifier representing a backup schedule. */
+export type BackupScheduleId = string;
+
 // Values sent to the API are exact unions; values read back also accept
 // `string`, so a status added server-side cannot break a pinned client.
 
@@ -82,6 +85,22 @@ export type CollectionStatus =
  */
 export type BackupStatus =
   'Initializing' | 'Ready' | 'InitializationFailed' | (string & {});
+
+/**
+ * The current status of a backup produced by a backup schedule. `Scheduled`
+ * means the run is planned but has not started.
+ *
+ * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+ */
+export type ScheduledBackupStatus = 'Scheduled' | BackupStatus;
+
+/**
+ * How often a backup schedule runs. The run time within each period is chosen
+ * by the service and reported as `nextScheduledRun`.
+ *
+ * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+ */
+export type BackupScheduleFrequency = 'daily' | 'weekly' | 'monthly';
 
 /**
  * The state of an index's read capacity.

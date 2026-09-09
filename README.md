@@ -237,7 +237,7 @@ Detailed information on specific ways of using the SDK are covered in these guid
 - [Serverless Indexes](./guides/index-management/serverless-indexes.md) - Create and manage auto-scaling serverless indexes
 - [Pod Indexes](./guides/index-management/pod-indexes.md) - Create and manage dedicated pod-based indexes
 - [Collections](./guides/index-management/collections.md) - Static copies of pod-based indexes
-- [Backups](./guides/index-management/backups.md) - Create and restore from serverless index backups
+- [Backups](./guides/index-management/backups.md) - Create, schedule, and restore from serverless index backups
 - [Common Operations](./guides/index-management/shared-operations.md) - List, describe, delete, and configure indexes
 
 **Data Operations:**
