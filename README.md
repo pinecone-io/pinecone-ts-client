@@ -198,7 +198,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Create an assistant
-const assistant = await pc.createAssistant({
+const assistant = await pc.assistants.create({
   name: 'product-assistant',
   instructions: 'You are a helpful product recommendation assistant.',
 });
