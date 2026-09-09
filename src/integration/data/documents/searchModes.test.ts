@@ -30,6 +30,11 @@ const modes: {
     ids: ['apple'],
   },
   {
+    name: 'unqualified query string',
+    scoreBy: [{ type: 'query_string', query: 'apple' }],
+    ids: ['apple'],
+  },
+  {
     name: 'multiple text clauses',
     scoreBy: [
       { type: 'text', fields: ['text'], query: 'apple' },
@@ -182,6 +187,38 @@ describe('document search scoring modes', () => {
     ).rejects.toBeInstanceOf(PineconeBadRequestError);
   });
 
+  test.each(['update', 'delete'] as const)(
+    'rejects search-only text-match operators in %s filters',
+    async (operation) => {
+      const filter = { text: { $match_phrase: 'apple' } };
+      const response =
+        operation === 'update'
+          ? index.updateDocuments({ filter, setFields: { group: 'changed' } })
+          : index.deleteDocuments({ filter });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
+  test.each(
+    [
+      [
+        ...denseScoreBy,
+        {
+          type: 'sparse_vector',
+          field: 'sparse',
+          sparseValues: { indices: [1], values: [1] },
+        },
+      ],
+      [{ type: 'query_string', field: 'text', query: 'apple' }],
+      [{ type: 'text', field: 'text', query: '' }],
+      [{ type: 'text', field: 'text', query: '   ' }],
+    ].map((scoreBy) => ({ scoreBy })),
+  )('rejects invalid scoring clauses: $scoreBy', async ({ scoreBy }) => {
+    await expect(
+      index.searchDocuments({ scoreBy, topK: 1 }),
+    ).rejects.toBeInstanceOf(PineconeBadRequestError);
+  });
+
   test.each([
     { includeFields: undefined },
     { includeFields: [] },
@@ -326,7 +363,7 @@ describe('document search scoring modes', () => {
     async ({ scoreBy, ids }) => {
       const result = await index.searchDocuments({
         scoreBy,
-        topK: 3,
+        topK: documents.length + 1,
         includeFields: ['*'],
       });
       expect(result.namespace).toBe(namespace);

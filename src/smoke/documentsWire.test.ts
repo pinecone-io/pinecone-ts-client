@@ -2,6 +2,7 @@ import { Index, Pinecone, SearchDocumentsOptions } from '../index';
 import {
   PineconeBadRequestError,
   PineconeMaxRetriesExceededError,
+  PineconeUnmappedHttpError,
 } from '../errors';
 
 const host = 'https://documents.test.pinecone.io';
@@ -207,6 +208,40 @@ describe.each(operations)('$name documents wire contract', (operation) => {
     );
     expect(transport).toHaveBeenCalledTimes(1);
   });
+
+  test('preserves a nested 429 without retrying under the current 5xx-only policy', async () => {
+    const transport = jest
+      .fn()
+      .mockImplementation(async () =>
+        json(
+          {
+            status: 429,
+            error: { code: 'RESOURCE_EXHAUSTED', message: 'Too many requests' },
+          },
+          429,
+        ),
+      );
+    const response = operation.call(client(transport, 3));
+    await expect(response).rejects.toBeInstanceOf(PineconeUnmappedHttpError);
+    await expect(response).rejects.toThrow('Too many requests');
+    expect(transport).toHaveBeenCalledTimes(1);
+    expectWire(transport, operation);
+  });
+});
+
+test('preserves a null score in a decoded document search hit', async () => {
+  const response = {
+    matches: [{ ...document, _score: null }],
+    namespace,
+    usage,
+  };
+  const transport = jest.fn().mockImplementation(async () => json(response));
+  const result = await client(transport).searchDocuments({
+    scoreBy: [{ type: 'text', field: 'title', query: 'Hello' }],
+    topK: 1,
+  });
+  expect(result.matches).toEqual(response.matches);
+  expect(result.matches[0]._score).toBeNull();
 });
 
 const scoring: SearchDocumentsOptions['scoreBy'][] = [
