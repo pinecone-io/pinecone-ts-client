@@ -54,7 +54,7 @@ jobs:
           # Always surface the setup logs (minus the fixtures line) first.
           echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
-          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | tail -n 1 | cut -d'=' -f2-)
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | sed -n 's/^FIXTURES_JSON=//p' | tail -n 1)
           if [ -n "$FIXTURES_JSON" ]; then
             echo "FIXTURES_JSON=$FIXTURES_JSON" >> "$GITHUB_OUTPUT"
           fi
