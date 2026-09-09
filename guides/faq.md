@@ -255,10 +255,13 @@ async function concurrentQueries() {
 concurrentQueries();
 ```
 
-## What's the difference between `upsert` and `upsertRecords`?
+## What's the difference between `upsert`, `upsertRecords`, and `documents.upsert`?
 
 - **`upsert`**: For vectors you've already embedded (bring your own vectors)
 - **`upsertRecords`**: For text data with integrated inference (Pinecone generates embeddings)
+- **`documents.upsert`**: For documents with `_id` and named text or vector fields defined by an index schema. Full-text search uses text directly; you supply any dense or sparse vector values yourself.
+
+Choose the operation that matches your index schema. See [Working with Documents](./data-operations/working-with-documents.md) for document upserts and full-text search.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';

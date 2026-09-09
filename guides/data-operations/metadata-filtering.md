@@ -1,6 +1,28 @@
 # Metadata Filtering
 
-Metadata filtering allows you to narrow your query results to only vectors that match specific metadata criteria. This is useful for implementing features like filtering by category, date range, user permissions, and more.
+Filtering allows you to narrow search results by fields such as category, date, or user permissions. Vector operations filter fields stored inside `metadata`; document operations filter fields stored directly on the document.
+
+## Filtering document searches
+
+On an index with full-text search enabled for `body`, combine text scoring with a document field filter:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const index = pc.index({ name: 'documents-example', namespace: 'articles' });
+
+const results = await index.documents.search({
+  scoreBy: [{ type: 'text', fields: ['body'], query: 'apple' }],
+  filter: { category: { $eq: 'gardening' } },
+  topK: 5,
+  includeFields: ['title', 'body'],
+});
+
+console.log(results.matches);
+```
+
+See [Working with Documents](./working-with-documents.md) for index setup, full-text search, and filtering document fetches, updates, and deletes. The remaining examples in this guide use vector metadata.
 
 For more information, see [Filter by metadata](https://docs.pinecone.io/guides/search/filter-by-metadata).
 

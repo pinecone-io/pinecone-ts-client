@@ -1,13 +1,15 @@
 # Pinecone TypeScript SDK &middot; ![License](https://img.shields.io/github/license/pinecone-io/pinecone-ts-client?color=orange) ![npm](https://img.shields.io/npm/v/%40pinecone-database%2Fpinecone?link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40pinecone-database%2Fpinecone) ![npm](https://img.shields.io/npm/dw/%40pinecone-database/pinecone?style=flat&color=blue&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40pinecone-database%2Fpinecone) ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/pinecone-io/pinecone-ts-client/pr.yml?label=CI&link=https%3A%2F%2Fgithub.com%2Fpinecone-io%2Fpinecone-ts-client%2Factions%2Fworkflows%2Fmerge.yml)
 
-The official Pinecone TypeScript SDK for building vector search applications with AI/ML.
+The official Pinecone TypeScript SDK for building full-text and vector search applications.
 
-Pinecone is a vector database that makes it easy to add vector search to production applications. Use Pinecone to store, search, and manage high-dimensional vectors for applications like semantic search, recommendation systems, and RAG (Retrieval-Augmented Generation).
+Use Pinecone to store, search, and manage documents and high-dimensional vectors. Search document text directly with full-text queries, or use embeddings for semantic search, recommendation systems, and RAG (Retrieval-Augmented Generation).
 
 ## Features
 
+- **Document & Full-Text Search**: Store documents, search text across multiple fields, and use query-string scoring with filtering and field selection
+- **Document Operations**: Upsert, fetch, update, and delete documents within namespaces
 - **Vector Operations**: Store, query, and manage high-dimensional vectors with metadata filtering
-- **Serverless & Pod Indexes**: Choose between serverless (auto-scaling) or pod-based (dedicated) indexes
+- **Index Management**: Create serverless indexes and manage existing pod-based indexes
 - **Integrated Inference**: Built-in embedding and reranking models for end-to-end search workflows
 - **Pinecone Assistant**: AI assistants powered by vector database capabilities
 - **Type Safety**: Full TypeScript support with generic type parameters for metadata
@@ -19,6 +21,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 - [Installation](#installation)
 - [Productionizing](#productionizing)
 - [Quickstart](#quickstart)
+  - [Full-text search with documents](#full-text-search-with-documents)
   - [Bringing your own vectors](#bringing-your-own-vectors-to-pinecone)
   - [Using integrated inference](#using-integrated-inference)
 - [Pinecone Assistant](#pinecone-assistant)
@@ -61,6 +64,70 @@ The Pinecone TypeScript SDK is intended for **server-side use only**. Using the 
 
 ## Quickstart
 
+Choose the workflow that matches your data:
+
+- [Documents and full-text search](#full-text-search-with-documents) for searchable text and named document fields.
+- [Bring your own vectors](#bringing-your-own-vectors-to-pinecone) for vector records with embeddings you generate.
+- [Integrated inference](#using-integrated-inference) to have Pinecone generate embeddings from text.
+
+### Full-text search with documents
+
+Create an index with searchable text fields, upsert documents, and search their contents without generating embeddings. Enable full-text search on each searchable string field with `fullTextSearch: {}`.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+// 1. Instantiate the client using the PINECONE_API_KEY environment variable
+const pc = new Pinecone();
+
+// 2. Create an index with full-text search enabled on title and body
+const indexModel = await pc.indexes.create({
+  name: 'documents-example',
+  schema: {
+    fields: {
+      title: { type: 'string', fullTextSearch: {} },
+      body: { type: 'string', fullTextSearch: {} },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
+  waitUntilReady: true,
+});
+
+// 3. Target a namespace and upsert documents using _id identifiers
+const index = pc.index({ host: indexModel.host, namespace: 'articles' });
+await index.documents.upsert({
+  documents: [
+    {
+      _id: 'article-1',
+      title: 'Growing apples',
+      body: 'Apple trees need sunlight and well-drained soil.',
+      category: 'gardening',
+    },
+    {
+      _id: 'article-2',
+      title: 'Growing pears',
+      body: 'Pear trees thrive in sunny orchards.',
+      category: 'gardening',
+    },
+  ],
+});
+
+// 4. Search across text fields and select the fields to return
+// Newly upserted documents may take time to become searchable.
+const results = await index.documents.search({
+  scoreBy: [{ type: 'text', fields: ['title', 'body'], query: 'apple' }],
+  filter: { category: { $eq: 'gardening' } },
+  topK: 5,
+  includeFields: ['title', 'body'],
+});
+
+console.log(results.matches);
+```
+
+Search matches include `_id` and `_score`; use `includeFields` to return document content. For query-string scoring, replace `scoreBy` with `[{ type: 'query_string', query: 'body:apple' }]`. You can also manage documents with `index.documents.fetch`, `index.documents.update`, and `index.documents.delete`.
+
+See [Working with Documents](./guides/data-operations/working-with-documents.md) for search options and document management examples.
+
 ### Bringing your own vectors to Pinecone
 
 This example shows how to create an index, add vectors with embeddings you've generated, and query them. This approach gives you full control over your embedding model and vector generation process.
@@ -80,7 +147,7 @@ const indexModel = await pc.indexes.create({
   name: 'example-index',
   schema: {
     fields: {
-      vector: { type: 'dense_vector', dimension: 8, metric: 'cosine' },
+      _values: { type: 'dense_vector', dimension: 8, metric: 'cosine' },
     },
   },
   deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
@@ -233,16 +300,18 @@ Detailed information on specific ways of using the SDK are covered in these guid
 
 **Index Management:**
 
-- [Serverless Indexes](./guides/index-management/serverless-indexes.md) - Create and manage auto-scaling serverless indexes
-- [Pod Indexes](./guides/index-management/pod-indexes.md) - Create and manage dedicated pod-based indexes
+- [Serverless Indexes](./guides/index-management/serverless-indexes.md) - Create serverless indexes for document, full-text, and vector search
+- [Pod Indexes](./guides/index-management/pod-indexes.md) - Manage existing pod-based indexes
 - [Collections](./guides/index-management/collections.md) - Static copies of pod-based indexes
-- [Backups](./guides/index-management/backups.md) - Create, schedule, and restore from serverless index backups
+- [Backups](./guides/index-management/backups.md) - Create and restore from serverless index backups
+- [Backup Schedules](./guides/index-management/backup-schedules.md) - Create and manage recurring index backups
 - [Common Operations](./guides/index-management/shared-operations.md) - List, describe, delete, and configure indexes
 
 **Data Operations:**
 
+- [Working with Documents](./guides/data-operations/working-with-documents.md) - Store, search, fetch, update, and delete documents
 - [Working with Vectors](./guides/data-operations/working-with-vectors.md) - Upsert, query, fetch, update, and delete vectors
-- [Namespaces](./guides/data-operations/namespaces.md) - Organize vectors within an index
+- [Namespaces](./guides/data-operations/namespaces.md) - Organize documents and vectors within an index
 - [Metadata Filtering](./guides/data-operations/metadata-filtering.md) - Advanced filtering with operators
 - [Bulk Import](./guides/data-operations/bulk-import.md) - Import large datasets from object storage
 

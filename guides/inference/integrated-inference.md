@@ -2,6 +2,8 @@
 
 When using an index with integrated inference, embedding and reranking operations are tied to index operations and do not require extra steps. This allows working with an index that accepts source text and converts it to vectors automatically using an embedding model hosted by Pinecone.
 
+For full-text search over document fields without generating embeddings, see [Working with Documents](../data-operations/working-with-documents.md).
+
 For more information, see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference).
 
 ## Create an index for a model
