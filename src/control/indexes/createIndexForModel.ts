@@ -8,6 +8,8 @@ import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
 
+import { normalizeReadCapacity } from './legacyTranslation';
+import type { CreateIndexReadCapacity } from './legacyTypes';
 import type { IndexModel } from './listIndexes';
 import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
@@ -60,9 +62,10 @@ export interface CreateIndexForModelOptions extends Omit<
   /** The embedding model and the document field it reads. */
   embed: CreateIndexForModelEmbed;
   /**
-   * The read capacity configuration for the index. Omit for on-demand capacity.
+   * The native nested or deprecated flat read capacity configuration for the
+   * index. Omit for on-demand capacity.
    */
-  readCapacity?: ReadCapacity;
+  readCapacity?: ReadCapacity | CreateIndexReadCapacity;
   /** Whether to enable deletion protection. Defaults to `disabled`. */
   deletionProtection?: DeletionProtection;
   /**
@@ -153,8 +156,12 @@ export async function createIndexForModel(
     );
   }
 
-  const { waitUntilReady, timeout, suppressConflicts, ...createRequest } =
+  const { waitUntilReady, timeout, suppressConflicts, readCapacity, ...rest } =
     options;
+  const createRequest = {
+    ...rest,
+    readCapacity: normalizeReadCapacity(readCapacity),
+  };
 
   try {
     const result = await api.createIndexForModel({
