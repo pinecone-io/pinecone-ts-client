@@ -126,11 +126,9 @@ export async function compileOnlySurfaceCoverage(): Promise<void> {
   });
   void wrongDocumentResponse;
   void documentMethods;
-}
 
-// Compiled only: preserve legacy response reads on resource and flat aliases.
-export async function compileLegacyResponse(pc: Pinecone): Promise<void> {
-  const model = await pc.indexes.describe('index');
+  // Compiled only: preserve legacy response reads on resource and flat aliases.
+  const model = await p.indexes.describe('index');
   const dimension: number | undefined = model.dimension;
   const metric: string = model.metric;
   const vectorType: 'dense' | 'sparse' = model.vectorType;
@@ -140,7 +138,7 @@ export async function compileLegacyResponse(pc: Pinecone): Promise<void> {
     void mode;
   }
   const embedModel: string | undefined = model.embed?.model;
-  const legacyMetric: string = (await pc.describeIndex('index')).metric;
+  const legacyMetric: string = (await p.describeIndex('index')).metric;
   // @ts-expect-error legacy properties are getter-only
   model.dimension = 12;
   void [dimension, metric, vectorType, embedModel, legacyMetric];
