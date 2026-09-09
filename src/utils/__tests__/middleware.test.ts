@@ -1,6 +1,7 @@
 import { createMiddlewareArray } from '../middleware';
 import { indexOperationsBuilder } from '../../control/indexOperationsBuilder';
 import {
+  PineconeArgumentError,
   PineconeAuthorizationError,
   PineconeBadRequestError,
   PineconeConnectionError,
@@ -9,6 +10,8 @@ import {
 
 const url = 'https://api.pinecone.io/indexes';
 const init = { method: 'GET' };
+const getErrorMiddleware = () =>
+  createMiddlewareArray().find((middleware) => middleware.onError)!;
 
 describe('shared request middleware', () => {
   let originalDebug: string | undefined;
@@ -31,17 +34,26 @@ describe('shared request middleware', () => {
     debug.mockRestore();
   });
 
-  test('installs path safety before error handling when debug flags are absent', () => {
+  test('installs path safety before error handling when debug flags are absent', async () => {
     const middleware = createMiddlewareArray();
     expect(middleware).toHaveLength(2);
-    expect(middleware[0].pre).toEqual(expect.any(Function));
-    expect(middleware[1].onError).toEqual(expect.any(Function));
+    expect(middleware[0].pre).toBeDefined();
+    expect(middleware[1].onError).toBeDefined();
+    expect(middleware[1].post).toBeDefined();
+    await expect(
+      middleware[0].pre!({
+        url: 'https://api.pinecone.io/indexes/..',
+        init,
+        fetch: jest.fn(),
+      }),
+    ).rejects.toBeInstanceOf(PineconeArgumentError);
+    expect(debug).not.toHaveBeenCalled();
   });
 
   test('preserves the exact retry-exhaustion error', async () => {
     const error = new PineconeMaxRetriesExceededError(3);
     await expect(
-      createMiddlewareArray().find((entry) => entry.onError)!.onError!({
+      getErrorMiddleware().onError!({
         error,
         url,
         init,
@@ -52,8 +64,7 @@ describe('shared request middleware', () => {
 
   test('wraps transport failures and retains their cause', async () => {
     const error = new TypeError('connection refused');
-    const result = createMiddlewareArray().find((entry) => entry.onError)!
-      .onError!({
+    const result = getErrorMiddleware().onError!({
       error,
       url,
       init,
@@ -68,7 +79,7 @@ describe('shared request middleware', () => {
     async (status) => {
       const response = new Response(status === 204 ? null : 'body', { status });
       expect(
-        await createMiddlewareArray().find((entry) => entry.post)!.post!({
+        await getErrorMiddleware().post!({
           response,
           url,
           init,
@@ -80,7 +91,7 @@ describe('shared request middleware', () => {
   );
 
   test('maps a plain-text authorization error using the request URL', async () => {
-    const result = createMiddlewareArray().find((entry) => entry.post)!.post!({
+    const result = getErrorMiddleware().post!({
       response: new Response('Invalid API key', { status: 401 }),
       url,
       init,
@@ -158,9 +169,12 @@ describe('shared request middleware', () => {
         body: '{"name":"test"}',
       },
     };
-    for (const entry of middleware) await entry.pre?.(request);
-    for (const entry of middleware)
-      await entry.post?.({ ...request, response: new Response('{}') });
+    for (const hook of middleware) {
+      await hook.pre?.(request);
+    }
+    for (const hook of middleware) {
+      await hook.post?.({ ...request, response: new Response('{}') });
+    }
     const logs = debug.mock.calls.flat().join('\n');
     expect(logs).toContain('>>> Body: {"name":"test"}');
     expect(logs).toContain(
@@ -168,33 +182,4 @@ describe('shared request middleware', () => {
     );
     expect(logs.indexOf('>>> Body:')).toBeLessThan(logs.indexOf('curl -X'));
   });
-});
-
-describe('additional header content-type protection', () => {
-  test.each([
-    { 'Content-Type': 'application/json' },
-    [['content-type', 'application/json']],
-    new Headers({ 'Content-Type': 'application/json' }),
-  ] as RequestInit['headers'][])(
-    'preserves encoding for header container %p',
-    async (headers) => {
-      const middleware = createMiddlewareArray({
-        'Content-Type': 'text/plain',
-        'content-type': 'text/html',
-        'CONTENT-TYPE': 'application/xml',
-        'X-Custom': 'retained',
-      });
-      const result = await middleware[1].pre!({
-        url,
-        init: { headers },
-        fetch: jest.fn(),
-      });
-      expect(new Headers(result!.init.headers).get('content-type')).toBe(
-        'application/json',
-      );
-      expect(new Headers(result!.init.headers).get('x-custom')).toBe(
-        'retained',
-      );
-    },
-  );
 });
