@@ -68,6 +68,29 @@ describe('chatCompletionStream', () => {
     );
   });
 
+  test('sends the JSON Content-Type and ignores a caller override', async () => {
+    const configWithOverride = {
+      ...mockConfig,
+      additionalHeaders: { 'Content-Type': 'text/plain' },
+    } as PineconeConfiguration;
+    const streamFn = chatCompletionStream(
+      mockAssistantName,
+      mockApiProvider,
+      configWithOverride,
+    );
+
+    await streamFn({ messages: [{ role: 'user', content: 'Hello' }] });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }),
+    );
+  });
+
   test('forwards temperature into the outgoing body', async () => {
     const streamFn = chatCompletionStream(
       mockAssistantName,
