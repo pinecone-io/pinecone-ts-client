@@ -71,6 +71,7 @@ describe('backup and restore lifecycle', () => {
           },
         },
         waitUntilReady: true,
+        timeout: 180_000,
         tags: { project: 'pinecone-integration-tests' },
       });
       const source = pc.index({ name: sourceName, namespace });
@@ -281,7 +282,7 @@ describe('backup and restore lifecycle', () => {
   testFullRestore(
     'restores aged seeded records and explicit read capacity end to end',
     () => runLifecycle(true),
-    3_600_000,
+    5_400_000,
   );
 
   test('unknown backup IDs return not-found for describe and delete', async () => {

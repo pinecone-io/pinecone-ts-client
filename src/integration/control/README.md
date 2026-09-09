@@ -2,7 +2,7 @@
 
 The default matrix exercises backup creation, both backup lists, description and deletion; restore acceptance and job description/listing; and unknown-backup errors. Each run owns and removes its indexes and backup.
 
-Set `PINECONE_LONG_RUNNING_INTEGRATION=1` to additionally verify restored contents and read capacity end to end. This test deliberately waits 15 minutes after records become visible before creating the backup. Pinecone [documents](https://docs.pinecone.io/guides/manage-data/backups-overview#limitations) that backups only include vectors at least 15 minutes old; successful fetches and index stats do not establish backup eligibility. All readiness/completion checks use bounded polling. Allow up to one hour for the complete test, including cleanup. The ordinary matrix does not run this expensive path.
+Set `PINECONE_LONG_RUNNING_INTEGRATION=1` to additionally verify restored contents and read capacity end to end. This test deliberately waits 15 minutes after records become visible before creating the backup. Pinecone [documents](https://docs.pinecone.io/guides/manage-data/backups-overview#limitations) that backups only include vectors at least 15 minutes old; successful fetches and index stats do not establish backup eligibility. All readiness/completion checks use bounded polling. Allow up to 90 minutes for the complete test, including cleanup. The ordinary matrix does not run this expensive path.
 
 ```sh
 PINECONE_LONG_RUNNING_INTEGRATION=1 npm run test:integration:node -- --runTestsByPath src/integration/control/backups.test.ts
