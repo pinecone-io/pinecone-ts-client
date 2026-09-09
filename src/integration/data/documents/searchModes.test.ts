@@ -205,19 +205,30 @@ describe('document search scoring modes', () => {
         ...denseScoreBy,
         {
           type: 'sparse_vector',
-          field: 'sparse',
+          fields: ['sparse'],
           sparseValues: { indices: [1], values: [1] },
         },
       ],
-      [{ type: 'query_string', field: 'text', query: 'apple' }],
-      [{ type: 'text', field: 'text', query: '' }],
-      [{ type: 'text', field: 'text', query: '   ' }],
-    ].map((scoreBy) => ({ scoreBy })),
-  )('rejects invalid scoring clauses: $scoreBy', async ({ scoreBy }) => {
-    await expect(
-      index.searchDocuments({ scoreBy, topK: 1 }),
-    ).rejects.toBeInstanceOf(PineconeBadRequestError);
-  });
+      [{ type: 'query_string', fields: ['text'], query: 'apple' }],
+      [{ type: 'text', fields: ['text'], query: '' }],
+      [{ type: 'text', fields: ['text'], query: '   ' }],
+    ].map((scoreBy, position) => ({
+      scoreBy,
+      reason: [
+        "clauses must appear alone in 'score_by'",
+        "must not specify 'field' or 'fields'",
+        'Text query must not be empty',
+        'Text query must not be empty',
+      ][position],
+    })),
+  )(
+    'rejects invalid scoring clauses: $scoreBy',
+    async ({ scoreBy, reason }) => {
+      const response = index.searchDocuments({ scoreBy, topK: 1 });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+      await expect(response).rejects.toThrow(reason);
+    },
+  );
 
   test.each([
     { includeFields: undefined },
@@ -361,22 +372,33 @@ describe('document search scoring modes', () => {
   test.each(modes)(
     '$name ranks real documents and honors topK',
     async ({ scoreBy, ids }) => {
-      const result = await index.searchDocuments({
-        scoreBy,
-        topK: documents.length + 1,
-        includeFields: ['*'],
-      });
-      expect(result.namespace).toBe(namespace);
-      expect(result.usage).toBeDefined();
-      expect(result.matches.map(({ _id }) => _id)).toEqual(ids);
-      for (const match of result.matches) {
-        expect(match).toMatchObject(
-          documents.find((document) => document._id === match._id)!,
-        );
-        expect(match._score).toEqual(expect.any(Number));
-      }
-      const top = await index.searchDocuments({ scoreBy, topK: 1 });
-      expect(top.matches.map(({ _id }) => _id)).toEqual([ids[0]]);
+      // A successful readiness probe does not guarantee the next replica/read
+      // has caught up. Keep every positive assertion behind bounded polling.
+      await assertWithRetries(
+        () =>
+          index.searchDocuments({
+            scoreBy,
+            topK: documents.length + 1,
+            includeFields: ['*'],
+          }),
+        (result: SearchDocumentsResponse) => {
+          expect(result.namespace).toBe(namespace);
+          expect(result.usage).toBeDefined();
+          expect(result.matches.map(({ _id }) => _id)).toEqual(ids);
+          for (const match of result.matches) {
+            expect(match).toMatchObject(
+              documents.find((document) => document._id === match._id)!,
+            );
+            expect(match._score).toEqual(expect.any(Number));
+          }
+        },
+      );
+      await assertWithRetries(
+        () => index.searchDocuments({ scoreBy, topK: 1 }),
+        (top: SearchDocumentsResponse) => {
+          expect(top.matches.map(({ _id }) => _id)).toEqual([ids[0]]);
+        },
+      );
     },
   );
 
@@ -385,18 +407,25 @@ describe('document search scoring modes', () => {
     { includeFields: [] },
     { includeFields: ['group'] },
   ])('projects only requested fields: %j', async ({ includeFields }) => {
-    const result = await index.searchDocuments({
-      scoreBy: denseScoreBy,
-      topK: 1,
-      includeFields,
-    });
-    expect(result.matches).toHaveLength(1);
-    const match = result.matches[0];
-    expect(match._id).toBe('apple');
-    expect(Object.keys(match).sort()).toEqual(
-      includeFields?.length ? ['_id', '_score', 'group'] : ['_id', '_score'],
+    await assertWithRetries(
+      () =>
+        index.searchDocuments({
+          scoreBy: denseScoreBy,
+          topK: 1,
+          includeFields,
+        }),
+      (result: SearchDocumentsResponse) => {
+        expect(result.matches).toHaveLength(1);
+        const match = result.matches[0];
+        expect(match._id).toBe('apple');
+        expect(Object.keys(match).sort()).toEqual(
+          includeFields?.length
+            ? ['_id', '_score', 'group']
+            : ['_id', '_score'],
+        );
+        if (includeFields?.length) expect(match.group).toBe('fruit');
+      },
     );
-    if (includeFields?.length) expect(match.group).toBe('fruit');
   });
 
   test('filters candidates with a positive control before a no-match filter', async () => {
