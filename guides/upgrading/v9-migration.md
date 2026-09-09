@@ -304,7 +304,7 @@ example ``You must pass a non-empty `documents` array to upsertDocuments.``
 
 ## `additionalHeaders` can now pin the API version
 
-Every request this SDK sends carries `X-Pinecone-Api-Version: 2026-07`. To talk to an
+By default, API requests carry `X-Pinecone-Api-Version: 2026-07`. To talk to an
 older version of the API, pass the header through `additionalHeaders`:
 
 ```typescript
@@ -334,6 +334,7 @@ decides which versions it still serves and rejects the rest. And v9's request an
 models are generated from the 2026-07 schemas, so a pinned client can send and receive
 shapes those models do not describe. Keep a pinned client scoped to the calls that need the
 older version rather than using it as a general downgrade.
+
 ## Pod indexes can no longer be created
 
 `Indexes.create`'s `deployment` accepts `deploymentType: 'managed'` or
@@ -406,16 +407,6 @@ by the client.
 `claude-sonnet-4-5` — see "Superseded assistant model names now reach the
 server as-is" above. The TypeScript client errors via the server rather than
 remapping; Python remaps silently.
-
-## `X-Pinecone-Api-Version` now defaults to 2026-07
-
-Every request the SDK makes carries `X-Pinecone-Api-Version: 2026-07`, set
-internally on each generated API call. Pinning an older API version through
-the client is not supported: the SDK sets this header on every request after
-any headers passed through `additionalHeaders` are merged in, so a custom
-`X-Pinecone-Api-Version` value you supply is overwritten rather than sent. To
-target an older API version, stay on the SDK major version that shipped
-against it.
 
 ## Removed and renamed exports
 
