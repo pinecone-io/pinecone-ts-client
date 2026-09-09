@@ -59,13 +59,7 @@ export class Documents {
   /** @internal */
   private _namespace: string;
 
-  /**
-   * Instantiation of Documents is handled by {@link Index}.
-   *
-   * @constructor
-   * @param provider - The provider that resolves the document operations API for the targeted index.
-   * @param namespace - The namespace all operations on this accessor are scoped to.
-   */
+  /** @internal */
   constructor(provider: DocumentOperationsProvider, namespace: string) {
     this._provider = provider;
     this._namespace = namespace;

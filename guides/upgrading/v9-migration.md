@@ -67,9 +67,14 @@ await index.documents.upsert({
 The accessor is scoped to the same namespace as the `Index` it hangs off, so
 `pc.index('my-index').namespace('ns-1').documents.upsert(...)` writes to `ns-1`.
 
-The flat names remain available as deprecated delegates with unchanged
-arguments, responses, and errors. Editors show their replacements; there is no
-scheduled removal in v9.x.
+The flat names were added during the v9 pre-release cycle and never shipped in
+v8, so this affects only code already written against a v9 pre-release. They
+remain available as deprecated delegates with unchanged arguments, responses,
+and errors. Editors show their replacements; there is no scheduled removal in
+v9.x.
+
+Validation errors raised by either shape still name the flat method, for
+example ``You must pass a non-empty `documents` array to upsertDocuments.``
 
 | Flat method (deprecated)         | Accessor call                     |
 | -------------------------------- | --------------------------------- |
