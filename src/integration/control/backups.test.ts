@@ -9,6 +9,7 @@ import {
   cleanupResources,
   randomName,
   retryDelete,
+  retryDeletes,
   sleep,
   waitUntilIndexReady,
 } from '../test-helpers';
@@ -217,7 +218,18 @@ describe('backup and restore lifecycle', () => {
           },
         );
       }
-      await pc.backups.delete(id);
+      // An accepted restore can still hold a reference to its backup. Remove
+      // the destination first so backup deletion does not race the active job.
+      await retryDeletes(pc, restoredName);
+      await assertWithRetries(
+        async () => {
+          await expect(
+            pc.indexes.describe(restoredName),
+          ).rejects.toBeInstanceOf(PineconeNotFoundError);
+        },
+        () => {},
+      );
+      await retryDelete(() => pc.backups.delete(id), `backup '${id}'`);
       await assertWithRetries(
         async () => {
           await expect(pc.backups.describe(id)).rejects.toBeInstanceOf(
@@ -231,17 +243,22 @@ describe('backup and restore lifecycle', () => {
       failures.push(error);
     } finally {
       // Attempt all cleanup, including when creation or a later assertion fails.
-      const results = await Promise.allSettled([
+      const indexResults = await Promise.allSettled([
         cleanupResources(pc, [sourceName, restoredName]),
-        ...(backupId
-          ? [
-              retryDelete(
-                () => pc.backups.delete(backupId!),
-                `backup '${backupId}'`,
-              ),
-            ]
-          : []),
       ]);
+      const results = [
+        ...indexResults,
+        ...(await Promise.allSettled([
+          ...(backupId
+            ? [
+                retryDelete(
+                  () => pc.backups.delete(backupId!),
+                  `backup '${backupId}'`,
+                ),
+              ]
+            : []),
+        ])),
+      ];
       failures.push(
         ...results.flatMap((result) =>
           result.status === 'rejected' ? [result.reason] : [],
