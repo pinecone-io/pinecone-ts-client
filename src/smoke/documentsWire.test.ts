@@ -210,17 +210,15 @@ describe.each(operations)('$name documents wire contract', (operation) => {
   });
 
   test('preserves a nested 429 without retrying under the current 5xx-only policy', async () => {
-    const transport = jest
-      .fn()
-      .mockImplementation(async () =>
-        json(
-          {
-            status: 429,
-            error: { code: 'RESOURCE_EXHAUSTED', message: 'Too many requests' },
-          },
-          429,
-        ),
-      );
+    const transport = jest.fn().mockImplementation(async () =>
+      json(
+        {
+          status: 429,
+          error: { code: 'RESOURCE_EXHAUSTED', message: 'Too many requests' },
+        },
+        429,
+      ),
+    );
     const response = operation.call(client(transport, 3));
     await expect(response).rejects.toBeInstanceOf(PineconeUnmappedHttpError);
     await expect(response).rejects.toThrow('Too many requests');
