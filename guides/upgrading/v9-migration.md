@@ -24,6 +24,8 @@ Upgrade your runtime to Node 22 (Maintenance LTS) or Node 24 (Active LTS); both 
 
 The published JavaScript itself does not use any Node 22-only API, so v9 may still run on Node 20 in practice — but that combination is untested and unsupported, and nothing keeps it working in later releases.
 
+<a id="flat-control-plane-methods-remain-available"></a>
+
 ## The control plane moved under resource namespaces
 
 Every flat `Pinecone` method that manages an index, collection, backup, restore
