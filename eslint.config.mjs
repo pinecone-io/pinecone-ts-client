@@ -44,6 +44,30 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/control/indexes/legacyTranslation.ts'],
+    rules: {
+      'import-x/no-restricted-paths': [
+        'error',
+        {
+          zones: [
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/data',
+            },
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/pinecone-generated-ts-fetch/db_control/apis',
+            },
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/pinecone-generated-ts-fetch/db_data/apis',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/preview/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',

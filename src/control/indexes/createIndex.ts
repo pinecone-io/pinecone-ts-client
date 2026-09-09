@@ -9,6 +9,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_con
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { pollUntilIndexIsReady } from '../../utils';
+import { translateLegacyCreateOptions } from './legacyTranslation';
+import type { LegacyCreateIndexOptions } from './legacyTypes';
 import type { IndexModel } from './listIndexes';
 import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
@@ -99,7 +101,8 @@ export type CreateIndexSchemaField =
  * The schema of a new index: a map of field names to their configurations.
  *
  * Field names must be unique, non-empty strings, and cannot use the reserved
- * names `_id`, `_values`, or `_sparse_values`.
+ * name `_id`. A schema containing only reserved `_values` or `_sparse_values`
+ * fields selects the vectors API and supports legacy vector operations.
  *
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
@@ -112,7 +115,7 @@ export interface CreateIndexSchema {
  * Options for creating a schema-based index.
  *
  */
-export interface CreateIndexOptions extends Omit<
+export interface NativeCreateIndexOptions extends Omit<
   CreateIndexRequest,
   'name' | 'schema' | 'readCapacity' | 'deletionProtection'
 > {
@@ -120,6 +123,14 @@ export interface CreateIndexOptions extends Omit<
   name: string;
   /** The typed fields stored in each document. See {@link CreateIndexSchema}. */
   schema: CreateIndexSchema;
+  /** @deprecated Use schema fields. */
+  dimension?: never;
+  /** @deprecated Use schema fields. */
+  metric?: never;
+  /** @deprecated Use schema fields. */
+  vectorType?: never;
+  /** @deprecated Use deployment. */
+  spec?: never;
   /**
    * The read capacity configuration for the index. Omit for on-demand capacity.
    */
@@ -144,6 +155,19 @@ export interface CreateIndexOptions extends Omit<
   suppressConflicts?: boolean;
 }
 
+/** Options for creating either a schema-based or a classic vector index. */
+export type CreateIndexOptions =
+  NativeCreateIndexOptions | LegacyCreateIndexOptions;
+export type {
+  LegacyCreateIndexOptions,
+  LegacyCreateIndexSpec,
+  CreateIndexSpec,
+  CreateIndexServerlessSpec,
+  CreateIndexByocSpec,
+  CreateIndexPodSpec,
+  CreateIndexReadCapacity,
+} from './legacyTypes';
+
 /**
  * Creates a schema-based index.
  */
@@ -159,19 +183,20 @@ export async function createIndex(
   api: ManageIndexesApi,
   options: CreateIndexOptions,
 ): Promise<IndexModel | void> {
-  if (!options.name) {
+  const normalized = translateLegacyCreateOptions(options);
+  if (!normalized.name) {
     throw new PineconeArgumentError(
       'You must pass a non-empty string for `name` in order to create an index.',
     );
   }
-  if (!options.schema) {
+  if (!normalized.schema) {
     throw new PineconeArgumentError(
       'You must pass a `schema` object in order to create an index.',
     );
   }
 
   const { waitUntilReady, timeout, suppressConflicts, ...createRequest } =
-    options;
+    normalized;
 
   try {
     const result = await api.createIndex({

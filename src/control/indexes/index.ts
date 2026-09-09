@@ -2,6 +2,14 @@ export { Indexes } from './indexes';
 
 export type {
   CreateIndexOptions,
+  NativeCreateIndexOptions,
+  LegacyCreateIndexOptions,
+  LegacyCreateIndexSpec,
+  CreateIndexSpec,
+  CreateIndexServerlessSpec,
+  CreateIndexByocSpec,
+  CreateIndexPodSpec,
+  CreateIndexReadCapacity,
   CreateIndexSchema,
   CreateIndexSchemaField,
   FullTextSearchStringField,
@@ -52,6 +60,8 @@ export type {
 } from './listIndexes';
 export type {
   ConfigureIndexOptions,
+  NativeConfigureIndexOptions,
+  LegacyConfigureIndexOptions,
   PatchIndexDeploymentRequest,
   PatchIndexSchema,
   PatchSemanticTextField,

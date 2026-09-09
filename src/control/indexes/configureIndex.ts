@@ -1,10 +1,13 @@
 import type {
   ManageIndexesApi,
   ConfigureIndexRequest,
+  ReadCapacityPatch,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_control';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
+import { translateLegacyConfigureOptions } from './legacyTranslation';
+import type { CreateIndexReadCapacity } from './legacyTypes';
 import type { IndexModel } from './listIndexes';
 import type { ReadCapacity, DeletionProtection } from '../types';
 
@@ -14,17 +17,32 @@ import type { ReadCapacity, DeletionProtection } from '../types';
  * All fields are optional — send only those you want to change.
  *
  */
-export type ConfigureIndexOptions = Omit<
+export type NativeConfigureIndexOptions = Omit<
   ConfigureIndexRequest,
   'readCapacity' | 'deletionProtection'
 > & {
   /**
    * The read capacity configuration to apply. Omit to leave it unchanged.
    */
-  readCapacity?: ReadCapacity;
+  readCapacity?: ReadCapacity | ReadCapacityPatch;
   /** Whether to enable deletion protection. Omit to leave it unchanged. */
   deletionProtection?: DeletionProtection;
 };
+
+/** Options for native configuration or legacy pod scaling/read capacity. */
+export type ConfigureIndexOptions = Omit<
+  NativeConfigureIndexOptions,
+  'readCapacity'
+> & {
+  /** @deprecated Use deployment.replicas. */
+  podReplicas?: number;
+  /** @deprecated Use deployment.podType. */
+  podType?: string;
+  /** Read capacity in native or legacy flat form. */
+  readCapacity?: ReadCapacity | ReadCapacityPatch | CreateIndexReadCapacity;
+};
+/** @deprecated Use ConfigureIndexOptions with deployment. */
+export type LegacyConfigureIndexOptions = ConfigureIndexOptions;
 
 export type {
   PatchIndexDeploymentRequest,
@@ -48,6 +66,7 @@ export async function configureIndex(
       'You must pass a non-empty string for `name` in order to configure an index.',
     );
   }
+  const normalized = translateLegacyConfigureOptions(options);
   const fields: Array<keyof ConfigureIndexOptions> = [
     'deployment',
     'schema',
@@ -55,7 +74,13 @@ export async function configureIndex(
     'tags',
     'deletionProtection',
   ];
-  if (!options || !fields.some((field) => options[field] !== undefined)) {
+  if (
+    !options ||
+    !fields.some(
+      (field) =>
+        normalized[field as keyof NativeConfigureIndexOptions] !== undefined,
+    )
+  ) {
     throw new PineconeArgumentError(
       'You must pass at least one configuration option to configureIndex.',
     );
@@ -63,7 +88,7 @@ export async function configureIndex(
   try {
     return await api.configureIndex({
       indexName: name,
-      configureIndexRequest: options,
+      configureIndexRequest: normalized,
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   } catch (e) {
