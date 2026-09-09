@@ -6,6 +6,8 @@ new index definitions use a typed `schema`, and pod-based indexes can no longer
 be created. Compatibility delegates and legacy request translation preserve
 many v8 call sites; response shapes still require attention.
 
+Vector and document operations are both supported, including for new indexes. Existing vector applications do not need to adopt `index.documents`. Start with the [runtime requirements](#nodejs-22-is-now-the-minimum-runtime), then review [index response properties](#index-responses-retain-derived-legacy-properties), [backup timestamps](#backup-timestamps-and-schema), and [imported types](#removed-and-renamed-exports) used by your application.
+
 ## Node.js 22 is now the minimum runtime
 
 `engines.node` moved from `>=20.0.0` to `>=22.0.0`. Node 20 reached [end-of-life](https://github.com/nodejs/Release#release-schedule) on 2026-04-30 and no longer receives security patches.
@@ -101,11 +103,12 @@ translated to reserved vector fields and the corresponding deployment.
 Legacy pod creation, metadata schemas, and source-collection/source-backup
 creation options are rejected with migration guidance.
 
-Native options describe document fields through `schema`, with an optional
-`deployment` selecting infrastructure. Choose named fields for document-plane
-applications. Keep the supported legacy shape for classic vector applications;
-changing to an arbitrary named vector field is not a transparent migration of
-an existing `index.upsert`/`index.query` workflow.
+Native options describe searchable fields through `schema`, with an optional
+`deployment` selecting infrastructure. Use reserved `_values` or `_sparse_values`
+fields for vector operations, or custom named fields for document operations.
+Both use the same index creation API. Changing to an arbitrary named vector
+field changes the data operations the index accepts; preserve reserved fields
+when migrating an `index.upsert`/`index.query` workflow.
 
 **Legacy request: still supported**
 
@@ -123,7 +126,7 @@ await pc.createIndex({
 });
 ```
 
-**Native schema: for document-plane applications**
+**Native request for the same vector workflow**
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -133,17 +136,18 @@ const indexModel = await pc.indexes.create({
   name: 'my-index',
   schema: {
     fields: {
-      chunk_vector: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
+      _values: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
     },
   },
   waitUntilReady: true,
 });
 ```
 
-`create` resolves to `IndexModel | void` (not just `IndexModel`): passing
-`suppressConflicts: true` makes it resolve to `undefined` instead of throwing
-when an index with that name already exists, so code that reads a property of
-`indexModel` needs to narrow first.
+`create` returns `IndexModel` when `suppressConflicts` is omitted or explicitly
+`false`, including the example above. Passing `suppressConflicts: true` makes it
+resolve to `undefined` instead of throwing when an index with that name already
+exists. Calls with that option, or a boolean whose value is not statically
+known, return `IndexModel | void`; narrow the result before reading properties.
 
 How the legacy concepts map to the native schema:
 
@@ -170,20 +174,26 @@ text-analysis settings are permanent — `schema` cannot be changed after
 creation except through `pc.indexes.configure`'s narrower patch shape, which
 can only update a `semantic_text` field's embedding parameters.
 
-## The index response lost its flat vector fields
+<a id="the-index-response-lost-its-flat-vector-fields"></a>
 
-`IndexModel` — returned by `describe` and `configure`, in `create`'s result,
-and in each entry of `list`'s `indexes` array — no
-longer has `dimension`, `metric`, `vectorType`, `spec`, or `embed`. Read each
-value from `schema` or `deployment` instead:
+<a id="the-index-response-lost-its-flat-vector-fields"></a>
 
-| v8 field     | v9 equivalent                                                                                       |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| `dimension`  | `schema.fields.<name>.dimension` on the `dense_vector` field                                        |
-| `metric`     | `schema.fields.<name>.metric` on the `dense_vector` field                                           |
-| `vectorType` | The `type` of the relevant `schema.fields` entry (`dense_vector`, `sparse_vector`, `semantic_text`) |
-| `spec`       | `deployment` — `{ deploymentType: 'managed' \| 'byoc' \| 'pod', ... }`                              |
-| `embed`      | The `semantic_text` field in `schema.fields`, if the index has one                                  |
+## Index responses retain derived legacy properties
+
+`IndexModel` responses from `create`, `createForModel`, `describe`, `configure`,
+and each entry of `list`'s `indexes` array expose deprecated `dimension`,
+`metric`, `vectorType`, `spec`, and `embed` getters. The deprecated flat control
+methods return the same decorated responses. The API's native data lives in
+`schema`, `deployment`, and top-level `readCapacity`; use those fields for new
+code and when persisting responses:
+
+| v8 field     | v9 equivalent                                                                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dimension`  | `schema.fields.<name>.dimension` on the `dense_vector` field                                                                                                                                      |
+| `metric`     | `schema.fields.<name>.metric` on the `dense_vector` field                                                                                                                                         |
+| `vectorType` | Map `dense_vector` to `'dense'` and `sparse_vector` to `'sparse'`, or use `deriveVectorType` to preserve legacy semantics. A `semantic_text` field alone does not determine a legacy vector type. |
+| `spec`       | `deployment` — `{ deploymentType: 'managed' \| 'byoc' \| 'pod', ... }`                                                                                                                            |
+| `embed`      | The `semantic_text` field in `schema.fields`, if the index has one                                                                                                                                |
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -199,6 +209,39 @@ for (const [name, field] of Object.entries(indexModel.schema.fields)) {
 
 if (indexModel.deployment.deploymentType === 'managed') {
   console.log(indexModel.deployment.cloud, indexModel.deployment.region);
+}
+```
+
+The getters derive values only where the response supplies a supported legacy
+equivalent. Sparse vector indexes retain `metric: 'dotproduct'`,
+`vectorType: 'sparse'`, and an absent `dimension`. A full-text-only index has no
+legacy vector dimension or metric: reading either throws
+`PineconeIndexPropertyError`. Ambiguous schemas, initializing responses, and
+unreported model settings can also cause property reads to throw. Optional
+typing does not make a getter safe: `model.dimension ?? 0` can still throw.
+
+`spec` projects the deployment into `serverless`, `byoc`, or `pod`. Its managed
+and BYOC `readCapacity` is the API's reported response object, not a recreated
+v8 capacity shape; reading that nested property throws if the API omitted it.
+Legacy metadata configuration cannot be inferred from searchable fields, so
+`spec.serverless.schema`, `spec.byoc.schema`, and `spec.pod.metadataConfig` are
+not populated. `embed` derives settings from a single `semantic_text` field
+and is absent otherwise.
+
+For explicit handling without throwing compatibility getters, the exported
+`deriveDimension`, `deriveMetric`, `deriveVectorType`, `deriveSpec`, and
+`deriveEmbed` helpers return a `Derived<T>` result with an `outcome` of
+`value`, `absent`, or `error`:
+
+```typescript
+import { deriveDimension } from '@pinecone-database/pinecone';
+import type { IndexModelData } from '@pinecone-database/pinecone';
+
+function reportDimension(model: IndexModelData) {
+  const result = deriveDimension(model);
+  if (result.outcome === 'value') return String(result.value);
+  if (result.outcome === 'absent') return 'Not applicable';
+  return `Unavailable: ${result.failure.reason}`;
 }
 ```
 
@@ -445,12 +488,12 @@ unchanged.
 Which data-plane methods an index supports depends on its schema, not on when
 you created it:
 
-- Classic vector indexes (including new indexes created through the supported
-  legacy `dimension`/`metric`/`spec` shape)
-  keep serving the classical vector plane: `upsert`, `query`, `fetch`,
+- Vector indexes use reserved `_values` or `_sparse_values` schema fields,
+  whether created with native options or the supported
+  `dimension`/`metric`/`spec` request shape. The `upsert`, `query`, `fetch`,
   `update`, the `delete*` methods, `listPaginated`, and `describeIndexStats`
   on `Index` are unchanged.
-- Indexes created with custom document schema fields serve the document plane:
+- Indexes created with custom named schema fields use document operations:
   `index.documents.upsert`, `search`, `fetch`, `update`, `list`, and `delete`,
   scoped by `.namespace()`
   the same way the vector methods are. Calling a method the index's schema
@@ -460,13 +503,13 @@ you created it:
 import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
-// Classical vector plane — unchanged from v8
+// Vector operations, supported for new and existing vector indexes
 const vectorIndex = pc.index('my-vector-index');
 await vectorIndex.upsert({
   records: [{ id: 'a', values: [0.1, 0.2, 0.3] }],
 });
 
-// Document plane — for indexes created with `schema`
+// Document operations, for indexes with custom named schema fields
 const documentIndex = pc.index('my-schema-index');
 await documentIndex.namespace('my-namespace').documents.upsert({
   documents: [{ _id: 'doc-1', chunk_text: 'hello world' }],
@@ -669,74 +712,92 @@ nullability require the migrations described in this guide.
 `CreateIndexServerlessSpec`, `CreateIndexByocSpec`, `CreateIndexPodSpec`, and
 `CreateIndexReadCapacity` are exported for compatibility. The pod spec type
 remains nameable, but creating a pod index is rejected at runtime.
+`CreateIndexReadCapacity` retains the flat dedicated shape (`nodeType` and
+`manual`, with an optional `mode`) as well as on-demand mode. Legacy creation
+accepts this shape or native nested capacity at the top level and inside
+`spec.serverless` or `spec.byoc`; top-level capacity takes precedence. The
+translator infers `Dedicated` from flat settings and emits the native nested
+`dedicated` shape. Empty legacy capacity defaults to `OnDemand`.
+
 `LegacyConfigureIndexOptions` also remains exported. Prefer
 `NativeCreateIndexOptions`, `NativeConfigureIndexOptions`, and the native
 schema/deployment types when adopting the new request shape.
 
+### Retained legacy response types
+
+`IndexModelSpec`, `ModelIndexEmbed`, `ServerlessSpecResponse`,
+`ByocSpecResponse`, and `PodSpec` remain exported as deprecated compatibility
+aliases. They describe the derived legacy properties above; they do not restore
+all v8 response fields or permit pod creation. Prefer `IndexDeployment` and the
+schema field types when reading native responses. `IndexModelData` describes
+the native response without compatibility getters and is suitable for fixtures
+and plain copied response objects.
+
 ### Removed v8 index-spec types
 
-| Removed export                                             | Replacement                                                                                                                                                                 |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PodSpec`, `PodSpecMetadataConfig`, `PodBased`             | None — pod indexes cannot be created; see above                                                                                                                             |
-| `ServerlessSpec`, `ServerlessSpecResponse`, `Serverless2`  | `{ deploymentType: 'managed', cloud, region }` on `deployment`                                                                                                              |
-| `ByocSpec`, `ByocSpecResponse`, `BYOC2`                    | `{ deploymentType: 'byoc', environment }` on `deployment`                                                                                                                   |
-| `IndexModelSpec`                                           | `IndexDeployment` (the response shape of `deployment`)                                                                                                                      |
-| `ConfigureIndexRequestSpec`                                | `PatchIndexDeploymentRequest` on `ConfigureIndexOptions.deployment`                                                                                                         |
-| `ConfigureIndexRequestEmbed`, `ModelIndexEmbed`            | `PatchSemanticTextField` on `ConfigureIndexOptions.schema`, or `CreateIndexForModelEmbed` at creation                                                                       |
-| `MetadataSchema`, `MetadataSchemaFieldsValue`              | No direct replacement. Remove legacy metadata-indexing configuration; searchable document fields use `CreateIndexSchema`/`CreateIndexSchemaField` with different semantics. |
-| `ReadCapacityDedicatedSpec`, `ReadCapacityDedicatedParams` | `ReadCapacityDedicated`, `ReadCapacityDedicatedSettings`                                                                                                                    |
-| `ReadCapacityOnDemandSpec`, `ReadCapacityOnDemandParams`   | `ReadCapacityOnDemand`                                                                                                                                                      |
+| Removed export                                | Replacement                                                                                                                                                                 |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PodSpecMetadataConfig`, `PodBased`           | None — pod indexes cannot be created; see above                                                                                                                             |
+| `ServerlessSpec`, `Serverless2`               | `{ deploymentType: 'managed', cloud, region }` on `deployment`                                                                                                              |
+| `ByocSpec`, `BYOC2`                           | `{ deploymentType: 'byoc', environment }` on `deployment`                                                                                                                   |
+| `ConfigureIndexRequestSpec`                   | `PatchIndexDeploymentRequest` on `ConfigureIndexResourceOptions.deployment`                                                                                                 |
+| `ConfigureIndexRequestEmbed`                  | `PatchSemanticTextField` on `ConfigureIndexResourceOptions.schema`, or `CreateIndexForModelEmbed` at creation                                                               |
+| `MetadataSchema`, `MetadataSchemaFieldsValue` | No direct replacement. Remove legacy metadata-indexing configuration; searchable document fields use `CreateIndexSchema`/`CreateIndexSchemaField` with different semantics. |
+| `ReadCapacityDedicatedSpec`                   | `ReadCapacityDedicated`, `ReadCapacityDedicatedSettings`                                                                                                                    |
+| `ReadCapacityOnDemandSpec`                    | `ReadCapacityOnDemand`                                                                                                                                                      |
 
-### Removed identifier and listing option aliases
+<a id="removed-identifier-and-listing-option-aliases"></a>
 
-The seven describe/delete option types below were string aliases in v8,
-not objects containing an identifier. Those methods already accepted strings;
-the removed type names require an import migration, not a change from an
-object to a string. `ListBackupsOptions` was a structured options type and
-now has separate index-scoped and project-scoped resource equivalents:
+### Retained identifier and listing option aliases
 
-| Removed export              | Replacement                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------------------------------- |
-| `DeleteIndexOptions`        | `Indexes.delete(name: string)`                                                                    |
-| `DescribeIndexOptions`      | `Indexes.describe(name: string)`                                                                  |
-| `DeleteCollectionOptions`   | `Collections.delete(name: string)`                                                                |
-| `DescribeCollectionOptions` | `Collections.describe(name: string)`                                                              |
-| `DeleteBackupOptions`       | `Backups.delete(backupId: string)`                                                                |
-| `DescribeBackupOptions`     | `Backups.describe(backupId: string)`                                                              |
-| `DescribeRestoreJobOptions` | `RestoreJobs.describe(jobId: string)`                                                             |
-| `ListBackupsOptions`        | `ListIndexBackupsOptions` (`Backups.listByIndex`) or `ListProjectBackupsOptions` (`Backups.list`) |
+`DeleteIndexOptions`, `DescribeIndexOptions`, `DeleteCollectionOptions`,
+`DescribeCollectionOptions`, `DeleteBackupOptions`, `DescribeBackupOptions`,
+and `DescribeRestoreJobOptions` remain exported as deprecated string aliases.
+Their calls still accept string identifiers.
 
-`BackupPaginationResponse` was also renamed, to `BackupListPagination` — the
-type of `BackupList.pagination`, unrelated to the options-object changes
-above.
+The named options for flat calls also retain their identifier fields. Use the
+resource-specific options when passing an identifier as a separate argument:
 
-## Pending compatibility work
+| Flat-call options              | Identifier field     | Resource-call options                                    |
+| ------------------------------ | -------------------- | -------------------------------------------------------- |
+| `ConfigureIndexOptions`        | `name`               | `ConfigureIndexResourceOptions`                          |
+| `CreateBackupOptions`          | `indexName`          | `CreateBackupResourceOptions`                            |
+| `CreateIndexFromBackupOptions` | `backupId`           | `CreateIndexFromBackupResourceOptions`                   |
+| `ListBackupsOptions`           | Optional `indexName` | `ListIndexBackupsOptions` or `ListProjectBackupsOptions` |
 
-This guide describes the current implementation. Derived legacy response properties
-are tracked in [PR #143](https://github.com/pinecone-io/pinecone-ts-client-internal/pull/143).
+For example, keep `CreateBackupOptions` for `pc.createBackup(options)`, or
+switch to `CreateBackupResourceOptions` for `pc.backups.create(indexName, options)`.
+`ListBackupsOptions` remains a deprecated options type for `pc.listBackups`;
+omitting `indexName` lists project backups.
 
-API-version pinning selects a server API version; it does not replace v9's
-generated request serializers, response decoders, or TypeScript declarations.
-It cannot recover v8 types or timestamp representations.
+`ReadCapacityOnDemandParams` and `ReadCapacityDedicatedParams` remain exported
+as deprecated aliases for the flat capacity shape. `createForModel` and
+`backups.createIndex` accept supported flat or native nested capacity options.
+For new code, use `ReadCapacityOnDemand` or `ReadCapacityDedicated` with the
+native nested shape.
 
-If #143 lands as currently proposed, legacy index properties will be lazy,
-nonenumerable getters. Direct reads may work where a legacy equivalent exists,
-but spread, `Object.assign`, `structuredClone`, and JSON serialization will
-omit them. Optional typing also does not make a getter safe: even
-`model.dimension ?? 0` can throw `PineconeIndexPropertyError` for an unsupported
-or unreported field. That proposal has not landed, and this guide does not
-resolve the response-accessor policy tracked in #43/#143.
+`BackupPaginationResponse` was renamed to `BackupListPagination`, the type of
+`BackupList.pagination`.
 
-For copied or persisted index responses, prefer the native `schema` and
+<a id="pending-compatibility-work"></a>
+
+## Copying and persisting index responses
+
+The legacy properties are lazy, nonenumerable getters. Direct reads
+can derive a supported legacy equivalent, but spread, `Object.assign`,
+`structuredClone`, and JSON serialization omit those properties. A plain
+parsed or copied object does not acquire the getters merely because it is
+asserted to be an `IndexModel`; use `IndexModelData` for the native data shape.
+
+For copied or persisted index responses, use the native `schema` and
 `deployment`, or define an explicit application projection from the selected
-schema field. The following works with the current SDK and does not depend on
-pending getters. An absent or non-dense selected field produces no projection;
-it never guesses which of several fields your application meant.
+schema field. The example returns `undefined` if the selected field is absent
+or is not a dense vector.
 
 ```typescript
-import type { IndexModel } from '@pinecone-database/pinecone';
+import type { IndexModelData } from '@pinecone-database/pinecone';
 
-function denseVectorSnapshot(model: IndexModel, fieldName: string) {
+function denseVectorSnapshot(model: IndexModelData, fieldName: string) {
   const field = model.schema.fields[fieldName];
   if (!field || !('type' in field) || field.type !== 'dense_vector')
     return undefined;
@@ -750,12 +811,6 @@ function denseVectorSnapshot(model: IndexModel, fieldName: string) {
 }
 ```
 
-Request read-capacity translation and historical named option contracts are
-tracked in [issue #156](https://github.com/pinecone-io/pinecone-ts-client-internal/issues/156)
-and [issue #157](https://github.com/pinecone-io/pinecone-ts-client-internal/issues/157).
-Their compatibility fixes must be verified before treating those paths as
-fully preserved; update this guide's request and export sections when they land.
-
-The batching engine is present, but public `index.documents.batchUpsert()`
-exposure is tracked separately in
-[issue #138](https://github.com/pinecone-io/pinecone-ts-client-internal/issues/138).
+API-version pinning selects a server API version; it does not replace v9's
+generated request serializers, response decoders, or TypeScript declarations.
+It cannot recover v8 types or timestamp representations.

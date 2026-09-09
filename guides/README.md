@@ -4,16 +4,18 @@ Detailed guides for using the Pinecone TypeScript SDK.
 
 ## Index Management
 
-- [Serverless Indexes](./index-management/serverless-indexes.md) - Create and manage auto-scaling serverless indexes
-- [Pod Indexes](./index-management/pod-indexes.md) - Create and manage dedicated pod-based indexes
+- [Serverless Indexes](./index-management/serverless-indexes.md) - Create serverless indexes for document, full-text, and vector search
+- [Pod Indexes](./index-management/pod-indexes.md) - Manage existing pod-based indexes
 - [Collections](./index-management/collections.md) - Static copies of pod-based indexes
 - [Backups](./index-management/backups.md) - Create and restore from serverless index backups
+- [Backup Schedules](./index-management/backup-schedules.md) - Create and manage recurring index backups
 - [Common Operations](./index-management/shared-operations.md) - List, describe, delete, and configure indexes
 
 ## Data Operations
 
+- [Working with Documents](./data-operations/working-with-documents.md) - Store, search, fetch, update, and delete documents
 - [Working with Vectors](./data-operations/working-with-vectors.md) - Upsert, query, fetch, update, and delete vectors
-- [Namespaces](./data-operations/namespaces.md) - Organize vectors within an index
+- [Namespaces](./data-operations/namespaces.md) - Organize documents and vectors within an index
 - [Metadata Filtering](./data-operations/metadata-filtering.md) - Advanced filtering with operators
 - [Bulk Import](./data-operations/bulk-import.md) - Import large datasets from object storage
 

@@ -1,6 +1,6 @@
 # Working with Vectors
 
-This guide covers operations for upserting, querying, fetching, updating, and deleting vectors in Pinecone indexes.
+Store and search vector records using `upsert`, `query`, and the other vector operations. Create a vector index with reserved `_values` or `_sparse_values` schema fields; see [Serverless Indexes](../index-management/serverless-indexes.md#dense-and-sparse-vector-indexes) for setup. For full-text search or vectors stored in named document fields, use [Working with Documents](./working-with-documents.md).
 
 ## Targeting an index
 
