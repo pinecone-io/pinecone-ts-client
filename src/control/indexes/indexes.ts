@@ -245,7 +245,7 @@ export class Indexes {
    * const pc = new Pinecone();
    *
    * const indexModel = await pc.indexes.configure('my-schema-index', {
-   *   deletion_protection: 'enabled',
+   *   deletionProtection: 'enabled',
    *   tags: { team: 'ml-platform' },
    * });
    * console.log(indexModel.name);

@@ -45,7 +45,7 @@ export interface IntegrationFixtures {
  *
  * @example
  * ```typescript
- * import { getTestContext } from '../test-context';
+ * import { getTestContext, IntegrationFixtures } from './test-context';
  *
  * let fixtures: IntegrationFixtures;
  *

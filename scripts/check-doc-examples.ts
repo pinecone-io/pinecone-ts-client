@@ -50,6 +50,62 @@ export function findMarkdownFiles(root: string): string[] {
   return files;
 }
 
+/** Find handwritten source files, including nested directories but excluding generated SDKs. */
+export function findTypeScriptFiles(root: string): string[] {
+  const files: string[] = [];
+  const walk = (directory: string) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const full = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (!entry.name.startsWith('pinecone-generated-ts-fetch')) walk(full);
+      } else if (entry.isFile() && entry.name.endsWith('.ts')) files.push(full);
+    }
+  };
+  walk(path.join(root, 'src'));
+  return files.sort();
+}
+
+/** Extract fenced examples from actual TSDoc comments, preserving source line numbers. */
+export function extractTSDocBlocks(relPath: string, text: string): CodeBlock[] {
+  const source = ts.createSourceFile(
+    relPath,
+    text,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const comments = new Map<number, ts.JSDoc>();
+  const visit = (node: ts.Node) => {
+    for (const comment of (node as ts.Node & { jsDoc?: ts.JSDoc[] }).jsDoc ??
+      []) {
+      comments.set(comment.pos, comment);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  const examples = text.split('\n').map(() => '');
+  for (const comment of comments.values()) {
+    const firstLine = source.getLineAndCharacterOfPosition(comment.pos).line;
+    const lines = text.slice(comment.pos, comment.end).split('\n');
+    let inExample = false;
+    let inFence = false;
+    lines.forEach((rawLine, offset) => {
+      const line = rawLine
+        .replace(/^\s*\/\*\* ?/, '')
+        .replace(/^\s*\* ?/, '')
+        .replace(/\*\/\s*$/, '');
+      if (!inFence && /^\s*@example\b/.test(line)) {
+        inExample = true;
+        return;
+      }
+      if (!inFence && /^\s*@[a-zA-Z]/.test(line)) inExample = false;
+      if (!inExample) return;
+      examples[firstLine + offset] = line;
+      if (/^\s*```/.test(line)) inFence = !inFence;
+    });
+  }
+  return extractBlocksFromText(relPath, examples.join('\n'));
+}
+
 const SUPERSEDED_MIGRATION_GUIDES = new Set([
   'guides/upgrading/v1-migration.md',
   'guides/upgrading/v2-migration.md',
@@ -111,7 +167,10 @@ export function extractBlocksFromFile(
   root: string,
   absPath: string,
 ): CodeBlock[] {
-  return extractBlocksFromText(
+  const extract = absPath.endsWith('.ts')
+    ? extractTSDocBlocks
+    : extractBlocksFromText;
+  return extract(
     path.relative(root, absPath),
     fs.readFileSync(absPath, 'utf8'),
   );
@@ -120,7 +179,8 @@ export function extractBlocksFromFile(
 function virtualFileName(block: CodeBlock): string {
   return path.join(
     repoRoot,
-    `__doc_example__${block.sourceFile}__${block.fenceIndex}.ts`,
+    path.dirname(block.sourceFile),
+    `__doc_example__${path.basename(block.sourceFile)}__${block.fenceIndex}.ts`,
   );
 }
 
@@ -197,7 +257,12 @@ function undeclaredNamesIn(diagnostics: readonly ts.Diagnostic[]): Set<string> {
   return names;
 }
 
-const CLIENT_VARIABLE_NAMES = new Set(['pc', 'pinecone']);
+const SDK_VARIABLE_TYPES = new Map([
+  ['pc', 'Pinecone'],
+  ['pinecone', 'Pinecone'],
+  ['index', 'Index'],
+  ['assistant', 'Assistant'],
+]);
 
 function asStandaloneModule(
   code: string,
@@ -205,22 +270,17 @@ function asStandaloneModule(
   anyShimmedNames: Set<string>,
 ): string {
   const sortedNames = [...freeNames].sort();
-  const needsClientType = sortedNames.some((name) =>
-    CLIENT_VARIABLE_NAMES.has(name),
-  );
-  const preamble = [
-    ...(needsClientType
-      ? [
-          `import type { Pinecone as __Pinecone } from '@pinecone-database/pinecone';`,
-        ]
-      : []),
-    ...sortedNames.map((name) => {
-      if (CLIENT_VARIABLE_NAMES.has(name))
-        return `declare const ${name}: __Pinecone;`;
-      anyShimmedNames.add(name);
-      return `declare const ${name}: any;`;
-    }),
-  ];
+  const preamble = sortedNames.map((name) => {
+    if (name === 'Pinecone') {
+      return "import { Pinecone } from '@pinecone-database/pinecone';";
+    }
+    const sdkType = SDK_VARIABLE_TYPES.get(name);
+    if (sdkType) {
+      return `declare const ${name}: import('@pinecone-database/pinecone').${sdkType};`;
+    }
+    anyShimmedNames.add(name);
+    return `declare const ${name}: any;`;
+  });
   const withShims = preamble.length ? `${preamble.join('\n')}\n${code}` : code;
   return `${withShims}\nexport {};\n`;
 }
@@ -313,9 +373,10 @@ function formatDiagnostics(diagnostics: readonly ts.Diagnostic[]): string {
 }
 
 function main() {
-  const allBlocks = findMarkdownFiles(repoRoot).flatMap((f) =>
-    extractBlocksFromFile(repoRoot, f),
-  );
+  const allBlocks = [
+    ...findMarkdownFiles(repoRoot),
+    ...findTypeScriptFiles(repoRoot),
+  ].flatMap((f) => extractBlocksFromFile(repoRoot, f));
   const result = checkBlocks(allBlocks, loadKnownFailures(knownFailuresPath));
   const relKnownFailuresPath = path.relative(repoRoot, knownFailuresPath);
 

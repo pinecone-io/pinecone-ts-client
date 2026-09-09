@@ -218,7 +218,7 @@ export class Backups {
    * // }
    *
    * // Poll until the restore completes
-   * const job = await pc.indexes.describeRestoreJob('4d4c8693-10fd-4204-a57b-1e3e626fca07');
+   * const job = await pc.restoreJobs.describe('4d4c8693-10fd-4204-a57b-1e3e626fca07');
    * console.log(job.status);
    * // 'Completed'
    * ```

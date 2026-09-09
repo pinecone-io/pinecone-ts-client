@@ -1,5 +1,10 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import {
   classifyExclusion,
+  extractTSDocBlocks,
+  findTypeScriptFiles,
   extractBlocksFromText,
   checkBlocks,
   codeHash,
@@ -252,4 +257,136 @@ ${[
   );
   expect(result.newFailures).toEqual([]);
   expect(result.anyShimmedNames.size).toBe(0);
+});
+
+describe('TSDoc examples', () => {
+  const comment = (code: string) =>
+    [
+      '/**',
+      ' * @example',
+      ' * ```typescript',
+      ...code.split('\n').map((line) => ` * ${line}`),
+      ' * ```',
+      ' */',
+      'export function example() {}',
+    ].join('\n');
+
+  it('extracts multiple examples across nested declarations with original fence lines', () => {
+    const text = [
+      'export class Examples {',
+      '  /**',
+      '   * @example First example',
+      '   * ```typescript',
+      '   * const first = 1;',
+      '   * ```',
+      '   * @example Second example',
+      '   * ```typescript',
+      '   * const second = 2;',
+      '   * ```',
+      '   * @returns Not an example',
+      '   * ```typescript',
+      '   * const ignored = 3;',
+      '   * ```',
+      '   */',
+      '  method() {}',
+      '}',
+      comment('const third = 3;'),
+    ].join('\n');
+    expect(extractTSDocBlocks('src/example.ts', text)).toEqual([
+      {
+        sourceFile: 'src/example.ts',
+        fenceIndex: 1,
+        startLine: 4,
+        code: 'const first = 1;',
+        excludedReason: null,
+      },
+      {
+        sourceFile: 'src/example.ts',
+        fenceIndex: 2,
+        startLine: 8,
+        code: 'const second = 2;',
+        excludedReason: null,
+      },
+      {
+        sourceFile: 'src/example.ts',
+        fenceIndex: 3,
+        startLine: 20,
+        code: 'const third = 3;',
+        excludedReason: null,
+      },
+    ]);
+  });
+
+  it('ignores comment-like strings, ordinary comments, and fences outside @example tags', () => {
+    const text = [
+      `const fake = ${JSON.stringify(comment('const ignored = 1;'))};`,
+      comment('const ignored = 2;').replace('/**', '/*'),
+      comment('const ignored = 3;').replace('@example', '@remarks'),
+      comment('npm install').replace('```typescript', '```bash'),
+    ].join('\n');
+    expect(extractTSDocBlocks('src/example.ts', text)).toEqual([]);
+  });
+
+  it('preserves indentation and TypeScript directive comments inside fences', () => {
+    const code = [
+      'if (true) {',
+      '  // @ts-expect-error This is intentionally invalid.',
+      '  const value: number = "example";',
+      '}',
+    ].join('\n');
+    expect(extractTSDocBlocks('src/example.ts', comment(code))[0].code).toBe(
+      code,
+    );
+  });
+
+  it('finds handwritten sources and excludes both generated directory variants', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pinecone-tsdoc-'));
+    try {
+      for (const file of [
+        'src/index.ts',
+        'src/nested/client.ts',
+        'src/nested/notes.md',
+        'src/pinecone-generated-ts-fetch/api.ts',
+        'src/pinecone-generated-ts-fetch-alpha/api.ts',
+      ]) {
+        fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+        fs.writeFileSync(path.join(root, file), '');
+      }
+      expect(
+        findTypeScriptFiles(root).map((file) => path.relative(root, file)),
+      ).toEqual(['src/index.ts', 'src/nested/client.ts']);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('checks TSDoc fragments against real SDK types and resolves relative source imports', () => {
+    const examples = [
+      ['src/good.ts', 'await pc.describeIndex("test");'],
+      [
+        'src/relative.ts',
+        "import type { PineconeConfiguration } from './data';\nconst config: PineconeConfiguration = { apiKey: 'test' };",
+      ],
+      ['src/bad-client.ts', 'await pc.nonexistentMethod();'],
+      [
+        'src/bad-constructor.ts',
+        'const pc = new Pinecone({ invalidOption: true });',
+      ],
+      ['src/bad-index.ts', 'await index.nonexistentMethod();'],
+      ['src/bad-assistant.ts', 'await assistant.nonexistentMethod();'],
+    ];
+    const result = checkBlocks(
+      examples.flatMap(([file, code]) =>
+        extractTSDocBlocks(file, comment(code)),
+      ),
+      [],
+    );
+    expect(result.newFailures.map(({ block }) => block.sourceFile)).toEqual([
+      'src/bad-client.ts',
+      'src/bad-constructor.ts',
+      'src/bad-index.ts',
+      'src/bad-assistant.ts',
+    ]);
+    expect(result.anyShimmedNames.size).toBe(0);
+  });
 });

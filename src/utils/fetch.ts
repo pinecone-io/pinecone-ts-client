@@ -19,13 +19,13 @@ export interface RetryConfig {
    * @example
    * ```typescript
    * // Disable retries - make only the initial request
-   * const pinecone = new Pinecone({ maxRetries: 0 });
+   * const withoutRetries = new Pinecone({ apiKey: 'your-api-key', maxRetries: 0 });
    *
    * // Allow 1 retry after initial failure (2 total attempts)
-   * const pinecone = new Pinecone({ maxRetries: 1 });
+   * const oneRetry = new Pinecone({ apiKey: 'your-api-key', maxRetries: 1 });
    *
    * // Default: 3 retries after initial failure (4 total attempts)
-   * const pinecone = new Pinecone({ maxRetries: 3 });
+   * const pinecone = new Pinecone({ apiKey: 'your-api-key', maxRetries: 3 });
    * ```
    */
   maxRetries?: number;

@@ -30,7 +30,7 @@ console.log(operation.status); // 'Processing' | 'Completed' | 'Failed'
 let op = operation;
 while (op.status === 'Processing') {
   await new Promise((r) => setTimeout(r, 2000));
-  op = await assistant.describeOperation({ operationId: operation.id });
+  op = await assistant.describeOperation(operation.id);
 }
 ```
 
@@ -53,9 +53,7 @@ const operation = await assistant.deleteFile('abc123');
 console.log(operation.status); // 'Processing' | 'Completed' | 'Failed'
 
 // Optionally poll to confirm completion
-const completed = await assistant.describeOperation({
-  operationId: operation.id,
-});
+const completed = await assistant.describeOperation(operation.id);
 ```
 
 ## New assistant APIs
@@ -76,7 +74,7 @@ const operation = await assistant.upsertFile({
 Fetch the current status of any async file operation by its ID.
 
 ```typescript
-const op = await assistant.describeOperation({ operationId: operation.id });
+const op = await assistant.describeOperation(operation.id);
 console.log(op.status); // 'Processing' | 'Completed' | 'Failed'
 console.log(op.percentComplete); // 0–100
 ```
