@@ -16,6 +16,11 @@ jest.mock('../documents/deleteDocuments');
 jest.mock('../documents/listDocuments');
 jest.mock('../documents/updateDocuments');
 
+interface OperationShape {
+  shape: string;
+  invoke: (index: Index) => Promise<unknown>;
+}
+
 // Keep the options and invocation typed against each public Index method.
 function operation<Options, Response>(
   name: string,
@@ -25,14 +30,20 @@ function operation<Options, Response>(
     options: Options,
   ) => Promise<Response>,
   options: Options,
-  invoke: (index: Index, options: Options) => Promise<Response>,
+  invokeFlat: (index: Index, options: Options) => Promise<Response>,
+  invokeAccessor: (index: Index, options: Options) => Promise<Response>,
 ) {
-  return {
-    name,
-    command,
-    options,
-    invoke: (index: Index) => invoke(index, options),
-  };
+  const shapes: OperationShape[] = [
+    {
+      shape: 'flat method',
+      invoke: (index: Index) => invokeFlat(index, options),
+    },
+    {
+      shape: 'documents accessor',
+      invoke: (index: Index) => invokeAccessor(index, options),
+    },
+  ];
+  return { name, command, options, shapes };
 }
 
 const operations = [
@@ -41,6 +52,7 @@ const operations = [
     upsertDocuments,
     { documents: [{ _id: 'doc-1', text: 'Hello' }] },
     (index, options) => index.upsertDocuments(options),
+    (index, options) => index.documents.upsert(options),
   ),
   operation(
     'searchDocuments',
@@ -52,24 +64,28 @@ const operations = [
       topK: 5,
     },
     (index, options) => index.searchDocuments(options),
+    (index, options) => index.documents.search(options),
   ),
   operation(
     'fetchDocuments',
     fetchDocuments,
     { ids: ['doc-1'] },
     (index, options) => index.fetchDocuments(options),
+    (index, options) => index.documents.fetch(options),
   ),
   operation(
     'deleteDocuments',
     deleteDocuments,
     { ids: ['doc-1'] },
     (index, options) => index.deleteDocuments(options),
+    (index, options) => index.documents.delete(options),
   ),
   operation(
     'listDocuments',
     listDocuments,
     { limit: 10, prefix: 'doc-' },
     (index, options) => index.listDocuments(options),
+    (index, options) => index.documents.list(options),
   ),
   operation(
     'updateDocuments',
@@ -80,6 +96,7 @@ const operations = [
       ],
     },
     (index, options) => index.updateDocuments(options),
+    (index, options) => index.documents.update(options),
   ),
 ];
 
@@ -119,93 +136,106 @@ describe('Index document operations', () => {
     expect(listDocuments).toHaveBeenCalledWith(api, '__default__', {});
   });
 
-  describe.each(operations)('$name', ({ command, options, invoke }) => {
-    test.each([
-      {
-        label: 'default namespace',
-        namespace: '__default__',
-        create: () => new Index(target, config),
-      },
-      {
-        label: 'namespace option',
-        namespace: 'tenant-a',
-        create: () => new Index({ ...target, namespace: 'tenant-a' }, config),
-      },
-      {
-        label: 'empty namespace option',
-        namespace: '__default__',
-        create: () => new Index({ ...target, namespace: '' }, config),
-      },
-      {
-        label: 'chained namespace',
-        namespace: 'tenant-b',
-        create: () =>
-          new Index({ ...target, namespace: 'tenant-a' }, config).namespace(
-            'tenant-b',
-          ),
-      },
-      {
-        label: 'repeated namespace chaining',
-        namespace: 'tenant-c',
-        create: () =>
-          new Index(target, config).namespace('tenant-b').namespace('tenant-c'),
-      },
-      {
-        label: 'chaining back to default',
-        namespace: '__default__',
-        create: () =>
-          new Index({ ...target, namespace: 'tenant-a' }, config).namespace(''),
-      },
-    ])(
-      'forwards the $label and returns the operation result',
-      async ({ namespace, create }) => {
-        const response = { responseSentinel: true };
-        (command as jest.Mock).mockResolvedValue(response);
-        const index = create();
+  describe.each(operations)('$name', ({ command, options, shapes }) => {
+    describe.each<OperationShape>(shapes)('$shape', ({ invoke }) => {
+      test.each([
+        {
+          label: 'default namespace',
+          namespace: '__default__',
+          create: () => new Index(target, config),
+        },
+        {
+          label: 'namespace option',
+          namespace: 'tenant-a',
+          create: () => new Index({ ...target, namespace: 'tenant-a' }, config),
+        },
+        {
+          label: 'empty namespace option',
+          namespace: '__default__',
+          create: () => new Index({ ...target, namespace: '' }, config),
+        },
+        {
+          label: 'chained namespace',
+          namespace: 'tenant-b',
+          create: () =>
+            new Index({ ...target, namespace: 'tenant-a' }, config).namespace(
+              'tenant-b',
+            ),
+        },
+        {
+          label: 'repeated namespace chaining',
+          namespace: 'tenant-c',
+          create: () =>
+            new Index(target, config)
+              .namespace('tenant-b')
+              .namespace('tenant-c'),
+        },
+        {
+          label: 'chaining back to default',
+          namespace: '__default__',
+          create: () =>
+            new Index({ ...target, namespace: 'tenant-a' }, config).namespace(
+              '',
+            ),
+        },
+      ])(
+        'forwards the $label and returns the operation result',
+        async ({ namespace, create }) => {
+          const response = { responseSentinel: true };
+          (command as jest.Mock).mockResolvedValue(response);
+          const index = create();
 
-        await expect(invoke(index)).resolves.toBe(response);
+          await expect(invoke(index)).resolves.toBe(response);
 
-        expect(
-          DocumentOperationsProvider.prototype.provide,
-        ).toHaveBeenCalledTimes(1);
-        expect(command).toHaveBeenCalledTimes(1);
-        expect(command).toHaveBeenCalledWith(api, namespace, options);
-        expect((command as jest.Mock).mock.calls[0][2]).toBe(options);
-        for (const call of jest.mocked(DocumentOperationsProvider).mock.calls) {
-          expect(call).toEqual([
-            config,
-            target.name,
-            target.host,
-            target.additionalHeaders,
-          ]);
-        }
-      },
-    );
+          expect(
+            DocumentOperationsProvider.prototype.provide,
+          ).toHaveBeenCalledTimes(1);
+          expect(command).toHaveBeenCalledTimes(1);
+          expect(command).toHaveBeenCalledWith(api, namespace, options);
+          expect((command as jest.Mock).mock.calls[0][2]).toBe(options);
+          for (const call of jest.mocked(DocumentOperationsProvider).mock
+            .calls) {
+            expect(call).toEqual([
+              config,
+              target.name,
+              target.host,
+              target.additionalHeaders,
+            ]);
+          }
+        },
+      );
 
-    test('keeps parent and child namespaces independent', async () => {
-      const parent = new Index({ ...target, namespace: 'parent' }, config);
-      const child = parent.namespace('child');
-      const parentApi = { parent: true } as unknown as DocumentOperationsApi;
-      const childApi = { child: true } as unknown as DocumentOperationsApi;
-      const providers = jest.mocked(DocumentOperationsProvider).mock.instances;
-      jest.mocked(providers[0].provide).mockResolvedValue(parentApi);
-      jest.mocked(providers[1].provide).mockResolvedValue(childApi);
+      test('keeps parent and child namespaces independent', async () => {
+        const parent = new Index({ ...target, namespace: 'parent' }, config);
+        const child = parent.namespace('child');
+        const parentApi = { parent: true } as unknown as DocumentOperationsApi;
+        const childApi = { child: true } as unknown as DocumentOperationsApi;
+        const providers = jest.mocked(DocumentOperationsProvider).mock
+          .instances;
+        jest.mocked(providers[0].provide).mockResolvedValue(parentApi);
+        jest.mocked(providers[1].provide).mockResolvedValue(childApi);
 
-      await invoke(child);
-      await invoke(parent);
+        await invoke(child);
+        await invoke(parent);
 
-      expect(command).toHaveBeenNthCalledWith(1, childApi, 'child', options);
-      expect(command).toHaveBeenNthCalledWith(2, parentApi, 'parent', options);
-    });
+        expect(command).toHaveBeenNthCalledWith(1, childApi, 'child', options);
+        expect(command).toHaveBeenNthCalledWith(
+          2,
+          parentApi,
+          'parent',
+          options,
+        );
+      });
 
-    test('propagates provider errors without invoking the operation', async () => {
-      const error = new Error('Unable to resolve document index host');
-      jest
-        .mocked(DocumentOperationsProvider.prototype.provide)
-        .mockRejectedValue(error);
+      test('propagates provider errors without invoking the operation', async () => {
+        const error = new Error('Unable to resolve document index host');
+        jest
+          .mocked(DocumentOperationsProvider.prototype.provide)
+          .mockRejectedValue(error);
 
-      await expect(invoke(new Index(target, config))).rejects.toBe(error);
-      expect(command).not.toHaveBeenCalled();
+        await expect(invoke(new Index(target, config))).rejects.toBe(error);
+        expect(command).not.toHaveBeenCalled();
+      });
     });
   });
 });
