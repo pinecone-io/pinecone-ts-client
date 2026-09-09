@@ -76,7 +76,7 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 // const pc = new Pinecone();
 
 // 2. Create a serverless index
-const indexModel = await pc.createIndex({
+const indexModel = await pc.indexes.create({
   name: 'example-index',
   schema: {
     fields: {
@@ -127,7 +127,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 // 2. Create an index configured for use with a particular embedding model
-const indexModel = await pc.createIndexForModel({
+const indexModel = await pc.indexes.createForModel({
   name: 'example-index',
   cloud: 'aws',
   region: 'us-east-1',
@@ -198,7 +198,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone();
 
 // Create an assistant
-const assistant = await pc.createAssistant({
+const assistant = await pc.assistants.create({
   name: 'product-assistant',
   instructions: 'You are a helpful product recommendation assistant.',
 });

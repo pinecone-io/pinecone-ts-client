@@ -2,7 +2,7 @@
 
 > **Note:** Serverless and starter indexes do not support collections.
 
-A collection is a static copy of a pod-based index that may be used to create backups, to create copies of indexes, or to perform experiments with different index configurations. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/guides/indexes/pods/understanding-collections).
+A collection is a static snapshot of an existing pod-based index. The 2026-07 API supports creating and managing collections, but does not support creating a new index from a collection. To learn more about Pinecone collections, see [Understanding collections](https://docs.pinecone.io/guides/indexes/pods/understanding-collections).
 
 ## Create a collection
 
@@ -13,13 +13,13 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.createCollection({
+await pc.collections.create({
   name: 'collection-name',
   source: 'index-name',
 });
 ```
 
-This API call returns quickly, but the creation of a collection can take from minutes to hours depending on the size of the source index and the index's configuration. Use `describeCollection` to check the status of a collection.
+This API call returns quickly, but the creation of a collection can take from minutes to hours depending on the size of the source index and the index's configuration. Use `collections.describe` to check the status of a collection.
 
 ## Describe a collection
 
@@ -30,7 +30,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const collectionDescription = await pc.describeCollection('collection-name');
+const collectionDescription = await pc.collections.describe('collection-name');
 console.log(collectionDescription);
 // {
 //   name: 'collection-name',
@@ -44,14 +44,14 @@ console.log(collectionDescription);
 
 ## List collections
 
-The `listCollections` command returns an object with an array of collection models:
+The `collections.list` command returns an object with an array of collection models:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const list = await pc.listCollections();
+const list = await pc.collections.list();
 console.log(list);
 // {
 //   collections: [
@@ -75,48 +75,9 @@ console.log(list);
 // }
 ```
 
-## Create an index from a collection
+## Restoring data
 
-Given that you have an existing collection, you can create a new pod-based index from it. Note that for pod-based indexes, you can specify a `sourceCollection` from which to create an index. The collection must be in the same environment as the index.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'product-description-p1x1',
-  dimension: 256,
-  metric: 'cosine',
-  spec: {
-    pod: {
-      environment: 'us-east4-gcp',
-      pods: 1,
-      podType: 'p1.x1',
-      sourceCollection: 'product-description-embeddings',
-    },
-  },
-});
-```
-
-When the new index is ready, it should contain all the data that was in the collection, ready to be queried.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-const indexModel = await pc.describeIndex('product-description-p1x1');
-const index = pc.index({ host: indexModel.host });
-const stats = await index.describeIndexStats();
-console.log(stats);
-// {
-//   namespaces: { '': { recordCount: 78000 } },
-//   dimension: 256,
-//   indexFullness: 0.9,
-//   totalRecordCount: 78000
-// }
-```
+The 2026-07 create-index API does not accept `sourceCollection` and cannot create new pod deployments. Do not use legacy collection-to-index creation examples with this release. The separate [backups](./backups.md) resource supports restoring an eligible backup through `pc.backups.createIndex`; a collection is not a backup ID.
 
 ## Delete a collection
 
@@ -127,7 +88,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.deleteCollection('collection-name');
+await pc.collections.delete('collection-name');
 ```
 
-You can use `listCollections` to confirm the deletion.
+You can use `collections.list` to confirm the deletion.

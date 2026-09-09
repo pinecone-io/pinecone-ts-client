@@ -26,7 +26,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -45,7 +45,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -64,7 +64,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -87,7 +87,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -126,7 +126,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -153,7 +153,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -180,7 +180,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const indexModel = await pc.describeIndex('my-index');
+const indexModel = await pc.indexes.describe('my-index');
 const index = pc.index({ host: indexModel.host });
 
 const results = await index.query({
@@ -234,5 +234,5 @@ const results = await index.query({
 
 For more details on metadata configuration, see:
 
-- [Serverless metadata schema](../index-management/serverless-indexes.md#metadata-schema-configuration)
-- [Pod metadata configuration](../index-management/pod-indexes.md#optional-spec-configurations-when-creating-pod-indexes)
+- [Namespace metadata indexing](../index-management/serverless-indexes.md#metadata-indexing-for-a-namespace)
+- [Existing pod index limitations](../index-management/pod-indexes.md)

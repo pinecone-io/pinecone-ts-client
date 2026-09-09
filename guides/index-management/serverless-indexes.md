@@ -1,255 +1,144 @@
 # Serverless Indexes
 
-For introductory information on indexes, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes)
+For introductory information, see [Understanding indexes](https://docs.pinecone.io/guides/indexes/understanding-indexes).
 
-## Sparse vs Dense embedding vectors
+## Dense and sparse vector indexes
 
-When you are working with dense embedding vectors, you must specify the `dimension` of the vectors you expect to store at the time your index is created. For sparse vectors, used to represent vectors where most values are zero, you omit `dimension` and must specify `vectorType: 'sparse'`.
+The 2026-07 API creates managed indexes with a `schema` and `deployment`. To use the existing vector operations (`upsert`, `query`, and `fetch`), declare only the reserved `_values` field for dense vectors or `_sparse_values` for sparse vectors. A dense field requires its dimension and metric; a sparse field has neither.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-// Create an index for dense vectors
-await pc.createIndex({
+await pc.indexes.create({
   name: 'index-for-dense-vectors',
-  dimension: 1536,
-  metric: 'cosine',
-  // vectorType: 'dense' is the default value, so it can be omitted if you prefer
-  vectorType: 'dense',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
+  schema: {
+    fields: {
+      _values: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
     },
   },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
 });
 
-// Create an index for sparse vectors
-await pc.createIndex({
+await pc.indexes.create({
   name: 'index-for-sparse-vectors',
-  metric: 'dotproduct',
-  vectorType: 'sparse',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
-    },
-  },
+  schema: { fields: { _sparse_values: { type: 'sparse_vector' } } },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
 });
 ```
+
+Custom schema field names select the documents API instead. Use document operations such as `index.upsertDocuments` and `index.searchDocuments` for that schema. Legacy `dimension`, `metric`, `vectorType`, and `spec` options remain compatibility inputs, but should not be mixed with the native `schema` and `deployment` shape.
 
 ## Available clouds
 
-See the [available cloud regions](https://docs.pinecone.io/guides/index-data/create-an-index#cloud-regions) page for the most up-to-date information on which cloud regions are available.
-
-### Create a serverless index on Amazon Web Services (AWS)
-
-The following example creates a serverless index in the `us-west-2` region of AWS. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
+Choose the cloud and region in `deployment`. See [available cloud regions](https://docs.pinecone.io/guides/index-data/create-an-index#cloud-regions) for supported deployments. For example, a managed GCP deployment uses:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
+await pc.indexes.create({
   name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
+  schema: {
+    fields: {
+      _values: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
     },
   },
-  vectorType: 'dense',
-});
-```
-
-### Create a serverless index on Google Cloud Platform
-
-The following example creates a serverless index in the `us-central1` region of GCP. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'gcp',
-      region: 'us-central1',
-    },
+  deployment: {
+    deploymentType: 'managed',
+    cloud: 'gcp',
+    region: 'us-central1',
   },
 });
 ```
 
-### Create a serverless index on Azure
+## Read capacity
 
-The following example creates a serverless index on Azure. For more information on serverless and regional availability, see [Indexing Overview](https://docs.pinecone.io/guides/index-data/indexing-overview).
+Read capacity is a top-level option. On-demand mode is the default. Dedicated mode places its node type and manual scaling settings under `dedicated`.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'azure',
-      region: 'eastus2',
+await pc.indexes.create({
+  name: 'dedicated-index',
+  schema: {
+    fields: {
+      _values: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
+  readCapacity: {
+    mode: 'Dedicated',
+    dedicated: {
+      nodeType: 't1',
+      scaling: 'Manual',
+      manual: { shards: 2, replicas: 2 },
     },
   },
 });
-```
 
-## Read Capacity Configuration
-
-You can configure the read capacity mode for your serverless index. By default, indexes are created with `OnDemand` mode. You can also specify `Dedicated` mode with dedicated read nodes.
-
-### Dedicated Read Capacity
-
-Dedicated mode allocates dedicated read nodes for your workload. Alongside `mode: 'Dedicated'` you must specify a `nodeType` (`'b1'` or `'t1'`) and a `manual` object giving the number of `shards` and `replicas`.
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'gcp',
-      region: 'us-central1',
-      readCapacity: {
-        mode: 'Dedicated',
-        nodeType: 't1',
-        manual: {
-          shards: 2,
-          replicas: 2,
-        },
-      },
+await pc.indexes.configure('dedicated-index', {
+  readCapacity: {
+    mode: 'Dedicated',
+    dedicated: {
+      nodeType: 't1',
+      scaling: 'Manual',
+      manual: { shards: 3, replicas: 2 },
     },
   },
 });
-```
 
-### Configuring Read Capacity
-
-You can change the read capacity configuration of an existing serverless index using `configureIndex`. This allows you to:
-
-- Switch between OnDemand and Dedicated modes
-- Adjust the number of shards and replicas for Dedicated mode with manual scaling
-
-```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-// Switch to OnDemand read capacity
-await pc.configureIndex({
-  name: 'my-index',
+await pc.indexes.configure('dedicated-index', {
   readCapacity: { mode: 'OnDemand' },
 });
-
-// Switch to Dedicated read capacity with manual scaling
-await pc.configureIndex({
-  name: 'my-index',
-  readCapacity: {
-    mode: 'Dedicated',
-    nodeType: 't1',
-    manual: {
-      shards: 3,
-      replicas: 2,
-    },
-  },
-});
-
-// Scale up by increasing shards and replicas
-await pc.configureIndex({
-  name: 'my-index',
-  readCapacity: {
-    mode: 'Dedicated',
-    nodeType: 't1',
-    manual: {
-      shards: 4,
-      replicas: 3,
-    },
-  },
-});
 ```
 
-When you change read capacity configuration, the index will transition to the new configuration. You can use `describeIndex` to check the status of the transition.
+Configuration changes are asynchronous. Use `pc.indexes.describe` to inspect the transition.
 
-## Metadata Schema Configuration
+## Metadata indexing for a namespace
 
-You can configure which metadata fields are filterable by specifying a metadata schema. By default, all metadata fields are indexed. However, large amounts of metadata can cause slower index building as well as slower query execution, particularly when data is not cached in a query executor's memory and local SSD and must be fetched from object storage.
-
-To prevent performance issues due to excessive metadata, you can limit metadata indexing to the fields that you plan to use for query filtering. The schema is an object with a `fields` map keyed by metadata field name. When you specify a metadata schema, only fields listed in `fields` with `filterable: true` are indexed and can be used in filters. Note that `filterable: false` is not currently supported; omit the field instead.
+Legacy `spec.serverless.schema` metadata settings are not accepted by the 2026-07 create-index operation. For selective metadata indexing, create a namespace on an existing index with a namespace schema. This metadata schema is distinct from the index schema that declares vector or text fields.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
-      schema: {
-        fields: {
-          genre: { filterable: true },
-          year: { filterable: true },
-          description: { filterable: true },
-        },
-      },
+const index = pc.index({ name: 'index-for-dense-vectors' });
+await index.createNamespace({
+  name: 'filtered-records',
+  schema: {
+    fields: {
+      genre: { filterable: true },
+      year: { filterable: true },
     },
   },
 });
 ```
 
-## Waiting for Index Readiness
+When a namespace schema is supplied, only its listed fields are indexed for filtering. `filterable: false` is not supported; omit fields that should not be indexed.
 
-When you create an index, it takes some time to be ready. You can optionally wait for the index to be ready by setting `waitUntilReady: true`:
+## Wait for readiness
+
+Set `waitUntilReady: true` to wait for creation, and use `timeout` to bound that wait.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
-
-await pc.createIndex({
-  name: 'my-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-west-2',
+const indexModel = await pc.indexes.create({
+  name: 'ready-index',
+  schema: {
+    fields: {
+      _values: { type: 'dense_vector', dimension: 1536, metric: 'cosine' },
     },
   },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
   waitUntilReady: true,
+  timeout: 180_000,
 });
-
-// The index is now ready to use
-const indexModel = await pc.describeIndex('my-index');
 const index = pc.index({ host: indexModel.host });
 ```
 
-## Configuring, listing, describing, and deleting
-
-See [common operations](shared-operations.md) to learn about how to manage the lifecycle of your index after it is created.
+See [common operations](./shared-operations.md) for the rest of the index lifecycle.

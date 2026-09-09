@@ -11,7 +11,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const assistant = await pc.createAssistant({
+const assistant = await pc.assistants.create({
   name: 'product-assistant',
   instructions: 'You are a helpful product recommendation assistant.',
   metadata: {
@@ -102,7 +102,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const assistants = await pc.listAssistants();
+const assistants = await pc.assistants.list();
 console.log(assistants);
 // {
 //   assistants: [
@@ -126,7 +126,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.updateAssistant({
+await pc.assistants.update({
   name: 'product-assistant',
   instructions:
     'You are a helpful product recommendation assistant. Be concise and friendly.',
@@ -143,7 +143,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-const info = await pc.describeAssistant('product-assistant');
+const info = await pc.assistants.describe('product-assistant');
 console.log(info);
 // {
 //   name: 'product-assistant',
@@ -165,7 +165,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
-await pc.deleteAssistant('product-assistant');
+await pc.assistants.delete('product-assistant');
 ```
 
 ## Complete quickstart example
@@ -177,7 +177,7 @@ async function assistantQuickstart() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   // 1. Create an assistant
-  await pc.createAssistant({
+  await pc.assistants.create({
     name: 'my-assistant',
     instructions: 'You are a helpful assistant.',
   });
