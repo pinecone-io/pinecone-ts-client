@@ -1,28 +1,18 @@
 [
   {
-    "file": "README.md",
-    "codeHash": "65f6479f1857",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43); returns IndexModel | void (#56)"
-  },
-  {
-    "file": "README.md",
-    "codeHash": "6357a07a91b9",
-    "reason": "Legacy top-level cloud option differs from the 2026-07 createIndexForModel request schema (#42/#43); returns IndexModel | void (#56)"
-  },
-  {
     "file": "guides/data-operations/bulk-import.md",
     "codeHash": "f05dfa1a6f81",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43); returns IndexModel | void (#56)"
+    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
     "file": "guides/data-operations/working-with-vectors.md",
     "codeHash": "e5b3e150bead",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43); returns IndexModel | void (#56)"
+    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
     "file": "guides/faq.md",
     "codeHash": "07cb7e727188",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43); returns IndexModel | void (#56)"
+    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
     "file": "guides/index-management/collections.md",

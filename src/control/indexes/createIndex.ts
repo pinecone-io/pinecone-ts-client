@@ -131,7 +131,9 @@ export interface CreateIndexOptions extends Omit<
    */
   timeout?: number;
   /**
-   * When true, does not throw if an index with this name already exists.
+   * When true, returns `undefined` instead of throwing if an index with this
+   * name already exists. Otherwise creation always returns an index model,
+   * regardless of `waitUntilReady`.
    */
   suppressConflicts?: boolean;
 }
@@ -139,6 +141,14 @@ export interface CreateIndexOptions extends Omit<
 /**
  * Creates a schema-based index.
  */
+export function createIndex(
+  api: ManageIndexesApi,
+  options: CreateIndexOptions & { suppressConflicts?: false },
+): Promise<IndexModel>;
+export function createIndex(
+  api: ManageIndexesApi,
+  options: CreateIndexOptions,
+): Promise<IndexModel | void>;
 export async function createIndex(
   api: ManageIndexesApi,
   options: CreateIndexOptions,

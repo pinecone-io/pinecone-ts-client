@@ -78,14 +78,13 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 // 2. Create a serverless index
 const indexModel = await pc.createIndex({
   name: 'example-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-east-1',
+  schema: {
+    fields: {
+      vector: { type: 'dense_vector', dimension: 8, metric: 'cosine' },
     },
   },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
+  waitUntilReady: true,
 });
 
 // 3. Target the index
@@ -96,7 +95,7 @@ await index.upsert({
   records: [
     {
       id: 'vec1',
-      values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], // ... dimension should match index (1536)
+      values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], // dimension matches the index (8)
       metadata: { genre: 'drama', year: 2020 },
     },
     {

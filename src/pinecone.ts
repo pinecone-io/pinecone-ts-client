@@ -1,5 +1,6 @@
 import type {
   CreateIndexOptions,
+  IndexModel,
   CreateIndexForModelOptions,
   ConfigureIndexOptions,
   CreateCollectionOptions,
@@ -214,11 +215,23 @@ export class Pinecone {
   }
 
   /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(
+    options: CreateIndexOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(options: CreateIndexOptions): Promise<IndexModel | void>;
   createIndex(options: CreateIndexOptions) {
     return this.indexes.create(options);
   }
 
   /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions,
+  ): Promise<IndexModel | void>;
   createIndexForModel(options: CreateIndexForModelOptions) {
     return this.indexes.createForModel(options);
   }
