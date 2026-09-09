@@ -145,8 +145,9 @@ when an index with that name already exists, so code that reads a property of
 
 How the legacy concepts map to the native schema:
 
-- `dimension` and `metric` move onto the `dense_vector` (or `sparse_vector`)
-  field you declare in `schema.fields`, rather than describing the whole index.
+- `dimension` and `metric` belong to a `dense_vector` field in `schema.fields`.
+  A native `sparse_vector` field has no dimension or configurable metric; legacy
+  sparse creation accepts only `dotproduct`.
 - `vectorType` is implied by the field type instead of being a separate
   option: `dense_vector` or `sparse_vector` when you declare the schema
   yourself with `create`, or `semantic_text` when the server builds the field
@@ -473,17 +474,17 @@ schema/deployment types when adopting the new request shape.
 
 ### Removed v8 index-spec types
 
-| Removed export                                             | Replacement                                                                                           |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `PodSpec`, `PodSpecMetadataConfig`, `PodBased`             | None — pod indexes cannot be created; see above                                                       |
-| `ServerlessSpec`, `ServerlessSpecResponse`, `Serverless2`  | `{ deploymentType: 'managed', cloud, region }` on `deployment`                                        |
-| `ByocSpec`, `ByocSpecResponse`, `BYOC2`                    | `{ deploymentType: 'byoc', environment }` on `deployment`                                             |
-| `IndexModelSpec`                                           | `IndexDeployment` (the response shape of `deployment`)                                                |
-| `ConfigureIndexRequestSpec`                                | `PatchIndexDeploymentRequest` on `ConfigureIndexOptions.deployment`                                   |
-| `ConfigureIndexRequestEmbed`, `ModelIndexEmbed`            | `PatchSemanticTextField` on `ConfigureIndexOptions.schema`, or `CreateIndexForModelEmbed` at creation |
-| `MetadataSchema`, `MetadataSchemaFieldsValue`              | `CreateIndexSchema`, `CreateIndexSchemaField`                                                         |
-| `ReadCapacityDedicatedSpec`, `ReadCapacityDedicatedParams` | `ReadCapacityDedicated`, `ReadCapacityDedicatedSettings`                                              |
-| `ReadCapacityOnDemandSpec`, `ReadCapacityOnDemandParams`   | `ReadCapacityOnDemand`                                                                                |
+| Removed export                                             | Replacement                                                                                                                                                                 |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PodSpec`, `PodSpecMetadataConfig`, `PodBased`             | None — pod indexes cannot be created; see above                                                                                                                             |
+| `ServerlessSpec`, `ServerlessSpecResponse`, `Serverless2`  | `{ deploymentType: 'managed', cloud, region }` on `deployment`                                                                                                              |
+| `ByocSpec`, `ByocSpecResponse`, `BYOC2`                    | `{ deploymentType: 'byoc', environment }` on `deployment`                                                                                                                   |
+| `IndexModelSpec`                                           | `IndexDeployment` (the response shape of `deployment`)                                                                                                                      |
+| `ConfigureIndexRequestSpec`                                | `PatchIndexDeploymentRequest` on `ConfigureIndexOptions.deployment`                                                                                                         |
+| `ConfigureIndexRequestEmbed`, `ModelIndexEmbed`            | `PatchSemanticTextField` on `ConfigureIndexOptions.schema`, or `CreateIndexForModelEmbed` at creation                                                                       |
+| `MetadataSchema`, `MetadataSchemaFieldsValue`              | No direct replacement. Remove legacy metadata-indexing configuration; searchable document fields use `CreateIndexSchema`/`CreateIndexSchemaField` with different semantics. |
+| `ReadCapacityDedicatedSpec`, `ReadCapacityDedicatedParams` | `ReadCapacityDedicated`, `ReadCapacityDedicatedSettings`                                                                                                                    |
+| `ReadCapacityOnDemandSpec`, `ReadCapacityOnDemandParams`   | `ReadCapacityOnDemand`                                                                                                                                                      |
 
 ### Options objects replaced by positional arguments
 
