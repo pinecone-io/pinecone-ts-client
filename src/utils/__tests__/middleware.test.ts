@@ -1,6 +1,7 @@
 import { createMiddlewareArray } from '../middleware';
 import { indexOperationsBuilder } from '../../control/indexOperationsBuilder';
 import {
+  PineconeArgumentError,
   PineconeAuthorizationError,
   PineconeBadRequestError,
   PineconeConnectionError,
@@ -9,6 +10,8 @@ import {
 
 const url = 'https://api.pinecone.io/indexes';
 const init = { method: 'GET' };
+const getErrorMiddleware = () =>
+  createMiddlewareArray().find((middleware) => middleware.onError)!;
 
 describe('shared request middleware', () => {
   let originalDebug: string | undefined;
@@ -31,14 +34,26 @@ describe('shared request middleware', () => {
     debug.mockRestore();
   });
 
-  test('installs only error handling when debug flags are absent', () => {
-    expect(createMiddlewareArray()).toHaveLength(1);
+  test('installs path safety before error handling when debug flags are absent', async () => {
+    const middleware = createMiddlewareArray();
+    expect(middleware).toHaveLength(2);
+    expect(middleware[0].pre).toBeDefined();
+    expect(middleware[1].onError).toBeDefined();
+    expect(middleware[1].post).toBeDefined();
+    await expect(
+      middleware[0].pre!({
+        url: 'https://api.pinecone.io/indexes/..',
+        init,
+        fetch: jest.fn(),
+      }),
+    ).rejects.toBeInstanceOf(PineconeArgumentError);
+    expect(debug).not.toHaveBeenCalled();
   });
 
   test('preserves the exact retry-exhaustion error', async () => {
     const error = new PineconeMaxRetriesExceededError(3);
     await expect(
-      createMiddlewareArray()[0].onError!({
+      getErrorMiddleware().onError!({
         error,
         url,
         init,
@@ -49,7 +64,7 @@ describe('shared request middleware', () => {
 
   test('wraps transport failures and retains their cause', async () => {
     const error = new TypeError('connection refused');
-    const result = createMiddlewareArray()[0].onError!({
+    const result = getErrorMiddleware().onError!({
       error,
       url,
       init,
@@ -64,7 +79,7 @@ describe('shared request middleware', () => {
     async (status) => {
       const response = new Response(status === 204 ? null : 'body', { status });
       expect(
-        await createMiddlewareArray()[0].post!({
+        await getErrorMiddleware().post!({
           response,
           url,
           init,
@@ -76,7 +91,7 @@ describe('shared request middleware', () => {
   );
 
   test('maps a plain-text authorization error using the request URL', async () => {
-    const result = createMiddlewareArray()[0].post!({
+    const result = getErrorMiddleware().post!({
       response: new Response('Invalid API key', { status: 401 }),
       url,
       init,
@@ -141,7 +156,7 @@ describe('shared request middleware', () => {
     process.env.PINECONE_DEBUG = '1';
     process.env.PINECONE_DEBUG_CURL = '1';
     const middleware = createMiddlewareArray();
-    expect(middleware).toHaveLength(3);
+    expect(middleware).toHaveLength(4);
     const request = {
       url,
       fetch: jest.fn(),
@@ -154,8 +169,12 @@ describe('shared request middleware', () => {
         body: '{"name":"test"}',
       },
     };
-    await middleware[0].pre!(request);
-    await middleware[1].post!({ ...request, response: new Response('{}') });
+    for (const hook of middleware) {
+      await hook.pre?.(request);
+    }
+    for (const hook of middleware) {
+      await hook.post?.({ ...request, response: new Response('{}') });
+    }
     const logs = debug.mock.calls.flat().join('\n');
     expect(logs).toContain('>>> Body: {"name":"test"}');
     expect(logs).toContain(
