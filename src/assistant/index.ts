@@ -128,7 +128,9 @@ export class Assistant {
   /**
    * Creates an instance of the `Assistant` class.
    *
-   * @param options - The {@link AssistantOptions} for targeting the assistant.
+   * @param options - The {@link AssistantOptions} for targeting the assistant. Its
+   * `additionalHeaders` are merged over the client's, winning on an exact key match, and the
+   * result is sent with every request this assistant makes.
    * @param config - The Pinecone configuration object containing an API key and other configuration parameters
    * needed for API calls.
    *

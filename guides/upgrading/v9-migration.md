@@ -101,12 +101,16 @@ In v8.x that entry was accepted and then discarded: each generated operation re-
 SDK's own version as a per-call header, and per-call headers won. Requests went out on the
 SDK's version with no error and no warning. In v9, `additionalHeaders` is applied last, so
 an entry keyed exactly `X-Pinecone-Api-Version` replaces the SDK's value on every request
-that client makes, control plane and data plane alike, including clients handed back by
-`pc.index(...)` and `pc.Index(...)`.
+that client makes, control plane and data plane alike, including the clients handed back by
+`pc.index(...)`, `pc.Index(...)`, `pc.assistant(...)`, and `pc.Assistant(...)`. Headers
+passed to one of those, through `pc.index({ additionalHeaders })` or the legacy third
+argument, are merged over the client's and win on an exact key match.
 
 Matching is case-sensitive, so `x-pinecone-api-version` is sent alongside the SDK's header
-rather than replacing it. The same last-write-wins rule now applies to every header the SDK
-sets, including `Api-Key` and `User-Agent`.
+rather than replacing it. `Api-Key`, `User-Agent`, and the Admin client's `Authorization`
+follow the same last-write-wins rule. `Content-Type` does not: the request body is already
+encoded by the time `additionalHeaders` are applied, so overriding it would only mislabel
+the body.
 
 Two limits are worth knowing before you pin. The SDK does not validate the value — the API
 decides which versions it still serves and rejects the rest. And v9's request and response

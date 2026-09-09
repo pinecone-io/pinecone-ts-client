@@ -29,7 +29,8 @@ export type PineconeConfiguration = {
    * `X-Pinecone-Api-Version` pins every request this client makes — control plane and data
    * plane — to that API version. Matching is case-sensitive: `x-pinecone-api-version` is
    * sent alongside the SDK's header rather than replacing it. The same rule applies to
-   * `Api-Key` and `User-Agent`.
+   * `Api-Key` and `User-Agent`. `Content-Type` is the exception, since the request body is
+   * already encoded by the time these headers are applied.
    *
    * Request and response models are generated from the 2026-07 schemas, so scope a pinned
    * client to the calls that need the older version rather than using it as a general

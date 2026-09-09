@@ -6,28 +6,33 @@ import {
 import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
 import { assertRequestPathIsAddressable } from './requestPath';
 
+const toHeaderRecord = (existing: RequestInit['headers']): HTTPHeaders => {
+  if (!existing) {
+    return {};
+  }
+  if (Array.isArray(existing)) {
+    return Object.fromEntries(existing);
+  }
+  if (typeof Headers !== 'undefined' && existing instanceof Headers) {
+    const record: HTTPHeaders = {};
+    existing.forEach((value, name) => {
+      record[name] = value;
+    });
+    return record;
+  }
+  return { ...(existing as HTTPHeaders) };
+};
+
 const mergeHeaders = (
   existing: RequestInit['headers'],
   additionalHeaders: HTTPHeaders,
-): RequestInit['headers'] => {
-  const hasHeadersClass = typeof Headers !== 'undefined';
-  if (
-    (hasHeadersClass && existing instanceof Headers) ||
-    Array.isArray(existing)
-  ) {
-    if (hasHeadersClass) {
-      const merged = new Headers(existing);
-      for (const [name, value] of Object.entries(additionalHeaders)) {
-        merged.set(name, value);
-      }
-      return merged;
-    }
-    return [
-      ...(existing as [string, string][]),
-      ...Object.entries(additionalHeaders),
-    ];
+): HTTPHeaders => {
+  const base = toHeaderRecord(existing);
+  const merged = { ...base, ...additionalHeaders };
+  if (base['Content-Type'] !== undefined) {
+    merged['Content-Type'] = base['Content-Type'];
   }
-  return { ...(existing as HTTPHeaders | undefined), ...additionalHeaders };
+  return merged;
 };
 
 const additionalHeadersMiddleware = (
@@ -50,7 +55,9 @@ const additionalHeadersMiddleware = (
  *
  * @param additionalHeaders - Headers configured on the client, applied after a generated
  * operation's own headers. Matching is case-sensitive, so an entry keyed exactly
- * `X-Pinecone-Api-Version` takes precedence over the SDK's pinned version.
+ * `X-Pinecone-Api-Version` takes precedence over the SDK's pinned version. `Content-Type`
+ * is the one exception: the body is already encoded by the time these are applied, so the
+ * operation's own value stands.
  * @returns Array of middleware objects
  */
 export const createMiddlewareArray = (
