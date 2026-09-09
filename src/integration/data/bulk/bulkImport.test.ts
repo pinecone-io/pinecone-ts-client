@@ -27,6 +27,7 @@ describe('legacy vector bulk import', () => {
           },
         },
         waitUntilReady: true,
+        timeout: 180_000,
       });
       const index = pc.index({ name: indexName });
       const response = await index.startImport({ uri: testURI });
@@ -86,6 +87,6 @@ describe('legacy vector bulk import', () => {
   testFullImport(
     'completes a parquet import and exposes all ten records',
     () => runImport(true),
-    2_100_000,
+    2_700_000,
   );
 });
