@@ -197,6 +197,60 @@ jobs:
           CI: true
         run: npm run test:smoke:mocked
 
+  compatibility-package:
+    name: Build compatibility package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+      - name: Setup runtime
+        uses: ./.github/actions/setup-runtime
+      - name: Install build dependencies
+        run: npm ci
+      # prepack runs the production build. Every consumer below tests this
+      # same tarball, without rebuilding it under the consumer's runtime.
+      - name: Pack SDK
+        run: |
+          mkdir -p "$RUNNER_TEMP/compatibility-package"
+          npm pack --pack-destination "$RUNNER_TEMP/compatibility-package"
+      - name: Upload packed SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-package
+          path: ${{ runner.temp }}/compatibility-package/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+
+  package-consumers:
+    name: Package consumers (Node ${{ matrix.node_version }})
+    needs: [compatibility-package]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [22.x, 24.x]
+    steps:
+      - name: Checkout consumer fixtures
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+      # No repository dependencies or compiler in the runtime jobs. The
+      # consumer installer uses npm bundled with the selected Node release.
+      - name: Setup consumer runtime
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Download packed SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: compatibility-package
+          path: ${{ runner.temp }}/compatibility-package
+      - name: Run CommonJS and ESM consumers (no API key)
+        run: node scripts/test-package.mjs "$RUNNER_TEMP"/compatibility-package/*.tgz
+
   edge-runtime-entry:
     name: Edge runtime entry check
     runs-on: ubuntu-latest
