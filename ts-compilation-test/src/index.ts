@@ -91,39 +91,39 @@ export async function compileOnlySurfaceCoverage(): Promise<void> {
   const wrongResponse: Promise<string> = p.describeIndex('index');
   void wrongResponse;
   void methods;
-}
 
-export async function compileOnlyDocumentSurfaceCoverage(): Promise<void> {
-  const index = p.index('compilation-test');
-  const scoped = index.namespace('ns-1');
+  const docIndex = p.index('compilation-test');
+  const scoped = docIndex.namespace('ns-1');
 
   // Preserve flat argument and return types alongside the documents accessor.
   const documentMethods: {
-    upsertDocuments: (typeof index)['documents']['upsert'];
-    searchDocuments: (typeof index)['documents']['search'];
-    fetchDocuments: (typeof index)['documents']['fetch'];
-    updateDocuments: (typeof index)['documents']['update'];
-    listDocuments: (typeof index)['documents']['list'];
-    deleteDocuments: (typeof index)['documents']['delete'];
-  } = index;
+    upsertDocuments: (typeof docIndex)['documents']['upsert'];
+    searchDocuments: (typeof docIndex)['documents']['search'];
+    fetchDocuments: (typeof docIndex)['documents']['fetch'];
+    updateDocuments: (typeof docIndex)['documents']['update'];
+    listDocuments: (typeof docIndex)['documents']['list'];
+    deleteDocuments: (typeof docIndex)['documents']['delete'];
+  } = docIndex;
 
   const documents = [{ _id: 'doc-1', chunk_text: 'Hello world' }];
   await scoped.documents.upsert({ documents });
   await scoped.upsertDocuments({ documents });
-  await index.documents.list();
-  await index.listDocuments();
+  await docIndex.documents.list();
+  await docIndex.listDocuments();
 
-  const results = await scoped.documents.search({
+  const searchResults = await scoped.documents.search({
     scoreBy: [{ type: 'text', fields: ['chunk_text'], query: 'hello' }],
     topK: 5,
   });
-  const matchCount: number = results.matches.length;
+  const matchCount: number = searchResults.matches.length;
   console.log(`Matches: ${matchCount}`);
 
   // @ts-expect-error the accessor still requires the documents payload
-  await index.documents.upsert();
+  await docIndex.documents.upsert();
   // @ts-expect-error the accessor preserves typed response models
-  const wrongResponse: Promise<string> = index.documents.fetch({ ids: ['a'] });
-  void wrongResponse;
+  const wrongDocumentResponse: Promise<string> = docIndex.documents.fetch({
+    ids: ['a'],
+  });
+  void wrongDocumentResponse;
   void documentMethods;
 }
