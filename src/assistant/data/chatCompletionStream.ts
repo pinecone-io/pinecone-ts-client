@@ -4,6 +4,7 @@ import {
 } from '../../pinecone-generated-ts-fetch/assistant_data';
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, ChatStream } from '../../utils';
+import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 import { AsstDataOperationsProvider } from './asstDataOperationsProvider';
 import type {
   ChatCompletionOptions,
@@ -29,7 +30,10 @@ export const chatCompletionStream = (
     validateChatOptions(options);
 
     const hostUrl = await apiProvider.provideHostUrl();
-    const chatUrl = `${hostUrl}/chat/${assistantName}/chat/completions`;
+    const chatUrl = `${hostUrl}/chat/${encodeURIComponent(
+      assistantName,
+    )}/chat/completions`;
+    assertRequestPathIsAddressable(chatUrl);
 
     const requestHeaders = {
       'Api-Key': config.apiKey,

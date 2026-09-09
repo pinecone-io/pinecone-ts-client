@@ -3,13 +3,15 @@ import {
   ResponseError,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
+import { assertRequestPathIsAddressable } from './requestPath';
 
 /**
- * Creates the middleware array with debug and error handling.
+ * Creates the middleware array with path safety, debug, and error handling.
  *
  * Middleware execution order:
- * 1. Debug middleware (if enabled) - logs requests/responses
- * 2. Error handling middleware - converts ResponseError to proper Pinecone error types
+ * 1. Path safety - rejects a request that would resolve to a different route
+ * 2. Debug middleware (if enabled) - logs requests/responses
+ * 3. Error handling middleware - converts ResponseError to proper Pinecone error types
  *
  * @returns Array of middleware objects
  */
@@ -97,6 +99,11 @@ export const createMiddlewareArray = (): Middleware[] => {
   }
 
   return [
+    {
+      pre: async (context) => {
+        assertRequestPathIsAddressable(context.url);
+      },
+    },
     ...debugMiddleware,
     // Error handling middleware - converts ResponseErrors to proper Pinecone error types
     {
