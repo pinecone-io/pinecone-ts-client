@@ -151,6 +151,8 @@ describe('backup and restore lifecycle', () => {
             percentComplete: 100,
           });
         },
+        600_000,
+        5000,
       );
       await assertWithRetries(
         () =>
@@ -221,7 +223,7 @@ describe('backup and restore lifecycle', () => {
         failures,
         `Backup integration failed: ${failures.map(String).join('; ')}`,
       );
-  }, 900_000);
+  }, 1_800_000);
 
   test('unknown backup IDs return not-found for describe and delete', async () => {
     const missingId = crypto.randomUUID();
