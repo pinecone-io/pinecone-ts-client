@@ -10,7 +10,12 @@ module.exports = {
     '^.+\\.ts?$': 'ts-jest',
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  testPathIgnorePatterns: ['src/integration', 'src/smoke', 'dist/'],
+  testPathIgnorePatterns: [
+    'src/integration',
+    'src/smoke',
+    'dist/',
+    '/__tests__/fixtures/',
+  ],
   testTimeout: 250000,
   verbose: true,
   detectOpenHandles: true,

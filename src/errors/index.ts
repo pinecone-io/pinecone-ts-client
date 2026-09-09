@@ -33,3 +33,5 @@ export {
 } from './batch';
 export { extractMessage } from './utils';
 export { handleApiError } from './handling';
+
+export { PineconeIndexPropertyError } from './indexProperty';

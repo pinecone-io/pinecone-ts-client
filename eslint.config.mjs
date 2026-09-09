@@ -62,4 +62,27 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['src/control/indexes/legacyAccessors.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '**/data',
+                '**/data/**',
+                '**/errors',
+                '**/errors/**',
+                '**/pinecone-generated-ts-fetch/**',
+              ],
+              message:
+                'Legacy derivation stays pure; import response types from listIndexes instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

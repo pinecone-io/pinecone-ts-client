@@ -200,6 +200,10 @@ describe('mocked critical path (no API key)', () => {
       fetchApi: mockFetch,
     });
     const result = await pc.indexes.describe(INDEX_NAME);
+    expect(result.dimension).toBe(3);
+    expect(result.metric).toBe('cosine');
+    expect(result.vectorType).toBe('dense');
+    expect(result.spec.serverless?.readCapacity).toBe(result.readCapacity);
     expect(result).toMatchObject({
       name: INDEX_NAME,
       host: DATA_HOST,

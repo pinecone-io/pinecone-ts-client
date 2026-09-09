@@ -1,4 +1,4 @@
-import type { IndexModel } from '../listIndexes';
+import type { IndexModelData as IndexModel } from '../listIndexes';
 import { describeIndex } from '../describeIndex';
 import {
   ManageIndexesApi,

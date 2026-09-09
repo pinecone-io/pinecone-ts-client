@@ -42,6 +42,7 @@ export type {
 export type {
   IndexList,
   IndexModel,
+  IndexModelData,
   IndexModelStatus,
   IndexSchema,
   IndexSchemaField,
@@ -66,3 +67,29 @@ export type {
   PatchIndexSchema,
   PatchSemanticTextField,
 } from './configureIndex';
+
+export type {
+  IndexModelSpec,
+  ModelIndexEmbed,
+  ServerlessSpecResponse,
+  ByocSpecResponse,
+  PodSpec,
+  LegacyIndexProperties,
+  LegacyIndexSpec,
+  LegacyIndexEmbed,
+  LegacyServerlessSpec,
+  LegacyByocSpec,
+  LegacyPodSpec,
+  Derived,
+  DeriveFailure,
+  DeriveFailureReason,
+  IndexShape,
+} from './legacyAccessors';
+export {
+  classifyIndexShape,
+  deriveDimension,
+  deriveMetric,
+  deriveVectorType,
+  deriveSpec,
+  deriveEmbed,
+} from './legacyAccessors';
