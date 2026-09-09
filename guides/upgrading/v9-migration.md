@@ -84,3 +84,32 @@ example ``You must pass a non-empty `documents` array to upsertDocuments.``
 | `index.updateDocuments(options)` | `index.documents.update(options)` |
 | `index.listDocuments(options?)`  | `index.documents.list(options?)`  |
 | `index.deleteDocuments(options)` | `index.documents.delete(options)` |
+
+## `additionalHeaders` can now pin the API version
+
+Every request this SDK sends carries `X-Pinecone-Api-Version: 2026-07`. To talk to an
+older version of the API, pass the header through `additionalHeaders`:
+
+```typescript
+const pc = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY!,
+  additionalHeaders: { 'X-Pinecone-Api-Version': '2026-01' },
+});
+```
+
+In v8.x that entry was accepted and then discarded: each generated operation re-sent the
+SDK's own version as a per-call header, and per-call headers won. Requests went out on the
+SDK's version with no error and no warning. In v9, `additionalHeaders` is applied last, so
+an entry keyed exactly `X-Pinecone-Api-Version` replaces the SDK's value on every request
+that client makes, control plane and data plane alike, including clients handed back by
+`pc.index(...)` and `pc.Index(...)`.
+
+Matching is case-sensitive, so `x-pinecone-api-version` is sent alongside the SDK's header
+rather than replacing it. The same last-write-wins rule now applies to every header the SDK
+sets, including `Api-Key` and `User-Agent`.
+
+Two limits are worth knowing before you pin. The SDK does not validate the value — the API
+decides which versions it still serves and rejects the rest. And v9's request and response
+models are generated from the 2026-07 schemas, so a pinned client can send and receive
+shapes those models do not describe. Keep a pinned client scoped to the calls that need the
+older version rather than using it as a general downgrade.

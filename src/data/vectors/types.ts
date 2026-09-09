@@ -24,6 +24,24 @@ export type PineconeConfiguration = {
 
   /**
    * Optional headers to be included in all requests.
+   *
+   * These are applied after the headers the SDK sets, so an entry keyed exactly
+   * `X-Pinecone-Api-Version` pins every request this client makes — control plane and data
+   * plane — to that API version. Matching is case-sensitive: `x-pinecone-api-version` is
+   * sent alongside the SDK's header rather than replacing it. The same rule applies to
+   * `Api-Key` and `User-Agent`.
+   *
+   * Request and response models are generated from the 2026-07 schemas, so scope a pinned
+   * client to the calls that need the older version rather than using it as a general
+   * downgrade.
+   *
+   * @example
+   * ```typescript
+   * const pc = new Pinecone({
+   *   apiKey: 'your-api-key',
+   *   additionalHeaders: { 'X-Pinecone-Api-Version': '2026-01' },
+   * });
+   * ```
    */
   additionalHeaders?: HTTPHeaders;
 

@@ -28,6 +28,10 @@ export interface IndexOptions {
 
   /**
    * Optional additional HTTP headers to include with each request to the index.
+   *
+   * Applied after the headers the SDK sets, so an entry keyed exactly
+   * `X-Pinecone-Api-Version` pins these requests to that API version. Matching is
+   * case-sensitive.
    */
   additionalHeaders?: HTTPHeaders;
 }
@@ -49,6 +53,10 @@ export interface AssistantOptions {
 
   /**
    * Optional additional HTTP headers to include with each request to the assistant.
+   *
+   * Applied after the headers the SDK sets, so an entry keyed exactly
+   * `X-Pinecone-Api-Version` pins these requests to that API version. Matching is
+   * case-sensitive.
    */
   additionalHeaders?: HTTPHeaders;
 }
