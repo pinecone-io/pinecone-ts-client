@@ -280,6 +280,7 @@ describe('backup and restore lifecycle', () => {
     1_800_000,
   );
 
+  // @integration-skip #117: requires explicit long run for 15-minute backup eligibility and restore completion.
   const testFullRestore =
     process.env.PINECONE_LONG_RUNNING_INTEGRATION === '1' ? test : test.skip;
   testFullRestore(

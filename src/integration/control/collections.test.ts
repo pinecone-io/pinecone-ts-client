@@ -6,6 +6,7 @@ import { assertWithRetries, randomName, retryDelete } from '../test-helpers';
 // this suite snapshots it without writing records or deleting the source index.
 // Track fixture provisioning in #21.
 const sourceName = process.env.PINECONE_COLLECTION_SOURCE_INDEX;
+// @integration-skip #21: requires a dedicated stable pod source because 2026-07 cannot create pod deployments.
 const describeWithPodFixture = sourceName ? describe : describe.skip;
 describeWithPodFixture(
   'pod collection lifecycle (PINECONE_COLLECTION_SOURCE_INDEX)',
