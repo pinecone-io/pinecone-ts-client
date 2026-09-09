@@ -84,3 +84,33 @@ describe('upsertRecords', () => {
     }
   });
 });
+
+describe('upsertRecords path safety', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test.each(['.', '..'])(
+    'a namespace of %p is refused before the request goes out',
+    async (namespace) => {
+      const { cmd, mockFetch } = setupCmd({});
+      await expect(
+        cmd.run({ records: [{ id: '1', chunk_text: 'test' }], namespace }),
+      ).rejects.toThrow(PineconeArgumentError);
+      expect(mockFetch).not.toHaveBeenCalled();
+    },
+  );
+
+  test.each([
+    ['ns-1', 'ns-1'],
+    ['a/b', 'a%2Fb'],
+    ['a.b', 'a.b'],
+    ['%2e%2e', '%252e%252e'],
+  ])('a namespace of %p reaches %p', async (namespace, encoded) => {
+    const { cmd, mockFetch } = setupCmd({});
+    await cmd.run({ records: [{ id: '1', chunk_text: 'test' }], namespace });
+    expect(new URL(mockFetch.mock.calls[0][0]).pathname).toBe(
+      `/records/namespaces/${encoded}/upsert`,
+    );
+  });
+});

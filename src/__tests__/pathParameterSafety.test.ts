@@ -14,6 +14,8 @@ import { NamespaceOperationsProvider } from '../data/namespaces/namespacesOperat
 import { OAUTH_TOKEN_URL } from '../admin/tokenProvider';
 import { PineconeArgumentError } from '../errors';
 import type { FetchAPI } from '../pinecone-generated-ts-fetch/db_control';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const HOST = 'https://mocked.test.pinecone.io';
 
@@ -175,4 +177,46 @@ test('assistant_evaluation carries the same guard', async () => {
       ),
     ),
   ).rejects.toThrow(PineconeArgumentError);
+});
+
+/**
+ * A hand-built path never reaches the middleware, so the guard has to be
+ * called explicitly. `upsertRecords` shipped without it once; this keeps the
+ * next one from doing the same.
+ */
+test('every hand-built request path calls the guard', () => {
+  const sources: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (
+          [
+            '__tests__',
+            'integration',
+            'smoke',
+            'pinecone-generated-ts-fetch',
+          ].includes(entry.name)
+        ) {
+          continue;
+        }
+        walk(full);
+      } else if (entry.name.endsWith('.ts')) {
+        sources.push(full);
+      }
+    }
+  };
+  walk(path.join(__dirname, '..'));
+
+  const hostTemplate = /\$\{[A-Za-z_]*[Hh]ost[A-Za-z]*\}\//;
+  const handBuilt = sources.filter((file) =>
+    hostTemplate.test(fs.readFileSync(file, 'utf8')),
+  );
+  const unguarded = handBuilt.filter(
+    (file) =>
+      !fs.readFileSync(file, 'utf8').includes('assertRequestPathIsAddressable'),
+  );
+
+  expect(handBuilt.length).toBeGreaterThan(0);
+  expect(unguarded).toEqual([]);
 });

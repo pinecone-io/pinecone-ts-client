@@ -6,6 +6,7 @@ import {
 } from './types';
 import { handleApiError, PineconeArgumentError } from '../../errors';
 import { buildUserAgent, getFetch } from '../../utils';
+import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 import {
   ResponseError,
   X_PINECONE_API_VERSION,
@@ -57,7 +58,10 @@ export class UpsertRecordsCommand<T extends RecordMetadata = RecordMetadata> {
 
     const namespace = options.namespace ?? this.namespace;
     const hostUrl = await this.apiProvider.provideHostUrl();
-    const upsertRecordsUrl = `${hostUrl}/records/namespaces/${namespace}/upsert`;
+    const upsertRecordsUrl = `${hostUrl}/records/namespaces/${encodeURIComponent(
+      namespace,
+    )}/upsert`;
+    assertRequestPathIsAddressable(upsertRecordsUrl);
 
     const requestHeaders = {
       'Api-Key': this.config.apiKey,
