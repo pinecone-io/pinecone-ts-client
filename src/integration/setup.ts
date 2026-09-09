@@ -14,6 +14,7 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { createLegacyVectorIndex } from './legacyVectorFixtures';
 
 /**
  * Integration Test Setup Script
@@ -40,6 +41,10 @@ export const setup = async () => {
 
   const indexes: string[] = [];
   const assistants: string[] = [];
+  const legacyVectors = {
+    dense: { name: randomName('integration-legacy-dense') },
+    sparse: { name: randomName('integration-legacy-sparse') },
+  };
   let testFilePath: string | undefined;
   try {
     // Create serverless index
@@ -124,6 +129,14 @@ export const setup = async () => {
       recordIds,
     );
 
+    // Keep both legacy planes available to every matrix job. Register names
+    // before creating so an accepted request followed by a timeout is cleaned.
+    for (const kind of ['dense', 'sparse'] as const) {
+      const name = legacyVectors[kind].name;
+      indexes.push(name);
+      await createLegacyVectorIndex(pc, name, kind);
+    }
+
     // Create assistant
     const assistantName = `test-assistant-${Date.now()}`;
     console.error(`🤖 Creating assistant: ${assistantName}`);
@@ -157,6 +170,7 @@ export const setup = async () => {
 
     // Build fixtures object
     const fixtures = {
+      legacyVectors,
       serverlessIndex: {
         name: indexName,
         dimension: 2,
@@ -186,7 +200,7 @@ export const setup = async () => {
   } catch (error) {
     // Publish names even on failure so CI can retry cleanup if this attempt fails.
     console.log(
-      `FIXTURES_JSON=${JSON.stringify({ serverlessIndex: { name: indexes[0] }, assistant: { name: assistants[0] } })}`,
+      `FIXTURES_JSON=${JSON.stringify({ cleanupIndexes: indexes, serverlessIndex: { name: indexes[0] }, assistant: { name: assistants[0] } })}`,
     );
     try {
       await cleanupResources(pc, indexes, assistants);
