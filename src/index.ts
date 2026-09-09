@@ -1,6 +1,6 @@
 // Class, function exports
 export { Pinecone } from './pinecone';
-export { Index } from './data';
+export { Index, Documents } from './data';
 export { Indexes } from './control/indexes';
 export { Collections } from './control/collections';
 export { Backups } from './control/backups';
