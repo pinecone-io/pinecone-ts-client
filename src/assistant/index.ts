@@ -23,6 +23,7 @@ import { AsstDataOperationsProvider } from './data/asstDataOperationsProvider';
 import { context } from './data/context';
 import { AssistantOptions } from '../types';
 import { PineconeArgumentError } from '../errors';
+import { mergeAdditionalHeaders } from '../utils/additionalHeaders';
 
 // Export input option types
 export type {
@@ -140,12 +141,18 @@ export class Assistant {
       );
     }
 
-    this.config = config;
+    this.config = {
+      ...config,
+      additionalHeaders: mergeAdditionalHeaders(
+        config.additionalHeaders,
+        options.additionalHeaders,
+      ),
+    };
     const asstDataOperationsProvider = new AsstDataOperationsProvider(
       this.config,
       options.name,
       options.host,
-      options.additionalHeaders,
+      this.config.additionalHeaders,
     );
     this.assistantName = options.name;
 
