@@ -6,8 +6,10 @@ storage prefix; the import URI must name that parent prefix. Keep the existing
 legacy Parquet fixture unchanged.
 
 The target must be a document index with `embedding` as a `dense_vector` field
-(dimension 2, metric `cosine`) and `text` as a `string` field. Each JSONL line is
-one document with `_id` plus its fields. The files contain no customer data.
+(dimension 2, metric `cosine`) and `text` declared as
+`{ type: 'string', fullTextSearch: {} }`. The `fullTextSearch` object is required
+when declaring a string field in the create schema. Each JSONL line is one
+document with `_id` plus its fields. The files contain no customer data.
 
 ## Contract evidence
 
