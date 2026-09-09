@@ -279,6 +279,13 @@ export type {
   UpdateDocumentRecord,
 } from './data';
 export type {
+  BatchUpsertDocumentsOptions,
+  BatchUpsertDocumentsResponse,
+  BatchUpsertDocumentsError,
+  BatchUpsertDisposition,
+  BatchUpsertErrorMode,
+} from './data/documents/batchUpsertDocuments';
+export type {
   ConfigureIndexRequest,
   CreateCollectionRequest,
   CreateIndexForModelRequest,
