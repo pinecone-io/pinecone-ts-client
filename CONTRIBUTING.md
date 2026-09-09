@@ -136,3 +136,8 @@ build. Generated models remain in the reference, but warnings whose source is
 under `src/pinecone-generated-ts-fetch/`
 are excluded by `assets/docs-validation.mjs`. Warnings without an identified
 generated source still fail, including handwritten links to generated types.
+
+## Releasing
+
+See [the release checklist](./RELEASING.md) for private preparation, companion
+application validation, and publishing documentation from the public release tag.

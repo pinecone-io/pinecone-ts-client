@@ -1,5 +1,6 @@
 import { copyFileSync } from 'fs';
 import { join } from 'path';
+import { PageEvent, RendererEvent } from 'typedoc';
 import { scopeDocumentationWarnings } from './docs-validation.mjs';
 
 /**
@@ -12,19 +13,19 @@ import { scopeDocumentationWarnings } from './docs-validation.mjs';
 
 export const load = (app) => {
   scopeDocumentationWarnings(app.logger);
-  // See PageEvent: https://github.com/TypeStrong/typedoc/blob/f2d2abe054feca91b89c00c33e1d726bbda85dcb/src/lib/output/events.ts#L134
-  app.renderer.on('endPage', onPageRendered.bind(this));
-  // See RendererEvent: https://github.com/TypeStrong/typedoc/blob/f2d2abe054feca91b89c00c33e1d726bbda85dcb/src/lib/output/events.ts#L47
-  // TypeDoc 0.27+ changed from 'endRender' to 'end'
-  app.renderer.on('end', onRenderFinished.bind(this));
+  app.renderer.on(PageEvent.END, onPageRendered);
+  app.renderer.on(RendererEvent.END, onRenderFinished);
 };
 
 function onPageRendered(page) {
-  // after the page is rendered we want to insert a favicon into head
+  // after the page is rendered we want to insert a favicon into head. The favicon
+  // lives at the root of the output, so the href has to be relative to the page's
+  // own depth -- typedoc has already worked that out and emitted it as `data-base`.
   if (page && page.contents) {
+    const base = page.contents.match(/data-base="([^"]*)"/)?.[1] ?? './';
     page.contents = page.contents.replace(
       '</head>',
-      '<link rel="icon" href="./favicon-32x32.png"/></head>',
+      `<link rel="icon" href="${base}favicon-32x32.png"/></head>`,
     );
   }
 }

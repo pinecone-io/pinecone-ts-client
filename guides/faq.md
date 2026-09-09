@@ -207,7 +207,7 @@ async function batchUpsert(records: PineconeRecord[], batchSize: number = 100) {
 }
 ```
 
-For very large datasets (millions of vectors), consider using the [bulk import](../data-operations/bulk-import.md) feature.
+For very large datasets (millions of vectors), consider using the [bulk import](./data-operations/bulk-import.md) feature.
 
 ## Why are my queries slow?
 
