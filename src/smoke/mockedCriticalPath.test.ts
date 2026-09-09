@@ -1,26 +1,7 @@
 /**
- * Mocked critical-path smoke test — connect → upsert → query.
- *
- * This is the *mocked* half of the smoke-test gate. Unlike the keyed suites
- * under `src/integration/` (which hit a real Pinecone backend and require
- * `PINECONE_API_KEY`), this scenario runs the same connect → upsert → query
- * flow against a mocked HTTP transport. It therefore runs on **every** pull
- * request in CI, with no API key, and guards the three most critical use cases
- * against a regression in the request/response plumbing:
- *
- *   1. connect — construct a client and resolve an index host via describe
- *   2. upsert  — write vectors to the data plane
- *   3. query   — read them back by vector similarity
- *
- * We inject the mock at the transport layer via `PineconeConfiguration.fetchApi`
- * (the TS analogue of Python's respx). Everything above `fetch` — config
- * resolution, host caching, request building, response deserialization — is the
- * real code path, so this catches wiring regressions that an API-object-level
- * mock would paper over. Because JS is uniformly promise-based there is no
- * separate sync/async split as in the Python SDK; one async flow covers it.
- *
- * The real (keyed) counterpart lives in `src/integration/` and runs in the
- * Testing workflow with `PINECONE_API_KEY` supplied.
+ * Keyless smoke gate: real clients, providers, serialization, and host caching
+ * over a mocked HTTP transport. Cover both vectors and documents APIs, plus
+ * namespace management. Unrouted requests fail instead of reaching a backend.
  */
 
 import { Pinecone } from '../index';
@@ -37,18 +18,44 @@ const DATA_PLANE = `https://${DATA_HOST}`;
 // A valid describe-index (IndexModel) response body for INDEX_NAME.
 const describeIndexBody = {
   name: INDEX_NAME,
-  dimension: 3,
-  metric: 'cosine',
   host: DATA_HOST,
-  spec: { serverless: { cloud: 'gcp', region: 'us-east1' } },
+  deployment: { deployment_type: 'managed', cloud: 'gcp', region: 'us-east1' },
+  schema: {
+    fields: {
+      _values: { type: 'dense_vector', dimension: 3, metric: 'cosine' },
+      _sparse_values: { type: 'sparse_vector' },
+    },
+  },
+  deletion_protection: 'disabled',
+  read_capacity: { mode: 'OnDemand', status: { state: 'Ready' } },
   status: { ready: true, state: 'Ready' },
-  vector_type: 'dense',
 };
 
-type RouteHit = { url: string; method: string };
+const DOCUMENT_INDEX = 'mocked-documents';
+const DOCUMENT_HOST = 'mocked-documents.svc.test.pinecone.io';
+const DOCUMENT_PLANE = `https://${DOCUMENT_HOST}`;
+const NAMESPACE = 'smoke-documents';
+const documentIndexBody = {
+  ...describeIndexBody,
+  name: DOCUMENT_INDEX,
+  host: DOCUMENT_HOST,
+  schema: {
+    fields: {
+      embedding: { type: 'dense_vector', dimension: 3, metric: 'cosine' },
+      title: { type: 'string', full_text_search: { language: 'english' } },
+    },
+  },
+};
+
+type RouteHit = {
+  url: string;
+  method: string;
+  headers: Headers;
+  body?: unknown;
+};
 
 /**
- * Build a fetch mock that routes describe → upsert → query by URL + method and
+ * Build a fetch mock that routes control and both data APIs by URL + method and
  * records which legs were exercised. Any unrouted request fails loudly so a
  * plumbing change that hits an unexpected endpoint can't pass silently.
  */
@@ -58,7 +65,13 @@ const buildFetchMock = () => {
     async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const url = typeof input === 'string' ? input : input.toString();
       const method = (init?.method || 'GET').toUpperCase();
-      hits.push({ url, method });
+      hits.push({
+        url,
+        method,
+        headers: new Headers(init?.headers),
+        body:
+          typeof init?.body === 'string' ? JSON.parse(init.body) : undefined,
+      });
 
       const json = (body: object) =>
         new Response(JSON.stringify(body), {
@@ -72,6 +85,31 @@ const buildFetchMock = () => {
         url === `${CONTROL_PLANE}/indexes/${INDEX_NAME}`
       ) {
         return json(describeIndexBody);
+      }
+      if (
+        method === 'GET' &&
+        url === `${CONTROL_PLANE}/indexes/${DOCUMENT_INDEX}`
+      ) {
+        return json(documentIndexBody);
+      }
+      if (
+        method === 'POST' &&
+        url === `${DOCUMENT_PLANE}/namespaces/${NAMESPACE}/documents/upsert`
+      ) {
+        return json({ upserted_count: 1 });
+      }
+      if (
+        method === 'POST' &&
+        url === `${DOCUMENT_PLANE}/namespaces/${NAMESPACE}/documents/search`
+      ) {
+        return json({
+          matches: [{ _id: 'doc-1', _score: 0.98, title: 'Hello' }],
+          namespace: NAMESPACE,
+          usage: { read_units: 2 },
+        });
+      }
+      if (method === 'GET' && url === `${DOCUMENT_PLANE}/namespaces`) {
+        return json({ namespaces: [{ name: NAMESPACE, record_count: '1' }] });
       }
       // 2. upsert: POST https://{host}/vectors/upsert
       if (method === 'POST' && url === `${DATA_PLANE}/vectors/upsert`) {
@@ -99,6 +137,19 @@ const buildFetchMock = () => {
 
 const countHits = (hits: RouteHit[], method: string, url: string) =>
   hits.filter((h) => h.method === method && h.url === url).length;
+
+const expectVersionHeaders = (hits: RouteHit[]) => {
+  const controlHits = hits.filter((hit) => hit.url.startsWith(CONTROL_PLANE));
+  const dataHits = hits.filter(
+    (hit) =>
+      hit.url.startsWith(DATA_PLANE) || hit.url.startsWith(DOCUMENT_PLANE),
+  );
+  expect(controlHits.length).toBeGreaterThan(0);
+  expect(dataHits.length).toBeGreaterThan(0);
+  for (const hit of [...controlHits, ...dataHits]) {
+    expect(hit.headers.get('X-Pinecone-Api-Version')).toBe('2026-07');
+  }
+};
 
 describe('mocked critical path (no API key)', () => {
   // The data-plane host is cached in a process-global singleton keyed by
@@ -138,6 +189,92 @@ describe('mocked critical path (no API key)', () => {
     ).toBe(1);
     expect(countHits(hits, 'POST', `${DATA_PLANE}/vectors/upsert`)).toBe(1);
     expect(countHits(hits, 'POST', `${DATA_PLANE}/query`)).toBe(1);
+    expectVersionHeaders(hits);
+  });
+
+  test('2026-07 index fields survive HTTP deserialization', async () => {
+    const { mockFetch } = buildFetchMock();
+    const pc = new Pinecone({
+      apiKey: 'mocked-key',
+      controllerHostUrl: CONTROL_PLANE,
+      fetchApi: mockFetch,
+    });
+    const result = await pc.indexes.describe(INDEX_NAME);
+    expect(result).toMatchObject({
+      name: INDEX_NAME,
+      host: DATA_HOST,
+      deployment: {
+        deploymentType: 'managed',
+        cloud: 'gcp',
+        region: 'us-east1',
+      },
+      schema: describeIndexBody.schema,
+      deletionProtection: 'disabled',
+      readCapacity: { mode: 'OnDemand', status: { state: 'Ready' } },
+      status: { ready: true, state: 'Ready' },
+    });
+  });
+
+  test('connect → documents upsert/search → list namespaces uses the real wire contract', async () => {
+    const { mockFetch, hits } = buildFetchMock();
+    const pc = new Pinecone({
+      apiKey: 'mocked-key',
+      controllerHostUrl: CONTROL_PLANE,
+      fetchApi: mockFetch,
+    });
+    const index = pc.index({ name: DOCUMENT_INDEX });
+    const scoped = index.namespace(NAMESPACE);
+    const documents = [
+      { _id: 'doc-1', embedding: [0.1, 0.2, 0.3], title: 'Hello' },
+    ];
+    expect(await scoped.upsertDocuments({ documents })).toEqual({
+      upsertedCount: 1,
+    });
+    expect(
+      await scoped.searchDocuments({
+        scoreBy: [
+          {
+            type: 'dense_vector',
+            fields: ['embedding'],
+            values: [0.1, 0.2, 0.3],
+          },
+        ],
+        topK: 1,
+        includeFields: ['title'],
+      }),
+    ).toEqual({
+      matches: [{ _id: 'doc-1', _score: 0.98, title: 'Hello' }],
+      namespace: NAMESPACE,
+      usage: { readUnits: 2 },
+    });
+    expect(await index.listNamespaces()).toMatchObject({
+      namespaces: [{ name: NAMESPACE, recordCount: '1' }],
+    });
+    expect(hits.map(({ method, url }) => ({ method, url }))).toEqual([
+      { method: 'GET', url: `${CONTROL_PLANE}/indexes/${DOCUMENT_INDEX}` },
+      {
+        method: 'POST',
+        url: `${DOCUMENT_PLANE}/namespaces/${NAMESPACE}/documents/upsert`,
+      },
+      {
+        method: 'POST',
+        url: `${DOCUMENT_PLANE}/namespaces/${NAMESPACE}/documents/search`,
+      },
+      { method: 'GET', url: `${DOCUMENT_PLANE}/namespaces` },
+    ]);
+    expect(hits[1].body).toEqual({ documents });
+    expect(hits[2].body).toEqual({
+      score_by: [
+        {
+          type: 'dense_vector',
+          fields: ['embedding'],
+          values: [0.1, 0.2, 0.3],
+        },
+      ],
+      top_k: 1,
+      include_fields: ['title'],
+    });
+    expectVersionHeaders(hits);
   });
 
   test('resolving the same index twice issues only one describe call (host cache)', async () => {
