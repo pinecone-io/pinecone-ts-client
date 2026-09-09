@@ -60,19 +60,16 @@ git submodule update --init
 If you need to regenerate the TypeScript types from the OpenAPI spec (e.g. after a spec update), run:
 
 ```bash
-npm run generate:openapi
+npm run generate:openapi -- 2026-07
 ```
 
 This checks out `codegen/apis` at the commit pinned by this repository, rebuilds the generated
-code under `src/pinecone-generated-ts-fetch/`, then runs `build` and `format` automatically. To
-check out the `apis` repo's latest `main` instead of the pinned commit, run the script directly
-with `--update-pin` as its second argument, then run `build` and `format` yourself, since this
-path bypasses `npm run generate:openapi`:
+code under `src/pinecone-generated-ts-fetch/`, then runs `build` and `format` automatically. The spec version is required;
+replace `2026-07` with the version to generate. To check out the `apis` repo's latest
+`main` instead of the pinned commit, add `--update-pin` after the version:
 
 ```bash
-./codegen/build-oas.sh 2026-07 --update-pin
-npm run build
-npm run format
+npm run generate:openapi -- 2026-07 --update-pin
 ```
 
 `--update-pin` only changes what's checked out in your working tree. To keep the new `apis`

@@ -1,4 +1,5 @@
-import { scripts } from '../../package.json';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import {
   UpdateDocumentsRequestToJSON,
   VectorToJSON,
@@ -16,10 +17,6 @@ import { X_PINECONE_API_VERSION as adminVersion } from '../pinecone-generated-ts
 // Regeneration must keep each module's request header aligned with the spec
 // selected by the generation command, including Assistant and inference.
 describe('generated API versions', () => {
-  const specVersion = scripts['generate:openapi'].match(
-    /build-oas\.sh (\d{4}-\d{2})/,
-  )?.[1];
-
   test.each([
     ['db_control', controlVersion],
     ['db_data', dataVersion],
@@ -28,7 +25,11 @@ describe('generated API versions', () => {
     ['assistant_data', assistantDataVersion],
     ['assistant_evaluation', assistantEvaluationVersion],
     ['admin', adminVersion],
-  ])('%s sends the generated spec version', (_module, headerVersion) => {
+  ])('%s sends the generated spec version', (module, headerVersion) => {
+    const specVersion = readFileSync(
+      join(__dirname, '../pinecone-generated-ts-fetch', module, 'runtime.ts'),
+      'utf8',
+    ).match(/The version of the OpenAPI document: (\d{4}-\d{2})/)?.[1];
     expect(specVersion).toBeDefined();
     expect(headerVersion).toBe(specVersion);
   });
