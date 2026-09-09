@@ -9,6 +9,7 @@ exports[`public package contract pins the runtime barrel exports 1`] = `
   "Backups",
   "ChatStream",
   "Collections",
+  "Documents",
   "Errors",
   "Index",
   "Indexes",
