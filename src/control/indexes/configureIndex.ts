@@ -48,6 +48,18 @@ export async function configureIndex(
       'You must pass a non-empty string for `name` in order to configure an index.',
     );
   }
+  const fields: Array<keyof ConfigureIndexOptions> = [
+    'deployment',
+    'schema',
+    'readCapacity',
+    'tags',
+    'deletionProtection',
+  ];
+  if (!options || !fields.some((field) => options[field] !== undefined)) {
+    throw new PineconeArgumentError(
+      'You must pass at least one configuration option to configureIndex.',
+    );
+  }
   try {
     return await api.configureIndex({
       indexName: name,
