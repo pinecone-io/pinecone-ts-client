@@ -14,5 +14,7 @@
     "Pinecone Docs": "https://docs.pinecone.io"
   },
   "treatWarningsAsErrors": true,
-  "validation": true
+  "validation": true,
+  "plugin": ["./assets/docs-theme.mjs", "typedoc-plugin-redirect"],
+  "extends": ["./assets/docs-redirects.json"]
 }

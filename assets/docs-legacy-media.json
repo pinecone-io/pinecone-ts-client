@@ -1,0 +1,20 @@
+{
+  "media/async-patterns.md": "guides/typescript-features/async-patterns.md",
+  "media/backups.md": "guides/index-management/backups.md",
+  "media/bulk-import.md": "guides/data-operations/bulk-import.md",
+  "media/chat.md": "guides/assistant/chat.md",
+  "media/collections.md": "guides/index-management/collections.md",
+  "media/error-handling.md": "guides/typescript-features/error-handling.md",
+  "media/faq.md": "guides/faq.md",
+  "media/file-management.md": "guides/assistant/file-management.md",
+  "media/getting-started.md": "guides/assistant/getting-started.md",
+  "media/inference-api.md": "guides/inference/inference-api.md",
+  "media/integrated-inference.md": "guides/inference/integrated-inference.md",
+  "media/metadata-filtering.md": "guides/data-operations/metadata-filtering.md",
+  "media/namespaces.md": "guides/data-operations/namespaces.md",
+  "media/pod-indexes.md": "guides/index-management/pod-indexes.md",
+  "media/serverless-indexes.md": "guides/index-management/serverless-indexes.md",
+  "media/shared-operations.md": "guides/index-management/shared-operations.md",
+  "media/type-safety.md": "guides/typescript-features/type-safety.md",
+  "media/working-with-vectors.md": "guides/data-operations/working-with-vectors.md"
+}

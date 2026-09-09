@@ -267,6 +267,8 @@ Detailed information on specific ways of using the SDK are covered in these guid
 
 - [FAQ](./guides/faq.md) - Frequently asked questions and troubleshooting
 
+<a id="issues-bugs"></a>
+
 # Issues and Bugs
 
 If you notice bugs or have feedback, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues).
