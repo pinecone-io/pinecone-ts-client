@@ -1,3 +1,4 @@
+import { PineconeBadRequestError } from '../../../errors';
 import {
   Pinecone,
   Index,
@@ -9,6 +10,10 @@ import {
   randomName,
   retryDeletes,
 } from '../../test-helpers';
+
+const denseScoreBy: DocumentScoringMethod[] = [
+  { type: 'dense_vector', fields: ['dense'], values: [1, 0] },
+];
 
 const modes: {
   name: string;
@@ -46,8 +51,23 @@ const modes: {
   },
   {
     name: 'dense vector',
-    scoreBy: [{ type: 'dense_vector', fields: ['dense'], values: [1, 0] }],
+    scoreBy: denseScoreBy,
     ids: ['apple', 'car', 'pear'],
+  },
+  {
+    name: 'text plus query string',
+    scoreBy: [
+      { type: 'text', fields: ['text'], query: 'apple' },
+      { type: 'query_string', query: 'title:orchard' },
+    ],
+    ids: ['apple', 'pear'],
+  },
+  {
+    name: 'text across multiple fields',
+    scoreBy: [
+      { type: 'text', fields: ['text', 'title'], query: 'apple orchard' },
+    ],
+    ids: ['apple', 'pear'],
   },
 ];
 
@@ -114,10 +134,82 @@ describe('document search scoring modes', () => {
         },
       );
     }
-  }, 1_200_000);
+  }, 1_500_000);
 
   afterAll(async () => {
     await retryDeletes(pc, name);
+  });
+
+  test('upserts documents and reports the accepted document count', async () => {
+    const target = pc.index({ name, namespace: 'upsert-count' });
+    const response = await target.upsertDocuments({ documents });
+    expect(response.upsertedCount).toBe(documents.length);
+    await assertWithRetries(
+      () => target.fetchDocuments({ ids: documents.map(({ _id }) => _id) }),
+      (result) => {
+        expect(Object.keys(result.documents).sort()).toEqual(
+          documents.map(({ _id }) => _id).sort(),
+        );
+      },
+    );
+  });
+
+  test.each([
+    { includeFields: undefined },
+    { includeFields: [] },
+    { includeFields: ['*'] },
+    { includeFields: ['group'] },
+  ])(
+    'fetch projection follows the fetch contract: %j',
+    async ({ includeFields }) => {
+      const result = await index.fetchDocuments({
+        ids: ['apple'],
+        includeFields,
+      });
+      const document = result.documents.apple;
+      if (includeFields?.[0] === 'group') {
+        expect(document).toEqual({ _id: 'apple', group: 'fruit' });
+      } else {
+        // Fetch defaults to every field; search defaults to no projected fields.
+        expect(document).toEqual(documents[0]);
+      }
+    },
+  );
+
+  test('fetches projected documents by metadata on a multi-field schema', async () => {
+    await assertWithRetries(
+      () =>
+        index.fetchDocuments({
+          filter: { group: { $eq: 'fruit' } },
+          includeFields: ['group'],
+        }),
+      (result) => {
+        expect(result.namespace).toBe(namespace);
+        expect(Object.keys(result.documents).sort()).toEqual(['apple', 'pear']);
+        for (const document of Object.values(result.documents) as Array<
+          Record<string, unknown>
+        >) {
+          expect(Object.keys(document).sort()).toEqual(['_id', 'group']);
+          expect(document.group).toBe('fruit');
+        }
+      },
+    );
+    const empty = await index.fetchDocuments({
+      filter: { group: { $eq: 'missing' } },
+    });
+    expect(empty.documents).toEqual({});
+  });
+
+  test('rejects combining vector and text clauses according to the 2026-07 contract', async () => {
+    await expect(
+      index.searchDocuments({
+        scoreBy: [
+          ...denseScoreBy,
+          { type: 'text', fields: ['text'], query: 'apple' },
+        ],
+        topK: 3,
+      }),
+    ).rejects.toBeInstanceOf(PineconeBadRequestError);
   });
 
   test.each(modes)(
@@ -148,7 +240,7 @@ describe('document search scoring modes', () => {
     { includeFields: ['group'] },
   ])('projects only requested fields: %j', async ({ includeFields }) => {
     const result = await index.searchDocuments({
-      scoreBy: modes[4].scoreBy,
+      scoreBy: denseScoreBy,
       topK: 1,
       includeFields,
     });
@@ -165,7 +257,7 @@ describe('document search scoring modes', () => {
     await assertWithRetries(
       () =>
         index.searchDocuments({
-          scoreBy: modes[4].scoreBy,
+          scoreBy: denseScoreBy,
           topK: 3,
           filter: { group: { $eq: 'fruit' } },
         }),
@@ -174,7 +266,7 @@ describe('document search scoring modes', () => {
       },
     );
     const empty = await index.searchDocuments({
-      scoreBy: modes[4].scoreBy,
+      scoreBy: denseScoreBy,
       topK: 3,
       filter: { group: { $eq: 'missing' } },
     });
@@ -184,7 +276,7 @@ describe('document search scoring modes', () => {
   test('isolates an empty namespace from the populated namespace', async () => {
     const result = await pc
       .index({ name, namespace: 'empty' })
-      .searchDocuments({ scoreBy: modes[4].scoreBy, topK: 3 });
+      .searchDocuments({ scoreBy: denseScoreBy, topK: 3 });
     expect(result.namespace).toBe('empty');
     expect(result.matches).toEqual([]);
   });
