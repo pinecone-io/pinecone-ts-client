@@ -5,6 +5,8 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_dat
 import { PineconeArgumentError } from '../../errors';
 
 /**
+ * Query settings shared by searches using a vector or an existing record ID.
+ *
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
  */
 export type QueryShared = {
@@ -12,16 +14,12 @@ export type QueryShared = {
   topK: number;
 
   /**
-   * This boolean value specifies whether embedding values are returned with query results.
-   *
-   * By default, values are not returned to reduce the size of the request payload.
+   * Include embedding values in each match. Omit or use `false` to keep the response smaller.
    */
   includeValues?: boolean;
 
   /**
-   * This boolean value specifies whether metadata values are returned with query results.
-   *
-   * By default, metadata values are not returned to reduce the size of the request payload.
+   * Include metadata in each match. Omit or use `false` to keep the response smaller.
    */
   includeMetadata?: boolean;
 
@@ -38,30 +36,21 @@ export type QueryShared = {
   namespace?: string;
 
   /**
-   * An optimization parameter for IVF dense indexes in dedicated read node (DRN) indexes. It adjusts
-   * how much of the index is scanned to find vector candidates. Range: `0.5` – `4` (default).
-   *
-   * Keep the default (`4.0`) for the best search results. If query latency is too high, try lowering
-   * this value incrementally (minimum `0.5`) to speed up the search at the cost of slightly lower
-   * accuracy. This parameter is only supported for dedicated (DRN) dense indexes.
+   * Search effort for dedicated dense indexes, from `0.5` to `4`.
+   * Lower values trade recall for lower latency; omit to use the service default.
    */
   scanFactor?: number;
 
   /**
-   * An optimization parameter that controls the maximum number of candidate dense vectors to rerank.
-   * Reranking computes exact distances to improve recall but increases query latency.
-   * Range: `topK` – `100000`.
-   *
-   * Keep the default for a balance of recall and latency. Increase this value if recall is too low,
-   * or decrease it to reduce latency at the cost of accuracy. This parameter is only supported for
-   * dedicated (DRN) dense indexes.
+   * Maximum candidates to rerank for dedicated dense indexes, from `topK` to `100000`.
+   * Increase to favor recall or decrease to favor latency; omit for the service default.
    */
   maxCandidates?: number;
 };
 
 /**
  * Include an `id` in your query configuration along with properties defined in
- * { @link QueryShared } if you want to use vector values from a record in the
+ * {@link QueryShared} if you want to use vector values from a record in the
  * index as your query.
  *
  * @see [Querying data](https://docs.pinecone.io/docs/query-data)
@@ -76,7 +65,7 @@ export type QueryByRecordId = QueryShared & {
 
 /**
  * Include vector values in your query configuration along with properties defined
- * in { @link QueryShared }.
+ * in {@link QueryShared}.
  *
  * @see [Querying data](https://docs.pinecone.io/docs/query-data)
  */
@@ -113,7 +102,7 @@ export interface ScoredPineconeRecord<
 }
 
 /**
- * Response from { @link Index.query }
+ * Response from {@link Index.query}.
  *
  * @see [Query data](https://docs.pinecone.io/docs/query-data)
  */

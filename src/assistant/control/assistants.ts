@@ -14,13 +14,17 @@ import { AssistantHostSingleton } from '../assistantHostSingleton';
 import type { PineconeConfiguration } from '../../data';
 
 /**
- * Control-plane operations for assistants. Access via `pc.assistants`.
+ * Assistants manages assistants and evaluates generated answers.
  *
+ * Access it through `pc.assistants`; do not construct it directly.
+ * Use {@link Pinecone.assistant} to chat with one assistant and manage its files.
+ *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
- *
- * const assistants = await pc.assistants.list();
+ * const result = await pc.assistants.list();
+ * console.log(result.assistants);
  * ```
  */
 export class Assistants {
@@ -32,6 +36,7 @@ export class Assistants {
   private _listAssistants: ReturnType<typeof listAssistants>;
   private _evaluate: ReturnType<typeof evaluate>;
 
+  /** @internal */
   constructor(config: PineconeConfiguration) {
     this._config = config;
     const asstControlApi = asstControlOperationsBuilder(config);
@@ -46,30 +51,21 @@ export class Assistants {
   }
 
   /**
-   * Creates a new Assistant.
+   * Creates an assistant.
+   *
+   * Check its status with {@link Assistants.describe} before using it.
+   *
+   * @param options - Assistant name, such as `support-guide`, and optional instructions, metadata, and region.
+   * @returns Assistant details, including its status and host.
+   * @throws {@link Errors.PineconeArgumentError} if options are missing or the region is unsupported.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.assistants.create({name: 'test1'});
-   * // {
-   * //  name: 'test11',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Initializing',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:52:49.652Z,
-   * //  updatedAt: 2025-01-08T22:52:49.652Z
-   * // }
+   * const assistant = await pc.assistants.create({ name: 'support-guide' });
+   * console.log(assistant.status);
    * ```
-   *
-   * @param options - A {@link CreateAssistantOptions} object containing the `name` of the Assistant to be created.
-   * Optionally, users can also specify instructions, metadata, and host region. Region must be one of "us" or "eu"
-   * and determines where the Assistant will be hosted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
    */
   async create(options: CreateAssistantOptions) {
     const assistant = await this._createAssistant(options);
@@ -82,18 +78,18 @@ export class Assistants {
   }
 
   /**
-   * Deletes an Assistant by name.
+   * Deletes an assistant by name.
+   *
+   * @param assistantName - The name of the assistant to delete, such as `support-guide`.
+   * @returns Resolves when the deletion request completes.
+   * @throws {@link Errors.PineconeArgumentError} if `assistantName` is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.assistants.delete('test1');
+   * await pc.assistants.delete('support-guide');
    * ```
-   *
-   * @param assistantName - The name of the Assistant to be deleted.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    */
   async delete(assistantName: string) {
     await this._deleteAssistant(assistantName);
@@ -102,30 +98,21 @@ export class Assistants {
   }
 
   /**
-   * Retrieves information about an Assistant by name, including its current
-   * status (e.g. whether it is still initializing or ready to use).
+   * Gets assistant configuration and readiness status.
+   *
+   * @param assistantName - The name of the assistant, such as `support-guide`.
+   * @returns Assistant details, including its status and host.
+   * @throws {@link Errors.PineconeArgumentError} if `assistantName` is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const test = await pc.assistants.describe('test1');
-   * console.log(test);
-   * // {
-   * //  name: 'test1',
-   * //  instructions: undefined,
-   * //  metadata: undefined,
-   * //  status: 'Ready',
-   * //  host: 'https://prod-1-data.ke.pinecone.io',
-   * //  createdAt: 2025-01-08T22:24:50.525Z,
-   * //  updatedAt: 2025-01-08T22:24:52.303Z
-   * // }
+   * const assistant = await pc.assistants.describe('support-guide');
+   * console.log(assistant.status);
    * ```
    *
-   * @param assistantName - The name of the Assistant to retrieve.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link Assistant} model.
+   * @see {@link Assistants.list} to discover assistants.
    */
   async describe(assistantName: string) {
     const assistant = await this._describeAssistant(assistantName);
@@ -138,31 +125,19 @@ export class Assistants {
   }
 
   /**
-   * Retrieves a list of all Assistants for a given Pinecone API key.
+   * Lists assistants in the project.
+   *
+   * @returns Assistant details in `assistants`.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistants = await pc.assistants.list();
-   * console.log(assistants);
-   * // {
-   * //  assistants: [
-   * //    {
-   * //      name: 'test2',
-   * //      instructions: 'test-instructions',
-   * //      metadata: [Object],
-   * //      status: 'Ready',
-   * //      host: 'https://prod-1-data.ke.pinecone.io',
-   * //      createdAt: 2025-01-06T19:14:18.633Z,
-   * //      updatedAt: 2025-01-06T19:14:36.977Z
-   * //    },
-   * //  ]
-   * // }
+   * const result = await pc.assistants.list();
+   * console.log(result.assistants);
    * ```
    *
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an object containing an array of {@link Assistant} models.
+   * @see {@link Assistants.describe} for details of one assistant.
    */
   async list() {
     const assistantList = await this._listAssistants();
@@ -186,59 +161,47 @@ export class Assistants {
   }
 
   /**
-   * Updates an Assistant by name.
+   * Updates assistant instructions or metadata.
+   *
+   * Omitted fields are left unchanged; an empty instructions string is not applied.
+   *
+   * @param options - The assistant name and the instructions or metadata to update.
+   * @returns The updated assistant name, instructions, and metadata.
+   * @throws {@link Errors.PineconeArgumentError} if options or the assistant name are missing.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * await pc.assistants.update({ name: 'test1', instructions: 'some new instructions!'});
-   * // {
-   * //  assistantName: test1,
-   * //  instructions: 'some new instructions!',
-   * //  metadata: undefined
-   * // }
+   * const result = await pc.assistants.update({
+   *   name: 'support-guide',
+   *   instructions: 'Answer using the uploaded support policies and cite your sources.',
+   * });
+   * console.log(result.instructions);
    * ```
-   *
-   * @param options - An {@link UpdateAssistantOptions} object containing the name of the assistant to be updated and
-   * optional instructions and metadata.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link UpdateAssistantResponse} object.
    */
   update(options: UpdateAssistantOptions) {
     return this._updateAssistant(options);
   }
 
   /**
-   * Evaluates the alignment of a generated answer against a ground truth answer.
-   * Returns metrics for correctness (precision), completeness (recall), and alignment (harmonic mean).
+   * Evaluates a generated answer against a ground truth answer.
+   *
+   * @param options - The question, generated `answer`, and reference answer in `groundTruth`.
+   * @returns Correctness, completeness, and alignment metrics, with reasoning and usage.
+   * @throws {@link Errors.PineconeArgumentError} if options are missing or an answer or question is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
    * const result = await pc.assistants.evaluate({
-   *   question: "What is the capital of France?",
-   *   answer: "The capital of France is Paris.",
-   *   groundTruth: "Paris is the capital and most populous city of France."
+   *   question: 'Where can I start a return?',
+   *   answer: 'Start a return from your order history.',
+   *   groundTruth: 'Customers can start returns from their order history.',
    * });
-   * console.log(result);
-   * // {
-   * //   metrics: {
-   * //     correctness: 0.95,
-   * //     completeness: 0.90,
-   * //     alignment: 0.92
-   * //   },
-   * //   reasoning: { evaluatedFacts: [...] },
-   * //   usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 }
-   * // }
+   * console.log(result.metrics);
    * ```
-   *
-   * @param options - An {@link EvaluateOptions} object containing the question, answer, and groundTruth.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A Promise that resolves to an {@link AlignmentResponse} object containing metrics and reasoning.
    */
   evaluate(options: { question: string; answer: string; groundTruth: string }) {
     return this._evaluate(options);

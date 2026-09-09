@@ -3,11 +3,10 @@ import { BasePineconeError } from './base';
 const CONFIG_HELP = `You can find the configuration values for your project in the Pinecone developer console at https://app.pinecone.io.`;
 
 /**
- * This exception indicates there is a problem with the configuration values
- * you have provided to the client. The error message should contain additional
- * context about what you are missing.
+ * The client configuration is missing a required value or contains an invalid value.
+ * Read the error message for the setting to supply.
  *
- * @see {@link Pinecone} for information about initializing the client.
+ * @see {@link Pinecone} for client initialization.
  */
 export class PineconeConfigurationError extends BasePineconeError {
   constructor(message: string) {
@@ -17,11 +16,10 @@ export class PineconeConfigurationError extends BasePineconeError {
 }
 
 /**
- * This exception indicates an API call that returned a response that was
- * unable to be parsed or that did not include expected fields. It's not
- * expected to ever occur.
+ * Pinecone returned a response the SDK could not interpret.
  *
- * If you encounter this error, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues) so we can investigate.
+ * If this persists, [report the issue](https://github.com/pinecone-io/pinecone-ts-client/issues)
+ * with the operation and SDK version.
  */
 export class PineconeUnexpectedResponseError extends BasePineconeError {
   constructor(url: string, status: number, body: string, message?: string) {
@@ -35,21 +33,15 @@ export class PineconeUnexpectedResponseError extends BasePineconeError {
 }
 
 /**
- * This error occurs when the client tries to read environment variables in
- * an environment that does not have access to the Node.js global `process.env`.
+ * The runtime cannot read environment variables for client configuration.
+ * Pass an explicit configuration to {@link Pinecone}.
  *
- * If you are seeing this error, you will need to configure the client by passing
- * configuration values to the `Pinecone` constructor.
- *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  *
- * const pinecone = new Pinecone({
- *    apiKey: 'YOUR_API_KEY',
- * })
+ * const pc = new Pinecone({ apiKey: 'your-api-key' });
  * ```
- *
- * @see Instructions for configuring { @link Pinecone }
  */
 export class PineconeEnvironmentVarsNotSupportedError extends BasePineconeError {
   constructor(message: string) {
@@ -59,10 +51,9 @@ export class PineconeEnvironmentVarsNotSupportedError extends BasePineconeError 
 }
 
 /**
- * This error occurs when the client is unable to resolve the database host for a given
- * index. This is unexpected to occur unless there is a problem with the Pinecone service.
- *
- * If you encounter this error, please [file an issue](https://github.com/pinecone-io/pinecone-ts-client/issues) so we can investigate.
+ * The SDK could not determine an index host from its description.
+ * Check the index in the [Pinecone console](https://app.pinecone.io) and supply its
+ * host through {@link IndexOptions.host} if needed.
  */
 export class PineconeUnableToResolveHostError extends BasePineconeError {
   constructor(message: string) {

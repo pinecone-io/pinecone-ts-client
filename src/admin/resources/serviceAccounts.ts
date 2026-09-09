@@ -11,20 +11,18 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating a new service account (the body of `admin.serviceAccounts.create`). Aliased
- * from the generated `CreateServiceAccountRequest`. Omitting `roleBindings` creates the
+ * Options for {@link ServiceAccountsResource.create}. Omitting `roleBindings` creates the
  * service account with no role bindings; roles can be added later via {@link AdminClient.roleBindings}.
  */
 export type CreateServiceAccountOptions = CreateServiceAccountRequest;
 
 /**
- * Options for updating an existing service account (the body of `admin.serviceAccounts.update`).
- * Aliased from the generated `UpdateServiceAccountRequest`.
+ * Fields to update with {@link ServiceAccountsResource.update}; omitted fields remain unchanged.
  */
 export type UpdateServiceAccountOptions = UpdateServiceAccountRequest;
 
 /**
- * Options for listing service accounts (the pagination query of `admin.serviceAccounts.list`).
+ * Options for {@link ServiceAccountsResource.list}.
  */
 export type ListServiceAccountsOptions = Omit<
   ListServiceAccountsRequest,
@@ -32,8 +30,17 @@ export type ListServiceAccountsOptions = Omit<
 >;
 
 /**
- * Operations for managing service accounts within the organization. Accessed via
- * {@link AdminClient.serviceAccounts}.
+ * Service accounts authenticate applications that administer an organization.
+ * Access this resource through {@link AdminClient.serviceAccounts}; do not construct it directly.
+ * Use {@link AdminClient.apiKeys} for project API keys.
+ *
+ * @example
+ * ```typescript
+ * import { AdminClient } from '@pinecone-database/pinecone';
+ *
+ * const admin = new AdminClient();
+ * const result = await admin.serviceAccounts.list();
+ * ```
  */
 export class ServiceAccountsResource {
   private readonly _api: ServiceAccountsApi;
@@ -43,8 +50,20 @@ export class ServiceAccountsResource {
   }
 
   /**
-   * Create a new service account. The returned {@link ServiceAccountWithSecret} contains the OAuth
-   * client secret, which is returned only once and cannot be retrieved later.
+   * Creates a service account. Save the client secret; it cannot be retrieved later.
+   *
+   * @param options - The service account name and optional role bindings. Omit bindings to assign roles later.
+   * @returns The account details in `serviceAccount` and the secret in `clientSecret`.
+   * @throws {@link Errors.PineconeArgumentError} when the service account name is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.serviceAccounts.create({ name: 'catalog-sync' });
+   * console.log(result.serviceAccount);
+   * ```
    */
   async create(
     options: CreateServiceAccountOptions,
@@ -60,7 +79,22 @@ export class ServiceAccountsResource {
     });
   }
 
-  /** Get a service account's details by ID. */
+  /**
+   * Retrieves a service account by ID.
+   *
+   * @param serviceAccountId - The service account ID returned when it was created or listed.
+   * @returns The service account details.
+   * @throws {@link Errors.PineconeArgumentError} when `serviceAccountId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.serviceAccounts.describe('7e730a1d-8c0f-48f1-a9a3-1ac66fdd2ef4');
+   * console.log(result);
+   * ```
+   */
   async describe(serviceAccountId: string): Promise<ServiceAccount> {
     if (!serviceAccountId) {
       throw new PineconeArgumentError(
@@ -73,7 +107,21 @@ export class ServiceAccountsResource {
     });
   }
 
-  /** List all service accounts within the organization. */
+  /**
+   * Lists one page of service accounts in the organization.
+   *
+   * @param options - Page size and continuation token. Omit to fetch the first page with the default size.
+   * @returns Results in `data`; pass `pagination.next` as `paginationToken` to fetch the next page.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.serviceAccounts.list({ limit: 10 });
+   * console.log(result.data);
+   * ```
+   */
   async list(
     options: ListServiceAccountsOptions = {},
   ): Promise<ServiceAccountList> {
@@ -83,7 +131,25 @@ export class ServiceAccountsResource {
     });
   }
 
-  /** Update an existing service account by ID. */
+  /**
+   * Updates a service account. Omitted fields remain unchanged.
+   *
+   * @param serviceAccountId - The ID of the service account to update.
+   * @param options - Fields to change, such as `name`.
+   * @returns The updated service account details.
+   * @throws {@link Errors.PineconeArgumentError} when `serviceAccountId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.serviceAccounts.update('7e730a1d-8c0f-48f1-a9a3-1ac66fdd2ef4', {
+   *   name: 'catalog-sync-prod',
+   * });
+   * console.log(result);
+   * ```
+   */
   async update(
     serviceAccountId: string,
     options: UpdateServiceAccountOptions,
@@ -101,9 +167,22 @@ export class ServiceAccountsResource {
   }
 
   /**
-   * Rotate the OAuth client secret for a service account by ID. The returned
-   * {@link ServiceAccountWithSecret} contains the new secret, which is returned only once; the
-   * previous secret is invalidated.
+   * Replaces a service account client secret, invalidating the previous secret.
+   *
+   * Save the new secret; it cannot be retrieved later.
+   *
+   * @param serviceAccountId - The ID of the service account whose secret to replace.
+   * @returns The account details in `serviceAccount` and the new secret in `clientSecret`.
+   * @throws {@link Errors.PineconeArgumentError} when the service account ID is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.serviceAccounts.rotateSecret('7e730a1d-8c0f-48f1-a9a3-1ac66fdd2ef4');
+   * console.log(result.serviceAccount);
+   * ```
    */
   async rotateSecret(
     serviceAccountId: string,
@@ -119,7 +198,21 @@ export class ServiceAccountsResource {
     });
   }
 
-  /** Delete a service account by ID. */
+  /**
+   * Deletes a service account.
+   *
+   * @param serviceAccountId - The ID of the service account to delete.
+   * @returns Resolves when the deletion request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `serviceAccountId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * await admin.serviceAccounts.delete('7e730a1d-8c0f-48f1-a9a3-1ac66fdd2ef4');
+   * ```
+   */
   async delete(serviceAccountId: string): Promise<void> {
     if (!serviceAccountId) {
       throw new PineconeArgumentError(

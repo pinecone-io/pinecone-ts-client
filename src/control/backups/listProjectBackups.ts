@@ -8,7 +8,7 @@ import { handleApiError } from '../../errors/handling';
  *
  */
 export interface ListProjectBackupsOptions {
-  /** Maximum number of results to return per page (1–100, default: 10). */
+  /** Maximum number of results per page. Omit to use the service default. */
   limit?: number;
   /** Pagination token from a prior response to retrieve the next page. */
   paginationToken?: string;

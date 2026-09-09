@@ -9,15 +9,15 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating a new role binding (the body of `admin.roleBindings.create`). `principalType`
+ * Options for {@link RoleBindingsResource.create}. `principalType`
  * is one of `user`, `service_account`, `api_key`, or `invite`; `resourceType` is `organization` or `project`
  * (`resourceId` is required for `project` scope and omitted for `organization` scope).
  */
 export type CreateRoleBindingOptions = CreateRoleBindingRequest;
 
 /**
- * Options for listing role bindings (the filters and pagination query of `admin.roleBindings.list`).
- * All fields are optional filters; `principalType` is required alongside `principalId`, and
+ * Options for {@link RoleBindingsResource.list}.
+ * Filters and pagination settings are optional; `principalType` is required alongside `principalId`, and
  * `resourceType` alongside `resourceId`.
  */
 export type ListRoleBindingsOptions = Omit<
@@ -26,9 +26,17 @@ export type ListRoleBindingsOptions = Omit<
 >;
 
 /**
- * Operations for managing role bindings, which grant roles to principals (users, service accounts,
- * API keys, and invites) at an organization or project scope. Accessed via
- * {@link AdminClient.roleBindings}.
+ * Role bindings grant a user, service account, API key, or invite a role on an organization or project.
+ * Access this resource through {@link AdminClient.roleBindings}; do not construct it directly.
+ * Use {@link AdminClient.invites} to invite someone who is not yet a member.
+ *
+ * @example
+ * ```typescript
+ * import { AdminClient } from '@pinecone-database/pinecone';
+ *
+ * const admin = new AdminClient();
+ * const result = await admin.roleBindings.list();
+ * ```
  */
 export class RoleBindingsResource {
   private readonly _api: RoleBindingsApi;
@@ -37,7 +45,28 @@ export class RoleBindingsResource {
     this._api = api;
   }
 
-  /** Create a new role binding. */
+  /**
+   * Grants a role to a user, service account, API key, or invite.
+   *
+   * @param options - The principal, role, and resource scope. Supply `resourceId` for a project-scoped role.
+   * @returns The new role binding, including its `id`.
+   * @throws {@link Errors.PineconeArgumentError} when the principal ID, principal type, resource type, or role is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const binding = await admin.roleBindings.create({
+   *   principalType: 'service_account',
+   *   principalId: '7e730a1d-8c0f-48f1-a9a3-1ac66fdd2ef4',
+   *   resourceType: 'project',
+   *   resourceId: '8a3e2d1c-0b9f-4e6d-8c7b-5a4f3e2d1c0b',
+   *   role: 'ProjectViewer',
+   * });
+   * console.log(binding.id);
+   * ```
+   */
   async create(options: CreateRoleBindingOptions): Promise<RoleBinding> {
     if (!options || !options.principalId) {
       throw new PineconeArgumentError(
@@ -65,7 +94,22 @@ export class RoleBindingsResource {
     });
   }
 
-  /** Get a role binding's details by ID. */
+  /**
+   * Retrieves a role binding by ID.
+   *
+   * @param roleBindingId - The role binding ID returned when it was created or listed.
+   * @returns The role binding details.
+   * @throws {@link Errors.PineconeArgumentError} when `roleBindingId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.roleBindings.describe('17470909-6cb1-4db1-93ef-20ab82595683');
+   * console.log(result);
+   * ```
+   */
   async describe(roleBindingId: string): Promise<RoleBinding> {
     if (!roleBindingId) {
       throw new PineconeArgumentError(
@@ -78,7 +122,21 @@ export class RoleBindingsResource {
     });
   }
 
-  /** List role bindings, optionally filtered by principal, resource, or role. */
+  /**
+   * Lists one page of role bindings, optionally filtered by principal, resource, or role.
+   *
+   * @param options - Filters and pagination settings. Omit to fetch the first page without filters.
+   * @returns Results in `data`; pass `pagination.next` as `paginationToken` to fetch the next page.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.roleBindings.list({ limit: 10 });
+   * console.log(result.data);
+   * ```
+   */
   async list(options: ListRoleBindingsOptions = {}): Promise<RoleBindingList> {
     return await this._api.listRoleBindings({
       ...options,
@@ -86,7 +144,21 @@ export class RoleBindingsResource {
     });
   }
 
-  /** Delete a role binding by ID. */
+  /**
+   * Deletes a role binding, removing the role it grants.
+   *
+   * @param roleBindingId - The ID of the role binding to delete.
+   * @returns Resolves when the deletion request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `roleBindingId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * await admin.roleBindings.delete('17470909-6cb1-4db1-93ef-20ab82595683');
+   * ```
+   */
   async delete(roleBindingId: string): Promise<void> {
     if (!roleBindingId) {
       throw new PineconeArgumentError(

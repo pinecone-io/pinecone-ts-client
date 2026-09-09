@@ -37,7 +37,7 @@ export interface CreateIndexByocSpec {
   /** @deprecated Use top-level `readCapacity`. */
   readCapacity?: CreateIndexReadCapacity | ReadCapacity;
 }
-/** @deprecated New pod indexes cannot be created on the 2026-07 API. */
+/** @deprecated New pod indexes cannot be created. Use a managed or BYOC deployment. */
 export interface CreateIndexPodSpec {
   /** @deprecated Existing pod indexes can still be configured. */
   environment: string;
@@ -56,7 +56,7 @@ export interface LegacyCreateIndexSpec {
   serverless?: CreateIndexServerlessSpec;
   /** @deprecated Use a BYOC `deployment`. */
   byoc?: CreateIndexByocSpec;
-  /** @deprecated New pod indexes cannot be created on 2026-07. */
+  /** @deprecated New pod indexes cannot be created. Use a managed or BYOC deployment. */
   pod?: CreateIndexPodSpec;
 }
 /** @deprecated Use `deployment` when creating an index. */

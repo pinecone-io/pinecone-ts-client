@@ -74,8 +74,7 @@ export type AdminClientConfiguration = {
   };
 
   /**
-   * Optional configuration field for specifying the maximum number of retries after the initial
-   * request. Defaults to 3.
+   * Reserved retry setting. Admin requests currently do not use this value or retry automatically.
    */
   maxRetries?: number;
 };

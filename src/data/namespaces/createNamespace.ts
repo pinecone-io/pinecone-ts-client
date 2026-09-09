@@ -10,7 +10,10 @@ import { PineconeArgumentError } from '../../errors';
 export interface CreateNamespaceOptions {
   /** The name of the namespace to create. */
   name: string;
-  /** Schema for the behavior of Pinecone's internal metadata index. By default, all metadata is indexed; when `schema` is present, only fields which are present in the `fields` object with a `filterable: true` are indexed. Note that `filterable: false` is not currently supported. */
+  /**
+   * Metadata fields to make filterable, such as `{ fields: { category: { filterable: true } } }`.
+   * Omit to index all metadata fields; when supplied, only listed filterable fields are indexed.
+   */
   schema?: CreateNamespaceRequestSchema;
 }
 

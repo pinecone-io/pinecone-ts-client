@@ -7,12 +7,14 @@ import type {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * See [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
+ * Options for one page of record IDs from {@link Index.listPaginated}.
+ *
+ * @see [List record IDs](https://docs.pinecone.io/guides/data/list-record-ids)
  */
 export type ListOptions = {
   /** The id prefix to match. If unspecified, an empty string prefix will be used with the effect of listing all ids in a namespace. */
   prefix?: string;
-  /** The maximum number of ids to return. If unspecified, the server returns up to 100 ids at a time, in sorted order (bitwise "C" collation). */
+  /** Maximum IDs per page; omit for the service default. IDs are returned in sorted order. */
   limit?: number;
   /** A token needed to fetch the next page of results. This token is returned in the response if additional results are available. */
   paginationToken?: string;

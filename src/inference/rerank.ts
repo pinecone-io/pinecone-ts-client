@@ -7,6 +7,17 @@ import { PineconeArgumentError } from '../errors';
 
 /**
  * Options for reranking documents against a query.
+ *
+ * @example
+ * ```typescript
+ * import type { RerankOptions } from '@pinecone-database/pinecone';
+ * const options: RerankOptions = {
+ *   model: 'bge-reranker-v2-m3',
+ *   query: 'How do I return an order?',
+ *   documents: [{ body: 'Start a return from your order history.' }],
+ *   rankFields: ['body'],
+ * };
+ * ```
  */
 export interface RerankOptions {
   /**
@@ -20,7 +31,7 @@ export interface RerankOptions {
   query: string;
 
   /**
-   * The documents to rerank.
+   * Text strings or document objects. Objects need a `text` field unless you supply `rankFields`.
    */
   documents: Array<{ [key: string]: string } | string>;
 
@@ -30,7 +41,7 @@ export interface RerankOptions {
   topN?: number;
 
   /**
-   * Whether to return the documents in the response.
+   * Include document contents in each result. Defaults to `true`.
    */
   returnDocuments?: boolean;
 

@@ -6,6 +6,12 @@ import {
 
 /**
  * The options for listing models.
+ *
+ * @example
+ * ```typescript
+ * import type { ListModelsOptions } from '@pinecone-database/pinecone';
+ * const options: ListModelsOptions = { type: 'embed', vectorType: 'dense' };
+ * ```
  */
 export interface ListModelsOptions {
   /**

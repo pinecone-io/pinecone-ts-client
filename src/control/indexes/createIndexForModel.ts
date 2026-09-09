@@ -21,9 +21,8 @@ export interface CreateIndexForModelEmbed extends Omit<
   'metric' | 'fieldMap'
 > {
   /**
-   * The name of the embedding model to use, for example
-   * `multilingual-e5-large`. Call {@link Inference.listModels} to see the
-   * models available to your project.
+   * The embedding model to use. Call {@link Inference.listModels} to find a model
+   * suited to your document text and search queries.
    */
   model: string;
   /**
@@ -42,8 +41,7 @@ export interface CreateIndexForModelEmbed extends Omit<
 /**
  * Options for creating an index with an integrated embedding model.
  *
- * The server builds a `semantic_text` schema field from the `embed` parameters
- * given here, so text you upsert is embedded for you. For full control over
+ * The `embed` settings select the model and document field to embed for you. For full control over
  * schema composition — combining a dense or sparse vector field with full-text
  * search, for example — use {@link Indexes.create} directly.
  *

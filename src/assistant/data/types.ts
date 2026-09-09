@@ -7,33 +7,19 @@ import type {
 
 /**
  * Options for filtering files in the list operation.
+ *
+ * @example
+ * ```typescript
+ * import type { ListFilesOptions } from '@pinecone-database/pinecone';
+ * const options: ListFilesOptions = { filter: { category: { $eq: 'returns' } } };
+ * ```
  */
 export interface ListFilesOptions {
   /**
-   * Optionally filter files by metadata. Uses Pinecone's metadata filter language:
-   * fields are referenced at the top level (not wrapped in a `metadata` key), and
-   * may be combined with operators like `$eq`, `$ne`, `$gt`, `$lt`, `$in`.
+   * Filter by file metadata, such as `{ category: { $eq: 'returns' } }`.
+   * Reference metadata fields at the top level, without a `metadata` wrapper.
    *
-   * @example Direct value match:
-   * ```typescript
-   * const options = { filter: { version: 'v1' } };
-   * ```
-   *
-   * @example Operator filter:
-   * ```typescript
-   * const options = { filter: { version: { $eq: 'v1' } } };
-   * ```
-   *
-   * @example Combined fields:
-   * ```typescript
-   * const options = { filter: { version: 'v1', tier: { $in: ['gold', 'silver'] } } };
-   * ```
-   *
-   * @see {@link https://docs.pinecone.io/guides/data/filter-with-metadata Metadata filter language}
-   *
-   * Filters that don't match Pinecone's expected shape (e.g. wrapping fields
-   * in a top-level `metadata` key like `{ metadata: { version: 'v1' } }`) are
-   * silently ignored server-side and return the unfiltered file list.
+   * @see {@link https://docs.pinecone.io/guides/data/filter-with-metadata Metadata filters}
    */
   filter?: object;
 }
@@ -51,6 +37,12 @@ export interface AssistantFilesList {
 /**
  * Options for listing the async operations (such as file uploads and deletes)
  * performed on an assistant.
+ *
+ * @example
+ * ```typescript
+ * import type { ListOperationsOptions } from '@pinecone-database/pinecone';
+ * const options: ListOperationsOptions = { status: 'Processing' };
+ * ```
  */
 export interface ListOperationsOptions {
   /**
@@ -69,16 +61,16 @@ export interface ListOperationsOptions {
   limit?: number;
   /**
    * The token to paginate through the list of operations. Use the
-   * `paginationToken` returned in a previous response to fetch the next page.
+   * `pagination.next` returned in a previous response to fetch the next page.
    */
   paginationToken?: string;
 }
 
 /**
- * An enum constant representing the models that can be used for chatting with an assistant. The default is 'gpt-4o'.
+ * Convenience names for assistant chat models.
  *
  * This enum is provided for convenience but is not enforced. You can pass any string value
- * as the model parameter. New models may be added by without requiring an SDK update.
+ * as the model parameter. Use a supported model name even if it is not listed here.
  * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
  */
 export const ChatModelEnum = {
@@ -96,37 +88,57 @@ export const ChatModelEnum = {
 
 /**
  * This enum type is provided for convenience but is not enforced. You can pass any string value
- * as the model parameter. New models may be added by without requiring an SDK update.
+ * as the model parameter. Use a supported model name even if it is not listed here.
  * @see [Choose a model](https://docs.pinecone.io/guides/assistant/chat-with-assistant#choose-a-model)
  */
 export type ChatModelEnum = (typeof ChatModelEnum)[keyof typeof ChatModelEnum];
 
 /**
  * Describes the format of a message in an assistant chat. The `role` key can only be one of `user` or `assistant`.
+ *
+ * @example
+ * ```typescript
+ * import type { MessageModel } from '@pinecone-database/pinecone';
+ * const message: MessageModel = { role: 'user', content: 'How do I return an order?' };
+ * ```
  */
 export interface MessageModel {
   /** Author of the message: user or assistant. */
   role: string;
-  /** Text carried by this message or streamed chunk. */
+  /** The message text. */
   content: string;
 }
 
 /**
  * The messages to send to an assistant. Can be a list of strings or a list of {@link MessageModel} objects.
- * The `role` key can only be one of `user` or `assistant`.
+ * Strings are sent as user messages; use objects to include assistant replies in the conversation.
+ *
+ * @example
+ * ```typescript
+ * import type { MessagesModel } from '@pinecone-database/pinecone';
+ * const messages: MessagesModel = [
+ *   { role: 'user', content: 'How do I return an order?' },
+ * ];
+ * ```
  */
 export type MessagesModel = string[] | MessageModel[];
 
 /**
- * Controls the context snippets sent to the LLM.
+ * Controls the context snippets used to generate an answer.
+ *
+ * @example
+ * ```typescript
+ * import type { ChatContextOptions } from '@pinecone-database/pinecone';
+ * const options: ChatContextOptions = { multimodal: true, includeBinaryContent: true };
+ * ```
  */
 export interface ChatContextOptions {
   /**
-   * The maximum number of context snippets to use. Default is 16. Maximum is 64.
+   * The maximum number of context snippets to use; omit to use the service default.
    */
   topK?: number;
   /**
-   * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
+   * The maximum size of each context snippet, in tokens; omit to use the service default.
    */
   snippetSize?: number;
   /**
@@ -140,7 +152,13 @@ export interface ChatContextOptions {
 }
 
 /**
- * The list of queries / chats to chat an assistant
+ * Messages and response settings for {@link Assistant.chat} and {@link Assistant.chatStream}.
+ *
+ * @example
+ * ```typescript
+ * import type { ChatOptions } from '@pinecone-database/pinecone';
+ * const options: ChatOptions = { messages: ['How do I return an order?'] };
+ * ```
  */
 export interface ChatOptions {
   /**
@@ -153,30 +171,36 @@ export interface ChatOptions {
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls response variability where supported by the model. Lower values favor more consistent answers.
    */
   temperature?: number;
 
   /**
-   * Optionally filter which documents can be retrieved using the following metadata fields.
+   * Filter the files used for retrieval by metadata, such as `{ category: 'returns' }`.
    */
   filter?: object;
   /**
-   * If true, the assistant will be instructed to return a JSON response. Cannot be used with streaming.
+   * Request a JSON answer with {@link Assistant.chat}; unavailable for streaming.
    */
   jsonResponse?: boolean;
   /**
-   * If true, the assistant will be instructed to return highlights from the referenced documents that support its response.
+   * Request highlighted passages from the source files that support the answer.
    */
   includeHighlights?: boolean;
   /**
-   * Controls the context snippets sent to the LLM.
+   * Controls the context snippets used to generate an answer.
    */
   contextOptions?: ChatContextOptions;
 }
 
 /**
  * Request format for sending a chat completion request to an assistant.
+ *
+ * @example
+ * ```typescript
+ * import type { ChatCompletionOptions } from '@pinecone-database/pinecone';
+ * const options: ChatCompletionOptions = { messages: ['How do I return an order?'] };
+ * ```
  */
 export interface ChatCompletionOptions {
   /**
@@ -189,17 +213,23 @@ export interface ChatCompletionOptions {
    */
   model?: string;
   /**
-   * Controls the randomness of the model's output: lower values make responses more deterministic, while higher values increase creativity and variability. If the model does not support a temperature parameter, the parameter will be ignored.
+   * Controls response variability where supported by the model. Lower values favor more consistent answers.
    */
   temperature?: number;
   /**
-   * Optionally filter which documents can be retrieved using the following metadata fields.
+   * Filter the files used for retrieval by metadata, such as `{ category: 'returns' }`.
    */
   filter?: object;
 }
 
 /**
  * Parameters to retrieve context from an assistant.
+ *
+ * @example
+ * ```typescript
+ * import type { ContextOptions } from '@pinecone-database/pinecone';
+ * const options: ContextOptions = { query: 'How do I return an order?' };
+ * ```
  */
 export interface ContextOptions {
   /**
@@ -211,15 +241,15 @@ export interface ContextOptions {
    */
   messages?: MessagesModel;
   /**
-   * Optionally filter which documents can be retrieved using the following metadata fields.
+   * Filter the files used for retrieval by metadata, such as `{ category: 'returns' }`.
    */
   filter?: object;
   /**
-   * The maximum number of context snippets to return. Default is 16. Maximum is 64.
+   * The maximum number of context snippets to return; omit to use the service default.
    */
   topK?: number;
   /**
-   * The maximum context snippet size. Default is 2048 tokens. Minimum is 512 tokens. Maximum is 8192 tokens.
+   * The maximum size of each context snippet, in tokens; omit to use the service default.
    */
   snippetSize?: number;
   /**
@@ -238,8 +268,8 @@ export interface ContextOptions {
  * memory — for example, when forwarding an incoming HTTP upload directly to
  * the assistant without buffering on disk.
  *
- * `Buffer` and `Blob` work on any runtime, including Edge and Workers.
- * `ReadableStream` requires a Node.js runtime.
+ * `Blob` works in browser-compatible runtimes. `Buffer` requires Buffer support;
+ * Node.js readable streams require a Node.js runtime.
  *
  * Note: `ReadableStream` inputs are sent in a single attempt. Automatic
  * retries are not supported because the stream is consumed after the first
@@ -253,6 +283,15 @@ export type Uploadable = Buffer | Blob | NodeJS.ReadableStream;
  * Provide either `path` (a local file path) or `file` + `fileName` (an
  * in-memory buffer, blob, or readable stream). The two forms are mutually
  * exclusive.
+ *
+ * @example
+ * ```typescript
+ * import type { UploadFileOptions } from '@pinecone-database/pinecone';
+ * const options: UploadFileOptions = {
+ *   file: new Blob(['Start a return from your order history.']),
+ *   fileName: 'returns-policy.txt',
+ * };
+ * ```
  */
 export type UploadFileOptions = {
   /**
@@ -260,7 +299,7 @@ export type UploadFileOptions = {
    */
   metadata?: Record<string, string | number>;
   /**
-   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   * Enable image extraction when processing the file.
    */
   multimodal?: boolean;
 } & (
@@ -278,12 +317,11 @@ export type UploadFileOptions = {
   | {
       /**
        * The file data to upload. Accepts a `Buffer`, `Blob`, or Node.js
-       * `ReadableStream`. When passing a stream, `fileName` is required so
-       * the server receives a meaningful filename.
+       * `ReadableStream`. Provide `fileName` for all file inputs.
        */
       file: Uploadable;
       /**
-       * The filename to use in the multipart upload (e.g. `"report.pdf"`).
+       * The filename shown for the uploaded file, such as `returns-policy.pdf`.
        * Required when using `file`.
        */
       fileName: string;
@@ -303,6 +341,15 @@ export type UploadFileOptions = {
  * Unlike {@link UploadFileOptions} — which always creates a new file with a
  * server-generated ID — upsert is keyed on the ID you supply and does not
  * accept metadata.
+ *
+ * @example
+ * ```typescript
+ * import type { UpsertFileOptions } from '@pinecone-database/pinecone';
+ * const options: UpsertFileOptions = {
+ *   assistantFileId: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
+ *   path: 'returns-policy.pdf',
+ * };
+ * ```
  */
 export type UpsertFileOptions = {
   /**
@@ -312,7 +359,7 @@ export type UpsertFileOptions = {
    */
   assistantFileId: string;
   /**
-   * Whether to process the file as multimodal (enabling image extraction). Defaults to false.
+   * Enable image extraction when processing the file.
    */
   multimodal?: boolean;
 } & (
@@ -330,12 +377,11 @@ export type UpsertFileOptions = {
   | {
       /**
        * The file data to upload. Accepts a `Buffer`, `Blob`, or Node.js
-       * `ReadableStream`. When passing a stream, `fileName` is required so
-       * the server receives a meaningful filename.
+       * `ReadableStream`. Provide `fileName` for all file inputs.
        */
       file: Uploadable;
       /**
-       * The filename to use in the multipart upload (e.g. `"report.pdf"`).
+       * The filename shown for the uploaded file, such as `returns-policy.pdf`.
        * Required when using `file`.
        */
       fileName: string;
@@ -381,14 +427,14 @@ export type FinishReasonEnum =
 /**
  * A discriminated union representing a chunked response in a streamed chat.
  * This can be one of several chunk types: {@link MessageStartChunk}, {@link ContentChunk}, {@link CitationChunk}, or {@link MessageEndChunk}.
- * These represent the objects that will be streamed as a part of the assistant't response.
+ * These represent the objects that will be streamed as a part of the assistant's response.
  */
 export type StreamedChatResponse =
   MessageStartChunk | ContentChunk | CitationChunk | MessageEndChunk;
 
 /**
  * Describes the common properties of all the chunk types streamed in a chat response.
- * The different chunk types form a a discriminated union type {@link StreamedChatResponse}.
+ * The different chunk types form a discriminated union type {@link StreamedChatResponse}.
  */
 export interface BaseChunk {
   /**
@@ -413,10 +459,7 @@ export interface MessageStartChunk extends BaseChunk {
    * The type of the chunk indicating the beginning of the stream.
    */
   type: 'message_start';
-  /**
-   * The role of the message sender. Either `user` or `assistant`.
-   */
-  /** Author of the message: user or assistant. */
+  /** The role of the message sender. */
   role: string;
   /**
    * The number of context snippets used to generate the response.
