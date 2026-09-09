@@ -47,3 +47,35 @@ applies only when listing backups for an index.
 These delegates preserve the flat method names and identifier placement. Other
 v9 request and response schema changes still apply; for example, restoring
 `createIndex` does not translate the v8 `dimension` option to the v9 schema.
+
+## Document operations moved under `index.documents`
+
+The six document methods on `Index` are now grouped behind a `documents`
+accessor, matching the way the control plane groups index, collection, and
+backup operations, and the way the Python client exposes the same operations.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+
+const index = pc.index('my-schema-index').namespace('my-namespace');
+await index.documents.upsert({
+  documents: [{ _id: 'doc-1', chunk_text: 'Hello world' }],
+});
+```
+
+The accessor is scoped to the same namespace as the `Index` it hangs off, so
+`pc.index('my-index').namespace('ns-1').documents.upsert(...)` writes to `ns-1`.
+
+The flat names remain available as deprecated delegates with unchanged
+arguments, responses, and errors. Editors show their replacements; there is no
+scheduled removal in v9.x.
+
+| Flat method (deprecated)         | Accessor call                     |
+| -------------------------------- | --------------------------------- |
+| `index.upsertDocuments(options)` | `index.documents.upsert(options)` |
+| `index.searchDocuments(options)` | `index.documents.search(options)` |
+| `index.fetchDocuments(options)`  | `index.documents.fetch(options)`  |
+| `index.updateDocuments(options)` | `index.documents.update(options)` |
+| `index.listDocuments(options?)`  | `index.documents.list(options?)`  |
+| `index.deleteDocuments(options)` | `index.documents.delete(options)` |
