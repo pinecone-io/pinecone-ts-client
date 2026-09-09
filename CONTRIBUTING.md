@@ -80,7 +80,9 @@ commit, commit the updated `codegen/apis` pointer in this repository as its own 
 
 ## Documented examples
 
-Every fenced `typescript` block in `README.md` and `guides/**/*.md` is type-checked in CI:
+Every fenced `typescript` block in `README.md` and `guides/**/*.md`, plus fenced
+`typescript` blocks under TSDoc `@example` tags in handwritten `src/**/*.ts`, is
+type-checked in CI. Generated `src/pinecone-generated-ts-fetch*/` trees are excluded:
 
 ```bash
 npm run docs:examples
@@ -93,6 +95,12 @@ a ready-to-paste entry, keyed by the file and a hash of the block's own content 
 edit elsewhere in the file can't shift which block an entry points at. An entry whose example
 starts compiling, or whose hash no longer matches anything (the example was edited, moved, or
 excluded), fails the check, so the list only grows for real, tracked drift.
+
+Examples are checked as separate modules. Relative imports resolve from the documented file's
+directory. Free `pc`/`pinecone`, `index`, and `assistant` variables use their real SDK types,
+and a free `Pinecone` constructor uses the SDK export. Other free identifiers are reported
+and shimmed as `any`; provide explicit imports or declarations when their types matter.
+Markdown and TSDoc examples share the same content-hash baseline.
 
 ## Local testing
 
@@ -128,6 +136,6 @@ The `npm` command runs the bash file located in the `src/external-app` directory
 Run `npm run docs:build` to validate and render the API reference. Handwritten
 comments must have no warnings: missing documentation and broken links fail the
 build. Generated models remain in the reference, but warnings whose source is
-under `src/pinecone-generated-ts-fetch/` or `src/pinecone-generated-ts-fetch-alpha/`
+under `src/pinecone-generated-ts-fetch/`
 are excluded by `assets/docs-validation.mjs`. Warnings without an identified
 generated source still fail, including handwritten links to generated types.

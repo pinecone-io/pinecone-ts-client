@@ -6,12 +6,7 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: [
-      'dist',
-      'src/pinecone-generated-ts-fetch',
-      'src/pinecone-generated-ts-fetch-alpha',
-      'pinecone-rag-demo',
-    ],
+    ignores: ['dist', 'src/pinecone-generated-ts-fetch', 'pinecone-rag-demo'],
   },
   {
     files: ['**/*.ts'],
@@ -64,16 +59,6 @@ export default tseslint.config(
             },
           ],
         },
-      ],
-    },
-  },
-  {
-    files: ['src/preview/**/*.ts'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-function-return-type': [
-        'error',
-        { allowExpressions: true },
       ],
     },
   },

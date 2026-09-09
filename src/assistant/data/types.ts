@@ -16,17 +16,17 @@ export interface ListFilesOptions {
    *
    * @example Direct value match:
    * ```typescript
-   * filter: { version: 'v1' }
+   * const options = { filter: { version: 'v1' } };
    * ```
    *
    * @example Operator filter:
    * ```typescript
-   * filter: { version: { $eq: 'v1' } }
+   * const options = { filter: { version: { $eq: 'v1' } } };
    * ```
    *
    * @example Combined fields:
    * ```typescript
-   * filter: { version: 'v1', tier: { $in: ['gold', 'silver'] } }
+   * const options = { filter: { version: 'v1', tier: { $in: ['gold', 'silver'] } } };
    * ```
    *
    * @see {@link https://docs.pinecone.io/guides/data/filter-with-metadata Metadata filter language}

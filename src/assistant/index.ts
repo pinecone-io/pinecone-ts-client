@@ -413,7 +413,7 @@ export class Assistant {
    * } else {
    *     fileId = '';
    * }
-   * const resp = await assistant.describeFile({fileId: fileId})
+   * const resp = await assistant.describeFile(fileId)
    * console.log(resp);
    * // {
    * //  name: 'test-file.txt',

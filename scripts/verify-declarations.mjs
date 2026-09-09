@@ -2,6 +2,7 @@
 // declaration (including alpha runtimes), not only exports reachable from index.
 import { execFileSync } from 'node:child_process';
 import {
+  cpSync,
   mkdirSync,
   mkdtempSync,
   rmSync,
@@ -57,6 +58,9 @@ try {
 new Pinecone({ apiKey: 'test', fetchApi: fetch });
 `,
   );
+  cpSync(join(root, 'ts-compilation-test/src'), join(scratch, 'consumer'), {
+    recursive: true,
+  });
   for (const lib of [['es2022'], ['es2022', 'dom'], ['es2022', 'webworker']]) {
     writeFileSync(
       join(scratch, 'tsconfig.json'),
@@ -73,6 +77,7 @@ new Pinecone({ apiKey: 'test', fetchApi: fetch });
         },
         include: [
           'index.ts',
+          'consumer/**/*.ts',
           'node_modules/@pinecone-database/pinecone/**/*.d.ts',
         ],
       }),
