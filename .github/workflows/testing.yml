@@ -228,6 +228,9 @@ jobs:
             '~5.6.0',
             '~5.7.0',
             '~5.8.0',
+            '~5.9.0',
+            '~6.0.0',
+            '~7.0.0',
             'latest',
           ]
     steps:
@@ -268,10 +271,15 @@ jobs:
           cat package-lock.json
           npm run tsc-version
           npm run build
-          # `npm run build` is the actual TS-version compatibility check and
-          # needs no credentials. `npm run start` calls listIndexes() against
-          # the live API, so it is skipped when no key is available (e.g.
-          # Dependabot PRs, which cannot read Actions secrets).
+          # Two more consumer shapes: the TypeScript 6+ default of an empty
+          # `types` list (no automatic @types inclusion), and an ESM project
+          # under `module: nodenext` with `verbatimModuleSyntax`.
+          npm run typecheck:default-types
+          npm run typecheck:esm
+          # `npm run build` and the typechecks are the actual TS-version
+          # compatibility check and need no credentials. `npm run start` calls
+          # listIndexes() against the live API, so it is skipped when no key is
+          # available (e.g. Dependabot PRs, which cannot read Actions secrets).
           if [ -n "$PINECONE_API_KEY" ]; then
             npm run start
           else

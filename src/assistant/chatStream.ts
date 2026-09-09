@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import { convertKeysToCamelCase } from '../utils/convertKeys';
 
 /**
@@ -18,10 +17,10 @@ import { convertKeysToCamelCase } from '../utils/convertKeys';
  * ```
  */
 export class ChatStream<Item> implements AsyncIterable<Item> {
-  private stream: Readable;
+  private stream: AsyncIterable<Uint8Array | string>;
 
   /** @internal */
-  constructor(stream: Readable) {
+  constructor(stream: AsyncIterable<Uint8Array | string>) {
     this.stream = stream;
   }
 
@@ -40,8 +39,12 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
    */
   async *[Symbol.asyncIterator](): AsyncIterator<Item> {
     let buffer = '';
+    const decoder = new TextDecoder();
     for await (const chunk of this.stream) {
-      buffer += chunk.toString();
+      buffer +=
+        typeof chunk === 'string'
+          ? chunk
+          : decoder.decode(chunk, { stream: true });
       let newlineIndex;
       while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
         const line = buffer.slice(0, newlineIndex).trim();
@@ -61,6 +64,7 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
         }
       }
     }
+    buffer += decoder.decode();
     if (buffer.trim()) {
       try {
         const parsedJson = JSON.parse(buffer);

@@ -2,6 +2,8 @@
   "scripts": {
     "build": "tsc",
     "tsc-version": "tsc -v",
-    "start": "node lib/index.js"
+    "start": "node lib/index.js",
+    "typecheck:default-types": "tsc -p tsconfig.default-types.json",
+    "typecheck:esm": "tsc -p esm"
   }
 }
