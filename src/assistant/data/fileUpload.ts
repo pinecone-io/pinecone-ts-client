@@ -8,6 +8,7 @@ import {
 import { handleApiError } from '../../errors';
 import type { PineconeConfiguration } from '../../data';
 import { buildUserAgent, getFetch, getNonRetryingFetch } from '../../utils';
+import { assertRequestPathIsAddressable } from '../../utils/requestPath';
 import type { Uploadable } from './types';
 
 /**
@@ -48,6 +49,7 @@ export async function sendFileMultipart(
   config: PineconeConfiguration,
   metadata?: Record<string, string | number>,
 ): Promise<OperationModel> {
+  assertRequestPathIsAddressable(url);
   const requestHeaders = buildRequestHeaders(config);
 
   if (input.path) {
