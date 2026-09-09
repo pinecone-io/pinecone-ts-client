@@ -74,6 +74,7 @@ describe('upsertRecords', () => {
       { chunk_text: 'test2', category: 'test' },
     ];
 
+    expect.assertions(2);
     try {
       await cmd.run({ records });
     } catch (err) {
