@@ -82,7 +82,7 @@ const legacy = await pc.describeIndex('my-schema-index');
 const current = await pc.indexes.describe('my-schema-index');
 ```
 
-Two entries change identifier placement rather than just adding a namespace:
+Several entries change identifier placement rather than just adding a namespace:
 `configureIndex` and `createBackup` carry their target name as a field inside
 the v8 options object (`{ name, ... }` or `{ indexName, ... }`), and as a
 separate leading argument on the resource call
@@ -202,6 +202,183 @@ if (indexModel.deployment.deploymentType === 'managed') {
 
 `status`, `readCapacity`, and `deletionProtection` also changed shape — see
 the `IndexModel` reference in the [API documentation](https://sdk.pinecone.io/typescript/interfaces/IndexModel.html) for the full type.
+
+## Namespace counters are decimal strings
+
+`NamespaceDescription.recordCount` and `sizeBytes` changed from optional
+`number` to optional `string`. These represent 64-bit integers, which can
+exceed JavaScript's safe integer range. The decoder passes the wire value
+through; this declaration correction does not introduce a runtime conversion
+from numbers to strings. Replace arithmetic on the old numeric declaration
+with explicit conversion, and preserve `undefined` when the count is unknown.
+Do not apply this change to every counter: `BackupModel` counts remain numbers.
+
+```typescript
+import type { NamespaceDescription } from '@pinecone-database/pinecone';
+
+const namespace: NamespaceDescription = {
+  recordCount: '9007199254740993',
+  sizeBytes: '18014398509481986',
+};
+const records = namespace.recordCount === undefined
+  ? undefined
+  : BigInt(namespace.recordCount);
+const bytes = namespace.sizeBytes === undefined
+  ? undefined
+  : BigInt(namespace.sizeBytes);
+const bytesPerRecord = records !== undefined && records > 0n && bytes !== undefined
+  ? bytes / records // BigInt division truncates the fractional part.
+  : undefined;
+
+function safeNumber(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const integer = BigInt(value);
+  if (integer < 0n || integer > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new RangeError('Counter cannot be represented as a safe number');
+  }
+  return Number(integer);
+}
+const smallCount = safeNumber('42');
+const unknownCount = safeNumber(undefined);
+console.log(bytesPerRecord, smallCount, unknownCount);
+```
+
+Keep the original decimal strings in JSON storage: `JSON.stringify` cannot
+serialize `bigint` values directly. Converting an already rounded number to
+`BigInt` cannot recover its lost precision.
+
+## Backup timestamps and schema
+
+`BackupModel.createdAt` was an optional string in v8; the v9 decoder returns
+an optional `Date`. Replace string operations with `toISOString()` for display
+or persistence and `getTime()` for comparisons, guarding absence first.
+`dimension` and `metric` were removed from the backup's top level; inspect the
+optional `schema` and select the vector field your application uses. When
+`schema` is absent, the backup response does not supply that information. Do
+not guess a dimension or metric, or substitute the current source index's
+schema for the backed-up schema.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+const pc = new Pinecone();
+const backup = await pc.backups.describe('backup-id');
+const createdAtIso = backup.createdAt?.toISOString();
+const createdBeforeToday = backup.createdAt === undefined
+  ? undefined
+  : backup.createdAt.getTime() < new Date().setUTCHours(0, 0, 0, 0);
+
+for (const [name, field] of Object.entries(backup.schema?.fields ?? {})) {
+  if ('type' in field && field.type === 'dense_vector') {
+    console.log(name, field.dimension, field.metric);
+  }
+}
+console.log(createdAtIso, createdBeforeToday);
+```
+
+JSON converts a `Date` to an ISO string; parsing JSON does not revive it. Use
+an application storage contract and validate parsed data before reconstructing
+a date. This example also accepts the string timestamp stored by v8; it does
+not assert that a parsed object is a live `BackupModel`.
+
+```typescript
+type StoredBackup = { backupId: string; createdAt?: string };
+const stored: StoredBackup = {
+  backupId: 'backup-id',
+  createdAt: '2026-09-09T00:00:00.000Z',
+};
+const parsed: unknown = JSON.parse(JSON.stringify(stored));
+if (typeof parsed !== 'object' || parsed === null ||
+    !('backupId' in parsed) || typeof parsed.backupId !== 'string') {
+  throw new Error('Invalid stored backup');
+}
+const timestamp = 'createdAt' in parsed ? parsed.createdAt : undefined;
+if (timestamp !== undefined && typeof timestamp !== 'string') {
+  throw new Error('Invalid stored timestamp');
+}
+const createdAt = timestamp === undefined ? undefined : new Date(timestamp);
+if (createdAt !== undefined && Number.isNaN(createdAt.getTime())) {
+  throw new Error('Invalid stored date');
+}
+console.log(parsed.backupId, createdAt?.toISOString());
+```
+
+## Restore dates and nullable responses
+
+`RestoreJobModel.createdAt` now has type `Date | null`. A wire `null` is
+preserved as `null`, so replace unconditional date method calls with a guard.
+`completedAt` now has type `Date | null | undefined`, but the current decoder
+turns both a missing wire field and wire `null` into `undefined`. A present
+non-null timestamp becomes a `Date`. The wider declaration does not promise
+that the SDK will return `null` for an unfinished job. Use a nullish guard that
+also works with explicitly nullable fixtures:
+
+```typescript
+import type { RestoreJobModel } from '@pinecone-database/pinecone';
+
+function restoreTiming(job: RestoreJobModel) {
+  return {
+    started: job.createdAt?.toISOString(),
+    finished: job.completedAt?.toISOString(),
+    elapsedMs: job.createdAt != null && job.completedAt != null
+      ? job.completedAt.getTime() - job.createdAt.getTime()
+      : undefined,
+  };
+}
+```
+
+Other response declarations now admit `null`, including `IndexModel.tags`,
+`BackupModel.tags`, `BackupList.pagination`, and
+`ReadCapacityStatus.currentReplicas` / `currentShards`. Their current decoders
+normalize missing or null wire fields to `undefined`; application fixtures can
+still contain `null` under the declared types. Check both with optional
+chaining or `!= null`. Unknown capacity is not a measured zero.
+
+```typescript
+import type {
+  BackupList, IndexModel, ReadCapacityStatus,
+} from '@pinecone-database/pinecone';
+
+function responseSummary(index: IndexModel, backups: BackupList, capacity: ReadCapacityStatus) {
+  return {
+    tags: Object.entries(index.tags ?? {}),
+    nextBackupPage: backups.pagination?.next,
+    replicas: capacity.currentReplicas == null ? 'unknown' : String(capacity.currentReplicas),
+    shards: capacity.currentShards == null ? 'unknown' : String(capacity.currentShards),
+  };
+}
+```
+
+## Required search fields and pagination fixtures
+
+`SearchMatchTerms.strategy` and `terms`, previously optional, are now required.
+Replace an empty or partial match-terms object with both fields (currently
+`strategy: 'all'`), or omit the enclosing optional `matchTerms` filter when no
+filter is intended. This is a declaration tightening; the serializer does not
+invent defaults or validate incomplete JavaScript objects.
+
+`Pagination.next` is also required when a pagination object exists. Replace
+old fixtures containing `pagination: {}` with either a cursor or an omitted
+pagination envelope for the final page. A required `next` does not mean every
+list response has another page. The backup envelope uses the separate
+`BackupListPagination` type and can also be null.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+import type { ListResponse, Pagination, SearchMatchTerms } from '@pinecone-database/pinecone';
+
+const matchTerms: SearchMatchTerms = { strategy: 'all', terms: ['animal'] };
+const cursor: Pagination = { next: 'opaque-service-token' };
+const pageWithMore: ListResponse = { vectors: [{ id: 'a' }], pagination: cursor };
+const finalPage: ListResponse = { vectors: [{ id: 'b' }] };
+
+const pc = new Pinecone();
+const index = pc.index('my-vector-index');
+let page = await index.listPaginated({ limit: 100 });
+while (page.pagination?.next) {
+  page = await index.listPaginated({ limit: 100, paginationToken: page.pagination.next });
+}
+console.log(matchTerms, pageWithMore, finalPage);
+```
 
 ## `configureIndex` changed shape
 
@@ -450,8 +627,10 @@ and `PreviewCreateIndexOptions` map to the changed `ConfigureIndexOptions` and
 `Index` class, and `PreviewReadCapacity*` maps to the changed `ReadCapacity*`
 family; `PreviewCreateBackupOptions`,
 `PreviewCreateIndexFromBackupOptions`/`Response`, and
-`PreviewRestoreJobList`/`Model` map to the unchanged `CreateBackupOptions`,
-`CreateIndexFromBackupOptions`/`Response`, and `RestoreJobList`/`Model`.
+`PreviewRestoreJobList`/`Model` map to `CreateBackupOptions`,
+`CreateIndexFromBackupOptions`/`Response`, and `RestoreJobList`/`Model`. These
+stable names are not all unchanged: identifier placement and restore timestamp
+nullability require the migrations described in this guide.
 
 ### Retained legacy request types
 
@@ -501,7 +680,46 @@ above.
 
 This guide describes the current implementation. Derived legacy response properties
 are tracked in [PR #143](https://github.com/pinecone-io/pinecone-ts-client-internal/pull/143).
-Update the response guidance when that change lands.
+
+API-version pinning selects a server API version; it does not replace v9's
+generated request serializers, response decoders, or TypeScript declarations.
+It cannot recover v8 types or timestamp representations.
+
+If #143 lands as currently proposed, legacy index properties will be lazy,
+nonenumerable getters. Direct reads may work where a legacy equivalent exists,
+but spread, `Object.assign`, `structuredClone`, and JSON serialization will
+omit them. Optional typing also does not make a getter safe: even
+`model.dimension ?? 0` can throw `PineconeIndexPropertyError` for an unsupported
+or unreported field. That proposal has not landed, and this guide does not
+resolve the response-accessor policy tracked in #43/#143.
+
+For copied or persisted index responses, prefer the native `schema` and
+`deployment`, or define an explicit application projection from the selected
+schema field. The following works with the current SDK and does not depend on
+pending getters. An absent or non-dense selected field produces no projection;
+it never guesses which of several fields your application meant.
+
+```typescript
+import type { IndexModel } from '@pinecone-database/pinecone';
+
+function denseVectorSnapshot(model: IndexModel, fieldName: string) {
+  const field = model.schema.fields[fieldName];
+  if (!field || !('type' in field) || field.type !== 'dense_vector') return undefined;
+  return {
+    name: model.name,
+    fieldName,
+    dimension: field.dimension,
+    metric: field.metric,
+    vectorType: 'dense' as const,
+  };
+}
+```
+
+Request read-capacity translation and historical named option contracts are
+tracked in [issue #156](https://github.com/pinecone-io/pinecone-ts-client-internal/issues/156)
+and [issue #157](https://github.com/pinecone-io/pinecone-ts-client-internal/issues/157).
+Their compatibility fixes must be verified before treating those paths as
+fully preserved; update this guide's request and export sections when they land.
 
 The batching engine is present, but public `index.documents.batchUpsert()`
 exposure is tracked separately in
