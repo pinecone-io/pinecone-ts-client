@@ -11,7 +11,7 @@ export type IndexStatsNamespaceSummary = {
 };
 
 /**
- * An index description returned from { @link Index.describeIndexStats }
+ * An index description returned from {@link Index.describeIndexStats}
  */
 export type IndexStatsDescription = {
   /**
@@ -27,7 +27,7 @@ export type IndexStatsDescription = {
   dimension?: number;
 
   /**
-   * A number indicating the percentage of available storage consumed
+   * The fraction of available storage consumed
    * by your index. This is relevant only for pod-based indexes; serverless
    * indexes scale automatically, so index fullness does not apply.
    *
@@ -37,7 +37,7 @@ export type IndexStatsDescription = {
   indexFullness?: number;
 
   /**
-   * The total number of records that have been upserted to your index.
+   * The current total number of records in the index.
    */
   totalRecordCount?: number;
 };
@@ -48,9 +48,11 @@ export type IndexStatsDescription = {
  */
 export type DescribeIndexStatsOptions = {
   /**
-   * If this parameter is present, the operation only returns statistics for vectors that satisfy the filter.
+   * If this parameter is present, the operation only returns statistics for vectors that satisfy
+   * the filter.
    *
-   * @see [Understanding metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
+   * @see [Understanding
+   * metadata](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
    */
   filter: object;
 };

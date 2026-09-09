@@ -2,21 +2,42 @@ import type { Readable } from 'stream';
 import { convertKeysToCamelCase } from '../utils/convertKeys';
 
 /**
- * Implements an async iterable that processes the readable stream of an assistant chat response.
+ * An async iterable of assistant response chunks.
  *
- * This class expects each chunk of data in the stream to begin with `data:` and be followed by a valid chunk of JSON.
- * If a chunk contains malformed JSON, it is skipped, and a debug message is logged.
+ * Obtain it from {@link Assistant.chatStream} or {@link Assistant.chatCompletionStream};
+ * do not construct it directly. Unlike a complete chat response, it yields updates as they arrive.
  *
- * @template Item - The type of items yielded by the iterable.
+ * @typeParam Item - The response chunk yielded during iteration.
+ * @example
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const pc = new Pinecone();
+ * const assistant = pc.assistant({ name: 'support-guide' });
+ * const stream = await assistant.chatStream({ messages: ['How do I return an order?'] });
+ * for await (const chunk of stream) console.log(chunk);
+ * ```
  */
 export class ChatStream<Item> implements AsyncIterable<Item> {
   private stream: Readable;
 
+  /** @internal */
   constructor(stream: Readable) {
     this.stream = stream;
   }
 
-  /** Iterate over response items as they arrive from the assistant. */
+  /**
+   * Iterates over response chunks as they arrive.
+   *
+   * @returns An iterator over the response chunks.
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const stream = await assistant.chatStream({ messages: ['How do I return an order?'] });
+   * for await (const chunk of stream) console.log(chunk);
+   * ```
+   */
   async *[Symbol.asyncIterator](): AsyncIterator<Item> {
     let buffer = '';
     for await (const chunk of this.stream) {

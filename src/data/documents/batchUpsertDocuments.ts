@@ -50,7 +50,7 @@ export interface BatchUpsertDocumentsError {
   batchIndex: number;
   /** The documents this batch carried, ready to be passed back in for a retry. */
   documents: Array<DocumentRecord>;
-  /** Whether the batch reached Pinecone. See {@link BatchUpsertDisposition}. */
+  /** Whether sending was attempted. See {@link BatchUpsertDisposition}. */
   disposition: BatchUpsertDisposition;
   /** What the attempt produced, or a {@link Errors.PineconeBatchUpsertUnsentError} for an unsent batch. */
   error: Error;
@@ -82,7 +82,8 @@ export interface BatchUpsertDocumentsResponse {
   errors: Array<BatchUpsertDocumentsError>;
   /**
    * Every document from every failed batch, flattened. Pass this straight back
-   * to a batched upsert to retry only what did not land.
+   * to a batched upsert to retry failed or unsent batches. Failed requests may already have
+   * applied.
    */
   failedItems: Array<DocumentRecord>;
   /** Whether `totalTimeout` elapsed with batches still unsent. */
@@ -92,8 +93,7 @@ export interface BatchUpsertDocumentsResponse {
 /**
  * Options for a batched document upsert.
  *
- * The target namespace comes from the `Index` the call is made through, as it
- * does for every other document operation — chain `.namespace()` to change it.
+ * Controls request size, concurrency, and how failures are collected.
  */
 export interface BatchUpsertDocumentsOptions {
   /** The documents to upsert. An empty array resolves with zero counts and sends nothing. */

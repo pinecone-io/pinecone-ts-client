@@ -10,11 +10,13 @@ import { PineconeArgumentError } from '../../errors';
 /**
  * The options that may be passed to {@link Index.fetchByMetadata}
  *
- * @see [Fetch records by metadata](https://docs.pinecone.io/guides/manage-data/fetch-data#fetch-records-by-metadata)
+ * @see [Fetch records by
+ * metadata](https://docs.pinecone.io/guides/manage-data/fetch-data#fetch-records-by-metadata)
  */
 export type FetchByMetadataOptions = {
   /**
-   * The metadata filter to apply when fetching records. Only records matching this filter will be returned.
+   * The metadata filter to apply when fetching records. Only records matching this filter will be
+   * returned.
    *
    * @see [Metadata filtering](https://docs.pinecone.io/docs/metadata-filtering)
    */
@@ -46,7 +48,7 @@ export type FetchByMetadataResponse<T extends RecordMetadata = RecordMetadata> =
     namespace: string;
     /** Read units consumed by this request. */
     usage?: OperationUsage;
-    /** Information for retrieving the next page. */
+    /** Contains `next` when another page is available. */
     pagination?: Pagination;
   };
 

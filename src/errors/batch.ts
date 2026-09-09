@@ -2,8 +2,7 @@ import { BasePineconeError } from './base';
 import type { BatchUpsertDocumentsResponse } from '../data/documents/batchUpsertDocuments';
 
 /**
- * Thrown by a batched document upsert running under `onError: 'throw'` when a
- * batch fails.
+ * An error containing the results of a failed batched document upsert.
  *
  * The batches already in flight when the failure surfaced are awaited before
  * this is thrown, so `response` is a complete account of what landed and what
@@ -13,22 +12,14 @@ import type { BatchUpsertDocumentsResponse } from '../data/documents/batchUpsert
  * `maxConcurrency` above 1 is not necessarily the rejection that stopped the
  * run. Read `response.errors` to see every failure.
  *
- * The example below calls the documents accessor, which arrives with the
- * accessor change tracked in issue #103; the engine and these types ship first.
- *
+ * @example
  * ```typescript
- * import { Pinecone, Errors } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
+ * import { Errors } from '@pinecone-database/pinecone';
  *
- * try {
- *   await pc.index('my-schema-index').documents.batchUpsert({
- *     documents,
- *     onError: 'throw',
- *   });
- * } catch (e) {
- *   if (e instanceof Errors.PineconeBatchUpsertError) {
- *     console.log(e.response.upsertedCount);
- *     console.log(e.response.failedItems.length);
+ * function reportBatchFailure(error: unknown) {
+ *   if (error instanceof Errors.PineconeBatchUpsertError) {
+ *     console.log(error.response.upsertedCount);
+ *     console.log(error.response.failedItems);
  *   }
  * }
  * ```

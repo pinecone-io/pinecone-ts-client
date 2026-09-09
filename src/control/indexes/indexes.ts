@@ -14,14 +14,16 @@ import { configureIndex, ConfigureIndexOptions } from './configureIndex';
 import { IndexHostSingleton } from '../../data/indexHostSingleton';
 
 /**
- * Control-plane operations for the lifecycle of Pinecone indexes.
- * Access via `pc.indexes`.
+ * Indexes store documents and define the fields available for search.
+ * Access index management through {@link Pinecone.indexes}; do not construct this class directly.
+ * Use {@link Pinecone.index} to read, write, and search data within an index.
  *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
  *
- * const list = await pc.indexes.list();
+ * const pc = new Pinecone();
+ * const indexes = await pc.indexes.list();
  * ```
  */
 export class Indexes {
@@ -34,33 +36,18 @@ export class Indexes {
   }
 
   /**
-   * Lists all indexes in the project. The returned list includes `schema`
-   * fields describing the typed fields of each index.
+   * Lists all indexes in the project.
+   *
+   * @returns The indexes and their configuration, schema, and readiness status.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   *
    * const pc = new Pinecone();
-   *
-   * const indexList = await pc.indexes.list();
-   * console.log(indexList);
-   * // {
-   * //   indexes: [
-   * //     {
-   * //       name: 'my-schema-index',
-   * //       metric: 'cosine',
-   * //       host: 'my-schema-index-abc123.svc.pinecone.io',
-   * //       schema: {
-   * //         fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
-   * //       },
-   * //       status: { ready: true, state: 'Ready' }
-   * //     }
-   * //   ]
-   * // }
+   * const result = await pc.indexes.list();
+   * console.log(result.indexes);
    * ```
-   *
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexList}.
    */
   async list(): Promise<IndexList> {
     const indexList = await listIndexes(this._api);
@@ -74,40 +61,60 @@ export class Indexes {
   }
 
   /**
-   * Creates a schema-based index.
+   * Creates an index with searchable fields defined by a schema.
    *
-   * The `schema` object defines the fields stored in each document. At least one
-   * primary field (`dense_vector`, `sparse_vector`, `semantic_text`, or a `string`
-   * field with `fullTextSearch`) must be present.
+   * Creation returns before the index is ready unless `waitUntilReady` is true.
+   *
+   * @param options - The index name and schema. Set `waitUntilReady` to wait before writing data.
+   * @returns The index configuration and status.
+   * @throws {@link Errors.PineconeArgumentError} when the index name or schema is missing.
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
    *
-   * const indexModel = await pc.indexes.create({
-   *   name: 'my-schema-index',
-   *   schema: {
-   *     fields: {
-   *       chunk_text: { type: 'string', fullTextSearch: {} },
-   *     },
-   *   },
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.create({
+   *   name: 'product-catalog',
+   *   schema: { fields: { description: { type: 'string', fullTextSearch: {} } } },
    *   waitUntilReady: true,
    * });
-   * console.log(indexModel.name);
-   * // 'my-schema-index'
+   * console.log(index.name);
    * ```
    *
-   * @param options - The {@link CreateIndexOptions} for creating the index, including `name`, `schema`, and optional `waitUntilReady` and `timeout`.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict. Use `waitUntilReady: true` to block until the index is ready for data operations.
+   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
    */
   create(
     options: CreateIndexOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
+  /**
+   * Creates an index with searchable fields defined by a schema.
+   *
+   * Creation returns before the index is ready unless `waitUntilReady` is true.
+   *
+   * @param options - The index name and schema. Set `waitUntilReady` to wait before writing data.
+   * @returns The index configuration and status, or `undefined` if `suppressConflicts` ignores an existing index.
+   * @throws {@link Errors.PineconeArgumentError} when the index name or schema is missing.
+   * @throws {@link Errors.PineconeConflictError} when the name exists and `suppressConflicts` is false.
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.create({
+   *   name: 'product-catalog',
+   *   schema: { fields: { description: { type: 'string', fullTextSearch: {} } } },
+   *   suppressConflicts: true,
+   * });
+   * console.log(index?.name);
+   * ```
+   *
+   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   */
   create(options: CreateIndexOptions): Promise<IndexModel | void>;
   async create(options: CreateIndexOptions): Promise<IndexModel | void> {
     const indexModel = await createIndex(this._api, options);
@@ -122,46 +129,70 @@ export class Indexes {
   }
 
   /**
-   * Creates an index with an integrated embedding model.
+   * Creates an index that embeds document text with an integrated model.
    *
-   * A convenience wrapper around {@link create}: the server builds a
-   * `semantic_text` schema field from the `embed` parameters you provide, so
-   * text you upsert is embedded for you. For full control over schema
-   * composition — combining a dense or sparse vector field with full-text
-   * search, for example — use {@link create} directly.
+   * Creation returns before the index is ready unless `waitUntilReady` is true.
    *
-   * Integrated-embedding indexes are serverless only; the deployment is chosen
-   * for you.
+   * @param options - The index name, cloud, region, and embedding configuration. Use `fieldMap` to select your text field.
+   * @returns The index configuration and status.
+   * @throws {@link Errors.PineconeArgumentError} when required index or embedding settings are missing or the metric is invalid.
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
    *
-   * const indexModel = await pc.indexes.createForModel({
-   *   name: 'my-model-index',
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.createForModel({
+   *   name: 'product-catalog',
    *   cloud: 'aws',
    *   region: 'us-east-1',
    *   embed: {
    *     model: 'multilingual-e5-large',
-   *     fieldMap: { text: 'chunk_text' },
+   *     fieldMap: { text: 'description' },
    *   },
    *   waitUntilReady: true,
    * });
-   * console.log(indexModel.name);
-   * // 'my-model-index'
+   * console.log(index.name);
    * ```
    *
-   * @param options - The {@link CreateIndexForModelOptions} for the index, including `name`, `cloud`, `region`, and `embed`.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict.
+   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
    */
   createForModel(
     options: CreateIndexForModelOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
+  /**
+   * Creates an index that embeds document text with an integrated model.
+   *
+   * Creation returns before the index is ready unless `waitUntilReady` is true.
+   *
+   * @param options - The index name, cloud, region, and embedding configuration. Use `fieldMap` to select your text field.
+   * @returns The index configuration and status, or `undefined` if `suppressConflicts` ignores an existing index.
+   * @throws {@link Errors.PineconeArgumentError} when required index or embedding settings are missing or the metric is invalid.
+   * @throws {@link Errors.PineconeConflictError} when the name exists and `suppressConflicts` is false.
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.createForModel({
+   *   name: 'product-catalog',
+   *   cloud: 'aws',
+   *   region: 'us-east-1',
+   *   embed: {
+   *     model: 'multilingual-e5-large',
+   *     fieldMap: { text: 'description' },
+   *   },
+   *   suppressConflicts: true,
+   * });
+   * console.log(index?.name);
+   * ```
+   *
+   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
+   */
   createForModel(
     options: CreateIndexForModelOptions,
   ): Promise<IndexModel | void>;
@@ -178,30 +209,20 @@ export class Indexes {
   }
 
   /**
-   * Describes an index by name, returning its configuration, schema, and status.
+   * Retrieves the configuration, schema, and readiness of an index.
+   *
+   * @param indexName - The index name, such as `product-catalog`.
+   * @returns The index configuration, host, schema, and current status.
+   * @throws {@link Errors.PineconeArgumentError} when the index name is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   *
    * const pc = new Pinecone();
-   *
-   * const indexModel = await pc.indexes.describe('my-schema-index');
-   * console.log(indexModel);
-   * // {
-   * //   name: 'my-schema-index',
-   * //   metric: 'cosine',
-   * //   host: 'my-schema-index-abc123.svc.pinecone.io',
-   * //   schema: {
-   * //     fields: { chunk_text: { type: 'string', fullTextSearch: {} } }
-   * //   },
-   * //   status: { ready: true, state: 'Ready' }
-   * // }
+   * const index = await pc.indexes.describe('product-catalog');
+   * console.log(index.status.ready);
    * ```
-   *
-   * @param indexName - The name of the index to describe.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link IndexModel}.
    */
   async describe(indexName: string): Promise<IndexModel> {
     const indexModel = await describeIndex(this._api, indexName);
@@ -211,23 +232,21 @@ export class Indexes {
   }
 
   /**
-   * Deletes an index by name.
+   * Deletes an index and its data.
    *
-   * Deletion is asynchronous; the index may still be terminating after this call returns.
-   * Deletion protection must be disabled before calling this method.
+   * Disable deletion protection first. The index may still be terminating when this call returns.
+   *
+   * @param name - The index name, such as `product-catalog`.
+   * @returns Resolves when the deletion request is accepted.
+   * @throws {@link Errors.PineconeArgumentError} when the index name is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   *
    * const pc = new Pinecone();
-   *
-   * await pc.indexes.delete('my-schema-index');
+   * await pc.indexes.delete('product-catalog');
    * ```
-   *
-   * @param name - The name of the index to delete.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the deletion request is accepted.
    */
   async delete(name: string): Promise<void> {
     await deleteIndex(this._api, name);
@@ -235,28 +254,25 @@ export class Indexes {
   }
 
   /**
-   * Configures an index by name.
+   * Updates an index configuration.
    *
-   * Only the fields present in `options` are updated; omit a field to leave it unchanged.
+   * Omitted fields remain unchanged.
+   *
+   * @param name - The index name, such as `product-catalog`.
+   * @param options - The settings to change; provide at least one field.
+   * @returns The updated index configuration and status.
+   * @throws {@link Errors.PineconeArgumentError} when the name is empty or no configuration field is provided.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   *
    * const pc = new Pinecone();
-   *
-   * const indexModel = await pc.indexes.configure('my-schema-index', {
+   * const index = await pc.indexes.configure('product-catalog', {
    *   deletionProtection: 'enabled',
-   *   tags: { team: 'ml-platform' },
    * });
-   * console.log(indexModel.name);
-   * // 'my-schema-index'
+   * console.log(index.deletionProtection);
    * ```
-   *
-   * @param name - The name of the index to configure.
-   * @param options - The {@link ConfigureIndexOptions} fields to update. Only provided fields are changed.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to the updated {@link IndexModel}.
    */
   async configure(
     name: string,

@@ -5,10 +5,16 @@ export type { AssistantModel };
 
 /**
  * The configuration needed to create an assistant.
+ *
+ * @example
+ * ```typescript
+ * import type { CreateAssistantOptions } from '@pinecone-database/pinecone';
+ * const options: CreateAssistantOptions = { name: 'support-guide' };
+ * ```
  */
 export interface CreateAssistantOptions {
   /**
-   * The name of the assistant. Resource name must be 1-63 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'.
+   * The assistant name, such as `support-guide`. Use lowercase letters, numbers, and hyphens.
    */
   name: string;
   /**
@@ -20,13 +26,22 @@ export interface CreateAssistantOptions {
    */
   metadata?: Record<string, string>;
   /**
-   * The region to deploy the assistant in. Our current options are either us or eu. Defaults to us.
+   * The hosting region: `us` or `eu`. Omit to use the service default.
    */
   region?: string;
 }
 
 /**
  * The configuration updates for the assistant.
+ *
+ * @example
+ * ```typescript
+ * import type { UpdateAssistantOptions } from '@pinecone-database/pinecone';
+ * const options: UpdateAssistantOptions = {
+ *   name: 'support-guide',
+ *   instructions: 'Cite the uploaded support policies in your answers.',
+ * };
+ * ```
  */
 export interface UpdateAssistantOptions {
   /**
@@ -75,6 +90,16 @@ export interface AssistantList {
 
 /**
  * The request for the alignment evaluation.
+ *
+ * @example
+ * ```typescript
+ * import type { EvaluateOptions } from '@pinecone-database/pinecone';
+ * const options: EvaluateOptions = {
+ *   question: 'Where can I start a return?',
+ *   answer: 'From your order history.',
+ *   groundTruth: 'Customers can start returns from their order history.',
+ * };
+ * ```
  */
 export interface EvaluateOptions {
   /**

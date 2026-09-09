@@ -9,14 +9,14 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for creating and sending a new invite (the body of `admin.invites.create`). `roleBindings`
+ * Options for {@link InvitesResource.create}. `roleBindings`
  * must include at least one organization-scoped binding that grants organization membership
  * (e.g. `OrgOwner`, `OrgManager`, `OrgBillingAdmin`, or `OrgMember`); project-scoped bindings are optional.
  */
 export type CreateInviteOptions = CreateInviteRequest;
 
 /**
- * Options for listing invites (the pagination query of `admin.invites.list`).
+ * Options for {@link InvitesResource.list}.
  */
 export type ListInvitesOptions = Omit<
   ListInvitesRequest,
@@ -24,8 +24,17 @@ export type ListInvitesOptions = Omit<
 >;
 
 /**
- * Operations for managing invitations to join the organization. Accessed via
- * {@link AdminClient.invites}.
+ * Invites let people join an organization with assigned roles.
+ * Access this resource through {@link AdminClient.invites}; do not construct it directly.
+ * Use {@link AdminClient.users} to manage existing members.
+ *
+ * @example
+ * ```typescript
+ * import { AdminClient } from '@pinecone-database/pinecone';
+ *
+ * const admin = new AdminClient();
+ * const result = await admin.invites.list();
+ * ```
  */
 export class InvitesResource {
   private readonly _api: InvitesApi;
@@ -34,7 +43,25 @@ export class InvitesResource {
     this._api = api;
   }
 
-  /** Create and send a new invite to join the organization. */
+  /**
+   * Creates and sends an invitation to join the organization.
+   *
+   * @param options - The recipient email and roles to grant. Include an organization-scoped membership role.
+   * @returns The invite details, including its `id` and assigned roles.
+   * @throws {@link Errors.PineconeArgumentError} when the email is empty or no role binding is provided.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const invite = await admin.invites.create({
+   *   email: 'alex@example.com',
+   *   roleBindings: [{ resourceType: 'organization', role: 'OrgMember' }],
+   * });
+   * console.log(invite.id);
+   * ```
+   */
   async create(options: CreateInviteOptions): Promise<Invite> {
     if (!options || !options.email) {
       throw new PineconeArgumentError(
@@ -52,7 +79,22 @@ export class InvitesResource {
     });
   }
 
-  /** Get an invite's details by ID. */
+  /**
+   * Retrieves a invite by ID.
+   *
+   * @param inviteId - The invite ID returned when it was created or listed.
+   * @returns The invite details.
+   * @throws {@link Errors.PineconeArgumentError} when `inviteId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.invites.describe('648ad735-cf52-4cf4-9949-47c56fd9731f');
+   * console.log(result);
+   * ```
+   */
   async describe(inviteId: string): Promise<Invite> {
     if (!inviteId) {
       throw new PineconeArgumentError(
@@ -65,7 +107,21 @@ export class InvitesResource {
     });
   }
 
-  /** List invites in the organization. */
+  /**
+   * Lists one page of invites in the organization.
+   *
+   * @param options - Page size and continuation token. Omit to fetch the first page with the default size.
+   * @returns Results in `data`; pass `pagination.next` as `paginationToken` to fetch the next page.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.invites.list({ limit: 10 });
+   * console.log(result.data);
+   * ```
+   */
   async list(options: ListInvitesOptions = {}): Promise<InviteList> {
     return await this._api.listInvites({
       ...options,
@@ -73,7 +129,22 @@ export class InvitesResource {
     });
   }
 
-  /** Resend an existing invite by ID, extending its expiration. */
+  /**
+   * Resends an invitation and extends its expiration.
+   *
+   * @param inviteId - The ID of the existing invite to resend.
+   * @returns The updated invite details.
+   * @throws {@link Errors.PineconeArgumentError} when the invite ID is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const invite = await admin.invites.resend('648ad735-cf52-4cf4-9949-47c56fd9731f');
+   * console.log(invite);
+   * ```
+   */
   async resend(inviteId: string): Promise<Invite> {
     if (!inviteId) {
       throw new PineconeArgumentError(
@@ -86,7 +157,21 @@ export class InvitesResource {
     });
   }
 
-  /** Delete an invite by ID. */
+  /**
+   * Deletes an invite.
+   *
+   * @param inviteId - The ID of the invite to delete.
+   * @returns Resolves when the deletion request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `inviteId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * await admin.invites.delete('648ad735-cf52-4cf4-9949-47c56fd9731f');
+   * ```
+   */
   async delete(inviteId: string): Promise<void> {
     if (!inviteId) {
       throw new PineconeArgumentError(

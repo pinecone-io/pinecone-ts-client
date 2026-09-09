@@ -158,72 +158,22 @@ export type {
 } from './documents/updateDocuments';
 
 /**
- * The `Index` class is used to perform data operations (upsert, query, etc)
- * against Pinecone indexes. Typically, it will be instantiated via a `Pinecone`
- * client instance that has already built the required configuration from a
- * combination of sources.
+ * A client for reading and writing records in a Pinecone index.
+ * Obtain an instance with {@link Pinecone.index}; do not construct it directly.
+ * Vector methods accept embeddings, while document methods use fields declared in a schema-based
+ * index.
  *
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone()
+ * @typeParam T - Metadata fields stored with vector records; omitted for flexible metadata.
  *
- * const indexModel = await pc.indexes.describe('index-name');
- * const index = pc.index({ host: indexModel.host })
- * ```
- *
- * ### Targeting an index, with user-defined Metadata types
- *
- * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
- *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
- *
- * type MovieMetadata = {
- *   title: string,
- *   runtime: numbers,
- *   genre: 'comedy' | 'horror' | 'drama' | 'action'
- * }
- *
- * // Specify a custom metadata type while targeting the index
- * const index = pc.index<MovieMetadata>({ name: 'test-index' });
- *
- * // Now you get type errors if upserting malformed metadata
- * await index.upsert({
- *   records: [{
- *     id: '1234',
- *     values: [
- *       .... // embedding values
- *     ],
- *     metadata: {
- *       title: 'Gone with the Wind',
- *       runtime: 238,
- *       genre: 'drama',
- *
- *       // @ts-expect-error because category property not in MovieMetadata
- *       category: 'classic'
- *     }
- *   }]
- * })
- *
- * const results = await index.query({
- *    vector: [
- *     ... // query embedding
- *    ],
- *    filter: { genre: { '$eq': 'drama' }}
- * })
- * const movie = results.matches[0];
- *
- * if (movie.metadata) {
- *   // Since we passed the MovieMetadata type parameter above,
- *   // we can interact with metadata fields without having to
- *   // do any typecasting.
- *   const { title, runtime, genre } = movie.metadata;
- *   console.log(`The best match in drama was ${title}`)
- * }
+ * type ProductMetadata = { title: string; category: string };
+ * const index = pc.index<ProductMetadata>({ name: 'product-catalog', namespace: 'products-en' });
+ * const result = await index.fetch({ ids: ['trail-shoe-42'] });
+ * console.log(result.records['trail-shoe-42']?.metadata?.title);
  * ```
- *
- * @typeParam T - The type of metadata associated with each record.
  */
 export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
@@ -247,13 +197,15 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   /** @hidden */
   private _upsertCommand: UpsertCommand<T>;
   /**
-   * Document operations for schema-based indexes, scoped to the namespace this
-   * `Index` targets.
+   * Document operations for a schema-based index, scoped to this client's namespace.
    *
+   * @example
    * ```typescript
-   * await index.documents.upsert({
-   *   documents: [{ _id: 'doc-1', chunk_text: 'Hello world' }],
-   * });
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   * const result = await index.documents.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.documents);
    * ```
    */
   public documents: Documents;
@@ -300,28 +252,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   private additionalHeaders?: HTTPHeaders;
 
   /**
-   * Instantiation of Index is handled by {@link Pinecone}
+   * Create index clients through {@link Pinecone.index}.
    *
-   * @example
-   * ```js
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
-   *
-   * // Get host from describeIndex
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
-   *
-   * // Or get host from createIndex response
-   * const indexModel = await pc.indexes.create({
-   *   name: 'my-index',
-   *   dimension: 1536,
-   *   spec: { serverless: { cloud: 'aws', region: 'us-east-1' } }
-   * });
-   * const index = pc.index({ host: indexModel.host });
-   * ```
-   *
-   * @param options - The {@link IndexOptions} for targeting the index.
-   * @param config - The configuration from the Pinecone client.
+   * @internal
    */
   constructor(options: IndexOptions, config: PineconeConfiguration) {
     if (!options.name && !options.host) {
@@ -421,689 +354,539 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Delete all records from the targeted namespace. To delete all records from across all namespaces,
-   * delete the index using {@link Pinecone.deleteIndex} and create a new one using {@link Pinecone.createIndex}.
+   * Delete all records in one namespace.
    *
-  * @example
-  * ```js
-  * import { Pinecone } from '@pinecone-database/pinecone';
-  * const pc = new Pinecone();
-  * const indexModel = await pc.indexes.describe('my-index');
-  * const index = pc.index({ host: indexModel.host });
-  *
-  * await index.describeIndexStats();
-  * // {
-  * //  namespaces: {
-  * //    '': { recordCount: 10 },
-  * //   foo: { recordCount: 1 }
-  * //   },
-  * //   dimension: 8,
-  * //   indexFullness: 0,
-  * //   totalRecordCount: 11
-  * // }
-  * // Deletes all records from the default namespace '__default__'. Records in other namespaces are not modified.
-  * await index.deleteAll();
-  *
-  * // Deletes all records from the namespace 'foo'. Records in other namespaces are not modified.
-  * await index.deleteAll({ namespace: 'foo' });
-  *
-
-  * ```
-   * @param options - Optional {@link DeleteAllOptions} for the operation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
+   * Records in other namespaces are unaffected.
+   *
+   * @param options - Override the configured namespace; omit to use this client's namespace.
+   * @returns Resolves when the delete request succeeds.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
+   *
+   * await index.deleteAll();
+   * ```
+   *
+   * @see {@link Index.deleteMany} to select records by IDs or metadata.
    */
   deleteAll(options?: DeleteAllOptions) {
     return this._deleteAll(options);
   }
 
   /**
-   * Delete records from the index by either an array of ids, or a filter object.
-   * See [Filtering with metadata](https://docs.pinecone.io/docs/metadata-filtering#deleting-vectors-by-metadata-filter)
-   * for more on deleting records with filters.
+   * Delete records selected by IDs or a metadata filter.
+   *
+   * @param options - Provide either `ids`, such as `['trail-shoe-42']`, or `filter`, and optionally
+   * a namespace override.
+   * @returns Resolves when the delete request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when the record selection is missing or invalid.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * await index.deleteMany({ ids: ['record-1', 'record-2'] });
-   *
-   * // or
-   * await index.deleteMany({ filter: { genre: 'classical' } });
+   * await index.deleteMany({ ids: ['trail-shoe-42', 'trail-shoe-43'] });
    * ```
-   * @param options - The {@link DeleteManyOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
+   *
+   * @see {@link Index.deleteAll} to remove every record in a namespace.
    */
   deleteMany(options: DeleteManyOptions) {
     return this._deleteMany(options);
   }
 
   /**
-   * Delete a record from the index by id.
+   * Delete a record by ID.
+   *
+   * @param options - The record ID, such as `trail-shoe-42`, and an optional namespace override.
+   * @returns Resolves when the delete request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `id` is empty or missing.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * await index.deleteOne({ id: 'record-1', namespace: 'foo' });
+   * await index.deleteOne({ id: 'trail-shoe-42' });
    * ```
-   * @param options - The {@link DeleteOneOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete is completed.
+   *
+   * @see {@link Index.deleteMany} to delete multiple records.
    */
   deleteOne(options: DeleteOneOptions) {
     return this._deleteOne(options);
   }
 
   /**
-   * Describes the index's statistics such as total number of records, records per namespace, and the index's dimension size.
+   * Get record counts and dimensions for the index.
+   *
+   * @param options - A metadata filter to restrict the statistics; omit for statistics across the
+   * index.
+   * @returns Index statistics, including `namespaces` with per-namespace counts and
+   * `totalRecordCount`.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * await index.describeIndexStats();
-   * // {
-   * //  namespaces: {
-   * //    '': { recordCount: 10 }
-   * //    foo: { recordCount: 2000 },
-   * //    bar: { recordCount: 2000 }
-   * //   },
-   * //   dimension: 1536,
-   * //   indexFullness: 0,
-   * //   totalRecordCount: 4010
-   * // }
+   * const stats = await index.describeIndexStats();
+   * console.log(stats.totalRecordCount, stats.namespaces);
    * ```
-   * @param options - The {@link DescribeIndexStatsOptions} for the operation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves with the {@link IndexStatsDescription} value when the operation is completed.
    */
   describeIndexStats(options?: DescribeIndexStatsOptions) {
     return this._describeIndexStats(options);
   }
 
   /**
-   * The `listPaginated` operation finds vectors based on an id prefix within a single namespace.
-   * It returns matching ids in a paginated form, with a pagination token to fetch the next page of results.
-   * This id list can then be passed to fetch or delete options to perform operations on the matching records.
-   * See [Get record IDs](https://docs.pinecone.io/docs/get-record-ids) for guidance and examples.
+   * List one page of record IDs in a namespace.
+   *
+   * Supported for serverless indexes.
+   *
+   * @param options - An ID prefix, page size, continuation token, or namespace override; omit for
+   * the first unfiltered page.
+   * @returns Record IDs in `vectors` and `pagination.next` when another page is available.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
-   *
-   * const results = await index.listPaginated({ prefix: 'doc1#' });
-   * console.log(results);
-   * // {
-   * //   vectors: [
-   * //     { id: 'doc1#01' }, { id: 'doc1#02' }, { id: 'doc1#03' },
-   * //     { id: 'doc1#04' }, { id: 'doc1#05' },  { id: 'doc1#06' },
-   * //     { id: 'doc1#07' }, { id: 'doc1#08' }, { id: 'doc1#09' },
-   * //     ...
-   * //   ],
-   * //   pagination: {
-   * //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
-   * //   },
-   * //   namespace: 'my-namespace',
-   * //   usage: { readUnits: 1 }
-   * // }
-   *
-   * // Fetch the next page of results
-   * await index.listPaginated({ prefix: 'doc1#', paginationToken: results.pagination.next});
+   * const page = await index.listPaginated({ prefix: 'trail-shoe-' });
+   * console.log(page.vectors);
+   * if (page.pagination?.next) {
+   *   const nextPage = await index.listPaginated({
+   *     prefix: 'trail-shoe-', paginationToken: page.pagination.next,
+   *   });
+   *   console.log(nextPage.vectors);
+   * }
    * ```
    *
-   * > ⚠️ **Note:**
-   * >
-   * > `listPaginated` is supported only for serverless indexes.
-   *
-   * @param options - The {@link ListOptions} for the operation.
-   * @returns - A promise that resolves with the {@link ListResponse} when the operation is completed.
-   * @throws {@link Errors.PineconeConnectionError} when invalid environment, project id, or index name is configured.
-   * @throws {@link Errors.PineconeArgumentError} when invalid arguments are passed.
+   * @see {@link Index.fetch} to retrieve values and metadata for known IDs.
    */
   listPaginated(options?: ListOptions) {
     return this._listPaginated(options);
   }
 
   /**
-   * Upsert records to the index. If a new value is upserted for an existing
-   * record ID, it overwrites the previous value.
+   * Insert vector records, replacing records with the same IDs.
+   *
+   * The example assumes a three-dimensional dense index; use embeddings that match your index.
+   *
+   * @param options - Records with IDs and dense or sparse values, plus an optional namespace
+   * override.
+   * @returns Resolves when the upsert request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when records are empty or a record is missing its
+   * ID or vector values.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // Upsert to default namespace
    * await index.upsert({
-   *   records: [{
-   *     id: 'record-1',
-   *     values: [0.176, 0.345, 0.263],
-   *   },{
-   *     id: 'record-2',
-   *     values: [0.176, 0.345, 0.263],
-   *   }]
-   * })
-   *
-   * // Upsert to a different namespace
-   * await index.upsert({
-   *   records: [{
-   *     id: 'record-3',
-   *     values: [0.176, 0.345, 0.263],
-   *   }],
-   *   namespace: 'my-namespace'
-   * })
+   *   records: [{ id: 'trail-shoe-42', values: [0.12, 0.34, 0.56],
+   *     metadata: { category: 'footwear' } }],
+   * });
    * ```
    *
-   * @param options - The {@link UpsertOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the upsert is completed.
+   * @see {@link Index.upsertRecords} to embed text; {@link Index.update} for partial changes.
    */
   async upsert(options: UpsertOptions<T>) {
     return await this._upsertCommand.run(options);
   }
 
   /**
-   * Fetch records from the index.
+   * Fetch vector records by ID.
+   *
+   * @param options - Non-empty record IDs, such as `['trail-shoe-42']`, and an optional namespace
+   * override.
+   * @returns Records keyed by ID in `records`, the namespace, and usage information when available.
+   * @throws {@link Errors.PineconeArgumentError} when `ids` is missing or empty.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // Fetch from default namespace
-   * await index.fetch({ ids: ['record-1', 'record-2'] });
-   *
-   * // Override namespace for this operation
-   * await index.fetch({ ids: ['record-1', 'record-2'], namespace: 'my-namespace' });
+   * const result = await index.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.records['trail-shoe-42']);
    * ```
-   * @param options - The {@link FetchOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves with the {@link FetchResponse} when the fetch is completed.
+   *
+   * @see {@link Index.fetchByMetadata} to select records with a filter; {@link Documents.fetch} for
+   * schema-based documents.
    */
   async fetch(options: FetchOptions) {
     return await this._fetchCommand.run(options);
   }
 
   /**
-   * Fetch records from the index by metadata filter.
+   * Fetch one page of vector records matching a metadata filter.
+   *
+   * @param options - The metadata filter, optional page size and continuation token, and namespace
+   * override.
+   * @returns Records keyed by ID, the namespace, and `pagination.next` when another page is
+   * available.
+   * @throws {@link Errors.PineconeArgumentError} when `filter` is missing.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * await index.fetchByMetadata({ filter: { genre: 'classical' } });
+   * const page = await index.fetchByMetadata({ filter: { category: { $eq: 'footwear' } } });
+   * console.log(page.records);
    * ```
    *
-   * @param options - The {@link FetchByMetadataOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves with the {@link FetchByMetadataResponse} when the fetch is completed.
+   * @see {@link Index.fetch} to retrieve records by ID.
    */
   async fetchByMetadata(options: FetchByMetadataOptions) {
     return await this._fetchByMetadataCommand.run(options);
   }
 
   /**
-   * Query records from the index. Query is used to find the `topK` records in the index whose vector values are most
-   * similar to the vector values of the query according to the distance metric you have configured for your index.
-   * See [Query data](https://docs.pinecone.io/docs/query-data) for more on querying.
+   * Find vector records most similar to a query vector or an existing record.
+   *
+   * @param options - The result count `topK` and either `id` or `vector`, with optional filtering
+   * and returned values or metadata.
+   * @returns Matches ordered by similarity, the namespace, and usage information when available.
+   * @throws {@link Errors.PineconeArgumentError} when query values, filters, or search tuning
+   * options fail validation.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-index');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // Query by id
-   * await index.query({ topK: 3, id: 'record-1'});
-   *
-   * // Query by vector
-   * await index.query({ topK: 3, vector: [0.176, 0.345, 0.263] });
-   *
-   * // Query a different namespace
-   * await index.query({ topK: 3, id: 'record-1', namespace: 'custom-namespace' });
+   * const result = await index.query({
+   *   id: 'trail-shoe-42', topK: 5, includeMetadata: true,
+   * });
+   * console.log(result.matches);
    * ```
    *
-   * @param options - The {@link QueryOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves with the {@link QueryResponse} when the query is completed.
+   * @see {@link Index.searchRecords} for text queries and reranking; {@link Documents.search} for
+   * schema-based search.
    */
   async query(options: QueryOptions) {
     return await this._queryCommand.run(options);
   }
 
   /**
-   * Update records in the index by id or by metadata filter. Updating by id
-   * changes the vector and/or metadata of a single record; updating by metadata
-   * filter changes metadata across all matching records. If a vector value is
-   * provided it overwrites the previous value, and `metadata` is merged into the
-   * existing metadata (only the specified fields are modified or added).
+   * Update vector values or metadata on existing records.
+   *
+   * Updating metadata leaves unspecified metadata fields and vector values unchanged.
+   *
+   * @param options - Select a record with `id` to change vectors or metadata, or use `filter` to
+   * change metadata on matching records; optionally override the namespace.
+   * @returns Resolves when the update request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when neither or both of `id` and `filter` are
+   * provided.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('imdb-movies');
-   * const index = pc.index({ host: indexModel.host });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
    * await index.update({
-   *   id: '18593',
-   *   metadata: { genre: 'romance' },
+   *   id: 'trail-shoe-42', metadata: { category: 'hiking-footwear' },
    * });
    * ```
    *
-   * @param options - The {@link UpdateOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the update is completed.
+   * @see {@link Index.upsert} to replace whole records; {@link Documents.update} for schema-based
+   * documents.
    */
   async update(options: UpdateOptions<T>) {
     return await this._updateCommand.run(options);
   }
 
   /**
-   * Upsert integrated records into a specific namespace within an index.
-   * Pinecone converts the record text to vectors automatically using the hosted
-   * embedding model associated with the index, so this is supported only for
-   * indexes with integrated embedding.
+   * Write text records to an index with integrated embedding.
+   *
+   * The example assumes the index maps its embedding input to `chunk_text`.
+   *
+   * @param options - Records with `id` or `_id`, the text field configured in the index field map,
+   * and optional metadata or namespace override.
+   * @returns Resolves when the upsert request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when a record has neither `id` nor `_id`.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-search', namespace: 'products-en' });
    *
-   * const indexModel = await pc.indexes.describe('integrated-index');
-   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
-   *
-   * await namespace.upsertRecords({
-   *   records: [
-   *     {
-   *       id: 'rec1',
-   *       chunk_text:
-   *         "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
-   *       category: 'product',
-   *     },
-   *     {
-   *       id: 'rec2',
-   *       chunk_text:
-   *         'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
-   *       category: 'nutrition',
-   *     },
-   *     {
-   *       id: 'rec3',
-   *       chunk_text:
-   *         'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
-   *       category: 'cultivation',
-   *     },
-   *     {
-   *       id: 'rec4',
-   *       chunk_text:
-   *         'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
-   *       category: 'product',
-   *     },
-   *     {
-   *       id: 'rec5',
-   *       chunk_text:
-   *         'Apple went public in 1980, making history with one of the largest IPOs at that time.',
-   *       category: 'milestone',
-   *     },
-   *     {
-   *       id: 'rec6',
-   *       chunk_text:
-   *         'Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases.',
-   *       category: 'nutrition',
-   *     },
-   *     {
-   *       id: 'rec7',
-   *       chunk_text:
-   *         "Known for its design-forward products, Apple's branding and market strategy have greatly influenced the technology sector and popularized minimalist design worldwide.",
-   *       category: 'influence',
-   *     },
-   *     {
-   *       id: 'rec8',
-   *       chunk_text:
-   *         'The high fiber content in apples can also help regulate blood sugar levels, making them a favorable snack for people with diabetes.',
-   *       category: 'nutrition',
-   *     },
-   *   ]
+   * await index.upsertRecords({
+   *   records: [{ _id: 'trail-shoe-42', chunk_text: 'Waterproof hiking shoe with a durable sole.',
+   *     category: 'footwear' }],
    * });
    * ```
    *
-   * @param options - The {@link UpsertRecordsOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns a promise that resolves when the operation is complete.
+   * @see {@link Index.upsert} for precomputed vectors; {@link Documents.upsert} for schema-based
+   * documents.
    */
   async upsertRecords(options: UpsertRecordsOptions<T>) {
     return await this._upsertRecordsCommand.run(options);
   }
 
   /**
-   * Search a specific namespace for records within an index, using a query
-   * text, query vector, or record ID. Searching with a query vector or record
-   * ID is supported for all indexes; searching with text is supported only for
-   * indexes with integrated embedding.
+   * Search records with text, a vector, or an existing record ID.
+   *
+   * Text queries require an index with integrated embedding.
+   *
+   * @param options - A query with `topK`, optional result fields, reranking settings, and a
+   * namespace override.
+   * @returns Ranked hits in `result.hits` and usage information.
+   * @throws {@link Errors.PineconeArgumentError} when `query` is missing.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('integrated-index');
-   * const namespace = pc.index({ host: indexModel.host, namespace: 'my-namespace' });
+   * const index = pc.index({ name: 'product-search', namespace: 'products-en' });
    *
-   * const response = await namespace.searchRecords({
-   *   query: {
-   *     inputs: { text: 'disease prevention' }, topK: 4 },
-   *     rerank: {
-   *       model: 'bge-reranker-v2-m3',
-   *       topN: 2,
-   *       rankFields: ['chunk_text'],
-   *     },
-   *   fields: ['category', 'chunk_text'],
+   * const result = await index.searchRecords({
+   *   query: { inputs: { text: 'waterproof hiking shoes' }, topK: 5 },
+   *   fields: ['chunk_text', 'category'],
    * });
-   * console.log(response);
-   * // {
-   * //   "result": {
-   * //     "hits": [
-   * //       {
-   * //         "id": "rec6",
-   * //         "score": 0.1318424493074417,
-   * //         "fields": {
-   * //           "category": "nutrition",
-   * //           "chunk_text": "Rich in vitamin C and other antioxidants, apples contribute to immune health and may reduce the risk of chronic diseases."
-   * //         }
-   * //       },
-   * //       {
-   * //         "id": "rec2",
-   * //         "score": 0.004867417272180319,
-   * //         "fields": {
-   * //           "category": "nutrition",
-   * //           "chunk_text": "Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut."
-   * //         }
-   * //       }
-   * //     ]
-   * //   },
-   * //   "usage": {
-   * //     "readUnits": 1,
-   * //     "embedTotalTokens": 8,
-   * //     "rerankUnits": 1
-   * //   }
-   * // }
+   * console.log(result.result.hits);
    * ```
    *
-   * @param options - The {@link SearchRecordsOptions} for the operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns a promise that resolves to {@link SearchRecordsResponse} when the operation is complete.
+   * @see {@link Index.query} for vector similarity queries; {@link Documents.search} for
+   * schema-based search.
    */
   async searchRecords(options: SearchRecordsOptions) {
     return await this._searchRecordsCommand.run(options);
   }
 
   /**
-   * Start an asynchronous import of vectors from object storage into a Pinecone Serverless index.
+   * Start an asynchronous import of vectors from object storage.
+   *
+   * Requires a serverless index. The response does not wait for the import to finish.
+   *
+   * @param options - The import directory URI, optional storage integration, and error handling
+   * mode (defaults to `continue`).
+   * @returns The import ID in `id`; use it to check progress.
+   * @throws {@link Errors.PineconeArgumentError} when `uri` is missing or `errorMode` is
+   * unsupported.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.startImport({ uri: 's3://my-bucket/my-data' }));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // {"id":"1"}
+   * const operation = await index.startImport({ uri: 's3://product-data/catalog-import' });
+   * console.log(operation.id);
    * ```
    *
-   * @param options - The {@link StartImportOptions} for the import operation.
-   * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to {@link StartImportResponse} when the import operation is started.
+   * @see {@link Index.describeImport} to check progress.
    */
   async startImport(options: StartImportOptions) {
     return await this._startImportCommand.run(options);
   }
 
   /**
-   * List all recent and ongoing import operations.
+   * List one page of recent and ongoing import operations.
+   *
+   * @param limit - Maximum operations per page, such as `10`; omit for the service default.
+   * @param paginationToken - The previous response's `pagination.next`; omit for the first page.
+   * @returns Import operations in `data` and `pagination.next` when another page is available.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.listImports(10));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // {
-   * //  data: [
-   * //    {
-   * //      id: '1',
-   * //      uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
-   * //      status: 'Completed',
-   * //      createdAt: 2024-09-17T16:59:57.973Z,
-   * //      finishedAt: 2024-09-17T17:00:12.809Z,
-   * //      percentComplete: 100,
-   * //      recordsImported: 20,
-   * //      error: undefined
-   * //    }
-   * //  ],
-   * //  pagination: undefined  // Example is only 1 item, so no pag. token given.
-   * // }
+   * const page = await index.listImports(10);
+   * console.log(page.data);
    * ```
    *
-   * @param limit - (Optional) Max number of import operations to return per page.
-   * @param paginationToken - (Optional) Pagination token to continue a previous listing operation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link ListImportsResponse} when the operation is complete.
+   * @see {@link Index.describeImport} for one import's progress.
    */
   async listImports(limit?: number, paginationToken?: string) {
     return await this._listImportsCommand.run(limit, paginationToken);
   }
 
   /**
-   * Return details of a specific import operation.
+   * Get the status and progress of an import operation.
+   *
+   * @param id - The import ID returned by {@link Index.startImport}.
+   * @returns Import details, including `status`, `percentComplete`, and `recordsImported`.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.describeImport('import-id'));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // {
-   * //  id: '1',
-   * //  uri: 's3://dev-bulk-import-datasets-pub/10-records-dim-10',
-   * //  status: 'Completed',
-   * //  createdAt: 2024-09-17T16:59:57.973Z,
-   * //  finishedAt: 2024-09-17T17:00:12.809Z,
-   * //  percentComplete: 100,
-   * //  recordsImported: 20,
-   * //  error: undefined
-   * // }
+   * const operation = await index.startImport({ uri: 's3://product-data/catalog-import' });
+   * const progress = await index.describeImport(operation.id);
+   * console.log(progress.status, progress.recordsImported);
    * ```
    *
-   * @param id - The id of the import operation to describe.
+   * @see {@link Index.listImports} to find import IDs.
    */
   async describeImport(id: string) {
     return await this._describeImportCommand.run(id);
   }
 
   /**
-   * Cancel a specific import operation.
+   * Request cancellation of an import operation.
+   *
+   * @param id - The import ID returned by {@link Index.startImport} or {@link Index.listImports}.
+   * @returns The cancellation response.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.cancelImport('import-id'));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // {}
+   * const page = await index.listImports();
+   * const pending = page.data?.find((operation) => operation.status === 'Pending');
+   * if (pending) {
+   *   await index.cancelImport(pending.id);
+   * }
    * ```
    *
-   * @param id - The id of the import operation to cancel.
+   * @see {@link Index.describeImport} to check the operation status.
    */
   async cancelImport(id: string) {
     return await this._cancelImportCommand.run(id);
   }
 
   /**
-   * Creates a new namespace within the index with an optional metadata schema.
-   * Note: this operation is not supported for pod-based indexes.
+   * Create a namespace with an optional metadata schema.
+   *
+   * Supported for serverless indexes.
+   *
+   * @param options - A namespace name, such as `products-fr`, and optional metadata fields to make
+   * filterable.
+   * @returns The namespace description, including its name and record count.
+   * @throws {@link Errors.PineconeArgumentError} when the namespace name is empty or missing.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * await index.createNamespace({
-   *   name: 'my-namespace',
-   *   schema: {
-   *     fields: {
-   *       genre: { filterable: true },
-   *       year: { filterable: true }
-   *     }
-   *   }
-   * });
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
+   *
+   * const namespace = await index.createNamespace({ name: 'products-fr' });
+   * console.log(namespace.name);
    * ```
    *
-   * @param options - Configuration options for creating the namespace.
-   * @param options.name - (Required) The name of the namespace to create.
-   * @param options.schema - (Optional) The metadata schema for the namespace. By default, all metadata is indexed;
-   * when a schema is present, only fields which are present in the `fields` object with `filterable: true` are indexed.
+   * @see {@link Index.namespace} to target a namespace with a client.
    */
   async createNamespace(options: CreateNamespaceOptions) {
     return await this._createNamespaceCommand(options);
   }
 
   /**
-   * Returns a list of namespaces within the index.
-   * Note: this operation is not supported for pod-based indexes.
+   * List one page of namespaces in the index.
+   *
+   * Supported for serverless indexes.
+   *
+   * @param options - An optional name prefix, page size, and continuation token; omit for the first
+   * unfiltered page.
+   * @returns Namespace descriptions in `namespaces` and `pagination.next` when another page is
+   * available.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.listNamespaces({ limit: 10 }));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // {
-   * //   namespaces: [
-   * //     { name: 'ns-1', recordCount: '1' },
-   * //     { name: 'ns-2', recordCount: '1' }
-   * //   ],
-   * //   pagination: undefined
-   * // }
+   * const page = await index.listNamespaces({ prefix: 'products-' });
+   * console.log(page.namespaces);
    * ```
    *
-   * @param options - The {@link ListNamespacesOptions} for the operation.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link ListNamespacesResponse} when the operation is complete.
+   * @see {@link Index.describeNamespace} for one namespace.
    */
   async listNamespaces(options?: ListNamespacesOptions) {
     return await this._listNamespacesCommand(options);
   }
 
   /**
-   * Returns the details of a specific namespace.
-   * Note: this operation is not supported for pod-based indexes.
+   * Get a namespace's name, record count, and schema when available.
+   *
+   * Supported for serverless indexes.
+   *
+   * @param namespace - The namespace name, such as `products-en`.
+   * @returns The namespace description.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * console.log(await index.describeNamespace('ns-1'));
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // { name: 'ns-1', recordCount: '1' }
+   * const details = await index.describeNamespace('products-en');
+   * console.log(details.recordCount);
    * ```
    *
-   * @param namespace - The namespace to describe.
+   * @see {@link Index.listNamespaces} to discover namespace names.
    */
   async describeNamespace(namespace: string) {
     return await this._describeNamespaceCommand(namespace);
   }
 
   /**
-   * Deletes a specific namespace from the index, including all records within it.
-   * Deleting a namespace is irreversible; all data in the namespace is permanently
-   * deleted. Note: this operation is not supported for pod-based indexes.
+   * Permanently delete a namespace and all its records.
+   *
+   * Supported for serverless indexes. This operation is irreversible.
+   *
+   * @param namespace - The namespace name, such as `retired-products`.
+   * @returns Resolves when the deletion request succeeds.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const indexModel = await pc.indexes.describe('my-serverless-index');
-   * const index = pc.index({ host: indexModel.host });
-   * await index.deleteNamespace('ns-1');
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
+   *
+   * await index.deleteNamespace('retired-products');
    * ```
    *
-   * @param namespace - The namespace to delete.
+   * @see {@link Index.deleteMany} to remove selected records.
    */
   async deleteNamespace(namespace: string) {
     return await this._deleteNamespaceCommand(namespace);
   }
 
   /**
-   * Returns an {@link Index} targeting the specified namespace.
-   * By default if no namespace is provided, all operations take place inside the default namespace `'__default__'`.
+   * Create a client scoped to a namespace in the same index.
+   *
+   * Record operations use this namespace unless their options override it. Index-wide operations,
+   * such as listing namespaces or describing index statistics, still apply to the whole index.
+   *
+   * @param namespace - The namespace to target, such as `products-fr`.
+   * @returns An {@link Index} preserving this client's metadata type and configuration.
    *
    * @example
-   * ```js
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    *
-   * // Create an Index client instance scoped to operate on a
-   * // single namespace
-   * const ns = pc.index('my-index').namespace('my-namespace');
-   *
-   * // Now operations against this intance only affect records in
-   * // the targeted namespace
-   * ns.upsert([
-   *   // ... records to upsert in namespace 'my-namespace'
-   * ])
-   *
-   * ns.query({
-   *   // ... query records in namespace 'my-namespace'
-   * })
+   * const frenchProducts = index.namespace('products-fr');
+   * const result = await frenchProducts.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.records);
    * ```
-   * This `namespace()` method will inherit custom metadata types if you are chaining the call off an {@link Index} client instance that is typed with a user-specified metadata type. See {@link Pinecone.index} for more info.
    *
-   * @param namespace - The namespace to target within the index. All operations performed with the returned client instance will be scoped only to the targeted namespace.
-   * @returns An {@link Index} object that can be used to perform data operations scoped to the specified namespace.
+   * @see {@link Index.createNamespace} to create a namespace explicitly.
    */
   namespace(namespace: string): Index<T> {
     return new Index<T>(
@@ -1117,42 +900,189 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
     );
   }
 
-  /** @deprecated Use `index.documents.upsert()` instead. */
+  /**
+   * Write documents to a schema-based index.
+   *
+   * @param options - A non-empty `documents` array; each document needs `_id` and fields matching
+   * the index schema.
+   * @returns The number of documents written in `upsertedCount`.
+   * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or missing.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * const result = await index.documents.upsert({
+   *   documents: [{ _id: 'trail-shoe-42', title: 'Waterproof hiking shoe', category: 'footwear' }],
+   * });
+   * console.log(result.upsertedCount);
+   * ```
+   *
+   * @see {@link Documents.update} for partial changes; {@link Index.upsertRecords} for integrated
+   * embedding records.
+   *
+   * @deprecated Use {@link Documents.upsert} through `index.documents.upsert()`.
+   */
   upsertDocuments(
     options: UpsertDocumentsOptions,
   ): Promise<UpsertDocumentsResponse> {
     return this.documents.upsert(options);
   }
 
-  /** @deprecated Use `index.documents.search()` instead. */
+  /**
+   * Search schema-based documents using one or more scoring methods.
+   *
+   * Choose scoring fields and methods supported by your index schema.
+   *
+   * @param options - Scoring methods in `scoreBy`, the result count `topK`, and optional filters
+   * and returned fields.
+   * @returns Ranked `matches`, the namespace, and usage information.
+   * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is missing or empty, or `topK` is
+   * missing or less than 1.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * const result = await index.documents.search({
+   *   scoreBy: [{ type: 'text', fields: ['title'], query: 'hiking shoes' }],
+   *   topK: 5, includeFields: ['title'],
+   * });
+   * console.log(result.matches);
+   * ```
+   *
+   * @see {@link Index.searchRecords} for integrated embedding search; {@link Index.query} for
+   * vector similarity queries.
+   *
+   * @deprecated Use {@link Documents.search} through `index.documents.search()`.
+   */
   searchDocuments(
     options: SearchDocumentsOptions,
   ): Promise<SearchDocumentsResponse> {
     return this.documents.search(options);
   }
 
-  /** @deprecated Use `index.documents.fetch()` instead. */
+  /**
+   * Fetch schema-based documents by IDs or a metadata filter.
+   *
+   * Fetching by filter returns one page at a time.
+   *
+   * @param options - Either non-empty `ids` or `filter`; use `paginationToken` only with a filter.
+   * @returns Documents keyed by ID in `documents`, the namespace, usage, and a continuation token
+   * when available.
+   * @throws {@link Errors.PineconeArgumentError} when the selection is missing or invalid, or
+   * pagination is requested without a filter.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * const result = await index.documents.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.documents['trail-shoe-42']);
+   * ```
+   *
+   * @see {@link Documents.list} to list document IDs; {@link Index.fetch} for vector records.
+   *
+   * @deprecated Use {@link Documents.fetch} through `index.documents.fetch()`.
+   */
   fetchDocuments(
     options: FetchDocumentsOptions,
   ): Promise<FetchDocumentsResponse> {
     return this.documents.fetch(options);
   }
 
-  /** @deprecated Use `index.documents.delete()` instead. */
+  /**
+   * Delete schema-based documents by IDs, filter, or an entire namespace.
+   *
+   * `deleteAll: true` removes all documents in this client's namespace.
+   *
+   * @param options - Exactly one of non-empty `ids`, `filter`, or `deleteAll: true`.
+   * @returns The number of documents matched by the request in `matchedRecords`.
+   * @throws {@link Errors.PineconeArgumentError} when the selection is missing or invalid.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * const result = await index.documents.delete({ ids: ['trail-shoe-42'] });
+   * console.log(result.matchedRecords);
+   * ```
+   *
+   * @see {@link Index.deleteMany} for vector records.
+   *
+   * @deprecated Use {@link Documents.delete} through `index.documents.delete()`.
+   */
   deleteDocuments(
     options: DeleteDocumentsOptions,
   ): Promise<DeleteDocumentsResponse> {
     return this.documents.delete(options);
   }
 
-  /** @deprecated Use `index.documents.list()` instead. */
+  /**
+   * List one page of document IDs in the targeted namespace.
+   *
+   * @param options - An optional ID prefix, page size, and continuation token; defaults to the
+   * first unfiltered page.
+   * @returns Document entries in `documents`, ordered by ID, and `pagination.next` when another
+   * page is available.
+   * @throws {@link Errors.PineconeArgumentError} when `limit` is less than 1.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * const page = await index.documents.list({ prefix: 'trail-shoe-' });
+   * console.log(page.documents);
+   * ```
+   *
+   * @see {@link Documents.fetch} to retrieve document fields; {@link Index.listPaginated} for
+   * vector record IDs.
+   *
+   * @deprecated Use {@link Documents.list} through `index.documents.list()`.
+   */
   listDocuments(
     options: ListDocumentsOptions = {},
   ): Promise<ListDocumentsResponse> {
     return this.documents.list(options);
   }
 
-  /** @deprecated Use `index.documents.update()` instead. */
+  /**
+   * Partially update schema-based documents selected by IDs or a filter.
+   *
+   * Unspecified fields are preserved. The example changes `category` while retaining the document's
+   * title and other fields.
+   *
+   * @param options - Per-ID changes in `documents`, or a `filter` with non-empty `setFields` and/or
+   * `removeFields`.
+   * @returns The number of documents matched by the request in `matchedRecords`.
+   * @throws {@link Errors.PineconeArgumentError} when the selection or field changes are missing or
+   * incompatible.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const index = pc.index({ name: 'product-documents', namespace: 'products-en' });
+   *
+   * await index.documents.update({
+   *   documents: [{ _id: 'trail-shoe-42', category: 'hiking-footwear' }],
+   * });
+   * ```
+   *
+   * @see {@link Documents.upsert} to write documents; {@link Index.update} for vector records.
+   *
+   * @deprecated Use {@link Documents.update} through `index.documents.update()`.
+   */
   updateDocuments(
     options: UpdateDocumentsOptions,
   ): Promise<UpdateDocumentsResponse> {

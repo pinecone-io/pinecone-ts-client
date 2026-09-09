@@ -9,17 +9,17 @@ import { listRestoreJobs, ListRestoreJobsOptions } from './listRestoreJobs';
 import { describeRestoreJob } from './describeRestoreJob';
 
 /**
- * Control-plane operations for restore jobs, which track the progress of an
- * index being created from a backup. Access via `pc.restoreJobs`.
+ * Restore jobs track the creation of indexes from backups.
+ * Access them through {@link Pinecone.restoreJobs}; do not construct this class directly.
+ * Start a restore with {@link Backups.createIndex}.
  *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
- * const pc = new Pinecone();
  *
+ * const pc = new Pinecone();
  * const jobs = await pc.restoreJobs.list();
  * ```
- *
- * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export class RestoreJobs {
   private _api: ManageIndexesApi;
@@ -29,64 +29,41 @@ export class RestoreJobs {
   }
 
   /**
-   * Lists all restore jobs for the current project.
+   * Lists one page of restore jobs in the project.
+   *
+   * @param options - Page size and continuation token. Omit to fetch the first page with the default size.
+   * @returns Jobs in `data`; pass `pagination.next` as `paginationToken` to fetch the next page.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
+   *
    * const pc = new Pinecone();
-   *
-   * const restoreJobs = await pc.restoreJobs.list({ limit: 3 });
-   * console.log(restoreJobs);
-   * // {
-   * //   data: [
-   * //     {
-   * //       restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
-   * //       backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //       targetIndexName: 'my-schema-index-restored',
-   * //       status: 'Completed',
-   * //       percentComplete: 100
-   * //     }
-   * //   ],
-   * //   pagination: undefined
-   * // }
+   * const page = await pc.restoreJobs.list({ limit: 10 });
+   * console.log(page.data, page.pagination?.next);
    * ```
-   *
-   * @param options - Optional {@link ListRestoreJobsOptions} pagination parameters (limit, paginationToken).
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link RestoreJobList}.
-   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
    */
   async list(options?: ListRestoreJobsOptions): Promise<RestoreJobList> {
     return listRestoreJobs(this._api, options);
   }
 
   /**
-   * Describes a restore job by ID.
+   * Retrieves the current progress of a restore job.
    *
-   * Use this to poll the status of an index restore initiated by {@link Backups.createIndex}.
+   * @param jobId - The `restoreJobId` returned by {@link Backups.createIndex}.
+   * @returns The restore status, target index, and completion percentage.
+   * @throws {@link Errors.PineconeArgumentError} when the restore job ID is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone();
    *
+   * const pc = new Pinecone();
    * const job = await pc.restoreJobs.describe('4d4c8693-10fd-4204-a57b-1e3e626fca07');
-   * console.log(job);
-   * // {
-   * //   restoreJobId: '4d4c8693-10fd-4204-a57b-1e3e626fca07',
-   * //   backupId: '11450b9f-96e5-47e5-9186-03f346b1f385',
-   * //   targetIndexName: 'my-schema-index-restored',
-   * //   targetIndexId: 'deb7688b-9f21-4c16-8eb7-f0027abd27fe',
-   * //   status: 'Completed',
-   * //   percentComplete: 100
-   * // }
+   * console.log(job.status, job.percentComplete);
    * ```
    *
-   * @param jobId - The restore job ID returned by {@link Backups.createIndex}.
-   * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves to a {@link RestoreJobModel}.
-   * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
+   * @see {@link Backups.createIndex} to start a restore.
    */
   async describe(jobId: string): Promise<RestoreJobModel> {
     return describeRestoreJob(this._api, jobId);

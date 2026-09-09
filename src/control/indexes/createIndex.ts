@@ -48,10 +48,11 @@ export type {
  * A `string` field indexed for full-text search.
  *
  * `fullTextSearch` is what makes the field searchable, so it is required. Pass
- * an empty object to accept the defaults (`language: 'en'`, no stemming, no
- * stop-word filtering), or set the text analysis options explicitly.
+ * an empty object to accept the text analysis defaults, or set options explicitly.
  *
  * ```typescript
+ * import type { FullTextSearchStringField } from '@pinecone-database/pinecone';
+ *
  * const field: FullTextSearchStringField = {
  *   type: 'string',
  *   fullTextSearch: {},
@@ -80,9 +81,6 @@ export type FullTextSearchStringField = StringField;
  * plain strings — do not belong in the schema. Send them as document metadata
  * instead: they are indexed automatically at upsert time and appear on the
  * described index's {@link IndexSchema}.
- *
- * An index may declare at most one `dense_vector` and one `sparse_vector`
- * field, and must declare at least one field.
  *
  * @see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index)
  */
