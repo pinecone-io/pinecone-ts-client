@@ -1,6 +1,5 @@
-const dotenv = require('dotenv');
-
-const pinecone = require('../dist');
+import dotenv from 'dotenv';
+import { Pinecone } from '../dist';
 
 dotenv.config();
 
@@ -30,16 +29,16 @@ async function safeDelete(
 }
 
 (async () => {
-  const p = new pinecone.Pinecone();
+  const p = new Pinecone();
 
   // Delete collections
   console.log('\n--- Cleaning up collections ---');
-  const collectionList = await p.listCollections();
+  const collectionList = await p.collections.list();
   if (collectionList.collections && collectionList.collections.length > 0) {
     for (const collection of collectionList.collections) {
       console.log(`Attempting to delete collection ${collection.name}...`);
       await safeDelete(
-        () => p.deleteCollection(collection.name),
+        () => p.collections.delete(collection.name),
         'collection',
         collection.name,
       );
@@ -50,7 +49,7 @@ async function safeDelete(
 
   // Delete indexes
   console.log('\n--- Cleaning up indexes ---');
-  const response = await p.listIndexes();
+  const response = await p.indexes.list();
   if (response.indexes && response.indexes.length > 0) {
     for (const index of response.indexes) {
       console.log(`Processing index ${index.name}...`);
@@ -60,7 +59,7 @@ async function safeDelete(
           `Changing deletionProtection status for index ${index.name}...`,
         );
         try {
-          await p.configureIndex(index.name, {
+          await p.indexes.configure(index.name, {
             deletionProtection: 'disabled',
           });
           console.log(
@@ -81,7 +80,7 @@ async function safeDelete(
         }
       }
 
-      await safeDelete(() => p.deleteIndex(index.name), 'index', index.name);
+      await safeDelete(() => p.indexes.delete(index.name), 'index', index.name);
     }
   } else {
     console.log('No indexes found to delete');
@@ -89,12 +88,12 @@ async function safeDelete(
 
   // Delete assistants
   console.log('\n--- Cleaning up assistants ---');
-  const assistants = await p.listAssistants();
-  if (assistants.assistants.length > 0) {
+  const assistants = await p.assistants.list();
+  if (assistants.assistants && assistants.assistants.length > 0) {
     for (const assistant of assistants.assistants) {
       console.log(`Attempting to delete assistant ${assistant.name}...`);
       await safeDelete(
-        () => p.deleteAssistant(assistant.name),
+        () => p.assistants.delete(assistant.name),
         'assistant',
         assistant.name,
       );
@@ -105,14 +104,14 @@ async function safeDelete(
 
   // Delete backups
   console.log('\n--- Cleaning up backups ---');
-  const backups = await p.listBackups();
-  if (backups.data.length > 0) {
+  const backups = await p.backups.list();
+  if (backups.data && backups.data.length > 0) {
     for (const backup of backups.data) {
       console.log(
         `Attempting to delete backup ${backup.name} (ID: ${backup.backupId})...`,
       );
       await safeDelete(
-        () => p.deleteBackup(backup.backupId),
+        () => p.backups.delete(backup.backupId),
         'backup',
         `${backup.name} (ID: ${backup.backupId})`,
       );
