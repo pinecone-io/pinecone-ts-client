@@ -11,7 +11,7 @@ import type {
   CreateIndexSchema,
 } from './createIndex';
 import type {
-  ConfigureIndexOptions,
+  ConfigureIndexResourceOptions,
   NativeConfigureIndexOptions,
 } from './configureIndex';
 import {
@@ -107,7 +107,10 @@ export function specToDeployment(spec: unknown): IndexDeploymentRequest {
   };
 }
 
-function readCapacity(value: unknown): ReadCapacity | undefined {
+/** Normalize legacy flat capacity while preserving native API settings. */
+export function normalizeReadCapacity(
+  value: unknown,
+): ReadCapacity | undefined {
   if (value === undefined) return undefined;
   const input = object(value, '`readCapacity`');
   const flat = 'nodeType' in input || 'manual' in input;
@@ -149,7 +152,7 @@ function readCapacity(value: unknown): ReadCapacity | undefined {
 
 /** Lift and copy read capacity from the legacy deployment spec. */
 export function specToReadCapacity(spec: unknown): ReadCapacity | undefined {
-  return readCapacity(specPart(spec).inner.readCapacity);
+  return normalizeReadCapacity(specPart(spec).inner.readCapacity);
 }
 
 /** Construct exactly one reserved vector field for the vectors API. */
@@ -265,7 +268,7 @@ export function translateLegacyCreateOptions(
   const schema = legacyVectorSchema(options);
   const capacity =
     input.readCapacity !== undefined
-      ? readCapacity(input.readCapacity)
+      ? normalizeReadCapacity(input.readCapacity)
       : specToReadCapacity(input.spec);
   if (deployment.deploymentType === 'byoc' && capacity?.mode !== 'Dedicated')
     fail('BYOC indexes require an explicit readCapacity of mode Dedicated.');
@@ -288,7 +291,7 @@ export function translateLegacyCreateOptions(
 
 /** Normalize legacy pod scaling and flat read capacity without a describe call. */
 export function translateLegacyConfigureOptions(
-  options: ConfigureIndexOptions,
+  options: ConfigureIndexResourceOptions,
 ): NativeConfigureIndexOptions {
   if (options == null)
     fail('You must pass at least one configuration option to configureIndex.');
@@ -331,7 +334,8 @@ export function translateLegacyConfigureOptions(
   );
   const result = clone(rest) as NativeConfigureIndexOptions;
   if (hasPod) result.deployment = legacyPodScaling(options);
-  if (capacity !== undefined) result.readCapacity = readCapacity(capacity);
+  if (capacity !== undefined)
+    result.readCapacity = normalizeReadCapacity(capacity);
   if (!Object.keys(result).length)
     fail('You must pass at least one configuration option to configureIndex.');
   return result;

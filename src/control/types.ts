@@ -239,3 +239,24 @@ export interface ReadCapacityDedicated {
  * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
  */
 export type ReadCapacity = ReadCapacityOnDemand | ReadCapacityDedicated;
+
+/** @deprecated Pass a {@link BackupId} to {@link Backups.describe}. */
+export type DescribeBackupOptions = BackupId;
+
+/** @deprecated Pass a {@link BackupId} to {@link Backups.delete}. */
+export type DeleteBackupOptions = BackupId;
+
+/** @deprecated Pass a {@link RestoreJobId} to {@link RestoreJobs.describe}. */
+export type DescribeRestoreJobOptions = RestoreJobId;
+
+/** @deprecated Pass a {@link IndexName} to {@link Indexes.delete}. */
+export type DeleteIndexOptions = IndexName;
+
+/** @deprecated Pass a {@link IndexName} to {@link Indexes.describe}. */
+export type DescribeIndexOptions = IndexName;
+
+/** @deprecated Pass a {@link CollectionName} to {@link Collections.delete}. */
+export type DeleteCollectionOptions = CollectionName;
+
+/** @deprecated Pass a {@link CollectionName} to {@link Collections.describe}. */
+export type DescribeCollectionOptions = CollectionName;

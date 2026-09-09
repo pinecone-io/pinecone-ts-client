@@ -10,7 +10,10 @@ import {
 } from './createIndexForModel';
 import { describeIndex } from './describeIndex';
 import { deleteIndex } from './deleteIndex';
-import { configureIndex, ConfigureIndexOptions } from './configureIndex';
+import {
+  configureIndex,
+  ConfigureIndexResourceOptions,
+} from './configureIndex';
 import { IndexHostSingleton } from '../../data/indexHostSingleton';
 
 /**
@@ -276,7 +279,7 @@ export class Indexes {
    */
   async configure(
     name: string,
-    options: ConfigureIndexOptions,
+    options: ConfigureIndexResourceOptions,
   ): Promise<IndexModel> {
     return configureIndex(this._api, name, options);
   }

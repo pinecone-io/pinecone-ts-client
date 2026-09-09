@@ -44,6 +44,16 @@ export interface ListIndexBackupsOptions {
 }
 
 /**
+ * Options for the deprecated flat backup listing method.
+ * @deprecated Use {@link ListIndexBackupsOptions} with {@link Backups.listByIndex},
+ * or {@link ListProjectBackupsOptions} with {@link Backups.list}.
+ */
+export interface ListBackupsOptions extends ListIndexBackupsOptions {
+  /** Omit to list all project backups. */
+  indexName?: string;
+}
+
+/**
  * Lists all backups for an index.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)

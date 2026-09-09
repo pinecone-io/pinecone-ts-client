@@ -12,7 +12,7 @@ import { indexOperationsBuilder } from '../../indexOperationsBuilder';
 import { Backups } from '../backups';
 import type { BackupModel } from '../describeBackup';
 import type { BackupList } from '../listIndexBackups';
-import type { CreateIndexFromBackupOptions } from '../createIndexFromBackup';
+import type { CreateIndexFromBackupResourceOptions } from '../createIndexFromBackup';
 
 jest.mock('../../indexOperationsBuilder');
 
@@ -146,7 +146,7 @@ describe('Backups operation contracts through the public facade', () => {
     });
   });
 
-  test.each<CreateIndexFromBackupOptions>([
+  test.each<CreateIndexFromBackupResourceOptions>([
     { name: 'restored-index' },
     {
       name: 'restored-index',

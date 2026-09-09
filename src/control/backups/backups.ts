@@ -6,7 +6,7 @@ import type { BackupModel } from './describeBackup';
 import type { BackupList } from './listIndexBackups';
 import type { PineconeConfiguration } from '../../data';
 import { indexOperationsBuilder } from '../indexOperationsBuilder';
-import { createBackup, CreateBackupOptions } from './createBackup';
+import { createBackup, CreateBackupResourceOptions } from './createBackup';
 import { listIndexBackups, ListIndexBackupsOptions } from './listIndexBackups';
 import {
   listProjectBackups,
@@ -16,7 +16,7 @@ import { describeBackup } from './describeBackup';
 import { deleteBackup } from './deleteBackup';
 import {
   createIndexFromBackup,
-  CreateIndexFromBackupOptions,
+  CreateIndexFromBackupResourceOptions,
 } from './createIndexFromBackup';
 
 /**
@@ -61,7 +61,7 @@ export class Backups {
    */
   async create(
     indexName: string,
-    options?: CreateBackupOptions,
+    options?: CreateBackupResourceOptions,
   ): Promise<BackupModel> {
     return createBackup(this._api, indexName, options);
   }
@@ -181,7 +181,7 @@ export class Backups {
    */
   async createIndex(
     backupId: string,
-    options: CreateIndexFromBackupOptions,
+    options: CreateIndexFromBackupResourceOptions,
   ): Promise<CreateIndexFromBackupResponse> {
     return createIndexFromBackup(this._api, backupId, options);
   }

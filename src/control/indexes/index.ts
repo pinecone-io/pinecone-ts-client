@@ -10,6 +10,8 @@ export type {
   CreateIndexByocSpec,
   CreateIndexPodSpec,
   CreateIndexReadCapacity,
+  ReadCapacityOnDemandParams,
+  ReadCapacityDedicatedParams,
   CreateIndexSchema,
   CreateIndexSchemaField,
   FullTextSearchStringField,
@@ -61,6 +63,7 @@ export type {
 } from './listIndexes';
 export type {
   ConfigureIndexOptions,
+  ConfigureIndexResourceOptions,
   NativeConfigureIndexOptions,
   LegacyConfigureIndexOptions,
   PatchIndexDeploymentRequest,
