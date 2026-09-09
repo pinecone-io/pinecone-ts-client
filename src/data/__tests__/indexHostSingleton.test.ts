@@ -26,6 +26,8 @@ describe('IndexHostSingleton', () => {
     const pineconeConfig = {
       apiKey: 'api-key-1',
     };
+    const api = { controlApiSentinel: true };
+    mockIndexOperationsBuilder.mockReturnValue(api);
     mockDescribeIndex.mockResolvedValue({
       name: 'index-1',
 
@@ -43,7 +45,8 @@ describe('IndexHostSingleton', () => {
       testIndex,
     );
     expect(hostUrl).toEqual(`https://${testHost}`);
-    expect(mockDescribeIndex.mock.calls[0][1]).toEqual(testIndex);
+    expect(mockIndexOperationsBuilder).toHaveBeenCalledWith(pineconeConfig);
+    expect(mockDescribeIndex).toHaveBeenCalledWith(api, testIndex);
   });
 
   test('calls describeIndex once per apiKey and indexName', async () => {

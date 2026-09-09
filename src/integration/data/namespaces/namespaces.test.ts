@@ -1,108 +1,117 @@
-import { ListNamespacesResponse, Pinecone } from '../../../index';
+import { Index, ListNamespacesResponse, Pinecone } from '../../../index';
+import { PineconeNotFoundError } from '../../../errors';
 import {
   assertWithRetries,
   generateDocuments,
-  sleep,
   randomName,
 } from '../../test-helpers';
 import { getTestContext } from '../../test-context';
 
-const namespaceOne = randomName('namespace-one');
-const namespaceTwo = randomName('namespace-two');
-const namespaceThree = randomName('namespace-three');
+const namespacePrefix = randomName('namespaces');
+const namespaceOne = `${namespacePrefix}-one`;
+const namespaceTwo = `${namespacePrefix}-two`;
+const namespaceThree = `${namespacePrefix}-three`;
+const namespaceToDelete = `${namespacePrefix}-delete`;
 let pinecone: Pinecone, serverlessIndexName: string;
+let index: Index;
+
+const expectNamespaces = (response: ListNamespacesResponse) => {
+  expect(response.namespaces).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: namespaceOne }),
+      expect.objectContaining({ name: namespaceTwo }),
+    ]),
+  );
+};
 
 describe('namespaces operations', () => {
   beforeAll(async () => {
     const fixtures = await getTestContext();
     pinecone = fixtures.client;
     serverlessIndexName = fixtures.serverlessIndex.name;
+    index = pinecone.index({ name: serverlessIndexName });
 
-    const serverlessIndexNsOne = pinecone.index({
-      name: serverlessIndexName,
-      namespace: namespaceOne,
+    const documents = generateDocuments({
+      dimension: fixtures.serverlessIndex.dimension,
+      quantity: 5,
+      fieldName: fixtures.serverlessIndex.vectorFieldName,
     });
-
-    const serverlessIndexNsTwo = pinecone.index({
-      name: serverlessIndexName,
-      namespace: namespaceTwo,
-    });
-
-    // Seed indexes
-    const documentsToUpsert = generateDocuments({ dimension: 2, quantity: 5 });
-    await serverlessIndexNsOne.upsertDocuments({
-      documents: documentsToUpsert,
-    });
-    await serverlessIndexNsTwo.upsertDocuments({
-      documents: documentsToUpsert,
-    });
-    await sleep(2000); // Wait for the upsert operations to complete
-  });
-
-  // Tests deleteNamespace
-  afterAll(async () => {
-    await pinecone
-      .index({ name: serverlessIndexName })
-      .deleteNamespace(namespaceThree);
-
+    for (const namespace of [namespaceOne, namespaceTwo]) {
+      await index.namespace(namespace).upsertDocuments({ documents });
+    }
     await assertWithRetries(
-      () => pinecone.index({ name: serverlessIndexName }).listNamespaces(),
-      (response: ListNamespacesResponse) => {
-        expect(response.namespaces).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: namespaceOne }),
-          ]),
-        );
-        expect(response.namespaces).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: namespaceTwo }),
-          ]),
-        );
-        expect(response.namespaces).not.toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ name: namespaceThree }),
-          ]),
-        );
-      },
-      240000,
+      () => index.listNamespaces({ prefix: namespacePrefix }),
+      expectNamespaces,
     );
   });
 
-  test('create namespace', async () => {
-    const response = await pinecone
-      .index({ name: serverlessIndexName })
-      .createNamespace({
-        name: namespaceThree,
-        schema: { fields: { test: { filterable: true } } },
-      });
+  afterAll(async () => {
+    if (!index) return;
+    const results = await Promise.allSettled(
+      [namespaceOne, namespaceTwo, namespaceThree, namespaceToDelete].map(
+        async (namespace) => {
+          try {
+            await index.deleteNamespace(namespace);
+          } catch (error) {
+            if (!(error instanceof PineconeNotFoundError)) throw error;
+          }
+        },
+      ),
+    );
+    const failures = results.filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+    if (failures.length) {
+      throw new AggregateError(
+        failures.map((result) => result.reason),
+        'Failed to clean up integration namespaces',
+      );
+    }
+  });
 
+  test('create namespace', async () => {
+    const response = await index.createNamespace({
+      name: namespaceThree,
+      schema: { fields: { test: { filterable: true } } },
+    });
     expect(response.name).toEqual(namespaceThree);
     expect(response.schema?.fields?.test.filterable).toBe(true);
   });
 
   test('list namespaces', async () => {
-    const response = await pinecone
-      .index({ name: serverlessIndexName })
-      .listNamespaces();
-
-    expect(response.namespaces).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ name: namespaceOne }),
-        expect.objectContaining({ name: namespaceTwo }),
-      ]),
-    );
+    expectNamespaces(await index.listNamespaces({ prefix: namespacePrefix }));
   });
 
   test('describe namespace', async () => {
-    let response = await pinecone
-      .index({ name: serverlessIndexName })
-      .describeNamespace(namespaceOne);
+    for (const name of [namespaceOne, namespaceTwo]) {
+      const response = await index.describeNamespace(name);
+      expect(response.name).toEqual(name);
+    }
+  });
 
-    expect(response.name).toEqual(namespaceOne);
-
-    response = await pinecone
-      .index({ name: serverlessIndexName })
-      .describeNamespace(namespaceTwo);
-    expect(response.name).toEqual(namespaceTwo);
+  test('delete namespace removes it while retaining neighboring namespaces', async () => {
+    await index.createNamespace({ name: namespaceToDelete });
+    await assertWithRetries(
+      () => index.listNamespaces({ prefix: namespacePrefix }),
+      (response) => {
+        expect(response.namespaces).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: namespaceToDelete }),
+          ]),
+        );
+      },
+    );
+    await index.deleteNamespace(namespaceToDelete);
+    await assertWithRetries(
+      () => index.listNamespaces({ prefix: namespacePrefix }),
+      (response) => {
+        expectNamespaces(response);
+        expect(response.namespaces).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: namespaceToDelete }),
+          ]),
+        );
+      },
+    );
   });
 });

@@ -65,7 +65,9 @@ npm run integration:teardown
 
 ### In CI
 
-Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs share the same resources.
+Tests automatically use `FIXTURES_JSON` set by the setup job. The matrix runs Node 22 and 24 with npm and Bun. All matrix jobs share the same resources, so suites use unique namespaces and remove every namespace they create.
+
+Schema field names, dimensions, metrics, deployment location, and seeded record IDs are carried in the fixture JSON. Assertions should use those values instead of duplicating setup constants. Local HTTP retry tests use an ephemeral loopback port and a mock API key.
 
 ## CI Workflow
 
@@ -120,6 +122,7 @@ Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs sh
     "name": "test-index-1234567890",
     "dimension": 2,
     "metric": "dotproduct",
+    "deployment": { "cloud": "aws", "region": "us-west-2" },
     "vectorFieldName": "embedding",
     "metadataFilter": { "key": "genre", "value": "drama" },
     "recordIds": ["record-1", "record-2", "record-3"]
@@ -154,3 +157,18 @@ test('example', () => {
   // ... test code
 });
 ```
+
+## Disabled and opt-in coverage
+
+Every `test.skip`, `it.skip`, `describe.skip`, disabled shorthand (`xit`, `xtest`, `xdescribe`), or conditional alias that selects a Jest skip must have a tracked reason. Add a leading comment to the skipped statement, its enclosing suite, or the conditional alias declaration:
+
+```typescript
+// @integration-skip #35: dense-only indexes return empty results despite fetched documents.
+describe.skip('dense-only search', () => {
+  /* tests */
+});
+```
+
+The keyless `integrationSkipInventory.test.ts` unit test parses the integration TypeScript syntax without executing suites or provisioning resources. It recognizes parameterized/computed skips and opt-in gates. An annotation on an enclosing suite applies to its descendants; an unrelated adjacent suite's annotation does not. Remove the annotation when re-enabling the last skipped test in that scope. Issue numbers refer to this repository and the reason must explain what enables the coverage.
+
+The current dense-only search and filter-fetch limitations are tracked in #35 and #17. Integrated inference is active, so the old #16 skip is no longer inventoried. Document bulk import fixture provisioning remains #38. Slow backup-content and bulk-completion checks and the collections source-pod fixture are explicit opt-in coverage: their conditional skip declarations should name #117, #38, and #21 respectively and document the required environment variable next to the gate. Default lifecycle tests remain active.

@@ -36,7 +36,8 @@
     "test:edge-runtime": "tsx scripts/edge-runtime/loadEntryInEdgeVM.ts",
     "docs:examples": "jest --config jest.config.js scripts/__tests__/check-doc-examples.test.ts && tsx scripts/check-doc-examples.ts",
     "verify:sourcemaps": "tsx scripts/verify-source-maps.ts",
-    "verify:declarations": "node scripts/verify-declarations.mjs"
+    "verify:declarations": "node scripts/verify-declarations.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.tools.json"
   },
   "engines": {
     "node": ">=22.0.0"

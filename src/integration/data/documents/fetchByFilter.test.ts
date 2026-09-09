@@ -36,6 +36,7 @@ beforeAll(async () => {
 // (verified in pinecone-db at 8a4bfa3b10), so the request the SDK sends is
 // correct and there is no client-side fix. Un-skip when the read path returns
 // matches.
+// @integration-skip #17: dense-only fixture returns empty filter results; restore when the read path returns its seeded documents.
 describe.skip('fetchDocuments by filter', () => {
   // Reads here are read-your-writes eventual, like every other document read
   // in this directory, so re-poll rather than asserting on a single call.

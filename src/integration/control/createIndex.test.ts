@@ -8,9 +8,13 @@ const trackIndex = (name: string) => {
   indexNames.push(name);
   return name;
 };
-afterEach(async () => {
-  await cleanupResources(pinecone, indexNames.splice(0));
-}, 60_000);
+const cleanupTrackedResources = async () => {
+  await cleanupResources(pinecone, indexNames);
+  // Retain names after failure so a later hook can retry the deletion.
+  indexNames.length = 0;
+};
+afterEach(cleanupTrackedResources, 60_000);
+afterAll(cleanupTrackedResources, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
