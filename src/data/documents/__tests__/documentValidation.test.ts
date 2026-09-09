@@ -1,6 +1,5 @@
 import { updateDocuments } from '../updateDocuments';
 import type { DocumentOperationsApi } from '../../../pinecone-generated-ts-fetch/db_data';
-import { PineconeArgumentError } from '../../../errors';
 
 describe('updateDocuments argument validation', () => {
   const fakeUpdate: (req: object) => Promise<object> = jest
@@ -41,21 +40,31 @@ describe('updateDocuments argument validation', () => {
         documents: [{ _id: '1' }],
         filter: { flavor: { $eq: 'strawberry' } },
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`documents` and `filter` are mutually exclusive in updateDocuments; pass one or the other.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
   test('rejects a request with neither documents nor filter', async () => {
-    await expect(updateDocuments(api, 'ns', {})).rejects.toThrow(
-      PineconeArgumentError,
-    );
+    await expect(updateDocuments(api, 'ns', {})).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        'You must pass either a non-empty `documents` array or a `filter` with `setFields` and/or `removeFields` to updateDocuments.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
   test('rejects an empty documents array without filter', async () => {
-    await expect(updateDocuments(api, 'ns', { documents: [] })).rejects.toThrow(
-      PineconeArgumentError,
-    );
+    await expect(
+      updateDocuments(api, 'ns', { documents: [] }),
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`documents` must contain at least one document update in updateDocuments.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
@@ -64,7 +73,11 @@ describe('updateDocuments argument validation', () => {
       updateDocuments(api, 'ns', {
         filter: { flavor: { $eq: 'strawberry' } },
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        'A `filter` update requires a non-empty `setFields` and/or `removeFields`.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
@@ -75,7 +88,11 @@ describe('updateDocuments argument validation', () => {
         setFields: {},
         removeFields: [],
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        'A `filter` update requires a non-empty `setFields` and/or `removeFields`.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
@@ -97,7 +114,11 @@ describe('updateDocuments argument validation', () => {
         documents: [{ _id: '1' }],
         removeFields: ['flavor'],
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`setFields` and `removeFields` are only valid together with `filter` in updateDocuments; they cannot be combined with `documents`.',
+    });
     expect(fakeUpdate).not.toHaveBeenCalled();
   });
 
@@ -166,25 +187,40 @@ describe('fetchDocuments argument validation', () => {
         ids: ['1'],
         filter: { flavor: { $eq: 'mint' } },
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`ids` and `filter` are mutually exclusive in fetchDocuments; pass one or the other.',
+    });
+    expect(fakeFetch).not.toHaveBeenCalled();
   });
 
   test('rejects neither ids nor filter', async () => {
-    await expect(fetchDocuments(api, 'ns', {})).rejects.toThrow(
-      PineconeArgumentError,
-    );
+    await expect(fetchDocuments(api, 'ns', {})).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        'You must pass either a non-empty `ids` array or a `filter` to fetchDocuments.',
+    });
+    expect(fakeFetch).not.toHaveBeenCalled();
   });
 
   test('rejects empty ids without filter', async () => {
-    await expect(fetchDocuments(api, 'ns', { ids: [] })).rejects.toThrow(
-      PineconeArgumentError,
-    );
+    await expect(fetchDocuments(api, 'ns', { ids: [] })).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message: '`ids` must contain at least one document ID in fetchDocuments.',
+    });
+    expect(fakeFetch).not.toHaveBeenCalled();
   });
 
   test('rejects paginationToken with ids', async () => {
     await expect(
       fetchDocuments(api, 'ns', { ids: ['1'], paginationToken: 'tok' }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`paginationToken` is only valid together with `filter` in fetchDocuments.',
+    });
+    expect(fakeFetch).not.toHaveBeenCalled();
   });
 
   test('rejects an empty ids array combined with filter', async () => {
@@ -233,9 +269,12 @@ describe('deleteDocuments argument validation', () => {
   });
 
   test('rejects no selector', async () => {
-    await expect(deleteDocuments(api, 'ns', {})).rejects.toThrow(
-      PineconeArgumentError,
-    );
+    await expect(deleteDocuments(api, 'ns', {})).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        'You must specify exactly one of `ids`, `filter`, or `deleteAll` to deleteDocuments.',
+    });
+    expect(fakeDelete).not.toHaveBeenCalled();
   });
 
   test('rejects ids combined with filter', async () => {
@@ -244,7 +283,12 @@ describe('deleteDocuments argument validation', () => {
         ids: ['1'],
         filter: { flavor: { $eq: 'mint' } },
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`ids`, `filter`, and `deleteAll` are mutually exclusive in deleteDocuments; pass exactly one.',
+    });
+    expect(fakeDelete).not.toHaveBeenCalled();
   });
 
   test('rejects filter combined with deleteAll', async () => {
@@ -253,13 +297,23 @@ describe('deleteDocuments argument validation', () => {
         filter: { flavor: { $eq: 'mint' } },
         deleteAll: true,
       }),
-    ).rejects.toThrow(PineconeArgumentError);
+    ).rejects.toMatchObject({
+      name: 'PineconeArgumentError',
+      message:
+        '`ids`, `filter`, and `deleteAll` are mutually exclusive in deleteDocuments; pass exactly one.',
+    });
+    expect(fakeDelete).not.toHaveBeenCalled();
   });
 
   test('rejects empty ids array', async () => {
-    await expect(deleteDocuments(api, 'ns', { ids: [] })).rejects.toThrow(
-      PineconeArgumentError,
+    await expect(deleteDocuments(api, 'ns', { ids: [] })).rejects.toMatchObject(
+      {
+        name: 'PineconeArgumentError',
+        message:
+          '`ids` must contain at least one document ID in deleteDocuments.',
+      },
     );
+    expect(fakeDelete).not.toHaveBeenCalled();
   });
 
   test('rejects an empty ids array combined with filter', async () => {
