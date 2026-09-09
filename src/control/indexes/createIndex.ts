@@ -164,6 +164,8 @@ export type {
   CreateIndexByocSpec,
   CreateIndexPodSpec,
   CreateIndexReadCapacity,
+  ReadCapacityOnDemandParams,
+  ReadCapacityDedicatedParams,
 } from './legacyTypes';
 
 /**

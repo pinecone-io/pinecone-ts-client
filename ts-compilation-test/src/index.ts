@@ -2,7 +2,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 import {
   CreateIndexReadCapacity,
   CreateIndexForModelOptions,
-  CreateIndexFromBackupOptions,
+  CreateIndexFromBackupResourceOptions,
   ReadCapacity,
 } from '@pinecone-database/pinecone';
 
@@ -157,7 +157,7 @@ export async function compileOnlySurfaceCoverage(): Promise<void> {
       embed: { model: 'multilingual-e5-large', fieldMap: { text: 'text' } },
       readCapacity,
     };
-    const backup: CreateIndexFromBackupOptions = {
+    const backup: CreateIndexFromBackupResourceOptions = {
       name: 'restored-index',
       readCapacity,
     };

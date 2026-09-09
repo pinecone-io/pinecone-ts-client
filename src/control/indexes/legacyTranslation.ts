@@ -11,7 +11,7 @@ import type {
   CreateIndexSchema,
 } from './createIndex';
 import type {
-  ConfigureIndexOptions,
+  ConfigureIndexResourceOptions,
   NativeConfigureIndexOptions,
 } from './configureIndex';
 import {
@@ -291,7 +291,7 @@ export function translateLegacyCreateOptions(
 
 /** Normalize legacy pod scaling and flat read capacity without a describe call. */
 export function translateLegacyConfigureOptions(
-  options: ConfigureIndexOptions,
+  options: ConfigureIndexResourceOptions,
 ): NativeConfigureIndexOptions {
   if (options == null)
     fail('You must pass at least one configuration option to configureIndex.');

@@ -15,7 +15,10 @@ import {
   ManageIndexesApi,
 } from '../../../pinecone-generated-ts-fetch/db_control';
 import { createIndex, CreateIndexOptions } from '../createIndex';
-import { configureIndex, ConfigureIndexOptions } from '../configureIndex';
+import {
+  configureIndex,
+  ConfigureIndexResourceOptions,
+} from '../configureIndex';
 import { PineconeArgumentError } from '../../../errors';
 
 const spec = { serverless: { cloud: 'aws', region: 'us-east-1' } };
@@ -367,7 +370,7 @@ describe('legacy read capacity validation', () => {
     expect(() =>
       translateLegacyConfigureOptions({
         readCapacity,
-      } as ConfigureIndexOptions),
+      } as ConfigureIndexResourceOptions),
     ).toThrow(new PineconeArgumentError(message));
   });
   test('preserves native partial dedicated capacity settings', () => {
@@ -422,7 +425,7 @@ describe('legacy configure validation', () => {
     ],
   ])('rejects invalid patch %p', (input, message) => {
     expect(() =>
-      translateLegacyConfigureOptions(input as ConfigureIndexOptions),
+      translateLegacyConfigureOptions(input as ConfigureIndexResourceOptions),
     ).toThrow(new PineconeArgumentError(message));
   });
 });

@@ -12,11 +12,15 @@ import { handleApiError } from '../../errors/handling';
 export type { CreateIndexFromBackupResponse } from '../../pinecone-generated-ts-fetch/db_control';
 
 /**
- * Options for creating an index from a backup.
+ * Options for the deprecated flat backup restore method.
+ *
+ * @deprecated Use {@link CreateIndexFromBackupResourceOptions} with {@link Backups.createIndex}.
  *
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export interface CreateIndexFromBackupOptions {
+  /** The ID of the backup to restore. */
+  backupId: string;
   /** The new index name, such as `product-catalog-restored`. Must be unique within the project. */
   name: string;
   /** Optional tags to apply to the created index. Overrides backup tags if provided. */
@@ -26,6 +30,12 @@ export interface CreateIndexFromBackupOptions {
   /** Native nested or deprecated flat read capacity configuration. Omit for on-demand capacity. */
   readCapacity?: ReadCapacity | CreateIndexReadCapacity;
 }
+
+/** Options for {@link Backups.createIndex}; pass the backup ID separately. */
+export type CreateIndexFromBackupResourceOptions = Omit<
+  CreateIndexFromBackupOptions,
+  'backupId'
+>;
 
 /**
  * Creates an index from a Pinecone backup.
@@ -42,7 +52,7 @@ export interface CreateIndexFromBackupOptions {
 export const createIndexFromBackup = async (
   api: ManageIndexesApi,
   backupId: string,
-  options: CreateIndexFromBackupOptions,
+  options: CreateIndexFromBackupResourceOptions,
 ): Promise<CreateIndexFromBackupResponse> => {
   if (!backupId) {
     throw new PineconeArgumentError(

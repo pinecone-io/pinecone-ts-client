@@ -29,11 +29,16 @@ export type NativeConfigureIndexOptions = Omit<
   deletionProtection?: DeletionProtection;
 };
 
-/** Options for native configuration or legacy pod scaling/read capacity. */
+/**
+ * Options for the deprecated flat index configuration method.
+ * @deprecated Use {@link ConfigureIndexResourceOptions} with {@link Indexes.configure}.
+ */
 export type ConfigureIndexOptions = Omit<
   NativeConfigureIndexOptions,
   'readCapacity'
 > & {
+  /** The name of the index to configure. */
+  name: string;
   /** @deprecated Use deployment.replicas. */
   podReplicas?: number;
   /** @deprecated Use deployment.podType. */
@@ -41,8 +46,11 @@ export type ConfigureIndexOptions = Omit<
   /** Read capacity in native or legacy flat form. */
   readCapacity?: ReadCapacity | ReadCapacityPatch | CreateIndexReadCapacity;
 };
-/** @deprecated Use ConfigureIndexOptions with deployment. */
-export type LegacyConfigureIndexOptions = ConfigureIndexOptions;
+/** Options for {@link Indexes.configure}; pass the index name separately. */
+export type ConfigureIndexResourceOptions = Omit<ConfigureIndexOptions, 'name'>;
+
+/** @deprecated Use {@link ConfigureIndexResourceOptions} with deployment. */
+export type LegacyConfigureIndexOptions = ConfigureIndexResourceOptions;
 
 export type {
   PatchIndexDeploymentRequest,
@@ -59,7 +67,7 @@ export type {
 export async function configureIndex(
   api: ManageIndexesApi,
   name: string,
-  options: ConfigureIndexOptions,
+  options: ConfigureIndexResourceOptions,
 ): Promise<IndexModel> {
   if (!name) {
     throw new PineconeArgumentError(
@@ -67,7 +75,7 @@ export async function configureIndex(
     );
   }
   const normalized = translateLegacyConfigureOptions(options);
-  const fields: Array<keyof ConfigureIndexOptions> = [
+  const fields: Array<keyof ConfigureIndexResourceOptions> = [
     'deployment',
     'schema',
     'readCapacity',
