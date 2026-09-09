@@ -33,7 +33,7 @@ import {
  */
 export interface SearchRecordsRequestQuery {
     /**
-     * The number of similar records to return.
+     * The number of similar records to return, from 1 to 10000.
      * @type {number}
      * @memberof SearchRecordsRequestQuery
      */

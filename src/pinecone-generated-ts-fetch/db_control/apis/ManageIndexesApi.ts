@@ -271,7 +271,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a backup of an index. 
+     * Create a backup of an index. The backup records the schema of the index it is taken from and reports it as `schema`. An index created from the backup with [Create index from backup](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_from_backup) inherits that schema. 
      * Create a backup of an index
      */
     async createBackupRaw(requestParameters: CreateBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupModel>> {
@@ -313,7 +313,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a backup of an index. 
+     * Create a backup of an index. The backup records the schema of the index it is taken from and reports it as `schema`. An index created from the backup with [Create index from backup](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_from_backup) inherits that schema. 
      * Create a backup of an index
      */
     async createBackup(requestParameters: CreateBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupModel> {
@@ -322,7 +322,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a time-based backup schedule for the specified index.
+     * Create a time-based backup schedule for the specified index. Backup schedules are supported for serverless and BYOC indexes; the request is rejected with `400` for a pod-based index.
      * Create a backup schedule for an index
      */
     async createBackupScheduleRaw(requestParameters: CreateBackupScheduleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupScheduleResponse>> {
@@ -364,7 +364,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a time-based backup schedule for the specified index.
+     * Create a time-based backup schedule for the specified index. Backup schedules are supported for serverless and BYOC indexes; the request is rejected with `400` for a pod-based index.
      * Create a backup schedule for an index
      */
     async createBackupSchedule(requestParameters: CreateBackupScheduleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupScheduleResponse> {
@@ -373,7 +373,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a Pinecone collection.    Serverless indexes do not support collections. 
+     * Create a Pinecone collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Create a collection
      */
     async createCollectionRaw(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionModel>> {
@@ -411,7 +411,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a Pinecone collection.    Serverless indexes do not support collections. 
+     * Create a Pinecone collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Create a collection
      */
     async createCollection(requestParameters: CreateCollectionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionModel> {
@@ -420,7 +420,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a Pinecone index. Define the schema for your index — including vector fields, semantic text fields, and metadata fields — and the deployment infrastructure (managed serverless or BYOC). **The index schema cannot be modified after creation.** Field types, dimensions, metrics, and text-analysis settings are permanent. Choose your schema carefully before creating an index. To restore from a backup, set `source_backup_id` and specify the target `deployment.cloud` and `deployment.region`. Same-cloud cross-region restore is supported when available for the backup\'s source region. Cross-cloud restore is not supported. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index). 
+     * Create a Pinecone index. Define the schema for your index — dense vector, sparse vector, and full-text search fields — and, optionally, the deployment infrastructure (managed serverless or BYOC). To create an index with an integrated embedding model, use [Create an index with integrated embedding](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_for_model). If `deployment` is omitted, the index is deployed as a managed (serverless) index on `aws` in `us-east-1`. **The index schema cannot be modified after creation.** Field types, dimensions, metrics, and text-analysis settings are permanent. Choose your schema carefully before creating an index. To create an index from a backup, use [Create index from backup](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_from_backup). For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index). 
      * Create an index
      */
     async createIndexRaw(requestParameters: CreateIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
@@ -458,7 +458,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a Pinecone index. Define the schema for your index — including vector fields, semantic text fields, and metadata fields — and the deployment infrastructure (managed serverless or BYOC). **The index schema cannot be modified after creation.** Field types, dimensions, metrics, and text-analysis settings are permanent. Choose your schema carefully before creating an index. To restore from a backup, set `source_backup_id` and specify the target `deployment.cloud` and `deployment.region`. Same-cloud cross-region restore is supported when available for the backup\'s source region. Cross-cloud restore is not supported. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index). 
+     * Create a Pinecone index. Define the schema for your index — dense vector, sparse vector, and full-text search fields — and, optionally, the deployment infrastructure (managed serverless or BYOC). To create an index with an integrated embedding model, use [Create an index with integrated embedding](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_for_model). If `deployment` is omitted, the index is deployed as a managed (serverless) index on `aws` in `us-east-1`. **The index schema cannot be modified after creation.** Field types, dimensions, metrics, and text-analysis settings are permanent. Choose your schema carefully before creating an index. To create an index from a backup, use [Create index from backup](https://docs.pinecone.io/reference/api/2026-07/control-plane/create_index_from_backup). For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index). 
      * Create an index
      */
     async createIndex(requestParameters: CreateIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
@@ -467,7 +467,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a serverless index with an integrated embedding model. Pinecone automatically embeds text written to the specified field at write time and embeds queries at read time using the same model. This is a convenience wrapper around [Create Index](#tag/Manage-Indexes/operation/create_index) that constructs a `semantic_text` schema field from the model parameters you provide. For full control over schema composition (e.g., combining semantic text with metadata fields), use Create Index directly. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding).
+     * Create an index with integrated embedding. With this type of index, you provide source text, and Pinecone uses a [hosted embedding model](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) to convert the text automatically during [upsert](https://docs.pinecone.io/reference/api/2026-07/data-plane/upsert_records) and [search](https://docs.pinecone.io/reference/api/2026-07/data-plane/search_records). The response is this version\'s index model, with the embedding configuration surfaced as a `semantic_text` field in the index `schema`, named after the `field_map` text entry. Read and write the index through the records API. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding).
      * Create an index with integrated embedding
      */
     async createIndexForModelRaw(requestParameters: CreateIndexForModelOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<IndexModel>> {
@@ -505,7 +505,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a serverless index with an integrated embedding model. Pinecone automatically embeds text written to the specified field at write time and embeds queries at read time using the same model. This is a convenience wrapper around [Create Index](#tag/Manage-Indexes/operation/create_index) that constructs a `semantic_text` schema field from the model parameters you provide. For full control over schema composition (e.g., combining semantic text with metadata fields), use Create Index directly. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding).
+     * Create an index with integrated embedding. With this type of index, you provide source text, and Pinecone uses a [hosted embedding model](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) to convert the text automatically during [upsert](https://docs.pinecone.io/reference/api/2026-07/data-plane/upsert_records) and [search](https://docs.pinecone.io/reference/api/2026-07/data-plane/search_records). The response is this version\'s index model, with the embedding configuration surfaced as a `semantic_text` field in the index `schema`, named after the `field_map` text entry. Read and write the index through the records API. For guidance and examples, see [Create an index](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding).
      * Create an index with integrated embedding
      */
     async createIndexForModel(requestParameters: CreateIndexForModelOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
@@ -514,7 +514,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
+     * Create an index from a backup. The restored index inherits the schema of the index the backup was taken from, including its full-text search fields and its integrated embedding configuration, and the request cannot override it. A backup that carries no `schema` restores an index whose fields are derived from the source index\'s dimension, metric, and vector type, and reported under the reserved `_values` / `_sparse_values` names. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperationRaw(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateIndexFromBackupResponse>> {
@@ -556,7 +556,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an index from a backup. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
+     * Create an index from a backup. The restored index inherits the schema of the index the backup was taken from, including its full-text search fields and its integrated embedding configuration, and the request cannot override it. A backup that carries no `schema` restores an index whose fields are derived from the source index\'s dimension, metric, and vector type, and reported under the reserved `_values` / `_sparse_values` names. For serverless backups, you can optionally set `read_capacity` so the restored index is created with dedicated read nodes (DRN) instead of defaulting to on-demand capacity.
      * Create an index from a backup
      */
     async createIndexFromBackupOperation(requestParameters: CreateIndexFromBackupOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateIndexFromBackupResponse> {
@@ -651,7 +651,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete an existing collection. Serverless indexes do not support collections. 
+     * Delete an existing collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Delete a collection
      */
     async deleteCollectionRaw(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -686,7 +686,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete an existing collection. Serverless indexes do not support collections. 
+     * Delete an existing collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Delete a collection
      */
     async deleteCollection(requestParameters: DeleteCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
@@ -825,7 +825,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a description of a collection. Serverless indexes do not support collections. 
+     * Get a description of a collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Describe a collection
      */
     async describeCollectionRaw(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionModel>> {
@@ -860,7 +860,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a description of a collection. Serverless indexes do not support collections. 
+     * Get a description of a collection. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * Describe a collection
      */
     async describeCollection(requestParameters: DescribeCollectionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionModel> {
@@ -1061,7 +1061,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all collections in a project. Serverless indexes do not support collections. 
+     * List all collections in a project. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * List collections
      */
     async listCollectionsRaw(requestParameters: ListCollectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CollectionList>> {
@@ -1092,7 +1092,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all collections in a project. Serverless indexes do not support collections. 
+     * List all collections in a project. Collections are supported only for pod-based indexes. Pod-based indexes cannot be created with API version `2026-07`, so this operation applies to pod-based indexes created with an earlier API version. 
      * List collections
      */
     async listCollections(requestParameters: ListCollectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionList> {
@@ -1293,7 +1293,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update frequency, retention, or enabled state for a backup schedule. Re-enabling a disabled schedule (`enabled: true`) enqueues a new backup operation.
+     * Update frequency, retention, or enabled state for a backup schedule. Re-enabling a disabled schedule (`enabled: true`) enqueues a new backup operation, and is rejected with `409` when the index already has another enabled schedule.
      * Update a backup schedule
      */
     async updateBackupScheduleRaw(requestParameters: UpdateBackupScheduleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BackupScheduleResponse>> {
@@ -1335,7 +1335,7 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update frequency, retention, or enabled state for a backup schedule. Re-enabling a disabled schedule (`enabled: true`) enqueues a new backup operation.
+     * Update frequency, retention, or enabled state for a backup schedule. Re-enabling a disabled schedule (`enabled: true`) enqueues a new backup operation, and is rejected with `409` when the index already has another enabled schedule.
      * Update a backup schedule
      */
     async updateBackupSchedule(requestParameters: UpdateBackupScheduleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BackupScheduleResponse> {

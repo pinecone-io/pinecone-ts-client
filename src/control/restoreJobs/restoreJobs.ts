@@ -64,7 +64,7 @@ export class RestoreJobs {
   /**
    * Describes a restore job by ID.
    *
-   * Use this to poll the status of an index restore initiated by {@link createFromBackup}.
+   * Use this to poll the status of an index restore initiated by {@link Backups.createIndex}.
    *
    * @example
    * ```typescript
@@ -83,7 +83,7 @@ export class RestoreJobs {
    * // }
    * ```
    *
-   * @param jobId - The restore job ID returned by {@link createFromBackup}.
+   * @param jobId - The restore job ID returned by {@link Backups.createIndex}.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @returns A promise that resolves to a {@link RestoreJobModel}.
    * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)

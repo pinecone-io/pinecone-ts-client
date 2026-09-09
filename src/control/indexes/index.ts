@@ -2,6 +2,14 @@ export { Indexes } from './indexes';
 
 export type {
   CreateIndexOptions,
+  NativeCreateIndexOptions,
+  LegacyCreateIndexOptions,
+  LegacyCreateIndexSpec,
+  CreateIndexSpec,
+  CreateIndexServerlessSpec,
+  CreateIndexByocSpec,
+  CreateIndexPodSpec,
+  CreateIndexReadCapacity,
   CreateIndexSchema,
   CreateIndexSchemaField,
   FullTextSearchStringField,
@@ -27,7 +35,10 @@ export type {
   DedicatedNodeType,
   ReadCapacityScaling,
 } from './createIndex';
-export type { CreateIndexForModelOptions } from './createIndexForModel';
+export type {
+  CreateIndexForModelOptions,
+  CreateIndexForModelEmbed,
+} from './createIndexForModel';
 export type {
   IndexList,
   IndexModel,
@@ -49,6 +60,8 @@ export type {
 } from './listIndexes';
 export type {
   ConfigureIndexOptions,
+  NativeConfigureIndexOptions,
+  LegacyConfigureIndexOptions,
   PatchIndexDeploymentRequest,
   PatchIndexSchema,
   PatchSemanticTextField,

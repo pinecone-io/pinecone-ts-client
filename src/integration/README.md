@@ -10,9 +10,13 @@ Integration tests use a simple environment variable approach where all test fixt
 
 ### Setup Script (`src/integration/setup.ts`)
 
-1. Creates serverless index with test data
-2. Creates assistant with uploaded test file
-3. Outputs `FIXTURES_JSON={"serverlessIndex":{...},"assistant":{...}}`
+1. Creates a document index with test data
+2. Creates dense and sparse legacy indexes using reserved-only schemas
+3. Creates an assistant with an uploaded test file
+4. Outputs `FIXTURES_JSON={"serverlessIndex":{...},"legacyVectors":{...},"assistant":{...}}`
+
+Vector suites use unique namespaces on the shared legacy indexes. Regenerate
+fixtures with setup if an older `FIXTURES_JSON` lacks `legacyVectors`.
 
 ### Test Files
 
@@ -23,7 +27,8 @@ Integration tests use a simple environment variable approach where all test fixt
 ### Teardown Script (`src/integration/teardown.ts`)
 
 1. Reads `FIXTURES_JSON` environment variable
-2. Deletes the index and assistant
+2. Attempts to delete all three indexes and the assistant, including resources
+   registered by a failed setup; reports any cleanup failures
 
 ## Running Tests
 
@@ -60,7 +65,9 @@ npm run integration:teardown
 
 ### In CI
 
-Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs share the same resources.
+Tests automatically use `FIXTURES_JSON` set by the setup job. The matrix runs Node 22 and 24 with npm and Bun. All matrix jobs share the same resources, so suites use unique namespaces and remove every namespace they create.
+
+Schema field names, dimensions, metrics, deployment location, and seeded record IDs are carried in the fixture JSON. Assertions should use those values instead of duplicating setup constants. Local HTTP retry tests use an ephemeral loopback port and a mock API key.
 
 ## CI Workflow
 
@@ -114,7 +121,15 @@ Tests automatically use `FIXTURES_JSON` set by the setup job. All matrix jobs sh
   "serverlessIndex": {
     "name": "test-index-1234567890",
     "dimension": 2,
-    "metric": "dotproduct"
+    "metric": "dotproduct",
+    "deployment": { "cloud": "aws", "region": "us-west-2" },
+    "vectorFieldName": "embedding",
+    "metadataFilter": { "key": "genre", "value": "drama" },
+    "recordIds": ["record-1", "record-2", "record-3"]
+  },
+  "legacyVectors": {
+    "dense": { "name": "integration-legacy-dense-12345678" },
+    "sparse": { "name": "integration-legacy-sparse-12345678" }
   },
   "assistant": {
     "name": "test-assistant-1234567890",
@@ -142,3 +157,18 @@ test('example', () => {
   // ... test code
 });
 ```
+
+## Disabled and opt-in coverage
+
+Every `test.skip`, `it.skip`, `describe.skip`, disabled shorthand (`xit`, `xtest`, `xdescribe`), or conditional alias that selects a Jest skip must have a tracked reason. Add a leading comment to the skipped statement, its enclosing suite, or the conditional alias declaration:
+
+```typescript
+// @integration-skip #35: dense-only indexes return empty results despite fetched documents.
+describe.skip('dense-only search', () => {
+  /* tests */
+});
+```
+
+The keyless `integrationSkipInventory.test.ts` unit test parses the integration TypeScript syntax without executing suites or provisioning resources. It recognizes parameterized/computed skips and opt-in gates. An annotation on an enclosing suite applies to its descendants; an unrelated adjacent suite's annotation does not. Remove the annotation when re-enabling the last skipped test in that scope. Issue numbers refer to this repository and the reason must explain what enables the coverage.
+
+The current dense-only search and filter-fetch limitations are tracked in #35 and #17. Integrated inference is active, so the old #16 skip is no longer inventoried. Document bulk import fixture provisioning remains #38. Slow backup-content and bulk-completion checks and the collections source-pod fixture are explicit opt-in coverage: their conditional skip declarations should name #117, #38, and #21 respectively and document the required environment variable next to the gate. Default lifecycle tests remain active.

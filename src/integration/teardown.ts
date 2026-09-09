@@ -1,4 +1,5 @@
 import { Pinecone } from '../pinecone';
+import { cleanupResources } from './test-helpers';
 
 /**
  * Integration Test Teardown Script
@@ -34,32 +35,16 @@ export const teardown = async () => {
 
   console.error('🧹 Cleaning up integration test resources...');
 
-  // Delete serverless index
-  if (fixtures.serverlessIndex?.name) {
-    try {
-      console.error(`📦 Deleting index: ${fixtures.serverlessIndex.name}`);
-      await pc.indexes.delete(fixtures.serverlessIndex.name);
-      console.error('✅ Index deleted');
-    } catch (error) {
-      console.error('❌ Failed to delete index:', error);
-      // Continue with assistant cleanup even if index deletion fails
-    }
-  } else {
-    console.error('⚠️  No serverless index name found in FIXTURES_JSON');
-  }
-
-  // Delete assistant
-  if (fixtures.assistant?.name) {
-    try {
-      console.error(`🤖 Deleting assistant: ${fixtures.assistant.name}`);
-      await pc.assistants.delete(fixtures.assistant.name);
-      console.error('✅ Assistant deleted');
-    } catch (error) {
-      console.error('❌ Failed to delete assistant:', error);
-    }
-  } else {
-    console.error('⚠️  No assistant name found in FIXTURES_JSON');
-  }
+  await cleanupResources(
+    pc,
+    fixtures.cleanupIndexes ??
+      [
+        fixtures.serverlessIndex?.name,
+        fixtures.legacyVectors?.dense?.name,
+        fixtures.legacyVectors?.sparse?.name,
+      ].filter((name): name is string => typeof name === 'string'),
+    fixtures.assistant?.name ? [fixtures.assistant.name] : [],
+  );
 
   console.error('✅ Teardown complete!');
 };

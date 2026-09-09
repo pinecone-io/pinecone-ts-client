@@ -29,7 +29,7 @@ import {
 
 /**
  * @type ReadCapacity
- * By default the index will be created with read capacity  mode `OnDemand`. If you prefer to allocate dedicated read  nodes for your workload, you must specify mode `Dedicated` and additional configurations for `node_type` and `scaling`.
+ * By default the index will be created with read capacity  mode `OnDemand`. If you prefer to allocate dedicated read  nodes for your workload, you must specify mode `Dedicated` and additional configurations for `node_type` and `scaling`. BYOC indexes do not support `OnDemand`: a `byoc` deployment must set `mode: Dedicated` explicitly, since omitting `read_capacity` defaults to `OnDemand` and is rejected.
  * @export
  */
 export type ReadCapacity = { mode: 'Dedicated' } & ReadCapacityDedicatedSpec | { mode: 'OnDemand' } & ReadCapacityOnDemandSpec;

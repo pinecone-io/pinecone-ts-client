@@ -13,13 +13,20 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DocumentFieldValue } from './DocumentFieldValue';
+import {
+    DocumentFieldValueFromJSON,
+    DocumentFieldValueFromJSONTyped,
+    DocumentFieldValueToJSON,
+} from './DocumentFieldValue';
+
 /**
  * A partial update to a document, identified by `_id`. Any other fields set new values for those fields. Fields named in `_remove_fields` are removed from the document.
  * @export
  * @interface UpdateDocumentRecord
  */
 export interface UpdateDocumentRecord {
-    [key: string]: any | any;
+    [key: string]: DocumentFieldValue | any;
     /**
      * The unique identifier of the document to update.
      * @type {string}

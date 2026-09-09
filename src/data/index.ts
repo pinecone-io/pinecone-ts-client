@@ -55,6 +55,7 @@ import {
 import {
   deleteDocuments,
   DeleteDocumentsOptions,
+  DeleteDocumentsResponse,
 } from './documents/deleteDocuments';
 import {
   listDocuments,
@@ -64,6 +65,7 @@ import {
 import {
   updateDocuments,
   UpdateDocumentsOptions,
+  UpdateDocumentsResponse,
 } from './documents/updateDocuments';
 import { createNamespace } from './namespaces/createNamespace';
 import type { CreateNamespaceOptions } from './namespaces/createNamespace';
@@ -141,7 +143,10 @@ export type {
   FetchDocumentsResponse,
   DocumentFetchUsage,
 } from './documents/fetchDocuments';
-export type { DeleteDocumentsOptions } from './documents/deleteDocuments';
+export type {
+  DeleteDocumentsOptions,
+  DeleteDocumentsResponse,
+} from './documents/deleteDocuments';
 export type {
   ListDocumentsOptions,
   ListDocumentsResponse,
@@ -151,6 +156,7 @@ export type {
 } from './documents/listDocuments';
 export type {
   UpdateDocumentsOptions,
+  UpdateDocumentsResponse,
   UpdateDocumentRecord,
 } from './documents/updateDocuments';
 
@@ -308,7 +314,6 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * const index = pc.index({ host: indexModel.host });
    * ```
    *
-   * @constructor
    * @param options - The {@link IndexOptions} for targeting the index.
    * @param config - The configuration from the Pinecone client.
    */
@@ -1205,9 +1210,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - The {@link DeleteDocumentsOptions} identifying the documents to delete.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the delete request is accepted.
+   * @returns A promise that resolves to a {@link DeleteDocumentsResponse} whose
+   * `matchedRecords` reports how many documents the request matched.
    */
-  async deleteDocuments(options: DeleteDocumentsOptions): Promise<void> {
+  async deleteDocuments(
+    options: DeleteDocumentsOptions,
+  ): Promise<DeleteDocumentsResponse> {
     const api = await this._documentProvider.provide();
     return deleteDocuments(api, this.target.namespace, options);
   }
@@ -1256,9 +1264,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - The {@link UpdateDocumentsOptions} containing the documents to update.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
-   * @returns A promise that resolves when the update request is accepted.
+   * @returns A promise that resolves to an {@link UpdateDocumentsResponse} whose
+   * `matchedRecords` reports how many documents the request matched.
    */
-  async updateDocuments(options: UpdateDocumentsOptions): Promise<void> {
+  async updateDocuments(
+    options: UpdateDocumentsOptions,
+  ): Promise<UpdateDocumentsResponse> {
     const api = await this._documentProvider.provide();
     return updateDocuments(api, this.target.namespace, options);
   }

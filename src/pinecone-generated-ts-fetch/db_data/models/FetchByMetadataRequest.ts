@@ -30,9 +30,9 @@ export interface FetchByMetadataRequest {
      * @type {object}
      * @memberof FetchByMetadataRequest
      */
-    filter?: object;
+    filter: object;
     /**
-     * Max number of vectors to return.
+     * The maximum number of records to return per page. Defaults to 100.
      * @type {number}
      * @memberof FetchByMetadataRequest
      */
@@ -50,6 +50,7 @@ export interface FetchByMetadataRequest {
  */
 export function instanceOfFetchByMetadataRequest(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "filter" in value;
 
     return isInstance;
 }
@@ -65,7 +66,7 @@ export function FetchByMetadataRequestFromJSONTyped(json: any, ignoreDiscriminat
     return {
         
         'namespace': !exists(json, 'namespace') ? undefined : json['namespace'],
-        'filter': !exists(json, 'filter') ? undefined : json['filter'],
+        'filter': json['filter'],
         'limit': !exists(json, 'limit') ? undefined : json['limit'],
         'paginationToken': !exists(json, 'paginationToken') ? undefined : json['paginationToken'],
     };

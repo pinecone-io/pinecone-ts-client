@@ -1,10 +1,14 @@
 import { BasePineconeError } from './base';
 
-/** @internal */
+/** Details of an unsuccessful HTTP request, used to construct API errors. */
 export type FailedRequestInfo = {
+  /** HTTP response status code. */
   status: number;
+  /** URL of the failed request. */
   url?: string;
+  /** Response body returned by the server. */
   body?: string;
+  /** Human-readable server error message. */
   message?: string;
 };
 
@@ -135,6 +139,7 @@ export class PineconeInternalServerError extends BasePineconeError {
 
 /* We can choose to throw this error when we want to limit requests to the server. When instantiated, pass the
  number of retries the user has made already. */
+/** Raised when a request still fails after all configured retry attempts. */
 export class PineconeMaxRetriesExceededError extends BasePineconeError {
   constructor(retries: number) {
     const intro = `You have exceeded the max configured retries (${retries}). `;

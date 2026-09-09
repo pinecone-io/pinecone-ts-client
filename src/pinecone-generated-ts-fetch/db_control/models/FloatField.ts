@@ -26,11 +26,11 @@ export interface FloatField {
      */
     type: FloatFieldTypeEnum;
     /**
-     * Optional description for this field.
+     * Optional description for this field. `null` when none was set.
      * @type {string}
      * @memberof FloatField
      */
-    description?: string;
+    description?: string | null;
     /**
      * Whether this field is indexed for metadata filtering.
      * @type {boolean}

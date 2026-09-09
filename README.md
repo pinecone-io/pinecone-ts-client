@@ -47,7 +47,7 @@ Pinecone is a vector database that makes it easy to add vector search to product
 npm install --save-dev @types/node
 ```
 
-The published type declarations also reference DOM lib types (e.g. `RequestCredentials`, `WindowOrWorkerGlobalScope`, used by the `fetchApi` configuration option's `FetchAPI` type). If your `tsconfig.json` doesn't set `"skipLibCheck": true` and its `lib` array omits `"dom"` and `"webworker"` — which is the case for many Node-only configs, since `skipLibCheck` defaults to `false` — compiling against this SDK fails with `Cannot find name` errors even though the SDK itself runs fine in Node.js. Add `"webworker"` (or `"dom"`) to `lib`, or set `"skipLibCheck": true`, to avoid this.
+The published type declarations support Node-only TypeScript configurations with `lib: ["es2022"]`, `types: ["node"]`, and `skipLibCheck: false`. Use a current version of `@types/node` for your supported Node.js version so its built-in fetch types are available; adding `"dom"` or `"webworker"` to `lib` is not required.
 
 ## Installation
 
@@ -78,14 +78,13 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 // 2. Create a serverless index
 const indexModel = await pc.createIndex({
   name: 'example-index',
-  dimension: 1536,
-  metric: 'cosine',
-  spec: {
-    serverless: {
-      cloud: 'aws',
-      region: 'us-east-1',
+  schema: {
+    fields: {
+      vector: { type: 'dense_vector', dimension: 8, metric: 'cosine' },
     },
   },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
+  waitUntilReady: true,
 });
 
 // 3. Target the index
@@ -96,7 +95,7 @@ await index.upsert({
   records: [
     {
       id: 'vec1',
-      values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], // ... dimension should match index (1536)
+      values: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], // dimension matches the index (8)
       metadata: { genre: 'drama', year: 2020 },
     },
     {

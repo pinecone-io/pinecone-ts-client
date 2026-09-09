@@ -95,8 +95,23 @@ jobs:
       # cannot resolve for a consumer.
       - name: Verify published source maps
         run: npm run verify:sourcemaps
+      - name: Verify published declarations
+        run: npm run verify:declarations
       - name: TypeDoc
         uses: ./.github/actions/build-docs
+
+  typecheck:
+    name: Typecheck source, scripts, and consumers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Typecheck without emitting files
+        run: npm run typecheck
 
   testing:
     needs: [changes]

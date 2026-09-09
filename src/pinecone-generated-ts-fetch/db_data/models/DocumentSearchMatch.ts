@@ -27,11 +27,11 @@ export interface DocumentSearchMatch {
      */
     _id: string;
     /**
-     * The similarity score of the matched document.
+     * The similarity score of the matched document. `null` when the score is not a finite number, which can happen for dense vectors of very large magnitude.
      * @type {number}
      * @memberof DocumentSearchMatch
      */
-    _score: number;
+    _score: number | null;
 }
 
 /**

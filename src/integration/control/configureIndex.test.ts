@@ -1,4 +1,3 @@
-import { PineconeBadRequestError } from '../../errors';
 import { Pinecone } from '../../index';
 import { randomName, retryDeletes, waitUntilIndexReady } from '../test-helpers';
 
@@ -23,14 +22,25 @@ describe('configure index', () => {
         },
       },
       waitUntilReady: true,
+      timeout: 180_000,
       tags: { project: 'pinecone-integration-tests' },
     });
   });
 
   afterAll(async () => {
+    if (!pinecone || !serverlessIndexName) return;
     // Note: using retryDeletes instead of waitUntilReady due to backend bug where index status is ready, but index
     // is actually still upgrading
     await retryDeletes(pinecone, serverlessIndexName);
+  });
+
+  afterEach(async () => {
+    if (!pinecone || !serverlessIndexName) return;
+    // Restore deletion protection even if an assertion fails midway through a
+    // test, so teardown can always remove the index.
+    await pinecone.indexes.configure(serverlessIndexName, {
+      deletionProtection: 'disabled',
+    });
   });
 
   describe('serverless index', () => {
@@ -41,12 +51,13 @@ describe('configure index', () => {
       await waitUntilIndexReady(serverlessIndexName);
 
       // verify we cannot delete the index
-      await pinecone.indexes.delete(serverlessIndexName).catch((e) => {
-        const err = e as PineconeBadRequestError;
-        expect(err.name).toEqual('PineconeBadRequestError');
-        expect(err.message).toContain(
+      await expect(
+        pinecone.indexes.delete(serverlessIndexName),
+      ).rejects.toMatchObject({
+        name: 'PineconeBadRequestError',
+        message: expect.stringContaining(
           'Deletion protection is enabled for this index',
-        );
+        ),
       });
 
       // disable so we can clean the index up
@@ -76,24 +87,18 @@ describe('configure index', () => {
         tags: { testTag: '' }, // Passing null/undefined here is not allowed due to type safety (must eval to string)
       });
       const description3 = await pinecone.indexes.describe(serverlessIndexName);
-      if (description3.tags != null) {
-        expect(description3.tags['testTag']).toBeUndefined();
-        expect(description3.tags['project']).toEqual(
-          'pinecone-integration-tests',
-        );
-      }
+      expect(description3.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
 
       // Confirm when config'ing other things about the index, tags are not changed
       await pinecone.indexes.configure(serverlessIndexName, {
         deletionProtection: 'enabled',
       });
       const description4 = await pinecone.indexes.describe(serverlessIndexName);
-      if (description4.tags != null) {
-        expect(description4.tags['testTag']).toBeUndefined();
-        expect(description4.tags['project']).toEqual(
-          'pinecone-integration-tests',
-        );
-      }
+      expect(description4.tags).toEqual({
+        project: 'pinecone-integration-tests',
+      });
 
       // (Cleanup) Disable deletion protection
       await pinecone.indexes.configure(serverlessIndexName, {
@@ -111,9 +116,7 @@ describe('configure index', () => {
         tags: { project: 'updated-project' },
       });
       const description2 = await pinecone.indexes.describe(serverlessIndexName);
-      if (description2.tags != null) {
-        expect(description2.tags['project']).toEqual('updated-project');
-      }
+      expect(description2.tags?.['project']).toEqual('updated-project');
     });
   });
 });

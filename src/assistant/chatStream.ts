@@ -16,6 +16,7 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
     this.stream = stream;
   }
 
+  /** Iterate over response items as they arrive from the assistant. */
   async *[Symbol.asyncIterator](): AsyncIterator<Item> {
     let buffer = '';
     for await (const chunk of this.stream) {

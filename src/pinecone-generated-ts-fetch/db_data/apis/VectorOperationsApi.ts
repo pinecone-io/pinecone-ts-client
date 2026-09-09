@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   DeleteRequest,
   DescribeIndexStatsRequest,
+  ErrorResponse,
   FetchByMetadataRequest,
   FetchByMetadataResponse,
   FetchResponse,
@@ -38,6 +39,8 @@ import {
     DeleteRequestToJSON,
     DescribeIndexStatsRequestFromJSON,
     DescribeIndexStatsRequestToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
     FetchByMetadataRequestFromJSON,
     FetchByMetadataRequestToJSON,
     FetchByMetadataResponseFromJSON,
@@ -72,7 +75,7 @@ import {
 
 export interface DeleteVectorsRequest {
     xPineconeApiVersion: string;
-    deleteRequest: DeleteRequest;
+    deleteRequest: DeleteRequest | null;
 }
 
 export interface DescribeIndexStatsOperationRequest {
@@ -101,7 +104,7 @@ export interface ListVectorsRequest {
 
 export interface QueryVectorsRequest {
     xPineconeApiVersion: string;
-    queryRequest: QueryRequest;
+    queryRequest: QueryRequest | null;
 }
 
 export interface SearchRecordsNamespaceRequest {
@@ -112,7 +115,7 @@ export interface SearchRecordsNamespaceRequest {
 
 export interface UpdateVectorRequest {
     xPineconeApiVersion: string;
-    updateRequest: UpdateRequest;
+    updateRequest: UpdateRequest | null;
 }
 
 export interface UpsertRecordsNamespaceRequest {
@@ -325,7 +328,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the IDs of records in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+     * List the IDs of records in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of IDs. When the response has no `pagination`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
      * List record IDs
      */
     async listVectorsRaw(requestParameters: ListVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResponse>> {
@@ -372,7 +375,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the IDs of records in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response also includes a `pagination_token` that you can use to get the next batch of IDs. When the response does not include a `pagination_token`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
+     * List the IDs of records in a single namespace of a serverless index. An optional prefix can be passed to limit the results to IDs with a common prefix.  Returns up to 100 IDs at a time by default in sorted order (bitwise \"C\" collation). If the `limit` parameter is set, `list` returns up to that number of IDs instead. Whenever there are additional IDs to return, the response includes `pagination.next`, a token you pass as `paginationToken` to get the next batch of IDs. When the response has no `pagination`, there are no more IDs to return.  For guidance and examples, see [List record IDs](https://docs.pinecone.io/guides/manage-data/list-record-ids).  **Note:** `list` is supported only for serverless indexes.
      * List record IDs
      */
     async listVectors(requestParameters: ListVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResponse> {
@@ -428,7 +431,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text (`inputs`) is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with text
      */
     async searchRecordsNamespaceRaw(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchRecordsResponse>> {
@@ -470,7 +473,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding). Searching with a query vector or record ID is supported for all indexes.   For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text (`inputs`) is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
      * Search with text
      */
     async searchRecordsNamespace(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchRecordsResponse> {
@@ -526,7 +529,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models).  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert text
      */
     async upsertRecordsNamespaceRaw(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -568,7 +571,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models).  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
      * Upsert text
      */
     async upsertRecordsNamespace(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {

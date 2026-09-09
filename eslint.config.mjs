@@ -6,12 +6,7 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: [
-      'dist',
-      'src/pinecone-generated-ts-fetch',
-      'src/pinecone-generated-ts-fetch-alpha',
-      'pinecone-rag-demo',
-    ],
+    ignores: ['dist', 'src/pinecone-generated-ts-fetch', 'pinecone-rag-demo'],
   },
   {
     files: ['**/*.ts'],
@@ -44,12 +39,26 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/preview/**/*.ts'],
+    files: ['src/control/indexes/legacyTranslation.ts'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-function-return-type': [
+      'import-x/no-restricted-paths': [
         'error',
-        { allowExpressions: true },
+        {
+          zones: [
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/data',
+            },
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/pinecone-generated-ts-fetch/db_control/apis',
+            },
+            {
+              target: './src/control/indexes/legacyTranslation.ts',
+              from: './src/pinecone-generated-ts-fetch/db_data/apis',
+            },
+          ],
+        },
       ],
     },
   },

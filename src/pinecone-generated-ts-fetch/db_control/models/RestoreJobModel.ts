@@ -44,7 +44,8 @@ export interface RestoreJobModel {
      */
     targetIndexId: string;
     /**
-     * Status of the restore job
+     * Status of the restore job.
+     * Possible values: `Pending`, `Completed`, `Failed`, or `Cancelled`.
      * @type {string}
      * @memberof RestoreJobModel
      */
@@ -54,15 +55,15 @@ export interface RestoreJobModel {
      * @type {Date}
      * @memberof RestoreJobModel
      */
-    createdAt: Date;
+    createdAt: Date | null;
     /**
-     * Timestamp when the restore job finished
+     * Timestamp when the restore job finished. `null` until the job has completed.
      * @type {Date}
      * @memberof RestoreJobModel
      */
-    completedAt?: Date;
+    completedAt?: Date | null;
     /**
-     * The progress made by the restore job out of 100
+     * Progress of the restore job: `100` once the job is `Completed`, absent while it is pending or after it has failed. Intermediate progress is not reported.
      * @type {number}
      * @memberof RestoreJobModel
      */
@@ -99,8 +100,8 @@ export function RestoreJobModelFromJSONTyped(json: any, ignoreDiscriminator: boo
         'targetIndexName': json['target_index_name'],
         'targetIndexId': json['target_index_id'],
         'status': json['status'],
-        'createdAt': (new Date(json['created_at'])),
-        'completedAt': !exists(json, 'completed_at') ? undefined : (new Date(json['completed_at'])),
+        'createdAt': (json['created_at'] === null ? null : new Date(json['created_at'])),
+        'completedAt': !exists(json, 'completed_at') ? undefined : (json['completed_at'] === null ? null : new Date(json['completed_at'])),
         'percentComplete': !exists(json, 'percent_complete') ? undefined : json['percent_complete'],
     };
 }
@@ -119,8 +120,8 @@ export function RestoreJobModelToJSON(value?: RestoreJobModel | null): any {
         'target_index_name': value.targetIndexName,
         'target_index_id': value.targetIndexId,
         'status': value.status,
-        'created_at': (value.createdAt.toISOString()),
-        'completed_at': value.completedAt === undefined ? undefined : (value.completedAt.toISOString()),
+        'created_at': (value.createdAt === null ? null : value.createdAt.toISOString()),
+        'completed_at': value.completedAt === undefined ? undefined : (value.completedAt === null ? null : value.completedAt.toISOString()),
         'percent_complete': value.percentComplete,
     };
 }

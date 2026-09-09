@@ -31,19 +31,19 @@ export interface ReadCapacityDedicatedConfig {
      * @type {string}
      * @memberof ReadCapacityDedicatedConfig
      */
-    nodeType?: string;
+    nodeType: string;
     /**
      * The type of scaling strategy to use.
      * @type {string}
      * @memberof ReadCapacityDedicatedConfig
      */
-    scaling?: string;
+    scaling: string;
     /**
      * 
      * @type {ScalingConfigManual}
      * @memberof ReadCapacityDedicatedConfig
      */
-    manual?: ScalingConfigManual;
+    manual: ScalingConfigManual;
 }
 
 /**
@@ -51,6 +51,9 @@ export interface ReadCapacityDedicatedConfig {
  */
 export function instanceOfReadCapacityDedicatedConfig(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "nodeType" in value;
+    isInstance = isInstance && "scaling" in value;
+    isInstance = isInstance && "manual" in value;
 
     return isInstance;
 }
@@ -65,9 +68,9 @@ export function ReadCapacityDedicatedConfigFromJSONTyped(json: any, ignoreDiscri
     }
     return {
         
-        'nodeType': !exists(json, 'node_type') ? undefined : json['node_type'],
-        'scaling': !exists(json, 'scaling') ? undefined : json['scaling'],
-        'manual': !exists(json, 'manual') ? undefined : ScalingConfigManualFromJSON(json['manual']),
+        'nodeType': json['node_type'],
+        'scaling': json['scaling'],
+        'manual': ScalingConfigManualFromJSON(json['manual']),
     };
 }
 

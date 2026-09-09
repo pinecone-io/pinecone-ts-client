@@ -26,11 +26,11 @@ export interface StringListField {
      */
     type: StringListFieldTypeEnum;
     /**
-     * Optional description for this field.
+     * Optional description for this field. `null` when none was set.
      * @type {string}
      * @memberof StringListField
      */
-    description?: string;
+    description?: string | null;
     /**
      * Whether this field is indexed for metadata filtering.
      * @type {boolean}

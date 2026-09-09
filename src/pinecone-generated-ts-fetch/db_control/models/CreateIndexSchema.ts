@@ -21,14 +21,16 @@ import {
 } from './CreateIndexSchemaField';
 
 /**
- * The schema to use when creating a Pinecone index. Defines the typed fields that documents in the index can contain, including vector fields, semantic text fields, and metadata fields.
- * At least one primary field (`dense_vector`, `sparse_vector`, `semantic_text`, or a `string` field with `full_text_search`) must be present.
+ * The schema to use when creating a Pinecone index. Defines the fields the index searches over: dense vector, sparse vector, and full-text search fields.
+ * At least one of `dense_vector`, `sparse_vector`, or a `string` field with `full_text_search` must be present; an empty `fields` map is rejected. At most one `dense_vector` and one `sparse_vector` field, and at most 100 `full_text_search` fields. Metadata used for filtering is not declared in the schema; it is indexed automatically from the documents you upsert.
  * @export
  * @interface CreateIndexSchema
  */
 export interface CreateIndexSchema {
     /**
-     * A map of field names to their configurations. Field names must be unique, non-empty strings and must not use the reserved names `_id`, `_values`, or `_sparse_values`.
+     * A map of field names to their configurations. Field names must be unique, non-empty strings of at most 64 bytes and must not start with `$`, which introduces a filter operator.
+     * Names starting with `_` are reserved: this covers `_id`, `_values`, `_sparse_values`, and every other underscore-prefixed name. Two reserved names are accepted, and only as the whole schema: `_values` (type `dense_vector`) and/or `_sparse_values` (type `sparse_vector`) with no other fields. Such a schema creates a classic vector index, which is read and written through the vectors API rather than the documents API — the same index that earlier API versions created from `dimension`, `metric`, and `vector_type`. Reserved fields do not accept a `description`. Any other field named with a leading `_`, or a reserved field combined with other fields, is rejected.
+     * The map may not be empty: a schema with no fields is rejected with `Schema must contain at least one of the following field types: dense_vector, sparse_vector, string with full_text_search`.
      * @type {{ [key: string]: CreateIndexSchemaField; }}
      * @memberof CreateIndexSchema
      */

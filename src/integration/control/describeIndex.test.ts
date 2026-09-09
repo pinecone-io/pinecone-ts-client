@@ -1,12 +1,14 @@
 import { PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { getTestContext } from '../test-context';
+import { getTestContext, IntegrationFixtures } from '../test-context';
 
 let pinecone: Pinecone, serverlessIndexName: string;
+let indexFixture: IntegrationFixtures['serverlessIndex'];
 
 beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
+  indexFixture = fixtures.serverlessIndex;
   serverlessIndexName = fixtures.serverlessIndex.name;
 });
 
@@ -18,20 +20,20 @@ describe('describe index; serverless', () => {
 
     // `dimension` and `metric` are properties of the index's `dense_vector`
     // schema field rather than of the index itself.
-    const embedding = description.schema.fields['embedding'];
+    const embedding = description.schema.fields[indexFixture.vectorFieldName];
     if (!('type' in embedding) || embedding.type !== 'dense_vector') {
       throw new Error('expected `embedding` to be a dense_vector field');
     }
-    expect(embedding.dimension).toEqual(2);
-    expect(embedding.metric).toEqual('dotproduct');
+    expect(embedding.dimension).toEqual(indexFixture.dimension);
+    expect(embedding.metric).toEqual(indexFixture.metric);
 
     // `deployment` is a discriminated union keyed on `deploymentType`.
     const deployment = description.deployment;
     if (deployment.deploymentType !== 'managed') {
       throw new Error('expected a managed (serverless) deployment');
     }
-    expect(deployment.cloud).toEqual('aws');
-    expect(deployment.region).toEqual('us-west-2');
+    expect(deployment.cloud).toEqual(indexFixture.deployment.cloud);
+    expect(deployment.region).toEqual(indexFixture.deployment.region);
 
     expect(description.status.ready).toEqual(true);
     expect(description.status.state).toEqual('Ready');

@@ -94,8 +94,14 @@ export interface ReadCapacityOnDemandSpecResponse extends Omit<
  * @see [Dedicated read nodes](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes)
  */
 export type ReadCapacityResponse =
-  | ({ mode: 'Dedicated' } & ReadCapacityDedicatedSpecResponse)
-  | ({ mode: 'OnDemand' } & ReadCapacityOnDemandSpecResponse);
+  | ({
+      /** Read capacity provisioning mode. */
+      mode: 'Dedicated';
+    } & ReadCapacityDedicatedSpecResponse)
+  | ({
+      /** Read capacity provisioning mode. */
+      mode: 'OnDemand';
+    } & ReadCapacityOnDemandSpecResponse);
 
 /**
  * A field in the schema of an existing index. Check `type` to narrow to a
@@ -108,18 +114,44 @@ export type ReadCapacityResponse =
  * set you can declare yourself.
  */
 export type TypedIndexSchemaField =
-  | ({ type: 'boolean' } & BooleanField)
-  | ({ type: 'dense_vector' } & DenseVectorField & {
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'boolean';
+    } & BooleanField)
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'dense_vector';
+    } & DenseVectorField & {
+        /** Similarity metric used by this field. */
         metric: IndexMetric | (string & {});
       })
-  | ({ type: 'float' } & FloatField)
-  | ({ type: 'integer' } & IntegerField)
-  | ({ type: 'semantic_text' } & SemanticTextField & {
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'float';
+    } & FloatField)
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'integer';
+    } & IntegerField)
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'semantic_text';
+    } & SemanticTextField & {
+        /** Similarity metric used by this field. */
         metric?: IndexMetric | (string & {});
       })
-  | ({ type: 'sparse_vector' } & SparseVectorField)
-  | ({ type: 'string' } & ResponseStringField)
-  | ({ type: 'string_list' } & StringListField);
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'sparse_vector';
+    } & SparseVectorField)
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'string';
+    } & ResponseStringField)
+  | ({
+      /** Field kind used to narrow this schema variant. */
+      type: 'string_list';
+    } & StringListField);
 
 /**
  * A field in the schema of an existing index.
@@ -141,6 +173,7 @@ export type IndexSchemaField = TypedIndexSchemaField | LegacyMetadataField;
  * ```
  */
 export interface IndexSchema extends Omit<GeneratedIndexSchema, 'fields'> {
+  /** Map of field names to their schema configurations. */
   fields: { [fieldName: string]: IndexSchemaField };
 }
 
@@ -166,6 +199,7 @@ export interface IndexModel extends Omit<
  * The indexes in a project, as returned by {@link Indexes.list}.
  */
 export interface IndexList extends Omit<GeneratedIndexList, 'indexes'> {
+  /** Indexes in the project. */
   indexes?: Array<IndexModel>;
 }
 

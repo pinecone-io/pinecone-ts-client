@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface BackupScheduleRetentionInput {
     /**
-     * Number of days to retain each backup created by this schedule. The maximum allowed value is determined by your project configuration (`max_backup_retention_days`).
+     * Number of days to retain each backup created by this schedule. Must be at least 1 and no more than the service-configured maximum; a value outside that range is rejected with `400`.
      * @type {number}
      * @memberof BackupScheduleRetentionInput
      */

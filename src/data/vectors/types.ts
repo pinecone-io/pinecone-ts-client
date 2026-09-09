@@ -148,6 +148,8 @@ export type OperationUsage = {
  * Integrated records require an `id` or `_id` field in addition to any relevant model fields, or metadata.
  */
 export type IntegratedRecord<T extends RecordMetadata = RecordMetadata> = {
+  /** Unique record identifier; supply either id or _id. */
   id?: string;
+  /** Alternate spelling of the unique record identifier. */
   _id?: string;
 } & T;

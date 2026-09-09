@@ -20,11 +20,11 @@ import { exists, mapValues } from '../runtime';
  */
 export interface CreateNamespaceRequestSchemaFieldsValue {
     /**
-     * Whether the field is filterable. If true, the field is indexed and can be used in filters. Only true values are allowed.
+     * Whether the field is indexed and can be used in filters. Must be present and must be `true`: omitting it, or sending `false` or `null`, is rejected with `Field '<name>' is set to filterable: false. Only filterable: true is supported.` To leave a field unindexed, omit it from `fields` entirely.
      * @type {boolean}
      * @memberof CreateNamespaceRequestSchemaFieldsValue
      */
-    filterable?: boolean;
+    filterable: boolean;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface CreateNamespaceRequestSchemaFieldsValue {
  */
 export function instanceOfCreateNamespaceRequestSchemaFieldsValue(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "filterable" in value;
 
     return isInstance;
 }
@@ -46,7 +47,7 @@ export function CreateNamespaceRequestSchemaFieldsValueFromJSONTyped(json: any, 
     }
     return {
         
-        'filterable': !exists(json, 'filterable') ? undefined : json['filterable'],
+        'filterable': json['filterable'],
     };
 }
 

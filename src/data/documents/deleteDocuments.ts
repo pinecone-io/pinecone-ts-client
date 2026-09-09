@@ -1,19 +1,23 @@
 import type {
   DocumentOperationsApi,
   DeleteDocumentsRequest,
+  DeleteDocumentsResponse,
 } from '../../pinecone-generated-ts-fetch/db_data';
 import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_data';
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 import { assertNonEmptyArray } from './documentValidation';
 
-export type { DeleteDocumentsRequest as DeleteDocumentsOptions } from '../../pinecone-generated-ts-fetch/db_data';
+export type {
+  DeleteDocumentsRequest as DeleteDocumentsOptions,
+  DeleteDocumentsResponse,
+} from '../../pinecone-generated-ts-fetch/db_data';
 
 export const deleteDocuments = async (
   api: DocumentOperationsApi,
   namespace: string,
   options: DeleteDocumentsRequest,
-): Promise<void> => {
+): Promise<DeleteDocumentsResponse> => {
   const given = [
     options.ids !== undefined,
     options.filter !== undefined,
@@ -32,7 +36,7 @@ export const deleteDocuments = async (
   }
   assertNonEmptyArray(options.ids, 'ids', 'document ID', 'deleteDocuments');
   try {
-    await api.deleteDocuments({
+    return await api.deleteDocuments({
       namespace,
       deleteDocumentsRequest: options,
       xPineconeApiVersion: X_PINECONE_API_VERSION,

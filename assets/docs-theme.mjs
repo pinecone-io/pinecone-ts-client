@@ -1,6 +1,7 @@
 import { copyFileSync } from 'fs';
 import { join } from 'path';
 import { PageEvent, RendererEvent } from 'typedoc';
+import { scopeDocumentationWarnings } from './docs-validation.mjs';
 
 /**
  * This script is passed into typedoc at build time, and is used to hook into their rendering
@@ -11,6 +12,7 @@ import { PageEvent, RendererEvent } from 'typedoc';
  */
 
 export const load = (app) => {
+  scopeDocumentationWarnings(app.logger);
   app.renderer.on(PageEvent.END, onPageRendered);
   app.renderer.on(RendererEvent.END, onRenderFinished);
 };

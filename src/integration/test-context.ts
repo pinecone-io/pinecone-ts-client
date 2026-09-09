@@ -1,13 +1,16 @@
 import { Pinecone } from '../index';
+import type { LegacyVectorFixtures } from './legacyVectorFixtures';
 
 /**
  * Integration test fixtures interface
  */
 export interface IntegrationFixtures {
   client: Pinecone;
+  legacyVectors: LegacyVectorFixtures;
   serverlessIndex: {
     name: string;
     dimension: number;
+    deployment: { cloud: string; region: string };
     metric: string;
     /**
      * Name of the `dense_vector` schema field holding the seeded vectors.
@@ -45,7 +48,7 @@ export interface IntegrationFixtures {
  *
  * @example
  * ```typescript
- * import { getTestContext } from '../test-context';
+ * import { getTestContext, IntegrationFixtures } from './test-context';
  *
  * let fixtures: IntegrationFixtures;
  *
@@ -92,6 +95,9 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
   if (!data.assistant?.name) {
     throw new Error('FIXTURES_JSON missing assistant.name');
   }
+  if (!data.legacyVectors?.dense?.name || !data.legacyVectors?.sparse?.name) {
+    throw new Error('FIXTURES_JSON missing legacyVectors.dense/sparse.name');
+  }
 
   const apiKey = process.env.PINECONE_API_KEY;
   if (!apiKey) {
@@ -115,8 +121,13 @@ export const getTestContext = async (): Promise<IntegrationFixtures> => {
 
   return {
     client,
+    legacyVectors: data.legacyVectors,
     serverlessIndex: {
       name: data.serverlessIndex.name,
+      deployment: data.serverlessIndex.deployment || {
+        cloud: 'aws',
+        region: 'us-west-2',
+      },
       dimension: data.serverlessIndex.dimension || 2,
       metric: data.serverlessIndex.metric || 'dotproduct',
       vectorFieldName: data.serverlessIndex.vectorFieldName || 'embedding',

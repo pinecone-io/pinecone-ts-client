@@ -36,13 +36,13 @@ export interface SearchMatchTerms {
      * @type {string}
      * @memberof SearchMatchTerms
      */
-    strategy?: string;
+    strategy: string;
     /**
      * A list of terms that must be present in the text of each search hit based on the specified strategy.
      * @type {Array<string>}
      * @memberof SearchMatchTerms
      */
-    terms?: Array<string>;
+    terms: Array<string>;
 }
 
 /**
@@ -50,6 +50,8 @@ export interface SearchMatchTerms {
  */
 export function instanceOfSearchMatchTerms(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "strategy" in value;
+    isInstance = isInstance && "terms" in value;
 
     return isInstance;
 }
@@ -64,8 +66,8 @@ export function SearchMatchTermsFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'strategy': !exists(json, 'strategy') ? undefined : json['strategy'],
-        'terms': !exists(json, 'terms') ? undefined : json['terms'],
+        'strategy': json['strategy'],
+        'terms': json['terms'],
     };
 }
 

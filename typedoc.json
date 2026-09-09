@@ -13,6 +13,6 @@
     "Github Repo": "https://github.com/pinecone-io/pinecone-ts-client",
     "Pinecone Docs": "https://docs.pinecone.io"
   },
-  "treatWarningsAsErrors": false,
+  "treatWarningsAsErrors": true,
   "validation": true
 }

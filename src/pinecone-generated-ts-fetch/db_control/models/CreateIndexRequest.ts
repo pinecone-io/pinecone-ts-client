@@ -58,19 +58,7 @@ export interface CreateIndexRequest {
      */
     schema: CreateIndexSchema;
     /**
-     * The name of a collection from which to create the index. The collection must have been created from a pod-based index with a compatible schema.
-     * @type {string}
-     * @memberof CreateIndexRequest
-     */
-    sourceCollection?: string;
-    /**
-     * The ID of a backup from which to restore the index. Mutually exclusive with `source_collection`.
-     * @type {string}
-     * @memberof CreateIndexRequest
-     */
-    sourceBackupId?: string;
-    /**
-     * The ID of a customer-managed encryption key (CMEK) to use for this index. Requires CMEK to be enabled for your organization.
+     * The ID of a customer-managed encryption key (CMEK) to use for this index. Requires CMEK to be enabled for your organization. Encrypted indexes cannot have `full_text_search` fields: a request that sets `cmek_id` and declares one is rejected, and a project that enforces CMEK rejects any schema with a `full_text_search` field with `412`.
      * @type {string}
      * @memberof CreateIndexRequest
      */
@@ -82,11 +70,11 @@ export interface CreateIndexRequest {
      */
     readCapacity?: ReadCapacity;
     /**
-     * Custom user tags added to an index. Keys must be 80 characters or less. Values must be 120 characters or less. Keys must be alphanumeric, '_', or '-'.  Values must be alphanumeric, ';', '@', '_', '-', '.', '+', or ' '. To unset a key, set the value to be an empty string.
+     * Custom user tags added to an index, at most 20 per index. Keys must be 80 characters or less and alphanumeric, '_', or '-'. Values must be 120 characters or less and consist of printable ASCII characters or spaces. To unset a key, set the value to be an empty string. `null` in responses when the index has no tags.
      * @type {{ [key: string]: string; }}
      * @memberof CreateIndexRequest
      */
-    tags?: { [key: string]: string; };
+    tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
      * Possible values: `disabled` or `enabled`.
@@ -119,8 +107,6 @@ export function CreateIndexRequestFromJSONTyped(json: any, ignoreDiscriminator: 
         'name': !exists(json, 'name') ? undefined : json['name'],
         'deployment': !exists(json, 'deployment') ? undefined : IndexDeploymentRequestFromJSON(json['deployment']),
         'schema': CreateIndexSchemaFromJSON(json['schema']),
-        'sourceCollection': !exists(json, 'source_collection') ? undefined : json['source_collection'],
-        'sourceBackupId': !exists(json, 'source_backup_id') ? undefined : json['source_backup_id'],
         'cmekId': !exists(json, 'cmek_id') ? undefined : json['cmek_id'],
         'readCapacity': !exists(json, 'read_capacity') ? undefined : ReadCapacityFromJSON(json['read_capacity']),
         'tags': !exists(json, 'tags') ? undefined : json['tags'],
@@ -140,8 +126,6 @@ export function CreateIndexRequestToJSON(value?: CreateIndexRequest | null): any
         'name': value.name,
         'deployment': IndexDeploymentRequestToJSON(value.deployment),
         'schema': CreateIndexSchemaToJSON(value.schema),
-        'source_collection': value.sourceCollection,
-        'source_backup_id': value.sourceBackupId,
         'cmek_id': value.cmekId,
         'read_capacity': ReadCapacityToJSON(value.readCapacity),
         'tags': value.tags,

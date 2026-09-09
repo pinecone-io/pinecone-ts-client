@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A semantic text field configuration. Backed by an integrated embedding model that embeds text at write and query time, enabling semantic similarity search without separate embedding calls.
+ * A semantic text field, as returned when describing an index created with an integrated embedding model. Backed by an integrated embedding model that embeds text at write and query time, enabling semantic similarity search without separate embedding calls. Cannot be declared when creating an index; use the create-for-model operation.
  * @export
  * @interface SemanticTextField
  */
@@ -26,11 +26,23 @@ export interface SemanticTextField {
      */
     type: SemanticTextFieldTypeEnum;
     /**
+     * Optional description for this field, at most 256 bytes. `null` in responses when none was set.
+     * @type {string}
+     * @memberof SemanticTextField
+     */
+    description?: string | null;
+    /**
      * The name of the integrated embedding model to use for this field.
      * @type {string}
      * @memberof SemanticTextField
      */
     model: string;
+    /**
+     * The dimension of the vectors the model produces. `null` for models that produce sparse vectors.
+     * @type {number}
+     * @memberof SemanticTextField
+     */
+    dimension?: number | null;
     /**
      * The distance metric used for similarity search. Defaults to the model's preferred metric if not specified.
      * Possible values: `cosine`, `dotproduct`, or `euclidean`.
@@ -43,13 +55,13 @@ export interface SemanticTextField {
      * @type {object}
      * @memberof SemanticTextField
      */
-    writeParameters?: object;
+    writeParameters?: object | null;
     /**
      * Model-specific parameters applied at query time, such as `input_type`.
      * @type {object}
      * @memberof SemanticTextField
      */
-    readParameters?: object;
+    readParameters?: object | null;
 }
 
 
@@ -84,7 +96,9 @@ export function SemanticTextFieldFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'type': json['type'],
+        'description': !exists(json, 'description') ? undefined : json['description'],
         'model': json['model'],
+        'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'writeParameters': !exists(json, 'write_parameters') ? undefined : json['write_parameters'],
         'readParameters': !exists(json, 'read_parameters') ? undefined : json['read_parameters'],
@@ -101,7 +115,9 @@ export function SemanticTextFieldToJSON(value?: SemanticTextField | null): any {
     return {
         
         'type': value.type,
+        'description': value.description,
         'model': value.model,
+        'dimension': value.dimension,
         'metric': value.metric,
         'write_parameters': value.writeParameters,
         'read_parameters': value.readParameters,

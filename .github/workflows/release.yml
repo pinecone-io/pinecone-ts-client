@@ -82,8 +82,6 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
-        with:
-          node_version: '24.x'
 
       ##### VERSION BUMP #####
       - name: 'Bump version for production release'

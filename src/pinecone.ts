@@ -1,3 +1,19 @@
+import type {
+  CreateIndexOptions,
+  IndexModel,
+  CreateIndexForModelOptions,
+  ConfigureIndexOptions,
+  CreateCollectionOptions,
+  CreateBackupOptions,
+  CreateIndexFromBackupOptions,
+  ListIndexBackupsOptions,
+  ListRestoreJobsOptions,
+} from './control';
+import type {
+  CreateAssistantOptions,
+  UpdateAssistantOptions,
+  EvaluateOptions,
+} from './assistant/control';
 import { Indexes } from './control/indexes';
 import { Collections } from './control/collections';
 import { Backups } from './control/backups';
@@ -58,6 +74,7 @@ import { IndexOptions, AssistantOptions } from './types';
  * See {@link PineconeConfiguration} for a full description of available configuration options.
  */
 export class Pinecone {
+  /** Generate embeddings, rerank documents, and discover inference models. */
   public inference: Inference;
   /**
    * Control-plane operations for indexes, backups, restore jobs, and collections.
@@ -116,7 +133,6 @@ export class Pinecone {
    * });
    * ```
    *
-   * @constructor
    * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {
@@ -196,6 +212,151 @@ export class Pinecone {
     }
 
     return environmentConfig as PineconeConfiguration;
+  }
+
+  /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(
+    options: CreateIndexOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.create()` instead. */
+  createIndex(options: CreateIndexOptions): Promise<IndexModel | void>;
+  createIndex(options: CreateIndexOptions) {
+    return this.indexes.create(options);
+  }
+
+  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  createIndexForModel(
+    options: CreateIndexForModelOptions,
+  ): Promise<IndexModel | void>;
+  createIndexForModel(options: CreateIndexForModelOptions) {
+    return this.indexes.createForModel(options);
+  }
+
+  /** @deprecated Use `pc.indexes.describe()` instead. */
+  describeIndex(indexName: string) {
+    return this.indexes.describe(indexName);
+  }
+
+  /** @deprecated Use `pc.indexes.list()` instead. */
+  listIndexes() {
+    return this.indexes.list();
+  }
+
+  /** @deprecated Use `pc.indexes.delete()` instead. */
+  deleteIndex(indexName: string) {
+    return this.indexes.delete(indexName);
+  }
+
+  /** @deprecated Use `pc.collections.create()` instead. */
+  createCollection(options: CreateCollectionOptions) {
+    return this.collections.create(options);
+  }
+
+  /** @deprecated Use `pc.collections.list()` instead. */
+  listCollections() {
+    return this.collections.list();
+  }
+
+  /** @deprecated Use `pc.collections.describe()` instead. */
+  describeCollection(collectionName: string) {
+    return this.collections.describe(collectionName);
+  }
+
+  /** @deprecated Use `pc.collections.delete()` instead. */
+  deleteCollection(collectionName: string) {
+    return this.collections.delete(collectionName);
+  }
+
+  /** @deprecated Use `pc.backups.create(indexName, options)` instead. */
+  createBackup(options: CreateBackupOptions & { indexName: string }) {
+    const { indexName, ...rest } = options;
+    return this.backups.create(indexName, rest);
+  }
+
+  /** @deprecated Use `pc.backups.describe()` instead. */
+  describeBackup(backupId: string) {
+    return this.backups.describe(backupId);
+  }
+
+  /** @deprecated Use `pc.backups.delete()` instead. */
+  deleteBackup(backupId: string) {
+    return this.backups.delete(backupId);
+  }
+
+  /** @deprecated Use `pc.backups.createIndex(backupId, options)` instead. */
+  createIndexFromBackup(
+    options: CreateIndexFromBackupOptions & { backupId: string },
+  ) {
+    const { backupId, ...rest } = options;
+    return this.backups.createIndex(backupId, rest);
+  }
+
+  /** @deprecated Use `pc.restoreJobs.describe()` instead. */
+  describeRestoreJob(restoreJobId: string) {
+    return this.restoreJobs.describe(restoreJobId);
+  }
+
+  /** @deprecated Use `pc.restoreJobs.list()` instead. */
+  listRestoreJobs(options?: ListRestoreJobsOptions) {
+    return this.restoreJobs.list(options);
+  }
+
+  /** @deprecated Use `pc.assistants.create()` instead. */
+  createAssistant(options: CreateAssistantOptions) {
+    return this.assistants.create(options);
+  }
+
+  /** @deprecated Use `pc.assistants.describe()` instead. */
+  describeAssistant(assistantName: string) {
+    return this.assistants.describe(assistantName);
+  }
+
+  /** @deprecated Use `pc.assistants.list()` instead. */
+  listAssistants() {
+    return this.assistants.list();
+  }
+
+  /** @deprecated Use `pc.assistants.delete()` instead. */
+  deleteAssistant(assistantName: string) {
+    return this.assistants.delete(assistantName);
+  }
+
+  /** @deprecated Use `pc.assistants.update()` instead. */
+  updateAssistant(options: UpdateAssistantOptions) {
+    return this.assistants.update(options);
+  }
+
+  /** @deprecated Use `pc.assistants.evaluate()` instead. */
+  evaluate(options: EvaluateOptions) {
+    return this.assistants.evaluate(options);
+  }
+
+  /**
+   * @deprecated Use `pc.indexes.configure(name, options)` instead.
+   */
+  configureIndex(options: ConfigureIndexOptions & { name: string }) {
+    const { name, ...rest } = options;
+    return this.indexes.configure(name, rest);
+  }
+
+  /**
+   * @deprecated Use `pc.backups.listByIndex(indexName, options)` for an index,
+   * or `pc.backups.list(options)` for all project backups.
+   */
+  listBackups(
+    options: ListIndexBackupsOptions & {
+      indexName?: string;
+    } = {},
+  ) {
+    const { indexName, includeDeleted, ...rest } = options;
+    if (indexName) {
+      return this.backups.listByIndex(indexName, { ...rest, includeDeleted });
+    }
+    return this.backups.list(rest);
   }
 
   /** @hidden */

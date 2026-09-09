@@ -103,8 +103,12 @@ export class Indexes {
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted. Use `waitUntilReady: true` to block until the index is ready for data operations.
+   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict. Use `waitUntilReady: true` to block until the index is ready for data operations.
    */
+  create(
+    options: CreateIndexOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  create(options: CreateIndexOptions): Promise<IndexModel | void>;
   async create(options: CreateIndexOptions): Promise<IndexModel | void> {
     const indexModel = await createIndex(this._api, options);
     // `createIndex` resolves to `void` when `suppressConflicts` swallowed a
@@ -121,12 +125,13 @@ export class Indexes {
    * Creates an index with an integrated embedding model.
    *
    * A convenience wrapper around {@link create}: the server builds a
-   * `semantic_text` schema field named `field` from the model parameters you
-   * provide. For full control over schema composition — for example combining
-   * semantic text with additional metadata fields — use {@link create} directly.
+   * `semantic_text` schema field from the `embed` parameters you provide, so
+   * text you upsert is embedded for you. For full control over schema
+   * composition — combining a dense or sparse vector field with full-text
+   * search, for example — use {@link create} directly.
    *
-   * Integrated-embedding indexes are serverless only; omit `deployment` to
-   * default to managed (serverless) on AWS `us-east-1`.
+   * Integrated-embedding indexes are serverless only; the deployment is chosen
+   * for you.
    *
    * @example
    * ```typescript
@@ -135,21 +140,31 @@ export class Indexes {
    *
    * const indexModel = await pc.indexes.createForModel({
    *   name: 'my-model-index',
-   *   field: 'chunk_text',
-   *   model: 'multilingual-e5-large',
+   *   cloud: 'aws',
+   *   region: 'us-east-1',
+   *   embed: {
+   *     model: 'multilingual-e5-large',
+   *     fieldMap: { text: 'chunk_text' },
+   *   },
    *   waitUntilReady: true,
    * });
    * console.log(indexModel.name);
    * // 'my-model-index'
    * ```
    *
-   * @param options - The {@link CreateIndexForModelOptions} for the index, including `name`, `field`, and `model`.
+   * @param options - The {@link CreateIndexForModelOptions} for the index, including `name`, `cloud`, `region`, and `embed`.
    * @throws {@link Errors.PineconeArgumentError} when arguments passed to the method fail a runtime validation.
    * @throws {@link Errors.PineconeBadRequestError} when index creation fails due to invalid parameters or project quotas.
    * @throws {@link Errors.PineconeConnectionError} when network problems or an outage of Pinecone's APIs prevent the request from being completed.
    * @throws {@link Errors.PineconeConflictError} when attempting to create an index using a name that already exists in the project.
-   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted.
+   * @returns A promise that resolves to {@link IndexModel} when the creation request is accepted, or `undefined` when `suppressConflicts: true` suppresses an existing-index conflict.
    */
+  createForModel(
+    options: CreateIndexForModelOptions & { suppressConflicts?: false },
+  ): Promise<IndexModel>;
+  createForModel(
+    options: CreateIndexForModelOptions,
+  ): Promise<IndexModel | void>;
   async createForModel(
     options: CreateIndexForModelOptions,
   ): Promise<IndexModel | void> {
@@ -230,7 +245,7 @@ export class Indexes {
    * const pc = new Pinecone();
    *
    * const indexModel = await pc.indexes.configure('my-schema-index', {
-   *   deletion_protection: 'enabled',
+   *   deletionProtection: 'enabled',
    *   tags: { team: 'ml-platform' },
    * });
    * console.log(indexModel.name);

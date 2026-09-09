@@ -1,6 +1,7 @@
 {
   "name": "@pinecone-database/pinecone",
   "version": "8.2.0",
+  "packageManager": "npm@11.19.0",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -15,17 +16,17 @@
   "license": "Apache-2.0",
   "scripts": {
     "prepack": "npm run build",
-    "build": "rm -rf dist/ && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist/ && tsc -p tsconfig.build.json && node scripts/fix-declaration-fetch-types.mjs",
     "version": "jq --null-input --arg version $npm_package_version '{\"name\": \"@pinecone-database/pinecone\", \"version\": $version}' > src/version.json",
-    "docs:build": "typedoc --plugin ./assets/docs-theme.mjs",
+    "docs:build": "node --test assets/docs-validation.test.mjs && typedoc --plugin ./assets/docs-theme.mjs",
     "generate:openapi": "./codegen/build-oas.sh 2026-07 && npm run build && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src/",
     "repl": "npm run build && tsx scripts/replInit.ts",
     "integration:setup": "npx ts-node ./src/integration/setup.ts",
     "integration:teardown": "npx ts-node ./src/integration/teardown.ts",
-    "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --detectOpenHandles --runInBand --bail --forceExit",
-    "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --detectOpenHandles --runInBand --bail --forceExit",
+    "test:integration:node": "TEST_ENV=node jest src/integration/ -c jest.config.integration-node.js --detectOpenHandles --runInBand --forceExit",
+    "test:integration:edge": "TEST_ENV=edge jest src/integration/ -c jest.config.integration-edge.js --detectOpenHandles --runInBand --forceExit",
     "test:integration:local": "./scripts/run-integration-tests-local.sh",
     "test:integration:local:edge": "./scripts/run-integration-tests-local.sh edge",
     "test:integration:cleanup": "npm run build && tsx scripts/cleanupResources.ts",
@@ -34,7 +35,9 @@
     "test:smoke:mocked": "jest -c jest.config.smoke.js",
     "test:edge-runtime": "tsx scripts/edge-runtime/loadEntryInEdgeVM.ts",
     "docs:examples": "jest --config jest.config.js scripts/__tests__/check-doc-examples.test.ts && tsx scripts/check-doc-examples.ts",
-    "verify:sourcemaps": "tsx scripts/verify-source-maps.ts"
+    "verify:sourcemaps": "tsx scripts/verify-source-maps.ts",
+    "verify:declarations": "node scripts/verify-declarations.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.tools.json"
   },
   "engines": {
     "node": ">=22.0.0"

@@ -159,29 +159,32 @@ describe('updateDocuments', () => {
       );
     });
 
-    // Prod rejects update-by-filter on 2026-07 ("Document update by 'filter'
-    // is not implemented yet", HTTP 400) even though the spec and SDK support
-    // it. Un-skip when the fleet rolls it out; see
-    // pinecone-ts-client-internal#15.
-    test.skip('verify update by metadata (filter)', async () => {
+    test('verify update by metadata (filter)', async () => {
       const metadataKey = Object.keys(denseMetadata)[0];
       const metadataValue = denseMetadata[metadataKey];
       const newMetadata = { flavor: 'vanilla' };
 
       // Filter-based updates use `setFields` rather than an inline document.
-      await srvrlssIndexDense.updateDocuments({
+      const response = await srvrlssIndexDense.updateDocuments({
         filter: { [metadataKey]: { $eq: metadataValue } },
         setFields: newMetadata,
       });
 
+      // Assert the server matched the filter before asserting what it wrote:
+      // a zero match and a write that never landed fail the same way otherwise.
+      expect(response.matchedRecords).toBeGreaterThan(0);
+
+      // Read back by id, not by filter — fetch-by-filter is a separate
+      // capability with its own suite, and verifying through it here would
+      // make this test fail for either reason.
       await assertWithRetries(
         () =>
           srvrlssIndexDense.fetchDocuments({
-            filter: { [metadataKey]: { $eq: metadataValue } },
+            ids: denseRecordIds,
             includeFields: ['flavor'],
           }),
         (result: FetchDocumentsResponse) => {
-          const doc = Object.values(result.documents)[0];
+          const doc = result.documents[denseRecordIds[0]];
           expect(doc).toBeDefined();
           expect(doc).toMatchObject(newMetadata);
         },
@@ -217,28 +220,27 @@ describe('updateDocuments', () => {
       );
     });
 
-    // Prod rejects update-by-filter on 2026-07 ("Document update by 'filter'
-    // is not implemented yet", HTTP 400) even though the spec and SDK support
-    // it. Un-skip when the fleet rolls it out; see
-    // pinecone-ts-client-internal#15.
-    test.skip('verify update by metadata (filter)', async () => {
+    test('verify update by metadata (filter)', async () => {
       const metadataKey = Object.keys(sparseMetadata)[0];
       const metadataValue = sparseMetadata[metadataKey];
       const newMetadata = { flavor: 'vanilla' };
 
-      await srvrlssIndexSparse.updateDocuments({
+      const response = await srvrlssIndexSparse.updateDocuments({
         filter: { [metadataKey]: { $eq: metadataValue } },
         setFields: newMetadata,
       });
 
+      expect(response.matchedRecords).toBeGreaterThan(0);
+
+      // Read back by id; see the dense case above.
       await assertWithRetries(
         () =>
           srvrlssIndexSparse.fetchDocuments({
-            filter: { [metadataKey]: { $eq: metadataValue } },
+            ids: sparseRecordIds,
             includeFields: ['flavor'],
           }),
         (result: FetchDocumentsResponse) => {
-          const doc = Object.values(result.documents)[0];
+          const doc = result.documents[sparseRecordIds[0]];
           expect(doc).toBeDefined();
           expect(doc).toMatchObject(newMetadata);
         },

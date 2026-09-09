@@ -87,23 +87,23 @@ export interface BackupScheduleHistoryItem {
      */
     schema?: BackupScheduleHistoryItemSchema | null;
     /**
-     * Total number of records in the backup.
+     * Total number of records in the backup. `null` until the backup reaches status `Ready`.
      * @type {number}
      * @memberof BackupScheduleHistoryItem
      */
-    recordCount: number;
+    recordCount?: number | null;
     /**
-     * Number of namespaces in the backup.
+     * Number of namespaces in the backup. `null` until the backup reaches status `Ready`.
      * @type {number}
      * @memberof BackupScheduleHistoryItem
      */
-    namespaceCount: number;
+    namespaceCount?: number | null;
     /**
-     * Approximate stored size of this scheduled-backup snapshot, in bytes.
+     * Approximate stored size of this scheduled-backup snapshot, in bytes. `null` until the backup reaches status `Ready`.
      * @type {number}
      * @memberof BackupScheduleHistoryItem
      */
-    sizeBytes: number;
+    sizeBytes?: number | null;
     /**
      * RFC 3339 timestamp when the backup record was created.
      * @type {Date}
@@ -130,9 +130,6 @@ export function instanceOfBackupScheduleHistoryItem(value: object): boolean {
     isInstance = isInstance && "status" in value;
     isInstance = isInstance && "cloud" in value;
     isInstance = isInstance && "region" in value;
-    isInstance = isInstance && "recordCount" in value;
-    isInstance = isInstance && "namespaceCount" in value;
-    isInstance = isInstance && "sizeBytes" in value;
     isInstance = isInstance && "createdAt" in value;
 
     return isInstance;
@@ -158,9 +155,9 @@ export function BackupScheduleHistoryItemFromJSONTyped(json: any, ignoreDiscrimi
         'cloud': json['cloud'],
         'region': json['region'],
         'schema': !exists(json, 'schema') ? undefined : BackupScheduleHistoryItemSchemaFromJSON(json['schema']),
-        'recordCount': json['record_count'],
-        'namespaceCount': json['namespace_count'],
-        'sizeBytes': json['size_bytes'],
+        'recordCount': !exists(json, 'record_count') ? undefined : json['record_count'],
+        'namespaceCount': !exists(json, 'namespace_count') ? undefined : json['namespace_count'],
+        'sizeBytes': !exists(json, 'size_bytes') ? undefined : json['size_bytes'],
         'createdAt': (new Date(json['created_at'])),
         'scheduledExecutionAt': !exists(json, 'scheduled_execution_at') ? undefined : (new Date(json['scheduled_execution_at'])),
     };

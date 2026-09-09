@@ -32,17 +32,23 @@ export interface FetchDocumentsRequest {
      */
     filter?: object;
     /**
-     * The document fields to include in the response. If not specified, all fields are returned.
+     * The document fields to return on each document. When omitted or empty, all fields are returned; `["*"]` also returns every field.
      * @type {Array<string>}
      * @memberof FetchDocumentsRequest
      */
     includeFields?: Array<string>;
     /**
-     * A pagination token from a previous fetch response, used to retrieve the next page of matching documents. A page holds up to 10000 documents; the page size is fixed and cannot be set per request. Only valid together with `filter`.
+     * A pagination token from a previous fetch response, used to retrieve the next page of matching documents. Only valid together with `filter`.
      * @type {string}
      * @memberof FetchDocumentsRequest
      */
     paginationToken?: string;
+    /**
+     * The maximum number of documents to return per page. Only applies to a fetch by `filter`; a fetch by `ids` is already bounded by `ids` and ignores an in-range value, but a value outside 1-10000 is rejected on either form. Defaults to 100.
+     * @type {number}
+     * @memberof FetchDocumentsRequest
+     */
+    limit?: number;
 }
 
 /**
@@ -68,6 +74,7 @@ export function FetchDocumentsRequestFromJSONTyped(json: any, ignoreDiscriminato
         'filter': !exists(json, 'filter') ? undefined : json['filter'],
         'includeFields': !exists(json, 'include_fields') ? undefined : json['include_fields'],
         'paginationToken': !exists(json, 'pagination_token') ? undefined : json['pagination_token'],
+        'limit': !exists(json, 'limit') ? undefined : json['limit'],
     };
 }
 
@@ -84,6 +91,7 @@ export function FetchDocumentsRequestToJSON(value?: FetchDocumentsRequest | null
         'filter': value.filter,
         'include_fields': value.includeFields,
         'pagination_token': value.paginationToken,
+        'limit': value.limit,
     };
 }
 

@@ -38,7 +38,7 @@ fi
 echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
 # Extract and export FIXTURES_JSON
-export FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
+export FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | tail -n 1 | cut -d'=' -f2-)
 
 if [ -z "$FIXTURES_JSON" ]; then
   echo ""
@@ -87,9 +87,13 @@ else
   echo "$TEARDOWN_OUTPUT"
 fi
 
-# Exit with test exit code
+# Preserve test failures, and fail a passing run if cleanup failed.
 echo ""
 if [ $TEST_EXIT_CODE -eq 0 ]; then
+  if [ $TEARDOWN_EXIT_CODE -ne 0 ]; then
+    echo "❌ Tests passed, but resource cleanup failed"
+    exit $TEARDOWN_EXIT_CODE
+  fi
   echo "✅ All tests passed"
   exit 0
 else

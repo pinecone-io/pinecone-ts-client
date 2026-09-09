@@ -27,7 +27,7 @@ import {
  */
 export interface PatchIndexSchema {
     /**
-     * A map of semantic text field names to their updated parameters. Only fields of type `semantic_text` may be specified.
+     * A map of semantic text field names to their updated parameters. Only fields of type `semantic_text` may be specified, and only one field per request.
      * @type {{ [key: string]: PatchSemanticTextField; }}
      * @memberof PatchIndexSchema
      */

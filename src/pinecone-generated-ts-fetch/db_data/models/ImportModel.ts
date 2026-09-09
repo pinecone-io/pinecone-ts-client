@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ImportValidationResult } from './ImportValidationResult';
+import {
+    ImportValidationResultFromJSON,
+    ImportValidationResultFromJSONTyped,
+    ImportValidationResultToJSON,
+} from './ImportValidationResult';
+
 /**
  * The model for an import operation.
  * @export
@@ -24,26 +31,26 @@ export interface ImportModel {
      * @type {string}
      * @memberof ImportModel
      */
-    id?: string;
+    id: string;
     /**
      * The URI from where the data is imported.
      * @type {string}
      * @memberof ImportModel
      */
-    uri?: string;
+    uri: string;
     /**
      * The status of the operation.
      * Possible values: `Pending`, `InProgress`, `Failed`, `Completed`, or `Cancelled`.
      * @type {string}
      * @memberof ImportModel
      */
-    status?: string;
+    status: string;
     /**
      * The start time of the import operation.
      * @type {Date}
      * @memberof ImportModel
      */
-    createdAt?: Date;
+    createdAt: Date;
     /**
      * The end time of the import operation.
      * @type {Date}
@@ -55,19 +62,25 @@ export interface ImportModel {
      * @type {number}
      * @memberof ImportModel
      */
-    percentComplete?: number;
+    percentComplete: number;
     /**
      * The number of records successfully imported.
      * @type {number}
      * @memberof ImportModel
      */
-    recordsImported?: number;
+    recordsImported: number;
     /**
      * The error message if the import process failed.
      * @type {string}
      * @memberof ImportModel
      */
     error?: string;
+    /**
+     * 
+     * @type {ImportValidationResult}
+     * @memberof ImportModel
+     */
+    validationResult?: ImportValidationResult;
 }
 
 /**
@@ -75,6 +88,12 @@ export interface ImportModel {
  */
 export function instanceOfImportModel(value: object): boolean {
     let isInstance = true;
+    isInstance = isInstance && "id" in value;
+    isInstance = isInstance && "uri" in value;
+    isInstance = isInstance && "status" in value;
+    isInstance = isInstance && "createdAt" in value;
+    isInstance = isInstance && "percentComplete" in value;
+    isInstance = isInstance && "recordsImported" in value;
 
     return isInstance;
 }
@@ -89,14 +108,15 @@ export function ImportModelFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'uri': !exists(json, 'uri') ? undefined : json['uri'],
-        'status': !exists(json, 'status') ? undefined : json['status'],
-        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
+        'id': json['id'],
+        'uri': json['uri'],
+        'status': json['status'],
+        'createdAt': (new Date(json['createdAt'])),
         'finishedAt': !exists(json, 'finishedAt') ? undefined : (new Date(json['finishedAt'])),
-        'percentComplete': !exists(json, 'percentComplete') ? undefined : json['percentComplete'],
-        'recordsImported': !exists(json, 'recordsImported') ? undefined : json['recordsImported'],
+        'percentComplete': json['percentComplete'],
+        'recordsImported': json['recordsImported'],
         'error': !exists(json, 'error') ? undefined : json['error'],
+        'validationResult': !exists(json, 'validationResult') ? undefined : ImportValidationResultFromJSON(json['validationResult']),
     };
 }
 
@@ -112,11 +132,12 @@ export function ImportModelToJSON(value?: ImportModel | null): any {
         'id': value.id,
         'uri': value.uri,
         'status': value.status,
-        'createdAt': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
+        'createdAt': (value.createdAt.toISOString()),
         'finishedAt': value.finishedAt === undefined ? undefined : (value.finishedAt.toISOString()),
         'percentComplete': value.percentComplete,
         'recordsImported': value.recordsImported,
         'error': value.error,
+        'validationResult': ImportValidationResultToJSON(value.validationResult),
     };
 }
 

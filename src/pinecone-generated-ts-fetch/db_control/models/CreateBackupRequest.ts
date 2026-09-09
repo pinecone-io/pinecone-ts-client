@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface CreateBackupRequest {
     /**
-     * The name of the backup.
+     * The name of the backup. Must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or `-`; any other value is rejected with `400`.
      * @type {string}
      * @memberof CreateBackupRequest
      */
