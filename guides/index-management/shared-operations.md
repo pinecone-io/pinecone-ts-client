@@ -13,52 +13,11 @@ const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 const list = await pc.indexes.list();
 console.log(list);
-// {
-//   indexes: [
-//     {
-//       name: 'serverless-index',
-//       dimension: 1536,
-//       metric: 'cosine',
-//       host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-//       deletionProtection: 'disabled',
-//       spec: {
-//         serverless: {
-//           cloud: 'aws',
-//           region: 'us-west-2'
-//         }
-//       },
-//       status: {
-//         ready: true,
-//         state: 'Ready'
-//       }
-//     },
-//     {
-//       name: 'pod-index',
-//       dimension: 1536,
-//       metric: 'cosine',
-//       host: 'pod-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-//       deletionProtection: 'disabled',
-//       spec: {
-//         pod: {
-//           environment: 'us-west2-aws',
-//           replicas: 1,
-//           shards: 1,
-//           podType: 'p1.x1',
-//           pods: 1
-//         }
-//       },
-//       status: {
-//         ready: true,
-//         state: 'Ready'
-//       }
-//     }
-//   ]
-// }
 ```
 
 ## Describe an index
 
-You can fetch the description of any index by name using `pc.indexes.describe`:
+You can fetch the description of any index by name using `pc.indexes.describe`. The 2026-07 response carries field definitions under `schema` and hosting settings under `deployment`:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -66,24 +25,9 @@ import { Pinecone } from '@pinecone-database/pinecone';
 const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
 const indexDescription = await pc.indexes.describe('serverless-index');
-console.log(indexDescription);
-// {
-//   name: 'serverless-index',
-//   dimension: 1536,
-//   metric: 'cosine',
-//   host: 'serverless-index-4zo0ijk.svc.us-west2-aws.pinecone.io',
-//   deletionProtection: 'disabled',
-//   spec: {
-//     serverless: {
-//       cloud: 'aws',
-//       region: 'us-west-2'
-//     }
-//   },
-//   status: {
-//     ready: true,
-//     state: 'Ready'
-//   }
-// }
+console.log(indexDescription.schema);
+console.log(indexDescription.deployment);
+console.log(indexDescription.status);
 ```
 
 ## Delete an index
@@ -143,27 +87,6 @@ await pc.indexes.configure('pod-index', {
 
 const config = await pc.indexes.describe('pod-index');
 console.log(config);
-// {
-//   name: 'pod-index',
-//   dimension: 1536,
-//   metric: 'cosine',
-//   host: 'pod-index-4zo0ijk.svc.us-east1-gcp.pinecone.io',
-//   deletionProtection: 'disabled',
-//   spec: {
-//     pod: {
-//       environment: 'us-east1-gcp',
-//       replicas: 2,
-//       shards: 2,
-//       podType: 'p1.x4',
-//       pods: 4,
-//       metadataConfig: { ... }
-//     }
-//   },
-//   status: {
-//     ready: true,
-//     state: 'ScalingUpPodSize'
-//   }
-// }
 ```
 
 ## Deletion protection
