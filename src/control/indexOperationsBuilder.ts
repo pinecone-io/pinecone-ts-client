@@ -30,7 +30,7 @@ export const indexOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   return new ManageIndexesApi(new Configuration(apiConfig));

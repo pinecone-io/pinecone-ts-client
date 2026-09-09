@@ -74,7 +74,7 @@ export class BulkOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

@@ -30,7 +30,7 @@ export const inferenceOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   return new InferenceApi(new Configuration(apiConfig));

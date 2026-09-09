@@ -74,7 +74,7 @@ export class NamespaceOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
 
     const indexConfiguration = new Configuration(indexConfigurationParameters);

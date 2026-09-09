@@ -29,7 +29,7 @@ export const asstMetricsOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   return new MetricsApi(new Configuration(apiConfig));

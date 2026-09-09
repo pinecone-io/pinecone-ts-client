@@ -69,7 +69,7 @@ export const adminOperationsBuilder = (
       ...headers,
     },
     fetchApi: getFetch(config),
-    middleware: createMiddlewareArray(),
+    middleware: createMiddlewareArray(headers),
   };
 
   const configuration = new Configuration(apiConfig);

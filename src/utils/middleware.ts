@@ -1,21 +1,65 @@
 import {
+  HTTPHeaders,
   Middleware,
   ResponseError,
 } from '../pinecone-generated-ts-fetch/db_control';
 import { handleApiError, PineconeMaxRetriesExceededError } from '../errors';
 import { assertRequestPathIsAddressable } from './requestPath';
 
+const mergeHeaders = (
+  existing: RequestInit['headers'],
+  additionalHeaders: HTTPHeaders,
+): RequestInit['headers'] => {
+  const hasHeadersClass = typeof Headers !== 'undefined';
+  if (
+    (hasHeadersClass && existing instanceof Headers) ||
+    Array.isArray(existing)
+  ) {
+    if (hasHeadersClass) {
+      const merged = new Headers(existing);
+      for (const [name, value] of Object.entries(additionalHeaders)) {
+        merged.set(name, value);
+      }
+      return merged;
+    }
+    return [
+      ...(existing as [string, string][]),
+      ...Object.entries(additionalHeaders),
+    ];
+  }
+  return { ...(existing as HTTPHeaders | undefined), ...additionalHeaders };
+};
+
+const additionalHeadersMiddleware = (
+  additionalHeaders: HTTPHeaders,
+): Middleware => ({
+  pre: async ({ url, init }) => ({
+    url,
+    init: { ...init, headers: mergeHeaders(init.headers, additionalHeaders) },
+  }),
+});
+
 /**
- * Creates the middleware array with path safety, debug, and error handling.
+ * Creates middleware for path safety, header precedence, debug, and error handling.
  *
  * Middleware execution order:
  * 1. Path safety - rejects a request that would resolve to a different route
- * 2. Debug middleware (if enabled) - logs requests/responses
- * 3. Error handling middleware - converts ResponseError to proper Pinecone error types
+ * 2. Additional-headers middleware (if any) - applies configured headers last
+ * 3. Debug middleware (if enabled) - logs requests/responses
+ * 4. Error handling middleware - converts ResponseError to proper Pinecone error types
  *
+ * @param additionalHeaders - Headers configured on the client, applied after a generated
+ * operation's own headers. Matching is case-sensitive, so an entry keyed exactly
+ * `X-Pinecone-Api-Version` takes precedence over the SDK's pinned version.
  * @returns Array of middleware objects
  */
-export const createMiddlewareArray = (): Middleware[] => {
+export const createMiddlewareArray = (
+  additionalHeaders?: HTTPHeaders | null,
+): Middleware[] => {
+  const headerMiddleware: Middleware[] =
+    additionalHeaders && Object.keys(additionalHeaders).length > 0
+      ? [additionalHeadersMiddleware({ ...additionalHeaders })]
+      : [];
   const debugMiddleware: Middleware[] = [];
 
   const chalk = (str, color) => {
@@ -104,6 +148,7 @@ export const createMiddlewareArray = (): Middleware[] => {
         assertRequestPathIsAddressable(context.url);
       },
     },
+    ...headerMiddleware,
     ...debugMiddleware,
     // Error handling middleware - converts ResponseErrors to proper Pinecone error types
     {

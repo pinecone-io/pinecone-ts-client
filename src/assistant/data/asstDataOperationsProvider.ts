@@ -79,7 +79,7 @@ export class AsstDataOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
 
     return new ManageAssistantsDataApi(new DataConfiguration(apiConfig));

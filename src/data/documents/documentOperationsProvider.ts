@@ -69,7 +69,7 @@ export class DocumentOperationsProvider {
         ...headers,
       },
       fetchApi: getFetch(this.config),
-      middleware: createMiddlewareArray(),
+      middleware: createMiddlewareArray(headers),
     };
     return new DocumentOperationsApi(new Configuration(apiConfig));
   }
