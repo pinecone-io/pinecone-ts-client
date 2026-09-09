@@ -37,7 +37,12 @@ export const teardown = async () => {
 
   await cleanupResources(
     pc,
-    fixtures.serverlessIndex?.name ? [fixtures.serverlessIndex.name] : [],
+    fixtures.cleanupIndexes ??
+      [
+        fixtures.serverlessIndex?.name,
+        fixtures.legacyVectors?.dense?.name,
+        fixtures.legacyVectors?.sparse?.name,
+      ].filter((name): name is string => typeof name === 'string'),
     fixtures.assistant?.name ? [fixtures.assistant.name] : [],
   );
 

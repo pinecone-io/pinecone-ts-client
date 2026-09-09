@@ -63,7 +63,7 @@ test('assistant creation failure cleans both resource names', async () => {
   await expect(setup()).rejects.toBe(error);
   expect(cleanup).toHaveBeenCalledWith(
     pc,
-    [create.mock.calls[0][0].name],
+    create.mock.calls.map(([options]) => options.name),
     [createAssistant.mock.calls[0][0].name],
   );
 });
@@ -97,3 +97,45 @@ test('teardown accepts partial fixtures left by failed setup', async () => {
   await teardown();
   expect(cleanup).toHaveBeenCalledWith(pc, ['index'], []);
 });
+
+test('failed legacy fixture creation retains every accepted index for cleanup', async () => {
+  const error = new Error('sparse fixture readiness failed');
+  create
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockRejectedValueOnce(error);
+  await expect(setup()).rejects.toBe(error);
+  const names = create.mock.calls.map(([options]) => options.name);
+  expect(names).toHaveLength(3);
+  expect(create.mock.calls[1][0].schema.fields).toEqual({
+    _values: { type: 'dense_vector', dimension: 2, metric: 'dotproduct' },
+  });
+  expect(create.mock.calls[2][0].schema.fields).toEqual({
+    _sparse_values: { type: 'sparse_vector' },
+  });
+  expect(cleanup).toHaveBeenCalledWith(pc, names, []);
+  expect(console.log).toHaveBeenCalledWith(
+    expect.stringContaining(
+      JSON.stringify({ cleanupIndexes: names }).slice(1, -1),
+    ),
+  );
+});
+
+test.each([
+  {
+    serverlessIndex: { name: 'documents' },
+    legacyVectors: { dense: { name: 'dense' }, sparse: { name: 'sparse' } },
+  },
+  { cleanupIndexes: ['documents', 'dense', 'sparse'] },
+])(
+  'teardown cleans document and legacy indexes from full or partial fixtures',
+  async (fixtures) => {
+    process.env.FIXTURES_JSON = JSON.stringify(fixtures);
+    await teardown();
+    expect(cleanup).toHaveBeenCalledWith(
+      pc,
+      ['documents', 'dense', 'sparse'],
+      [],
+    );
+  },
+);
