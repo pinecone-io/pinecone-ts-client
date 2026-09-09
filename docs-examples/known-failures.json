@@ -1,27 +1,7 @@
 [
   {
-    "file": "guides/data-operations/bulk-import.md",
-    "codeHash": "f05dfa1a6f81",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/data-operations/working-with-vectors.md",
-    "codeHash": "e5b3e150bead",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/faq.md",
-    "codeHash": "07cb7e727188",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
     "file": "guides/index-management/collections.md",
     "codeHash": "aa932de4b9b6",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/pod-indexes.md",
-    "codeHash": "b8029ea513cc",
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
@@ -35,83 +15,8 @@
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   },
   {
-    "file": "guides/index-management/pod-indexes.md",
-    "codeHash": "2b303e8e8263",
-    "reason": "Legacy podReplicas configure option differs from the 2026-07 request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "c0e085a1c01f",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "fbc6b0804de5",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "33625220793e",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "9a4afb734e6d",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "d6fca0be762a",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "a82b5b8ba276",
-    "reason": "Dedicated read capacity nodeType differs from the 2026-07 request schema (#42/#43)"
-  },
-  {
     "file": "guides/index-management/serverless-indexes.md",
     "codeHash": "1f4347548c23",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/serverless-indexes.md",
-    "codeHash": "ee8952e6c858",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/shared-operations.md",
-    "codeHash": "4b8cd8765045",
-    "reason": "Legacy podReplicas configure option differs from the 2026-07 request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/shared-operations.md",
-    "codeHash": "e01cb10b18d7",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/index-management/shared-operations.md",
-    "codeHash": "1e41e37044af",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/typescript-features/async-patterns.md",
-    "codeHash": "79e4474f1fda",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/typescript-features/async-patterns.md",
-    "codeHash": "474826555949",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/typescript-features/error-handling.md",
-    "codeHash": "9da6654d77b5",
-    "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
-  },
-  {
-    "file": "guides/typescript-features/error-handling.md",
-    "codeHash": "15ae50719353",
     "reason": "Legacy top-level dimension/metric options differ from the 2026-07 createIndex request schema (#42/#43)"
   }
 ]

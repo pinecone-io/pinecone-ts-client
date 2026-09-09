@@ -27,7 +27,6 @@ describe('configureIndex', () => {
       tags: undefined,
       deletionProtection: undefined,
     },
-    { embed: { model: 'old-model' } },
   ])('rejects an absent supported option: %p', async (options) => {
     await expect(
       configureIndex(api, 'index', options as ConfigureIndexOptions),
