@@ -113,6 +113,12 @@ describe('Index document operations', () => {
     );
   });
 
+  test('lists documents with no options through the public Index method', async () => {
+    const index = new Index(target, config);
+    await index.listDocuments();
+    expect(listDocuments).toHaveBeenCalledWith(api, '__default__', {});
+  });
+
   describe.each(operations)('$name', ({ command, options, invoke }) => {
     test.each([
       {
