@@ -26,11 +26,13 @@ beforeAll(async () => {
 // query-by-id form. The vectors API's `query({ id })` has no equivalent in the
 // documents API and is intentionally not covered here.
 describe('searchDocuments tests on serverless index', () => {
-  // Prod answers `dense_vector` scoring on 2026-07 with HTTP 200 and an empty
-  // `matches` array, even though the seeded namespace demonstrably holds 11
-  // documents. The mode is in the spec and the SDK supports it, but the fleet
-  // doesn't serve it for schema-based indexes yet. Un-skip when it rolls out;
-  // see pinecone-ts-client-internal#92.
+  // Prod answers `dense_vector` scoring with HTTP 200 and an empty `matches`
+  // array, even though the seeded namespace demonstrably holds 11 documents.
+  // This is a server-side read-path gap, not a client bug: the request the SDK
+  // sends is correct, and svc-docs-api validates the scoring field against the
+  // index schema and forwards it (verified in pinecone-db at 8a4bfa3b10). There
+  // is nothing to fix here, so it is not tracked in this repo — un-skip once
+  // the read path serves vector scoring for schema-based indexes.
   test.skip('search with vector values', async () => {
     const topK = 1;
 
@@ -51,8 +53,7 @@ describe('searchDocuments tests on serverless index', () => {
     );
   });
 
-  // Skipped for the same fleet gap as above; see
-  // pinecone-ts-client-internal#92.
+  // Skipped for the same read-path gap as above.
   test.skip('search when topK is greater than number of documents', async () => {
     const topK = 20; // the shared fixture seeds the serverless index with 11 documents
 
@@ -72,16 +73,15 @@ describe('searchDocuments tests on serverless index', () => {
     );
   });
 
-  // Skipped for the same fleet gap as above; see
-  // pinecone-ts-client-internal#92.
+  // Skipped for the same read-path gap as above.
   //
   // The zero-match assertion below needs the positive control ahead of it: on
   // its own it passes just as happily against a namespace that returns nothing
-  // for every query, which is exactly what #92 describes. The control uses the
-  // fixture's own metadata filter (`metadataFilter` in `src/integration/setup.ts`,
-  // taken from the first seeded document), so it is guaranteed to match at
-  // least one document whenever search works at all. The whole test therefore
-  // stays skipped until #92 clears — the fixture index declares only a
+  // for every query, which is the very failure being worked around. The control
+  // uses the fixture's own metadata filter (`metadataFilter` in
+  // `src/integration/setup.ts`, taken from the first seeded document), so it is
+  // guaranteed to match at least one document whenever search works at all. The
+  // whole test therefore stays skipped — the fixture index declares only a
   // `dense_vector` field, so there is no other scoring mode to control with.
   test.skip('with a filter matching nothing, returns empty results', async () => {
     await assertWithRetries(
@@ -115,8 +115,7 @@ describe('searchDocuments tests on serverless index', () => {
     );
   });
 
-  // Skipped for the same fleet gap as above; see
-  // pinecone-ts-client-internal#92.
+  // Skipped for the same read-path gap as above.
   test.skip('search with includeFields returns the requested fields', async () => {
     const queryVec = Array.from({ length: 2 }, () => Math.random());
 

@@ -1,12 +1,13 @@
 import { Pinecone } from '../../pinecone';
-import { SearchDocumentsResponse } from '../../pinecone-generated-ts-fetch/db_data';
+import { SearchRecordsResponse } from '../../pinecone-generated-ts-fetch/db_data';
 import { assertWithRetries, randomName } from '../test-helpers';
 
-// The 2026-07 spec restored the legacy create-for-model shape (apis 5f808858),
-// so this client now sends exactly what #16 recorded prod asking for. Still
-// skipped only because that has not been confirmed against a live fleet:
-// run it once with an API key and un-skip; see pinecone-ts-client-internal#16.
-describe.skip('Integrated Inference API tests', () => {
+// Integrated-inference indexes are served by the records API, not the
+// documents API: the server answers `upsertDocuments` on one of these with
+// "This index is not served by the documents API ... use the records API".
+const integratedNamespace = 'int-inf-ns';
+
+describe('Integrated Inference API tests', () => {
   let pinecone: Pinecone;
   let indexName: string;
   beforeAll(async () => {
@@ -31,7 +32,7 @@ describe.skip('Integrated Inference API tests', () => {
   });
 
   test('test upserting and searching records', async () => {
-    const upsertDocuments = [
+    const records = [
       {
         _id: 'rec1',
         chunk_text:
@@ -82,36 +83,38 @@ describe.skip('Integrated Inference API tests', () => {
       },
     ];
 
-    await pinecone
-      .index({ name: indexName })
-      .upsertDocuments({ documents: upsertDocuments });
+    const index = pinecone.index({
+      name: indexName,
+      namespace: integratedNamespace,
+    });
 
-    // Wait for records to become available using polling instead of fixed wait
+    await index.upsertRecords({ records });
+
+    // The server embeds each record's `chunk_text` on write, so readiness lags
+    // the upsert by more than a plain vector write would.
     await assertWithRetries(
-      () => pinecone.index({ name: indexName }).describeIndexStats(),
+      () => index.describeIndexStats(),
       (stats) => {
-        expect(stats.totalRecordCount).toBeGreaterThanOrEqual(8);
+        expect(stats.totalRecordCount).toBeGreaterThanOrEqual(records.length);
       },
-      30000, // max wait 30s
-      2000, // check every 2s instead of waiting fixed 25s
+      60000,
+      2000,
     );
 
-    // NOTE: the documents API has no dedicated "semantic" scoring type. `text`
-    // scoring is documented as BM25 against a single field; against a
-    // `semantic_text` field the server is expected to embed the query using
-    // that field's model. If this proves not to be the case, the alternative is
-    // to embed the query client-side and score with `dense_vector`.
+    // Searching by text is the whole point of integrated inference: the query
+    // is embedded server-side with the field's model, so no vector is sent.
     await assertWithRetries(
       () =>
-        pinecone.index({ name: indexName }).searchDocuments({
-          scoreBy: [
-            { type: 'text', field: 'chunk_text', query: 'apple corporation' },
-          ],
-          topK: 3,
+        index.searchRecords({
+          query: { topK: 3, inputs: { text: 'apple corporation' } },
+          fields: ['chunk_text', 'category'],
         }),
-      (results: SearchDocumentsResponse) => {
-        expect(results.matches).toBeDefined();
-        expect(results.matches.length).toEqual(3);
+      (results: SearchRecordsResponse) => {
+        expect(results.result.hits.length).toEqual(3);
+        results.result.hits.forEach((hit) => {
+          expect(hit._id).toBeDefined();
+          expect(hit.fields).toHaveProperty('chunk_text');
+        });
       },
     );
   });

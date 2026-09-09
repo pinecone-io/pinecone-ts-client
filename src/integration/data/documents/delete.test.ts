@@ -79,9 +79,7 @@ afterAll(async () => {
 //
 // Deletes are read-your-writes eventual, so every assertion below re-reads
 // through `assertWithRetries` until it converges. Verification goes through
-// fetch-by-ids (`listDocuments` only for the empty-namespace case) because
-// fetch-by-filter is itself broken on the 2026-07 fleet; see
-// pinecone-ts-client-internal#17.
+// fetch-by-ids (`listDocuments` only for the empty-namespace case).
 describe('deleteDocuments', () => {
   test('delete by a single id removes only that document', async () => {
     // Await record freshness, and check documents upserted
