@@ -1,7 +1,7 @@
 import { PineconeConflictError, PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
 import { getTestContext } from '../test-context';
-import { randomName } from '../test-helpers';
+import { cleanupResources, randomName } from '../test-helpers';
 
 let pinecone: Pinecone, serverlessIndexName: string;
 const createdScheduleIds: string[] = [];
@@ -9,18 +9,43 @@ const createdScheduleIds: string[] = [];
 beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
-  serverlessIndexName = fixtures.serverlessIndex.name;
+  // Matrix jobs share fixtures, but an index permits only one enabled schedule.
+  // Own the index for this suite so concurrent lifecycle tests cannot collide.
+  // Track the name before creation so cleanup also handles readiness failures.
+  serverlessIndexName = randomName('backup-schedule');
+  await pinecone.indexes.create({
+    name: serverlessIndexName,
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+    schema: {
+      fields: {
+        embedding: { type: 'dense_vector', dimension: 2, metric: 'cosine' },
+      },
+    },
+    waitUntilReady: true,
+    timeout: 180_000,
+    tags: { project: 'pinecone-integration-tests' },
+  });
 });
 
 afterAll(async () => {
-  for (const scheduleId of createdScheduleIds) {
-    try {
-      await pinecone.backupSchedules.delete(scheduleId);
-    } catch (e) {
-      if (!(e instanceof PineconeNotFoundError)) throw e;
+  try {
+    for (const scheduleId of createdScheduleIds) {
+      try {
+        await pinecone.backupSchedules.delete(scheduleId);
+      } catch (e) {
+        if (!(e instanceof PineconeNotFoundError)) throw e;
+      }
+    }
+  } finally {
+    if (serverlessIndexName) {
+      await cleanupResources(pinecone, [serverlessIndexName]);
     }
   }
-});
+}, 60_000);
 
 describe('backup schedules; serverless', () => {
   test('create, list, describe, update, history, delete lifecycle', async () => {

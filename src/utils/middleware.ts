@@ -81,7 +81,7 @@ export const createMiddlewareArray = (
    * Enable the `PINECONE_DEBUG` environment variable to print the request and
    * response bodies for each request.
    *
-   * Api-Key headers will be redacted.
+   * Api-Key and Authorization headers will be redacted regardless of casing.
    */
   if (
     typeof process !== 'undefined' &&
@@ -95,8 +95,15 @@ export const createMiddlewareArray = (
           chalk(`>>> Request: ${context.init.method} ${context.url}`, 'blue'),
         );
 
-        const headers = JSON.parse(JSON.stringify(context.init.headers));
-        headers['Api-Key'] = '***REDACTED***';
+        // Headers normalizes records, tuples, and Headers instances, including
+        // differently cased duplicates. Only redact the copy used for logging.
+        const headers: Record<string, string> = Object.create(null);
+        new Headers(context.init.headers).forEach((value, name) => {
+          headers[name] =
+            name === 'api-key' || name === 'authorization'
+              ? '***REDACTED***'
+              : value;
+        });
         console.debug(chalk(`>>> Headers: ${JSON.stringify(headers)}`, 'blue'));
 
         if (context.init.body) {

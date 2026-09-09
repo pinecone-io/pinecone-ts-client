@@ -11,6 +11,7 @@ describe('public package contract', () => {
     expect(pc.indexes).toBeInstanceOf(pinecone.Indexes);
     expect(pc.collections).toBeInstanceOf(pinecone.Collections);
     expect(pc.backups).toBeInstanceOf(pinecone.Backups);
+    expect(pc.backupSchedules).toBeInstanceOf(pinecone.BackupSchedules);
     expect(pc.restoreJobs).toBeInstanceOf(pinecone.RestoreJobs);
     expect(pc.assistants).toBeInstanceOf(pinecone.Assistants);
     expect(pc.inference).toBeInstanceOf(pinecone.Inference);
