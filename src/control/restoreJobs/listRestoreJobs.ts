@@ -13,7 +13,7 @@ export type { RestoreJobList } from '../../pinecone-generated-ts-fetch/db_contro
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export interface ListRestoreJobsOptions {
-  /** Maximum number of jobs to return (1–100, default 10). */
+  /** Maximum number of jobs per page. Omit to use the service default. */
   limit?: number;
   /** Pagination token from a previous response. */
   paginationToken?: string;

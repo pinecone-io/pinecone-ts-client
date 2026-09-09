@@ -33,62 +33,37 @@ import { Assistant } from './assistant';
 import { IndexOptions, AssistantOptions } from './types';
 
 /**
- * The `Pinecone` class is the main entrypoint to this sdk. You will use
- * instances of it to create and manage indexes as well as perform data
- * operations on those indexes after they are created.
+ * A client for managing Pinecone resources and working with indexed data.
+ * Create a client with your project API key, or set `PINECONE_API_KEY` and call `new Pinecone()`.
+ * Use {@link Pinecone.index | index} for data operations and {@link Pinecone.indexes | indexes}
+ * to create and manage indexes.
  *
- * ### Initializing the client
- *
- * There is one piece of configuration required to use the Pinecone client: an API key. This value can be passed using environment variables or in code through a configuration object. Find your API key in the console dashboard at [https://app.pinecone.io](https://app.pinecone.io)
- *
- * ### Using environment variables
- *
- * The environment variables used to configure the client are the following:
- *
- * ```bash
- * export PINECONE_API_KEY="your_api_key"
- * export PINECONE_CONTROLLER_HOST="your_controller_host"
- * ```
- *
- * When these environment variables are set, the client constructor does not require any additional arguments.
- *
+ * @example
  * ```typescript
  * import { Pinecone } from '@pinecone-database/pinecone';
  *
  * const pc = new Pinecone();
+ * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
  * ```
  *
- * ### Using a configuration object
- *
- * If you prefer to pass configuration in code, the constructor accepts a config object containing the `apiKey` and `environment` values. This
- * could be useful if your application needs to interact with multiple projects, each with a different configuration.
- *
- * ```typescript
- * import { Pinecone } from '@pinecone-database/pinecone';
- *
- * const pc = new Pinecone({
- *   apiKey: 'your_api_key',
- * });
- *
- * ```
- *
- * See {@link PineconeConfiguration} for a full description of available configuration options.
+ * @see {@link PineconeConfiguration} for authentication and request settings.
+ * @see {@link AdminClient} for organization administration using a service account.
  */
 export class Pinecone {
   /** Generate embeddings, rerank documents, and discover inference models. */
   public inference: Inference;
   /**
-   * Control-plane operations for indexes, backups, restore jobs, and collections.
+   * Create, configure, and manage indexes.
    *
    * @example
    * ```typescript
    * const list = await pc.indexes.list();
-   * const indexModel = await pc.indexes.describe('my-index');
+   * const indexModel = await pc.indexes.describe('product-catalog');
    * ```
    */
   public indexes: Indexes;
   /**
-   * Control-plane operations for collections.
+   * Create and manage collections of pod-based index data.
    *
    * @example
    * ```typescript
@@ -97,7 +72,7 @@ export class Pinecone {
    */
   public collections: Collections;
   /**
-   * Control-plane operations for index backups.
+   * Create and restore index backups.
    *
    * @example
    * ```typescript
@@ -106,7 +81,7 @@ export class Pinecone {
    */
   public backups: Backups;
   /**
-   * Control-plane operations for restore jobs.
+   * Inspect the progress of index restores.
    *
    * @example
    * ```typescript
@@ -115,16 +90,16 @@ export class Pinecone {
    */
   public restoreJobs: RestoreJobs;
   /**
-   * Control-plane operations for backup schedules.
+   * Manage recurring index backups.
    *
    * @example
    * ```typescript
-   * const schedules = await pc.backupSchedules.list('my-index');
+   * const schedules = await pc.backupSchedules.list('product-catalog');
    * ```
    */
   public backupSchedules: BackupSchedules;
   /**
-   * Control-plane operations for assistants.
+   * Create and manage assistants.
    *
    * @example
    * ```typescript
@@ -134,16 +109,20 @@ export class Pinecone {
   public assistants: Assistants;
 
   /**
+   * Create a client authenticated with a project API key.
+   *
+   * @param options - Client configuration. Omit to read `PINECONE_API_KEY` and the optional
+   * `PINECONE_CONTROLLER_HOST` from the environment. An explicit configuration must include `apiKey`.
+   * @throws {@link Errors.PineconeConfigurationError} if the API key is missing.
+   * @throws {@link Errors.PineconeEnvironmentVarsNotSupportedError} if options are omitted
+   * and the runtime cannot read environment variables; pass an explicit configuration instead.
+   *
    * @example
-   * ```
+   * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    *
-   * const pc = new Pinecone({
-   *  apiKey: 'my-api-key',
-   * });
+   * const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
    * ```
-   *
-   * @param options - The configuration options for the Pinecone client: {@link PineconeConfiguration}.
    */
   constructor(options?: PineconeConfiguration) {
     if (options === undefined) {
@@ -225,21 +204,131 @@ export class Pinecone {
     return environmentConfig as PineconeConfiguration;
   }
 
-  /** @deprecated Use `pc.indexes.create()` instead. */
+  /**
+   * {@inheritDoc Indexes.create}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the index name or schema is missing.
+   *
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   *
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.create({
+   *   name: 'product-catalog',
+   *   schema: { fields: { description: { type: 'string', fullTextSearch: {} } } },
+   *   waitUntilReady: true,
+   * });
+   * console.log(index.name);
+   * ```
+   *
+   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   *
+   * @deprecated Use {@link Indexes.create} instead.
+   */
   createIndex(
     options: CreateIndexOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
-  /** @deprecated Use `pc.indexes.create()` instead. */
+  /**
+   * {@inheritDoc Indexes.create}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the index name or schema is missing.
+   *
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   *
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.create({
+   *   name: 'product-catalog',
+   *   schema: { fields: { description: { type: 'string', fullTextSearch: {} } } },
+   *   waitUntilReady: true,
+   * });
+   * console.log(index.name);
+   * ```
+   *
+   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   *
+   * @deprecated Use {@link Indexes.create} instead.
+   */
   createIndex(options: CreateIndexOptions): Promise<IndexModel | void>;
   createIndex(options: CreateIndexOptions) {
     return this.indexes.create(options);
   }
 
-  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  /**
+   * {@inheritDoc Indexes.createForModel}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when required index or embedding settings are missing or the metric is invalid.
+   *
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   *
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.createForModel({
+   *   name: 'product-catalog',
+   *   cloud: 'aws',
+   *   region: 'us-east-1',
+   *   embed: {
+   *     model: 'multilingual-e5-large',
+   *     fieldMap: { text: 'description' },
+   *   },
+   *   waitUntilReady: true,
+   * });
+   * console.log(index.name);
+   * ```
+   *
+   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
+   *
+   * @deprecated Use {@link Indexes.createForModel} instead.
+   */
   createIndexForModel(
     options: CreateIndexForModelOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
-  /** @deprecated Use `pc.indexes.createForModel()` instead. */
+  /**
+   * {@inheritDoc Indexes.createForModel}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when required index or embedding settings are missing or the metric is invalid.
+   *
+   * @throws {@link Errors.PineconeConflictError} when an index with this name already exists.
+   *
+   * @throws {@link Errors.PineconeTimeoutError} when the readiness timeout expires.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.createForModel({
+   *   name: 'product-catalog',
+   *   cloud: 'aws',
+   *   region: 'us-east-1',
+   *   embed: {
+   *     model: 'multilingual-e5-large',
+   *     fieldMap: { text: 'description' },
+   *   },
+   *   waitUntilReady: true,
+   * });
+   * console.log(index.name);
+   * ```
+   *
+   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
+   *
+   * @deprecated Use {@link Indexes.createForModel} instead.
+   */
   createIndexForModel(
     options: CreateIndexForModelOptions,
   ): Promise<IndexModel | void>;
@@ -247,58 +336,217 @@ export class Pinecone {
     return this.indexes.createForModel(options);
   }
 
-  /** @deprecated Use `pc.indexes.describe()` instead. */
+  /**
+   * {@inheritDoc Indexes.describe}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the index name is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const index = await pc.indexes.describe('product-catalog');
+   * console.log(index.status.ready);
+   * ```
+   *
+   * @deprecated Use {@link Indexes.describe} instead.
+   */
   describeIndex(indexName: string) {
     return this.indexes.describe(indexName);
   }
 
-  /** @deprecated Use `pc.indexes.list()` instead. */
+  /**
+   * {@inheritDoc Indexes.list}
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const result = await pc.indexes.list();
+   * console.log(result.indexes);
+   * ```
+   *
+   * @deprecated Use {@link Indexes.list} instead.
+   */
   listIndexes() {
     return this.indexes.list();
   }
 
-  /** @deprecated Use `pc.indexes.delete()` instead. */
+  /**
+   * Deletes an index and its data.
+   *
+   * Disable deletion protection first. The index may still be terminating when this call returns.
+   *
+   * @param indexName - The index name, such as `product-catalog`.
+   * @returns Resolves when the deletion request is accepted.
+   * @throws {@link Errors.PineconeArgumentError} when the index name is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * await pc.indexes.delete('product-catalog');
+   * ```
+   *
+   * @deprecated Use {@link Indexes.delete} instead.
+   */
   deleteIndex(indexName: string) {
     return this.indexes.delete(indexName);
   }
 
-  /** @deprecated Use `pc.collections.create()` instead. */
+  /**
+   * {@inheritDoc Collections.create}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the collection name or source is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const collection = await pc.collections.create({
+   *   name: 'catalog-snapshot',
+   *   source: 'catalog-pod-index',
+   * });
+   * console.log(collection.status);
+   * ```
+   *
+   * @deprecated Use {@link Collections.create} instead.
+   */
   createCollection(options: CreateCollectionOptions) {
     return this.collections.create(options);
   }
 
-  /** @deprecated Use `pc.collections.list()` instead. */
+  /**
+   * {@inheritDoc Collections.list}
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const result = await pc.collections.list();
+   * console.log(result.collections);
+   * ```
+   *
+   * @deprecated Use {@link Collections.list} instead.
+   */
   listCollections() {
     return this.collections.list();
   }
 
-  /** @deprecated Use `pc.collections.describe()` instead. */
+  /**
+   * {@inheritDoc Collections.describe}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the collection name is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const collection = await pc.collections.describe('catalog-snapshot');
+   * console.log(collection.status);
+   * ```
+   *
+   * @deprecated Use {@link Collections.describe} instead.
+   */
   describeCollection(collectionName: string) {
     return this.collections.describe(collectionName);
   }
 
-  /** @deprecated Use `pc.collections.delete()` instead. */
+  /**
+   * {@inheritDoc Collections.delete}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the collection name is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * await pc.collections.delete('catalog-snapshot');
+   * ```
+   *
+   * @deprecated Use {@link Collections.delete} instead.
+   */
   deleteCollection(collectionName: string) {
     return this.collections.delete(collectionName);
   }
 
-  /** @deprecated Use `pc.backups.create(indexName, options)` instead. */
+  /**
+   * Create a backup of an index.
+   *
+   * @param options - Source `indexName` and optional backup name and description.
+   * @returns The backup details and creation status.
+   *
+   * @example
+   * ```typescript
+   * const backup = await pc.backups.create('product-catalog', { name: 'before-reimport' });
+   * ```
+   *
+   * @deprecated Use {@link Backups.create} with the index name as its first argument.
+   */
   createBackup(options: CreateBackupOptions & { indexName: string }) {
     const { indexName, ...rest } = options;
     return this.backups.create(indexName, rest);
   }
 
-  /** @deprecated Use `pc.backups.describe()` instead. */
+  /**
+   * {@inheritDoc Backups.describe}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the backup ID is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const backup = await pc.backups.describe('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * console.log(backup.status);
+   * ```
+   *
+   * @deprecated Use {@link Backups.describe} instead.
+   */
   describeBackup(backupId: string) {
     return this.backups.describe(backupId);
   }
 
-  /** @deprecated Use `pc.backups.delete()` instead. */
+  /**
+   * {@inheritDoc Backups.delete}
+   *
+   * @throws {@link Errors.PineconeArgumentError} when the backup ID is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * await pc.backups.delete('11450b9f-96e5-47e5-9186-03f346b1f385');
+   * ```
+   *
+   * @deprecated Use {@link Backups.delete} instead.
+   */
   deleteBackup(backupId: string) {
     return this.backups.delete(backupId);
   }
 
-  /** @deprecated Use `pc.backups.createIndex(backupId, options)` instead. */
+  /**
+   * Start restoring a backup into a new index.
+   *
+   * @param options - Source `backupId`, destination index name, and optional index settings.
+   * @returns The restore job ID and destination index details.
+   *
+   * @example
+   * ```typescript
+   * const restore = await pc.backups.createIndex('backup-7f3a', { name: 'catalog-restored' });
+   * ```
+   *
+   * @deprecated Use {@link Backups.createIndex} with the backup ID as its first argument.
+   */
   createIndexFromBackup(
     options: CreateIndexFromBackupOptions & { backupId: string },
   ) {
@@ -306,48 +554,182 @@ export class Pinecone {
     return this.backups.createIndex(backupId, rest);
   }
 
-  /** @deprecated Use `pc.restoreJobs.describe()` instead. */
+  /**
+   * Retrieves the current progress of a restore job.
+   *
+   * @param restoreJobId - The `restoreJobId` returned by {@link Backups.createIndex}.
+   * @returns The restore status, target index, and completion percentage.
+   * @throws {@link Errors.PineconeArgumentError} when the restore job ID is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const job = await pc.restoreJobs.describe('4d4c8693-10fd-4204-a57b-1e3e626fca07');
+   * console.log(job.status, job.percentComplete);
+   * ```
+   *
+   * @see {@link Backups.createIndex} to start a restore.
+   *
+   * @deprecated Use {@link RestoreJobs.describe} instead.
+   */
   describeRestoreJob(restoreJobId: string) {
     return this.restoreJobs.describe(restoreJobId);
   }
 
-  /** @deprecated Use `pc.restoreJobs.list()` instead. */
+  /**
+   * {@inheritDoc RestoreJobs.list}
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   *
+   * const pc = new Pinecone();
+   * const page = await pc.restoreJobs.list({ limit: 10 });
+   * console.log(page.data, page.pagination?.next);
+   * ```
+   *
+   * @deprecated Use {@link RestoreJobs.list} instead.
+   */
   listRestoreJobs(options?: ListRestoreJobsOptions) {
     return this.restoreJobs.list(options);
   }
 
-  /** @deprecated Use `pc.assistants.create()` instead. */
+  /**
+   * {@inheritDoc Assistants.create}
+   *
+   * @throws {@link Errors.PineconeArgumentError} if options are missing or the region is unsupported.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistant = await pc.assistants.create({ name: 'support-guide' });
+   * console.log(assistant.status);
+   * ```
+   *
+   * @deprecated Use {@link Assistants.create} instead.
+   */
   createAssistant(options: CreateAssistantOptions) {
     return this.assistants.create(options);
   }
 
-  /** @deprecated Use `pc.assistants.describe()` instead. */
+  /**
+   * {@inheritDoc Assistants.describe}
+   *
+   * @throws {@link Errors.PineconeArgumentError} if `assistantName` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const assistant = await pc.assistants.describe('support-guide');
+   * console.log(assistant.status);
+   * ```
+   *
+   * @see {@link Assistants.list} to discover assistants.
+   *
+   * @deprecated Use {@link Assistants.describe} instead.
+   */
   describeAssistant(assistantName: string) {
     return this.assistants.describe(assistantName);
   }
 
-  /** @deprecated Use `pc.assistants.list()` instead. */
+  /**
+   * {@inheritDoc Assistants.list}
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const result = await pc.assistants.list();
+   * console.log(result.assistants);
+   * ```
+   *
+   * @see {@link Assistants.describe} for details of one assistant.
+   *
+   * @deprecated Use {@link Assistants.list} instead.
+   */
   listAssistants() {
     return this.assistants.list();
   }
 
-  /** @deprecated Use `pc.assistants.delete()` instead. */
+  /**
+   * {@inheritDoc Assistants.delete}
+   *
+   * @throws {@link Errors.PineconeArgumentError} if `assistantName` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * await pc.assistants.delete('support-guide');
+   * ```
+   *
+   * @deprecated Use {@link Assistants.delete} instead.
+   */
   deleteAssistant(assistantName: string) {
     return this.assistants.delete(assistantName);
   }
 
-  /** @deprecated Use `pc.assistants.update()` instead. */
+  /**
+   * {@inheritDoc Assistants.update}
+   *
+   * @throws {@link Errors.PineconeArgumentError} if options or the assistant name are missing.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const result = await pc.assistants.update({
+   *   name: 'support-guide',
+   *   instructions: 'Answer using the uploaded support policies and cite your sources.',
+   * });
+   * console.log(result.instructions);
+   * ```
+   *
+   * @deprecated Use {@link Assistants.update} instead.
+   */
   updateAssistant(options: UpdateAssistantOptions) {
     return this.assistants.update(options);
   }
 
-  /** @deprecated Use `pc.assistants.evaluate()` instead. */
+  /**
+   * {@inheritDoc Assistants.evaluate}
+   *
+   * @throws {@link Errors.PineconeArgumentError} if options are missing or an answer or question is empty.
+   *
+   * @example
+   * ```typescript
+   * import { Pinecone } from '@pinecone-database/pinecone';
+   * const pc = new Pinecone();
+   * const result = await pc.assistants.evaluate({
+   *   question: 'Where can I start a return?',
+   *   answer: 'Start a return from your order history.',
+   *   groundTruth: 'Customers can start returns from their order history.',
+   * });
+   * console.log(result.metrics);
+   * ```
+   *
+   * @deprecated Use {@link Assistants.evaluate} instead.
+   */
   evaluate(options: EvaluateOptions) {
     return this.assistants.evaluate(options);
   }
 
   /**
-   * @deprecated Use `pc.indexes.configure(name, options)` instead.
+   * Update an index configuration.
+   *
+   * @param options - Index `name` and the settings to change; omitted settings are unchanged.
+   * @returns The updated index details.
+   *
+   * @example
+   * ```typescript
+   * await pc.indexes.configure('product-catalog', { deletionProtection: 'enabled' });
+   * ```
+   *
+   * @deprecated Use {@link Indexes.configure} with the index name as its first argument.
    */
   configureIndex(options: ConfigureIndexOptions & { name: string }) {
     const { name, ...rest } = options;
@@ -355,8 +737,19 @@ export class Pinecone {
   }
 
   /**
-   * @deprecated Use `pc.backups.listByIndex(indexName, options)` for an index,
-   * or `pc.backups.list(options)` for all project backups.
+   * List one page of backups for an index or the project.
+   *
+   * @param options - Pagination settings and optional `indexName`. Omit to list project backups.
+   * `includeDeleted` applies only when `indexName` is supplied.
+   * @returns Backups and a pagination token for the next page, when present.
+   *
+   * @example
+   * ```typescript
+   * const page = await pc.backups.listByIndex('product-catalog');
+   * console.log(page.data);
+   * ```
+   *
+   * @deprecated Use {@link Backups.listByIndex} for one index or {@link Backups.list} for the project.
    */
   listBackups(
     options: ListIndexBackupsOptions & {
@@ -383,122 +776,63 @@ export class Pinecone {
   }
 
   /**
-   * @returns The configuration object that was passed to the Pinecone constructor.
+   * Return the configuration used by this client.
+   *
+   * @returns The configuration object, including the API key. Treat it as sensitive.
+   *
+   * @example
+   * ```typescript
+   * const config = pc.getConfig();
+   * console.log(config.maxRetries);
+   * ```
    */
   getConfig() {
     return this.config;
   }
 
   /**
-   * Targets a specific index for performing data operations.
+   * Target an index for data operations.
    *
-   * You can target an index by providing its `name`, its `host`, or both. If only `name` is provided,
-   * the SDK will call {@link describeIndex} to resolve the host. If `host` is provided, the SDK will
-   * perform data operations directly against that host.
+   * Supplying a host avoids the index-name lookup. A name alone is resolved when needed.
    *
-   * #### Targeting an index by host (recommended for production)
+   * @typeParam T - Metadata fields associated with vector records.
+   * @param options - Index name or host, and optionally a namespace and additional request headers.
+   * @returns An {@link Index} scoped to the selected index and namespace.
    *
+   * @example
    * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * // Get the host from describeIndex
-   * const indexModel = await pc.indexes.describe('index-name');
-   * const index = pc.index({ host: indexModel.host })
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
    * ```
    *
-   * #### Targeting an index by name
-   *
+   * @example
    * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * const index = pc.index({ name: 'index-name' })
+   * type ProductMetadata = { title: string; category: string };
+   * const model = await pc.indexes.describe('product-catalog');
+   * const index = pc.index<ProductMetadata>({ host: model.host });
+   * const result = await index.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.records['trail-shoe-42']?.metadata?.title);
    * ```
    *
-   * #### Targeting an index by name (legacy string syntax - deprecated)
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * // Legacy syntax - will be removed in next major version
-   * const index = pc.index('index-name')
-   * ```
-   *
-   * #### Targeting an index by host
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   * const pc = new Pinecone()
-   *
-   * const index = pc.index({ host: 'index-name-abc123.svc.pinecone.io' })
-   * ```
-   *
-   * #### Targeting an index, with user-defined Metadata types
-   *
-   * If you are storing metadata alongside your vector values inside your Pinecone records, you can pass a type parameter to `index()` in order to get proper TypeScript typechecking when upserting and querying data.
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const pc = new Pinecone();
-   *
-   * type MovieMetadata = {
-   *   title: string,
-   *   runtime: numbers,
-   *   genre: 'comedy' | 'horror' | 'drama' | 'action'
-   * }
-   *
-   * // Specify a custom metadata type while targeting the index
-   * const indexModel = await pc.indexes.describe('test-index');
-   * const index = pc.index<MovieMetadata>({ host: indexModel.host });
-   *
-   * // Now you get type errors if upserting malformed metadata
-   * await index.upsert({
-   *   records: [{
-   *     id: '1234',
-   *     values: [
-   *       .... // embedding values
-   *     ],
-   *     metadata: {
-   *       title: 'Gone with the Wind',
-   *       runtime: 238,
-   *       genre: 'drama',
-   *
-   *       // @ts-expect-error because category property not in MovieMetadata
-   *       category: 'classic'
-   *     }
-   *   }]
-   * })
-   *
-   * const results = await index.query({
-   *    vector: [
-   *     ... // query embedding
-   *    ],
-   *    filter: { genre: { '$eq': 'drama' }}
-   * })
-   * const movie = results.matches[0];
-   *
-   * if (movie.metadata) {
-   *   // Since we passed the MovieMetadata type parameter above,
-   *   // we can interact with metadata fields without having to
-   *   // do any typecasting.
-   *   const { title, runtime, genre } = movie.metadata;
-   *   console.log(`The best match in drama was ${title}`)
-   * }
-   * ```
-   *
-   * @typeParam T - The type of metadata associated with each record.
-   * @param options - The {@link IndexOptions} for targeting the index.
-   * @returns An {@link Index} object that can be used to perform data operations.
+   * @see {@link Pinecone.indexes} to create or configure an index.
    */
   index<T extends RecordMetadata = RecordMetadata>(
     options: IndexOptions,
   ): Index<T>;
   /**
-   * @deprecated Use the options object pattern instead: `pc.index({ name: 'index-name' })`.
-   * This signature will be removed in the next major version.
+   * Target an index using positional arguments.
+   *
+   * @typeParam T - Metadata fields associated with vector records.
+   * @param indexName - Index name, such as `product-catalog`.
+   * @param indexHostUrl - Index host; omit to resolve it from the name.
+   * @param additionalHeaders - Additional headers to include in index requests.
+   * @returns An index client using the default namespace.
+   *
+   * @example
+   * ```typescript
+   * const index = pc.index({ name: 'product-catalog' });
+   * ```
+   *
+   * @deprecated Use the options overload of {@link Pinecone.index} instead.
    */
   index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
@@ -536,14 +870,42 @@ export class Pinecone {
 
   /**
    * {@inheritDoc index}
+   *
+   * @example
+   * ```typescript
+   * const index = pc.index({ name: 'product-catalog', namespace: 'products-en' });
+   * ```
+   *
+   * @example
+   * ```typescript
+   * type ProductMetadata = { title: string; category: string };
+   * const model = await pc.indexes.describe('product-catalog');
+   * const index = pc.index<ProductMetadata>({ host: model.host });
+   * const result = await index.fetch({ ids: ['trail-shoe-42'] });
+   * console.log(result.records['trail-shoe-42']?.metadata?.title);
+   * ```
+   *
+   * @see {@link Pinecone.indexes} to create or configure an index.
    */
   // Alias method to match the Python SDK capitalization
   Index<T extends RecordMetadata = RecordMetadata>(
     options: IndexOptions,
   ): Index<T>;
   /**
-   * @deprecated Use the options object pattern instead: `pc.Index({ name: 'index-name' })`.
-   * This signature will be removed in the next major version.
+   * Target an index using positional arguments.
+   *
+   * @typeParam T - Metadata fields associated with vector records.
+   * @param indexName - Index name, such as `product-catalog`.
+   * @param indexHostUrl - Index host; omit to resolve it from the name.
+   * @param additionalHeaders - Additional headers to include in index requests.
+   * @returns An index client using the default namespace.
+   *
+   * @example
+   * ```typescript
+   * const index = pc.index({ name: 'product-catalog' });
+   * ```
+   *
+   * @deprecated Use the options overload of {@link Pinecone.index} instead.
    */
   Index<T extends RecordMetadata = RecordMetadata>(
     indexName: string,
@@ -559,63 +921,36 @@ export class Pinecone {
   }
 
   /**
-   * Targets a specific assistant for performing operations.
+   * Target an assistant for file uploads, context retrieval, and chat.
    *
-   * Once an assistant is targeted, you can perform operations such as uploading files,
-   * updating instructions, and chatting.
+   * @param options - Assistant name, with an optional host and additional request headers.
+   * @returns An {@link Assistant} scoped to the selected assistant.
    *
-   * #### Targeting an assistant (options object - recommended)
-   *
+   * @example
    * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const pc = new Pinecone();
-   * const assistant = pc.assistant({ name: 'my-assistant' });
-   *
-   * // Upload a file to the assistant
-   * await assistant.uploadFile({
-   *   path: 'test-file.txt',
-   *   metadata: { description: 'Sample test file' }
+   * const assistant = pc.assistant({ name: 'support-handbook' });
+   * const response = await assistant.chat({
+   *   messages: [{ role: 'user', content: 'How do I return a damaged order?' }],
    * });
+   * console.log(response.message?.content);
    * ```
    *
-   * #### Targeting an assistant (legacy string syntax - deprecated)
-   *
-   * ```typescript
-   * import { Pinecone } from '@pinecone-database/pinecone';
-   *
-   * const pc = new Pinecone();
-   * // Legacy syntax - will be removed in next major version
-   * const assistant = pc.assistant('my-assistant');
-   * ```
-   *
-   * #### Full example with chat
-   *
-   * ```typescript
-   * const chatResp = await assistant.chat({
-   *   messages: [{ role: 'user', content: 'What is the capital of France?' }],
-   * });
-   * console.log(chatResp);
-   * // {
-   * //  id: '000000000000000023e7fb015be9d0ad',
-   * //  finishReason: 'stop',
-   * //  message: {
-   * //    role: 'assistant',
-   * //    content: 'The capital of France is Paris.'
-   * //  },
-   * //  model: 'gpt-4o-2024-05-13',
-   * //  citations: [ { position: 209, references: [Array] } ],
-   * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
-   * // }
-   * ```
-   *
-   * @param options - The {@link AssistantOptions} for targeting the assistant.
-   * @returns An {@link Assistant} object that can be used to perform assistant-related operations.
+   * @see {@link Pinecone.assistants} to create an assistant or update its instructions.
    */
   assistant(options: AssistantOptions): Assistant;
   /**
-   * @deprecated Use the options object pattern instead: `pc.assistant({ name: 'assistant-name' })`.
-   * This signature will be removed in the next major version.
+   * Target an assistant using positional arguments.
+   *
+   * @param name - Assistant name, such as `support-handbook`.
+   * @param host - Assistant host; omit to resolve it from the name.
+   * @returns An assistant client.
+   *
+   * @example
+   * ```typescript
+   * const assistant = pc.assistant({ name: 'support-handbook' });
+   * ```
+   *
+   * @deprecated Use the options overload of {@link Pinecone.assistant} instead.
    */
   assistant(name: string, host?: string): Assistant;
   assistant(
@@ -639,12 +974,33 @@ export class Pinecone {
 
   /**
    * {@inheritDoc assistant}
+   *
+   * @example
+   * ```typescript
+   * const assistant = pc.assistant({ name: 'support-handbook' });
+   * const response = await assistant.chat({
+   *   messages: [{ role: 'user', content: 'How do I return a damaged order?' }],
+   * });
+   * console.log(response.message?.content);
+   * ```
+   *
+   * @see {@link Pinecone.assistants} to create an assistant or update its instructions.
    */
   // Alias method
   Assistant(options: AssistantOptions): Assistant;
   /**
-   * @deprecated Use the options object pattern instead: `pc.Assistant({ name: 'assistant-name' })`.
-   * This signature will be removed in the next major version.
+   * Target an assistant using positional arguments.
+   *
+   * @param name - Assistant name, such as `support-handbook`.
+   * @param host - Assistant host; omit to resolve it from the name.
+   * @returns An assistant client.
+   *
+   * @example
+   * ```typescript
+   * const assistant = pc.assistant({ name: 'support-handbook' });
+   * ```
+   *
+   * @deprecated Use the options overload of {@link Pinecone.assistant} instead.
    */
   Assistant(name: string, host?: string): Assistant;
   Assistant(

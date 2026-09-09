@@ -10,7 +10,7 @@ import { handleApiError } from '../../errors/handling';
  * @see [Collections](https://docs.pinecone.io/guides/indexes/collections/understanding-collections)
  */
 export interface CreateCollectionOptions {
-  /** The name of the collection. Must be 1-45 chars, lowercase alphanumeric + '-', start/end alphanumeric. */
+  /** The collection name, such as `catalog-snapshot`. Must be unique within the project. */
   name: string;
   /** The name of the source pod-based index to snapshot. */
   source: string;

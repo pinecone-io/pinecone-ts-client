@@ -7,6 +7,16 @@ import {
 
 /**
  * Options for generating embeddings.
+ *
+ * @example
+ * ```typescript
+ * import type { EmbedOptions } from '@pinecone-database/pinecone';
+ * const options: EmbedOptions = {
+ *   model: 'multilingual-e5-large',
+ *   inputs: ['How do I return an order?'],
+ *   parameters: { inputType: 'query' },
+ * };
+ * ```
  */
 export interface EmbedOptions {
   /**

@@ -15,7 +15,7 @@ export type { CreateIndexFromBackupResponse } from '../../pinecone-generated-ts-
  * @see [Backups](https://docs.pinecone.io/guides/indexes/backups)
  */
 export interface CreateIndexFromBackupOptions {
-  /** The name of the index to create. 1–45 characters, alphanumeric and '-'. */
+  /** The new index name, such as `product-catalog-restored`. Must be unique within the project. */
   name: string;
   /** Optional tags to apply to the created index. Overrides backup tags if provided. */
   tags?: Record<string, string>;

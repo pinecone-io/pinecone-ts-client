@@ -86,6 +86,10 @@ export interface ReadCapacityOnDemandSpecResponse extends Omit<
  * configuration.
  *
  * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ *
+ * const pc = new Pinecone();
+ * const index = await pc.indexes.describe('product-catalog');
  * if (index.readCapacity?.mode === 'Dedicated') {
  *   console.log(index.readCapacity.dedicated?.nodeType);
  * }
@@ -166,8 +170,12 @@ export type IndexSchemaField = TypedIndexSchemaField | LegacyMetadataField;
  * The schema of an existing index: a map of field names to their configurations.
  *
  * ```typescript
- * const field = index.schema.fields['chunk_text'];
- * if ('type' in field && field.type === 'dense_vector') {
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ *
+ * const pc = new Pinecone();
+ * const index = await pc.indexes.describe('product-catalog');
+ * const field = index.schema.fields['embedding'];
+ * if (field && 'type' in field && field.type === 'dense_vector') {
  *   console.log(field.dimension, field.metric);
  * }
  * ```

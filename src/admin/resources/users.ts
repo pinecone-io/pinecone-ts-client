@@ -8,12 +8,22 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for listing users (the filter and pagination query of `admin.users.list`).
+ * Options for {@link UsersResource.list}.
  */
 export type ListUsersOptions = Omit<ListUsersRequest, 'xPineconeApiVersion'>;
 
 /**
- * Operations for managing users within the organization. Accessed via {@link AdminClient.users}.
+ * Users are people who belong to your organization.
+ * Access this resource through {@link AdminClient.users}; do not construct it directly.
+ * Use {@link AdminClient.invites} to invite new members.
+ *
+ * @example
+ * ```typescript
+ * import { AdminClient } from '@pinecone-database/pinecone';
+ *
+ * const admin = new AdminClient();
+ * const result = await admin.users.list();
+ * ```
  */
 export class UsersResource {
   private readonly _api: UsersApi;
@@ -22,7 +32,22 @@ export class UsersResource {
     this._api = api;
   }
 
-  /** Get a user's details by ID. */
+  /**
+   * Retrieves a user by ID.
+   *
+   * @param userId - The user ID returned by {@link UsersResource.list}.
+   * @returns The user details.
+   * @throws {@link Errors.PineconeArgumentError} when `userId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.users.describe('bf77a06e-cd10-41c8-af91-a7fa389dce2c');
+   * console.log(result);
+   * ```
+   */
   async describe(userId: string): Promise<User> {
     if (!userId) {
       throw new PineconeArgumentError(
@@ -35,7 +60,21 @@ export class UsersResource {
     });
   }
 
-  /** List users in the organization, optionally filtered by email. */
+  /**
+   * Lists one page of users, optionally filtered by email.
+   *
+   * @param options - Filters and pagination settings. Omit to fetch the first page without filters.
+   * @returns Results in `data`; pass `pagination.next` as `paginationToken` to fetch the next page.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.users.list({ limit: 10 });
+   * console.log(result.data);
+   * ```
+   */
   async list(options: ListUsersOptions = {}): Promise<UserList> {
     return await this._api.listUsers({
       ...options,
@@ -43,7 +82,21 @@ export class UsersResource {
     });
   }
 
-  /** Delete a user by ID, removing them from the organization. */
+  /**
+   * Removes a user from the organization.
+   *
+   * @param userId - The ID of the user to remove.
+   * @returns Resolves when the deletion request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `userId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * await admin.users.delete('bf77a06e-cd10-41c8-af91-a7fa389dce2c');
+   * ```
+   */
   async delete(userId: string): Promise<void> {
     if (!userId) {
       throw new PineconeArgumentError(

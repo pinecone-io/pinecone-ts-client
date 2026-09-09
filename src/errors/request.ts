@@ -2,31 +2,26 @@ import { BasePineconeError } from './base';
 import type { ErrorContext } from '../pinecone-generated-ts-fetch/db_control';
 
 /**
- * This error is thrown when the client attempts to make a
- * request and never receives any response.
+ * A request failed before the SDK received a usable response.
+ * Inspect `cause` for the underlying error and check your network connection.
  *
- * This could be due to:
- * - Network problems which prevent the request from being completed.
- * - An outage of Pinecone's APIs. See [Pinecone's status page](https://status.pinecone.io/) to find out whether there is an ongoing incident.
+ * @example
+ * ```typescript
+ * import { Errors, Pinecone } from '@pinecone-database/pinecone';
  *
- * The `cause` property will contain a reference to the underlying error. Inspect its value to find out more about the root cause of the error.
- * ```
- * import { Pinecone } from '@pinecone-database/pinecone';
- *
- * const p = new Pinecone({ apiKey: 'invalid-api-key-value' })
- *
+ * const pc = new Pinecone();
  * try {
- *  await p.indexes.list();
- * } catch (e) {
- *  console.log(e.name); // PineconeConnectionError
- *  console.log(e.cause); // Error [FetchError]: The request failed and the interceptors did not return an alternative response
- *  console.log(e.cause.cause); // TypeError: fetch failed
- *  console.log(e.cause.cause.cause); // Error: getaddrinfo ENOTFOUND controller.wrong-environment.pinecone.io
+ *   await pc.indexes.list();
+ * } catch (error) {
+ *   if (error instanceof Errors.PineconeConnectionError) {
+ *     console.error(error.cause);
+ *   }
+ *   throw error;
  * }
  * ```
  *
- * @see [Pinecone's status page](https://status.pinecone.io/)
- * */
+ * @see [Pinecone service status](https://status.pinecone.io/)
+ */
 export class PineconeConnectionError extends BasePineconeError {
   constructor(e: Error, url?: string) {
     let urlMessage = '';
@@ -43,9 +38,8 @@ export class PineconeConnectionError extends BasePineconeError {
 }
 
 /**
- * This error is thrown any time a request to the Pinecone API fails.
- *
- * The `cause` property will contain a reference to the underlying error. Inspect its value to find out more about the root cause.
+ * A request failed. Inspect `message` for the operation and response status, when
+ * available, and `cause` for the underlying error.
  */
 export class PineconeRequestError extends BasePineconeError {
   constructor(context: ErrorContext) {

@@ -16,12 +16,9 @@ const CONFIG_HELP = `You can find the configuration values for your project in t
 
 const BILLING_HELP = `You can review your plan and billing details in the Pinecone developer console at https://app.pinecone.io/organizations/-/settings/billing`;
 
-/** This error is thrown when API requests return with status 400. Typically this is due to some aspect of the request being incorrect or invalid.
- *
- * Some examples when this error could occur:
- * - While attempting to create an index with no available quota in your project.
- * - While upserting records that do not match the `dimension` of your index
- * - While attempting to create an index using an invalid name ("!@#$%")
+/**
+ * Pinecone rejected the request with status 400 or 403.
+ * Read the error message to identify invalid input or a restriction on the operation.
  */
 export class PineconeBadRequestError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
@@ -32,10 +29,10 @@ export class PineconeBadRequestError extends BasePineconeError {
 }
 
 /**
- * This error occurs when API requests are attempted using invalid configurations such as a mispelled or revoked API key.
+ * Pinecone rejected the credentials. Check that your API key or service-account
+ * credentials are valid and have not been revoked.
  *
- * Log in to https://app.pinecone.io to verify you have configured the { @link Pinecone }
- * client using the correct values.
+ * @see {@link PineconeConfiguration} and {@link AdminClientConfiguration}.
  */
 export class PineconeAuthorizationError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo, messageOverride?: string) {
@@ -201,14 +198,10 @@ export class PineconeMaxRetriesExceededError extends BasePineconeError {
 }
 
 /**
- * This error indicates API responses are returning with status 503 and
- * Pinecone itself is down. Check the [status page](https://status.pinecone.io/)
- * for information about current or recent outages.
+ * Pinecone returned status 503 (Service Unavailable).
+ * The service is temporarily unable to handle the request.
  *
- * The difference between this error (503) and a PineconeInternalServerError (500) is that this error does NOT indicate
- * that the server is _unable_ to process the request, just that the server will not process the request.
- *
- * @see [Pinecone's status page](https://status.pinecone.io/)
+ * @see [Pinecone service status](https://status.pinecone.io/)
  */
 export class PineconeUnavailableError extends BasePineconeError {
   constructor(failedRequest: FailedRequestInfo) {
@@ -225,12 +218,8 @@ export class PineconeUnavailableError extends BasePineconeError {
 }
 
 /**
- * This error is thrown when you are attempting to use a feature that is
- * not implemented or unavailable to you on your current plan. Free indexes
- * only support a subset of Pinecone's capabilities, and if you are seeing
- * these exceptions then you should consult the
- * [pricing page](https://www.pinecone.io/pricing/) to see whether upgrading
- * makes sense for your use case.
+ * Pinecone returned status 501 (Not Implemented).
+ * Read the response message to identify the unsupported operation.
  */
 export class PineconeNotImplementedError extends BasePineconeError {
   constructor(requestInfo: FailedRequestInfo) {

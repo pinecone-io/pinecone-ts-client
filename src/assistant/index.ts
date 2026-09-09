@@ -82,17 +82,17 @@ export type {
 export { ChatStream } from './chatStream';
 
 /**
- * The `Assistant` class holds the data plane methods for interacting with
- *  [Assistants](https://docs.pinecone.io/guides/assistant/understanding-assistant).
+ * An assistant answers questions using the files you provide.
  *
- *  This class can be instantiated through a {@link Pinecone} object, and is used to interact with a specific assistant.
+ * Access it through {@link Pinecone.assistant}; do not construct it directly.
+ * Use {@link Assistants} through `pc.assistants` to create and manage assistants.
  *
- *  @example
- *  ```typescript
- *  import { Pinecone } from '@pinecone-database/pinecone';
- *  const pc = new Pinecone();
- *  const assistant = pc.assistant({ name: 'assistant-name' });
- *  ```
+ * @example
+ * ```typescript
+ * import { Pinecone } from '@pinecone-database/pinecone';
+ * const pc = new Pinecone();
+ * const assistant = pc.assistant({ name: 'support-guide' });
+ * ```
  */
 export class Assistant {
   private config: PineconeConfiguration;
@@ -122,20 +122,10 @@ export class Assistant {
   /** @internal */
   readonly _context: ReturnType<typeof context>;
 
-  /** Name of the assistant targeted by this client. */
+  /** The name of the assistant targeted by this client. */
   assistantName: string;
 
-  /**
-   * Creates an instance of the `Assistant` class.
-   *
-   * @param options - The {@link AssistantOptions} for targeting the assistant. Its
-   * `additionalHeaders` are merged over the client's, winning on an exact key match, and the
-   * result is sent with every request this assistant makes.
-   * @param config - The Pinecone configuration object containing an API key and other configuration parameters
-   * needed for API calls.
-   *
-   * @throws An error if no assistant name is provided.
-   */
+  /** @internal */
   constructor(options: AssistantOptions, config: PineconeConfiguration) {
     if (!options.name || options.name.trim() === '') {
       throw new PineconeArgumentError(
@@ -206,159 +196,112 @@ export class Assistant {
   // --------- Chat methods ---------
 
   /**
-   * Sends a message to the assistant and receives a response. Retries the request if the server fails.
+   * Generates an answer from the assistant with structured citations.
    *
-   * This is the recommended way to chat with an assistant: it offers more
-   * functionality and control over the assistant's responses and references
-   * (e.g. structured citations) than the OpenAI-compatible
-   * {@link chatCompletion} interface.
+   * Server errors are retried according to {@link PineconeConfiguration.maxRetries}.
+   *
+   * @param options - Messages and optional model, file filter, and response settings.
+   * @returns The answer in `message`, with citations and token usage.
+   * @throws {@link Errors.PineconeArgumentError} if the messages or model fail validation.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const chatResp = await assistant.chat({messages: [{role: 'user', content: "What is the capital of France?"}]});
-   * // {
-   * //  id: '000000000000000023e7fb015be9d0ad',
-   * //  finishReason: 'stop',
-   * //  message: {
-   * //    role: 'assistant',
-   * //    content: 'The capital of France is Paris.'
-   * //  },
-   * //  model: 'gpt-4o-2024-05-13',
-   * //  citations: [ { position: 209, references: [Array] } ],
-   * //  usage: { promptTokens: 493, completionTokens: 38, totalTokens: 531 }
-   * // }
-   * ```
-   *
-   * @example
-   * Chat with multimodal context enabled:
-   * ```typescript
-   * const chatResp = await assistant.chat({
-   *   messages: [{role: 'user', content: "What do the charts show?"}],
-   *   contextOptions: {
-   *     multimodal: true,
-   *     includeBinaryContent: true
-   *   }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const response = await assistant.chat({
+   *   messages: [{ role: 'user', content: 'How do I return an order?' }],
    * });
+   * console.log(response.message, response.citations);
    * ```
    *
-   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
-   * assistant, including contextOptions for controlling multimodal content.
-   * @returns A promise that resolves to a {@link ChatModel} object containing the response from the assistant.
+   * @see {@link Assistant.chatStream} for streamed answers; {@link Assistant.chatCompletion} for completion-style responses.
    */
   chat(options: ChatOptions) {
     return this._chat(options);
   }
 
   /**
-   * Sends a message to the assistant and receives a streamed response as {@link ChatStream} of {@link StreamedChatResponse}. Retries the request if the server fails.
+   * Streams an assistant answer and its structured citations.
    *
-   * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
+   * Requires a Node.js runtime. Server errors are retried according to
+   * {@link PineconeConfiguration.maxRetries} before streaming begins.
+   *
+   * @param options - Messages and optional model, file filter, and context settings.
+   * @returns An async iterable of message, content, citation, and completion chunks.
+   * @throws {@link Errors.PineconeArgumentError} if the messages or model fail validation.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const chatStream = await assistant.chatStream({ messages: [{ role: 'user', content: 'What is the capital of France?'}]});
-   *
-   * // stream the response and log each chunk
-   * for await (const chunk of newStream) {
-   *   console.log(chunk);
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const stream = await assistant.chatStream({
+   *   messages: [{ role: 'user', content: 'How do I return an order?' }],
+   * });
+   * for await (const chunk of stream) {
+   *   if (chunk.type === 'content_chunk') console.log(chunk.delta.content);
    * }
-   * // each chunk will have a variable shape depending on the type:
-   * // { type:"message_start", id:"response_id", model:"gpt-4o-2024-05-13", role:"assistant"}
-   * // { type:"content_chunk", id:"response_id", model:"gpt-4o-2024-05-13", delta:{ content:"The"}}
-   * // { type:"content_chunk", id:"response_id", model:"gpt-4o-2024-05-13", delta:{ content:" test"}}
-   * // { type:"message_end", id:"response_id", model:"gpt-4o-2024-05-13", finishReason:"stop",usage:{ promptTokens:371,completionTokens:48,totalTokens:419}}
    * ```
    *
-   * @param options - A {@link ChatOptions} object containing the message and optional parameters to send to the
-   * assistant.
-   * @returns A promise that resolves to a {@link ChatStream} of {@link StreamedChatResponse}.
+   * @see {@link Assistant.chat} for a complete answer; {@link Assistant.chatCompletionStream} for completion-style chunks.
    */
   chatStream(options: ChatOptions) {
     return this._chatStream(options);
   }
 
   /**
-   * Sends a message to the assistant and receives a response that is compatible with
-   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   * Generates an assistant answer in a chat completion response format.
    *
-   * This interface is useful when you need inline citations or OpenAI-compatible
-   * responses, but has limited functionality compared to {@link chat}, which is
-   * the recommended interface for chatting with an assistant.
+   * Server errors are retried according to {@link PineconeConfiguration.maxRetries}.
+   *
+   * @param options - Messages and optional model, temperature, and file metadata filter.
+   * @returns Response choices containing the answer, with model and token usage.
+   * @throws {@link Errors.PineconeArgumentError} if the messages or model fail validation.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const chatCompletion = await assistant.chatCompletion({ messages: [{ role: 'user', content: 'What is the capital of France?' }]});
-   * console.log(chatCompletion);
-   * // {
-   * //  id: "response_id",
-   * //  choices: [
-   * //  {
-   * //    finishReason: "stop",
-   * //    index: 0,
-   * //    message: {
-   * //      role: "assistant",
-   * //      content: "The data mentioned is described as \"some temporary data\"  [1].\n\nReferences:\n1. [test-chat.txt](https://storage.googleapis.com/knowledge-prod-files/your_file_resource) \n"
-   * //    }
-   * //   }
-   * //  ],
-   * //  model: "gpt-4o-2024-05-13",
-   * //  usage: {
-   * //    promptTokens: 371,
-   * //    completionTokens: 19,
-   * //    totalTokens: 390
-   * //  }
-   * // }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const response = await assistant.chatCompletion({
+   *   messages: [{ role: 'user', content: 'How do I return an order?' }],
+   * });
+   * console.log(response.choices);
    * ```
    *
-   * @param options - A {@link ChatCompletionOptions} object containing the message and optional parameters to send
-   * to an assistant.
-   * @returns A promise that resolves to a {@link ChatCompletionModel} object containing the response from the assistant.
+   * @see {@link Assistant.chat} for structured citations and additional response options.
    */
   chatCompletion(options: ChatCompletionOptions) {
     return this._chatCompletion(options);
   }
 
   /**
-   * Sends a message to the assistant and receives a streamed response as {@link ChatStream} of {@link StreamedChatCompletionResponse}. Response is compatible with
-   * [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/text-generation. Retries the request if the server fails.
+   * Streams an assistant answer in a chat completion response format.
    *
-   * Requires a Node.js runtime; it is not available on Edge or Workers runtimes.
+   * Requires a Node.js runtime. Server errors are retried according to
+   * {@link PineconeConfiguration.maxRetries} before streaming begins.
+   *
+   * @param options - Messages and optional model, temperature, and file metadata filter.
+   * @returns An async iterable of completion chunks; each choice contains incremental updates in `delta`.
+   * @throws {@link Errors.PineconeArgumentError} if the messages or model fail validation.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const chatStream = await assistant.chatCompletionStream({messages: [{role: 'user', content: "What is the capital of France?"}]});
-   *
-   * // stream the response and log each chunk
-   * for await (const chunk of newStream) {
-   *   if (chunk.choices.length > 0 && chunk.choices[0].delta.content) {
-   *     process.stdout.write(chunk.choices[0].delta.content);
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const stream = await assistant.chatCompletionStream({
+   *   messages: [{ role: 'user', content: 'How do I return an order?' }],
+   * });
+   * for await (const chunk of stream) {
+   *   for (const choice of chunk.choices) {
+   *     if (choice.delta.content) console.log(choice.delta.content);
    *   }
    * }
-   * // { id: 'response_id', choices: [{ index: 0, delta: { role: 'assistant' }, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
-   * // { id: 'response_id', choices: [{ index: 0, delta: { content: 'The' }}, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
-   * // { id: 'response_id', choices: [{ index: 0, delta: { content: ' test' }}, finishReason: null }], model: 'gpt-4o-2024-05-13', usage: null }
-   * // { id: 'response_id', choices: [], model: 'gpt-4o-2024-05-13', usage: { promptTokens: 371, completionTokens: 48, totalTokens: 419 }}
    * ```
    *
-   * @param options - A {@link ChatCompletionOptions} object containing the message and optional parameters to send
-   * to an assistant.
-   * @returns A promise that resolves to a {@link ChatStream} of {@link StreamedChatCompletionResponse}.
+   * @see {@link Assistant.chatCompletion} for a complete response; {@link Assistant.chatStream} for structured citation chunks.
    */
   chatCompletionStream(options: ChatCompletionOptions) {
     return this._chatCompletionStream(options);
@@ -367,37 +310,23 @@ export class Assistant {
   // --------- File methods ---------
 
   /**
-   * Lists files (with optional filter) uploaded to an assistant.
+   * Lists files uploaded to the assistant.
+   *
+   * @param options - Optional file metadata filter; omit to list files without filtering.
+   * @returns File details in `files`, including processing status.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * // Metadata fields are referenced at the top level — not wrapped in a `metadata` key.
-   * // See https://docs.pinecone.io/guides/data/filter-with-metadata for operators ($eq, $ne, $gt, $lt, $in).
-   * const files = await assistant.listFiles({ filter: { version: { $eq: 'v1' } } });
-   * console.log(files);
-   * // {
-   * //  files: [
-   * //    {
-   * //      name: 'temp-file.txt',
-   * //      id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
-   * //      metadata: undefined,
-   * //      createdOn: 2025-01-06T19:14:21.969Z,
-   * //      updatedOn: 2025-01-06T19:14:36.925Z,
-   * //      status: 'Available',
-   * //      percentDone: 1,
-   * //      signedUrl: undefined,
-   * //      errorMessage: undefined
-   * //    }
-   * //  ]
-   * // }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const result = await assistant.listFiles({
+   *   filter: { category: { $eq: 'returns' } },
+   * });
+   * console.log(result.files);
    * ```
    *
-   * @param options - A {@link ListFilesOptions} object containing optional parameters to filter the list of files.
-   * @returns A promise that resolves to a {@link AssistantFilesList} object containing a list of files.
+   * @see {@link Assistant.describeFile} for details of one file.
    */
   listFiles(options?: ListFilesOptions) {
     if (!options) {
@@ -407,164 +336,99 @@ export class Assistant {
   }
 
   /**
-   * Describes a file uploaded to an assistant.
+   * Gets file details and processing status.
+   *
+   * @param fileId - The file ID returned by an upload operation or file listing.
+   * @param includeUrl - Include a signed download URL; defaults to `true`.
+   * @returns File details, including status and a download URL when requested.
+   * @throws {@link Errors.PineconeArgumentError} if `fileId` is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const files = await assistant.listFiles();
-   * let fileId: string;
-   * if (files.files) {
-   *     fileId = files.files[0].id;
-   * } else {
-   *     fileId = '';
-   * }
-   * const resp = await assistant.describeFile(fileId)
-   * console.log(resp);
-   * // {
-   * //  name: 'test-file.txt',
-   * //  id: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
-   * //  metadata: undefined,
-   * //  createdOn: 2025-01-06T19:14:21.969Z,
-   * //  updatedOn: 2025-01-06T19:14:36.925Z,
-   * //  status: 'Available',
-   * //  percentDone: 1,
-   * //  signedUrl: undefined,
-   * //   errorMessage: undefined
-   * // }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const file = await assistant.describeFile('1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b');
+   * console.log(file.status);
    * ```
    *
-   * @param fileId - The ID of the file to describe.
-   * @param includeUrl - Whether to include the signed URL in the response. Defaults to true.
-   * @returns A promise that resolves to a {@link AssistantFileModel} object containing the file details.
+   * @see {@link Assistant.listFiles} to find file IDs.
    */
   describeFile(fileId: string, includeUrl: boolean = true) {
     return this._describeFile(fileId, includeUrl);
   }
 
   /**
-   * Uploads a file to an assistant.
+   * Uploads a new file for the assistant to use.
    *
-   * Accepts either a local file path or an in-memory `Buffer`, `Blob`, or
-   * Node.js `ReadableStream`. Use the `file` + `fileName` form to forward an
-   * incoming HTTP upload stream directly to the assistant without writing it
-   * to disk or buffering the entire file in memory.
+   * Processing continues asynchronously; check the returned operation with
+   * {@link Assistant.describeOperation}. Stream inputs are sent in a single attempt.
+   *
+   * @param options - A local `path`, or `file` plus `fileName`, with optional metadata and multimodal processing.
+   * @returns An operation whose `id` tracks processing and whose `fileId` identifies the file.
+   * @throws {@link Errors.PineconeArgumentError} if file input or its required filename is missing.
    *
    * @example
-   * Upload from a local path:
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistant = pc.assistant({ name: 'my-assistant' });
-   * await assistant.uploadFile({ path: 'report.pdf', metadata: { category: 'reports' } });
-   * ```
-   *
-   * @example
-   * Upload from a Buffer (e.g. from multer memory storage):
-   * ```typescript
-   * // req.file.buffer is a Buffer provided by multer
-   * await assistant.uploadFile({
-   *   file: req.file.buffer,
-   *   fileName: req.file.originalname,
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const operation = await assistant.uploadFile({
+   *   path: 'returns-policy.pdf',
+   *   metadata: { category: 'returns' },
    * });
+   * console.log(operation.id);
    * ```
    *
-   * @example
-   * Upload from a ReadableStream (zero server-side buffering):
-   * ```typescript
-   * // Forward an incoming upload stream directly — no disk write, no memory spike.
-   * // Note: automatic retries are disabled for stream inputs because the stream
-   * // is consumed after the first read and cannot be replayed.
-   * await assistant.uploadFile({
-   *   file: req.file.stream,   // e.g. from busboy / @fastify/multipart
-   *   fileName: req.file.filename,
-   * });
-   * ```
-   *
-   * @example
-   * Upload a file with multimodal processing enabled:
-   * ```typescript
-   * await assistant.uploadFile({
-   *   path: 'document-with-images.pdf',
-   *   metadata: { category: 'reports' },
-   *   multimodal: true,
-   * });
-   * ```
-   *
-   * @param options - A {@link UploadFileOptions} object. Provide either
-   *   `path` (local file path) or `file` ({@link Uploadable}) + `fileName`,
-   *   along with optional `metadata` and `multimodal` flags.
-   * @returns A promise that resolves to an {@link OperationModel} describing the async upload operation. Use `operation.fileId` to track the file once processing begins.
+   * @see {@link Assistant.upsertFile} to create or replace a file at an ID you supply.
    */
   uploadFile(options: UploadFileOptions) {
     return this._uploadFile(options);
   }
 
   /**
-   * Creates or replaces a file on an assistant at a caller-supplied file ID.
+   * Creates or replaces a file at an ID you supply.
    *
-   * If a file with the given `assistantFileId` already exists, its content is
-   * replaced; otherwise a new file is created with that identifier. This makes
-   * upsert idempotent by ID — useful when you own the ID space, e.g. mirroring
-   * your own document IDs into the assistant or re-syncing a changed source
-   * document to the same ID.
+   * Processing continues asynchronously; check the returned operation with
+   * {@link Assistant.describeOperation}. Stream inputs are sent in a single attempt.
    *
-   * Contrast with {@link uploadFile}, which always creates a new file with a
-   * server-generated ID and additionally supports `metadata`. `upsertFile`
-   * does *not* accept metadata.
-   *
-   * Accepts the same file inputs as {@link uploadFile} — a local file path or
-   * an in-memory `Buffer`, `Blob`, or Node.js `ReadableStream`. Like upload,
-   * this is asynchronous: poll the returned operation with
-   * {@link describeOperation} to track completion.
+   * @param options - The `assistantFileId` and a local `path`, or `file` plus `fileName`, with optional multimodal processing.
+   * @returns An operation whose `id` tracks processing and whose `fileId` identifies the file.
+   * @throws {@link Errors.PineconeArgumentError} if the file ID, file input, or required filename is missing.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistant = pc.assistant({ name: 'my-assistant' });
-   * // Create-or-replace the file at this ID with new content.
+   * const assistant = pc.assistant({ name: 'support-guide' });
    * const operation = await assistant.upsertFile({
    *   assistantFileId: '1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b',
-   *   path: 'report.pdf',
+   *   path: 'returns-policy.pdf',
    * });
-   * const status = await assistant.describeOperation(operation.id);
+   * console.log(operation.id);
    * ```
    *
-   * @param options - An {@link UpsertFileOptions} object. Provide the
-   *   `assistantFileId` to create or replace, along with either `path`
-   *   (local file path) or `file` ({@link Uploadable}) + `fileName`, and an
-   *   optional `multimodal` flag.
-   * @returns A promise that resolves to an {@link OperationModel} describing the async upsert operation.
+   * @see {@link Assistant.uploadFile} to create a file with an assigned ID and optional metadata.
    */
   upsertFile(options: UpsertFileOptions) {
     return this._upsertFile(options);
   }
 
   /**
-   * Deletes a file uploaded to an assistant by ID.
+   * Deletes a file from the assistant asynchronously.
    *
-   * This is an asynchronous operation: the returned {@link OperationModel} can
-   * be polled for completion via {@link describeOperation}.
+   * @param fileId - The ID of the file to delete.
+   * @returns An operation to track deletion with {@link Assistant.describeOperation}.
+   * @throws {@link Errors.PineconeArgumentError} if `fileId` is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const files = await assistant.listFiles();
-   * if (files.files) {
-   *    const fileId = files.files[0].id;
-   *    await assistant.deleteFile(fileId);
-   *  }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const operation = await assistant.deleteFile('1a56ddd0-c6d8-4295-80c0-9bfd6f5cb87b');
+   * console.log(operation.id);
    * ```
-   *
-   * @param fileId - The ID of the file to delete.
-   * @returns A promise that resolves to an {@link OperationModel} describing the async delete operation.
    */
   deleteFile(fileId: string) {
     return this._deleteFile(fileId);
@@ -573,44 +437,53 @@ export class Assistant {
   // --------- Operation methods ---------
 
   /**
-   * Describes an async operation (such as a file upload or delete) performed on
-   * the assistant. Use this to poll the status of an {@link OperationModel}
-   * returned by {@link uploadFile}, {@link upsertFile}, or {@link deleteFile}.
+   * Gets the current status of an asynchronous file operation.
+   *
+   * Call again to check progress; this call does not wait for completion.
+   *
+   * @param operationId - The operation ID returned by a file upload, upsert, deletion, or operation listing.
+   * @returns Operation details including `status` and any error.
+   * @throws {@link Errors.PineconeArgumentError} if `operationId` is empty.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistant = pc.assistant({ name: 'test1' });
-   * const operation = await assistant.uploadFile({ path: 'report.pdf' });
-   * const status = await assistant.describeOperation(operation.id);
-   * console.log(status.status); // 'Processing' | 'Completed' | 'Failed'
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const operation = await assistant.uploadFile({ path: 'returns-policy.pdf' });
+   * const result = await assistant.describeOperation(operation.id);
+   * console.log(result.status);
    * ```
    *
-   * @param operationId - The ID of the operation to describe.
-   * @returns A promise that resolves to an {@link OperationModel} describing the operation.
+   * @see {@link Assistant.listOperations} to find operations.
    */
   describeOperation(operationId: string) {
     return this._describeOperation(operationId);
   }
 
   /**
-   * Lists the async operations (such as file uploads and deletes) performed on
-   * the assistant, with optional filters. Returns operations that are in
-   * progress, as well as recently completed or failed operations. Both
-   * successful and failed operations are retained for 30 days after completion.
+   * Lists one page of asynchronous operations on the assistant.
+   *
+   * @param options - Optional operation filters, page size, and pagination token.
+   * @returns Operations and pagination information; pass `pagination.next` as `paginationToken` for the next page.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistant = pc.assistant({ name: 'test1' });
-   * const { operations } = await assistant.listOperations({ status: 'Processing' });
-   * console.log(operations);
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const page = await assistant.listOperations({ status: 'Processing' });
+   * console.log(page.operations);
+   * if (page.pagination?.next) {
+   *   const nextPage = await assistant.listOperations({
+   *     status: 'Processing',
+   *     paginationToken: page.pagination.next,
+   *   });
+   *   console.log(nextPage.operations);
+   * }
    * ```
    *
-   * @param options - An optional {@link ListOperationsOptions} object to filter and paginate the operations.
-   * @returns A promise that resolves to an {@link OperationList} object containing the list of operations.
+   * @see {@link Assistant.describeOperation} for the status of one operation.
    */
   listOperations(options?: ListOperationsOptions) {
     if (!options) {
@@ -620,42 +493,22 @@ export class Assistant {
   }
 
   /**
-   * Retrieves [the context snippets](https://docs.pinecone.io/guides/assistant/understanding-context-snippets) used
-   * by an assistant during the retrieval process.
+   * Retrieves relevant context snippets without generating an answer.
+   *
+   * @param options - A query or conversation messages, with optional file filter and snippet settings.
+   * @returns Relevant snippets with source references and usage information.
+   * @throws {@link Errors.PineconeArgumentError} if neither `query` nor `messages` is supplied.
    *
    * @example
    * ```typescript
    * import { Pinecone } from '@pinecone-database/pinecone';
    * const pc = new Pinecone();
-   * const assistantName = 'test1';
-   * const assistant = pc.assistant({ name: assistantName });
-   * const response = await assistant.context({query: "What is the capital of France?"});
-   * console.log(response);
-   * // {
-   * //  snippets: [
-   * //    {
-   * //      type: 'text',
-   * //      content: 'The capital of France is Paris.',
-   * //      score: 0.9978925,
-   * //      reference: [Object]
-   * //    },
-   * //  ],
-   * //  usage: { promptTokens: 527, completionTokens: 0, totalTokens: 527 }
-   * // }
+   * const assistant = pc.assistant({ name: 'support-guide' });
+   * const response = await assistant.context({ query: 'How do I return an order?' });
+   * console.log(response.snippets);
    * ```
    *
-   * @example
-   * Retrieve multimodal context snippets with image data:
-   * ```typescript
-   * const response = await assistant.context({
-   *   query: "Show me charts about revenue",
-   *   multimodal: true,
-   *   includeBinaryContent: true
-   * });
-   * ```
-   *
-   * @param options - A {@link ContextOptions} object containing the query or messages, optional filter, and optional multimodal parameters.
-   * @returns A promise that resolves to a {@link ContextModel} object containing the context snippets.
+   * @see {@link Assistant.chat} to generate an answer from the context.
    */
   context(options: ContextOptions) {
     return this._context(options);

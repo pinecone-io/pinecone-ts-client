@@ -8,7 +8,8 @@ import { PineconeArgumentError } from '../../errors';
 
 /**
  * Options for searching records within a specific namespace.
- * @see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference).
+ * @see [Upsert and search with integrated
+ * inference](https://docs.pinecone.io/guides/inference/integrated-inference).
  */
 export type SearchRecordsOptions = {
   /**
@@ -16,7 +17,8 @@ export type SearchRecordsOptions = {
    */
   query: SearchRecordsQuery;
   /**
-   * The fields to return in the search results. If not specified, the response will include all fields.
+   * The fields to return in the search results. If not specified, the response will include all
+   * fields.
    */
   fields?: Array<string>;
   /**
@@ -43,7 +45,8 @@ export type SearchRecordsQuery = {
    */
   filter?: object;
   /**
-   * The query text to search with. Searching with text is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/indexes/create-an-index#integrated-embedding).
+   * Embedding inputs, such as `{ text: "waterproof hiking shoes" }`.
+   * Requires an index with integrated embedding.
    */
   inputs?: object;
   /**
@@ -55,14 +58,11 @@ export type SearchRecordsQuery = {
    */
   id?: string;
   /**
-   * Specifies which terms must be present in the text of each search hit based on the specified strategy.
-   * The match is performed against the text field specified in the integrated index fieldMap configuration.
-   * Terms are normalized and tokenized into single tokens before matching, and order does not matter.
-   * Expected format: {strategy: "all", terms: ["term1", "term2", "term3"]}
-   * Currently, only "all" strategy is supported, which means all specified terms must be present.
+   * Require matching terms in the text field configured by the index field map,
+   * for example `{ strategy: "all", terms: ["hiking", "waterproof"] }`.
+   * Supported for compatible sparse indexes with integrated embedding.
    *
-   * **Limitations:** matchTerms is only supported for sparse indexes with integrated embedding configured to
-   * use the pinecone-sparse-english-v0 model.
+   * @see [Integrated embedding](https://docs.pinecone.io/guides/inference/integrated-inference)
    */
   matchTerms?: SearchMatchTerms;
 };
@@ -90,20 +90,24 @@ export type SearchRecordsVector = {
  */
 export type SearchRecordsRerank = {
   /**
-   * The name of the [reranking model](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) to use.
+   * The name of the [reranking
+   * model](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models) to
+   * use.
    */
   model: string;
   /**
-   * The field(s) to consider for reranking. If not provided, the default is `["text"]`.
-   * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models)
+   * Text fields to use for reranking, such as `["chunk_text"]`. Choose fields supported by the
+   * model.
    */
   rankFields: Array<string>;
   /**
-   * The number of top results to return after reranking. Defaults to the `topK` in {@link SearchRecordsQuery}.
+   * The number of top results to return after reranking. Defaults to the `topK` in {@link
+   * SearchRecordsQuery}.
    */
   topN?: number;
   /**
-   * Additional model-specific parameters. Refer to the [model guide](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models)
+   * Additional model-specific parameters. Refer to the [model
+   * guide](https://docs.pinecone.io/guides/inference/understanding-inference#reranking-models)
    * for available model parameters.
    */
   parameters?: { [key: string]: any };

@@ -12,34 +12,36 @@ import type {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * This type is very similar to { @link PineconeRecord }, but differs because the
- * values field is optional here. This is to allow for situations where perhaps
- * the caller only wants to update metadata for a given record while leaving
- * stored vector values as they are.
+ * Partial changes for {@link Index.update}. Select one record by `id`, or use a
+ * metadata `filter` to update metadata on matching records. Unspecified fields are preserved.
  */
 export type UpdateOptions<T extends RecordMetadata = RecordMetadata> = {
-  /** The id of the record you would like to update */
+  /**
+   * The record ID, such as `trail-shoe-42`; mutually exclusive with `filter`.
+   */
   id?: RecordId;
 
-  /** The vector values you would like to store with this record */
+  /**
+   * Replacement dense vector values for an update by ID.
+   */
   values?: RecordValues;
 
-  /** The sparse values you would like to store with this record.
-   *
-   * @see [Understanding hybrid search](https://docs.pinecone.io/docs/hybrid-search)
+  /**
+   * Replacement sparse vector values for an update by ID.
    */
   sparseValues?: RecordSparseValues;
 
   /**
-   * The metadata you would like to store with this record.
+   * Metadata fields to add or replace. Other stored metadata fields are preserved.
    */
   metadata?: Partial<T>;
 
   /**
-   * A metadata filter expression. When provided, updates all vectors in the namespace that match
-   * the filter criteria. Must not be provided when using id. Either `id` or `filter` must be provided.
+   * Select records whose metadata should change. Mutually exclusive with `id`;
+   * provide the changes in `metadata`.
    *
-   * @see [Metadata filtering](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
+   * @see [Metadata
+   * filtering](https://docs.pinecone.io/guides/index-data/indexing-overview#metadata)
    */
   filter?: object;
 

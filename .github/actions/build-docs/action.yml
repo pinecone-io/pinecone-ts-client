@@ -3,7 +3,15 @@ description: 'Generates client documentation using TypeDoc'
 runs:
   using: 'composite'
   steps:
+    - name: Fetch documentation baseline from PR base
+      if: github.event_name == 'pull_request'
+      env:
+        DOCS_BASE_REF: ${{ github.event.pull_request.base.sha }}
+      run: git fetch --no-tags --depth=1 origin "$DOCS_BASE_REF"
+      shell: bash
     - name: Build html documentation
+      env:
+        DOCS_BASE_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
       run: |
         npm run docs:build
       shell: bash

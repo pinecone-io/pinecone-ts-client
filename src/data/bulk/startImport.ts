@@ -12,18 +12,23 @@ import { PineconeArgumentError } from '../../errors';
  */
 export interface StartImportOptions {
   /**
-   * The URI of the bucket (or container) and import directory containing the namespaces and Parquet files you want to import. For example, `s3://BUCKET_NAME/IMPORT_DIR` for Amazon S3, `gs://BUCKET_NAME/IMPORT_DIR` for Google Cloud Storage, or `https://STORAGE_ACCOUNT.blob.core.windows.net/CONTAINER_NAME/IMPORT_DIR` for Azure Blob Storage. For more information, see [Import records](https://docs.pinecone.io/guides/index-data/import-data#prepare-your-data).
+   * Object-storage directory containing the namespaces and Parquet files to import,
+   * for example `s3://product-data/catalog-import`.
+   *
+   * @see [Prepare import
+   * data](https://docs.pinecone.io/guides/index-data/import-data#prepare-your-data)
    */
   uri: string;
 
   /**
-   * Indicates how to respond to errors during the import process.
-   * Possible values: `abort` or `continue`.
+   * How to handle import errors: `continue` (the default) skips errors; `abort` stops the import.
    */
   errorMode?: 'continue' | 'abort';
 
   /**
-   * The id of the [storage integration](https://docs.pinecone.io/guides/operations/integrations/manage-storage-integrations) that should be used to access the data.
+   * The id of the [storage
+   * integration](https://docs.pinecone.io/guides/operations/integrations/manage-storage-integrations)
+   * that should be used to access the data.
    */
   integration?: string;
 }

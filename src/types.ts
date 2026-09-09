@@ -4,25 +4,25 @@ import { HTTPHeaders } from './pinecone-generated-ts-fetch/db_data';
  * Options for targeting an index for data operations.
  *
  * You must provide either `name` or `host` (or both). If only `host` is provided, the SDK will
- * perform data operations directly against that host without calling `describeIndex()` to resolve it.
+ * perform data operations directly against that host without calling {@link Indexes.describe} to resolve it.
  */
 export interface IndexOptions {
   /**
-   * The name of the index to target. Required unless `host` is provided.
+   * The name of the index to target, such as `product-catalog`. Required unless `host` is provided.
    */
   name?: string;
 
   /**
    * The namespace to target within the index. If not specified, operations will be performed
-   * on the default namespace `''`.
+   * on the default namespace.
    */
   namespace?: string;
 
   /**
    * The host URL to use for data operations against this index. If not provided,
-   * the host URL will be automatically resolved by calling `describeIndex()` using the `name`.
+   * the host URL will be automatically resolved by calling {@link Indexes.describe} using the `name`.
    *
-   * You can find your index host in the Pinecone console or by using `describeIndex()`.
+   * You can find your index host in the Pinecone console or by using {@link Indexes.describe}.
    */
   host?: string;
 
@@ -46,13 +46,13 @@ export interface IndexOptions {
  */
 export interface AssistantOptions {
   /**
-   * The name of the assistant to target.
+   * The name of the assistant to target, such as `support-handbook`.
    */
   name: string;
 
   /**
    * An optional host URL to use for operations against this assistant. If not provided,
-   * the host URL will be automatically resolved by calling `describeAssistant()`.
+   * the host URL will be automatically resolved by calling {@link Assistants.describe}.
    */
   host?: string;
 

@@ -8,13 +8,22 @@ import {
 import { PineconeArgumentError } from '../../errors';
 
 /**
- * Options for updating an existing organization (the body of `admin.organizations.update`).
+ * Fields to change with {@link OrganizationsResource.update}.
  */
 export type UpdateOrganizationOptions = UpdateOrganizationRequest;
 
 /**
- * Operations for managing the organizations available to your service account. Accessed via
- * {@link AdminClient.organizations}.
+ * Organizations contain the projects and members available to your service account.
+ * Access this resource through {@link AdminClient.organizations}; do not construct it directly.
+ * Use {@link AdminClient.projects} to manage projects within an organization.
+ *
+ * @example
+ * ```typescript
+ * import { AdminClient } from '@pinecone-database/pinecone';
+ *
+ * const admin = new AdminClient();
+ * const result = await admin.organizations.list();
+ * ```
  */
 export class OrganizationsResource {
   private readonly _api: OrganizationsApi;
@@ -23,7 +32,22 @@ export class OrganizationsResource {
     this._api = api;
   }
 
-  /** Get an organization's details by ID. */
+  /**
+   * Retrieves an organization by ID.
+   *
+   * @param organizationId - The organization ID returned when it was created or listed.
+   * @returns The organization details.
+   * @throws {@link Errors.PineconeArgumentError} when `organizationId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.organizations.describe('6924db3c-f119-48ce-9f5a-7b11ef3a870c');
+   * console.log(result);
+   * ```
+   */
   async describe(organizationId: string): Promise<Organization> {
     if (!organizationId) {
       throw new PineconeArgumentError(
@@ -36,14 +60,45 @@ export class OrganizationsResource {
     });
   }
 
-  /** List all organizations available to the authenticated service account. */
+  /**
+   * Lists the organizations available to the authenticated service account.
+   *
+   * @returns Results in `data`.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.organizations.list();
+   * console.log(result.data);
+   * ```
+   */
   async list(): Promise<OrganizationList> {
     return await this._api.listOrganizations({
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });
   }
 
-  /** Update an existing organization by ID. */
+  /**
+   * Updates an organization. Omitted fields remain unchanged.
+   *
+   * @param organizationId - The ID of the organization to update.
+   * @param options - Fields to change, such as `name`.
+   * @returns The updated organization details.
+   * @throws {@link Errors.PineconeArgumentError} when `organizationId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * const result = await admin.organizations.update('6924db3c-f119-48ce-9f5a-7b11ef3a870c', {
+   *   name: 'Acme Research',
+   * });
+   * console.log(result);
+   * ```
+   */
   async update(
     organizationId: string,
     options: UpdateOrganizationOptions,
@@ -61,8 +116,19 @@ export class OrganizationsResource {
   }
 
   /**
-   * Delete an organization by ID. All projects within the organization must be deleted first, or
-   * the API will reject the request.
+   * Deletes an organization. Delete its projects first.
+   *
+   * @param organizationId - The ID of the organization to delete.
+   * @returns Resolves when the deletion request succeeds.
+   * @throws {@link Errors.PineconeArgumentError} when `organizationId` is empty.
+   *
+   * @example
+   * ```typescript
+   * import { AdminClient } from '@pinecone-database/pinecone';
+   *
+   * const admin = new AdminClient();
+   * await admin.organizations.delete('6924db3c-f119-48ce-9f5a-7b11ef3a870c');
+   * ```
    */
   async delete(organizationId: string): Promise<void> {
     if (!organizationId) {

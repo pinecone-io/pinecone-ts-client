@@ -52,11 +52,9 @@ export type IndexMetric = 'cosine' | 'euclidean' | 'dotproduct';
 /**
  * The current state of an index.
  *
- * An index is ready for data operations once `Ready`. `InitializationFailed`
- * and `Failed` are terminal: the first means the index never finished building,
- * the second that a previously healthy index has since failed. Neither
- * recovers, and {@link Indexes.create} with `waitUntilReady` throws on both.
- * The rest are transitional.
+ * Check `status.ready` before starting data operations. When waiting for an index,
+ * {@link Indexes.create} and {@link Indexes.createForModel} throw if its state is
+ * `InitializationFailed`, `Failed`, `Terminating`, or `Disabled`.
  */
 export type IndexState =
   | 'Initializing'
@@ -178,8 +176,7 @@ export interface ScalingConfigManualInput {
    */
   replicas: number;
   /**
-   * The number of shards to use. Shards determine the storage capacity of an
-   * index, with each shard providing 250 GB of storage.
+   * The number of shards to use. Increase this to provide more storage capacity.
    */
   shards: number;
 }
@@ -225,6 +222,8 @@ export interface ReadCapacityDedicated {
  * capacity.
  *
  * ```typescript
+ * import type { ReadCapacity } from '@pinecone-database/pinecone';
+ *
  * const onDemand: ReadCapacity = { mode: 'OnDemand' };
  *
  * const dedicated: ReadCapacity = {

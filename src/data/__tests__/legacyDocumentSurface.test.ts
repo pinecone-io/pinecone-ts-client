@@ -40,9 +40,13 @@ describe('legacy document public surface', () => {
       ).toBe(0);
       const deprecated = ts.getJSDocDeprecatedTag(member!);
       expect(deprecated).toBeDefined();
-      expect(deprecated?.comment).toEqual(
-        expect.stringContaining(`index.${replacement}(`),
-      );
+      const links = Array.isArray(deprecated?.comment)
+        ? deprecated.comment
+            .filter(ts.isJSDocLink)
+            .map((link) => link.name?.getText(source))
+        : [];
+      const target = replacement[0].toUpperCase() + replacement.slice(1);
+      expect(links).toContain(target);
     },
   );
 
