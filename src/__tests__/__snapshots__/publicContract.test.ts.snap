@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`public package contract pins the runtime barrel exports 1`] = `
+[
+  "AdminClient",
+  "ApiKeysResource",
+  "Assistant",
+  "Assistants",
+  "Backups",
+  "ChatStream",
+  "Collections",
+  "Errors",
+  "Index",
+  "Indexes",
+  "Inference",
+  "InvitesResource",
+  "OrganizationsResource",
+  "Pinecone",
+  "ProjectsResource",
+  "RestoreJobs",
+  "RoleBindingsResource",
+  "ServiceAccountsResource",
+  "UsersResource",
+]
+`;
+
+exports[`public package contract pins the runtime barrel exports 2`] = `
+[
+  "BasePineconeError",
+  "PineconeArgumentError",
+  "PineconeAuthorizationError",
+  "PineconeBadRequestError",
+  "PineconeConfigurationError",
+  "PineconeConflictError",
+  "PineconeConnectionError",
+  "PineconeEnvironmentVarsNotSupportedError",
+  "PineconeIndexInitializationFailedError",
+  "PineconeIndexTerminatedError",
+  "PineconeInternalServerError",
+  "PineconeMaxRetriesExceededError",
+  "PineconeMethodNotAllowedError",
+  "PineconeNotFoundError",
+  "PineconeNotImplementedError",
+  "PineconeRequestError",
+  "PineconeTimeoutError",
+  "PineconeUnableToResolveHostError",
+  "PineconeUnavailableError",
+  "PineconeUnexpectedResponseError",
+  "PineconeUnmappedHttpError",
+  "PineconeUnprocessableEntityError",
+  "extractMessage",
+  "handleApiError",
+  "mapHttpStatusError",
+]
+`;
