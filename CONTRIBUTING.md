@@ -2,6 +2,34 @@
 
 We welcome contributions to this project.
 
+## Node.js and npm
+
+Use the Node.js major in `.nvmrc` and the exact npm version in `package.json`'s
+`packageManager` field. With nvm installed, bootstrap from the repository root:
+
+```bash
+nvm install
+nvm use
+bash scripts/setup-npm.sh
+npm ci
+```
+
+The bootstrap installs the pinned npm into the active Node installation and verifies
+that it is on PATH. Run it again after switching Node versions. `packageManager`
+records the pin; npm itself does not switch versions from that field, and Corepack's
+npm shim is not enabled by default. Do not rely on the npm bundled with Node.
+
+Use this npm for `npm install` when changing dependencies, and commit both
+`package.json` and `package-lock.json`. CI and releases run the same bootstrap before
+installing. The Node 22/24 matrix uses the same npm 11 resolver on each runtime and
+keeps `npm ci` lockfile validation, including on Dependabot PRs. This does not assume
+that Dependabot honors `packageManager`: CI checks its generated lockfile directly.
+
+When changing the npm pin, regenerate the lockfile with that version and verify both
+matrix runtimes. The development Node version must meet npm's own engine requirement
+(npm 11 requires Node >=22.9.0 on the Node 22 line); `nvm install` selects the latest
+patch. The published SDK's Node support is declared separately in `engines.node`.
+
 ## Repl
 
 For quick troubleshooting, there is a repl available by running `npm run repl`. This will start a Node.js repl with the

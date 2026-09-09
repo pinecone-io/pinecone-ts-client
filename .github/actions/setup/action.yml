@@ -4,15 +4,14 @@ inputs:
   node_version:
     description: 'Node.js version to setup'
     required: false
-    default: '22.x'
+    default: ''
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node
-      uses: actions/setup-node@v4
+    - name: Setup runtime
+      uses: ./.github/actions/setup-runtime
       with:
-        node-version: ${{ inputs.node_version }}
-        registry-url: 'https://registry.npmjs.org'
+        node_version: ${{ inputs.node_version }}
     - name: Cache NPM dependencies
       uses: actions/cache@v4
       with:

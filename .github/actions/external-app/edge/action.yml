@@ -14,10 +14,8 @@ runs:
     - name: Check out current repository (pinecone-ts-client)
       uses: actions/checkout@v4
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22.x'
+    - name: Setup runtime
+      uses: ./.github/actions/setup-runtime
 
     - name: Build pinecone-ts-client code
       run: npm ci && npm run build
