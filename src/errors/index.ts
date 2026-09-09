@@ -27,5 +27,9 @@ export { PineconeConnectionError, PineconeRequestError } from './request';
 export type { FailedRequestInfo } from './http';
 export { BasePineconeError } from './base';
 export { PineconeArgumentError } from './validation';
+export {
+  PineconeBatchUpsertError,
+  PineconeBatchUpsertUnsentError,
+} from './batch';
 export { extractMessage } from './utils';
 export { handleApiError } from './handling';
