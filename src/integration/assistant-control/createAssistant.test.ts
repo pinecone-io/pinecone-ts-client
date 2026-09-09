@@ -1,7 +1,15 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, waitUntilAssistantReady } from '../test-helpers';
+import {
+  cleanupResources,
+  randomString,
+  waitUntilAssistantReady,
+} from '../test-helpers';
 
 let pinecone: Pinecone;
+const assistantNames: string[] = [];
+afterEach(async () => {
+  await cleanupResources(pinecone, [], assistantNames.splice(0));
+}, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
@@ -10,6 +18,7 @@ beforeAll(async () => {
 describe('createAssistant happy path', () => {
   test('simple create', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await pinecone.assistants.create({
       name: assistantName,
       instructions: 'test-instructions',
@@ -24,14 +33,13 @@ describe('createAssistant happy path', () => {
     expect(description.name).toEqual(assistantName);
     expect(description.instructions).toEqual('test-instructions');
     expect(description.metadata).toEqual({ key: 'value', keyTwo: 'valueTwo' });
-
-    await pinecone.assistants.delete(assistantName);
   });
 });
 
 describe('createAssistant error paths', () => {
   test('createAssistant with too much metadata', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await expect(
       pinecone.assistants.create({
         name: assistantName,
@@ -42,6 +50,7 @@ describe('createAssistant error paths', () => {
 
   test('createAssistant with invalid region', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await expect(
       pinecone.assistants.create({
         name: assistantName,
@@ -61,6 +70,7 @@ describe('createAssistant error paths', () => {
 
   test('createAssistant with duplicate name', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await pinecone.assistants.create({
       name: assistantName,
     });
@@ -69,7 +79,5 @@ describe('createAssistant error paths', () => {
         name: assistantName,
       }),
     ).rejects.toThrow();
-
-    await pinecone.assistants.delete(assistantName);
   });
 });

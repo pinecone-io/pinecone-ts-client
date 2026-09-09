@@ -1,8 +1,12 @@
 import { Pinecone } from '../../pinecone';
-import { randomString } from '../test-helpers';
+import { cleanupResources, randomString } from '../test-helpers';
 import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
+const assistantNames: string[] = [];
+afterEach(async () => {
+  await cleanupResources(pinecone, [], assistantNames.splice(0));
+}, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
@@ -11,6 +15,7 @@ beforeAll(async () => {
 describe('updateAssistant inplace updates, happy path', () => {
   test('simple update', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await pinecone.assistants.create({
       name: assistantName,
       instructions: 'test-instructions',
@@ -30,12 +35,11 @@ describe('updateAssistant inplace updates, happy path', () => {
       key: 'newValue',
       keyTwo: 'newValueTwo',
     });
-
-    await pinecone.assistants.delete(assistantName);
   });
 
   test('updateAssistant with new metadata key:value pair', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
     await pinecone.assistants.create({
       name: assistantName,
       metadata: { key: 'value', keyTwo: 'valueTwo' },
@@ -48,8 +52,6 @@ describe('updateAssistant inplace updates, happy path', () => {
 
     const description = await pinecone.assistants.describe(assistantName);
     expect(description.metadata).toEqual({ keyThree: 'valueThree' });
-
-    await pinecone.assistants.delete(assistantName);
   });
 });
 

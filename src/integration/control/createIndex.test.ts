@@ -1,8 +1,16 @@
 import { PineconeArgumentError, PineconeNotFoundError } from '../../errors';
 import { Pinecone } from '../../index';
-import { randomName } from '../test-helpers';
+import { randomName, cleanupResources } from '../test-helpers';
 
 let pinecone: Pinecone;
+const indexNames: string[] = [];
+const trackIndex = (name: string) => {
+  indexNames.push(name);
+  return name;
+};
+afterEach(async () => {
+  await cleanupResources(pinecone, indexNames.splice(0));
+}, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
@@ -12,7 +20,7 @@ describe('create index', () => {
   describe('managed (serverless) index tests', () => {
     describe('happy path', () => {
       test('create dense index', async () => {
-        const indexName = randomName('serverless-create');
+        const indexName = trackIndex(randomName('serverless-create'));
         await pinecone.indexes.create({
           name: indexName,
           deployment: {
@@ -30,6 +38,7 @@ describe('create index', () => {
             },
           },
           waitUntilReady: true,
+          timeout: 180_000,
           tags: { project: 'pinecone-integration-tests' },
         });
         const description = await pinecone.indexes.describe(indexName);
@@ -51,12 +60,10 @@ describe('create index', () => {
 
         // `readCapacity` is a top-level property and defaults to OnDemand.
         expect(description.readCapacity?.mode).toEqual('OnDemand');
-
-        await pinecone.indexes.delete(indexName);
       });
 
       test('create index with Dedicated read capacity', async () => {
-        const indexName = randomName('svrlss-dedicated');
+        const indexName = trackIndex(randomName('svrlss-dedicated'));
         await pinecone.indexes.create({
           name: indexName,
           deployment: {
@@ -84,6 +91,7 @@ describe('create index', () => {
             },
           },
           waitUntilReady: true,
+          timeout: 180_000,
           tags: { project: 'pinecone-integration-tests' },
         });
         const description = await pinecone.indexes.describe(indexName);
@@ -97,12 +105,10 @@ describe('create index', () => {
           expect(readCapacity.dedicated?.manual?.replicas).toEqual(2);
           expect(readCapacity.dedicated?.manual?.shards).toEqual(1);
         }
-
-        await pinecone.indexes.delete(indexName);
       });
 
       test('create sparse index', async () => {
-        const indexName = randomName('svrlss-sparse-create');
+        const indexName = trackIndex(randomName('svrlss-sparse-create'));
 
         await pinecone.indexes.create({
           name: indexName,
@@ -125,18 +131,17 @@ describe('create index', () => {
 
         const sparse = description.schema.fields['sparse_embedding'];
         expect('type' in sparse && sparse.type).toEqual('sparse_vector');
-
-        await pinecone.indexes.delete(indexName);
       });
     });
 
     describe('error cases', () => {
       test('create index with invalid index name', async () => {
+        expect.assertions(2);
         try {
-          const indexName = randomName('serverless-create');
+          const indexName = randomName('serverless-create') + '-';
 
           await pinecone.indexes.create({
-            name: indexName + '-',
+            name: indexName,
             deployment: {
               deploymentType: 'managed',
               cloud: 'aws',
@@ -152,6 +157,7 @@ describe('create index', () => {
               },
             },
           });
+          trackIndex(indexName);
         } catch (e) {
           const err = e as PineconeNotFoundError;
           expect(err.name).toEqual('PineconeBadRequestError');
@@ -161,15 +167,17 @@ describe('create index', () => {
 
       test('create index without a schema', async () => {
         expect.assertions(2);
+        const indexName = randomName('missing-schema');
         try {
           await pinecone.indexes.create({
-            name: randomName('missing-schema'),
+            name: indexName,
             deployment: {
               deploymentType: 'managed',
               cloud: 'aws',
               region: 'us-east-1',
             },
           } as never);
+          trackIndex(indexName);
         } catch (e) {
           const err = e as PineconeArgumentError;
           expect(err.name).toEqual('PineconeArgumentError');

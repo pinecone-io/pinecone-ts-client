@@ -1,8 +1,16 @@
 import { Pinecone } from '../../pinecone';
-import { randomString, waitUntilAssistantReady } from '../test-helpers';
+import {
+  cleanupResources,
+  randomString,
+  waitUntilAssistantReady,
+} from '../test-helpers';
 import { PineconeNotFoundError } from '../../errors';
 
 let pinecone: Pinecone;
+const assistantNames: string[] = [];
+afterEach(async () => {
+  await cleanupResources(pinecone, [], assistantNames.splice(0));
+}, 60_000);
 
 beforeAll(async () => {
   pinecone = new Pinecone();
@@ -11,6 +19,7 @@ beforeAll(async () => {
 describe('deleteAssistant happy path', () => {
   test('simple delete', async () => {
     const assistantName = randomString(5);
+    assistantNames.push(assistantName);
 
     await pinecone.assistants.create({
       name: assistantName,

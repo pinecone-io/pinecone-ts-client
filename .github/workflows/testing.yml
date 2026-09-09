@@ -54,17 +54,20 @@ jobs:
           # Always surface the setup logs (minus the fixtures line) first.
           echo "$SETUP_OUTPUT" | grep -v "^FIXTURES_JSON=" || true
 
+          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | tail -n 1 | cut -d'=' -f2-)
+          if [ -n "$FIXTURES_JSON" ]; then
+            echo "FIXTURES_JSON=$FIXTURES_JSON" >> "$GITHUB_OUTPUT"
+          fi
+
           if [ "$SETUP_EXIT" -ne 0 ]; then
             echo "::error::setup.ts failed with exit code $SETUP_EXIT"
             exit "$SETUP_EXIT"
           fi
 
-          FIXTURES_JSON=$(echo "$SETUP_OUTPUT" | grep "^FIXTURES_JSON=" | cut -d'=' -f2-)
           if [ -z "$FIXTURES_JSON" ]; then
             echo "::error::setup.ts exited 0 but emitted no FIXTURES_JSON line"
             exit 1
           fi
-          echo "FIXTURES_JSON=$FIXTURES_JSON" >> $GITHUB_OUTPUT
 
   integration-tests:
     needs: [setup]
@@ -123,8 +126,8 @@ jobs:
 
   teardown:
     name: Teardown shared resources
-    needs: [integration-tests]
-    if: success() && !inputs.docs_only
+    needs: [setup, integration-tests]
+    if: always() && !inputs.docs_only && needs.setup.outputs.fixturesJson != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -138,7 +141,7 @@ jobs:
       - name: Run teardown script
         env:
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          FIXTURES_JSON: ${{ needs.integration-tests.outputs.fixturesJson }}
+          FIXTURES_JSON: ${{ needs.setup.outputs.fixturesJson }}
         run: npx ts-node ./src/integration/teardown.ts
 
   unit-tests:
