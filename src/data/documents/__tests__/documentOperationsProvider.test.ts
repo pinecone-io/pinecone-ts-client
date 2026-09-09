@@ -54,17 +54,15 @@ describe('DocumentOperationsProvider', () => {
   });
 
   test('preserves fetch, credentials, version, user agent, and additional headers', async () => {
-    const fetchApi = jest
-      .fn()
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            documents: [],
-            namespace: 'tenant',
-            usage: { read_units: 1 },
-          }),
-        ),
-      );
+    const fetchApi = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          documents: [],
+          namespace: 'tenant',
+          usage: { read_units: 1 },
+        }),
+      ),
+    );
     const api = await new DocumentOperationsProvider(
       { ...config, fetchApi },
       undefined,
