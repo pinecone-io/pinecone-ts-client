@@ -1,5 +1,8 @@
 import type { IndexModelData as IndexModel } from '../listIndexes';
-import { configureIndex, ConfigureIndexOptions } from '../configureIndex';
+import {
+  configureIndex,
+  ConfigureIndexResourceOptions,
+} from '../configureIndex';
 import {
   ManageIndexesApi,
   ResponseError,
@@ -29,7 +32,7 @@ describe('configureIndex', () => {
     },
   ])('rejects an absent supported option: %p', async (options) => {
     await expect(
-      configureIndex(api, 'index', options as ConfigureIndexOptions),
+      configureIndex(api, 'index', options as ConfigureIndexResourceOptions),
     ).rejects.toThrow(
       new PineconeArgumentError(
         'You must pass at least one configuration option to configureIndex.',
@@ -45,7 +48,7 @@ describe('configureIndex', () => {
     expect(request).not.toHaveBeenCalled();
   });
 
-  const patches: ConfigureIndexOptions[] = [
+  const patches: ConfigureIndexResourceOptions[] = [
     { deployment: { replicas: 2, podType: 'p1.x2' } },
     {
       schema: {
