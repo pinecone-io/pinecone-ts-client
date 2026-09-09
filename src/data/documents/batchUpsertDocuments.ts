@@ -27,9 +27,10 @@ const MAX_CONCURRENCY = 64;
  * - `unsent` — the batch was never sent, because `totalTimeout` elapsed or
  *   because an earlier batch failed under `onError: 'throw'`.
  *
- * More values may be added, so do not match on this exhaustively.
+ * More values may be added, so the union stays open: do not match on it
+ * exhaustively.
  */
-export type BatchUpsertDisposition = 'rejected' | 'unsent';
+export type BatchUpsertDisposition = 'rejected' | 'unsent' | (string & {});
 
 /**
  * What a batched upsert does when a batch fails.

@@ -9,6 +9,13 @@ import type { BatchUpsertDocumentsResponse } from '../data/documents/batchUpsert
  * this is thrown, so `response` is a complete account of what landed and what
  * did not — including the documents that were never sent.
  *
+ * `cause` is the failure with the lowest `batchIndex`, which under a
+ * `maxConcurrency` above 1 is not necessarily the rejection that stopped the
+ * run. Read `response.errors` to see every failure.
+ *
+ * The example below calls the documents accessor, which arrives with the
+ * accessor change tracked in issue #103; the engine and these types ship first.
+ *
  * ```typescript
  * import { Pinecone, Errors } from '@pinecone-database/pinecone';
  * const pc = new Pinecone();
