@@ -5,6 +5,7 @@ import { getTestContext } from '../../test-context';
 let pinecone: Pinecone,
   serverlessIndex: Index,
   vectorField: string,
+  recordCount: number,
   metadataKey: string,
   metadataValue: any;
 
@@ -12,6 +13,7 @@ beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
   vectorField = fixtures.serverlessIndex.vectorFieldName;
+  recordCount = fixtures.serverlessIndex.recordIds.length;
 
   serverlessIndex = pinecone.index({
     name: fixtures.serverlessIndex.name,
@@ -55,7 +57,7 @@ describe('searchDocuments tests on serverless index', () => {
 
   // Skipped for the same read-path gap as above.
   test.skip('search when topK is greater than number of documents', async () => {
-    const topK = 20; // the shared fixture seeds the serverless index with 11 documents
+    const topK = recordCount + 1;
 
     await assertWithRetries(
       () =>
@@ -67,7 +69,7 @@ describe('searchDocuments tests on serverless index', () => {
         }),
       (results: SearchDocumentsResponse) => {
         expect(results.matches).toBeDefined();
-        expect(results.matches.length).toEqual(11);
+        expect(results.matches.length).toEqual(recordCount);
         expect(results.usage).toBeDefined();
       },
     );

@@ -1,8 +1,9 @@
 import { Index, Pinecone } from '../index';
-import { generateRecords, globalNamespaceOne, sleep } from './test-helpers';
+import { generateRecords, globalNamespaceOne } from './test-helpers';
 import { PineconeMaxRetriesExceededError } from '../errors';
 import http from 'http';
 import { parse } from 'url';
+import type { AddressInfo } from 'net';
 
 // Retry logic tests
 describe('Testing retry logic via a mock, in-memory http server', () => {
@@ -22,7 +23,7 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
   let op: string;
 
   // Helper function to start the server with a specific response pattern
-  const startMockServer = (shouldSucceedOnSecondCall: boolean) => {
+  const startMockServer = async (shouldSucceedOnSecondCall: boolean) => {
     // Create http server
     server = http.createServer((req, res) => {
       const { pathname } = parse(req.url || '', true);
@@ -47,11 +48,18 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
         res.end();
       }
     });
-    server.listen(4000); // Host server on local port 4000
+    await new Promise<void>((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', () => {
+        server.off('error', reject);
+        resolve();
+      });
+    });
+    return `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   };
 
   beforeAll(() => {
-    pinecone = new Pinecone();
+    pinecone = new Pinecone({ apiKey: 'mock-retry-test-key' });
   });
 
   beforeEach(() => {
@@ -67,18 +75,15 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
   test('Upsert operation should retry 1x if server responds 1x with error and 1x with success', async () => {
     op = 'upsert';
     pinecone = new Pinecone({
-      apiKey: process.env['PINECONE_API_KEY'] || '',
+      apiKey: 'mock-retry-test-key',
       maxRetries: 2,
     });
 
     mockServerlessIndex = pinecone.index({
       name: indexName,
-      host: 'http://localhost:4000',
+      host: await startMockServer(true),
       namespace: globalNamespaceOne,
     });
-
-    // Start server with a successful response on the second call
-    startMockServer(true);
 
     // Call Upsert operation
     await mockServerlessIndex.upsert({ records: recordsToUpsert });
@@ -91,18 +96,15 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
     op = 'update';
 
     pinecone = new Pinecone({
-      apiKey: process.env['PINECONE_API_KEY'] || '',
+      apiKey: 'mock-retry-test-key',
       maxRetries: 2,
     });
 
     mockServerlessIndex = pinecone.index({
       name: indexName,
-      host: 'http://localhost:4000',
+      host: await startMockServer(true),
       namespace: globalNamespaceOne,
     });
-
-    // Start server with a successful response on the second call
-    startMockServer(true);
 
     const recordIdToUpdate = recordsToUpsert[0].id;
     const newMetadata = { flavor: 'chocolate' };
@@ -120,21 +122,16 @@ describe('Testing retry logic via a mock, in-memory http server', () => {
   test('Max retries exceeded w/o resolve', async () => {
     op = 'upsert';
 
-    await sleep(500); // In Node20+, tcp connections changed: https://github.com/pinecone-io/pinecone-ts-client/pull/318#issuecomment-2560180936
-
     pinecone = new Pinecone({
-      apiKey: process.env['PINECONE_API_KEY'] || '',
+      apiKey: 'mock-retry-test-key',
       maxRetries: 3,
     });
 
     mockServerlessIndex = pinecone.index({
       name: indexName,
-      host: 'http://localhost:4000',
+      host: await startMockServer(false),
       namespace: globalNamespaceOne,
     });
-
-    // Start server with persistent 503 errors on every call
-    startMockServer(false);
 
     // Catch expected error from Upsert operation
     await expect(

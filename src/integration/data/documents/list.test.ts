@@ -3,10 +3,12 @@ import { globalNamespaceOne, prefix, diffPrefix } from '../../test-helpers';
 import { getTestContext } from '../../test-context';
 
 let pinecone: Pinecone, serverlessIndex: Index;
+let recordIds: string[];
 
 beforeAll(async () => {
   const fixtures = await getTestContext();
   pinecone = fixtures.client;
+  recordIds = fixtures.serverlessIndex.recordIds;
 
   serverlessIndex = pinecone.index({
     name: fixtures.serverlessIndex.name,
@@ -16,10 +18,12 @@ beforeAll(async () => {
 
 describe('listDocuments, serverless index', () => {
   test('test listDocuments with no arguments', async () => {
-    const listResults = await serverlessIndex.listDocuments({});
+    const listResults = await serverlessIndex.listDocuments();
     expect(listResults).toBeDefined();
-    expect(listResults.pagination).toBeUndefined(); // Only 11 documents in the index, so no pag token returned
-    expect(listResults.documents.length).toBe(11);
+    expect(listResults.pagination).toBeUndefined();
+    expect(
+      listResults.documents.map((document) => document._id).sort(),
+    ).toEqual([...recordIds].sort());
     expect(listResults.namespace).toBe(globalNamespaceOne);
   });
 

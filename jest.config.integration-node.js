@@ -12,7 +12,6 @@ module.exports = {
       },
     ],
   },
-  testPathIgnorePatterns: [],
   testTimeout: 600000, // 10 minutes
   verbose: true,
   detectOpenHandles: true,
