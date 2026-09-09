@@ -3,9 +3,11 @@ import {
   mapHttpStatusError,
   PineconeBadRequestError,
   PineconeAuthorizationError,
+  PineconePaymentRequiredError,
   PineconeNotFoundError,
   PineconeMethodNotAllowedError,
   PineconeConflictError,
+  PineconeFailedPreconditionError,
   PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeNotImplementedError,
@@ -102,6 +104,24 @@ describe('mapHttpStatusError', () => {
     expect(err.message).toContain(url);
   });
 
+  test('402 → PineconePaymentRequiredError', () => {
+    const err = mapHttpStatusError({
+      status: 402,
+      url,
+      message: 'quota exhausted',
+    });
+    expect(err).toBeInstanceOf(PineconePaymentRequiredError);
+    expect(err.name).toBe('PineconePaymentRequiredError');
+    expect(err.message).toContain('402');
+    expect(err.message).toContain(url);
+  });
+
+  test('402 without url still produces PineconePaymentRequiredError', () => {
+    const err = mapHttpStatusError({ status: 402 });
+    expect(err).toBeInstanceOf(PineconePaymentRequiredError);
+    expect(err.message).toContain('billing');
+  });
+
   test('403 → PineconeBadRequestError', () => {
     const err = mapHttpStatusError({ status: 403, url, message: 'forbidden' });
     expect(err).toBeInstanceOf(PineconeBadRequestError);
@@ -132,6 +152,24 @@ describe('mapHttpStatusError', () => {
     const err = mapHttpStatusError({ status: 409, url });
     expect(err).toBeInstanceOf(PineconeConflictError);
     expect(err.name).toBe('PineconeConflictError');
+  });
+
+  test('412 → PineconeFailedPreconditionError', () => {
+    const err = mapHttpStatusError({
+      status: 412,
+      url,
+      message: 'resource state changed',
+    });
+    expect(err).toBeInstanceOf(PineconeFailedPreconditionError);
+    expect(err.name).toBe('PineconeFailedPreconditionError');
+    expect(err.message).toContain('412');
+    expect(err.message).toContain(url);
+  });
+
+  test('412 without url still produces PineconeFailedPreconditionError', () => {
+    const err = mapHttpStatusError({ status: 412 });
+    expect(err).toBeInstanceOf(PineconeFailedPreconditionError);
+    expect(err.message).toContain('precondition failed');
   });
 
   test('422 → PineconeUnprocessableEntityError', () => {
@@ -166,14 +204,15 @@ describe('mapHttpStatusError', () => {
     expect(err.name).toBe('PineconeUnavailableError');
   });
 
-  test('unmapped status throws PineconeUnmappedHttpError', () => {
-    expect(() => mapHttpStatusError({ status: 418, url })).toThrow(
-      PineconeUnmappedHttpError,
-    );
+  test('unmapped status returns a PineconeUnmappedHttpError, consistent with every mapped status', () => {
+    const err = mapHttpStatusError({ status: 418, url });
+    expect(err).toBeInstanceOf(PineconeUnmappedHttpError);
   });
 
   test('all returned errors extend BasePineconeError', () => {
-    const statuses = [400, 401, 403, 404, 405, 409, 422, 500, 501, 503];
+    const statuses = [
+      400, 401, 402, 403, 404, 405, 409, 412, 422, 500, 501, 503, 418,
+    ];
     for (const status of statuses) {
       const err = mapHttpStatusError({ status, url });
       expect(err).toBeInstanceOf(BasePineconeError);
@@ -248,5 +287,11 @@ describe('handleApiError', () => {
     const result = await handleApiError(badRequest);
     expect(result).toBeInstanceOf(PineconeBadRequestError);
     expect(result).not.toBeInstanceOf(PineconeConnectionError);
+  });
+
+  test('resolves (rather than rejects) an unmapped status, same as every mapped status', async () => {
+    const e = buildResponseError(418, "I'm a teapot");
+    const result = await handleApiError(e);
+    expect(result).toBeInstanceOf(PineconeUnmappedHttpError);
   });
 });

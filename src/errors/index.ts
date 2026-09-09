@@ -7,9 +7,11 @@ export {
 export {
   PineconeBadRequestError,
   PineconeAuthorizationError,
+  PineconePaymentRequiredError,
   PineconeNotFoundError,
   PineconeMethodNotAllowedError,
   PineconeConflictError,
+  PineconeFailedPreconditionError,
   PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeMaxRetriesExceededError,
