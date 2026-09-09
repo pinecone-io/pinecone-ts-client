@@ -6,7 +6,7 @@ import type {
   CreateCollectionOptions,
   CreateBackupOptions,
   CreateIndexFromBackupOptions,
-  ListIndexBackupsOptions,
+  ListBackupsOptions,
   ListRestoreJobsOptions,
 } from './control';
 import type {
@@ -490,7 +490,7 @@ export class Pinecone {
    *
    * @deprecated Use {@link Backups.create} with the index name as its first argument.
    */
-  createBackup(options: CreateBackupOptions & { indexName: string }) {
+  createBackup(options: CreateBackupOptions) {
     const { indexName, ...rest } = options;
     return this.backups.create(indexName, rest);
   }
@@ -547,9 +547,7 @@ export class Pinecone {
    *
    * @deprecated Use {@link Backups.createIndex} with the backup ID as its first argument.
    */
-  createIndexFromBackup(
-    options: CreateIndexFromBackupOptions & { backupId: string },
-  ) {
+  createIndexFromBackup(options: CreateIndexFromBackupOptions) {
     const { backupId, ...rest } = options;
     return this.backups.createIndex(backupId, rest);
   }
@@ -731,7 +729,7 @@ export class Pinecone {
    *
    * @deprecated Use {@link Indexes.configure} with the index name as its first argument.
    */
-  configureIndex(options: ConfigureIndexOptions & { name: string }) {
+  configureIndex(options: ConfigureIndexOptions) {
     const { name, ...rest } = options;
     return this.indexes.configure(name, rest);
   }
@@ -751,11 +749,7 @@ export class Pinecone {
    *
    * @deprecated Use {@link Backups.listByIndex} for one index or {@link Backups.list} for the project.
    */
-  listBackups(
-    options: ListIndexBackupsOptions & {
-      indexName?: string;
-    } = {},
-  ) {
+  listBackups(options: ListBackupsOptions = {}) {
     const { indexName, includeDeleted, ...rest } = options;
     if (indexName) {
       return this.backups.listByIndex(indexName, { ...rest, includeDeleted });
