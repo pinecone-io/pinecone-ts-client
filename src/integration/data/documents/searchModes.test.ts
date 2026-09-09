@@ -165,6 +165,24 @@ describe('document search scoring modes', () => {
   });
 
   test.each([
+    { _id: 'metadata-only', group: 'fruit' },
+    { _id: 'wrong-dense-type', dense: 'not a vector' },
+  ])(
+    'rejects a document that violates its index schema: $_id',
+    async (document) => {
+      await expect(
+        index.upsertDocuments({ documents: [document] }),
+      ).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
+  test('rejects a vectors-plane query against a documents index', async () => {
+    await expect(
+      index.query({ vector: [1, 0], topK: 1 }),
+    ).rejects.toBeInstanceOf(PineconeBadRequestError);
+  });
+
+  test.each([
     { includeFields: undefined },
     { includeFields: [] },
     { includeFields: ['*'] },
