@@ -287,7 +287,7 @@ async function buildMultipartBody(
   // Convert the async iterable (or Node.js Readable) to a Web ReadableStream
   const webStream = Readable.toWeb(
     stream instanceof Readable ? stream : Readable.from(stream),
-  ) as ReadableStream<Uint8Array>;
+  ) as ReadableStream<Uint8Array | string>;
 
   const reader = webStream.getReader();
   let phase: 'header' | 'body' | 'done' = 'header';
@@ -309,7 +309,9 @@ async function buildMultipartBody(
         controller.close();
         phase = 'done';
       } else {
-        controller.enqueue(value);
+        controller.enqueue(
+          typeof value === 'string' ? encoder.encode(value) : value,
+        );
       }
     },
     cancel(reason) {
