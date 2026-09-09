@@ -82,6 +82,7 @@ describe('legacy vector bulk import', () => {
 
   test('starts, describes, lists and cancels a parquet import', () =>
     runImport(false));
+  // @integration-skip #38: full import completion takes at least ten minutes and requires explicit long-run opt-in.
   const testFullImport =
     process.env.PINECONE_LONG_RUNNING_INTEGRATION === '1' ? test : test.skip;
   testFullImport(
