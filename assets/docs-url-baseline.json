@@ -291,6 +291,7 @@
     "documents/upgrading_v8-migration.html#signature-and-return-type-changed",
     "documents/upgrading_v8-migration.html#v8-migration-guide",
     "documents/upgrading_v9-migration.html",
+    "documents/upgrading_v9-migration.html#can-now-pin-the-api-version",
     "documents/upgrading_v9-migration.html#document-operations-moved-under",
     "documents/upgrading_v9-migration.html#flat-control-plane-methods-remain-available",
     "documents/upgrading_v9-migration.html#nodejs-22-is-now-the-minimum-runtime",
