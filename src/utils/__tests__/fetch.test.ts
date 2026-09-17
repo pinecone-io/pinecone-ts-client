@@ -377,6 +377,85 @@ describe('getFetch', () => {
       expect(customFetch).toHaveBeenCalledTimes(1);
     });
 
+    test('should retry on a transient connection failure (undici TypeError with UND_ERR_SOCKET cause)', async () => {
+      // Shape of the error Node's native fetch (undici) throws when the
+      // underlying socket closes mid-request - e.g. a slow/CPU-constrained
+      // server under load. See: https://github.com/pinecone-io/pinecone-ts-client/issues/354
+      const socketError = new TypeError('fetch failed');
+      (socketError as any).cause = {
+        code: 'UND_ERR_SOCKET',
+        message: 'other side closed',
+      };
+
+      const customFetch = jest
+        .fn()
+        .mockRejectedValueOnce(socketError)
+        .mockResolvedValueOnce({ status: 200, ok: true });
+
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+      const promise = fetchFn('https://example.com', {});
+      await jest.runAllTimersAsync();
+      const response = await promise;
+
+      expect(customFetch).toHaveBeenCalledTimes(2);
+      expect(response.status).toBe(200);
+    });
+
+    test('should retry on connect/headers/body timeout causes', async () => {
+      for (const code of [
+        'UND_ERR_CONNECT_TIMEOUT',
+        'UND_ERR_HEADERS_TIMEOUT',
+        'UND_ERR_BODY_TIMEOUT',
+      ]) {
+        const timeoutError = new TypeError('fetch failed');
+        (timeoutError as any).cause = { code };
+
+        const customFetch = jest
+          .fn()
+          .mockRejectedValueOnce(timeoutError)
+          .mockResolvedValueOnce({ status: 200, ok: true });
+
+        const config = {
+          apiKey: 'some-api-key',
+          fetchApi: customFetch,
+        } as PineconeConfiguration;
+
+        const fetchFn = getFetch(config);
+        const promise = fetchFn('https://example.com', {});
+        await jest.runAllTimersAsync();
+        const response = await promise;
+
+        expect(customFetch).toHaveBeenCalledTimes(2);
+        expect(response.status).toBe(200);
+      }
+    });
+
+    test('should not retry a TypeError with an unrecognized cause code', async () => {
+      const otherError = new TypeError('fetch failed');
+      (otherError as any).cause = { code: 'ENOTFOUND' };
+
+      const customFetch = jest.fn().mockRejectedValue(otherError);
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+
+      const promise = expect(
+        fetchFn('https://example.com', {}),
+      ).rejects.toThrow('fetch failed');
+      await jest.runAllTimersAsync();
+      await promise;
+
+      expect(customFetch).toHaveBeenCalledTimes(1);
+    });
+
     test('should throw PineconeMaxRetriesExceededError after exhausting all retries on error', async () => {
       const retryableError = new Error('Service unavailable');
       (retryableError as any).name = 'PineconeUnavailableError';
