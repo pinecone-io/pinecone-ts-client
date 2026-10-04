@@ -79,7 +79,8 @@
       "@jest/fake-timers": "^30.0.0",
       "jest-mock": "^30.0.0",
       "jest-util": "^30.0.0"
-    }
+    },
+    "test-exclude": "^8.0.0"
   },
   "types": "dist/index.d.ts",
   "files": [
