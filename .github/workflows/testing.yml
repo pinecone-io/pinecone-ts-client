@@ -216,7 +216,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/compatibility-package"
           npm pack --pack-destination "$RUNNER_TEMP/compatibility-package"
       - name: Upload packed SDK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: compatibility-package
           path: ${{ runner.temp }}/compatibility-package/*.tgz
@@ -244,7 +244,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
       - name: Download packed SDK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: compatibility-package
           path: ${{ runner.temp }}/compatibility-package

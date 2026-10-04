@@ -53,11 +53,11 @@
     "@edge-runtime/vm": "^5.0.0",
     "@eslint/js": "^10.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "26.4.1",
-    "@typescript-eslint/eslint-plugin": "^8.69.0",
-    "@typescript-eslint/parser": "^8.69.0",
+    "@types/node": "26.6.3",
+    "@typescript-eslint/eslint-plugin": "^8.70.1",
+    "@typescript-eslint/parser": "^8.70.1",
     "dotenv": "^17.4.2",
-    "eslint": "^10.10.0",
+    "eslint": "^10.11.0",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import-x": "^4.17.1",
     "globals": "^17.12.0",
@@ -65,13 +65,13 @@
     "jest-progress-bar-reporter": "^1.0.25",
     "jest-util": "^30.5.1",
     "parse5": "8.0.1",
-    "prettier": "^3.9.6",
-    "ts-jest": "^29.4.12",
-    "tsx": "^4.23.13",
+    "prettier": "^3.9.9",
+    "ts-jest": "^29.4.14",
+    "tsx": "^4.23.15",
     "typedoc": "^0.28.20",
     "typedoc-plugin-redirect": "1.3.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.69.0"
+    "typescript-eslint": "^8.70.1"
   },
   "overrides": {
     "@edge-runtime/jest-environment": {
