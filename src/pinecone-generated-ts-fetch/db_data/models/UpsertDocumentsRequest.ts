@@ -27,7 +27,9 @@ import {
  */
 export interface UpsertDocumentsRequest {
     /**
-     * The list of documents to upsert into the namespace.
+     * The list of documents to upsert into the namespace. At most 1000 documents, or 96 on an index whose schema declares `embed` or `sparse_embed`.
+     * 
+     * `maxItems` states the general limit. A client that batches documents must size batches at 96 when any field of the index schema declares `embed` or `sparse_embed`.
      * @type {Array<DocumentRecord>}
      * @memberof UpsertDocumentsRequest
      */

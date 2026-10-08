@@ -4,7 +4,10 @@ import {
   UpdateDocumentsRequestToJSON,
   VectorToJSON,
 } from '../pinecone-generated-ts-fetch/db_data';
-import { IndexSchemaFieldFromJSON } from '../pinecone-generated-ts-fetch/db_control';
+import {
+  CreateIndexSchemaFieldToJSON,
+  IndexSchemaFieldFromJSON,
+} from '../pinecone-generated-ts-fetch/db_control';
 
 import { X_PINECONE_API_VERSION as controlVersion } from '../pinecone-generated-ts-fetch/db_control/api_version';
 import { X_PINECONE_API_VERSION as dataVersion } from '../pinecone-generated-ts-fetch/db_data/api_version';
@@ -87,6 +90,25 @@ describe('codegen fixups survive regeneration', () => {
       type: 'dense_vector',
       dimension: 1536,
       metric: 'cosine',
+    });
+  });
+
+  // Fails if codegen/strip-validation-only-composition.mjs stops applying:
+  // `fullTextSearch` degrades to `object` and its keys pass through unconverted.
+  test('a string field serializes its full-text search settings', () => {
+    const body = CreateIndexSchemaFieldToJSON({
+      type: 'string',
+      fullTextSearch: {
+        stemming: true,
+        stopWords: true,
+        ngram: { minGram: 2, maxGram: 3 },
+      },
+    });
+
+    expect(body.full_text_search).toEqual({
+      stemming: true,
+      stop_words: true,
+      ngram: { min_gram: 2, max_gram: 3 },
     });
   });
 });

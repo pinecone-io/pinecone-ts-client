@@ -27,7 +27,7 @@ import {
 } from './SearchRecordsRequestRerank';
 
 /**
- * A search request for records in a specific namespace.
+ * A search request for records in a specific namespace, for the legacy Records API's `search_records` operation.
  * @export
  * @interface SearchRecordsRequest
  */

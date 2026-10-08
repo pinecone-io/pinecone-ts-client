@@ -25,6 +25,12 @@ export interface Usage {
      * @memberof Usage
      */
     readUnits?: number;
+    /**
+     * The billed egress for this response, in bytes. Measured on the encoded response payload.
+     * @type {number}
+     * @memberof Usage
+     */
+    egressBytes?: number;
 }
 
 /**
@@ -47,6 +53,7 @@ export function UsageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Usa
     return {
         
         'readUnits': !exists(json, 'readUnits') ? undefined : json['readUnits'],
+        'egressBytes': !exists(json, 'egressBytes') ? undefined : json['egressBytes'],
     };
 }
 
@@ -60,6 +67,7 @@ export function UsageToJSON(value?: Usage | null): any {
     return {
         
         'readUnits': value.readUnits,
+        'egressBytes': value.egressBytes,
     };
 }
 

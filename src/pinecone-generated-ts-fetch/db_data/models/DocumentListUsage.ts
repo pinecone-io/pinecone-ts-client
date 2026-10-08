@@ -25,6 +25,12 @@ export interface DocumentListUsage {
      * @memberof DocumentListUsage
      */
     readUnits: number;
+    /**
+     * The billed egress for this response, in bytes. Measured on the encoded response payload.
+     * @type {number}
+     * @memberof DocumentListUsage
+     */
+    egressBytes?: number;
 }
 
 /**
@@ -48,6 +54,7 @@ export function DocumentListUsageFromJSONTyped(json: any, ignoreDiscriminator: b
     return {
         
         'readUnits': json['read_units'],
+        'egressBytes': !exists(json, 'egress_bytes') ? undefined : json['egress_bytes'],
     };
 }
 
@@ -61,6 +68,7 @@ export function DocumentListUsageToJSON(value?: DocumentListUsage | null): any {
     return {
         
         'read_units': value.readUnits,
+        'egress_bytes': value.egressBytes,
     };
 }
 

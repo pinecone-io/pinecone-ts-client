@@ -51,7 +51,7 @@ export interface FetchDocumentsResponse {
      */
     pagination?: Pagination;
     /**
-     * The namespace the documents were fetched from.
+     * The namespace the documents were fetched from: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof FetchDocumentsResponse
      */

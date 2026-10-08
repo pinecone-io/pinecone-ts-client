@@ -25,6 +25,18 @@ export interface DocumentSearchUsage {
      * @memberof DocumentSearchUsage
      */
     readUnits: number;
+    /**
+     * The billed egress for this response, in bytes. Measured on the encoded response payload.
+     * @type {number}
+     * @memberof DocumentSearchUsage
+     */
+    egressBytes?: number;
+    /**
+     * The number of tokens Pinecone embedded for the query text of an `embed` or `sparse_embed` scoring method. Present only when the search embedded query text.
+     * @type {number}
+     * @memberof DocumentSearchUsage
+     */
+    embedTotalTokens?: number;
 }
 
 /**
@@ -48,6 +60,8 @@ export function DocumentSearchUsageFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'readUnits': json['read_units'],
+        'egressBytes': !exists(json, 'egress_bytes') ? undefined : json['egress_bytes'],
+        'embedTotalTokens': !exists(json, 'embed_total_tokens') ? undefined : json['embed_total_tokens'],
     };
 }
 
@@ -61,6 +75,8 @@ export function DocumentSearchUsageToJSON(value?: DocumentSearchUsage | null): a
     return {
         
         'read_units': value.readUnits,
+        'egress_bytes': value.egressBytes,
+        'embed_total_tokens': value.embedTotalTokens,
     };
 }
 

@@ -14,9 +14,9 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Specify the integrated inference embedding configuration for the index.
+ * Specify the integrated embedding configuration for the legacy integrated index.
  * 
- * Once set the model cannot be changed, but you can later update the embedding configuration for an integrated inference index including field map, read parameters, or write parameters.
+ * Once set the model cannot be changed, but you can later update the embedding configuration of a legacy integrated index, including field map, read parameters, or write parameters.
  * 
  * Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available models and model details.
  * @export
@@ -31,6 +31,7 @@ export interface CreateIndexForModelRequestEmbed {
     model: string;
     /**
      * The distance metric to be used for similarity search. You can use 'euclidean', 'cosine', or 'dotproduct'. If not specified, the metric will be defaulted according to the model. Cannot be updated once set.
+     * 
      * Possible values: `cosine`, `euclidean`, or `dotproduct`.
      * @type {string}
      * @memberof CreateIndexForModelRequestEmbed

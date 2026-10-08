@@ -27,7 +27,7 @@ import {
 } from './BackupScheduleRetentionInput';
 
 /**
- * Request body for creating a backup schedule on an index.
+ * Name, cadence, and retention for an index's automatic backups.
  * @export
  * @interface CreateBackupScheduleRequest
  */

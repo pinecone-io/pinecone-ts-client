@@ -37,7 +37,7 @@ export interface ReadCapacityDedicatedPatchSpec {
      * @type {ReadCapacityDedicatedPatchConfig}
      * @memberof ReadCapacityDedicatedPatchSpec
      */
-    dedicated: ReadCapacityDedicatedPatchConfig | null;
+    dedicated: ReadCapacityDedicatedPatchConfig;
 }
 
 /**

@@ -37,22 +37,17 @@ import {
 /**
  * @type CreateIndexSchemaField
  * The configuration of a single field in the index schema at creation time. The `type` property determines how the field is stored and searched.
- * Field types accepted at creation time:
- * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search. - `sparse_vector`: Sparse vectors for keyword or hybrid search. - `string` with a `full_text_search` object: String field for full-text search.
- * Schema constraints enforced at creation time:
- * - At most one `dense_vector` field. - At most one `sparse_vector` field. - At least one of `dense_vector`, `sparse_vector`, or a `string` field with
  * 
- *   `full_text_search` must be present.
+ * Field types accepted at creation time:
+ * 
+ * - `dense_vector`: Fixed-dimension floating-point vectors for ANN search.
+ * - `sparse_vector`: Sparse vectors for keyword or hybrid search.
+ * - `string` with `full_text_search`, `embed`, and/or `sparse_embed`: String field searched by full-text search, or by dense or sparse similarity over embeddings Pinecone derives from its text.
  * 
  * Other field types seen in `IndexSchemaField` responses cannot be declared here:
- * - `semantic_text` cannot be declared in a schema. Create an index with an
  * 
- *   integrated embedding model through the create-for-model operation instead;
- *   it appears as a `semantic_text` field when the index is described.
- * - `float` (also spelled `number`), `boolean`, `string_list`, and `string`
- * 
- *   without `full_text_search` are metadata types and are rejected. Include the
- *   values as document metadata and they are indexed for filtering automatically.
+ * - `semantic_text` is rejected. It is how a legacy integrated index created via create-for-model describes its embedded text field. To enable integrated embedding on a field of a new document index, declare a `string` field with `embed` or `sparse_embed`.
+ * - `float` (also spelled `number`), `boolean`, `string_list`, and a `string` field with none of `full_text_search`, `embed`, or `sparse_embed` are metadata types and are rejected. Include the values as document metadata and they are indexed for filtering automatically.
  * 
  * Every field accepts an optional `description` of at most 256 bytes.
  * @export

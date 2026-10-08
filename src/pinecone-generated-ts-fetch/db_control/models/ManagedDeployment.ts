@@ -27,6 +27,7 @@ export interface ManagedDeployment {
     deploymentType: ManagedDeploymentDeploymentTypeEnum;
     /**
      * The public cloud where the index is hosted.
+     * 
      * Possible values: `gcp`, `aws`, or `azure`.
      * @type {string}
      * @memberof ManagedDeployment

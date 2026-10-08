@@ -34,19 +34,11 @@ import {
 
 /**
  * Configuration updates to apply to an existing index. All fields are optional; only the fields you include are modified.
- * - `deployment`: Update pod-based scaling parameters (`replicas`, `pod_type`).
  * 
- *   Deployment type and cloud/region cannot be changed.
- * - `schema`: Update `semantic_text` field embedding parameters. Only
- * 
- *   `write_parameters` and `read_parameters` may be changed; the model cannot
- *   be changed after creation.
- * - `read_capacity`: Update read capacity mode or dedicated node configuration
- * 
- *   for managed and BYOC indexes. Not applicable to pod-based indexes.
- * - `tags`: Update or delete index tags. Setting a tag value to `""` removes
- * 
- *   the tag.
+ * - `deployment`: Update pod-based scaling parameters (`replicas`, `pod_type`). Deployment type and cloud/region cannot be changed.
+ * - `schema`: Update `semantic_text` field embedding parameters, on a legacy integrated index created via create-for-model. Only `write_parameters` and `read_parameters` may be changed; the model cannot be changed after creation.
+ * - `read_capacity`: Update read capacity mode or dedicated node configuration for managed and BYOC indexes. Not applicable to pod-based indexes.
+ * - `tags`: Update or delete index tags. Setting a tag value to `""` removes the tag.
  * - `deletion_protection`: Enable or disable deletion protection.
  * @export
  * @interface ConfigureIndexRequest
@@ -78,6 +70,7 @@ export interface ConfigureIndexRequest {
     tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
+     * 
      * Possible values: `disabled` or `enabled`.
      * @type {string}
      * @memberof ConfigureIndexRequest

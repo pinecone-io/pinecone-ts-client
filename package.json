@@ -71,7 +71,8 @@
     "typedoc": "^0.28.20",
     "typedoc-plugin-redirect": "1.3.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.70.1"
+    "typescript-eslint": "^8.70.1",
+    "yaml": "^2.9.1"
   },
   "overrides": {
     "@edge-runtime/jest-environment": {

@@ -30,9 +30,8 @@ import {
 /**
  * @type IndexDeploymentRequest
  * The deployment configuration for index creation. The `deployment_type` field selects the infrastructure model. Defaults to `managed` (serverless) in `us-east-1` on `aws` if omitted.
- * - `managed`: Serverless infrastructure managed by Pinecone, including
  * 
- *   full-text search indexes.
+ * - `managed`: Serverless infrastructure managed by Pinecone, including full-text search indexes.
  * - `byoc`: Bring-your-own-compute.
  * @export
  */

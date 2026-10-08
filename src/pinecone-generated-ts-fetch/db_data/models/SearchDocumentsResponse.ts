@@ -39,7 +39,7 @@ export interface SearchDocumentsResponse {
      */
     matches: Array<DocumentSearchMatch>;
     /**
-     * The namespace that was searched.
+     * The namespace that served the search: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof SearchDocumentsResponse
      */

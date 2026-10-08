@@ -21,13 +21,14 @@ import {
 } from './IndexSchemaField';
 
 /**
- * The schema of a Pinecone index. The schema defines the typed fields that documents in the index can contain, including vector fields, semantic text fields, and metadata fields.
+ * The schema of a Pinecone index. The schema defines the typed fields that documents in the index can contain, including vector fields, string fields searched by full-text search or by embeddings, and metadata fields.
  * @export
  * @interface IndexSchema
  */
 export interface IndexSchema {
     /**
      * A map of field names to their configurations.
+     * 
      * Indexes that are served by the vectors API — created with the reserved `_values` / `_sparse_values` schema, or created by an earlier API version from `dimension`, `metric`, and `vector_type` — report their vector fields under the reserved names `_values` (dense) and `_sparse_values` (sparse), and any metadata fields configured for filtering as legacy fields carrying only `filterable`. Dense vectors-API indexes always report both `_values` and `_sparse_values`, regardless of how they were created.
      * @type {{ [key: string]: IndexSchemaField; }}
      * @memberof IndexSchema

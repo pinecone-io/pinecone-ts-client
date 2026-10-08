@@ -26,6 +26,12 @@ export interface SearchUsage {
      */
     readUnits: number;
     /**
+     * The billed egress for this response, in bytes. Measured on the encoded response payload.
+     * @type {number}
+     * @memberof SearchUsage
+     */
+    egressBytes?: number;
+    /**
      * The number of embedding tokens consumed by this operation.
      * @type {number}
      * @memberof SearchUsage
@@ -60,6 +66,7 @@ export function SearchUsageFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'readUnits': json['read_units'],
+        'egressBytes': !exists(json, 'egress_bytes') ? undefined : json['egress_bytes'],
         'embedTotalTokens': !exists(json, 'embed_total_tokens') ? undefined : json['embed_total_tokens'],
         'rerankUnits': !exists(json, 'rerank_units') ? undefined : json['rerank_units'],
     };
@@ -75,6 +82,7 @@ export function SearchUsageToJSON(value?: SearchUsage | null): any {
     return {
         
         'read_units': value.readUnits,
+        'egress_bytes': value.egressBytes,
         'embed_total_tokens': value.embedTotalTokens,
         'rerank_units': value.rerankUnits,
     };

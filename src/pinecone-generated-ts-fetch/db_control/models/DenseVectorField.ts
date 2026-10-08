@@ -39,6 +39,7 @@ export interface DenseVectorField {
     dimension: number;
     /**
      * The distance metric used for similarity search.
+     * 
      * Possible values: `cosine`, `dotproduct`, or `euclidean`.
      * @type {string}
      * @memberof DenseVectorField

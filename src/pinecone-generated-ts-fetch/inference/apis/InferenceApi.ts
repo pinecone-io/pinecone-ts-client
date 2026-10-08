@@ -110,7 +110,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a description of a model hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Get a description of a model hosted by Pinecone.   You can use hosted models for integrated inference in Pinecone operations, such as integrated-embedding fields in a document index, or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Describe a model
      */
     async getModelRaw(requestParameters: GetModelRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelInfo>> {
@@ -145,7 +145,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get a description of a model hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * Get a description of a model hosted by Pinecone.   You can use hosted models for integrated inference in Pinecone operations, such as integrated-embedding fields in a document index, or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * Describe a model
      */
     async getModel(requestParameters: GetModelRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelInfo> {
@@ -154,7 +154,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models for integrated inference in Pinecone operations, such as integrated-embedding fields in a document index, or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * List available models
      */
     async listModelsRaw(requestParameters: ListModelsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelInfoList>> {
@@ -193,7 +193,7 @@ export class InferenceApi extends runtime.BaseAPI {
     }
 
     /**
-     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models as an integrated part of Pinecone operations or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
+     * List the embedding and reranking models hosted by Pinecone.   You can use hosted models for integrated inference in Pinecone operations, such as integrated-embedding fields in a document index, or for standalone embedding and reranking. For more details, see [Vector embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) and [Rerank results](https://docs.pinecone.io/guides/search/rerank-results).
      * List available models
      */
     async listModels(requestParameters: ListModelsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelInfoList> {

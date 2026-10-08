@@ -37,7 +37,9 @@ import {
  */
 export interface UpdateDocumentsRequest {
     /**
-     * The list of partial document updates to apply. Mutually exclusive with `filter`, and with a non-empty `set_fields` or `remove_fields`.
+     * The list of partial document updates to apply. At most 1000 updates, or 96 on an index whose schema declares `embed` or `sparse_embed`. Mutually exclusive with `filter`, and with a non-empty `set_fields` or `remove_fields`.
+     * 
+     * `maxItems` states the general limit. A client that batches updates must size batches at 96 when any field of the index schema declares `embed` or `sparse_embed`.
      * @type {Array<UpdateDocumentRecord>}
      * @memberof UpdateDocumentsRequest
      */
@@ -49,7 +51,7 @@ export interface UpdateDocumentsRequest {
      */
     filter?: object;
     /**
-     * The fields to set on every document matching `filter`, and the values to set them to. When non-empty, only valid together with `filter`; an empty object asks for no change and is ignored.
+     * The fields to set on every document matching `filter`, and the values to set them to. A field whose schema declares `embed` or `sparse_embed` cannot be set here; update it per ID with `documents`. When non-empty, only valid together with `filter`; an empty object asks for no change and is ignored.
      * @type {{ [key: string]: DocumentFieldValue; }}
      * @memberof UpdateDocumentsRequest
      */

@@ -88,17 +88,21 @@ generate_client() {
 	# Cleanup previous build files
 	echo "Cleaning up previous build files"
 	rm -rf "${build_dir}"
+	mkdir -p "${build_dir}"
+
+	patched_oas_file="${build_dir}/$(basename "$oas_file")"
+	node codegen/strip-validation-only-composition.mjs "$oas_file" "$patched_oas_file"
 
 	# Generate client module
 	docker run --rm -v $(pwd):/workspace openapitools/openapi-generator-cli:v7.0.0 generate \
-		--input-spec "/workspace/$oas_file" \
+		--input-spec "/workspace/$patched_oas_file" \
 		--generator-name typescript-fetch \
-		--output "/workspace/${build_dir}"
+		--output "/workspace/${build_dir}/client"
 
 	# Copy the generated module to the correct location
 	rm -rf "${destination}/${module_name}"
 	mkdir -p "${destination}/${module_name}"
-	cp -r ${build_dir}/* "${destination}/${module_name}"
+	cp -r ${build_dir}/client/* "${destination}/${module_name}"
 
 	# Keep the request header aligned with the generated spec for every module.
 	echo "export const X_PINECONE_API_VERSION = '${version}';" > ${destination}/${module_name}/api_version.ts

@@ -52,7 +52,7 @@ export interface QueryResponse {
      */
     matches?: Array<ScoredVector>;
     /**
-     * The namespace for the vectors.
+     * The namespace that served the query: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof QueryResponse
      */

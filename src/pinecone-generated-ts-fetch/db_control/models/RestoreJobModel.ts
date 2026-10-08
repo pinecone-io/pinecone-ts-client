@@ -45,6 +45,7 @@ export interface RestoreJobModel {
     targetIndexId: string;
     /**
      * Status of the restore job.
+     * 
      * Possible values: `Pending`, `Completed`, `Failed`, or `Cancelled`.
      * @type {string}
      * @memberof RestoreJobModel

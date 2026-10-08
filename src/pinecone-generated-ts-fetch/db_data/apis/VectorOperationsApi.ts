@@ -75,7 +75,7 @@ import {
 
 export interface DeleteVectorsRequest {
     xPineconeApiVersion: string;
-    deleteRequest: DeleteRequest | null;
+    deleteRequest: DeleteRequest;
 }
 
 export interface DescribeIndexStatsOperationRequest {
@@ -104,7 +104,7 @@ export interface ListVectorsRequest {
 
 export interface QueryVectorsRequest {
     xPineconeApiVersion: string;
-    queryRequest: QueryRequest | null;
+    queryRequest: QueryRequest;
 }
 
 export interface SearchRecordsNamespaceRequest {
@@ -115,7 +115,7 @@ export interface SearchRecordsNamespaceRequest {
 
 export interface UpdateVectorRequest {
     xPineconeApiVersion: string;
-    updateRequest: UpdateRequest | null;
+    updateRequest: UpdateRequest;
 }
 
 export interface UpsertRecordsNamespaceRequest {
@@ -431,8 +431,8 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text (`inputs`) is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
-     * Search with text
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   This operation is part of the legacy Records API, which legacy integrated indexes require. For new work, create a document index with a `string` field that uses integrated embedding (`embed` or `sparse_embed`), and search it with the Documents API\'s `search_documents` operation and an `embed` or `sparse_embed` scoring method.  Searching with text (`inputs`) is supported only for [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
+     * Search with text (legacy Records API)
      */
     async searchRecordsNamespaceRaw(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchRecordsResponse>> {
         if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
@@ -473,8 +473,8 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   Searching with text (`inputs`) is supported only for indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
-     * Search with text
+     * Search a namespace with a query text, query vector, or record ID and return the most similar records, along with their similarity scores. Optionally, rerank the initial results based on their relevance to the query.   This operation is part of the legacy Records API, which legacy integrated indexes require. For new work, create a document index with a `string` field that uses integrated embedding (`embed` or `sparse_embed`), and search it with the Documents API\'s `search_documents` operation and an `embed` or `sparse_embed` scoring method.  Searching with text (`inputs`) is supported only for [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding); for any other index a text query is rejected with `400`, and it is not available on BYOC indexes; reranking (`rerank`) is likewise unavailable on BYOC indexes. Searching with a query vector (`vector`) or a record ID (`id`) works on any index served by the vectors API.  For guidance and examples, see [Search](https://docs.pinecone.io/guides/search/search-overview).
+     * Search with text (legacy Records API)
      */
     async searchRecordsNamespace(requestParameters: SearchRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchRecordsResponse> {
         const response = await this.searchRecordsNamespaceRaw(requestParameters, initOverrides);
@@ -529,8 +529,8 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
-     * Upsert text
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  This operation is part of the legacy Records API, which legacy integrated indexes require. For new work, create a document index with a `string` field that uses integrated embedding (`embed` or `sparse_embed`), and write text with the Documents API\'s `upsert_documents` operation.  Upserting text is supported only for [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
+     * Upsert text (legacy Records API)
      */
     async upsertRecordsNamespaceRaw(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
@@ -571,8 +571,8 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  Upserting text is supported only for [indexes with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
-     * Upsert text
+     * Upsert text into a namespace. Pinecone converts the text to vectors automatically using the hosted embedding model associated with the index.  This operation is part of the legacy Records API, which legacy integrated indexes require. For new work, create a document index with a `string` field that uses integrated embedding (`embed` or `sparse_embed`), and write text with the Documents API\'s `upsert_documents` operation.  Upserting text is supported only for [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models); for any other index the request is rejected with `400`. It is not available on BYOC indexes.  A request can contain at most 1000 records. Each record is identified by `_id`. The service also accepts `id` as an alias, which this schema does not model; a record must not carry both.  For guidance, examples, and limits, see [Upsert data](https://docs.pinecone.io/guides/index-data/upsert-data).
+     * Upsert text (legacy Records API)
      */
     async upsertRecordsNamespace(requestParameters: UpsertRecordsNamespaceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.upsertRecordsNamespaceRaw(requestParameters, initOverrides);

@@ -14,8 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Specifies which terms must be present in the text of each search hit based on the specified strategy. The match is performed
- * against the text field specified in the integrated index `field_map` configuration.
+ * Specifies which terms must be present in the text of each search hit based on the specified strategy. The match is performed against the text field specified in the legacy integrated index's `field_map` configuration.
  * 
  * Terms are normalized and tokenized into single tokens before matching, and order does not matter.
  * 
@@ -25,8 +24,7 @@ import { exists, mapValues } from '../runtime';
  *   to `["animal", "character", "donald", "duck"]`, and would match
  *   `"Donald F. Duck is a funny animal character"` but would not match `"A duck is a funny animal"`.
  * 
- * Match terms filtering is supported only for sparse indexes with [integrated embedding](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding)
- * configured to use the [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0) model.
+ * Match terms filtering is supported only for sparse [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) configured to use the [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0) model.
  * @export
  * @interface SearchMatchTerms
  */

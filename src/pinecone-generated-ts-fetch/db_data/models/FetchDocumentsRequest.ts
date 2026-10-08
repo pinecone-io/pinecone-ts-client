@@ -33,6 +33,8 @@ export interface FetchDocumentsRequest {
     filter?: object;
     /**
      * The document fields to return on each document. When omitted or empty, all fields are returned; `["*"]` also returns every field.
+     * 
+     * Naming a field whose schema sets `store_text: false` is rejected with `400`, since its text is not stored; omitting `include_fields` or passing `["*"]` leaves such fields out.
      * @type {Array<string>}
      * @memberof FetchDocumentsRequest
      */

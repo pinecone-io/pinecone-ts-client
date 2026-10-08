@@ -138,8 +138,12 @@ jobs:
   teardown:
     name: Teardown shared resources
     needs: [setup, integration-tests]
-    # Setup emits partial fixtures on failure so cleanup can reclaim them too.
-    if: ${{ always() && !inputs.docs_only && needs.setup.outputs.fixturesJson != '' }}
+    # Setup emits partial fixtures on failure so cleanup can reclaim them too. Failed integration
+    # tests keep their fixtures so "Re-run failed jobs" can reuse them; the nightly
+    # testing-cleanup workflow reclaims fixtures from runs that are never re-run.
+    if: >-
+      ${{ !inputs.docs_only && needs.setup.outputs.fixturesJson != '' &&
+      (success() || cancelled() || needs.setup.result == 'failure') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

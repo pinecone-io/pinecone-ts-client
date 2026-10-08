@@ -44,6 +44,12 @@ export interface SearchRecordsResponse {
      * @memberof SearchRecordsResponse
      */
     usage: SearchUsage;
+    /**
+     * The namespace that served the search: the request's namespace, or the alias's target namespace when the request named a namespace alias.
+     * @type {string}
+     * @memberof SearchRecordsResponse
+     */
+    namespace: string;
 }
 
 /**
@@ -53,6 +59,7 @@ export function instanceOfSearchRecordsResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "result" in value;
     isInstance = isInstance && "usage" in value;
+    isInstance = isInstance && "namespace" in value;
 
     return isInstance;
 }
@@ -69,6 +76,7 @@ export function SearchRecordsResponseFromJSONTyped(json: any, ignoreDiscriminato
         
         'result': SearchRecordsResponseResultFromJSON(json['result']),
         'usage': SearchUsageFromJSON(json['usage']),
+        'namespace': json['namespace'],
     };
 }
 
@@ -83,6 +91,7 @@ export function SearchRecordsResponseToJSON(value?: SearchRecordsResponse | null
         
         'result': SearchRecordsResponseResultToJSON(value.result),
         'usage': SearchUsageToJSON(value.usage),
+        'namespace': value.namespace,
     };
 }
 

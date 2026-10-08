@@ -46,6 +46,7 @@ export interface CreateIndexForModelRequest {
     name: string;
     /**
      * The public cloud where you would like your index hosted.
+     * 
      * Possible values: `gcp`, `aws`, or `azure`.
      * @type {string}
      * @memberof CreateIndexForModelRequest
@@ -59,6 +60,7 @@ export interface CreateIndexForModelRequest {
     region: string;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
+     * 
      * Possible values: `disabled` or `enabled`.
      * @type {string}
      * @memberof CreateIndexForModelRequest

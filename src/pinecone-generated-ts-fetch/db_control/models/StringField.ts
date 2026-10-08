@@ -13,6 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CreateEmbedConfig } from './CreateEmbedConfig';
+import {
+    CreateEmbedConfigFromJSON,
+    CreateEmbedConfigFromJSONTyped,
+    CreateEmbedConfigToJSON,
+} from './CreateEmbedConfig';
+import type { CreateSparseEmbedConfig } from './CreateSparseEmbedConfig';
+import {
+    CreateSparseEmbedConfigFromJSON,
+    CreateSparseEmbedConfigFromJSONTyped,
+    CreateSparseEmbedConfigToJSON,
+} from './CreateSparseEmbedConfig';
 import type { StringFieldFullTextSearch } from './StringFieldFullTextSearch';
 import {
     StringFieldFullTextSearchFromJSON,
@@ -21,7 +33,17 @@ import {
 } from './StringFieldFullTextSearch';
 
 /**
- * A string field configuration for full-text search. The `full_text_search` object is required; a string field without it will be rejected.
+ * A string field configuration. The field must declare at least one search configuration:
+ * 
+ * - `full_text_search`: Index the text for full-text search.
+ * - `embed`: Integrated embedding with a dense model. Pinecone embeds the text with a hosted dense embedding model.
+ * - `sparse_embed`: Integrated embedding with a sparse model. Pinecone embeds the text with a hosted sparse embedding model.
+ * 
+ * They can be combined on one field, so the same text can be searched by full-text search, dense similarity, and sparse similarity. A string field with none of them is a metadata field and is rejected; include metadata in the documents you upsert instead.
+ * 
+ * By default the field's text is stored, and a stored field is always indexed for full-text search: when `full_text_search` is omitted, it is enabled with default settings. Set `store_text` to `false` to embed the text without storing it.
+ * 
+ * Each value is at most 100 KB, whether or not the text is stored.
  * @export
  * @interface StringField
  */
@@ -43,7 +65,29 @@ export interface StringField {
      * @type {StringFieldFullTextSearch}
      * @memberof StringField
      */
-    fullTextSearch: StringFieldFullTextSearch;
+    fullTextSearch?: StringFieldFullTextSearch;
+    /**
+     * When `true` (the default), the field's text is stored and the field is indexed for full-text search. Each value is then subject to the full-text limit of 10,000 tokens after tokenization, in addition to the 100 KB limit.
+     * 
+     * When `false`, the field's text is embedded and then discarded rather than stored. Such a field must declare `embed` or `sparse_embed`, and cannot declare `full_text_search`. A fetch or search whose `include_fields` names it is rejected with `400`, and it cannot be scored with `text` or `query_string` or matched with `$match_phrase`, `$match_all`, or `$match_any`; searching it with an `embed` or `sparse_embed` scoring method still works.
+     * 
+     * Fixed at creation.
+     * @type {boolean}
+     * @memberof StringField
+     */
+    storeText?: boolean;
+    /**
+     * 
+     * @type {CreateEmbedConfig}
+     * @memberof StringField
+     */
+    embed?: CreateEmbedConfig;
+    /**
+     * 
+     * @type {CreateSparseEmbedConfig}
+     * @memberof StringField
+     */
+    sparseEmbed?: CreateSparseEmbedConfig;
 }
 
 
@@ -62,7 +106,6 @@ export type StringFieldTypeEnum = typeof StringFieldTypeEnum[keyof typeof String
 export function instanceOfStringField(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "type" in value;
-    isInstance = isInstance && "fullTextSearch" in value;
 
     return isInstance;
 }
@@ -79,7 +122,10 @@ export function StringFieldFromJSONTyped(json: any, ignoreDiscriminator: boolean
         
         'type': json['type'],
         'description': !exists(json, 'description') ? undefined : json['description'],
-        'fullTextSearch': StringFieldFullTextSearchFromJSON(json['full_text_search']),
+        'fullTextSearch': !exists(json, 'full_text_search') ? undefined : StringFieldFullTextSearchFromJSON(json['full_text_search']),
+        'storeText': !exists(json, 'store_text') ? undefined : json['store_text'],
+        'embed': !exists(json, 'embed') ? undefined : CreateEmbedConfigFromJSON(json['embed']),
+        'sparseEmbed': !exists(json, 'sparse_embed') ? undefined : CreateSparseEmbedConfigFromJSON(json['sparse_embed']),
     };
 }
 
@@ -95,6 +141,9 @@ export function StringFieldToJSON(value?: StringField | null): any {
         'type': value.type,
         'description': value.description,
         'full_text_search': StringFieldFullTextSearchToJSON(value.fullTextSearch),
+        'store_text': value.storeText,
+        'embed': CreateEmbedConfigToJSON(value.embed),
+        'sparse_embed': CreateSparseEmbedConfigToJSON(value.sparseEmbed),
     };
 }
 

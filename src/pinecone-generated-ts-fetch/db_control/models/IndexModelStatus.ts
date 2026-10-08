@@ -27,6 +27,7 @@ export interface IndexModelStatus {
     ready: boolean;
     /**
      * The current state of the index.
+     * 
      * Possible values: `Initializing`, `InitializationFailed`, `Failed`, `ScalingUp`, `ScalingDown`, `ScalingUpPodSize`, `Terminating`, `Ready`, or `Disabled`.
      * @type {string}
      * @memberof IndexModelStatus

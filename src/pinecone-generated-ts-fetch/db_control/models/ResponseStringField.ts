@@ -13,6 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ResponseEmbedConfig } from './ResponseEmbedConfig';
+import {
+    ResponseEmbedConfigFromJSON,
+    ResponseEmbedConfigFromJSONTyped,
+    ResponseEmbedConfigToJSON,
+} from './ResponseEmbedConfig';
+import type { ResponseSparseEmbedConfig } from './ResponseSparseEmbedConfig';
+import {
+    ResponseSparseEmbedConfigFromJSON,
+    ResponseSparseEmbedConfigFromJSONTyped,
+    ResponseSparseEmbedConfigToJSON,
+} from './ResponseSparseEmbedConfig';
 import type { ResponseStringFieldFullTextSearch } from './ResponseStringFieldFullTextSearch';
 import {
     ResponseStringFieldFullTextSearchFromJSON,
@@ -21,7 +33,7 @@ import {
 } from './ResponseStringFieldFullTextSearch';
 
 /**
- * A string field as returned in index schema responses. String fields configured for full-text search include a `full_text_search` object; string fields used for metadata filtering only include a `filterable` flag.
+ * A string field as returned in index schema responses. A search field includes one or more of `full_text_search`, `embed`, and `sparse_embed`. A field whose text is stored always reports `full_text_search`, with its resolved settings, including when it was enabled by default. A string field used for metadata only includes a `filterable` flag instead.
  * @export
  * @interface ResponseStringField
  */
@@ -45,7 +57,25 @@ export interface ResponseStringField {
      */
     fullTextSearch?: ResponseStringFieldFullTextSearch;
     /**
-     * Whether this field is indexed for metadata filtering.
+     * Whether the field's text is stored. `true` means the text is stored and indexed for full-text search; `false` means it is embedded without being stored.
+     * @type {boolean}
+     * @memberof ResponseStringField
+     */
+    storeText?: boolean;
+    /**
+     * 
+     * @type {ResponseEmbedConfig}
+     * @memberof ResponseStringField
+     */
+    embed?: ResponseEmbedConfig;
+    /**
+     * 
+     * @type {ResponseSparseEmbedConfig}
+     * @memberof ResponseStringField
+     */
+    sparseEmbed?: ResponseSparseEmbedConfig;
+    /**
+     * Whether this field is indexed for metadata filtering. Present only on a string field with no search configuration.
      * @type {boolean}
      * @memberof ResponseStringField
      */
@@ -85,6 +115,9 @@ export function ResponseStringFieldFromJSONTyped(json: any, ignoreDiscriminator:
         'type': json['type'],
         'description': !exists(json, 'description') ? undefined : json['description'],
         'fullTextSearch': !exists(json, 'full_text_search') ? undefined : ResponseStringFieldFullTextSearchFromJSON(json['full_text_search']),
+        'storeText': !exists(json, 'store_text') ? undefined : json['store_text'],
+        'embed': !exists(json, 'embed') ? undefined : ResponseEmbedConfigFromJSON(json['embed']),
+        'sparseEmbed': !exists(json, 'sparse_embed') ? undefined : ResponseSparseEmbedConfigFromJSON(json['sparse_embed']),
         'filterable': !exists(json, 'filterable') ? undefined : json['filterable'],
     };
 }
@@ -101,6 +134,9 @@ export function ResponseStringFieldToJSON(value?: ResponseStringField | null): a
         'type': value.type,
         'description': value.description,
         'full_text_search': ResponseStringFieldFullTextSearchToJSON(value.fullTextSearch),
+        'store_text': value.storeText,
+        'embed': ResponseEmbedConfigToJSON(value.embed),
+        'sparse_embed': ResponseSparseEmbedConfigToJSON(value.sparseEmbed),
         'filterable': value.filterable,
     };
 }

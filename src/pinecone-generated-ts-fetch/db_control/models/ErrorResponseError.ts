@@ -21,6 +21,7 @@ import { exists, mapValues } from '../runtime';
 export interface ErrorResponseError {
     /**
      * The error code.
+     * 
      * Possible values: `OK`, `UNKNOWN`, `INVALID_ARGUMENT`, `DEADLINE_EXCEEDED`, `NOT_FOUND`, `ALREADY_EXISTS`, `PERMISSION_DENIED`, `UNAUTHENTICATED`, `RESOURCE_EXHAUSTED`, `FAILED_PRECONDITION`, `ABORTED`, `OUT_OF_RANGE`, `INTERNAL`, `FORBIDDEN`, `PAYMENT_REQUIRED`, `SERVICE_UNAVAILABLE`, `PAYLOAD_TOO_LARGE`, or `UNPROCESSABLE_ENTITY`.
      * @type {string}
      * @memberof ErrorResponseError

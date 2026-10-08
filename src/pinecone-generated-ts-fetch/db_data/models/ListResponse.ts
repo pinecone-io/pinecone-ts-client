@@ -51,7 +51,7 @@ export interface ListResponse {
      */
     pagination?: Pagination;
     /**
-     * The namespace of the vectors.
+     * The namespace that served the list: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof ListResponse
      */

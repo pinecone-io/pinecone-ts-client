@@ -22,6 +22,7 @@ import {
 
 /**
  * Full-text search configuration. When present, the field is indexed for full-text search.
+ * 
  * `stop_words` requires `stemming: true`. `ngram` cannot be combined with `stemming` or `stop_words`.
  * @export
  * @interface StringFieldFullTextSearch

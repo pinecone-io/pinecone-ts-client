@@ -21,7 +21,7 @@ import {
 } from './PatchSemanticTextField';
 
 /**
- * Schema updates to apply to an existing index. Only `semantic_text` field parameters can be updated after index creation. The model itself cannot be changed once set; only `write_parameters` and `read_parameters` may be updated if the model stays the same.
+ * Schema updates to apply to an existing index. Only `semantic_text` field parameters, on a legacy integrated index created via create-for-model, can be updated after index creation. The model itself cannot be changed once set; only `write_parameters` and `read_parameters` may be updated if the model stays the same. The `embed` and `sparse_embed` configurations of a `string` field are fixed at creation and cannot be updated.
  * @export
  * @interface PatchIndexSchema
  */

@@ -61,13 +61,13 @@ import {
 export interface DeleteDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    deleteDocumentsRequest: DeleteDocumentsRequest | null;
+    deleteDocumentsRequest: DeleteDocumentsRequest;
 }
 
 export interface FetchDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    fetchDocumentsRequest: FetchDocumentsRequest | null;
+    fetchDocumentsRequest: FetchDocumentsRequest;
 }
 
 export interface ListDocumentsOperationRequest {
@@ -85,7 +85,7 @@ export interface SearchDocumentsOperationRequest {
 export interface UpdateDocumentsOperationRequest {
     xPineconeApiVersion: string;
     namespace: string;
-    updateDocumentsRequest: UpdateDocumentsRequest | null;
+    updateDocumentsRequest: UpdateDocumentsRequest;
 }
 
 export interface UpsertDocumentsOperationRequest {
@@ -253,7 +253,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search for documents in a namespace using one or more scoring methods (dense vector, sparse vector, text, or query string similarity).  Returns the top-k most similar documents along with their scores and requested fields.
+     * Search for documents in a namespace using one or more scoring methods (dense vector, sparse vector, text, or query string similarity, or similarity to query text that Pinecone embeds with a field\'s own model).  Returns the top-k most similar documents along with their scores and requested fields.
      * Search documents
      */
     async searchDocumentsRaw(requestParameters: SearchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SearchDocumentsResponse>> {
@@ -295,7 +295,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search for documents in a namespace using one or more scoring methods (dense vector, sparse vector, text, or query string similarity).  Returns the top-k most similar documents along with their scores and requested fields.
+     * Search for documents in a namespace using one or more scoring methods (dense vector, sparse vector, text, or query string similarity, or similarity to query text that Pinecone embeds with a field\'s own model).  Returns the top-k most similar documents along with their scores and requested fields.
      * Search documents
      */
     async searchDocuments(requestParameters: SearchDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SearchDocumentsResponse> {
@@ -304,7 +304,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
+     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.  On an index whose schema declares `embed` or `sparse_embed`, a per-ID update that sets such a field provides its new text, and Pinecone re-embeds it with the field\'s model; an update that does not set the field leaves its text and vectors unchanged. A by-filter update cannot set such a field in `set_fields`. An index that embeds a field accepts at most 96 documents per request.  Pinecone embeds the text on every request that sets such a field, so a retried update is embedded, and metered, again. A per-ID update of a document that does not exist still embeds the text it sets.
      * Update documents
      */
     async updateDocumentsRaw(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateDocumentsResponse>> {
@@ -346,7 +346,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.
+     * Apply partial updates to documents in a namespace. Documents are selected either per ID with `documents`, or in bulk with `filter`.  - `documents`: Each update is identified by its `_id`. Any other fields set new values for those fields, and fields listed in `_remove_fields` are removed from the document. Fields that are not mentioned are left unchanged. Updates to a document that does not exist are accepted but have no effect. - `filter`: The same patch is applied to every document matching a metadata filter expression. The patch is given by `set_fields` and/or `remove_fields`, at least one of which must be specified. Text-match operators (`$match_phrase`, `$match_all`, `$match_any`) are not supported in a filtered update; they are only supported in search. The response reports `matched_records`, the number of documents the filter matched.  `documents` and the by-filter fields (`filter`, `set_fields`, `remove_fields`) are mutually exclusive.  On an index whose schema declares `embed` or `sparse_embed`, a per-ID update that sets such a field provides its new text, and Pinecone re-embeds it with the field\'s model; an update that does not set the field leaves its text and vectors unchanged. A by-filter update cannot set such a field in `set_fields`. An index that embeds a field accepts at most 96 documents per request.  Pinecone embeds the text on every request that sets such a field, so a retried update is embedded, and metered, again. A per-ID update of a document that does not exist still embeds the text it sets.
      * Update documents
      */
     async updateDocuments(requestParameters: UpdateDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateDocumentsResponse> {
@@ -355,7 +355,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
+     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.  On a `string` field whose schema declares `embed` or `sparse_embed`, provide the text: Pinecone embeds it with the field\'s model and stores the resulting vectors, and the text itself unless the field sets `store_text: false`. A vector or any other non-string value on such a field is rejected. A field with `embed` must be present on every document; a field with only `sparse_embed` may be omitted. An index that embeds a field accepts at most 96 documents per request, the inference batch size.  Pinecone embeds the text on every request that carries it, so a retried upsert produces the same vectors and is embedded, and metered, again. If embedding fails, nothing in the request is written.
      * Upsert documents
      */
     async upsertDocumentsRaw(requestParameters: UpsertDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertDocumentsResponse>> {
@@ -397,7 +397,7 @@ export class DocumentOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.
+     * Upsert documents into a namespace.  Each document must include an `_id` field and at least one field defined in the index schema; metadata fields may be provided alongside them. Any metadata field you provide that is not declared in the schema is stored on the document, returned via include_fields, and automatically indexed for filtering.  On a `string` field whose schema declares `embed` or `sparse_embed`, provide the text: Pinecone embeds it with the field\'s model and stores the resulting vectors, and the text itself unless the field sets `store_text: false`. A vector or any other non-string value on such a field is rejected. A field with `embed` must be present on every document; a field with only `sparse_embed` may be omitted. An index that embeds a field accepts at most 96 documents per request, the inference batch size.  Pinecone embeds the text on every request that carries it, so a retried upsert produces the same vectors and is embedded, and metered, again. If embedding fails, nothing in the request is written.
      * Upsert documents
      */
     async upsertDocuments(requestParameters: UpsertDocumentsOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertDocumentsResponse> {

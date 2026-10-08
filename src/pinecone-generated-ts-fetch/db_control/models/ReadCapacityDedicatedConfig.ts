@@ -21,7 +21,7 @@ import {
 } from './ScalingConfigManual';
 
 /**
- * Configuration for dedicated read capacity. See  [this guide](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes) for more details on  how to configure dedicated read capacity.
+ * Configuration for dedicated read capacity. See [this guide](https://docs.pinecone.io/guides/index-data/dedicated-read-nodes) for more details on how to configure dedicated read capacity.
  * @export
  * @interface ReadCapacityDedicatedConfig
  */

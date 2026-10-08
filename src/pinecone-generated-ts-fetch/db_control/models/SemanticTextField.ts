@@ -14,7 +14,9 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * A semantic text field, as returned when describing an index created with an integrated embedding model. Backed by an integrated embedding model that embeds text at write and query time, enabling semantic similarity search without separate embedding calls. Cannot be declared when creating an index; use the create-for-model operation.
+ * The embedded text field of a legacy integrated index created via create-for-model, as returned when the index is described. The index's embedding configuration is reported on the field named by its `field_map`. Legacy integrated indexes require the legacy Records API.
+ * 
+ * This is a read-only view: `semantic_text` is rejected when creating an index. A document index reports an integrated-embedding field as a `string` field carrying `embed` or `sparse_embed` instead.
  * @export
  * @interface SemanticTextField
  */
@@ -26,13 +28,13 @@ export interface SemanticTextField {
      */
     type: SemanticTextFieldTypeEnum;
     /**
-     * Optional description for this field, at most 256 bytes. `null` in responses when none was set.
+     * The field's description, or `null` when none was set.
      * @type {string}
      * @memberof SemanticTextField
      */
     description?: string | null;
     /**
-     * The name of the integrated embedding model to use for this field.
+     * The hosted embedding model that embeds the field's text.
      * @type {string}
      * @memberof SemanticTextField
      */
@@ -44,7 +46,8 @@ export interface SemanticTextField {
      */
     dimension?: number | null;
     /**
-     * The distance metric used for similarity search. Defaults to the model's preferred metric if not specified.
+     * The distance metric the index uses.
+     * 
      * Possible values: `cosine`, `dotproduct`, or `euclidean`.
      * @type {string}
      * @memberof SemanticTextField

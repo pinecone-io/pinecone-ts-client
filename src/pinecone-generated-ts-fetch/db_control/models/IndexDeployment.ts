@@ -37,12 +37,9 @@ import {
 /**
  * @type IndexDeployment
  * The deployment configuration of a Pinecone index. The `deployment_type` field indicates which infrastructure model the index uses.
- * - `pod`: Dedicated pod-based infrastructure. Suitable for workloads that
  * 
- *   require predictable performance.
- * - `managed`: Serverless infrastructure managed by Pinecone, including
- * 
- *   full-text search indexes. Scales automatically; billed per usage.
+ * - `pod`: Dedicated pod-based infrastructure. Suitable for workloads that require predictable performance.
+ * - `managed`: Serverless infrastructure managed by Pinecone, including full-text search indexes. Scales automatically; billed per usage.
  * - `byoc`: Bring-your-own-compute. Runs in customer-managed infrastructure.
  * @export
  */

@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './CreateNamespaceAliasRequest';
 export * from './CreateNamespaceRequest';
 export * from './CreateNamespaceRequestSchema';
 export * from './CreateNamespaceRequestSchemaFieldsValue';
@@ -31,10 +32,12 @@ export * from './ListDocumentsRequest';
 export * from './ListDocumentsResponse';
 export * from './ListImportsResponse';
 export * from './ListItem';
+export * from './ListNamespaceAliasesResponse';
 export * from './ListNamespacesResponse';
 export * from './ListResponse';
 export * from './ListedDocumentRecord';
 export * from './MetadataValue';
+export * from './NamespaceAliasDescription';
 export * from './NamespaceDescription';
 export * from './NamespaceDescriptionIndexedFields';
 export * from './NamespaceSummary';
@@ -42,6 +45,7 @@ export * from './Pagination';
 export * from './ProtobufAny';
 export * from './QueryRequest';
 export * from './QueryResponse';
+export * from './RepointNamespaceAliasRequest';
 export * from './RpcStatus';
 export * from './ScoredVector';
 export * from './SearchDocumentsRequest';

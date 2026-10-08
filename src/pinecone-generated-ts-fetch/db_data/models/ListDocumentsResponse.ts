@@ -51,7 +51,7 @@ export interface ListDocumentsResponse {
      */
     pagination?: Pagination;
     /**
-     * The namespace the documents were listed from.
+     * The namespace the documents were listed from: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof ListDocumentsResponse
      */

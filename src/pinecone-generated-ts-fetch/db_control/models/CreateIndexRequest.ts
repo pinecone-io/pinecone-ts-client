@@ -33,14 +33,15 @@ import {
 } from './ReadCapacity';
 
 /**
- * The configuration needed to create a Pinecone index.
+ * Configuration for a new index.
+ * 
  * The `schema` field is required and defines the typed fields for the index. The `deployment` field selects infrastructure and defaults to managed (serverless) on AWS `us-east-1` if omitted. The `name` is auto-generated if not provided.
  * @export
  * @interface CreateIndexRequest
  */
 export interface CreateIndexRequest {
     /**
-     * The name of the index. Must be unique within the project. Resource name must be 1-45 characters long, start and end with an alphanumeric character, and consist only of lower case alphanumeric characters or '-'. If not provided, a name is generated automatically. Callers that require retry-safe behavior should provide an explicit name — a duplicate request with the same name returns 409, making success detectable on retry.
+     * The name of the index. Must be unique within the project, start and end with an alphanumeric character, and contain only lower case alphanumeric characters or '-'. Generated automatically if not provided.
      * @type {string}
      * @memberof CreateIndexRequest
      */
@@ -77,6 +78,7 @@ export interface CreateIndexRequest {
     tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
+     * 
      * Possible values: `disabled` or `enabled`.
      * @type {string}
      * @memberof CreateIndexRequest

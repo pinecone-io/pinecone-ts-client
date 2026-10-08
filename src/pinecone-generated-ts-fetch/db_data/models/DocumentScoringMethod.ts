@@ -28,13 +28,18 @@ import {
  * - `sparse_vector`: Score by sparse vector similarity. Requires either `field` or `fields` naming exactly one field, and `sparse_values`.
  * - `text`: Score by BM25 text similarity. Requires either `field` or `fields` naming one or more fields, and `query`. Naming several fields scores the query against all of them.
  * - `query_string`: Score using a Lucene query string. Use field qualifiers (`field:(clause)`) to target a field, or omit field qualifiers to search against all text-searchable fields. Errors if `field` or `fields` is provided.
+ * - `embed`: Score by dense vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `embed` configuration. Requires either `field` or `fields` naming exactly one `string` field that declares `embed`, and `query`. `values` and `sparse_values` are rejected.
+ * - `sparse_embed`: Score by sparse vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `sparse_embed` configuration. Requires either `field` or `fields` naming exactly one `string` field that declares `sparse_embed`, and `query`. `values` and `sparse_values` are rejected.
+ * 
+ * `dense_vector` and `sparse_vector` score caller-supplied vectors against a `dense_vector` or `sparse_vector` field; to search a field that declares `embed` or `sparse_embed`, use the `embed` or `sparse_embed` type.
  * @export
  * @interface DocumentScoringMethod
  */
 export interface DocumentScoringMethod {
     /**
      * The scoring method type.
-     * Possible values: `dense_vector`, `sparse_vector`, `text`, or `query_string`.
+     * 
+     * Possible values: `dense_vector`, `sparse_vector`, `text`, `query_string`, `embed`, or `sparse_embed`.
      * @type {string}
      * @memberof DocumentScoringMethod
      */
@@ -42,20 +47,19 @@ export interface DocumentScoringMethod {
     /**
      * The fields to score against.
      * 
-     * Either `fields` or `field` must be provided for `dense_vector`, `sparse_vector`, and `text` scoring types, and neither may be provided for `query_string`. `dense_vector` and `sparse_vector` accept exactly one field; `text` accepts one or more.
+     * Either `fields` or `field` must be provided for `dense_vector`, `sparse_vector`, `text`, `embed`, and `sparse_embed` scoring types, and neither may be provided for `query_string`. `dense_vector`, `sparse_vector`, `embed`, and `sparse_embed` accept exactly one field, and a clause of one of these types that names more than one field is rejected; `text` accepts one or more.
      * @type {Array<string>}
      * @memberof DocumentScoringMethod
      */
     fields?: Array<string>;
     /**
-     * A single field to score against. Equivalent to a one-element `fields`; prefer `fields`, which can also name more than one field. Either `field` or `fields` must be provided for `dense_vector`, `sparse_vector`, and `text` scoring types, but not both.
+     * A single field to score against: the one-field form of `fields`, equivalent to a one-element `fields`. Either `field` or `fields` must be provided for `dense_vector`, `sparse_vector`, `text`, `embed`, and `sparse_embed` scoring types, but not both.
      * @type {string}
      * @memberof DocumentScoringMethod
-     * @deprecated
      */
     field?: string;
     /**
-     * The text query to use for `text` and `query_string` scoring types. Leading and trailing whitespace is trimmed; a query that is empty after trimming is rejected. At most 10 KB.
+     * The text query to use for `text`, `query_string`, `embed`, and `sparse_embed` scoring types. For `embed` and `sparse_embed`, Pinecone embeds this text with the named field's model. Leading and trailing whitespace is trimmed; a query that is empty after trimming is rejected. At most 10 KB.
      * @type {string}
      * @memberof DocumentScoringMethod
      */

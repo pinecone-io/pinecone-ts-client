@@ -39,7 +39,7 @@ export interface FetchResponse {
      */
     vectors?: { [key: string]: Vector; };
     /**
-     * The namespace of the vectors.
+     * The namespace that served the fetch: the request's namespace, or the alias's target namespace when the request named a namespace alias.
      * @type {string}
      * @memberof FetchResponse
      */

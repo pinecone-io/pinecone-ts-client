@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ReadCapacityStatus {
     /**
-     * The `state` describes the overall status of factors relating to the read capacity of an index. 
+     * The `state` describes the overall status of factors relating to the read capacity of an index.
      * 
      * Available values:
      * - `Ready` is the state most of the time

@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * The request for the `upsert` operation.
+ * A record for the legacy Records API's `upsert_records` operation.
  * @export
  * @interface UpsertRecord
  */

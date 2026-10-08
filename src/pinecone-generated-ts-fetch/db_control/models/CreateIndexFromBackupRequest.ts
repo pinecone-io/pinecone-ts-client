@@ -40,6 +40,7 @@ export interface CreateIndexFromBackupRequest {
     tags?: { [key: string]: string; } | null;
     /**
      * Whether [deletion protection](http://docs.pinecone.io/guides/manage-data/manage-indexes#configure-deletion-protection) is enabled/disabled for the index.
+     * 
      * Possible values: `disabled` or `enabled`.
      * @type {string}
      * @memberof CreateIndexFromBackupRequest
