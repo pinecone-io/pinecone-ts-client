@@ -87,7 +87,7 @@ export class Indexes {
    * console.log(index.name);
    * ```
    *
-   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   * @see {@link IntegratedEmbeddingStringField} to have Pinecone embed document text.
    */
   create(
     options: CreateIndexOptions & { suppressConflicts?: false },
@@ -116,7 +116,7 @@ export class Indexes {
    * console.log(index?.name);
    * ```
    *
-   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   * @see {@link IntegratedEmbeddingStringField} to have Pinecone embed document text.
    */
   create(options: CreateIndexOptions): Promise<IndexModel | void>;
   async create(options: CreateIndexOptions): Promise<IndexModel | void> {
@@ -133,6 +133,12 @@ export class Indexes {
 
   /**
    * Creates an index that embeds document text with an integrated model.
+   *
+   * This creates a legacy integrated index, read and written through
+   * {@link Index.upsertRecords} and {@link Index.searchRecords}. For new work,
+   * call {@link Indexes.create} with a `string` field that declares `embed` or
+   * `sparseEmbed` (see {@link IntegratedEmbeddingStringField}), and read and
+   * write it through `index.documents`.
    *
    * Creation returns before the index is ready unless `waitUntilReady` is true.
    *
@@ -160,13 +166,19 @@ export class Indexes {
    * console.log(index.name);
    * ```
    *
-   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
+   * @see {@link Indexes.create} to define vector, full-text search, or integrated embedding fields yourself.
    */
   createForModel(
     options: CreateIndexForModelOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
   /**
    * Creates an index that embeds document text with an integrated model.
+   *
+   * This creates a legacy integrated index, read and written through
+   * {@link Index.upsertRecords} and {@link Index.searchRecords}. For new work,
+   * call {@link Indexes.create} with a `string` field that declares `embed` or
+   * `sparseEmbed` (see {@link IntegratedEmbeddingStringField}), and read and
+   * write it through `index.documents`.
    *
    * Creation returns before the index is ready unless `waitUntilReady` is true.
    *
@@ -194,7 +206,7 @@ export class Indexes {
    * console.log(index?.name);
    * ```
    *
-   * @see {@link Indexes.create} to define vector or full-text search fields yourself.
+   * @see {@link Indexes.create} to define vector, full-text search, or integrated embedding fields yourself.
    */
   createForModel(
     options: CreateIndexForModelOptions,

@@ -1,4 +1,8 @@
-import { createIndex, CreateIndexOptions } from '../createIndex';
+import {
+  createIndex,
+  CreateIndexOptions,
+  CreateIndexSchemaField,
+} from '../createIndex';
 import {
   ManageIndexesApi,
   ResponseError,
@@ -241,5 +245,39 @@ describe('createIndex', () => {
       createIndexRequest: minimal,
       xPineconeApiVersion: '2026-07',
     });
+  });
+});
+
+describe('CreateIndexSchemaField string variants', () => {
+  it('accepts full-text search, integrated embedding, or both on one field', () => {
+    const fields: Record<string, CreateIndexSchemaField> = {
+      title: { type: 'string', fullTextSearch: {} },
+      dense: { type: 'string', embed: {} },
+      sparse: {
+        type: 'string',
+        sparseEmbed: { model: 'pinecone-sparse-english-v0' },
+      },
+      unstored: { type: 'string', embed: { dimension: 512 }, storeText: false },
+      all: {
+        type: 'string',
+        fullTextSearch: { language: 'en' },
+        embed: {
+          model: 'llama-text-embed-v2',
+          writeParameters: { truncate: 'END' },
+        },
+        sparseEmbed: {},
+      },
+    };
+    expect(Object.keys(fields)).toHaveLength(5);
+  });
+
+  it('rejects a string field that declares no search configuration', () => {
+    const fields: Record<string, CreateIndexSchemaField> = {
+      // @ts-expect-error a string field needs fullTextSearch, embed, or sparseEmbed
+      bare: { type: 'string' },
+      // @ts-expect-error storeText alone does not make a field searchable
+      unstored: { type: 'string', storeText: false },
+    };
+    expect(Object.keys(fields)).toHaveLength(2);
   });
 });

@@ -98,7 +98,11 @@ export interface BatchUpsertDocumentsResponse {
 export interface BatchUpsertDocumentsOptions {
   /** The documents to upsert. An empty array resolves with zero counts and sends nothing. */
   documents: Array<DocumentRecord>;
-  /** Documents per request, 1–1000. Defaults to 50. */
+  /**
+   * Documents per request, 1–1000. Defaults to 50. Keep it at 96 or below for an
+   * index with integrated embedding (a `string` field that declares `embed` or
+   * `sparseEmbed`), which rejects larger requests.
+   */
   batchSize?: number;
   /** Requests in flight at once, 1–64. Defaults to 8. */
   maxConcurrency?: number;

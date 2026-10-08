@@ -15,6 +15,7 @@ export * from './DocumentRecord';
 export * from './DocumentScoringMethod';
 export * from './DocumentSearchMatch';
 export * from './DocumentSearchUsage';
+export * from './DocumentWriteUsage';
 export * from './ErrorResponse';
 export * from './ErrorResponseError';
 export * from './FetchByMetadataRequest';

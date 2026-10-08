@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DocumentWriteUsage } from './DocumentWriteUsage';
+import {
+    DocumentWriteUsageFromJSON,
+    DocumentWriteUsageFromJSONTyped,
+    DocumentWriteUsageToJSON,
+} from './DocumentWriteUsage';
+
 /**
  * The response for the `update_documents` operation.
  * @export
@@ -25,6 +32,12 @@ export interface UpdateDocumentsResponse {
      * @memberof UpdateDocumentsResponse
      */
     matchedRecords?: number;
+    /**
+     * 
+     * @type {DocumentWriteUsage}
+     * @memberof UpdateDocumentsResponse
+     */
+    usage?: DocumentWriteUsage;
 }
 
 /**
@@ -47,6 +60,7 @@ export function UpdateDocumentsResponseFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'matchedRecords': !exists(json, 'matched_records') ? undefined : json['matched_records'],
+        'usage': !exists(json, 'usage') ? undefined : DocumentWriteUsageFromJSON(json['usage']),
     };
 }
 
@@ -60,6 +74,7 @@ export function UpdateDocumentsResponseToJSON(value?: UpdateDocumentsResponse | 
     return {
         
         'matched_records': value.matchedRecords,
+        'usage': DocumentWriteUsageToJSON(value.usage),
     };
 }
 

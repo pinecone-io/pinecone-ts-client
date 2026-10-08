@@ -34,6 +34,8 @@ export type {
   ResponseStringField,
   ResponseStringFieldFullTextSearch,
   ResponseStringFieldFullTextSearchNgram,
+  ResponseEmbedConfig,
+  ResponseSparseEmbedConfig,
   ReadCapacityDedicatedConfig,
   ScalingConfigManual,
 } from '../../pinecone-generated-ts-fetch/db_control';

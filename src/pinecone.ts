@@ -226,7 +226,7 @@ export class Pinecone {
    * console.log(index.name);
    * ```
    *
-   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   * @see {@link IntegratedEmbeddingStringField} to have Pinecone embed document text.
    *
    * @deprecated Use {@link Indexes.create} instead.
    */
@@ -255,7 +255,7 @@ export class Pinecone {
    * console.log(index.name);
    * ```
    *
-   * @see {@link Indexes.createForModel} to embed document text with an integrated model.
+   * @see {@link IntegratedEmbeddingStringField} to have Pinecone embed document text.
    *
    * @deprecated Use {@link Indexes.create} instead.
    */

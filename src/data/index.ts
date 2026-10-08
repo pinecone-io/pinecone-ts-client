@@ -126,6 +126,7 @@ export type {
   DocumentRecord,
   UpsertDocumentsOptions,
   UpsertDocumentsResponse,
+  DocumentWriteUsage,
 } from './documents/upsertDocuments';
 export type {
   DocumentScoringMethod,
@@ -910,7 +911,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - A non-empty `documents` array; each document needs `_id` and fields matching
    * the index schema.
-   * @returns The number of documents written in `upsertedCount`.
+   * @returns The number of documents written in `upsertedCount`. On an index with integrated
+   * embedding, `usage.embedTotalTokens` counts the tokens Pinecone embedded for the write;
+   * `usage` is omitted when the request embedded nothing.
    * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or missing.
    *
    * @example
@@ -960,8 +963,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * console.log(result.matches);
    * ```
    *
-   * @see {@link Index.searchRecords} for integrated embedding search; {@link Index.query} for
-   * vector similarity queries.
+   * @see {@link Index.searchRecords} to search a legacy integrated index; {@link Index.query}
+   * for vector similarity queries.
    *
    * @deprecated Use {@link Documents.search} through `index.documents.search()`.
    */
@@ -1069,7 +1072,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - Per-ID changes in `documents`, or a `filter` with non-empty `setFields` and/or
    * `removeFields`.
-   * @returns The number of documents matched by the request in `matchedRecords`.
+   * @returns The number of documents matched by the request in `matchedRecords`. On an index with
+   * integrated embedding, `usage.embedTotalTokens` counts the tokens Pinecone embedded for the
+   * update; `usage` is omitted when the request embedded nothing.
    * @throws {@link Errors.PineconeArgumentError} when the selection or field changes are missing or
    * incompatible.
    *

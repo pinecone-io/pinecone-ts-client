@@ -62,7 +62,9 @@ export class Documents {
    *
    * @param options - A non-empty `documents` array; each document needs `_id` and fields matching
    * the index schema.
-   * @returns The number of documents written in `upsertedCount`.
+   * @returns The number of documents written in `upsertedCount`. On an index with integrated
+   * embedding, `usage.embedTotalTokens` counts the tokens Pinecone embedded for the write;
+   * `usage` is omitted when the request embedded nothing.
    * @throws {@link Errors.PineconeArgumentError} when `documents` is empty or missing.
    *
    * @example
@@ -90,11 +92,20 @@ export class Documents {
   /**
    * Search schema-based documents using one or more scoring methods.
    *
-   * Choose scoring fields and methods supported by your index schema.
+   * Choose scoring fields and methods supported by your index schema. To search a
+   * `string` field with integrated embedding, pass the query as text in an `embed` or
+   * `sparse_embed` clause, such as `{ type: 'embed', field: 'body', query: 'trail running' }`,
+   * and Pinecone embeds it with the field's model. A `dense_vector`, `sparse_vector`,
+   * `embed`, or `sparse_embed` clause must appear alone in `scoreBy`; `text` and
+   * `query_string` clauses can be combined.
+   *
+   * Naming a field declared with `storeText: false` in `includeFields` is rejected with a
+   * `400`, since its text is not stored; `['*']` leaves such fields out.
    *
    * @param options - Scoring methods in `scoreBy`, the result count `topK`, and optional filters
    * and returned fields.
-   * @returns Ranked `matches`, the namespace, and usage information.
+   * @returns Ranked `matches`, the namespace, and usage information. `usage.embedTotalTokens`
+   * counts the query tokens Pinecone embedded, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is missing or empty, or `topK` is
    * missing or less than 1.
    *
@@ -111,8 +122,8 @@ export class Documents {
    * console.log(result.matches);
    * ```
    *
-   * @see {@link Index.searchRecords} for integrated embedding search; {@link Index.query} for
-   * vector similarity queries.
+   * @see {@link Index.searchRecords} to search a legacy integrated index; {@link Index.query}
+   * for vector similarity queries.
    */
   async search(
     options: SearchDocumentsOptions,
@@ -157,7 +168,9 @@ export class Documents {
    *
    * @param options - Per-ID changes in `documents`, or a `filter` with non-empty `setFields` and/or
    * `removeFields`.
-   * @returns The number of documents matched by the request in `matchedRecords`.
+   * @returns The number of documents matched by the request in `matchedRecords`. On an index with
+   * integrated embedding, `usage.embedTotalTokens` counts the tokens Pinecone embedded for the
+   * update; `usage` is omitted when the request embedded nothing.
    * @throws {@link Errors.PineconeArgumentError} when the selection or field changes are missing or
    * incompatible.
    *

@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { DocumentWriteUsage } from './DocumentWriteUsage';
+import {
+    DocumentWriteUsageFromJSON,
+    DocumentWriteUsageFromJSONTyped,
+    DocumentWriteUsageToJSON,
+} from './DocumentWriteUsage';
+
 /**
  * The response for the `upsert_documents` operation.
  * @export
@@ -25,6 +32,12 @@ export interface UpsertDocumentsResponse {
      * @memberof UpsertDocumentsResponse
      */
     upsertedCount: number;
+    /**
+     * 
+     * @type {DocumentWriteUsage}
+     * @memberof UpsertDocumentsResponse
+     */
+    usage?: DocumentWriteUsage;
 }
 
 /**
@@ -48,6 +61,7 @@ export function UpsertDocumentsResponseFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'upsertedCount': json['upserted_count'],
+        'usage': !exists(json, 'usage') ? undefined : DocumentWriteUsageFromJSON(json['usage']),
     };
 }
 
@@ -61,6 +75,7 @@ export function UpsertDocumentsResponseToJSON(value?: UpsertDocumentsResponse | 
     return {
         
         'upserted_count': value.upsertedCount,
+        'usage': DocumentWriteUsageToJSON(value.usage),
     };
 }
 

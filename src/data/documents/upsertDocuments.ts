@@ -11,6 +11,7 @@ export type {
   DocumentRecord,
   UpsertDocumentsRequest as UpsertDocumentsOptions,
   UpsertDocumentsResponse,
+  DocumentWriteUsage,
 } from '../../pinecone-generated-ts-fetch/db_data';
 
 export const upsertDocuments = async (
