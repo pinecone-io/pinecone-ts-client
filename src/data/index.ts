@@ -503,7 +503,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * });
    * ```
    *
-   * @see {@link Index.upsertRecords} to embed text; {@link Index.update} for partial changes.
+   * @see {@link Documents.upsert} to have Pinecone embed text, on a document index with integrated
+   * embedding; {@link Index.update} for partial changes.
    */
   async upsert(options: UpsertOptions<T>) {
     return await this._upsertCommand.run(options);
@@ -580,8 +581,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * console.log(result.matches);
    * ```
    *
-   * @see {@link Index.searchRecords} for text queries and reranking; {@link Documents.search} for
-   * schema-based search.
+   * @see {@link Documents.search} for schema-based search, including text queries on fields with
+   * integrated embedding; {@link Index.searchRecords} to search and rerank a legacy integrated index.
    */
   async query(options: QueryOptions) {
     return await this._queryCommand.run(options);
@@ -617,9 +618,12 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Write text records to an index with integrated embedding.
+   * Write text records to a legacy integrated index (legacy Records API).
    *
-   * The example assumes the index maps its embedding input to `chunk_text`.
+   * A legacy integrated index, created with {@link Indexes.createForModel}, embeds the text field
+   * named in its field map. The example assumes the index maps its embedding input to
+   * `chunk_text`. For a new index, declare `embed` or `sparseEmbed` on a `string` field and write
+   * through {@link Documents.upsert} instead.
    *
    * @param options - Records with `id` or `_id`, the text field configured in the index field map,
    * and optional metadata or namespace override.
@@ -646,9 +650,10 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
   }
 
   /**
-   * Search records with text, a vector, or an existing record ID.
+   * Search records with text, a vector, or an existing record ID (legacy Records API).
    *
-   * Text queries require an index with integrated embedding.
+   * Text queries require a legacy integrated index, created with {@link Indexes.createForModel}.
+   * To search a document index with integrated embedding, use {@link Documents.search}.
    *
    * @param options - A query with `topK`, optional result fields, reranking settings, and a
    * namespace override.
@@ -928,8 +933,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * console.log(result.upsertedCount);
    * ```
    *
-   * @see {@link Documents.update} for partial changes; {@link Index.upsertRecords} for integrated
-   * embedding records.
+   * @see {@link Documents.update} for partial changes; {@link IntegratedEmbeddingStringField} to have
+   * Pinecone embed a field's text; {@link Index.upsertRecords} to write to a legacy integrated index.
    *
    * @deprecated Use {@link Documents.upsert} through `index.documents.upsert()`.
    */

@@ -296,4 +296,4 @@ reranked.data.forEach((result) => {
 });
 ```
 
-For integrated inference where Pinecone handles embedding and reranking automatically, see [Integrated Inference](./integrated-inference.md).
+To have Pinecone embed document text as part of index operations, see [integrated embedding](../data-operations/working-with-documents.md#integrated-embedding). For indexes created with `createForModel`, see [Legacy Integrated Indexes](./integrated-inference.md).

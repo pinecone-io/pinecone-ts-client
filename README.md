@@ -10,7 +10,8 @@ Use Pinecone to store, search, and manage documents and high-dimensional vectors
 - **Document Operations**: Upsert, fetch, update, and delete documents within namespaces
 - **Vector Operations**: Store, query, and manage high-dimensional vectors with metadata filtering
 - **Index Management**: Create serverless indexes and manage existing pod-based indexes
-- **Integrated Inference**: Built-in embedding and reranking models for end-to-end search workflows
+- **Integrated Embedding**: Have Pinecone embed document text with hosted models, so you can search by meaning without managing vectors
+- **Inference**: Hosted embedding and reranking models through `pc.inference`
 - **Pinecone Assistant**: AI assistants powered by vector database capabilities
 - **Type Safety**: Full TypeScript support with generic type parameters for metadata
 
@@ -23,7 +24,7 @@ Use Pinecone to store, search, and manage documents and high-dimensional vectors
 - [Quickstart](#quickstart)
   - [Full-text search with documents](#full-text-search-with-documents)
   - [Bringing your own vectors](#bringing-your-own-vectors-to-pinecone)
-  - [Using integrated inference](#using-integrated-inference)
+  - [Integrated embedding with documents](#integrated-embedding-with-documents)
 - [Pinecone Assistant](#pinecone-assistant)
 - [More Information](#more-information-on-usage)
 - [Issues and Bugs](#issues-and-bugs)
@@ -68,7 +69,7 @@ Choose the workflow that matches your data:
 
 - [Documents and full-text search](#full-text-search-with-documents) for searchable text and named document fields.
 - [Bring your own vectors](#bringing-your-own-vectors-to-pinecone) for vector records with embeddings you generate.
-- [Integrated inference](#using-integrated-inference) to have Pinecone generate embeddings from text.
+- [Integrated embedding](#integrated-embedding-with-documents) to have Pinecone generate embeddings from document text.
 
 ### Full-text search with documents
 
@@ -183,78 +184,61 @@ const queryResponse = await index.query({
 console.log(queryResponse);
 ```
 
-### Using integrated inference
+<a id="using-integrated-inference"></a>
 
-This example demonstrates using Pinecone's integrated inference capabilities. You provide raw text data, and Pinecone handles embedding generation and optional reranking automatically. This is ideal when you want to focus on your data and let Pinecone handle the ML complexity.
+### Integrated embedding with documents
+
+Declare `embed` on a `string` field and Pinecone embeds the field's text with a hosted model when you upsert, and embeds your query text when you search. You never handle the vectors yourself.
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-// 1. Instantiate the Pinecone client
-const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+// 1. Instantiate the client using the PINECONE_API_KEY environment variable
+const pc = new Pinecone();
 
-// 2. Create an index configured for use with a particular embedding model
-const indexModel = await pc.indexes.createForModel({
-  name: 'example-index',
-  cloud: 'aws',
-  region: 'us-east-1',
-  embed: {
-    model: 'multilingual-e5-large',
-    fieldMap: { text: 'chunk_text' },
+// 2. Create an index whose body field is embedded by a hosted model
+const indexModel = await pc.indexes.create({
+  name: 'embedded-documents-example',
+  schema: {
+    fields: {
+      body: { type: 'string', embed: { model: 'llama-text-embed-v2' } },
+    },
   },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
   waitUntilReady: true,
 });
 
-// 3. Target the index
-const index = pc.index({ host: indexModel.host });
-
-// 4. Upsert records with raw text data
-// Pinecone will automatically generate embeddings using the configured model
-await index.upsertRecords({
-  records: [
+// 3. Upsert plain text; Pinecone generates the embeddings
+const index = pc.index({ host: indexModel.host, namespace: 'articles' });
+await index.documents.upsert({
+  documents: [
     {
-      id: 'rec1',
-      chunk_text:
-        "Apple's first product, the Apple I, was released in 1976 and was hand-built by co-founder Steve Wozniak.",
+      _id: 'rec1',
+      body: "Apple's first product, the Apple I, was released in 1976.",
       category: 'product',
     },
     {
-      id: 'rec2',
-      chunk_text:
-        'Apples are a great source of dietary fiber, which supports digestion and helps maintain a healthy gut.',
+      _id: 'rec2',
+      body: 'Apples are a great source of dietary fiber, which supports digestion.',
       category: 'nutrition',
-    },
-    {
-      id: 'rec3',
-      chunk_text:
-        'Apples originated in Central Asia and have been cultivated for thousands of years, with over 7,500 varieties available today.',
-      category: 'cultivation',
-    },
-    {
-      id: 'rec4',
-      chunk_text:
-        'In 2001, Apple released the iPod, which transformed the music industry by making portable music widely accessible.',
-      category: 'product',
     },
   ],
 });
 
-// 5. Search for similar records using text queries
-// Pinecone handles embedding the query and optionally reranking results
-const searchResponse = await index.searchRecords({
-  query: {
-    inputs: { text: 'Apple corporation' },
-    topK: 3,
-  },
-  rerank: {
-    model: 'bge-reranker-v2-m3',
-    topN: 2,
-    rankFields: ['chunk_text'],
-  },
+// 4. Search by meaning with query text
+// Newly upserted documents may take time to become searchable.
+const results = await index.documents.search({
+  scoreBy: [{ type: 'embed', field: 'body', query: 'healthy eating' }],
+  topK: 3,
+  includeFields: ['body', 'category'],
 });
 
-console.log(searchResponse);
+console.log(results.matches);
 ```
+
+The text is also stored and indexed for full-text search, so the same field supports `text` scoring. Add `sparseEmbed: {}` to the field for sparse embeddings. See [Integrated embedding](./guides/data-operations/working-with-documents.md#integrated-embedding) for the full set of options.
+
+Indexes created with `pc.indexes.createForModel` are legacy integrated indexes, read and written through the legacy Records API (`upsertRecords` and `searchRecords`). See [Legacy Integrated Indexes](./guides/inference/integrated-inference.md).
 
 ## Pinecone Assistant
 
@@ -318,7 +302,7 @@ Detailed information on specific ways of using the SDK are covered in these guid
 **Inference:**
 
 - [Inference API](./guides/inference/inference-api.md) - Use standalone embedding and reranking models
-- [Integrated Inference](./guides/inference/integrated-inference.md) - Index-integrated embedding and reranking
+- [Legacy Integrated Indexes](./guides/inference/integrated-inference.md) - Indexes created with `createForModel`, and the legacy Records API
 
 **Assistant:**
 

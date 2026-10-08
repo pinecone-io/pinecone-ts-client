@@ -1,6 +1,6 @@
 # Serverless Indexes
 
-Serverless indexes support documents with full-text search, dense and sparse vectors, and integrated embedding models. The 2026-07 API creates managed indexes with a `schema` describing searchable fields and a `deployment` choosing the cloud and region.
+Serverless indexes support documents with full-text search, dense and sparse vectors, and integrated embedding. The 2026-07 API creates managed indexes with a `schema` describing searchable fields and a `deployment` choosing the cloud and region.
 
 Both [document indexes](#document-indexes-with-full-text-search) and [vector indexes](#dense-and-sparse-vector-indexes) are supported workflows for new applications. Choose the schema and operations that match how you want to store and search your data.
 
@@ -49,7 +49,7 @@ const results = await index.documents.search({
 console.log(results.matches);
 ```
 
-The index schema declares searchable text and vector fields. Include filtering metadata such as `category` in the documents you upsert; it is indexed for filtering automatically and should not be declared in the create-index schema. Plain strings without `fullTextSearch`, numbers, booleans, and string lists are metadata, not searchable field declarations.
+The index schema declares searchable text and vector fields. Include filtering metadata such as `category` in the documents you upsert; it is indexed for filtering automatically and should not be declared in the create-index schema. Plain strings without `fullTextSearch`, `embed`, or `sparseEmbed`, numbers, booleans, and string lists are metadata, not searchable field declarations.
 
 Use the document operations for this index: `index.documents.upsert`, `index.documents.search`, `index.documents.fetch`, `index.documents.update`, and `index.documents.delete`. See [working with documents](../data-operations/working-with-documents.md) for the document lifecycle and search options.
 
@@ -74,9 +74,34 @@ await pc.indexes.create({
 });
 ```
 
-Use `index.documents.search` scoring clauses to target the named text or vector fields. Search text or one vector field per request; vector and text scoring cannot be combined in one request. See [document vector search](../data-operations/working-with-documents.md#search-vector-fields-in-documents) for examples. You supply the vectors for fields declared as `dense_vector` or `sparse_vector`. A schema can contain at most one dense vector field, one sparse vector field, and 100 full-text search fields, and must contain at least one searchable field.
+Use `index.documents.search` scoring clauses to target the named text or vector fields. Search text or one vector field per request; vector and text scoring cannot be combined in one request. See [document vector search](../data-operations/working-with-documents.md#search-vector-fields-in-documents) for examples. You supply the vectors for fields declared as `dense_vector` or `sparse_vector`. A schema can contain at most one dense vector field, one sparse vector field, and 100 full-text search fields, and must contain at least one searchable field. A `string` field that declares `embed` takes the dense slot, and one that declares `sparseEmbed` takes the sparse slot.
 
-To have Pinecone generate embeddings from document text, use `pc.indexes.createForModel` instead. That operation creates a `semantic_text` field from the model and field mapping; `semantic_text` cannot be declared directly in `pc.indexes.create`. See [integrated inference](../inference/integrated-inference.md) for creating and using these indexes.
+## Documents with integrated embedding
+
+To have Pinecone embed document text for you, declare `embed` or `sparseEmbed` on a `string` field. Pinecone embeds the text with a hosted model on upsert and update, and embeds query text with the same model when you search with an `embed` or `sparse_embed` clause:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+await pc.indexes.create({
+  name: 'articles-embedded',
+  schema: {
+    fields: {
+      body: {
+        type: 'string',
+        embed: { model: 'llama-text-embed-v2', dimension: 1024 },
+        sparseEmbed: {},
+      },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
+});
+```
+
+Every key of `embed` and `sparseEmbed` is optional, so `{}` selects the default model. The text is stored and indexed for full-text search by default; set `storeText: false` to embed it without storing it. See [integrated embedding](../data-operations/working-with-documents.md#integrated-embedding) for searching these fields, unstored text, and the 96-document request limit.
+
+`pc.indexes.createForModel` creates a legacy integrated index instead. It reports its embedded field as a `semantic_text` field, which cannot be declared in `pc.indexes.create`, and is read and written through the legacy Records API. See [legacy integrated indexes](../inference/integrated-inference.md).
 
 ## Dense and sparse vector indexes
 
@@ -104,7 +129,7 @@ await pc.indexes.create({
 });
 ```
 
-Reserved vector fields cannot be combined with custom document fields in the same schema. Custom schema field names select the documents API instead, even if the schema contains only vector fields. Legacy `dimension`, `metric`, `vectorType`, and `spec` options remain compatibility inputs, but should not be mixed with the native `schema` and `deployment` shape. See [working with vectors](../data-operations/working-with-vectors.md) for vector operations.
+Reserved vector fields cannot be combined with custom document fields in the same schema. Custom schema field names select the Documents API instead, even if the schema contains only vector fields. Legacy `dimension`, `metric`, `vectorType`, and `spec` options remain compatibility inputs, but should not be mixed with the native `schema` and `deployment` shape. See [working with vectors](../data-operations/working-with-vectors.md) for vector operations.
 
 ## Available clouds
 

@@ -302,7 +302,7 @@ export function translateLegacyConfigureOptions(
     );
   if ('embed' in input)
     fail(
-      `Converting an existing index to integrated embedding is not supported on 2026-07. Use pc.indexes.createForModel(). See ${GUIDE}`,
+      `Converting an existing index to integrated embedding is not supported on 2026-07. Create a new index through pc.indexes.create() with a string field that declares embed or sparseEmbed, or a legacy integrated index through pc.indexes.createForModel(). See ${GUIDE}`,
     );
   if ('spec' in input)
     fail(

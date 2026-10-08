@@ -12,7 +12,7 @@ describe('legacy property guidance', () => {
     if (result.outcome !== 'error')
       throw new Error('Expected an unavailable dimension');
     expect(formatDeriveFailure(result.failure)).toBe(
-      'Cannot read `dimension` from index "test-index": this documents-API index shape has no equivalent legacy property; this shape did not exist before 2026-07. Its schema declares: "keywords" (sparse_vector). Inspect the field you need with `Object.entries(index.schema.fields)`.',
+      'Cannot read `dimension` from index "test-index": this Documents API index shape has no equivalent legacy property; this shape did not exist before 2026-07. Its schema declares: "keywords" (sparse_vector). Inspect the field you need with `Object.entries(index.schema.fields)`.',
     );
   });
   test('shows model lookup when model information is not reported', () => {
@@ -20,7 +20,7 @@ describe('legacy property guidance', () => {
     if (result.outcome !== 'error')
       throw new Error('Expected an unavailable dimension');
     expect(formatDeriveFailure(result.failure)).toBe(
-      'Cannot read `dimension` from index "test-index": the API does not report this property on the integrated model field. Its schema declares: "chunk_text" (semantic_text, model llama-text-embed-v2). Look up the model with `await pc.inference.getModel("llama-text-embed-v2")`.',
+      'Cannot read `dimension` from index "test-index": the API does not report this property on the semantic_text field of a legacy integrated index. Its schema declares: "chunk_text" (semantic_text, model llama-text-embed-v2). Look up the model with `await pc.inference.getModel("llama-text-embed-v2")`.',
     );
   });
   test('reports readiness separately from a ready empty schema', () => {

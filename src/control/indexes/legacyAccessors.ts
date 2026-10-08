@@ -32,7 +32,7 @@ export interface DeriveFailure {
       dimension?: number | null;
       /** Reported similarity metric. */
       metric?: string;
-      /** Integrated embedding model identifier. */
+      /** Embedding model of a legacy integrated index. */
       model?: string;
     }>;
     /** Deployment discriminator reported by the API. */
@@ -123,9 +123,9 @@ export interface DerivedLegacyIndexSpec {
     readCapacity?: ReadCapacityResponse;
   };
 }
-/** Integrated embedding settings derived from a semantic text field. */
+/** Embedding settings of a legacy integrated index, derived from its semantic text field. */
 export interface LegacyIndexEmbed {
-  /** Integrated embedding model identifier. */
+  /** Embedding model of the legacy integrated index. */
   model: string;
   /** Reported similarity metric. */
   metric?: string;
@@ -322,7 +322,7 @@ export function deriveSpec(
     });
   return value({});
 }
-/** Derive the settings of a single integrated embedding field. */
+/** Derive the settings of a single semantic text field. */
 export function deriveEmbed(model: IndexModelData): Derived<LegacyIndexEmbed> {
   const fields = semantic(model);
   if (fields.length !== 1) return absent;
@@ -362,8 +362,8 @@ export function formatDeriveFailure({ reason, detail }: DeriveFailure): string {
       : reason === 'ambiguous'
         ? 'more than one schema field is a candidate, so there is no single legacy value.'
         : reason === 'not-reported-by-api'
-          ? 'the API does not report this property on the integrated model field.'
-          : 'this documents-API index shape has no equivalent legacy property; this shape did not exist before 2026-07.';
+          ? 'the API does not report this property on the semantic_text field of a legacy integrated index.'
+          : 'this Documents API index shape has no equivalent legacy property; this shape did not exist before 2026-07.';
   const model = detail.fields.find((field) => field.model)?.model;
   const next =
     reason === 'not-reported-by-api' && model

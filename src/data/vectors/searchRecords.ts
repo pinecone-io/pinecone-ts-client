@@ -46,7 +46,7 @@ export type SearchRecordsQuery = {
   filter?: object;
   /**
    * Embedding inputs, such as `{ text: "waterproof hiking shoes" }`.
-   * Requires an index with integrated embedding.
+   * Requires a legacy integrated index.
    */
   inputs?: object;
   /**
@@ -60,9 +60,9 @@ export type SearchRecordsQuery = {
   /**
    * Require matching terms in the text field configured by the index field map,
    * for example `{ strategy: "all", terms: ["hiking", "waterproof"] }`.
-   * Supported for compatible sparse indexes with integrated embedding.
+   * Supported for compatible sparse legacy integrated indexes.
    *
-   * @see [Integrated embedding](https://docs.pinecone.io/guides/inference/integrated-inference)
+   * @see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference)
    */
   matchTerms?: SearchMatchTerms;
 };

@@ -282,7 +282,7 @@ results.matches.forEach((match) => {
 
 ## Inference with types
 
-When using integrated inference with `upsertRecords`, you can also define types for your records. `IntegratedRecord<T>` adds the `id` / `_id` field to your metadata type, so define the metadata type and let `IntegratedRecord` supply the identifier:
+When using a legacy integrated index with `upsertRecords`, you can also define types for your records. `IntegratedRecord<T>` adds the `id` / `_id` field to your metadata type, so define the metadata type and let `IntegratedRecord` supply the identifier:
 
 ```typescript
 import { Pinecone, IntegratedRecord } from '@pinecone-database/pinecone';

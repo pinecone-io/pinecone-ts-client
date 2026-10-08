@@ -1,14 +1,16 @@
-# Integrated Inference
+<a id="integrated-inference"></a>
 
-When using an index with integrated inference, embedding and reranking operations are tied to index operations and do not require extra steps. This allows working with an index that accepts source text and converts it to vectors automatically using an embedding model hosted by Pinecone.
+# Legacy Integrated Indexes
 
-For full-text search over document fields without generating embeddings, see [Working with Documents](../data-operations/working-with-documents.md).
+An index created with `pc.indexes.createForModel` is a legacy integrated index. Pinecone embeds the text of one mapped field with a hosted model, and you read and write the index through the legacy Records API: `upsertRecords` and `searchRecords`, which can also rerank results.
+
+For new work, create a document index with [integrated embedding](../data-operations/working-with-documents.md#integrated-embedding) instead: declare `embed` or `sparseEmbed` on a `string` field in `pc.indexes.create`, and read and write the index through `index.documents`. A document index adds full-text search on the same fields, and `scoreBy` clauses across several searchable fields.
 
 For more information, see [Upsert and search with integrated inference](https://docs.pinecone.io/guides/inference/integrated-inference).
 
 ## Create an index for a model
 
-Integrated inference requires a serverless index configured for a specific embedding model. Use the `pc.indexes.createForModel` method to create an index that will automatically handle embeddings:
+A legacy integrated index is a serverless index configured for one embedding model. Use the `pc.indexes.createForModel` method to create one:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -204,12 +206,12 @@ For a list of available embedding models, see the [model gallery](https://docs.p
 
 ## Complete example
 
-Here's a complete workflow using integrated inference:
+Here's a complete workflow using a legacy integrated index:
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
 
-async function integratedInferenceExample() {
+async function legacyIntegratedIndexExample() {
   const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
 
   // 1. Create an index for a model
@@ -258,7 +260,7 @@ async function integratedInferenceExample() {
   console.log(results);
 }
 
-integratedInferenceExample();
+legacyIntegratedIndexExample();
 ```
 
 For standalone inference without index integration, see [Inference API](./inference-api.md).

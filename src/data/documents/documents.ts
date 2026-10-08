@@ -79,8 +79,8 @@ export class Documents {
    * console.log(result.upsertedCount);
    * ```
    *
-   * @see {@link Documents.update} for partial changes; {@link Index.upsertRecords} for integrated
-   * embedding records.
+   * @see {@link Documents.update} for partial changes; {@link IntegratedEmbeddingStringField} to have
+   * Pinecone embed a field's text; {@link Index.upsertRecords} to write to a legacy integrated index.
    */
   async upsert(
     options: UpsertDocumentsOptions,

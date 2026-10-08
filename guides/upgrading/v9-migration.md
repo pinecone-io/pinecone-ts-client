@@ -166,7 +166,10 @@ How the legacy concepts map to the native schema:
   `deployment` for index creation — see below.
 - `embed` (top-level integrated embedding) becomes a `semantic_text` schema
   field, built for you by `pc.indexes.createForModel`, which keeps the flat
-  `cloud`/`region`/`embed` shape for that one case.
+  `cloud`/`region`/`embed` shape for that one case. That creates a legacy
+  integrated index; for a new index, declare `embed` or `sparseEmbed` on a
+  `string` field in `create` instead (see
+  [integrated embedding](../data-operations/working-with-documents.md#integrated-embedding)).
 
 An index may declare at most one `dense_vector` and one `sparse_vector` field,
 and must declare at least one field. Field types, dimensions, metrics, and

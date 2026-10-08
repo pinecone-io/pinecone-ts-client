@@ -15,7 +15,7 @@ import type { IndexModel } from './listIndexes';
 import type { ReadCapacity, DeletionProtection, IndexMetric } from '../types';
 
 /**
- * The integrated embedding configuration for a new index.
+ * The embedding configuration of a new legacy integrated index.
  *
  * @see [Create an index with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding)
  */
@@ -42,11 +42,11 @@ export interface CreateIndexForModelEmbed extends Omit<
 }
 
 /**
- * Options for creating an index with an integrated embedding model.
+ * Options for creating a legacy integrated index with {@link Indexes.createForModel}.
  *
  * The `embed` settings select the model and document field to embed for you. For full control over
- * schema composition — combining a dense or sparse vector field with full-text
- * search, for example — use {@link Indexes.create} directly.
+ * schema composition — integrated embedding on `string` fields, or a dense or sparse vector
+ * field combined with full-text search, for example — use {@link Indexes.create} directly.
  *
  * @see [Create an index with integrated embedding](https://docs.pinecone.io/guides/index-data/create-an-index#integrated-embedding)
  */
@@ -88,9 +88,9 @@ export interface CreateIndexForModelOptions extends Omit<
 }
 
 /**
- * Creates an index with an integrated embedding model.
+ * Creates a legacy integrated index.
  *
- * Integrated-embedding indexes are serverless only; pod and BYOC deployments
+ * Legacy integrated indexes are serverless only; pod and BYOC deployments
  * are not supported, and the deployment is chosen for you.
  *
  * @param api - The manage-indexes API client.

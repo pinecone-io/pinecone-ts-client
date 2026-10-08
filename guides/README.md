@@ -22,7 +22,7 @@ Detailed guides for using the Pinecone TypeScript SDK.
 ## Inference
 
 - [Inference API](./inference/inference-api.md) - Use standalone embedding and reranking models
-- [Integrated Inference](./inference/integrated-inference.md) - Index-integrated embedding and reranking
+- [Legacy Integrated Indexes](./inference/integrated-inference.md) - Indexes created with `createForModel`, and the legacy Records API
 
 ## Assistant
 

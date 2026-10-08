@@ -258,8 +258,8 @@ concurrentQueries();
 ## What's the difference between `upsert`, `upsertRecords`, and `documents.upsert`?
 
 - **`upsert`**: For vectors you've already embedded (bring your own vectors)
-- **`upsertRecords`**: For text data with integrated inference (Pinecone generates embeddings)
-- **`documents.upsert`**: For documents with `_id` and named text or vector fields defined by an index schema. Full-text search uses text directly; you supply any dense or sparse vector values yourself.
+- **`upsertRecords`**: For text data in a legacy integrated index created with `createForModel` (the legacy Records API)
+- **`documents.upsert`**: For documents with `_id` and named text or vector fields defined by an index schema. Full-text search uses text directly. Pinecone embeds the text of fields with [integrated embedding](./data-operations/working-with-documents.md#integrated-embedding); you supply the values of `dense_vector` and `sparse_vector` fields yourself.
 
 Choose the operation that matches your index schema. See [Working with Documents](./data-operations/working-with-documents.md) for document upserts and full-text search.
 
@@ -274,8 +274,8 @@ await index1.upsert({
   records: [{ id: '1', values: [0.1, 0.2, 0.3] }],
 });
 
-// Use upsertRecords with integrated inference indexes
-const index2 = pc.index({ name: 'integrated-index' });
+// Use upsertRecords with legacy integrated indexes
+const index2 = pc.index({ name: 'legacy-integrated-index' });
 await index2.upsertRecords({
   records: [{ id: '1', text: 'This text will be embedded automatically' }],
 });

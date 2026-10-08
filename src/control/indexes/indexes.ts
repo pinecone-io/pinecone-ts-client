@@ -132,9 +132,9 @@ export class Indexes {
   }
 
   /**
-   * Creates an index that embeds document text with an integrated model.
+   * Creates a legacy integrated index, which embeds record text with a hosted model.
    *
-   * This creates a legacy integrated index, read and written through
+   * The index is read and written through the legacy Records API,
    * {@link Index.upsertRecords} and {@link Index.searchRecords}. For new work,
    * call {@link Indexes.create} with a `string` field that declares `embed` or
    * `sparseEmbed` (see {@link IntegratedEmbeddingStringField}), and read and
@@ -172,9 +172,9 @@ export class Indexes {
     options: CreateIndexForModelOptions & { suppressConflicts?: false },
   ): Promise<IndexModel>;
   /**
-   * Creates an index that embeds document text with an integrated model.
+   * Creates a legacy integrated index, which embeds record text with a hosted model.
    *
-   * This creates a legacy integrated index, read and written through
+   * The index is read and written through the legacy Records API,
    * {@link Index.upsertRecords} and {@link Index.searchRecords}. For new work,
    * call {@link Indexes.create} with a `string` field that declares `embed` or
    * `sparseEmbed` (see {@link IntegratedEmbeddingStringField}), and read and

@@ -6,7 +6,7 @@ Document operations use `_id` and ordinary top-level fields. For example, `categ
 
 ## Create an index and target a namespace
 
-Declare the fields you want to search in the index schema. A string field with `fullTextSearch: {}` supports full-text search without generating embeddings.
+Declare the fields you want to search in the index schema. A string field with `fullTextSearch: {}` supports full-text search without generating embeddings. To have Pinecone embed a string field's text for semantic search, see [Integrated embedding](#integrated-embedding).
 
 ```typescript
 import { Pinecone } from '@pinecone-database/pinecone';
@@ -65,7 +65,7 @@ const result = await index.documents.upsert({
 console.log(result.upsertedCount);
 ```
 
-Use upsert to write documents and `index.documents.update` for partial changes. Keep requests within the document API's 2 MB document and request limits; each full-text-search field value is limited to 100 KB and 10,000 tokens.
+Use upsert to write documents and `index.documents.update` for partial changes. Keep requests within the Documents API's 2 MB document and request limits; each full-text-search field value is limited to 100 KB and 10,000 tokens. An index with [integrated embedding](#integrated-embedding) accepts at most 96 documents per request.
 
 Writes become visible to reads and search asynchronously. `waitUntilReady` waits for index creation, not for later writes to become searchable. If your workflow needs to search immediately after a write, poll the intended search with a bounded timeout until the expected document appears. A successful fetch alone does not establish search readiness.
 
@@ -291,4 +291,95 @@ const results = await vectorDocumentIndex.documents.search({
 });
 ```
 
-Each vector scoring clause targets exactly one field and must be the only clause in `scoreBy`. The API does not combine vector and text clauses, or dense and sparse clauses, in one search request. Document search accepts query vector values; it has no query-by-ID form. Prefer `fields` over the deprecated singular `field` option.
+Each vector scoring clause targets exactly one field and must be the only clause in `scoreBy`. The API does not combine vector and text clauses, or dense and sparse clauses, in one search request. Document search accepts query vector values; it has no query-by-ID form. A clause can name its field as `field: 'embedding'` or as the one-element `fields: ['embedding']`; the two are equivalent.
+
+## Integrated embedding
+
+With integrated embedding, Pinecone embeds a field's text for you. Declare `embed` (a dense embedding) or `sparseEmbed` (a sparse embedding) on a `string` field, upsert plain text, and search with query text. Pinecone embeds document text with a hosted model on upsert and update, and embeds the query with the same model on search. You never handle the vectors.
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const model = await pc.indexes.create({
+  name: 'document-embed-search',
+  schema: {
+    fields: {
+      body: {
+        type: 'string',
+        embed: { model: 'llama-text-embed-v2', dimension: 1024 },
+        sparseEmbed: {},
+      },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
+  waitUntilReady: true,
+  timeout: 180_000,
+});
+const embedIndex = pc.index({ host: model.host, namespace: 'articles' });
+await embedIndex.documents.upsert({
+  documents: [
+    {
+      _id: 'article-1',
+      body: 'Plant apple trees in a sunny orchard with well-drained soil.',
+      category: 'gardening',
+    },
+  ],
+});
+```
+
+Every key of `embed` and `sparseEmbed` is optional; `{}` selects the default model, at its default dimension and metric for `embed`. The configuration is fixed at creation, and `pc.indexes.describe` reports it resolved, with every omitted key filled in from the model. `writeParameters` and `readParameters` set the model parameters used to embed document text and query text; the model's defaults rarely need changing.
+
+On a document index with integrated embedding, upsert and update responses include `usage.embedTotalTokens`, the tokens Pinecone embedded for the write. `usage` is omitted when the request embedded nothing, which is always the case on an index without integrated embedding.
+
+Search with an `embed` or `sparse_embed` clause that names the field and passes the query as text:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const embedIndex = pc.index({
+  name: 'document-embed-search',
+  namespace: 'articles',
+});
+const results = await embedIndex.documents.search({
+  scoreBy: [
+    { type: 'embed', field: 'body', query: 'how do I grow fruit trees' },
+  ],
+  topK: 5,
+  includeFields: ['body'],
+});
+
+console.log(results.usage.embedTotalTokens);
+```
+
+Like a vector clause, an `embed` or `sparse_embed` clause must be the only clause in `scoreBy`. `usage.embedTotalTokens` counts the query tokens Pinecone embedded, when the server reports it.
+
+An index has one dense slot and one sparse slot: at most one field can be a `dense_vector` field or declare `embed`, and at most one can be a `sparse_vector` field or declare `sparseEmbed`. A single field can declare `embed` and `sparseEmbed` together, and full-text search as well.
+
+### Stored text
+
+By default the field's text is stored, and stored text is always indexed for full-text search. A field that declares only `embed` therefore also supports `text` and `query_string` clauses, and describe reports `fullTextSearch` with default settings. Each value is at most 100 KB, and stored text is also subject to the full-text limit of 10,000 tokens per value.
+
+Set `storeText: false` to embed the text without storing it, for example to save space on a field you only search by similarity, or to keep sensitive text out of Pinecone:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+await pc.indexes.create({
+  name: 'document-embed-unstored',
+  schema: {
+    fields: {
+      notes: { type: 'string', embed: {}, storeText: false },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-west-2' },
+});
+```
+
+An unstored field needs `embed` or `sparseEmbed` and cannot declare `fullTextSearch`. It can only be searched with an `embed` or `sparse_embed` clause: `text` and `query_string` clauses and `$match_*` filters cannot use it. Its text cannot be returned either: a fetch or search whose `includeFields` names it is rejected with a `400`, and `['*']` leaves it out. Keep text stored if you may need full-text search on the field later; the setting is fixed at creation.
+
+### Request limits
+
+An upsert or update request against an index with integrated embedding carries at most 96 documents, rather than the usual 1,000. Split larger writes into requests of 96 documents or fewer.

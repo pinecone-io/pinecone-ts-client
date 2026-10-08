@@ -421,7 +421,7 @@ describe('legacy configure validation', () => {
     [{ replicas: 2 }, 'Use podReplicas to rescale an existing pod index.'],
     [
       { embed: {} },
-      'Converting an existing index to integrated embedding is not supported on 2026-07. Use pc.indexes.createForModel(). See MIGRATION.md',
+      'Converting an existing index to integrated embedding is not supported on 2026-07. Create a new index through pc.indexes.create() with a string field that declares embed or sparseEmbed, or a legacy integrated index through pc.indexes.createForModel(). See MIGRATION.md',
     ],
   ])('rejects invalid patch %p', (input, message) => {
     expect(() =>
