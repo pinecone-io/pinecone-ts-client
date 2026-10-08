@@ -58,6 +58,20 @@ before the next sync. This script does not run the npm release workflow.
    the docs job. To ensure the final docs correspond exactly to the released
    version, dispatch the docs workflow against the resulting tag as below.
 
+## Release candidates
+
+To publish a release candidate, sync as above and run `Release: NPM Package`
+in `rc` mode. Set `releaseType` to the bump intended for the final release and
+`rc_name` to a short identifier: from `9.0.0`, `minor` with `1` publishes
+`9.1.0-rc.1.0` under the `RC` npm tag. RC mode does not commit, tag, or publish
+docs, so every run bumps from the last stable version; use a new `rc_name` for
+each candidate, or the publish fails on the existing version.
+
+```bash
+gh workflow run release.yml --repo pinecone-io/pinecone-ts-client --ref main \
+  -f releaseMode=rc -f releaseType=minor -f rc_name=1 -f runTests=true
+```
+
 ## Publish documentation from the released tag
 
 After the public sync and successful package release, substitute the actual

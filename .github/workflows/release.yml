@@ -13,7 +13,7 @@ on:
           - 'rc' # Release candidate with @RC tag
           - 'dev' # Dev release with @dev tag
       releaseType:
-        description: 'Semver release type (prod only)'
+        description: 'Semver release type (prod and rc)'
         required: false
         type: choice
         default: 'patch'
@@ -22,10 +22,10 @@ on:
           - 'minor' # new features, backwards compatible
           - 'major' # breaking changes
       rc_name:
-        description: 'RC identifier (rc mode only)'
+        description: 'RC identifier (rc mode only); minor with 1 gives X.Y+1.0-rc.1.0. Use a new value for each RC'
         required: false
         type: string
-        default: '2024-07'
+        default: ''
       runTests:
         description: 'Run tests before releasing'
         required: true
@@ -103,7 +103,13 @@ jobs:
             echo "Error: rc_name is required for RC releases"
             exit 1
           fi
-          npm version prerelease --preid=rc.${{ inputs.rc_name }} --no-git-tag-version
+          if ! [[ "${{ inputs.rc_name }}" =~ ^[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*$ ]]; then
+            echo "Error: rc_name must be dot-separated alphanumerics or hyphens, e.g. 1 or 2026-07"
+            exit 1
+          fi
+          # RC versions aren't committed back, so each run bumps from the last
+          # stable release: pre<releaseType> targets the intended release version.
+          npm version pre${{ inputs.releaseType }} --preid=rc.${{ inputs.rc_name }} --no-git-tag-version
           newVersion=$(jq -r '.version' package.json)
           echo "version=$newVersion" >> $GITHUB_OUTPUT
           echo "Bumped version to $newVersion (RC release)"
