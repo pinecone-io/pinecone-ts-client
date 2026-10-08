@@ -47,16 +47,35 @@ export interface RetryConfig {
 }
 
 /**
+ * Undici (the engine behind Node's native `fetch`) reports a transport-level
+ * connection failure as `TypeError: fetch failed`, with the real error on
+ * `.cause`. These specific codes are undici's own transient connection/timing
+ * failures - e.g. the socket closing mid-request or a connect/header/body
+ * timeout - which commonly succeed on retry (a slow or CPU-constrained server
+ * under load is the typical trigger). This is deliberately narrower than all
+ * `.cause.code` values: it excludes ambiguous cases like a bare
+ * `Error('Connection refused')` with no `.cause`, which stays non-retryable.
+ */
+const RETRYABLE_CAUSE_CODES = new Set([
+  'UND_ERR_SOCKET',
+  'UND_ERR_CONNECT_TIMEOUT',
+  'UND_ERR_HEADERS_TIMEOUT',
+  'UND_ERR_BODY_TIMEOUT',
+]);
+
+/**
  * Determines if an error is retryable.
  *
  * Retryable errors include:
  * - Server errors (5xx status codes)
  * - PineconeUnavailableError
  * - PineconeInternalServerError
+ * - Transient connection failures from the underlying fetch implementation
+ *   (see RETRYABLE_CAUSE_CODES)
  *
  * Non-retryable errors include:
  * - Client errors (4xx status codes) - these indicate a problem with the request
- * - Network errors (connection refused, etc.) - typically not transient
+ * - Other network errors (connection refused, etc.) - typically not transient
  *
  * @param error - The error to check
  * @returns true if the error should trigger a retry
@@ -75,6 +94,16 @@ const isRetryableError = (error: any): boolean => {
 
   // Check status code for server errors (5xx)
   if (error?.status && error.status >= 500) {
+    return true;
+  }
+
+  // A fetch-level TypeError carrying one of undici's transient connection
+  // error codes on its cause (see RETRYABLE_CAUSE_CODES above)
+  if (
+    error?.name === 'TypeError' &&
+    typeof error?.cause?.code === 'string' &&
+    RETRYABLE_CAUSE_CODES.has(error.cause.code)
+  ) {
     return true;
   }
 
@@ -182,10 +211,12 @@ function getBaseFetch(
 }
 
 /**
- * Wraps a fetch function with automatic retry logic for server errors (5xx).
+ * Wraps a fetch function with automatic retry logic for server errors (5xx)
+ * and transient connection failures.
  *
  * The wrapped fetch function will:
  * - Retry on 5xx status codes with exponential backoff
+ * - Retry on transient connection failures (see RETRYABLE_CAUSE_CODES above)
  * - Throw PineconeMaxRetriesExceededError when retries are exhausted
  * - Pass through non-retryable responses (4xx, etc.) without retrying
  *
