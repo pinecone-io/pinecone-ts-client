@@ -105,7 +105,8 @@ export class Documents {
    * @param options - Scoring methods in `scoreBy`, the result count `topK`, and optional filters
    * and returned fields.
    * @returns Ranked `matches`, the namespace, and usage information. `usage.embedTotalTokens`
-   * counts the query tokens Pinecone embedded, when the server reports it.
+   * counts the query tokens Pinecone embedded, when the server reports it. `usage.egressBytes` is
+   * the billed size of the response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is missing or empty, or `topK` is
    * missing or less than 1.
    *
@@ -139,7 +140,8 @@ export class Documents {
    *
    * @param options - Either non-empty `ids` or `filter`; use `paginationToken` only with a filter.
    * @returns Documents keyed by ID in `documents`, the namespace, usage, and a continuation token
-   * when available.
+   * when available. `usage.egressBytes` is the billed size of the response in bytes, when the
+   * server reports it.
    * @throws {@link Errors.PineconeArgumentError} when the selection is missing or invalid, or
    * pagination is requested without a filter.
    *
@@ -199,8 +201,9 @@ export class Documents {
    *
    * @param options - An optional ID prefix, page size, and continuation token; defaults to the
    * first unfiltered page.
-   * @returns Document entries in `documents`, ordered by ID, and `pagination.next` when another
-   * page is available.
+   * @returns Document entries in `documents` ordered by ID, usage information, and
+   * `pagination.next` when another page is available. `usage.egressBytes` is the billed size of the
+   * response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `limit` is less than 1.
    *
    * @example

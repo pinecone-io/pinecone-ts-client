@@ -200,9 +200,11 @@ console.log(queryResponse);
 //     // ... more matches
 //   ],
 //   namespace: 'example-namespace',
-//   usage: { readUnits: 5 }
+//   usage: { readUnits: 5, egressBytes: 1432 }
 // }
 ```
+
+`usage.readUnits` is the number of read units the request consumed, and `usage.egressBytes` is the billed size of the response, in bytes. Fetch, fetch by metadata, and list responses report the same fields. Either field is omitted when the server doesn't report it.
 
 ### Querying by record id
 
@@ -364,7 +366,7 @@ console.log(results);
 //     next: 'eyJza2lwX3Bhc3QiOiJwcmVUZXN0LS04MCIsInByZWZpeCI6InByZVRlc3QifQ=='
 //   },
 //   namespace: 'my-namespace',
-//   usage: { readUnits: 1 }
+//   usage: { readUnits: 1, egressBytes: 187 }
 // }
 
 // Fetch the next page using the pagination token

@@ -92,6 +92,8 @@ Filters restrict the candidate documents; scoring ranks them. Filter on top-leve
 
 Search always returns `_id` and `_score`. Omitting `includeFields`, or passing an empty array, returns no additional fields. Use `includeFields: ['*']` to return every document field.
 
+Search, fetch, and list responses include `usage.readUnits`, the read units the request consumed, and `usage.egressBytes`, the billed size of the response in bytes. `egressBytes` is omitted when the server doesn't report it.
+
 ### Query-string scoring
 
 Use `query_string` when you want Lucene query-string syntax. Field qualifiers belong in the query itself; this scoring type must not specify `field` or `fields`.

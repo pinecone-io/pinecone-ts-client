@@ -457,6 +457,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param options - An ID prefix, page size, continuation token, or namespace override; omit for
    * the first unfiltered page.
    * @returns Record IDs in `vectors` and `pagination.next` when another page is available.
+   * `usage.egressBytes` is the billed size of the response in bytes, when the server reports it.
    *
    * @example
    * ```typescript
@@ -516,6 +517,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param options - Non-empty record IDs, such as `['trail-shoe-42']`, and an optional namespace
    * override.
    * @returns Records keyed by ID in `records`, the namespace, and usage information when available.
+   * `usage.egressBytes` is the billed size of the response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `ids` is missing or empty.
    *
    * @example
@@ -540,8 +542,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - The metadata filter, optional page size and continuation token, and namespace
    * override.
-   * @returns Records keyed by ID, the namespace, and `pagination.next` when another page is
-   * available.
+   * @returns Records keyed by ID, the namespace, usage information, and `pagination.next` when
+   * another page is available. `usage.egressBytes` is the billed size of the response in bytes,
+   * when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `filter` is missing.
    *
    * @example
@@ -566,6 +569,7 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    * @param options - The result count `topK` and either `id` or `vector`, with optional filtering
    * and returned values or metadata.
    * @returns Matches ordered by similarity, the namespace, and usage information when available.
+   * `usage.egressBytes` is the billed size of the response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when query values, filters, or search tuning
    * options fail validation.
    *
@@ -657,7 +661,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - A query with `topK`, optional result fields, reranking settings, and a
    * namespace override.
-   * @returns Ranked hits in `result.hits` and usage information.
+   * @returns Ranked hits in `result.hits` and usage information. `usage.egressBytes` is the billed
+   * size of the response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `query` is missing.
    *
    * @example
@@ -951,7 +956,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - Scoring methods in `scoreBy`, the result count `topK`, and optional filters
    * and returned fields.
-   * @returns Ranked `matches`, the namespace, and usage information.
+   * @returns Ranked `matches`, the namespace, and usage information. `usage.egressBytes` is the
+   * billed size of the response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `scoreBy` is missing or empty, or `topK` is
    * missing or less than 1.
    *
@@ -986,7 +992,8 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - Either non-empty `ids` or `filter`; use `paginationToken` only with a filter.
    * @returns Documents keyed by ID in `documents`, the namespace, usage, and a continuation token
-   * when available.
+   * when available. `usage.egressBytes` is the billed size of the response in bytes, when the
+   * server reports it.
    * @throws {@link Errors.PineconeArgumentError} when the selection is missing or invalid, or
    * pagination is requested without a filter.
    *
@@ -1044,8 +1051,9 @@ export class Index<T extends RecordMetadata = RecordMetadata> {
    *
    * @param options - An optional ID prefix, page size, and continuation token; defaults to the
    * first unfiltered page.
-   * @returns Document entries in `documents`, ordered by ID, and `pagination.next` when another
-   * page is available.
+   * @returns Document entries in `documents` ordered by ID, usage information, and
+   * `pagination.next` when another page is available. `usage.egressBytes` is the billed size of the
+   * response in bytes, when the server reports it.
    * @throws {@link Errors.PineconeArgumentError} when `limit` is less than 1.
    *
    * @example

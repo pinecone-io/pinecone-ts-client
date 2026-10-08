@@ -111,7 +111,7 @@ console.log(response);
 //     },
 //     // ... more matches
 //   ],
-//   usage: { readUnits: 5 }
+//   usage: { readUnits: 5, egressBytes: 896 }
 // }
 ```
 
@@ -155,6 +155,7 @@ console.log(response);
 //   ],
 //   usage: {
 //     readUnits: 5,
+//     egressBytes: 512,
 //     rerankUnits: 1
 //   }
 // }

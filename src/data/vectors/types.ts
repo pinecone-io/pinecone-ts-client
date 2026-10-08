@@ -157,6 +157,10 @@ export type OperationUsage = {
    * The number of read units consumed by this operation.
    */
   readUnits?: number;
+  /**
+   * The billed egress for this response, in bytes, measured on the encoded response payload.
+   */
+  egressBytes?: number;
 };
 
 /**
