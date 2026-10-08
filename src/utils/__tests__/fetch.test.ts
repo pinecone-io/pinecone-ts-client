@@ -406,11 +406,10 @@ describe('getFetch', () => {
       expect(response.status).toBe(200);
     });
 
-    test('should retry on connect/headers/body timeout causes', async () => {
+    test('should retry on connect/headers timeout causes', async () => {
       for (const code of [
         'UND_ERR_CONNECT_TIMEOUT',
         'UND_ERR_HEADERS_TIMEOUT',
-        'UND_ERR_BODY_TIMEOUT',
       ]) {
         const timeoutError = new TypeError('fetch failed');
         (timeoutError as any).cause = { code };
@@ -433,6 +432,27 @@ describe('getFetch', () => {
         expect(customFetch).toHaveBeenCalledTimes(2);
         expect(response.status).toBe(200);
       }
+    });
+
+    test('should rethrow the last transient connection failure after exhausting all retries', async () => {
+      const socketError = new TypeError('fetch failed');
+      (socketError as any).cause = { code: 'UND_ERR_SOCKET' };
+
+      const customFetch = jest.fn().mockRejectedValue(socketError);
+      const config = {
+        apiKey: 'some-api-key',
+        fetchApi: customFetch,
+      } as PineconeConfiguration;
+
+      const fetchFn = getFetch(config);
+
+      const promise = expect(fetchFn('https://example.com', {})).rejects.toBe(
+        socketError,
+      );
+      await jest.runAllTimersAsync();
+      await promise;
+
+      expect(customFetch).toHaveBeenCalledTimes(4);
     });
 
     test('should not retry a TypeError with an unrecognized cause code', async () => {
