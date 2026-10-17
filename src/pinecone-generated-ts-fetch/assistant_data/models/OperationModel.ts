@@ -66,15 +66,13 @@ export interface OperationModel {
      */
     percentComplete?: number;
     /**
-     * A message describing the error that caused the operation to fail.
-     * Present only when status is `Failed`.
+     * A message describing the error that caused the operation to fail. Present only when status is `Failed`.
      * @type {string}
      * @memberof OperationModel
      */
     errorMessage?: string | null;
     /**
-     * The number of ingestion units consumed by this operation.
-     * Present only when status is `Completed` for file ingestion operations.
+     * The number of ingestion units consumed by this operation. Present only when status is `Completed` for file ingestion operations.
      * @type {number}
      * @memberof OperationModel
      */

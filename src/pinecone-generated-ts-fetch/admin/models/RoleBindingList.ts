@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { InviteListPagination } from './InviteListPagination';
+import type { CostUsageExportListPagination } from './CostUsageExportListPagination';
 import {
-    InviteListPaginationFromJSON,
-    InviteListPaginationFromJSONTyped,
-    InviteListPaginationToJSON,
-} from './InviteListPagination';
+    CostUsageExportListPaginationFromJSON,
+    CostUsageExportListPaginationFromJSONTyped,
+    CostUsageExportListPaginationToJSON,
+} from './CostUsageExportListPagination';
 import type { RoleBinding } from './RoleBinding';
 import {
     RoleBindingFromJSON,
@@ -40,10 +40,10 @@ export interface RoleBindingList {
     data: Array<RoleBinding>;
     /**
      * 
-     * @type {InviteListPagination}
+     * @type {CostUsageExportListPagination}
      * @memberof RoleBindingList
      */
-    pagination?: InviteListPagination | null;
+    pagination?: CostUsageExportListPagination | null;
 }
 
 /**
@@ -67,7 +67,7 @@ export function RoleBindingListFromJSONTyped(json: any, ignoreDiscriminator: boo
     return {
         
         'data': ((json['data'] as Array<any>).map(RoleBindingFromJSON)),
-        'pagination': !exists(json, 'pagination') ? undefined : InviteListPaginationFromJSON(json['pagination']),
+        'pagination': !exists(json, 'pagination') ? undefined : CostUsageExportListPaginationFromJSON(json['pagination']),
     };
 }
 
@@ -81,7 +81,7 @@ export function RoleBindingListToJSON(value?: RoleBindingList | null): any {
     return {
         
         'data': ((value.data as Array<any>).map(RoleBindingToJSON)),
-        'pagination': InviteListPaginationToJSON(value.pagination),
+        'pagination': CostUsageExportListPaginationToJSON(value.pagination),
     };
 }
 

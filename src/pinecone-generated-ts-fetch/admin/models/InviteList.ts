@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -13,18 +13,18 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CostUsageExportListPagination } from './CostUsageExportListPagination';
+import {
+    CostUsageExportListPaginationFromJSON,
+    CostUsageExportListPaginationFromJSONTyped,
+    CostUsageExportListPaginationToJSON,
+} from './CostUsageExportListPagination';
 import type { Invite } from './Invite';
 import {
     InviteFromJSON,
     InviteFromJSONTyped,
     InviteToJSON,
 } from './Invite';
-import type { InviteListPagination } from './InviteListPagination';
-import {
-    InviteListPaginationFromJSON,
-    InviteListPaginationFromJSONTyped,
-    InviteListPaginationToJSON,
-} from './InviteListPagination';
 
 /**
  * A paginated list of invites in the organization.
@@ -40,10 +40,10 @@ export interface InviteList {
     data: Array<Invite>;
     /**
      * 
-     * @type {InviteListPagination}
+     * @type {CostUsageExportListPagination}
      * @memberof InviteList
      */
-    pagination?: InviteListPagination | null;
+    pagination?: CostUsageExportListPagination | null;
 }
 
 /**
@@ -67,7 +67,7 @@ export function InviteListFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'data': ((json['data'] as Array<any>).map(InviteFromJSON)),
-        'pagination': !exists(json, 'pagination') ? undefined : InviteListPaginationFromJSON(json['pagination']),
+        'pagination': !exists(json, 'pagination') ? undefined : CostUsageExportListPaginationFromJSON(json['pagination']),
     };
 }
 
@@ -81,7 +81,7 @@ export function InviteListToJSON(value?: InviteList | null): any {
     return {
         
         'data': ((value.data as Array<any>).map(InviteToJSON)),
-        'pagination': InviteListPaginationToJSON(value.pagination),
+        'pagination': CostUsageExportListPaginationToJSON(value.pagination),
     };
 }
 

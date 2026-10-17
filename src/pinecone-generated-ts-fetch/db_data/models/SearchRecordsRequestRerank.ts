@@ -26,8 +26,7 @@ export interface SearchRecordsRequestRerank {
      */
     model: string;
     /**
-     * The field(s) to consider for reranking. Every returned record must contain each
-     * listed field; otherwise the request is rejected with `400`.
+     * The field(s) to consider for reranking. Every returned record must contain each listed field; otherwise the request is rejected with `400`.
      * 
      * The number of fields supported is [model-specific](https://docs.pinecone.io/guides/search/rerank-results#reranking-models).
      * @type {Array<string>}

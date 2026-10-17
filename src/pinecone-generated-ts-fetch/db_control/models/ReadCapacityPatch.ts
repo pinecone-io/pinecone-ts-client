@@ -29,7 +29,7 @@ import {
 
 /**
  * @type ReadCapacityPatch
- * Read capacity changes for an existing managed or BYOC index. Switch to `OnDemand`, or set `Dedicated` and change any subset of `node_type`, `scaling`, and `manual` replicas/shards; fields you omit keep their current value. BYOC indexes do not support `OnDemand`.
+ * Read capacity changes for an existing managed or BYOC index. Switch to `OnDemand`, or set `Dedicated` and change any subset of `node_type`, `scaling`, and `manual` replicas/shards; fields you omit keep their current value.
  * @export
  */
 export type ReadCapacityPatch = { mode: 'Dedicated' } & ReadCapacityDedicatedPatchSpec | { mode: 'OnDemand' } & ReadCapacityOnDemandSpec;

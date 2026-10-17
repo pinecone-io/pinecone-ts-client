@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CreateNamespaceRequestSchema } from './CreateNamespaceRequestSchema';
+import type { MetadataSchema } from './MetadataSchema';
 import {
-    CreateNamespaceRequestSchemaFromJSON,
-    CreateNamespaceRequestSchemaFromJSONTyped,
-    CreateNamespaceRequestSchemaToJSON,
-} from './CreateNamespaceRequestSchema';
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 import type { NamespaceDescriptionIndexedFields } from './NamespaceDescriptionIndexedFields';
 import {
     NamespaceDescriptionIndexedFieldsFromJSON,
@@ -46,10 +46,10 @@ export interface NamespaceDescription {
     recordCount?: string;
     /**
      * 
-     * @type {CreateNamespaceRequestSchema}
+     * @type {MetadataSchema}
      * @memberof NamespaceDescription
      */
-    schema?: CreateNamespaceRequestSchema;
+    schema?: MetadataSchema;
     /**
      * 
      * @type {NamespaceDescriptionIndexedFields}
@@ -85,7 +85,7 @@ export function NamespaceDescriptionFromJSONTyped(json: any, ignoreDiscriminator
         
         'name': !exists(json, 'name') ? undefined : json['name'],
         'recordCount': !exists(json, 'record_count') ? undefined : json['record_count'],
-        'schema': !exists(json, 'schema') ? undefined : CreateNamespaceRequestSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
         'indexedFields': !exists(json, 'indexed_fields') ? undefined : NamespaceDescriptionIndexedFieldsFromJSON(json['indexed_fields']),
         'sizeBytes': !exists(json, 'size_bytes') ? undefined : json['size_bytes'],
     };
@@ -102,7 +102,7 @@ export function NamespaceDescriptionToJSON(value?: NamespaceDescription | null):
         
         'name': value.name,
         'record_count': value.recordCount,
-        'schema': CreateNamespaceRequestSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
         'indexed_fields': NamespaceDescriptionIndexedFieldsToJSON(value.indexedFields),
         'size_bytes': value.sizeBytes,
     };

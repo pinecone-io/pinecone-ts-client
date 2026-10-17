@@ -21,13 +21,15 @@ import { exists, mapValues } from '../runtime';
 export interface UsageModel {
     /**
      * For chat interactions, the number of tokens in the LLM request (message, context snippets, and system prompt).
+     * 
      * For context retrieval, the number of tokens in the LLM request used to generate search queries from the messages, plus the tokens in the retrieved context snippets.
      * @type {number}
      * @memberof UsageModel
      */
     promptTokens?: number;
     /**
-     * For chat interactions, the number of tokens in the assistant's response.  
+     * For chat interactions, the number of tokens in the assistant's response.
+     * 
      * For context retrieval, this is always 0.
      * @type {number}
      * @memberof UsageModel

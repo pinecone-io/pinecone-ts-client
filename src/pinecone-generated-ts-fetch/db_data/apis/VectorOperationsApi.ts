@@ -229,7 +229,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return records by ID from a single namespace. The returned records include the vector data and/or metadata. For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead. For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return records by ID from a single namespace. The returned records include the vector data and/or metadata.  For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch records
      */
     async fetchVectorsRaw(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchResponse>> {
@@ -272,7 +272,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return records by ID from a single namespace. The returned records include the vector data and/or metadata. For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead. For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return records by ID from a single namespace. The returned records include the vector data and/or metadata.  For on-demand indexes, since vector values are retrieved from object storage, fetch operations may have increased latency. If you only need metadata or IDs, consider using the query operation with `includeValues` set to `false` instead.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch records
      */
     async fetchVectors(requestParameters: FetchVectorsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchResponse> {
@@ -281,7 +281,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return records by metadata from a single namespace. The returned records include the vector data and metadata. For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return records by metadata from a single namespace. The returned records include the vector data and metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch records by metadata
      */
     async fetchVectorsByMetadataRaw(requestParameters: FetchVectorsByMetadataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FetchByMetadataResponse>> {
@@ -319,7 +319,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Look up and return records by metadata from a single namespace. The returned records include the vector data and metadata. For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
+     * Look up and return records by metadata from a single namespace. The returned records include the vector data and metadata.  For guidance and examples, see [Fetch data](https://docs.pinecone.io/guides/manage-data/fetch-data).
      * Fetch records by metadata
      */
     async fetchVectorsByMetadata(requestParameters: FetchVectorsByMetadataRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FetchByMetadataResponse> {
@@ -482,7 +482,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update records by ID or by metadata in a namespace. Updating by ID changes the vector and/or metadata of a single record. Updating by metadata changes metadata across multiple records using a metadata filter. If a vector value is included, it will overwrite the previous value. If `set_metadata` is included, only the specified metadata fields are modified, and if a specified metadata field does not exist, it is added. For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
+     * Update records in a namespace, either by ID or with a metadata filter. By ID, you can change a single record\'s vector values, its metadata, or both. A filter updates metadata only, and applies to every record that matches.  If a vector value is included, it will overwrite the previous value. If `set_metadata` is included, only the specified metadata fields are modified, and if a specified metadata field does not exist, it is added.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
      * Update a record
      */
     async updateVectorRaw(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateResponse>> {
@@ -520,7 +520,7 @@ export class VectorOperationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update records by ID or by metadata in a namespace. Updating by ID changes the vector and/or metadata of a single record. Updating by metadata changes metadata across multiple records using a metadata filter. If a vector value is included, it will overwrite the previous value. If `set_metadata` is included, only the specified metadata fields are modified, and if a specified metadata field does not exist, it is added. For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
+     * Update records in a namespace, either by ID or with a metadata filter. By ID, you can change a single record\'s vector values, its metadata, or both. A filter updates metadata only, and applies to every record that matches.  If a vector value is included, it will overwrite the previous value. If `set_metadata` is included, only the specified metadata fields are modified, and if a specified metadata field does not exist, it is added.  For guidance and examples, see [Update data](https://docs.pinecone.io/guides/manage-data/update-data).
      * Update a record
      */
     async updateVector(requestParameters: UpdateVectorRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateResponse> {

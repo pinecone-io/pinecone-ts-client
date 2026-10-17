@@ -257,6 +257,8 @@ const scoring: SearchDocumentsOptions['scoreBy'][] = [
     { type: 'dense_vector', fields: ['embedding'], values: [0.1, 0.2] },
     { type: 'text', fields: ['title'], query: 'Hello' },
   ],
+  [{ type: 'query_string', fields: ['title'], query: 'Hello' }],
+  [{ type: 'future_scoring', fields: ['title'], query: 'Hello' }],
 ];
 test.each(
   scoring.map((scoreBy, index) => ({

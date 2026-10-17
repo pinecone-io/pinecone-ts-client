@@ -40,6 +40,7 @@ export interface ImportModel {
     uri: string;
     /**
      * The status of the operation.
+     * 
      * Possible values: `Pending`, `InProgress`, `Failed`, `Completed`, or `Cancelled`.
      * @type {string}
      * @memberof ImportModel

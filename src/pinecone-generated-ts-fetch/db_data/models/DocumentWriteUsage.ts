@@ -22,7 +22,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface DocumentWriteUsage {
     /**
-     * The total number of tokens Pinecone embedded for the request, summed over every embedding call it made, dense and sparse, across all fields and models.
+     * The total number of tokens Pinecone embedded for the request, summed over every embedding call it made, dense and sparse, across all fields and models. Documents aren't deduplicated by `_id` within an upsert, so every entry's text is embedded and counted, including entries that repeat an `_id`.
      * @type {number}
      * @memberof DocumentWriteUsage
      */

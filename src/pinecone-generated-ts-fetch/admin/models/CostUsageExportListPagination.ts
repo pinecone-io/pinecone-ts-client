@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -16,31 +16,31 @@ import { exists, mapValues } from '../runtime';
 /**
  * Cursor envelope for the next page. `null` (or absent) on the final page of results.
  * @export
- * @interface InviteListPagination
+ * @interface CostUsageExportListPagination
  */
-export interface InviteListPagination {
+export interface CostUsageExportListPagination {
     /**
      * Opaque cursor for the next page. Do not parse or construct. Invalid or expired tokens return `400`.
      * @type {string}
-     * @memberof InviteListPagination
+     * @memberof CostUsageExportListPagination
      */
     next?: string;
 }
 
 /**
- * Check if a given object implements the InviteListPagination interface.
+ * Check if a given object implements the CostUsageExportListPagination interface.
  */
-export function instanceOfInviteListPagination(value: object): boolean {
+export function instanceOfCostUsageExportListPagination(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function InviteListPaginationFromJSON(json: any): InviteListPagination {
-    return InviteListPaginationFromJSONTyped(json, false);
+export function CostUsageExportListPaginationFromJSON(json: any): CostUsageExportListPagination {
+    return CostUsageExportListPaginationFromJSONTyped(json, false);
 }
 
-export function InviteListPaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean): InviteListPagination {
+export function CostUsageExportListPaginationFromJSONTyped(json: any, ignoreDiscriminator: boolean): CostUsageExportListPagination {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -50,7 +50,7 @@ export function InviteListPaginationFromJSONTyped(json: any, ignoreDiscriminator
     };
 }
 
-export function InviteListPaginationToJSON(value?: InviteListPagination | null): any {
+export function CostUsageExportListPaginationToJSON(value?: CostUsageExportListPagination | null): any {
     if (value === undefined) {
         return undefined;
     }

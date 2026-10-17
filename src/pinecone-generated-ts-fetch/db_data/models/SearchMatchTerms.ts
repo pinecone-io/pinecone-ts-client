@@ -20,9 +20,7 @@ import { exists, mapValues } from '../runtime';
  * 
  * Example:
  * 
- *   `"match_terms": {"terms": ["animal", "CHARACTER", "donald Duck"], "strategy": "all"}` will tokenize
- *   to `["animal", "character", "donald", "duck"]`, and would match
- *   `"Donald F. Duck is a funny animal character"` but would not match `"A duck is a funny animal"`.
+ *   `"match_terms": {"terms": ["animal", "CHARACTER", "donald Duck"], "strategy": "all"}` will tokenize to `["animal", "character", "donald", "duck"]`, and would match `"Donald F. Duck is a funny animal character"` but would not match `"A duck is a funny animal"`.
  * 
  * Match terms filtering is supported only for sparse [legacy integrated indexes](https://docs.pinecone.io/guides/index-data/indexing-overview#vector-embedding) configured to use the [pinecone-sparse-english-v0](https://docs.pinecone.io/models/pinecone-sparse-english-v0) model.
  * @export

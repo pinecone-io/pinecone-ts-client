@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -21,6 +21,7 @@ import { exists, mapValues } from '../runtime';
 export interface CreateRoleBindingRequest {
     /**
      * The kind of principal that receives permissions from a role binding.
+     * 
      * Possible values: `user`, `service_account`, `api_key`, `invite`.
      * @type {string}
      * @memberof CreateRoleBindingRequest
@@ -34,6 +35,7 @@ export interface CreateRoleBindingRequest {
     principalId: string;
     /**
      * The kind of resource scope a role binding applies to.
+     * 
      * Possible values: `organization`, `project`.
      * @type {string}
      * @memberof CreateRoleBindingRequest

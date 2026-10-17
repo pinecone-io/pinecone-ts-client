@@ -23,6 +23,10 @@ import type {
   CollectionList,
   CollectionModel,
   ConfigureIndexRequest,
+  ConversionJobList,
+  ConversionJobModel,
+  ConvertIndexRequest,
+  ConvertIndexResponse,
   CreateBackupRequest,
   CreateBackupScheduleRequest,
   CreateCollectionRequest,
@@ -54,6 +58,14 @@ import {
     CollectionModelToJSON,
     ConfigureIndexRequestFromJSON,
     ConfigureIndexRequestToJSON,
+    ConversionJobListFromJSON,
+    ConversionJobListToJSON,
+    ConversionJobModelFromJSON,
+    ConversionJobModelToJSON,
+    ConvertIndexRequestFromJSON,
+    ConvertIndexRequestToJSON,
+    ConvertIndexResponseFromJSON,
+    ConvertIndexResponseToJSON,
     CreateBackupRequestFromJSON,
     CreateBackupRequestToJSON,
     CreateBackupScheduleRequestFromJSON,
@@ -82,10 +94,21 @@ import {
     UpdateBackupScheduleRequestToJSON,
 } from '../models/index';
 
+export interface CancelConversionJobRequest {
+    xPineconeApiVersion: string;
+    jobId: string;
+}
+
 export interface ConfigureIndexOperationRequest {
     xPineconeApiVersion: string;
     indexName: string;
     configureIndexRequest: ConfigureIndexRequest;
+}
+
+export interface ConvertIndexOperationRequest {
+    xPineconeApiVersion: string;
+    indexName: string;
+    convertIndexRequest: ConvertIndexRequest;
 }
 
 export interface CreateBackupOperationRequest {
@@ -156,6 +179,11 @@ export interface DescribeCollectionRequest {
     collectionName: string;
 }
 
+export interface DescribeConversionJobRequest {
+    xPineconeApiVersion: string;
+    jobId: string;
+}
+
 export interface DescribeIndexRequest {
     xPineconeApiVersion: string;
     indexName: string;
@@ -182,6 +210,12 @@ export interface ListBackupSchedulesRequest {
 
 export interface ListCollectionsRequest {
     xPineconeApiVersion: string;
+}
+
+export interface ListConversionJobsRequest {
+    xPineconeApiVersion: string;
+    limit?: number;
+    paginationToken?: string;
 }
 
 export interface ListIndexBackupsRequest {
@@ -218,6 +252,50 @@ export interface UpdateBackupScheduleOperationRequest {
  * 
  */
 export class ManageIndexesApi extends runtime.BaseAPI {
+
+    /**
+     * Cancel a conversion job that is `Pending` or `InProgress`. The job stops, and the index it was filling is left in the `InitializationFailed` state; delete it to free its name.  Cancelling a job that has already ended has no effect. The response is the job as it stands after the request, so a repeated cancel returns the same result.
+     * Cancel a conversion job
+     */
+    async cancelConversionJobRaw(requestParameters: CancelConversionJobRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConversionJobModel>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling cancelConversionJob.');
+        }
+
+        if (requestParameters.jobId === null || requestParameters.jobId === undefined) {
+            throw new runtime.RequiredError('jobId','Required parameter requestParameters.jobId was null or undefined when calling cancelConversionJob.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/conversion-jobs/{job_id}/cancel`.replace(`{${"job_id"}}`, encodeURIComponent(String(requestParameters.jobId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConversionJobModelFromJSON(jsonValue));
+    }
+
+    /**
+     * Cancel a conversion job that is `Pending` or `InProgress`. The job stops, and the index it was filling is left in the `InitializationFailed` state; delete it to free its name.  Cancelling a job that has already ended has no effect. The response is the job as it stands after the request, so a repeated cancel returns the same result.
+     * Cancel a conversion job
+     */
+    async cancelConversionJob(requestParameters: CancelConversionJobRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConversionJobModel> {
+        const response = await this.cancelConversionJobRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Configure an existing index. For guidance and examples, see [Manage indexes](https://docs.pinecone.io/guides/manage-data/manage-indexes).
@@ -267,6 +345,57 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      */
     async configureIndex(requestParameters: ConfigureIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<IndexModel> {
         const response = await this.configureIndexRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Convert a serverless vector index into a new document index, read and written through the Documents API.  The source index is not changed and keeps serving reads and writes. The conversion copies a snapshot of the source taken when the job starts, the same way a backup does: writes made to the source after that point are not carried into the new index.  The new index takes the `schema` in the request. Each source record becomes a document with the same ID, mapped by convention:  - The record\'s dense vector fills the schema\'s one `dense_vector` field, or the `string` field with `embed`. - The record\'s sparse vector fills the schema\'s one `sparse_vector` field, or the `string` field with `sparse_embed`. A dense index whose records also carry sparse values needs a sparse field too: a record whose sparse values have nowhere to go is one the new index cannot take, so `error_mode` decides whether it fails the conversion or is skipped. - For a records index with integrated embedding (created with create-for-model), the vectors fill the `string` field named like the source\'s embedded text field, declared with `embed` (or `sparse_embed`) using the source\'s model. The vectors carry over, so the text is not embedded again. - Each `string` field with `full_text_search` is filled from the record\'s metadata key of the same name. - All other metadata is carried over unchanged and stays filterable.  The schema must be able to hold the source\'s vectors: its dense field has the source\'s dimension and metric, and a legacy integrated index (created with create-for-model) needs `embed` / `sparse_embed` fields that use its models. A schema made only of the reserved `_values` / `_sparse_values` fields is rejected, because it describes a vector index rather than a document index.  The request returns once the new index is created in the `Initializing` state and the conversion job is queued. Track the job with [Describe a conversion job](https://docs.pinecone.io/reference/api/2026-07/control-plane/describe_conversion_job). When the job completes, the index becomes `Ready`. If the job fails or is cancelled, the index is left in the `InitializationFailed` state; delete it to free its name.  The new index is created in the source\'s cloud and region, and is encrypted with the source\'s CMEK key when the source has one. Pod-based and BYOC indexes cannot be converted, and neither can an index that already has a document schema.
+     * Convert an index into a document index
+     */
+    async convertIndexRaw(requestParameters: ConvertIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConvertIndexResponse>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling convertIndex.');
+        }
+
+        if (requestParameters.indexName === null || requestParameters.indexName === undefined) {
+            throw new runtime.RequiredError('indexName','Required parameter requestParameters.indexName was null or undefined when calling convertIndex.');
+        }
+
+        if (requestParameters.convertIndexRequest === null || requestParameters.convertIndexRequest === undefined) {
+            throw new runtime.RequiredError('convertIndexRequest','Required parameter requestParameters.convertIndexRequest was null or undefined when calling convertIndex.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/indexes/{index_name}/convert`.replace(`{${"index_name"}}`, encodeURIComponent(String(requestParameters.indexName))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ConvertIndexRequestToJSON(requestParameters.convertIndexRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConvertIndexResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Convert a serverless vector index into a new document index, read and written through the Documents API.  The source index is not changed and keeps serving reads and writes. The conversion copies a snapshot of the source taken when the job starts, the same way a backup does: writes made to the source after that point are not carried into the new index.  The new index takes the `schema` in the request. Each source record becomes a document with the same ID, mapped by convention:  - The record\'s dense vector fills the schema\'s one `dense_vector` field, or the `string` field with `embed`. - The record\'s sparse vector fills the schema\'s one `sparse_vector` field, or the `string` field with `sparse_embed`. A dense index whose records also carry sparse values needs a sparse field too: a record whose sparse values have nowhere to go is one the new index cannot take, so `error_mode` decides whether it fails the conversion or is skipped. - For a records index with integrated embedding (created with create-for-model), the vectors fill the `string` field named like the source\'s embedded text field, declared with `embed` (or `sparse_embed`) using the source\'s model. The vectors carry over, so the text is not embedded again. - Each `string` field with `full_text_search` is filled from the record\'s metadata key of the same name. - All other metadata is carried over unchanged and stays filterable.  The schema must be able to hold the source\'s vectors: its dense field has the source\'s dimension and metric, and a legacy integrated index (created with create-for-model) needs `embed` / `sparse_embed` fields that use its models. A schema made only of the reserved `_values` / `_sparse_values` fields is rejected, because it describes a vector index rather than a document index.  The request returns once the new index is created in the `Initializing` state and the conversion job is queued. Track the job with [Describe a conversion job](https://docs.pinecone.io/reference/api/2026-07/control-plane/describe_conversion_job). When the job completes, the index becomes `Ready`. If the job fails or is cancelled, the index is left in the `InitializationFailed` state; delete it to free its name.  The new index is created in the source\'s cloud and region, and is encrypted with the source\'s CMEK key when the source has one. Pod-based and BYOC indexes cannot be converted, and neither can an index that already has a document schema.
+     * Convert an index into a document index
+     */
+    async convertIndex(requestParameters: ConvertIndexOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConvertIndexResponse> {
+        const response = await this.convertIndexRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -869,6 +998,50 @@ export class ManageIndexesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get the status and progress of a conversion job.
+     * Describe a conversion job
+     */
+    async describeConversionJobRaw(requestParameters: DescribeConversionJobRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConversionJobModel>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling describeConversionJob.');
+        }
+
+        if (requestParameters.jobId === null || requestParameters.jobId === undefined) {
+            throw new runtime.RequiredError('jobId','Required parameter requestParameters.jobId was null or undefined when calling describeConversionJob.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/conversion-jobs/{job_id}`.replace(`{${"job_id"}}`, encodeURIComponent(String(requestParameters.jobId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConversionJobModelFromJSON(jsonValue));
+    }
+
+    /**
+     * Get the status and progress of a conversion job.
+     * Describe a conversion job
+     */
+    async describeConversionJob(requestParameters: DescribeConversionJobRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConversionJobModel> {
+        const response = await this.describeConversionJobRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get a description of an index.
      * Describe an index
      */
@@ -1097,6 +1270,54 @@ export class ManageIndexesApi extends runtime.BaseAPI {
      */
     async listCollections(requestParameters: ListCollectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CollectionList> {
         const response = await this.listCollectionsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * List the project\'s conversion jobs, newest first.
+     * List conversion jobs
+     */
+    async listConversionJobsRaw(requestParameters: ListConversionJobsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConversionJobList>> {
+        if (requestParameters.xPineconeApiVersion === null || requestParameters.xPineconeApiVersion === undefined) {
+            throw new runtime.RequiredError('xPineconeApiVersion','Required parameter requestParameters.xPineconeApiVersion was null or undefined when calling listConversionJobs.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.paginationToken !== undefined) {
+            queryParameters['paginationToken'] = requestParameters.paginationToken;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters.xPineconeApiVersion !== undefined && requestParameters.xPineconeApiVersion !== null) {
+            headerParameters['X-Pinecone-Api-Version'] = String(requestParameters.xPineconeApiVersion);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Api-Key"] = this.configuration.apiKey("Api-Key"); // ApiKeyAuth authentication
+        }
+
+        const response = await this.request({
+            path: `/conversion-jobs`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConversionJobListFromJSON(jsonValue));
+    }
+
+    /**
+     * List the project\'s conversion jobs, newest first.
+     * List conversion jobs
+     */
+    async listConversionJobs(requestParameters: ListConversionJobsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConversionJobList> {
+        const response = await this.listConversionJobsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

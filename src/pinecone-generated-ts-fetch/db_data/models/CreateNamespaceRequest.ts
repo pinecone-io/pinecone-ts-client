@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CreateNamespaceRequestSchema } from './CreateNamespaceRequestSchema';
+import type { MetadataSchema } from './MetadataSchema';
 import {
-    CreateNamespaceRequestSchemaFromJSON,
-    CreateNamespaceRequestSchemaFromJSONTyped,
-    CreateNamespaceRequestSchemaToJSON,
-} from './CreateNamespaceRequestSchema';
+    MetadataSchemaFromJSON,
+    MetadataSchemaFromJSONTyped,
+    MetadataSchemaToJSON,
+} from './MetadataSchema';
 
 /**
  * A request for creating a namespace with the specified namespace name.
@@ -36,10 +36,10 @@ export interface CreateNamespaceRequest {
     name: string;
     /**
      * 
-     * @type {CreateNamespaceRequestSchema}
+     * @type {MetadataSchema}
      * @memberof CreateNamespaceRequest
      */
-    schema?: CreateNamespaceRequestSchema;
+    schema?: MetadataSchema;
 }
 
 /**
@@ -63,7 +63,7 @@ export function CreateNamespaceRequestFromJSONTyped(json: any, ignoreDiscriminat
     return {
         
         'name': json['name'],
-        'schema': !exists(json, 'schema') ? undefined : CreateNamespaceRequestSchemaFromJSON(json['schema']),
+        'schema': !exists(json, 'schema') ? undefined : MetadataSchemaFromJSON(json['schema']),
     };
 }
 
@@ -77,7 +77,7 @@ export function CreateNamespaceRequestToJSON(value?: CreateNamespaceRequest | nu
     return {
         
         'name': value.name,
-        'schema': CreateNamespaceRequestSchemaToJSON(value.schema),
+        'schema': MetadataSchemaToJSON(value.schema),
     };
 }
 

@@ -1,10 +1,12 @@
 import type {
   DocumentOperationsApi,
   UpsertDocumentsRequest,
-  SearchDocumentsRequest,
 } from '../../../pinecone-generated-ts-fetch/db_data';
 import { upsertDocuments } from '../upsertDocuments';
-import { searchDocuments } from '../searchDocuments';
+import {
+  searchDocuments,
+  type SearchDocumentsOptions,
+} from '../searchDocuments';
 import { listDocuments } from '../listDocuments';
 
 const scoreBy = [{ type: 'text', fields: ['title'], query: 'Dune' }];
@@ -36,7 +38,7 @@ describe('searchDocuments argument validation', () => {
     'rejects empty or missing scoring: %j',
     async (options) => {
       await expect(
-        searchDocuments(api, 'ns', options as SearchDocumentsRequest),
+        searchDocuments(api, 'ns', options as SearchDocumentsOptions),
       ).rejects.toMatchObject({
         name: 'PineconeArgumentError',
         message:
@@ -48,7 +50,7 @@ describe('searchDocuments argument validation', () => {
 
   test.each([undefined, null, 0, -1])('rejects topK %s', async (topK) => {
     await expect(
-      searchDocuments(api, 'ns', { scoreBy, topK } as SearchDocumentsRequest),
+      searchDocuments(api, 'ns', { scoreBy, topK } as SearchDocumentsOptions),
     ).rejects.toMatchObject({
       name: 'PineconeArgumentError',
       message: '`topK` must be a positive integer of at least 1.',
@@ -58,11 +60,14 @@ describe('searchDocuments argument validation', () => {
 
   test('accepts the minimum topK', async () => {
     await searchDocuments(api, 'ns', { scoreBy, topK: 1 });
-    expect(search).toHaveBeenCalledWith({
-      namespace: 'ns',
-      searchDocumentsRequest: { scoreBy, topK: 1 },
-      xPineconeApiVersion: '2026-07',
-    });
+    expect(search).toHaveBeenCalledWith(
+      {
+        namespace: 'ns',
+        searchDocumentsRequest: { scoreBy: [], topK: 1 },
+        xPineconeApiVersion: '2026-07',
+      },
+      expect.any(Function),
+    );
   });
 });
 

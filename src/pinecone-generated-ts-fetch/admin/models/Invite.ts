@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -33,6 +33,7 @@ export interface Invite {
     email: string;
     /**
      * The lifecycle status of an invite.
+     * 
      * Possible values: `pending`, `expired`, `processed`. List endpoints return only `pending` and `expired` invites; `processed` is returned only when fetching a single invite by ID.
      * @type {string}
      * @memberof Invite

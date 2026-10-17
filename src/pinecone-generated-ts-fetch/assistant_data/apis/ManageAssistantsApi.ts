@@ -490,7 +490,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all operations for an assistant. Returns operations that are in progress, as well as recently completed or failed operations. Both successful and failed operations are retained for 30 days after completion. Use the `operation_type` and `status` query parameters to filter results. 
+     * List all operations for an assistant. Returns operations that are in progress, as well as recently completed or failed operations.  Both successful and failed operations are retained for 30 days after completion.  Use the `operation_type` and `status` query parameters to filter results.
      * List operations
      */
     async listOperationsRaw(requestParameters: ListOperationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<OperationList>> {
@@ -541,7 +541,7 @@ export class ManageAssistantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * List all operations for an assistant. Returns operations that are in progress, as well as recently completed or failed operations. Both successful and failed operations are retained for 30 days after completion. Use the `operation_type` and `status` query parameters to filter results. 
+     * List all operations for an assistant. Returns operations that are in progress, as well as recently completed or failed operations.  Both successful and failed operations are retained for 30 days after completion.  Use the `operation_type` and `status` query parameters to filter results.
      * List operations
      */
     async listOperations(requestParameters: ListOperationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OperationList> {

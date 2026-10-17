@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Pinecone Admin API
- * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, and role bindings. 
+ * Provides an API for managing a Pinecone organization and its resources, including projects, API keys, organization users and invites, service accounts, role bindings, and cost usage exports. 
  *
  * The version of the OpenAPI document: 2026-07
  * Contact: support@pinecone.io
@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { InviteListPagination } from './InviteListPagination';
+import type { CostUsageExportListPagination } from './CostUsageExportListPagination';
 import {
-    InviteListPaginationFromJSON,
-    InviteListPaginationFromJSONTyped,
-    InviteListPaginationToJSON,
-} from './InviteListPagination';
+    CostUsageExportListPaginationFromJSON,
+    CostUsageExportListPaginationFromJSONTyped,
+    CostUsageExportListPaginationToJSON,
+} from './CostUsageExportListPagination';
 import type { ServiceAccount } from './ServiceAccount';
 import {
     ServiceAccountFromJSON,
@@ -40,10 +40,10 @@ export interface ServiceAccountList {
     data: Array<ServiceAccount>;
     /**
      * 
-     * @type {InviteListPagination}
+     * @type {CostUsageExportListPagination}
      * @memberof ServiceAccountList
      */
-    pagination?: InviteListPagination | null;
+    pagination?: CostUsageExportListPagination | null;
 }
 
 /**
@@ -67,7 +67,7 @@ export function ServiceAccountListFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'data': ((json['data'] as Array<any>).map(ServiceAccountFromJSON)),
-        'pagination': !exists(json, 'pagination') ? undefined : InviteListPaginationFromJSON(json['pagination']),
+        'pagination': !exists(json, 'pagination') ? undefined : CostUsageExportListPaginationFromJSON(json['pagination']),
     };
 }
 
@@ -81,7 +81,7 @@ export function ServiceAccountListToJSON(value?: ServiceAccountList | null): any
     return {
         
         'data': ((value.data as Array<any>).map(ServiceAccountToJSON)),
-        'pagination': InviteListPaginationToJSON(value.pagination),
+        'pagination': CostUsageExportListPaginationToJSON(value.pagination),
     };
 }
 

@@ -21,6 +21,7 @@ import { exists, mapValues } from '../runtime';
 export interface ImportErrorMode {
     /**
      * Indicates how to respond to errors during the import process.
+     * 
      * Possible values: `abort` or `continue`.
      * @type {string}
      * @memberof ImportErrorMode

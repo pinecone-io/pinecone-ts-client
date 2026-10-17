@@ -3,7 +3,6 @@ import {
   ResponseError,
   type UpsertDocumentsRequest,
   type UpsertDocumentsResponse,
-  type SearchDocumentsRequest,
   type SearchDocumentsResponse,
   type FetchDocumentsRequest,
   type FetchDocumentsResponse,
@@ -20,7 +19,10 @@ import {
   PineconeConnectionError,
 } from '../../../errors';
 import { upsertDocuments } from '../upsertDocuments';
-import { searchDocuments } from '../searchDocuments';
+import {
+  searchDocuments,
+  type SearchDocumentsOptions,
+} from '../searchDocuments';
 import { fetchDocuments } from '../fetchDocuments';
 import { listDocuments } from '../listDocuments';
 import { updateDocuments } from '../updateDocuments';
@@ -49,7 +51,8 @@ const cases = [
       topK: 3,
       includeFields: ['title'],
       filter,
-    } satisfies SearchDocumentsRequest,
+    } satisfies SearchDocumentsOptions,
+    scoreByOverride: true,
     response: {
       matches: [{ _id: 'book-1', _score: 0.9, title: 'Dune' }],
       namespace,
@@ -110,7 +113,14 @@ const cases = [
   },
 ];
 
-for (const { operation, run, options, response, prefix } of cases) {
+for (const {
+  operation,
+  run,
+  options,
+  response,
+  prefix,
+  scoreByOverride,
+} of cases) {
   describe(operation, () => {
     const mockOperation = jest.fn();
     const api = {
@@ -131,11 +141,16 @@ for (const { operation, run, options, response, prefix } of cases) {
       mockOperation.mockResolvedValue(response);
       const result = await invoke();
       expect(mockOperation).toHaveBeenCalledTimes(1);
-      expect(mockOperation).toHaveBeenCalledWith({
-        namespace,
-        [`${operation}Request`]: options,
-        xPineconeApiVersion: '2026-07',
-      });
+      expect(mockOperation).toHaveBeenCalledWith(
+        {
+          namespace,
+          [`${operation}Request`]: scoreByOverride
+            ? { ...options, scoreBy: [] }
+            : options,
+          xPineconeApiVersion: '2026-07',
+        },
+        ...(scoreByOverride ? [expect.any(Function)] : []),
+      );
       expect(result).toStrictEqual(response);
     });
 

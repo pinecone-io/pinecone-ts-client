@@ -12,81 +12,55 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
-import type { SparseValues } from './SparseValues';
 import {
-    SparseValuesFromJSON,
-    SparseValuesFromJSONTyped,
-    SparseValuesToJSON,
-} from './SparseValues';
+    DenseVectorScoring,
+    instanceOfDenseVectorScoring,
+    DenseVectorScoringFromJSON,
+    DenseVectorScoringFromJSONTyped,
+    DenseVectorScoringToJSON,
+} from './DenseVectorScoring';
+import {
+    EmbedScoring,
+    instanceOfEmbedScoring,
+    EmbedScoringFromJSON,
+    EmbedScoringFromJSONTyped,
+    EmbedScoringToJSON,
+} from './EmbedScoring';
+import {
+    QueryStringScoring,
+    instanceOfQueryStringScoring,
+    QueryStringScoringFromJSON,
+    QueryStringScoringFromJSONTyped,
+    QueryStringScoringToJSON,
+} from './QueryStringScoring';
+import {
+    SparseEmbedScoring,
+    instanceOfSparseEmbedScoring,
+    SparseEmbedScoringFromJSON,
+    SparseEmbedScoringFromJSONTyped,
+    SparseEmbedScoringToJSON,
+} from './SparseEmbedScoring';
+import {
+    SparseVectorScoring,
+    instanceOfSparseVectorScoring,
+    SparseVectorScoringFromJSON,
+    SparseVectorScoringFromJSONTyped,
+    SparseVectorScoringToJSON,
+} from './SparseVectorScoring';
+import {
+    TextScoring,
+    instanceOfTextScoring,
+    TextScoringFromJSON,
+    TextScoringFromJSONTyped,
+    TextScoringToJSON,
+} from './TextScoring';
 
 /**
- * A scoring method that defines how documents are scored against a query.
- * 
- * The `type` field determines which other fields are used:
- * - `dense_vector`: Score by dense vector similarity. Requires either `field` or `fields` naming exactly one field, and a `values` array.
- * - `sparse_vector`: Score by sparse vector similarity. Requires either `field` or `fields` naming exactly one field, and `sparse_values`.
- * - `text`: Score by BM25 text similarity. Requires either `field` or `fields` naming one or more fields, and `query`. Naming several fields scores the query against all of them.
- * - `query_string`: Score using a Lucene query string. Use field qualifiers (`field:(clause)`) to target a field, or omit field qualifiers to search against all text-searchable fields. Errors if `field` or `fields` is provided.
- * - `embed`: Score by dense vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `embed` configuration. Requires either `field` or `fields` naming exactly one `string` field that declares `embed`, and `query`. `values` and `sparse_values` are rejected.
- * - `sparse_embed`: Score by sparse vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `sparse_embed` configuration. Requires either `field` or `fields` naming exactly one `string` field that declares `sparse_embed`, and `query`. `values` and `sparse_values` are rejected.
- * 
- * `dense_vector` and `sparse_vector` score caller-supplied vectors against a `dense_vector` or `sparse_vector` field; to search a field that declares `embed` or `sparse_embed`, use the `embed` or `sparse_embed` type.
+ * @type DocumentScoringMethod
+ * A scoring clause that defines how documents are scored against a query. `type` selects the scoring method and which other fields the clause takes.
  * @export
- * @interface DocumentScoringMethod
  */
-export interface DocumentScoringMethod {
-    /**
-     * The scoring method type.
-     * 
-     * Possible values: `dense_vector`, `sparse_vector`, `text`, `query_string`, `embed`, or `sparse_embed`.
-     * @type {string}
-     * @memberof DocumentScoringMethod
-     */
-    type: string;
-    /**
-     * The fields to score against.
-     * 
-     * Either `fields` or `field` must be provided for `dense_vector`, `sparse_vector`, `text`, `embed`, and `sparse_embed` scoring types, and neither may be provided for `query_string`. `dense_vector`, `sparse_vector`, `embed`, and `sparse_embed` accept exactly one field, and a clause of one of these types that names more than one field is rejected; `text` accepts one or more.
-     * @type {Array<string>}
-     * @memberof DocumentScoringMethod
-     */
-    fields?: Array<string>;
-    /**
-     * A single field to score against: the one-field form of `fields`, equivalent to a one-element `fields`. Either `field` or `fields` must be provided for `dense_vector`, `sparse_vector`, `text`, `embed`, and `sparse_embed` scoring types, but not both.
-     * @type {string}
-     * @memberof DocumentScoringMethod
-     */
-    field?: string;
-    /**
-     * The text query to use for `text`, `query_string`, `embed`, and `sparse_embed` scoring types. For `embed` and `sparse_embed`, Pinecone embeds this text with the named field's model. Leading and trailing whitespace is trimmed; a query that is empty after trimming is rejected. At most 10 KB.
-     * @type {string}
-     * @memberof DocumentScoringMethod
-     */
-    query?: string;
-    /**
-     * The dense vector values to use for `dense_vector` scoring type.
-     * @type {Array<number>}
-     * @memberof DocumentScoringMethod
-     */
-    values?: Array<number>;
-    /**
-     * 
-     * @type {SparseValues}
-     * @memberof DocumentScoringMethod
-     */
-    sparseValues?: SparseValues;
-}
-
-/**
- * Check if a given object implements the DocumentScoringMethod interface.
- */
-export function instanceOfDocumentScoringMethod(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "type" in value;
-
-    return isInstance;
-}
+export type DocumentScoringMethod = { type: 'dense_vector' } & DenseVectorScoring | { type: 'embed' } & EmbedScoring | { type: 'query_string' } & QueryStringScoring | { type: 'sparse_embed' } & SparseEmbedScoring | { type: 'sparse_vector' } & SparseVectorScoring | { type: 'text' } & TextScoring;
 
 export function DocumentScoringMethodFromJSON(json: any): DocumentScoringMethod {
     return DocumentScoringMethodFromJSONTyped(json, false);
@@ -96,15 +70,22 @@ export function DocumentScoringMethodFromJSONTyped(json: any, ignoreDiscriminato
     if ((json === undefined) || (json === null)) {
         return json;
     }
-    return {
-        
-        'type': json['type'],
-        'fields': !exists(json, 'fields') ? undefined : json['fields'],
-        'field': !exists(json, 'field') ? undefined : json['field'],
-        'query': !exists(json, 'query') ? undefined : json['query'],
-        'values': !exists(json, 'values') ? undefined : json['values'],
-        'sparseValues': !exists(json, 'sparse_values') ? undefined : SparseValuesFromJSON(json['sparse_values']),
-    };
+    switch (json['type']) {
+        case 'dense_vector':
+            return {...DenseVectorScoringFromJSONTyped(json, true), type: 'dense_vector'};
+        case 'embed':
+            return {...EmbedScoringFromJSONTyped(json, true), type: 'embed'};
+        case 'query_string':
+            return {...QueryStringScoringFromJSONTyped(json, true), type: 'query_string'};
+        case 'sparse_embed':
+            return {...SparseEmbedScoringFromJSONTyped(json, true), type: 'sparse_embed'};
+        case 'sparse_vector':
+            return {...SparseVectorScoringFromJSONTyped(json, true), type: 'sparse_vector'};
+        case 'text':
+            return {...TextScoringFromJSONTyped(json, true), type: 'text'};
+        default:
+            throw new Error(`No variant of DocumentScoringMethod exists with 'type=${json['type']}'`);
+    }
 }
 
 export function DocumentScoringMethodToJSON(value?: DocumentScoringMethod | null): any {
@@ -114,14 +95,22 @@ export function DocumentScoringMethodToJSON(value?: DocumentScoringMethod | null
     if (value === null) {
         return null;
     }
-    return {
-        
-        'type': value.type,
-        'fields': value.fields,
-        'field': value.field,
-        'query': value.query,
-        'values': value.values,
-        'sparse_values': SparseValuesToJSON(value.sparseValues),
-    };
+    switch (value['type']) {
+        case 'dense_vector':
+            return DenseVectorScoringToJSON(value);
+        case 'embed':
+            return EmbedScoringToJSON(value);
+        case 'query_string':
+            return QueryStringScoringToJSON(value);
+        case 'sparse_embed':
+            return SparseEmbedScoringToJSON(value);
+        case 'sparse_vector':
+            return SparseVectorScoringToJSON(value);
+        case 'text':
+            return TextScoringToJSON(value);
+        default:
+            throw new Error(`No variant of DocumentScoringMethod exists with 'type=${value['type']}'`);
+    }
+
 }
 
