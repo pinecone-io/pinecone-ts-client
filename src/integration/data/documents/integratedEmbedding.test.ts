@@ -128,6 +128,30 @@ describe('integrated embedding on a document index', () => {
     );
   });
 
+  test.each([
+    { type: 'embed', fields: ['body'], query: 'a fox leaping over a dog' },
+    { type: 'sparse_embed', fields: ['summary'], query: 'grey wolf oak tree' },
+  ])(
+    'a $type clause accepts its field as a one-element fields array',
+    async (clause) => {
+      await topHit(clause, clause.type === 'embed' ? 'd1' : 'd3');
+    },
+  );
+
+  test.each(
+    ['embed', 'sparse_embed'].flatMap((type) => [
+      { type, field: 'body', fields: ['body'], query: 'fox' },
+      { type, fields: [], query: 'fox' },
+      { type, fields: ['body', 'summary'], query: 'fox' },
+    ]),
+  )(
+    'rejects a clause that does not name exactly one field: %j',
+    async (clause) => {
+      const response = index.documents.search({ scoreBy: [clause], topK: 1 });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
   test('a text clause searches the stored text of an embedded field', async () => {
     await topHit({ type: 'text', fields: ['body'], query: 'serverless' }, 'd2');
   });

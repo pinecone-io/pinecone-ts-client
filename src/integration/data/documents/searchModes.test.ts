@@ -230,6 +230,29 @@ describe('document search scoring modes', () => {
     },
   );
 
+  test.each(
+    [
+      { type: 'dense_vector', values: [1, 0] },
+      {
+        type: 'sparse_vector',
+        sparseValues: { indices: [1], values: [1] },
+      },
+    ].flatMap((clause) => {
+      const field = clause.type === 'dense_vector' ? 'dense' : 'sparse';
+      return [
+        { ...clause, field, fields: [field] },
+        { ...clause, fields: [] },
+        { ...clause, fields: [field, 'text'] },
+      ];
+    }),
+  )(
+    'rejects a vector clause that does not name exactly one field: %j',
+    async (clause) => {
+      const response = index.searchDocuments({ scoreBy: [clause], topK: 1 });
+      await expect(response).rejects.toBeInstanceOf(PineconeBadRequestError);
+    },
+  );
+
   test.each([
     { includeFields: undefined },
     { includeFields: [] },

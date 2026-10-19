@@ -152,11 +152,13 @@ describe('integrated embedding wire contract', () => {
   });
 
   test.each([
-    ['embed', 'trail running shoes'],
-    ['sparse_embed', 'waterproof'],
+    ['embed', 'trail running shoes', { field: 'body' }],
+    ['embed', 'trail running shoes', { fields: ['body'] }],
+    ['sparse_embed', 'waterproof', { field: 'body' }],
+    ['sparse_embed', 'waterproof', { fields: ['body'] }],
   ])(
-    'search sends a %s clause and decodes embed_total_tokens',
-    async (type, query) => {
+    'search sends a %s clause naming its field as %j and decodes embed_total_tokens',
+    async (type, query, target) => {
       const transport = jest.fn().mockResolvedValue(
         json({
           matches: [{ _id: 'doc-1', _score: 0.82 }],
@@ -165,7 +167,7 @@ describe('integrated embedding wire contract', () => {
         }),
       );
       const result = await documentsClient(transport).search({
-        scoreBy: [{ type, field: 'body', query }],
+        scoreBy: [{ type, ...target, query }],
         topK: 3,
       });
 
@@ -173,7 +175,7 @@ describe('integrated embedding wire contract', () => {
         `https://${DATA_HOST}/namespaces/${NAMESPACE}/documents/search`,
       );
       expect(sentBody(transport)).toEqual({
-        score_by: [{ type, field: 'body', query }],
+        score_by: [{ type, ...target, query }],
         top_k: 3,
       });
       expect(result.usage).toEqual({ readUnits: 6, embedTotalTokens: 4 });
