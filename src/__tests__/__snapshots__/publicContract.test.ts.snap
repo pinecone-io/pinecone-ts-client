@@ -54,6 +54,7 @@ exports[`public package contract pins the runtime barrel exports 2`] = `
   "PineconeMethodNotAllowedError",
   "PineconeNotFoundError",
   "PineconeNotImplementedError",
+  "PineconePayloadTooLargeError",
   "PineconePaymentRequiredError",
   "PineconeRequestError",
   "PineconeTimeoutError",

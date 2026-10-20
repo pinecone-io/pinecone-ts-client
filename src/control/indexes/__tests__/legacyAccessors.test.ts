@@ -191,6 +191,36 @@ const expectations = {
     ...classic.slice(0, 4),
     embed('dense-model', 'cosine', 1536),
   ],
+  stringEmbed: [value(1024), value('cosine'), value('dense'), managed, absent],
+  stringEmbedWithSparseEmbed: [
+    value(1024),
+    value('cosine'),
+    value('dense'),
+    managed,
+    absent,
+  ],
+  stringSparseEmbedOnly: novel,
+  stringEmbedPlusDense: [
+    error('ambiguous'),
+    error('ambiguous'),
+    error('ambiguous'),
+    managed,
+    absent,
+  ],
+  stringEmbedPlusSparse: [
+    value(1024),
+    value('cosine'),
+    error('ambiguous'),
+    managed,
+    absent,
+  ],
+  twoStringEmbeds: [
+    error('ambiguous'),
+    error('ambiguous'),
+    error('ambiguous'),
+    managed,
+    absent,
+  ],
 };
 
 function outcome(result: Derived<unknown>) {

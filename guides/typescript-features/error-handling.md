@@ -33,6 +33,7 @@ The SDK includes the following error classes, all reachable as `Errors.<ClassNam
 - **`PineconeMethodNotAllowedError`** (405) - HTTP method not supported for this endpoint
 - **`PineconeConflictError`** (409) - Resource already exists
 - **`PineconeFailedPreconditionError`** (412) - A precondition the request depended on no longer holds
+- **`PineconePayloadTooLargeError`** (413) - Request exceeded a size limit, such as the 96-document limit for integrated embedding
 - **`PineconeUnprocessableEntityError`** (422) - Request was well-formed but semantically invalid
 - **`PineconeInternalServerError`** (500) - Pinecone server error
 - **`PineconeNotImplementedError`** (501) - Feature not available on your plan

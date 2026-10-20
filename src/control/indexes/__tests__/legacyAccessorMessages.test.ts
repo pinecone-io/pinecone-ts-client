@@ -23,6 +23,14 @@ describe('legacy property guidance', () => {
       'Cannot read `dimension` from index "test-index": the API does not report this property on the semantic_text field of a legacy integrated index. Its schema declares: "chunk_text" (semantic_text, model llama-text-embed-v2). Look up the model with `await pc.inference.getModel("llama-text-embed-v2")`.',
     );
   });
+  test("shows a string field's embed settings when it makes a getter ambiguous", () => {
+    const result = deriveDimension(fixtures.stringEmbedPlusDense);
+    if (result.outcome !== 'error')
+      throw new Error('Expected an unavailable dimension');
+    expect(formatDeriveFailure(result.failure)).toBe(
+      'Cannot read `dimension` from index "test-index": more than one schema field is a candidate, so there is no single legacy value. Its schema declares: "body" (string, dimension 1024, metric cosine, model llama-text-embed-v2), "image_vec" (dense_vector, dimension 512, metric cosine). Inspect the field you need with `Object.entries(index.schema.fields)`.',
+    );
+  });
   test('reports readiness separately from a ready empty schema', () => {
     const result = deriveDimension(fixtures.initializing);
     if (result.outcome !== 'error')

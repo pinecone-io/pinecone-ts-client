@@ -12,6 +12,7 @@ export {
   PineconeMethodNotAllowedError,
   PineconeConflictError,
   PineconeFailedPreconditionError,
+  PineconePayloadTooLargeError,
   PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeMaxRetriesExceededError,

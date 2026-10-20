@@ -13,6 +13,11 @@ const dense = (dimension = 1536, metric = 'cosine') =>
   ({ type: 'dense_vector', dimension, metric }) as const;
 const sparse = { type: 'sparse_vector' } as const;
 const classic = { _values: dense(), _sparse_values: sparse };
+const embedText = {
+  type: 'string',
+  fullTextSearch: { language: 'en', stemming: false, stopWords: false },
+  embed: { model: 'llama-text-embed-v2', dimension: 1024, metric: 'cosine' },
+} as const;
 const fields = (
   fields: IndexSchema['fields'],
   extra: Partial<IndexModelData> = {},
@@ -147,4 +152,20 @@ export const fixtures = {
       metric: 'cosine',
     },
   }),
+  stringEmbed: fields({ body: embedText }),
+  stringEmbedWithSparseEmbed: fields({
+    body: {
+      ...embedText,
+      sparseEmbed: { model: 'pinecone-sparse-english-v0' },
+    },
+  }),
+  stringSparseEmbedOnly: fields({
+    body: {
+      type: 'string',
+      sparseEmbed: { model: 'pinecone-sparse-english-v0' },
+    },
+  }),
+  stringEmbedPlusDense: fields({ body: embedText, image_vec: dense(512) }),
+  stringEmbedPlusSparse: fields({ body: embedText, keywords: sparse }),
+  twoStringEmbeds: fields({ title: embedText, body: embedText }),
 } satisfies Record<string, IndexModelData>;

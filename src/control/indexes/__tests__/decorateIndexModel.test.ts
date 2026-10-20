@@ -133,4 +133,15 @@ describe('legacy accessors on every index response path', () => {
     expect(serverless(model).readCapacity).toBe(model.readCapacity);
     expect(serverless(model).schema).toBeUndefined();
   });
+  test("a string field's embed answers the dense vector getters", () => {
+    const model = decorateIndexModel(structuredClone(fixtures.stringEmbed));
+    expect(model.dimension).toBe(1024);
+    expect(model.metric).toBe('cosine');
+    expect(model.vectorType).toBe('dense');
+    expect(model.embed).toBeUndefined();
+    const ambiguous = decorateIndexModel(
+      structuredClone(fixtures.stringEmbedPlusDense),
+    );
+    expect(() => ambiguous.dimension).toThrow(PineconeIndexPropertyError);
+  });
 });

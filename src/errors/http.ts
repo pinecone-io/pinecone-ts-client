@@ -138,6 +138,30 @@ export class PineconeFailedPreconditionError extends BasePineconeError {
 }
 
 /**
+ * This error is thrown when API requests return with status 413 (Payload Too
+ * Large), meaning the request exceeded a size limit. For example, upserting
+ * more than 96 documents in one request to an index with integrated
+ * embedding.
+ *
+ * Split the request into smaller batches and send them separately.
+ */
+export class PineconePayloadTooLargeError extends BasePineconeError {
+  constructor(failedRequest: FailedRequestInfo) {
+    const { url, message } = failedRequest;
+    if (url) {
+      super(
+        `A call to ${url} returned HTTP status 413 (Payload Too Large). ${message ? message : ''}`.trim(),
+      );
+    } else {
+      super(
+        `The request exceeded a size limit. ${message ? message : ''}`.trim(),
+      );
+    }
+    this.name = 'PineconePayloadTooLargeError';
+  }
+}
+
+/**
  * This error is thrown when API requests return with status 422
  * (Unprocessable Entity). The request was well-formed, but the server was
  * unable to process it because its contents are semantically invalid.
@@ -334,6 +358,8 @@ export const mapHttpStatusError = (
       return new PineconeConflictError(failedRequestInfo);
     case 412:
       return new PineconeFailedPreconditionError(failedRequestInfo);
+    case 413:
+      return new PineconePayloadTooLargeError(failedRequestInfo);
     case 422:
       return new PineconeUnprocessableEntityError(failedRequestInfo);
     case 500:

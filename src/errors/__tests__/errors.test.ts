@@ -8,6 +8,7 @@ import {
   PineconeMethodNotAllowedError,
   PineconeConflictError,
   PineconeFailedPreconditionError,
+  PineconePayloadTooLargeError,
   PineconeUnprocessableEntityError,
   PineconeInternalServerError,
   PineconeNotImplementedError,
@@ -170,6 +171,25 @@ describe('mapHttpStatusError', () => {
     const err = mapHttpStatusError({ status: 412 });
     expect(err).toBeInstanceOf(PineconeFailedPreconditionError);
     expect(err.message).toContain('precondition failed');
+  });
+
+  test('413 → PineconePayloadTooLargeError', () => {
+    const err = mapHttpStatusError({
+      status: 413,
+      url,
+      message: 'too many documents',
+    });
+    expect(err).toBeInstanceOf(PineconePayloadTooLargeError);
+    expect(err.name).toBe('PineconePayloadTooLargeError');
+    expect(err.message).toContain('413');
+    expect(err.message).toContain(url);
+    expect(err.message).toContain('too many documents');
+  });
+
+  test('413 without url still produces PineconePayloadTooLargeError', () => {
+    const err = mapHttpStatusError({ status: 413 });
+    expect(err).toBeInstanceOf(PineconePayloadTooLargeError);
+    expect(err.message).toContain('size limit');
   });
 
   test('422 → PineconeUnprocessableEntityError', () => {

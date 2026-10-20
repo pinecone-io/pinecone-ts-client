@@ -167,8 +167,16 @@ const vectors = (model: IndexModelData) =>
   typed(model).filter(
     (field) => field.type === 'dense_vector' || field.type === 'sparse_vector',
   );
-const dense = (model: IndexModelData) =>
-  typed(model).filter((field) => field.type === 'dense_vector');
+const embedded = (model: IndexModelData) =>
+  typed(model).flatMap((field) =>
+    field.type === 'string' && field.embed
+      ? [{ name: field.name, type: 'string' as const, ...field.embed }]
+      : [],
+  );
+const dense = (model: IndexModelData) => [
+  ...typed(model).filter((field) => field.type === 'dense_vector'),
+  ...embedded(model),
+];
 const semantic = (model: IndexModelData) =>
   typed(model).filter((field) => field.type === 'semantic_text');
 const value = <T>(result: T): Derived<T> => ({
@@ -207,9 +215,17 @@ const failure = (
       indexName: model.name,
       servedBy: classifyIndexShape(model),
       fields: entries(model).map(([name, field]) =>
-        'type' in field
-          ? { name, ...field }
-          : { name, type: 'untyped legacy field' },
+        !('type' in field)
+          ? { name, type: 'untyped legacy field' }
+          : field.type === 'string' && field.embed
+            ? {
+                name,
+                ...field,
+                dimension: field.embed.dimension,
+                metric: field.embed.metric,
+                model: field.embed.model,
+              }
+            : { name, ...field },
       ),
       deploymentType: model.deployment.deploymentType,
       state: model.status.state,
@@ -268,11 +284,11 @@ export function deriveVectorType(
 ): Derived<'dense' | 'sparse'> {
   const bad = unavailable(model, 'vectorType');
   if (bad) return bad;
-  const fields = vectors(model);
+  const fields = [...vectors(model), ...embedded(model)];
   if (classifyIndexShape(model) === 'vectors-api')
     return value(dense(model).length ? 'dense' : 'sparse');
   if (fields.length === 1)
-    return value(fields[0].type === 'dense_vector' ? 'dense' : 'sparse');
+    return value(fields[0].type === 'sparse_vector' ? 'sparse' : 'dense');
   return failure(
     model,
     'vectorType',
