@@ -78,4 +78,67 @@ describe('ChatStream', () => {
     expect(chunks.length).toBe(2);
     expect(convertKeysMock).toHaveBeenCalledTimes(2);
   });
+
+  test('yields a final data event that has no trailing newline', async () => {
+    const stream = Readable.from([
+      'data: {"key": "value"}\n',
+      'data: {"key2": "value2"}',
+    ]);
+    const chatStream = new ChatStream<MockStreamData>(stream);
+
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of chatStream) {
+      chunks.push(chunk);
+    }
+
+    expect(chunks).toEqual([{ key: 'value' }, { key2: 'value2' }]);
+    expect(convertKeysMock).toHaveBeenCalledTimes(2);
+  });
+
+  test('yields a final data event with no trailing newline when it is split across byte chunks', async () => {
+    const bytes = new TextEncoder().encode(
+      'data: {"key":"a"}\ndata: {"key2":"café 🌲"}',
+    );
+    async function* source() {
+      for (const byte of bytes) yield new Uint8Array([byte]);
+    }
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of new ChatStream<MockStreamData>(source())) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ key: 'a' }, { key2: 'café 🌲' }]);
+  });
+
+  test('yields a final data event that ends with a carriage return and no newline', async () => {
+    const stream = Readable.from(['data: {"key": "value"}\r']);
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of new ChatStream<MockStreamData>(stream)) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ key: 'value' }]);
+  });
+
+  test('still yields a final unprefixed JSON object with no trailing newline', async () => {
+    const stream = Readable.from([
+      'data: {"key": "value"}\n',
+      '{"key2": "value2"}',
+    ]);
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of new ChatStream<MockStreamData>(stream)) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ key: 'value' }, { key2: 'value2' }]);
+  });
+
+  test('skips a malformed final data event with no trailing newline', async () => {
+    const stream = Readable.from([
+      'data: {"key": "value"}\n',
+      'data: malformed_json',
+    ]);
+    const chunks: MockStreamData[] = [];
+    for await (const chunk of new ChatStream<MockStreamData>(stream)) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ key: 'value' }]);
+  });
 });
