@@ -65,13 +65,15 @@ export class ChatStream<Item> implements AsyncIterable<Item> {
       }
     }
     buffer += decoder.decode();
-    if (buffer.trim()) {
+    const tail = buffer.trim();
+    if (tail) {
+      const json = tail.startsWith('data:') ? tail.slice(5).trim() : tail;
       try {
-        const parsedJson = JSON.parse(buffer);
+        const parsedJson = JSON.parse(json);
         const convertedJson = convertKeysToCamelCase(parsedJson);
         yield convertedJson as Item;
       } catch {
-        console.debug(`Skipping malformed JSON:${buffer}`);
+        console.debug(`Skipping malformed JSON:${tail}`);
       }
     }
   }
