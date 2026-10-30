@@ -14,17 +14,15 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Dense embedding configuration for a `string` field. Pinecone embeds the field's text with a hosted embedding model when documents are upserted or updated, and embeds the query text with the same model when a search scores the field with an `embed` scoring method.
+ * Dense embedding configuration for a `string` field. Pinecone embeds the field's text when documents are upserted or updated, and the query text when a search scores the field with an `embed` scoring method.
  * 
- * Every key is optional; `{}` selects the default model at its default dimension and metric. The server resolves each omitted key from the model, validates each supplied one against it, and returns the resolved configuration when the index is described. The configuration is fixed at creation and cannot be changed afterwards.
- * 
- * An `embed` field occupies the index's single dense vector slot, so it cannot be combined with a `dense_vector` field or with `embed` on another field.
+ * Every key is optional; `{}` selects the default model at its default dimension and metric. Fixed at creation.
  * @export
  * @interface CreateEmbedConfig
  */
 export interface CreateEmbedConfig {
     /**
-     * The name of a hosted dense embedding model. Defaults to `llama-text-embed-v2`. A sparse model is rejected; declare it under `sparse_embed` instead.
+     * The name of a hosted dense embedding model. Defaults to `llama-text-embed-v2`.
      * 
      * Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available models.
      * @type {string}
@@ -32,7 +30,7 @@ export interface CreateEmbedConfig {
      */
     model?: string;
     /**
-     * The dimension of the embedding vectors. Defaults to the model's default dimension. Models that support several dimensions accept any of them; for example, `llama-text-embed-v2` accepts `512` as well as its default of `1024`. A dimension the model does not support is rejected, and the error lists the supported ones.
+     * The dimension of the embedding vectors. Defaults to the model's default dimension.
      * 
      * Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for each model's supported dimensions.
      * @type {number}
@@ -40,7 +38,7 @@ export interface CreateEmbedConfig {
      */
     dimension?: number;
     /**
-     * The distance metric used for similarity search. Defaults to the model's default metric. A metric the model does not support is rejected.
+     * The distance metric used for similarity search. Defaults to the model's default metric.
      * 
      * Possible values: `cosine`, `dotproduct`, or `euclidean`.
      * @type {string}
@@ -48,13 +46,13 @@ export interface CreateEmbedConfig {
      */
     metric?: string;
     /**
-     * Model-specific parameters applied when embedding document text, such as `truncate`. Validated against the model; omitted parameters take the model's defaults. The resolved parameters are returned when the index is described.
+     * Model-specific parameters applied when embedding document text, such as `truncate`. Omitted parameters take the model's defaults.
      * @type {object}
      * @memberof CreateEmbedConfig
      */
     writeParameters?: object;
     /**
-     * Model-specific parameters applied when embedding search query text, such as `truncate`. Validated against the model; omitted parameters take the model's defaults. The resolved parameters are returned when the index is described.
+     * Model-specific parameters applied when embedding search query text, such as `truncate`. Omitted parameters take the model's defaults.
      * @type {object}
      * @memberof CreateEmbedConfig
      */

@@ -27,7 +27,7 @@ import {
 } from './SearchRecordsVector';
 
 /**
- * .
+ * The query to search with. Set `top_k` and one of `inputs`, `vector`, or `id`.
  * @export
  * @interface SearchRecordsRequestQuery
  */

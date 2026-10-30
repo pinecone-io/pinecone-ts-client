@@ -20,19 +20,19 @@ import { exists, mapValues } from '../runtime';
  */
 export interface StringFieldFullTextSearchNgram {
     /**
-     * Minimum n-gram length. Must be at least 1 and no greater than `max_gram`.
+     * Minimum n-gram length. Must be no greater than `max_gram`.
      * @type {number}
      * @memberof StringFieldFullTextSearchNgram
      */
     minGram: number;
     /**
-     * Maximum n-gram length. Must be no less than `min_gram` and at most 10.
+     * Maximum n-gram length.
      * @type {number}
      * @memberof StringFieldFullTextSearchNgram
      */
     maxGram: number;
     /**
-     * When `true`, only prefix n-grams anchored at the start of the token are generated (e.g. for autocomplete). Defaults to `false`.
+     * When `true`, only prefix n-grams anchored at the start of the token are generated (e.g. for autocomplete).
      * @type {boolean}
      * @memberof StringFieldFullTextSearchNgram
      */

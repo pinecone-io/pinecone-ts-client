@@ -29,19 +29,19 @@ import {
  */
 export interface StringFieldFullTextSearch {
     /**
-     * The language for text analysis. Defaults to `en` if not specified.
+     * The language for text analysis.
      * @type {string}
      * @memberof StringFieldFullTextSearch
      */
     language?: string;
     /**
-     * Whether to apply stemming during text analysis. Defaults to `false`.
+     * Whether to apply stemming during text analysis.
      * @type {boolean}
      * @memberof StringFieldFullTextSearch
      */
     stemming?: boolean;
     /**
-     * Whether to filter stop words during text analysis. Requires `stemming: true`. Defaults to `false`.
+     * Whether to filter stop words during text analysis. Requires `stemming: true`.
      * @type {boolean}
      * @memberof StringFieldFullTextSearch
      */

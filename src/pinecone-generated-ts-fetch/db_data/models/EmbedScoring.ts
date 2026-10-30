@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Score by dense vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `embed` configuration. Name exactly one `string` field that declares `embed`, with `fields` or `field`. `values` and `sparse_values` are rejected.
+ * Score by dense vector similarity to `query`, which Pinecone embeds with the model and read parameters of the named field's `embed` configuration. Set `parameters` to override the field's read parameters for this search. Name exactly one `string` field that declares `embed`, with `fields` or `field`. `values` and `sparse_values` are rejected.
  * @export
  * @interface EmbedScoring
  */
@@ -43,6 +43,12 @@ export interface EmbedScoring {
      * @memberof EmbedScoring
      */
     query: string;
+    /**
+     * Model parameters for embedding the query in this search. They override the field's `read_parameters`. Only `task_type` can be set, and `GET /models` lists the models that accept it.
+     * @type {{ [key: string]: any; }}
+     * @memberof EmbedScoring
+     */
+    parameters?: { [key: string]: any; };
 }
 
 
@@ -80,6 +86,7 @@ export function EmbedScoringFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'fields': !exists(json, 'fields') ? undefined : json['fields'],
         'field': !exists(json, 'field') ? undefined : json['field'],
         'query': json['query'],
+        'parameters': !exists(json, 'parameters') ? undefined : json['parameters'],
     };
 }
 
@@ -96,6 +103,7 @@ export function EmbedScoringToJSON(value?: EmbedScoring | null): any {
         'fields': value.fields,
         'field': value.field,
         'query': value.query,
+        'parameters': value.parameters,
     };
 }
 

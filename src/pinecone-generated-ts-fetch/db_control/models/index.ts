@@ -69,6 +69,7 @@ export * from './ResponseSparseEmbedConfig';
 export * from './ResponseStringField';
 export * from './ResponseStringFieldFullTextSearch';
 export * from './ResponseStringFieldFullTextSearchNgram';
+export * from './RestoreDeploymentRequest';
 export * from './RestoreJobList';
 export * from './RestoreJobModel';
 export * from './ScalingConfigManual';

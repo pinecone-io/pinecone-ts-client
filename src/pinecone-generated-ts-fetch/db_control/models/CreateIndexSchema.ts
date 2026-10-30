@@ -21,17 +21,15 @@ import {
 } from './CreateIndexSchemaField';
 
 /**
- * The schema to use when creating a Pinecone index. Defines the fields the index searches over: dense vector, sparse vector, and string fields searched by full-text search or by embeddings Pinecone derives from their text.
+ * The fields the index searches over: dense vectors, sparse vectors, and string fields searched by full-text search or by embeddings Pinecone derives from their text.
  * 
- * At least one of `dense_vector`, `sparse_vector`, or a `string` field with `full_text_search`, `embed`, or `sparse_embed` must be present; an empty `fields` map is rejected. An index has one dense vector slot and one sparse vector slot: at most one field may be a `dense_vector` field or carry `embed`, and at most one may be a `sparse_vector` field or carry `sparse_embed`. At most 100 `full_text_search` fields. Metadata used for filtering is not declared in the schema; it is indexed automatically from the documents you upsert.
+ * An index has one dense vector slot and one sparse vector slot: at most one field can be a `dense_vector` field or declare `embed`, and at most one can be a `sparse_vector` field or declare `sparse_embed`. Metadata isn't declared in the schema; it's indexed automatically from the documents you upsert.
  * @export
  * @interface CreateIndexSchema
  */
 export interface CreateIndexSchema {
     /**
-     * A map of field names to their configurations. Field names must be unique, non-empty strings of at most 64 bytes and must not start with `$`, which introduces a filter operator.
-     * 
-     * Names starting with `_` are reserved: this covers `_id`, `_values`, `_sparse_values`, and every other underscore-prefixed name. Two reserved names are accepted, and only as the whole schema: `_values` (type `dense_vector`) and/or `_sparse_values` (type `sparse_vector`) with no other fields. Such a schema creates a classic vector index, which is read and written through the vectors API rather than the Documents API — the same index that earlier API versions created from `dimension`, `metric`, and `vector_type`. Reserved fields do not accept a `description`. Any other field named with a leading `_`, or a reserved field combined with other fields, is rejected.
+     * A map of field names to field configurations. Names are at most 64 bytes and can't start with `$`. Names starting with `_` are reserved; to create a vector index with the reserved `_values` and `_sparse_values` fields, see [Adopt the Documents API](https://docs.pinecone.io/guides/index-data/adopt-the-documents-api#what-this-means-for-your-existing-code).
      * @type {{ [key: string]: CreateIndexSchemaField; }}
      * @memberof CreateIndexSchema
      */

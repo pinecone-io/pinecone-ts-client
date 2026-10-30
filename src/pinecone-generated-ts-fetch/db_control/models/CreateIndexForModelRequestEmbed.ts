@@ -16,7 +16,7 @@ import { exists, mapValues } from '../runtime';
 /**
  * Specify the integrated embedding configuration for the legacy integrated index.
  * 
- * Once set the model cannot be changed, but you can later update the embedding configuration of a legacy integrated index, including field map, read parameters, or write parameters.
+ * Once set, the model and field map can't be changed, but you can later update the read parameters and write parameters of a legacy integrated index.
  * 
  * Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available models and model details.
  * @export

@@ -33,17 +33,13 @@ import {
 } from './StringFieldFullTextSearch';
 
 /**
- * A string field configuration. The field must declare at least one search configuration:
+ * A string field. Declare at least one of:
  * 
  * - `full_text_search`: Index the text for full-text search.
- * - `embed`: Integrated embedding with a dense model. Pinecone embeds the text with a hosted dense embedding model.
- * - `sparse_embed`: Integrated embedding with a sparse model. Pinecone embeds the text with a hosted sparse embedding model.
+ * - `embed`: Embed the text with a hosted dense embedding model.
+ * - `sparse_embed`: Embed the text with a hosted sparse embedding model.
  * 
- * They can be combined on one field, so the same text can be searched by full-text search, dense similarity, and sparse similarity. A string field with none of them is a metadata field and is rejected; include metadata in the documents you upsert instead.
- * 
- * By default the field's text is stored, and a stored field is always indexed for full-text search: when `full_text_search` is omitted, it is enabled with default settings. Set `store_text` to `false` to embed the text without storing it.
- * 
- * Each value is at most 100 KB, whether or not the text is stored.
+ * Combine them to search the same text in more than one way. Each value is at most 100 KB.
  * @export
  * @interface StringField
  */
@@ -67,11 +63,9 @@ export interface StringField {
      */
     fullTextSearch?: StringFieldFullTextSearch;
     /**
-     * When `true` (the default), the field's text is stored and the field is indexed for full-text search. Each value is then subject to the full-text limit of 10,000 tokens after tokenization, in addition to the 100 KB limit.
+     * Whether to store the field's text. A stored field is always indexed for full-text search, with default settings if `full_text_search` is omitted.
      * 
-     * When `false`, the field's text is embedded and then discarded rather than stored. Such a field must declare `embed` or `sparse_embed`, and cannot declare `full_text_search`. A fetch or search whose `include_fields` names it is rejected with `400`, and it cannot be scored with `text` or `query_string` or matched with `$match_phrase`, `$match_all`, or `$match_any`; searching it with an `embed` or `sparse_embed` scoring method still works.
-     * 
-     * Fixed at creation.
+     * Set to `false` to embed the text without storing it. The field must then declare `embed` or `sparse_embed`, can't declare `full_text_search`, can't be named in `include_fields`, and can't be searched by text. Fixed at creation.
      * @type {boolean}
      * @memberof StringField
      */

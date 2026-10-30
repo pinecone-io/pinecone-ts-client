@@ -98,6 +98,18 @@ export interface ModelInfo {
      * @memberof ModelInfo
      */
     supportedParameters: Array<ModelInfoSupportedParameter>;
+    /**
+     * The APIs and index types this model works with.
+     * 
+     * - `standalone_inference`: The Inference API (`/embed`, `/rerank`).
+     * - `integrated_index`: A legacy integrated index created with `create-for-model`.
+     * - `document_index`: An `embed` or `sparse_embed` field in a document index schema.
+     * 
+     * Omitted when not set.
+     * @type {Array<string>}
+     * @memberof ModelInfo
+     */
+    supportedOn?: Array<string>;
 }
 
 /**
@@ -135,6 +147,7 @@ export function ModelInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'supportedDimensions': !exists(json, 'supported_dimensions') ? undefined : json['supported_dimensions'],
         'supportedMetrics': !exists(json, 'supported_metrics') ? undefined : json['supported_metrics'],
         'supportedParameters': ((json['supported_parameters'] as Array<any>).map(ModelInfoSupportedParameterFromJSON)),
+        'supportedOn': !exists(json, 'supported_on') ? undefined : json['supported_on'],
     };
 }
 
@@ -159,6 +172,7 @@ export function ModelInfoToJSON(value?: ModelInfo | null): any {
         'supported_dimensions': value.supportedDimensions,
         'supported_metrics': value.supportedMetrics,
         'supported_parameters': ((value.supportedParameters as Array<any>).map(ModelInfoSupportedParameterToJSON)),
+        'supported_on': value.supportedOn,
     };
 }
 

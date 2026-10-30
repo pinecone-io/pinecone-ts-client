@@ -27,11 +27,7 @@ import {
 } from './UpdateDocumentRecord';
 
 /**
- * The request for the `update_documents` operation. Either `documents` or `filter` must be specified, and they are mutually exclusive. A `filter` must be accompanied by a non-empty `set_fields` and/or `remove_fields`.
- * 
- * An empty `set_fields` or `remove_fields` asks for no change, so it does not make a request by-filter: it is ignored, and a request that also has `documents` is still a valid per-ID update.
- * 
- * A by-filter patch is checked against the index schema the same way a per-ID patch is: a value must match the type its field declares, a field cannot be both set and removed, and a required field cannot be removed.
+ * Set either `documents` or `filter`. A `filter` needs a non-empty `set_fields` or `remove_fields`.
  * @export
  * @interface UpdateDocumentsRequest
  */

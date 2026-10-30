@@ -38,7 +38,7 @@ export interface DeleteRequest {
      */
     namespace?: string;
     /**
-     * If specified, the metadata filter here will be used to select the vectors to delete. This is mutually exclusive with using delete_all=True. See [Delete data](https://docs.pinecone.io/guides/manage-data/delete-data#delete-records-by-metadata).
+     * If specified, the metadata filter here will be used to select the vectors to delete. This is mutually exclusive with `deleteAll`. See [Delete data](https://docs.pinecone.io/guides/manage-data/delete-data#delete-records-by-metadata).
      * @type {object}
      * @memberof DeleteRequest
      */

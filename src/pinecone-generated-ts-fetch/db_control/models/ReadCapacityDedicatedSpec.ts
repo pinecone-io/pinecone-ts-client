@@ -27,7 +27,7 @@ import {
  */
 export interface ReadCapacityDedicatedSpec {
     /**
-     * The mode of the index. Possible values: `OnDemand` or `Dedicated`. Defaults to `OnDemand`. If set to `Dedicated`, `dedicated.node_type`, and `dedicated.scaling` must be specified.
+     * The mode of the index. Possible values: `OnDemand` or `Dedicated`. Defaults to `OnDemand`. If set to `Dedicated`, `dedicated.node_type`, `dedicated.scaling`, and `dedicated.manual` must be specified.
      * @type {string}
      * @memberof ReadCapacityDedicatedSpec
      */

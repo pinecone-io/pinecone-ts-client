@@ -14,17 +14,15 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * Learned-sparse embedding configuration for a `string` field. Pinecone embeds the field's text with a hosted sparse embedding model when documents are upserted or updated, and embeds the query text with the same model when a search scores the field with a `sparse_embed` scoring method.
+ * Learned-sparse embedding configuration for a `string` field. Pinecone embeds the field's text when documents are upserted or updated, and the query text when a search scores the field with a `sparse_embed` scoring method.
  * 
- * Every key is optional; `{}` selects the default model. Sparse embeddings have no dimension or metric, and `dimension` or `metric` is rejected here. The resolved configuration is returned when the index is described. The configuration is fixed at creation and cannot be changed afterwards.
- * 
- * A `sparse_embed` field occupies the index's single sparse vector slot, so it cannot be combined with a `sparse_vector` field or with `sparse_embed` on another field.
+ * Every key is optional; `{}` selects the default model. Fixed at creation.
  * @export
  * @interface CreateSparseEmbedConfig
  */
 export interface CreateSparseEmbedConfig {
     /**
-     * The name of a hosted sparse embedding model. Defaults to `pinecone-sparse-english-v0`. A dense model is rejected; declare it under `embed` instead.
+     * The name of a hosted sparse embedding model. Defaults to `pinecone-sparse-english-v0`.
      * 
      * Refer to the [model guide](https://docs.pinecone.io/guides/index-data/create-an-index#embedding-models) for available models.
      * @type {string}
@@ -32,13 +30,13 @@ export interface CreateSparseEmbedConfig {
      */
     model?: string;
     /**
-     * Model-specific parameters applied when embedding document text, such as `truncate`. Validated against the model; omitted parameters take the model's defaults. The resolved parameters are returned when the index is described.
+     * Model-specific parameters applied when embedding document text, such as `truncate`. Omitted parameters take the model's defaults.
      * @type {object}
      * @memberof CreateSparseEmbedConfig
      */
     writeParameters?: object;
     /**
-     * Model-specific parameters applied when embedding search query text, such as `truncate`. Validated against the model; omitted parameters take the model's defaults. The resolved parameters are returned when the index is described.
+     * Model-specific parameters applied when embedding search query text, such as `truncate`. Omitted parameters take the model's defaults.
      * @type {object}
      * @memberof CreateSparseEmbedConfig
      */
