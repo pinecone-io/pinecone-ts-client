@@ -151,6 +151,77 @@ describe('integrated embedding wire contract', () => {
     });
   });
 
+  test('create sends embed processing_location and describe decodes it', async () => {
+    const usDescribeBody = {
+      ...describeBody,
+      schema: {
+        fields: {
+          body: {
+            type: 'string',
+            store_text: true,
+            embed: {
+              model: 'text-embedding-3-large',
+              dimension: 3072,
+              metric: 'cosine',
+              processing_location: 'us',
+            },
+          },
+        },
+      },
+    };
+    const transport = jest
+      .fn()
+      .mockResolvedValueOnce(json(usDescribeBody, 201))
+      .mockResolvedValueOnce(json(usDescribeBody));
+    const pc = controlClient(transport);
+
+    await pc.indexes.create({
+      name: INDEX_NAME,
+      schema: {
+        fields: {
+          body: {
+            type: 'string',
+            embed: {
+              model: 'text-embedding-3-large',
+              processingLocation: 'us',
+            },
+          },
+        },
+      },
+    });
+    expect(sentBody(transport).schema.fields.body).toEqual({
+      type: 'string',
+      embed: { model: 'text-embedding-3-large', processing_location: 'us' },
+    });
+
+    const index = await pc.indexes.describe(INDEX_NAME);
+    expect(index.schema.fields.body).toEqual({
+      type: 'string',
+      storeText: true,
+      embed: {
+        model: 'text-embedding-3-large',
+        dimension: 3072,
+        metric: 'cosine',
+        processingLocation: 'us',
+      },
+    });
+  });
+
+  test('create leaves processing_location out when unset', async () => {
+    const transport = jest.fn().mockResolvedValue(json(describeBody, 201));
+    await controlClient(transport).indexes.create({
+      name: INDEX_NAME,
+      schema: {
+        fields: {
+          body: { type: 'string', embed: { model: 'llama-text-embed-v2' } },
+        },
+      },
+    });
+    expect(sentBody(transport).schema.fields.body.embed).toEqual({
+      model: 'llama-text-embed-v2',
+    });
+  });
+
   test.each([
     ['embed', 'trail running shoes', { field: 'body' }],
     ['embed', 'trail running shoes', { fields: ['body'] }],
@@ -178,7 +249,46 @@ describe('integrated embedding wire contract', () => {
         score_by: [{ type, ...target, query }],
         top_k: 3,
       });
+      expect(sentBody(transport).score_by[0]).not.toHaveProperty('parameters');
       expect(result.usage).toEqual({ readUnits: 6, embedTotalTokens: 4 });
+    },
+  );
+
+  test.each([
+    ['embed', { task_type: 'fact_verification' }],
+    ['sparse_embed', { task_type: 'fact_verification' }],
+    ['embed', { task_type: 'fact_verification', future_key: { nested: 1 } }],
+  ])(
+    'search sends %s clause parameters %j as given for the API to validate',
+    async (type, parameters) => {
+      const transport = jest
+        .fn()
+        .mockResolvedValue(
+          json({ matches: [], namespace: NAMESPACE, usage: { read_units: 1 } }),
+        );
+      await documentsClient(transport).search({
+        scoreBy: [
+          {
+            type,
+            field: 'body',
+            query: 'Is the Eiffel Tower taller than 300 m?',
+            parameters,
+          },
+        ],
+        topK: 5,
+      });
+
+      expect(sentBody(transport)).toEqual({
+        score_by: [
+          {
+            type,
+            field: 'body',
+            query: 'Is the Eiffel Tower taller than 300 m?',
+            parameters,
+          },
+        ],
+        top_k: 5,
+      });
     },
   );
 

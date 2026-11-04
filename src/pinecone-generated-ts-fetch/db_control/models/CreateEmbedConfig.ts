@@ -38,6 +38,14 @@ export interface CreateEmbedConfig {
      */
     dimension?: number;
     /**
+     * Where the model processes your data. Defaults to the model's default processing location.
+     * 
+     * Supported processing locations depend on the model and your plan. See [Processing locations](https://docs.pinecone.io/guides/index-data/processing-locations).
+     * @type {string}
+     * @memberof CreateEmbedConfig
+     */
+    processingLocation?: string;
+    /**
      * The distance metric used for similarity search. Defaults to the model's default metric.
      * 
      * Possible values: `cosine`, `dotproduct`, or `euclidean`.
@@ -80,6 +88,7 @@ export function CreateEmbedConfigFromJSONTyped(json: any, ignoreDiscriminator: b
         
         'model': !exists(json, 'model') ? undefined : json['model'],
         'dimension': !exists(json, 'dimension') ? undefined : json['dimension'],
+        'processingLocation': !exists(json, 'processing_location') ? undefined : json['processing_location'],
         'metric': !exists(json, 'metric') ? undefined : json['metric'],
         'writeParameters': !exists(json, 'write_parameters') ? undefined : json['write_parameters'],
         'readParameters': !exists(json, 'read_parameters') ? undefined : json['read_parameters'],
@@ -97,6 +106,7 @@ export function CreateEmbedConfigToJSON(value?: CreateEmbedConfig | null): any {
         
         'model': value.model,
         'dimension': value.dimension,
+        'processing_location': value.processingLocation,
         'metric': value.metric,
         'write_parameters': value.writeParameters,
         'read_parameters': value.readParameters,

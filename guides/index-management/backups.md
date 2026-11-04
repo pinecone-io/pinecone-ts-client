@@ -2,7 +2,7 @@
 
 > **Note:** Backups require an eligible serverless index. They are not supported for full-text search indexes with document schemas containing `full_text_search` string fields, `dense_vector` fields, or `sparse_vector` fields. Check the [backup eligibility requirements](https://docs.pinecone.io/guides/manage-data/back-up-an-index). Pod-based indexes should use [collections](./collections.md) instead.
 
-A backup is a static, non-queryable copy of an eligible serverless index and consumes only storage. Restore it into a new serverless index, optionally with new `tags` and `deletionProtection` values. For more information, see [Backups overview](https://docs.pinecone.io/guides/manage-data/backups-overview).
+A backup is a static, non-queryable copy of an eligible serverless index and consumes only storage. Restore it into a new serverless index, optionally with new `tags` and `deletionProtection` values, or into another region of the same cloud. For more information, see [Backups overview](https://docs.pinecone.io/guides/manage-data/backups-overview).
 
 The examples below create and manage on-demand backups.
 
@@ -47,6 +47,30 @@ console.log(restoreJob.status);
 ```
 
 Poll with a bounded timeout while the job is `Pending`. `Completed` means the restore succeeded; `Failed` and `Cancelled` are terminal outcomes that did not complete the restore.
+
+### Restore into another region
+
+By default, the new index is created where the backup was taken: the same cloud and region for a serverless backup, or the same environment for a BYOC backup. To restore a serverless backup into another region of the same cloud, pass a `managed` `deployment` in that region:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone({ apiKey: 'YOUR_API_KEY' });
+
+const response = await pc.backups.createIndex(
+  '11450b9f-96e5-47e5-9186-03f346b1f385',
+  {
+    name: 'my-index-us-west-2',
+    deployment: {
+      deploymentType: 'managed',
+      cloud: 'aws',
+      region: 'us-west-2',
+    },
+  },
+);
+```
+
+Cross-cloud restore is not supported, a serverless backup cannot be restored into a BYOC environment, and a BYOC backup can only be restored into the environment it was taken in. Cross-region restore isn't yet available from every source region. `deployment.deploymentType` must be `managed` or `byoc`; any other value throws a `PineconeArgumentError` before a request is sent.
 
 ## Schedule recurring backups
 

@@ -27,6 +27,7 @@ export type {
  * - `text`: `field` or `fields` naming one or more fields, and `query`.
  * - `query_string`: `query` only. Use field qualifiers (`field:(clause)`) in the query to target a field.
  * - `embed` / `sparse_embed`: `field` or `fields` naming one `string` field that declares `embed` / `sparse_embed`, and `query`.
+ *   An `embed` clause also accepts `parameters`.
  */
 export interface DocumentScoringMethod {
   /**
@@ -55,6 +56,13 @@ export interface DocumentScoringMethod {
    * The sparse query vector for `sparse_vector`.
    */
   sparseValues?: SparseValues;
+  /**
+   * Model parameters for embedding the query of an `embed` clause in this search, such as
+   * `{ task_type: 'fact_verification' }`. They override the field's `readParameters`. Today only `task_type` can be
+   * set; `pc.inference.listModels()` lists the models that accept it. The API validates the keys and values, and
+   * rejects `parameters` on every other clause type, `sparse_embed` included.
+   */
+  parameters?: Record<string, unknown>;
 }
 
 /** Options for searching documents in a namespace. */
@@ -77,6 +85,7 @@ const DocumentScoringMethodToJSON = (value: DocumentScoringMethod) => ({
   query: value.query,
   values: value.values,
   sparse_values: SparseValuesToJSON(value.sparseValues),
+  parameters: value.parameters,
 });
 
 export const searchDocuments = async (

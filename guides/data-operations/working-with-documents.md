@@ -332,6 +332,30 @@ await embedIndex.documents.upsert({
 
 Every key of `embed` and `sparseEmbed` is optional; `{}` selects the default model, at its default dimension and metric for `embed`. The configuration is fixed at creation, and `pc.indexes.describe` reports it resolved, with every omitted key filled in from the model. `writeParameters` and `readParameters` set the model parameters used to embed document text and query text; the model's defaults rarely need changing.
 
+`embed.processingLocation` sets where the model processes your data, such as `'us'`. It defaults to the model's default processing location, and the locations you can choose depend on the model and your plan; see [Processing locations](https://docs.pinecone.io/guides/index-data/processing-locations). Like the rest of the configuration, it is fixed at creation and reported by `pc.indexes.describe`:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const usIndex = await pc.indexes.create({
+  name: 'embed-us-index',
+  schema: {
+    fields: {
+      body: {
+        type: 'string',
+        embed: { model: 'text-embedding-3-large', processingLocation: 'us' },
+      },
+    },
+  },
+  deployment: { deploymentType: 'managed', cloud: 'aws', region: 'us-east-1' },
+});
+const body = usIndex.schema.fields.body;
+if ('type' in body && body.type === 'string') {
+  console.log(body.embed?.processingLocation); // 'us'
+}
+```
+
 On a document index with integrated embedding, upsert and update responses include `usage.embedTotalTokens`, the tokens Pinecone embedded for the write. `usage` is omitted when the request embedded nothing, which is always the case on an index without integrated embedding.
 
 Search with an `embed` or `sparse_embed` clause that names the field and passes the query as text:
@@ -356,6 +380,28 @@ console.log(results.usage.embedTotalTokens);
 ```
 
 Like a vector clause, an `embed` or `sparse_embed` clause must be the only clause in `scoreBy`. `usage.embedTotalTokens` counts the query tokens Pinecone embedded, when the server reports it.
+
+An `embed` clause can set `parameters` to override the field's `readParameters` for one search. Today only `task_type` can be set, and only on models that accept it; `pc.inference.listModels()` lists each model's `supportedParameters`. For example, on an index whose `body` field embeds with `gemini-embedding-2`:
+
+```typescript
+import { Pinecone } from '@pinecone-database/pinecone';
+
+const pc = new Pinecone();
+const factIndex = pc.index({ name: 'fact-checks', namespace: 'claims' });
+const results = await factIndex.documents.search({
+  scoreBy: [
+    {
+      type: 'embed',
+      field: 'body',
+      query: 'Is the Eiffel Tower taller than 300 m?',
+      parameters: { task_type: 'fact_verification' },
+    },
+  ],
+  topK: 5,
+});
+```
+
+The SDK sends `parameters` as given, and the API validates its keys and values. `parameters` is rejected on every other clause type, `sparse_embed` included.
 
 An index has one dense slot and one sparse slot: at most one field can be a `dense_vector` field or declare `embed`, and at most one can be a `sparse_vector` field or declare `sparseEmbed`. A single field can declare `embed` and `sparseEmbed` together, and full-text search as well.
 

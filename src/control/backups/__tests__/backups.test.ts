@@ -166,6 +166,26 @@ describe('Backups operation contracts through the public facade', () => {
         },
       },
     },
+    {
+      name: 'restored-us-west-2',
+      deployment: {
+        deploymentType: 'managed',
+        cloud: 'aws',
+        region: 'us-west-2',
+      },
+    },
+    {
+      name: 'restored-byoc',
+      deployment: { deploymentType: 'byoc', environment: 'aws-us-east-1-b921' },
+      readCapacity: {
+        mode: 'Dedicated',
+        dedicated: {
+          nodeType: 'b1',
+          scaling: 'Manual',
+          manual: { shards: 1, replicas: 1 },
+        },
+      },
+    },
   ])('creates an index with options %j', async (options) => {
     await expect(
       backups.createIndex('backup-123', options),
@@ -178,10 +198,33 @@ describe('Backups operation contracts through the public facade', () => {
         tags: options.tags,
         deletionProtection: options.deletionProtection,
         readCapacity: options.readCapacity,
+        deployment: options.deployment,
       },
       xPineconeApiVersion: '2026-07',
     });
   });
+
+  test.each([
+    ['pod', { deploymentType: 'pod', environment: 'us-east-1-aws' }],
+    ['unknown', { deploymentType: 'serverless', cloud: 'aws' }],
+    ['missing', { cloud: 'aws', region: 'us-west-2' }],
+  ])(
+    'createIndex rejects a %s deployment type before calling the API',
+    async (_, deployment) => {
+      await expect(
+        backups.createIndex('backup-123', {
+          name: 'restored',
+          deployment: deployment as unknown as NonNullable<
+            CreateIndexFromBackupResourceOptions['deployment']
+          >,
+        }),
+      ).rejects.toMatchObject({
+        name: 'PineconeArgumentError',
+        message: expect.stringContaining('`deployment.deploymentType`'),
+      });
+      expect(api.createIndexFromBackupOperation).not.toHaveBeenCalled();
+    },
+  );
 
   const invalidCalls = [
     ['create', 'indexName', (b: Backups, value: string) => b.create(value)],

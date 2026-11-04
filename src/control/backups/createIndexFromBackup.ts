@@ -1,6 +1,7 @@
 import type {
   ManageIndexesApi,
   CreateIndexFromBackupResponse,
+  RestoreDeploymentRequest,
 } from '../../pinecone-generated-ts-fetch/db_control';
 import { normalizeReadCapacity } from '../indexes/legacyTranslation';
 import type { CreateIndexReadCapacity } from '../indexes/legacyTypes';
@@ -9,7 +10,12 @@ import { X_PINECONE_API_VERSION } from '../../pinecone-generated-ts-fetch/db_con
 import { PineconeArgumentError } from '../../errors';
 import { handleApiError } from '../../errors/handling';
 
-export type { CreateIndexFromBackupResponse } from '../../pinecone-generated-ts-fetch/db_control';
+export type {
+  CreateIndexFromBackupResponse,
+  RestoreDeploymentRequest,
+} from '../../pinecone-generated-ts-fetch/db_control';
+
+const RESTORE_DEPLOYMENT_TYPES: ReadonlyArray<string> = ['managed', 'byoc'];
 
 /**
  * Options for the deprecated flat backup restore method.
@@ -29,6 +35,13 @@ export interface CreateIndexFromBackupOptions {
   deletionProtection?: DeletionProtection;
   /** Native nested or deprecated flat read capacity configuration. Omit for on-demand capacity. */
   readCapacity?: ReadCapacity | CreateIndexReadCapacity;
+  /**
+   * Where to create the index. Omit to restore where the backup was taken: the same cloud and region for a serverless
+   * backup, or the same environment for a BYOC backup. To restore a serverless backup into another region of the same
+   * cloud, pass a `managed` deployment in that region. Cross-cloud restore is not supported, a serverless backup cannot
+   * be restored into a BYOC environment, and a BYOC backup can only be restored into the environment it was taken in.
+   */
+  deployment?: RestoreDeploymentRequest;
 }
 
 /** Options for {@link Backups.createIndex}; pass the backup ID separately. */
@@ -64,6 +77,14 @@ export const createIndexFromBackup = async (
       'You must pass a non-empty string for `name` to create an index from a backup.',
     );
   }
+  if (
+    options.deployment != null &&
+    !RESTORE_DEPLOYMENT_TYPES.includes(options.deployment.deploymentType)
+  ) {
+    throw new PineconeArgumentError(
+      `\`deployment.deploymentType\` must be 'managed' or 'byoc' to create an index from a backup; received ${JSON.stringify(options.deployment.deploymentType)}.`,
+    );
+  }
   const readCapacity = normalizeReadCapacity(options.readCapacity);
   try {
     return await api.createIndexFromBackupOperation({
@@ -73,6 +94,7 @@ export const createIndexFromBackup = async (
         tags: options.tags,
         deletionProtection: options.deletionProtection,
         readCapacity,
+        deployment: options.deployment,
       },
       xPineconeApiVersion: X_PINECONE_API_VERSION,
     });

@@ -160,9 +160,11 @@ export class Backups {
    * Use {@link RestoreJobs.describe} to check progress after this call returns.
    *
    * @param backupId - The ID of the backup to restore.
-   * @param options - The new index name and optional tags, deletion protection, and read capacity.
+   * @param options - The new index name and optional tags, deletion protection, read capacity, and deployment. Set
+   *   `deployment` to restore a serverless backup into another region of the same cloud.
    * @returns The `restoreJobId` for tracking progress and `indexId` of the new index.
-   * @throws {@link Errors.PineconeArgumentError} when the backup ID or new index name is empty.
+   * @throws {@link Errors.PineconeArgumentError} when the backup ID or new index name is empty, or when
+   *   `deployment.deploymentType` is not `managed` or `byoc`.
    *
    * @example
    * ```typescript

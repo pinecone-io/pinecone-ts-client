@@ -237,6 +237,7 @@ export type {
   CreateIndexFromBackupOptions,
   CreateIndexFromBackupResourceOptions,
   CreateIndexFromBackupResponse,
+  RestoreDeploymentRequest,
 } from './control/backups';
 export type {
   ListRestoreJobsOptions,

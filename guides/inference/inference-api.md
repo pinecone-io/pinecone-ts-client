@@ -27,7 +27,8 @@ console.log(models);
 //       providerName: 'Pinecone',
 //       supportedDimensions: [Array],
 //       supportedMetrics: [Array],
-//       supportedParameters: [Array]
+//       supportedParameters: [Array],
+//       supportedOn: [ 'standalone_inference', 'integrated_index', 'document_index' ]
 //     },
 //     // ... more models
 //   ]
@@ -36,6 +37,8 @@ console.log(models);
 const model = await pc.inference.getModel('multilingual-e5-large');
 console.log(model);
 ```
+
+`supportedOn` lists where a model can be used: `standalone_inference` (the `embed` and `rerank` methods on this page), `integrated_index` (a legacy integrated index created with `createForModel`), and `document_index` (an `embed` or `sparseEmbed` field in a document index schema). It is `undefined` when the API does not report it.
 
 ## Create embeddings
 

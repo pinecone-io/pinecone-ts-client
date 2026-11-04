@@ -15,4 +15,5 @@ export type {
   CreateIndexFromBackupOptions,
   CreateIndexFromBackupResourceOptions,
   CreateIndexFromBackupResponse,
+  RestoreDeploymentRequest,
 } from './createIndexFromBackup';
