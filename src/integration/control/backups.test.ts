@@ -230,6 +230,14 @@ describe('backup and restore lifecycle', () => {
         },
         () => {},
       );
+      // The service rejects a backup delete (HTTP 500) while any restore from
+      // it is still Pending, which can outlast the target index deletion.
+      await assertWithRetries(
+        () => pc.restoreJobs.describe(restore.restoreJobId),
+        (job: RestoreJobModel) => expect(job.status).not.toBe('Pending'),
+        600_000,
+        5000,
+      );
       await retryDelete(() => pc.backups.delete(id), `backup '${id}'`);
       await assertWithRetries(
         async () => {
@@ -255,6 +263,7 @@ describe('backup and restore lifecycle', () => {
                 retryDelete(
                   () => pc.backups.delete(backupId!),
                   `backup '${backupId}'`,
+                  120_000,
                 ),
               ]
             : []),
